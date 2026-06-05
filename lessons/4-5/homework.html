@@ -160,7 +160,137 @@ header.homework-header h1 {
   margin: 0 0 16px 0;
 }
 
+/* Family guide */
+.family-guide {
+  background: linear-gradient(180deg, #fffdf8 0%, var(--white) 100%);
+  border-color: #ead9b8;
+}
+
+.family-guide-header {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.family-guide-emoji {
+  font-size: 34px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.family-guide-title {
+  margin-bottom: 4px;
+}
+
+.family-guide-sub {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14.5px;
+}
+
+.family-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.family-panel {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+
+.family-panel-heading {
+  margin: 0 0 8px 0;
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--navy);
+}
+
+.family-tip-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.family-tip-list li {
+  margin-bottom: 6px;
+}
+
+.family-try-text {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.45;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.family-print-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.try-at-home {
+  background: linear-gradient(180deg, var(--teal-light) 0%, var(--white) 100%);
+  border-color: #b8ddd8;
+}
+
+.try-narrative {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.try-challenge {
+  margin: 0;
+  padding: 12px 14px;
+  background: var(--amber-light);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--amber);
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.family-problem-tip {
+  margin: -8px 0 14px 0;
+  padding: 10px 12px;
+  background: var(--amber-light);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  color: var(--hint);
+}
+
+.family-hint-box {
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  color: var(--navy);
+}
+
+.family-hint-box p {
+  margin: 0 0 6px 0;
+}
+
+.family-hint-box p:last-child {
+  margin-bottom: 0;
+}
+
 /* Vocabulary Flashcards */
+.vocab-family-note {
+  margin: -6px 0 14px 0;
+  font-size: 14px;
+  color: var(--muted);
+}
 .vocab-container {
   display: flex;
   gap: 16px;
@@ -179,10 +309,26 @@ header.homework-header h1 {
 }
 
 .vocab-card {
-  flex: 0 0 240px;
-  height: 160px;
+  flex: 0 0 260px;
+  height: 210px;
   perspective: 1000px;
   cursor: pointer;
+}
+
+.vocab-thumb-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.vocab-thumb {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  padding: 4px;
 }
 
 .vocab-card-inner {
@@ -271,6 +417,13 @@ header.homework-header h1 {
   color: var(--amber);
   margin: 6px 0 0 0;
   font-style: italic;
+}
+
+.vocab-back-visual {
+  margin: 10px 0 0 0;
+  font-size: 12px;
+  color: var(--teal-light);
+  line-height: 1.35;
 }
 
 /* Practice Problem Cards */
@@ -550,6 +703,92 @@ header.homework-header h1 {
 .drag-card:active {
   cursor: grabbing;
   transform: scale(0.98);
+}
+
+.drag-card.dragging {
+  opacity: 0.55;
+}
+
+.drag-column.over,
+.drag-source-pile.over {
+  border-color: var(--teal);
+  background: var(--teal-light);
+}
+
+/* Drag order (sequencing) */
+.drag-order-workspace {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.drag-order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drag-order-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--white);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  cursor: grab;
+  user-select: none;
+}
+
+.drag-order-row.dragging {
+  opacity: 0.55;
+}
+
+.drag-order-handle {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.drag-order-num {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--teal);
+  color: var(--white);
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.drag-order-text {
+  flex: 1;
+  font-weight: 600;
+  font-size: 14.5px;
+}
+
+.drag-order-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.order-move-btn {
+  min-width: 0;
+  padding: 4px 10px;
+}
+
+.drag-order-row.is-correct {
+  border-color: var(--success);
+  background: var(--success-bg);
+}
+
+.drag-order-row.is-incorrect {
+  border-color: var(--error);
+  background: var(--error-bg);
 }
 
 .drag-handle {
@@ -1035,13 +1274,61 @@ header.homework-header h1 {
   </header>
 
   
+    <section class="family-guide card" aria-label="Family guide">
+      <div class="family-guide-header">
+        <span class="family-guide-emoji">🕹️</span>
+        <div>
+          <h2 class="section-title family-guide-title">Family Guide</h2>
+          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+        </div>
+      </div>
+
+      <div class="family-guide-grid">
+        <div class="family-panel family-panel-tips">
+          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
+          <ul class="family-tip-list">
+            <li>Let your student try each problem first. Use <strong>Check Answers</strong> for friendly feedback.</li>
+            <li>Tap vocabulary cards to flip between term and definition.</li>
+            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
+          </ul>
+        </div>
+
+        <div class="family-panel family-panel-home">
+          <h3 class="family-panel-heading">🏡 Try this at home</h3>
+          <p class="family-try-text">At the prize shop a bear is 25% off but the shop adds 5% tax. Which of these raises the price and which lowers it, and what do the words discount, markup, tax, and tip have in common?</p>
+        </div>
+      </div>
+
+      
+        <div class="family-panel family-panel-legend">
+          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
+          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>fill table:</strong> Encourage your student to show their work on paper if a box feels tricky.</li><li><strong>drag sort:</strong> On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</li><li><strong>matching game:</strong> Say each term out loud, then talk through which match makes sense before choosing.</li></ul>
+        </div>
+
+      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
+    </section>
+  
+
+  
+    <section class="try-at-home card" aria-label="Try this at home">
+      <h2 class="section-title">🕹️ Real-World Connection</h2>
+      <p class="try-narrative">Welcome to the arcade prize shop! You&#039;ve been saving up tickets and now it&#039;s time to spend them. Some prizes are on sale with discounts, but the shop also charges a 5% ticket tax on purchases. Plus, there&#039;s a 10% markup on limited-edition prizes. Can you figure out the final ticket cost for each prize?</p>
+      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    </section>
+  
+
+  
     <section class="vocab-section card">
       <h2 class="section-title">🔑 Key Vocabulary</h2>
+      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/discount.svg" alt="Illustration of Discount: Money taken off the first price to make it cheaper." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Discount</h3>
                   <p class="vocab-es">Descuento</p>
                   <div class="vocab-visual-hint">💡 Example: 20% off $50 → discount is $10</div>
@@ -1050,6 +1337,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">Money taken off the first price to make it cheaper.</p>
                   <p class="vocab-def-es">Dinero que se quita del precio original para que sea más barato.</p>
+                  <p class="vocab-back-visual">📌 20% off $50 → discount is $10</p>
                 </div>
               </div>
             </div>
@@ -1057,6 +1345,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/percent.svg" alt="Illustration of Markup: Money added to the cost to set the selling price." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Markup</h3>
                   <p class="vocab-es">Recargo (margen)</p>
                   <div class="vocab-visual-hint">💡 Example: A $30 item with 10% markup sells for $33</div>
@@ -1065,6 +1356,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">Money added to the cost to set the selling price.</p>
                   <p class="vocab-def-es">Dinero que se suma al costo para fijar el precio de venta.</p>
+                  <p class="vocab-back-visual">📌 A $30 item with 10% markup sells for $33</p>
                 </div>
               </div>
             </div>
@@ -1072,6 +1364,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/percent.svg" alt="Illustration of Tax: Extra money added to a price for the government." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Tax</h3>
                   <p class="vocab-es">Impuesto</p>
                   <div class="vocab-visual-hint">💡 Example: 6% tax on $20 adds $1.20</div>
@@ -1080,6 +1375,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">Extra money added to a price for the government.</p>
                   <p class="vocab-def-es">Dinero extra que se suma a un precio para el gobierno.</p>
+                  <p class="vocab-back-visual">📌 6% tax on $20 adds $1.20</p>
                 </div>
               </div>
             </div>
@@ -1087,6 +1383,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/percent.svg" alt="Illustration of Tip: Extra money you give for good service." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Tip</h3>
                   <p class="vocab-es">Propina</p>
                   <div class="vocab-visual-hint">💡 Example: 15% tip on $40 = $6</div>
@@ -1095,6 +1394,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">Extra money you give for good service.</p>
                   <p class="vocab-def-es">Dinero extra que das por un buen servicio.</p>
+                  <p class="vocab-back-visual">📌 15% tip on $40 = $6</p>
                 </div>
               </div>
             </div>
@@ -1102,6 +1402,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/percent.svg" alt="Illustration of Percent: A way to compare a number to 100, shown with the % sign." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Percent</h3>
                   <p class="vocab-es">Porcentaje</p>
                   <div class="vocab-visual-hint">💡 Example: 50% means 50 out of 100</div>
@@ -1110,6 +1413,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">A way to compare a number to 100, shown with the % sign.</p>
                   <p class="vocab-def-es">Una manera de comparar un número con 100, con el signo %.</p>
+                  <p class="vocab-back-visual">📌 50% means 50 out of 100</p>
                 </div>
               </div>
             </div>
@@ -1128,6 +1432,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">A prize costs 120 tickets and is 25% off. What is the sale price?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="25% of 120 = 0.25 × 120 = 30. Sale price: 120 − 30 = 90 tickets.">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1168,6 +1473,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">A meal costs $20. You leave a 15% tip. How much is the tip?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="15% of $20 = 0.15 × 20 = $3.00.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1208,6 +1514,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">Solve each percent word problem.</p>
+        <p class="family-problem-tip">👪 Family tip: Encourage your student to show their work on paper if a box feels tricky.</p>
         <div class="table-responsive">
           <table class="fill-table">
             <thead>
@@ -1281,6 +1588,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">A store marks up a $30 item by 40%, then a customer gets 10% off. What is the final price?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="Markup: $30 × 1.40 = $42. Discount: $42 × 0.10 = $4.20. Final: $42 − $4.20 = $37.80.">
           
             <label class="mc-option-label" id="label_q_3_0">
@@ -1321,6 +1629,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">A restaurant bill is $35. You want to leave a 20% tip. What is the total amount you pay?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="Tip: 0.20 × $35 = $7.00. Total: $35 + $7 = $42.00.">
           
             <label class="mc-option-label" id="label_q_4_0">
@@ -1360,31 +1669,32 @@ header.homework-header h1 {
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">15 is what percent of 60?</p>
-        <div class="mc-options" data-correct="0" data-explanation="15/60 = 0.25 = 25%.">
+        <p class="problem-stem">Store 1 — Sneaker Spot: A pair of sneakers is $60 with 20% off. What is the sale price?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <div class="mc-options" data-correct="0" data-explanation="Discount: 0.20 x 60 = 12. Sale price: 60 - 12 = $48.">
           
             <label class="mc-option-label" id="label_q_5_0">
               <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">25%</span>
+              <span class="choice-text">$48</span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_1">
               <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">15%</span>
+              <span class="choice-text">$40</span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_2">
               <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">45%</span>
+              <span class="choice-text">$52</span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_3">
               <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">40%</span>
+              <span class="choice-text">$12</span>
             </label>
           
         </div>
@@ -1400,31 +1710,32 @@ header.homework-header h1 {
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">8 is 40% of what number?</p>
-        <div class="mc-options" data-correct="0" data-explanation="8 ÷ 0.40 = 20.">
+        <p class="problem-stem">Store 2 — Tech Stop: A $25 phone case has 8% sales tax added. What is the total cost?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <div class="mc-options" data-correct="0" data-explanation="Tax: 0.08 x 25 = 2. Total: 25 + 2 = $27.">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">20</span>
+              <span class="choice-text">$27</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_1">
               <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">32</span>
+              <span class="choice-text">$33</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_2">
               <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">48</span>
+              <span class="choice-text">$25.08</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_3">
               <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">16</span>
+              <span class="choice-text">$23</span>
             </label>
           
         </div>
@@ -1440,31 +1751,32 @@ header.homework-header h1 {
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">A test has 25 questions. A student gets 88% correct. How many are correct?</p>
-        <div class="mc-options" data-correct="0" data-explanation="0.88 × 25 = 22 questions.">
+        <p class="problem-stem">Store 3 — Food Court: Your lunch bill is $40. You leave a 15% tip. How much is the tip?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <div class="mc-options" data-correct="0" data-explanation="Tip: 0.15 x 40 = $6.">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">22</span>
+              <span class="choice-text">$6</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_1">
               <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">20</span>
+              <span class="choice-text">$4</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_2">
               <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">23</span>
+              <span class="choice-text">$15</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_3">
               <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">21</span>
+              <span class="choice-text">$46</span>
             </label>
           
         </div>
@@ -1473,106 +1785,188 @@ header.homework-header h1 {
     </section>
   
 
-    <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_8" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Problem 9</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge">DRAG SORT</div>
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">A shirt is $30 after a 25% discount off the original price. What was the original price?</p>
-        <div class="mc-options" data-correct="0" data-explanation="$30 is 75% of the original; 30 ÷ 0.75 = $40.">
-          
-            <label class="mc-option-label" id="label_q_8_0">
-              <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">$40</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_8_1">
-              <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">$37.50</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_8_2">
-              <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">$45</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_8_3">
-              <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">$36</span>
-            </label>
-          
+        <p class="problem-stem">Store 4 — Deal Sorter: Sort each mall sign by what it does to the final price.</p>
+        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
+        
+        <div class="drag-sort-workspace" id="dragsort_8">
+          <div class="drag-columns">
+            
+              <div class="drag-column" data-category-id="up" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'up')">
+                <div class="drag-column-header">Final Price Goes UP</div>
+                <div class="drag-column-slots" id="slots_8_up" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'up')"></div>
+              </div>
+              <div class="drag-column" data-category-id="down" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'down')">
+                <div class="drag-column-header">Final Price Goes DOWN</div>
+                <div class="drag-column-slots" id="slots_8_down" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'down')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_8" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_8_0"
+                     data-item-index="0"
+                     data-correct-category="down"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">35% off backpacks</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_0', 8); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="up">Final Price Goes UP</option><option value="down">Final Price Goes DOWN</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_8_1"
+                     data-item-index="1"
+                     data-correct-category="up"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">7% sales tax at checkout</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_1', 8); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="up">Final Price Goes UP</option><option value="down">Final Price Goes DOWN</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_8_2"
+                     data-item-index="2"
+                     data-correct-category="up"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">18% tip at the smoothie bar</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_2', 8); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="up">Final Price Goes UP</option><option value="down">Final Price Goes DOWN</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_8_3"
+                     data-item-index="3"
+                     data-correct-category="down"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Clearance: 50% off shoes</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_3', 8); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="up">Final Price Goes UP</option><option value="down">Final Price Goes DOWN</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_8_4"
+                     data-item-index="4"
+                     data-correct-category="up"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Store adds a 12% markup on collectibles</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_4', 8); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="up">Final Price Goes UP</option><option value="down">Final Price Goes DOWN</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_8_5"
+                     data-item-index="5"
+                     data-correct-category="down"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Coupon: 15% off your total</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_5', 8); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="up">Final Price Goes UP</option><option value="down">Final Price Goes DOWN</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(8); saveState(); updateProgress();">Reset Sorting</button>
         </div>
       </div>
     
     </section>
   
 
-    <section class="problem-section card" id="problem_9" data-problem-type="error-analysis">
+    <section class="problem-section card" id="problem_9" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
+        <div class="problem-type-badge">MATCHING GAME</div>
       </div>
       
       <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ Find the Discount Error</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_9_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">A prize costs 160 tickets at 25% off. Find the sale price.:</span>
-                <span class="step-work">160 tickets, 25% off</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Find 25% of 160:</span>
-                <span class="step-work">25 × 160 = 4,000</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Subtract discount:</span>
-                <span class="step-work">160 − 4,000 = −3,840</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_4">
-                <span class="step-badge">Step 4</span>
-                <span class="step-label">Final answer:</span>
-                <span class="step-work">Sale price is −3,840 tickets</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_9">Which step has the error?</label>
-            <select id="error_step_select_9" class="custom-select error-step-select" data-correct="2" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option><option value="4">Step 4</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
+        <p class="problem-stem">Store 5 — Price Match: Match each mall purchase to its correct final price.</p>
+        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
+        <div class="matching-pairs">
           
-          <div class="error-explain-row">
-            <label for="error_explain_input_9">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_9" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
+            <div class="matching-row" data-term="$100 jacket, 30% off" data-correct="$70">
+              <div class="matching-term">$100 jacket, 30% off</div>
+              <div class="matching-select-container">
+                <select name="q_9_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="$25">$25</option><option value="$55">$55</option><option value="$60">$60</option><option value="$70">$70</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
           
-          <div class="reveal-box" id="error_correct_work_9" style="display:none;">
-            <strong>Correct Work Reference:</strong> 25% = 0.25 (not 25). 0.25 × 160 = 40. Sale price: 160 − 40 = 120 tickets.
-          </div>
+            <div class="matching-row" data-term="$50 game, 10% tax added" data-correct="$55">
+              <div class="matching-term">$50 game, 10% tax added</div>
+              <div class="matching-select-container">
+                <select name="q_9_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="$25">$25</option><option value="$55">$55</option><option value="$60">$60</option><option value="$70">$70</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="$20 meal, 25% tip added" data-correct="$25">
+              <div class="matching-term">$20 meal, 25% tip added</div>
+              <div class="matching-select-container">
+                <select name="q_9_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="$25">$25</option><option value="$55">$55</option><option value="$60">$60</option><option value="$70">$70</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="$80 boots, 25% off" data-correct="$60">
+              <div class="matching-term">$80 boots, 25% off</div>
+              <div class="matching-select-container">
+                <select name="q_9_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="$25">$25</option><option value="$55">$55</option><option value="$60">$60</option><option value="$70">$70</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
         </div>
       </div>
     
@@ -1682,29 +2076,50 @@ function playFailureSound() {
 // Drag & Drop engine
 function allowDrop(ev) {
   ev.preventDefault();
+  const zone = ev.currentTarget;
+  if (zone && zone.classList) {
+    zone.classList.add("over");
+  }
 }
 
 function handleDragStart(ev) {
-  ev.dataTransfer.setData("text", ev.target.id);
+  const card = ev.currentTarget.closest(".drag-card");
+  if (!card) return;
+  ev.dataTransfer.setData("text/plain", card.id);
+  ev.dataTransfer.effectAllowed = "move";
+  card.classList.add("dragging");
+}
+
+function handleDragEnd(ev) {
+  const el = ev.currentTarget;
+  if (el) el.classList.remove("dragging");
+  clearDragOver();
+}
+
+function clearDragOver() {
+  document.querySelectorAll(".drag-column.over, .drag-source-pile.over, .drag-column-slots.over")
+    .forEach((el) => el.classList.remove("over"));
 }
 
 function handleDrop(ev, probIdx, categoryId) {
   ev.preventDefault();
-  const cardId = ev.dataTransfer.getData("text");
+  clearDragOver();
+  const cardId = ev.dataTransfer.getData("text/plain") || ev.dataTransfer.getData("text");
   const card = document.getElementById(cardId);
   if (!card) return;
-  
-  // Check if dropping card belongs to this problem
+
+  document.querySelectorAll(".drag-card.dragging").forEach((el) => el.classList.remove("dragging"));
+
   const prefix = "card_" + probIdx + "_";
   if (!card.id.startsWith(prefix)) return;
-  
+
   let targetContainer;
   if (categoryId) {
     targetContainer = document.getElementById("slots_" + probIdx + "_" + categoryId);
   } else {
     targetContainer = document.getElementById("pile_" + probIdx);
   }
-  
+
   if (targetContainer) {
     targetContainer.appendChild(card);
     const select = card.querySelector(".mobile-cat-select");
@@ -1712,6 +2127,127 @@ function handleDrop(ev, probIdx, categoryId) {
     saveState();
     updateProgress();
   }
+}
+
+function handleOrderDragStart(ev) {
+  const row = ev.currentTarget.closest(".drag-order-row");
+  if (!row) return;
+  ev.dataTransfer.setData("text/plain", row.id);
+  ev.dataTransfer.effectAllowed = "move";
+  row.classList.add("dragging");
+}
+
+function handleOrderDrop(ev, probIdx) {
+  ev.preventDefault();
+  const list = document.getElementById("orderlist_" + probIdx);
+  const rowId = ev.dataTransfer.getData("text/plain") || ev.dataTransfer.getData("text");
+  const row = document.getElementById(rowId);
+  if (!list || !row || !row.id.startsWith("order_" + probIdx + "_")) return;
+  document.querySelectorAll(".drag-order-row.dragging").forEach((el) => el.classList.remove("dragging"));
+
+  const afterEl = getOrderInsertBefore(list, ev.clientY);
+  if (afterEl) {
+    list.insertBefore(row, afterEl);
+  } else {
+    list.appendChild(row);
+  }
+  renumberOrderRows(probIdx);
+  saveState();
+  updateProgress();
+}
+
+function getOrderInsertBefore(list, clientY) {
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  for (const child of rows) {
+    const box = child.getBoundingClientRect();
+    if (clientY < box.top + box.height / 2) return child;
+  }
+  return null;
+}
+
+function moveOrderRowByEl(probIdx, btn, direction) {
+  const row = btn.closest(".drag-order-row");
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!row || !list) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  const rowIdx = rows.indexOf(row);
+  const nextIdx = rowIdx + direction;
+  if (nextIdx < 0 || nextIdx >= rows.length) return;
+  const neighbor = rows[nextIdx];
+  if (direction < 0) {
+    list.insertBefore(row, neighbor);
+  } else {
+    list.insertBefore(neighbor, row.nextSibling);
+  }
+  renumberOrderRows(probIdx);
+  saveState();
+  updateProgress();
+}
+
+function renumberOrderRows(probIdx) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list) return;
+  list.querySelectorAll(".drag-order-row").forEach((row, idx) => {
+    const num = row.querySelector(".drag-order-num");
+    if (num) num.textContent = String(idx + 1);
+  });
+}
+
+function restoreOrderList(probIdx, order) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list || !Array.isArray(order)) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  const byText = new Map(rows.map((row) => [row.dataset.stepText, row]));
+  list.innerHTML = "";
+  order.forEach((text) => {
+    const row = byText.get(text);
+    if (row) {
+      list.appendChild(row);
+      row.classList.remove("is-correct", "is-incorrect");
+    }
+  });
+  rows.forEach((row) => {
+    if (!list.contains(row)) list.appendChild(row);
+  });
+  renumberOrderRows(probIdx);
+}
+
+function resetDragOrder(probIdx) {
+  const workspace = document.getElementById("dragorder_" + probIdx);
+  if (!workspace) return;
+  let initial = [];
+  try {
+    initial = JSON.parse(workspace.dataset.initialOrder || "[]");
+  } catch (e) {
+    initial = [];
+  }
+  if (!initial.length) {
+    shuffleOrderRows(probIdx);
+  } else {
+    restoreOrderList(probIdx, initial);
+  }
+  const pCard = document.getElementById("problem_" + probIdx);
+  if (pCard) pCard.classList.remove("correct", "incorrect");
+}
+
+function shuffleOrderRows(probIdx) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  if (rows.length < 2) return;
+  for (let i = rows.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [rows[i], rows[j]] = [rows[j], rows[i]];
+  }
+  list.innerHTML = "";
+  rows.forEach((row) => list.appendChild(row));
+  if (rows.every((row, idx) => row.dataset.stepText === JSON.parse(document.getElementById("dragorder_" + probIdx).dataset.correctOrder || "[]")[idx])) {
+    const last = rows.pop();
+    rows.unshift(last);
+    list.innerHTML = "";
+    rows.forEach((row) => list.appendChild(row));
+  }
+  renumberOrderRows(probIdx);
 }
 
 function mobileMoveCard(select, cardId, probIdx) {
@@ -1795,7 +2331,8 @@ const STORAGE_KEY = "hw_state_lesson_" + "4-5";
 function saveState() {
   const state = {
     inputs: {},
-    dragPositions: {}
+    dragPositions: {},
+    orderPositions: {}
   };
   
   // Save text inputs, select dropdowns, textareas, and radios
@@ -1815,6 +2352,11 @@ function saveState() {
     if (parentContainer) {
       state.dragPositions[card.id] = parentContainer.id;
     }
+  });
+
+  document.querySelectorAll(".drag-order-list").forEach((list) => {
+    const probIdx = list.id.replace("orderlist_", "");
+    state.orderPositions[probIdx] = Array.from(list.querySelectorAll(".drag-order-row")).map((row) => row.dataset.stepText);
   });
   
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -1848,18 +2390,34 @@ function loadState() {
         const parent = document.getElementById(parentId);
         if (card && parent) {
           parent.appendChild(card);
-          // Sync select dropdown for mobile
           const select = card.querySelector(".mobile-cat-select");
           if (select) {
-            // parentId is like slots_0_prime
             const parts = parentId.split("_");
-            if (parts.length >= 3) {
+            if (parts.length >= 3 && parts[0] === "slots") {
               select.value = parts.slice(2).join("_");
             } else {
               select.value = "";
             }
           }
         }
+      }
+    }
+
+    if (state.orderPositions) {
+      for (const [probIdx, order] of Object.entries(state.orderPositions)) {
+        const list = document.getElementById("orderlist_" + probIdx);
+        if (!list || !Array.isArray(order)) continue;
+        const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+        const byText = new Map(rows.map((row) => [row.dataset.stepText, row]));
+        list.innerHTML = "";
+        order.forEach((text) => {
+          const row = byText.get(text);
+          if (row) list.appendChild(row);
+        });
+        rows.forEach((row) => {
+          if (!list.contains(row)) list.appendChild(row);
+        });
+        renumberOrderRows(probIdx);
       }
     }
   } catch (e) {
@@ -1898,8 +2456,12 @@ function updateProgress() {
       const answered = selects.filter(s => s.value !== "");
       if (answered.length > 0) hasValue = true;
     } else if (type === "drag-sort") {
-      const itemsInColumns = Array.from(section.querySelectorAll(".drag-column-slots .drag-card"));
-      if (itemsInColumns.length > 0) hasValue = true;
+      if (section.dataset.problemSubtype === "drag-order") {
+        hasValue = true;
+      } else {
+        const itemsInColumns = Array.from(section.querySelectorAll(".drag-column-slots .drag-card"));
+        if (itemsInColumns.length > 0) hasValue = true;
+      }
     } else if (type === "fill-table") {
       const inputs = Array.from(section.querySelectorAll(".table-input"));
       const filled = inputs.filter(i => i.value.trim() !== "");
@@ -1999,28 +2561,49 @@ function checkWorksheet() {
       });
       
     } else if (type === "drag-sort") {
-      const dragCards = section.querySelectorAll(".drag-card");
-      
-      dragCards.forEach(card => {
-        card.classList.remove("is-correct", "is-incorrect");
-        const correctCat = card.dataset.correctCategory;
-        const parentCol = card.parentElement;
-        
-        if (parentCol && parentCol.parentElement && parentCol.parentElement.classList.contains("drag-column")) {
-          const actualCat = parentCol.parentElement.dataset.categoryId;
-          if (actualCat === correctCat) {
-            card.classList.add("is-correct");
+      if (section.dataset.problemSubtype === "drag-order") {
+        const workspace = section.querySelector(".drag-order-workspace");
+        const list = section.querySelector(".drag-order-list");
+        let correct = [];
+        try {
+          correct = JSON.parse(workspace?.dataset.correctOrder || "[]");
+        } catch (e) {
+          correct = [];
+        }
+        const rows = Array.from(list?.querySelectorAll(".drag-order-row") || []);
+        rows.forEach((row, i) => {
+          row.classList.remove("is-correct", "is-incorrect");
+          if (row.dataset.stepText === correct[i]) {
+            row.classList.add("is-correct");
+          } else {
+            isProblemCorrect = false;
+            row.classList.add("is-incorrect");
+          }
+        });
+      } else {
+        const dragCards = section.querySelectorAll(".drag-card");
+
+        dragCards.forEach(card => {
+          card.classList.remove("is-correct", "is-incorrect");
+          const correctCat = card.dataset.correctCategory;
+          const parentCol = card.parentElement;
+
+          const column = card.closest(".drag-column");
+          if (column) {
+            const actualCat = column.dataset.categoryId;
+            if (actualCat === correctCat) {
+              card.classList.add("is-correct");
+            } else {
+              isProblemCorrect = false;
+              card.classList.add("is-incorrect");
+            }
           } else {
             isProblemCorrect = false;
             card.classList.add("is-incorrect");
           }
-        } else {
-          // Card still in source pile
-          isProblemCorrect = false;
-          card.classList.add("is-incorrect");
-        }
-      });
-      
+        });
+      }
+
     } else if (type === "fill-table") {
       const inputs = section.querySelectorAll(".table-input");
       
@@ -2212,7 +2795,12 @@ function resetWorksheet() {
       if (type === "drag-sort") {
         const parts = s.id.split("_");
         const idx = parts[1];
-        resetDragSort(idx);
+        if (s.dataset.problemSubtype === "drag-order") {
+          resetDragOrder(idx);
+          shuffleOrderRows(idx);
+        } else {
+          resetDragSort(idx);
+        }
       }
     });
     
@@ -2242,54 +2830,78 @@ function resetWorksheet() {
 
 // Initial configuration
 window.onload = function() {
+  const hadSavedState = !!localStorage.getItem(STORAGE_KEY);
   loadState();
+  if (!hadSavedState) {
+    document.querySelectorAll(".drag-order-workspace").forEach((workspace) => {
+      const probIdx = workspace.id.replace("dragorder_", "");
+      shuffleOrderRows(probIdx);
+    });
+  }
   updateProgress();
-  
-  // Set up dragging listeners for mobile touch screen card clicks
+
+  document.addEventListener("dragend", function() {
+    document.querySelectorAll(".drag-card.dragging, .drag-order-row.dragging")
+      .forEach((el) => el.classList.remove("dragging"));
+    clearDragOver();
+  });
+
+  document.querySelectorAll(".drag-card").forEach((card) => {
+    card.addEventListener("dragend", () => card.classList.remove("dragging"));
+  });
+
+  // Tap-to-move fallback for touch devices
   let selectedDragCard = null;
-  const cards = document.querySelectorAll(".drag-card");
-  
-  cards.forEach(card => {
+  document.querySelectorAll(".drag-card").forEach((card) => {
     card.addEventListener("click", function(e) {
-      if (e.target.tagName === "SELECT") return; // Let dropdown clicks handle themselves
-      
-      // Toggle select state
+      if (e.target.tagName === "SELECT" || e.target.tagName === "OPTION") return;
       if (selectedDragCard === this) {
         this.style.borderColor = "var(--line)";
         selectedDragCard = null;
       } else {
-        if (selectedDragCard) {
-          selectedDragCard.style.borderColor = "var(--line)";
-        }
+        if (selectedDragCard) selectedDragCard.style.borderColor = "var(--line)";
         selectedDragCard = this;
         this.style.borderColor = "var(--teal)";
       }
     });
   });
-  
-  const columns = document.querySelectorAll(".drag-column");
-  columns.forEach(col => {
-    col.addEventListener("click", function() {
-      if (selectedDragCard) {
-        const probIdx = selectedDragCard.id.split("_")[1];
-        const targetColId = this.dataset.categoryId;
-        
-        // Ensure the card belongs to this problem
-        if (selectedDragCard.id.startsWith("card_" + probIdx + "_")) {
-          const slots = this.querySelector(".drag-column-slots");
-          slots.appendChild(selectedDragCard);
-          
-          // Update corresponding select
-          const select = selectedDragCard.querySelector(".mobile-cat-select");
-          if (select) select.value = targetColId;
-          
-          selectedDragCard.style.borderColor = "var(--line)";
-          selectedDragCard = null;
-          
-          saveState();
-          updateProgress();
-        }
+
+  document.querySelectorAll(".drag-column, .drag-source-pile, .drag-column-slots").forEach((zone) => {
+    zone.addEventListener("click", function() {
+      if (!selectedDragCard) return;
+      const probIdx = selectedDragCard.id.split("_")[1];
+      if (!selectedDragCard.id.startsWith("card_" + probIdx + "_")) return;
+
+      let targetContainer = null;
+      let categoryId = "";
+      if (this.classList.contains("drag-column")) {
+        categoryId = this.dataset.categoryId || "";
+        targetContainer = this.querySelector(".drag-column-slots");
+      } else if (this.classList.contains("drag-column-slots")) {
+        categoryId = this.id.split("_").slice(2).join("_");
+        targetContainer = this;
+      } else if (this.classList.contains("drag-source-pile")) {
+        targetContainer = this;
       }
+
+      if (targetContainer) {
+        targetContainer.appendChild(selectedDragCard);
+        const select = selectedDragCard.querySelector(".mobile-cat-select");
+        if (select) select.value = categoryId;
+        selectedDragCard.style.borderColor = "var(--line)";
+        selectedDragCard = null;
+        saveState();
+        updateProgress();
+      }
+    });
+  });
+
+  document.querySelectorAll(".drag-order-list").forEach((list) => {
+    const probIdx = list.id.replace("orderlist_", "");
+    list.addEventListener("dragover", allowDrop);
+    list.addEventListener("drop", (ev) => handleOrderDrop(ev, probIdx));
+    list.querySelectorAll(".drag-order-row").forEach((row) => {
+      row.addEventListener("dragend", () => row.classList.remove("dragging"));
     });
   });
 };

@@ -160,7 +160,137 @@ header.homework-header h1 {
   margin: 0 0 16px 0;
 }
 
+/* Family guide */
+.family-guide {
+  background: linear-gradient(180deg, #fffdf8 0%, var(--white) 100%);
+  border-color: #ead9b8;
+}
+
+.family-guide-header {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.family-guide-emoji {
+  font-size: 34px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.family-guide-title {
+  margin-bottom: 4px;
+}
+
+.family-guide-sub {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14.5px;
+}
+
+.family-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.family-panel {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+
+.family-panel-heading {
+  margin: 0 0 8px 0;
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--navy);
+}
+
+.family-tip-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.family-tip-list li {
+  margin-bottom: 6px;
+}
+
+.family-try-text {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.45;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.family-print-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.try-at-home {
+  background: linear-gradient(180deg, var(--teal-light) 0%, var(--white) 100%);
+  border-color: #b8ddd8;
+}
+
+.try-narrative {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.try-challenge {
+  margin: 0;
+  padding: 12px 14px;
+  background: var(--amber-light);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--amber);
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.family-problem-tip {
+  margin: -8px 0 14px 0;
+  padding: 10px 12px;
+  background: var(--amber-light);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  color: var(--hint);
+}
+
+.family-hint-box {
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  color: var(--navy);
+}
+
+.family-hint-box p {
+  margin: 0 0 6px 0;
+}
+
+.family-hint-box p:last-child {
+  margin-bottom: 0;
+}
+
 /* Vocabulary Flashcards */
+.vocab-family-note {
+  margin: -6px 0 14px 0;
+  font-size: 14px;
+  color: var(--muted);
+}
 .vocab-container {
   display: flex;
   gap: 16px;
@@ -179,10 +309,26 @@ header.homework-header h1 {
 }
 
 .vocab-card {
-  flex: 0 0 240px;
-  height: 160px;
+  flex: 0 0 260px;
+  height: 210px;
   perspective: 1000px;
   cursor: pointer;
+}
+
+.vocab-thumb-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.vocab-thumb {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  padding: 4px;
 }
 
 .vocab-card-inner {
@@ -271,6 +417,13 @@ header.homework-header h1 {
   color: var(--amber);
   margin: 6px 0 0 0;
   font-style: italic;
+}
+
+.vocab-back-visual {
+  margin: 10px 0 0 0;
+  font-size: 12px;
+  color: var(--teal-light);
+  line-height: 1.35;
 }
 
 /* Practice Problem Cards */
@@ -550,6 +703,92 @@ header.homework-header h1 {
 .drag-card:active {
   cursor: grabbing;
   transform: scale(0.98);
+}
+
+.drag-card.dragging {
+  opacity: 0.55;
+}
+
+.drag-column.over,
+.drag-source-pile.over {
+  border-color: var(--teal);
+  background: var(--teal-light);
+}
+
+/* Drag order (sequencing) */
+.drag-order-workspace {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.drag-order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drag-order-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--white);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  cursor: grab;
+  user-select: none;
+}
+
+.drag-order-row.dragging {
+  opacity: 0.55;
+}
+
+.drag-order-handle {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.drag-order-num {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--teal);
+  color: var(--white);
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.drag-order-text {
+  flex: 1;
+  font-weight: 600;
+  font-size: 14.5px;
+}
+
+.drag-order-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.order-move-btn {
+  min-width: 0;
+  padding: 4px 10px;
+}
+
+.drag-order-row.is-correct {
+  border-color: var(--success);
+  background: var(--success-bg);
+}
+
+.drag-order-row.is-incorrect {
+  border-color: var(--error);
+  background: var(--error-bg);
 }
 
 .drag-handle {
@@ -1035,13 +1274,61 @@ header.homework-header h1 {
   </header>
 
   
+    <section class="family-guide card" aria-label="Family guide">
+      <div class="family-guide-header">
+        <span class="family-guide-emoji">🏀</span>
+        <div>
+          <h2 class="section-title family-guide-title">Family Guide</h2>
+          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+        </div>
+      </div>
+
+      <div class="family-guide-grid">
+        <div class="family-panel family-panel-tips">
+          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
+          <ul class="family-tip-list">
+            <li>Let your student try each problem first. Use <strong>Check Answers</strong> for friendly feedback.</li>
+            <li>Tap vocabulary cards to flip between term and definition.</li>
+            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
+          </ul>
+        </div>
+
+        <div class="family-panel family-panel-home">
+          <h3 class="family-panel-heading">🏡 Try this at home</h3>
+          <p class="family-try-text">The Wildcats&#039; scores are 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. To build a box plot you need a five-number summary. What five numbers will you need?</p>
+        </div>
+      </div>
+
+      
+        <div class="family-panel family-panel-legend">
+          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
+          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>fill table:</strong> Encourage your student to show their work on paper if a box feels tricky.</li><li><strong>matching game:</strong> Say each term out loud, then talk through which match makes sense before choosing.</li><li><strong>drag sort:</strong> On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</li></ul>
+        </div>
+
+      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
+    </section>
+  
+
+  
+    <section class="try-at-home card" aria-label="Try this at home">
+      <h2 class="section-title">🏀 Real-World Connection</h2>
+      <p class="try-narrative">The basketball league wants to compare scoring across teams. Here are the points scored by each player on the Wildcats in their last game: 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. The league needs a quick visual that shows the spread, the middle 50%, and any high or low scorers. Time to build a box plot!</p>
+      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    </section>
+  
+
+  
     <section class="vocab-section card">
       <h2 class="section-title">🔑 Key Vocabulary</h2>
+      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/box-plot.svg" alt="Illustration of Box Plot: A graph that shows how data is spread using five key numbers." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Box Plot</h3>
                   <p class="vocab-es">Diagrama de caja</p>
                   <div class="vocab-visual-hint">💡 Example: A box from Q1 to Q3 with a line at the median, and whiskers from min to max</div>
@@ -1050,6 +1337,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">A graph that shows how data is spread using five key numbers.</p>
                   <p class="vocab-def-es">Una gráfica que muestra cómo se reparten los datos con cinco números clave.</p>
+                  <p class="vocab-back-visual">📌 A box from Q1 to Q3 with a line at the median, and whiskers from min to max</p>
                 </div>
               </div>
             </div>
@@ -1057,6 +1345,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/median.svg" alt="Illustration of Median: The middle number that splits the data in half." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Median</h3>
                   <p class="vocab-es">Mediana</p>
                   <div class="vocab-visual-hint">💡 Example: Data: 10, 15, 20, 25, 30 → median is 20 (the 3rd value)</div>
@@ -1065,6 +1356,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">The middle number that splits the data in half.</p>
                   <p class="vocab-def-es">El número del medio que divide los datos en dos mitades.</p>
+                  <p class="vocab-back-visual">📌 Data: 10, 15, 20, 25, 30 → median is 20 (the 3rd value)</p>
                 </div>
               </div>
             </div>
@@ -1072,6 +1364,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/quartile.svg" alt="Illustration of Quartile: Numbers that split the data into four equal parts." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Quartile</h3>
                   <p class="vocab-es">Cuartil</p>
                   <div class="vocab-visual-hint">💡 Example: Data: 2, 4, 6, 8, 10, 12, 14 → Q1 = 4 (median of lower half), Q3 = 12 (median of upper half)</div>
@@ -1080,6 +1375,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">Numbers that split the data into four equal parts.</p>
                   <p class="vocab-def-es">Números que dividen los datos en cuatro partes iguales.</p>
+                  <p class="vocab-back-visual">📌 Data: 2, 4, 6, 8, 10, 12, 14 → Q1 = 4 (median of lower half), Q3 = 12 (median of upper half)</p>
                 </div>
               </div>
             </div>
@@ -1087,6 +1383,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/interquartile-range.svg" alt="Illustration of Interquartile Range: The spread of the middle half of the data (Q3 − Q1)." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Interquartile Range</h3>
                   <p class="vocab-es">Rango intercuartílico</p>
                   <div class="vocab-visual-hint">💡 Example: If Q1 = 12 and Q3 = 20, then IQR = 20 − 12 = 8 — the middle 50% spans 8 units</div>
@@ -1095,6 +1394,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">The spread of the middle half of the data (Q3 − Q1).</p>
                   <p class="vocab-def-es">La extensión de la mitad central de los datos (Q3 − Q1).</p>
+                  <p class="vocab-back-visual">📌 If Q1 = 12 and Q3 = 20, then IQR = 20 − 12 = 8 — the middle 50% spans 8 units</p>
                 </div>
               </div>
             </div>
@@ -1102,6 +1402,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/distribution.svg" alt="Illustration of Data distribution: How the data looks: where it sits and how spread out it is." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Data distribution</h3>
                   <p class="vocab-es">Distribución de datos</p>
                   <div class="vocab-visual-hint">💡 Example: A box plot where the median is centered in the box shows symmetric distribution</div>
@@ -1110,6 +1413,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">How the data looks: where it sits and how spread out it is.</p>
                   <p class="vocab-def-es">Cómo se ven los datos: dónde están y qué tan separados están.</p>
+                  <p class="vocab-back-visual">📌 A box plot where the median is centered in the box shows symmetric distribution</p>
                 </div>
               </div>
             </div>
@@ -1117,6 +1421,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/spread.svg" alt="Illustration of Variability: How spread out the numbers are." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Variability</h3>
                   <p class="vocab-es">Variabilidad</p>
                   <div class="vocab-visual-hint">💡 Example: Small IQR = low variability in the middle 50%. Large IQR = high variability</div>
@@ -1125,6 +1432,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">How spread out the numbers are.</p>
                   <p class="vocab-def-es">Qué tan separados están los números.</p>
+                  <p class="vocab-back-visual">📌 Small IQR = low variability in the middle 50%. Large IQR = high variability</p>
                 </div>
               </div>
             </div>
@@ -1143,6 +1451,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">A box plot shows: Min = 10, Q1 = 15, Median = 20, Q3 = 28, Max = 35. What is the interquartile range (IQR)?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="IQR = Q3 − Q1 = 28 − 15 = 13.">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1183,6 +1492,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">On a box plot, what does the line inside the box represent?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="The line inside the box of a box plot always represents the median.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1223,6 +1533,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">Complete the table.</p>
+        <p class="family-problem-tip">👪 Family tip: Encourage your student to show their work on paper if a box feels tricky.</p>
         <div class="table-responsive">
           <table class="fill-table">
             <thead>
@@ -1348,6 +1659,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">Match each box plot term to its meaning.</p>
+        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
         <div class="matching-pairs">
           
             <div class="matching-row" data-term="Minimum" data-correct="Smallest value in the data set">
@@ -1430,6 +1742,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">Two box plots show: Team A has IQR = 8, Team B has IQR = 22. What does this tell you?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="A smaller IQR means the middle 50% of data is more tightly clustered. Team A&#039;s scoring is more consistent in the middle range.">
           
             <label class="mc-option-label" id="label_q_4_0">
@@ -1469,31 +1782,32 @@ header.homework-header h1 {
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">In a box plot, the line inside the box represents the...</p>
-        <div class="mc-options" data-correct="0" data-explanation="The middle line of a box plot marks the median.">
+        <p class="problem-stem">The Hawks&#039; points per quarter are 2, 4, 5, 7, 8, 10, 12. Resting on the scoreboard, what are the minimum, median, and maximum?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <div class="mc-options" data-correct="0" data-explanation="The data is already in order. The smallest value is 2 and the largest is 12. There are 7 values, so the median is the 4th value, which is 7.">
           
             <label class="mc-option-label" id="label_q_5_0">
               <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Median</span>
+              <span class="choice-text">Minimum 2, median 7, maximum 12</span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_1">
               <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Mean</span>
+              <span class="choice-text">Minimum 2, median 5, maximum 12</span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_2">
               <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Maximum</span>
+              <span class="choice-text">Minimum 0, median 7, maximum 12</span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_3">
               <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Range</span>
+              <span class="choice-text">Minimum 2, median 8, maximum 10</span>
             </label>
           
         </div>
@@ -1509,31 +1823,32 @@ header.homework-header h1 {
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">A box plot has Q1 = 20 and Q3 = 35. What is the interquartile range (IQR)?</p>
-        <div class="mc-options" data-correct="0" data-explanation="IQR = Q3 − Q1 = 35 − 20 = 15.">
+        <p class="problem-stem">The Comets scored 6, 10, 14, 18, 22, 26, 30, 34 across 8 games. After ordering, what are Q1 and Q3?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <div class="mc-options" data-correct="0" data-explanation="With 8 values the median splits the data into a lower half (6, 10, 14, 18) and an upper half (22, 26, 30, 34). Q1 is the median of the lower half: (10 + 14) ÷ 2 = 12. Q3 is the median of the upper half: (26 + 30) ÷ 2 = 28.">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">15</span>
+              <span class="choice-text">Q1 = 12, Q3 = 28</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_1">
               <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">55</span>
+              <span class="choice-text">Q1 = 10, Q3 = 30</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_2">
               <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">27.5</span>
+              <span class="choice-text">Q1 = 14, Q3 = 26</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_3">
               <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">20</span>
+              <span class="choice-text">Q1 = 20, Q3 = 34</span>
             </label>
           
         </div>
@@ -1542,39 +1857,60 @@ header.homework-header h1 {
     </section>
   
 
-    <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_7" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Problem 8</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge">MATCHING GAME</div>
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">What does the box (between Q1 and Q3) of a box plot represent?</p>
-        <div class="mc-options" data-correct="0" data-explanation="The box spans Q1 to Q3, holding the middle half of the data.">
+        <p class="problem-stem">Match each team&#039;s ordered scores to its five-number summary (min, Q1, median, Q3, max).</p>
+        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
+        <div class="matching-pairs">
           
-            <label class="mc-option-label" id="label_q_7_0">
-              <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">The middle 50% of the data</span>
-            </label>
+            <div class="matching-row" data-term="Hawks: 5, 8, 11, 15, 18, 21, 27" data-correct="Min 5, Q1 8, Median 15, Q3 21, Max 27">
+              <div class="matching-term">Hawks: 5, 8, 11, 15, 18, 21, 27</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="Min 10, Q1 13, Median 20, Q3 28, Max 33">Min 10, Q1 13, Median 20, Q3 28, Max 33</option><option value="Min 2, Q1 6, Median 14, Q3 23, Max 30">Min 2, Q1 6, Median 14, Q3 23, Max 30</option><option value="Min 4, Q1 7, Median 16, Q3 25, Max 31">Min 4, Q1 7, Median 16, Q3 25, Max 31</option><option value="Min 5, Q1 8, Median 15, Q3 21, Max 27">Min 5, Q1 8, Median 15, Q3 21, Max 27</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
           
-            <label class="mc-option-label" id="label_q_7_1">
-              <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">All of the data</span>
-            </label>
+            <div class="matching-row" data-term="Comets: 10, 13, 16, 20, 24, 28, 33" data-correct="Min 10, Q1 13, Median 20, Q3 28, Max 33">
+              <div class="matching-term">Comets: 10, 13, 16, 20, 24, 28, 33</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="Min 10, Q1 13, Median 20, Q3 28, Max 33">Min 10, Q1 13, Median 20, Q3 28, Max 33</option><option value="Min 2, Q1 6, Median 14, Q3 23, Max 30">Min 2, Q1 6, Median 14, Q3 23, Max 30</option><option value="Min 4, Q1 7, Median 16, Q3 25, Max 31">Min 4, Q1 7, Median 16, Q3 25, Max 31</option><option value="Min 5, Q1 8, Median 15, Q3 21, Max 27">Min 5, Q1 8, Median 15, Q3 21, Max 27</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
           
-            <label class="mc-option-label" id="label_q_7_2">
-              <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">The mean</span>
-            </label>
+            <div class="matching-row" data-term="Jets: 2, 6, 9, 14, 19, 23, 30" data-correct="Min 2, Q1 6, Median 14, Q3 23, Max 30">
+              <div class="matching-term">Jets: 2, 6, 9, 14, 19, 23, 30</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="Min 10, Q1 13, Median 20, Q3 28, Max 33">Min 10, Q1 13, Median 20, Q3 28, Max 33</option><option value="Min 2, Q1 6, Median 14, Q3 23, Max 30">Min 2, Q1 6, Median 14, Q3 23, Max 30</option><option value="Min 4, Q1 7, Median 16, Q3 25, Max 31">Min 4, Q1 7, Median 16, Q3 25, Max 31</option><option value="Min 5, Q1 8, Median 15, Q3 21, Max 27">Min 5, Q1 8, Median 15, Q3 21, Max 27</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
           
-            <label class="mc-option-label" id="label_q_7_3">
-              <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Only the largest values</span>
-            </label>
+            <div class="matching-row" data-term="Suns: 4, 7, 10, 16, 22, 25, 31" data-correct="Min 4, Q1 7, Median 16, Q3 25, Max 31">
+              <div class="matching-term">Suns: 4, 7, 10, 16, 22, 25, 31</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="Min 10, Q1 13, Median 20, Q3 28, Max 33">Min 10, Q1 13, Median 20, Q3 28, Max 33</option><option value="Min 2, Q1 6, Median 14, Q3 23, Max 30">Min 2, Q1 6, Median 14, Q3 23, Max 30</option><option value="Min 4, Q1 7, Median 16, Q3 25, Max 31">Min 4, Q1 7, Median 16, Q3 25, Max 31</option><option value="Min 5, Q1 8, Median 15, Q3 21, Max 27">Min 5, Q1 8, Median 15, Q3 21, Max 27</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
           
         </div>
       </div>
@@ -1582,106 +1918,183 @@ header.homework-header h1 {
     </section>
   
 
-    <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_8" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Problem 9</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge">DRAG SORT</div>
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">A data set has minimum 5 and maximum 45. What is the range?</p>
-        <div class="mc-options" data-correct="0" data-explanation="Range = maximum − minimum = 45 − 5 = 40.">
-          
-            <label class="mc-option-label" id="label_q_8_0">
-              <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">40</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_8_1">
-              <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">50</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_8_2">
-              <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">25</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_8_3">
-              <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">9</span>
-            </label>
-          
+        <p class="problem-stem">Each card describes a part of the stadium box plot. Sort each card under the matching box plot part.</p>
+        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
+        
+        <div class="drag-sort-workspace" id="dragsort_8">
+          <div class="drag-columns">
+            
+              <div class="drag-column" data-category-id="fivenum" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'fivenum')">
+                <div class="drag-column-header">Part of the five-number summary</div>
+                <div class="drag-column-slots" id="slots_8_fivenum" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'fivenum')"></div>
+              </div>
+              <div class="drag-column" data-category-id="spread" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'spread')">
+                <div class="drag-column-header">Measure of spread</div>
+                <div class="drag-column-slots" id="slots_8_spread" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'spread')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_8" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_8_0"
+                     data-item-index="0"
+                     data-correct-category="fivenum"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">The minimum — the lowest score</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_0', 8); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="fivenum">Part of the five-number summary</option><option value="spread">Measure of spread</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_8_1"
+                     data-item-index="1"
+                     data-correct-category="fivenum"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Q1 — the median of the lower half</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_1', 8); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="fivenum">Part of the five-number summary</option><option value="spread">Measure of spread</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_8_2"
+                     data-item-index="2"
+                     data-correct-category="fivenum"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">The median — the middle score</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_2', 8); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="fivenum">Part of the five-number summary</option><option value="spread">Measure of spread</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_8_3"
+                     data-item-index="3"
+                     data-correct-category="fivenum"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Q3 — the median of the upper half</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_3', 8); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="fivenum">Part of the five-number summary</option><option value="spread">Measure of spread</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_8_4"
+                     data-item-index="4"
+                     data-correct-category="fivenum"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">The maximum — the highest score</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_4', 8); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="fivenum">Part of the five-number summary</option><option value="spread">Measure of spread</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_8_5"
+                     data-item-index="5"
+                     data-correct-category="spread"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">IQR — Q3 minus Q1</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_5', 8); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="fivenum">Part of the five-number summary</option><option value="spread">Measure of spread</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_8_6"
+                     data-item-index="6"
+                     data-correct-category="spread"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Range — maximum minus minimum</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_6', 8); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="fivenum">Part of the five-number summary</option><option value="spread">Measure of spread</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(8); saveState(); updateProgress();">Reset Sorting</button>
         </div>
       </div>
     
     </section>
   
 
-    <section class="problem-section card" id="problem_9" data-problem-type="error-analysis">
+    <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ Find the Box Plot Error</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_9_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Data:</span>
-                <span class="step-work">3, 7, 9, 12, 15, 18, 21</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Min and Max:</span>
-                <span class="step-work">Min = 3, Max = 21</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Median:</span>
-                <span class="step-work">Middle value = 12 ✓</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_4">
-                <span class="step-badge">Step 4</span>
-                <span class="step-label">Q1 and Q3:</span>
-                <span class="step-work">Q1 = 9, Q3 = 18</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_9">Which step has the error?</label>
-            <select id="error_step_select_9" class="custom-select error-step-select" data-correct="4" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option><option value="4">Step 4</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
+        <p class="problem-stem">A box plot for the Rockets shows Min = 8, Q1 = 15, Median = 22, Q3 = 30, Max = 38. The middle 50% of their scores falls between which two values?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <div class="mc-options" data-correct="0" data-explanation="The box of a box plot stretches from Q1 to Q3, and that box always holds the middle 50% of the data. Here the box goes from Q1 = 15 to Q3 = 30.">
           
-          <div class="error-explain-row">
-            <label for="error_explain_input_9">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_9" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
+            <label class="mc-option-label" id="label_q_9_0">
+              <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">Between 15 and 30</span>
+            </label>
           
-          <div class="reveal-box" id="error_correct_work_9" style="display:none;">
-            <strong>Correct Work Reference:</strong> Q1 is the median of the lower half (3, 7, 9), which is 7. Q3 is the median of the upper half (15, 18, 21), which is 18. The student used the wrong value for Q1 — they picked 9 (the last value in the lower half) instead of the median of that half.
-          </div>
+            <label class="mc-option-label" id="label_q_9_1">
+              <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">Between 8 and 38</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_9_2">
+              <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">Between 8 and 22</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_9_3">
+              <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">Between 22 and 38</span>
+            </label>
+          
         </div>
       </div>
     
@@ -1791,29 +2204,50 @@ function playFailureSound() {
 // Drag & Drop engine
 function allowDrop(ev) {
   ev.preventDefault();
+  const zone = ev.currentTarget;
+  if (zone && zone.classList) {
+    zone.classList.add("over");
+  }
 }
 
 function handleDragStart(ev) {
-  ev.dataTransfer.setData("text", ev.target.id);
+  const card = ev.currentTarget.closest(".drag-card");
+  if (!card) return;
+  ev.dataTransfer.setData("text/plain", card.id);
+  ev.dataTransfer.effectAllowed = "move";
+  card.classList.add("dragging");
+}
+
+function handleDragEnd(ev) {
+  const el = ev.currentTarget;
+  if (el) el.classList.remove("dragging");
+  clearDragOver();
+}
+
+function clearDragOver() {
+  document.querySelectorAll(".drag-column.over, .drag-source-pile.over, .drag-column-slots.over")
+    .forEach((el) => el.classList.remove("over"));
 }
 
 function handleDrop(ev, probIdx, categoryId) {
   ev.preventDefault();
-  const cardId = ev.dataTransfer.getData("text");
+  clearDragOver();
+  const cardId = ev.dataTransfer.getData("text/plain") || ev.dataTransfer.getData("text");
   const card = document.getElementById(cardId);
   if (!card) return;
-  
-  // Check if dropping card belongs to this problem
+
+  document.querySelectorAll(".drag-card.dragging").forEach((el) => el.classList.remove("dragging"));
+
   const prefix = "card_" + probIdx + "_";
   if (!card.id.startsWith(prefix)) return;
-  
+
   let targetContainer;
   if (categoryId) {
     targetContainer = document.getElementById("slots_" + probIdx + "_" + categoryId);
   } else {
     targetContainer = document.getElementById("pile_" + probIdx);
   }
-  
+
   if (targetContainer) {
     targetContainer.appendChild(card);
     const select = card.querySelector(".mobile-cat-select");
@@ -1821,6 +2255,127 @@ function handleDrop(ev, probIdx, categoryId) {
     saveState();
     updateProgress();
   }
+}
+
+function handleOrderDragStart(ev) {
+  const row = ev.currentTarget.closest(".drag-order-row");
+  if (!row) return;
+  ev.dataTransfer.setData("text/plain", row.id);
+  ev.dataTransfer.effectAllowed = "move";
+  row.classList.add("dragging");
+}
+
+function handleOrderDrop(ev, probIdx) {
+  ev.preventDefault();
+  const list = document.getElementById("orderlist_" + probIdx);
+  const rowId = ev.dataTransfer.getData("text/plain") || ev.dataTransfer.getData("text");
+  const row = document.getElementById(rowId);
+  if (!list || !row || !row.id.startsWith("order_" + probIdx + "_")) return;
+  document.querySelectorAll(".drag-order-row.dragging").forEach((el) => el.classList.remove("dragging"));
+
+  const afterEl = getOrderInsertBefore(list, ev.clientY);
+  if (afterEl) {
+    list.insertBefore(row, afterEl);
+  } else {
+    list.appendChild(row);
+  }
+  renumberOrderRows(probIdx);
+  saveState();
+  updateProgress();
+}
+
+function getOrderInsertBefore(list, clientY) {
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  for (const child of rows) {
+    const box = child.getBoundingClientRect();
+    if (clientY < box.top + box.height / 2) return child;
+  }
+  return null;
+}
+
+function moveOrderRowByEl(probIdx, btn, direction) {
+  const row = btn.closest(".drag-order-row");
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!row || !list) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  const rowIdx = rows.indexOf(row);
+  const nextIdx = rowIdx + direction;
+  if (nextIdx < 0 || nextIdx >= rows.length) return;
+  const neighbor = rows[nextIdx];
+  if (direction < 0) {
+    list.insertBefore(row, neighbor);
+  } else {
+    list.insertBefore(neighbor, row.nextSibling);
+  }
+  renumberOrderRows(probIdx);
+  saveState();
+  updateProgress();
+}
+
+function renumberOrderRows(probIdx) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list) return;
+  list.querySelectorAll(".drag-order-row").forEach((row, idx) => {
+    const num = row.querySelector(".drag-order-num");
+    if (num) num.textContent = String(idx + 1);
+  });
+}
+
+function restoreOrderList(probIdx, order) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list || !Array.isArray(order)) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  const byText = new Map(rows.map((row) => [row.dataset.stepText, row]));
+  list.innerHTML = "";
+  order.forEach((text) => {
+    const row = byText.get(text);
+    if (row) {
+      list.appendChild(row);
+      row.classList.remove("is-correct", "is-incorrect");
+    }
+  });
+  rows.forEach((row) => {
+    if (!list.contains(row)) list.appendChild(row);
+  });
+  renumberOrderRows(probIdx);
+}
+
+function resetDragOrder(probIdx) {
+  const workspace = document.getElementById("dragorder_" + probIdx);
+  if (!workspace) return;
+  let initial = [];
+  try {
+    initial = JSON.parse(workspace.dataset.initialOrder || "[]");
+  } catch (e) {
+    initial = [];
+  }
+  if (!initial.length) {
+    shuffleOrderRows(probIdx);
+  } else {
+    restoreOrderList(probIdx, initial);
+  }
+  const pCard = document.getElementById("problem_" + probIdx);
+  if (pCard) pCard.classList.remove("correct", "incorrect");
+}
+
+function shuffleOrderRows(probIdx) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  if (rows.length < 2) return;
+  for (let i = rows.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [rows[i], rows[j]] = [rows[j], rows[i]];
+  }
+  list.innerHTML = "";
+  rows.forEach((row) => list.appendChild(row));
+  if (rows.every((row, idx) => row.dataset.stepText === JSON.parse(document.getElementById("dragorder_" + probIdx).dataset.correctOrder || "[]")[idx])) {
+    const last = rows.pop();
+    rows.unshift(last);
+    list.innerHTML = "";
+    rows.forEach((row) => list.appendChild(row));
+  }
+  renumberOrderRows(probIdx);
 }
 
 function mobileMoveCard(select, cardId, probIdx) {
@@ -1904,7 +2459,8 @@ const STORAGE_KEY = "hw_state_lesson_" + "8-5";
 function saveState() {
   const state = {
     inputs: {},
-    dragPositions: {}
+    dragPositions: {},
+    orderPositions: {}
   };
   
   // Save text inputs, select dropdowns, textareas, and radios
@@ -1924,6 +2480,11 @@ function saveState() {
     if (parentContainer) {
       state.dragPositions[card.id] = parentContainer.id;
     }
+  });
+
+  document.querySelectorAll(".drag-order-list").forEach((list) => {
+    const probIdx = list.id.replace("orderlist_", "");
+    state.orderPositions[probIdx] = Array.from(list.querySelectorAll(".drag-order-row")).map((row) => row.dataset.stepText);
   });
   
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -1957,18 +2518,34 @@ function loadState() {
         const parent = document.getElementById(parentId);
         if (card && parent) {
           parent.appendChild(card);
-          // Sync select dropdown for mobile
           const select = card.querySelector(".mobile-cat-select");
           if (select) {
-            // parentId is like slots_0_prime
             const parts = parentId.split("_");
-            if (parts.length >= 3) {
+            if (parts.length >= 3 && parts[0] === "slots") {
               select.value = parts.slice(2).join("_");
             } else {
               select.value = "";
             }
           }
         }
+      }
+    }
+
+    if (state.orderPositions) {
+      for (const [probIdx, order] of Object.entries(state.orderPositions)) {
+        const list = document.getElementById("orderlist_" + probIdx);
+        if (!list || !Array.isArray(order)) continue;
+        const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+        const byText = new Map(rows.map((row) => [row.dataset.stepText, row]));
+        list.innerHTML = "";
+        order.forEach((text) => {
+          const row = byText.get(text);
+          if (row) list.appendChild(row);
+        });
+        rows.forEach((row) => {
+          if (!list.contains(row)) list.appendChild(row);
+        });
+        renumberOrderRows(probIdx);
       }
     }
   } catch (e) {
@@ -2007,8 +2584,12 @@ function updateProgress() {
       const answered = selects.filter(s => s.value !== "");
       if (answered.length > 0) hasValue = true;
     } else if (type === "drag-sort") {
-      const itemsInColumns = Array.from(section.querySelectorAll(".drag-column-slots .drag-card"));
-      if (itemsInColumns.length > 0) hasValue = true;
+      if (section.dataset.problemSubtype === "drag-order") {
+        hasValue = true;
+      } else {
+        const itemsInColumns = Array.from(section.querySelectorAll(".drag-column-slots .drag-card"));
+        if (itemsInColumns.length > 0) hasValue = true;
+      }
     } else if (type === "fill-table") {
       const inputs = Array.from(section.querySelectorAll(".table-input"));
       const filled = inputs.filter(i => i.value.trim() !== "");
@@ -2108,28 +2689,49 @@ function checkWorksheet() {
       });
       
     } else if (type === "drag-sort") {
-      const dragCards = section.querySelectorAll(".drag-card");
-      
-      dragCards.forEach(card => {
-        card.classList.remove("is-correct", "is-incorrect");
-        const correctCat = card.dataset.correctCategory;
-        const parentCol = card.parentElement;
-        
-        if (parentCol && parentCol.parentElement && parentCol.parentElement.classList.contains("drag-column")) {
-          const actualCat = parentCol.parentElement.dataset.categoryId;
-          if (actualCat === correctCat) {
-            card.classList.add("is-correct");
+      if (section.dataset.problemSubtype === "drag-order") {
+        const workspace = section.querySelector(".drag-order-workspace");
+        const list = section.querySelector(".drag-order-list");
+        let correct = [];
+        try {
+          correct = JSON.parse(workspace?.dataset.correctOrder || "[]");
+        } catch (e) {
+          correct = [];
+        }
+        const rows = Array.from(list?.querySelectorAll(".drag-order-row") || []);
+        rows.forEach((row, i) => {
+          row.classList.remove("is-correct", "is-incorrect");
+          if (row.dataset.stepText === correct[i]) {
+            row.classList.add("is-correct");
+          } else {
+            isProblemCorrect = false;
+            row.classList.add("is-incorrect");
+          }
+        });
+      } else {
+        const dragCards = section.querySelectorAll(".drag-card");
+
+        dragCards.forEach(card => {
+          card.classList.remove("is-correct", "is-incorrect");
+          const correctCat = card.dataset.correctCategory;
+          const parentCol = card.parentElement;
+
+          const column = card.closest(".drag-column");
+          if (column) {
+            const actualCat = column.dataset.categoryId;
+            if (actualCat === correctCat) {
+              card.classList.add("is-correct");
+            } else {
+              isProblemCorrect = false;
+              card.classList.add("is-incorrect");
+            }
           } else {
             isProblemCorrect = false;
             card.classList.add("is-incorrect");
           }
-        } else {
-          // Card still in source pile
-          isProblemCorrect = false;
-          card.classList.add("is-incorrect");
-        }
-      });
-      
+        });
+      }
+
     } else if (type === "fill-table") {
       const inputs = section.querySelectorAll(".table-input");
       
@@ -2321,7 +2923,12 @@ function resetWorksheet() {
       if (type === "drag-sort") {
         const parts = s.id.split("_");
         const idx = parts[1];
-        resetDragSort(idx);
+        if (s.dataset.problemSubtype === "drag-order") {
+          resetDragOrder(idx);
+          shuffleOrderRows(idx);
+        } else {
+          resetDragSort(idx);
+        }
       }
     });
     
@@ -2351,54 +2958,78 @@ function resetWorksheet() {
 
 // Initial configuration
 window.onload = function() {
+  const hadSavedState = !!localStorage.getItem(STORAGE_KEY);
   loadState();
+  if (!hadSavedState) {
+    document.querySelectorAll(".drag-order-workspace").forEach((workspace) => {
+      const probIdx = workspace.id.replace("dragorder_", "");
+      shuffleOrderRows(probIdx);
+    });
+  }
   updateProgress();
-  
-  // Set up dragging listeners for mobile touch screen card clicks
+
+  document.addEventListener("dragend", function() {
+    document.querySelectorAll(".drag-card.dragging, .drag-order-row.dragging")
+      .forEach((el) => el.classList.remove("dragging"));
+    clearDragOver();
+  });
+
+  document.querySelectorAll(".drag-card").forEach((card) => {
+    card.addEventListener("dragend", () => card.classList.remove("dragging"));
+  });
+
+  // Tap-to-move fallback for touch devices
   let selectedDragCard = null;
-  const cards = document.querySelectorAll(".drag-card");
-  
-  cards.forEach(card => {
+  document.querySelectorAll(".drag-card").forEach((card) => {
     card.addEventListener("click", function(e) {
-      if (e.target.tagName === "SELECT") return; // Let dropdown clicks handle themselves
-      
-      // Toggle select state
+      if (e.target.tagName === "SELECT" || e.target.tagName === "OPTION") return;
       if (selectedDragCard === this) {
         this.style.borderColor = "var(--line)";
         selectedDragCard = null;
       } else {
-        if (selectedDragCard) {
-          selectedDragCard.style.borderColor = "var(--line)";
-        }
+        if (selectedDragCard) selectedDragCard.style.borderColor = "var(--line)";
         selectedDragCard = this;
         this.style.borderColor = "var(--teal)";
       }
     });
   });
-  
-  const columns = document.querySelectorAll(".drag-column");
-  columns.forEach(col => {
-    col.addEventListener("click", function() {
-      if (selectedDragCard) {
-        const probIdx = selectedDragCard.id.split("_")[1];
-        const targetColId = this.dataset.categoryId;
-        
-        // Ensure the card belongs to this problem
-        if (selectedDragCard.id.startsWith("card_" + probIdx + "_")) {
-          const slots = this.querySelector(".drag-column-slots");
-          slots.appendChild(selectedDragCard);
-          
-          // Update corresponding select
-          const select = selectedDragCard.querySelector(".mobile-cat-select");
-          if (select) select.value = targetColId;
-          
-          selectedDragCard.style.borderColor = "var(--line)";
-          selectedDragCard = null;
-          
-          saveState();
-          updateProgress();
-        }
+
+  document.querySelectorAll(".drag-column, .drag-source-pile, .drag-column-slots").forEach((zone) => {
+    zone.addEventListener("click", function() {
+      if (!selectedDragCard) return;
+      const probIdx = selectedDragCard.id.split("_")[1];
+      if (!selectedDragCard.id.startsWith("card_" + probIdx + "_")) return;
+
+      let targetContainer = null;
+      let categoryId = "";
+      if (this.classList.contains("drag-column")) {
+        categoryId = this.dataset.categoryId || "";
+        targetContainer = this.querySelector(".drag-column-slots");
+      } else if (this.classList.contains("drag-column-slots")) {
+        categoryId = this.id.split("_").slice(2).join("_");
+        targetContainer = this;
+      } else if (this.classList.contains("drag-source-pile")) {
+        targetContainer = this;
       }
+
+      if (targetContainer) {
+        targetContainer.appendChild(selectedDragCard);
+        const select = selectedDragCard.querySelector(".mobile-cat-select");
+        if (select) select.value = categoryId;
+        selectedDragCard.style.borderColor = "var(--line)";
+        selectedDragCard = null;
+        saveState();
+        updateProgress();
+      }
+    });
+  });
+
+  document.querySelectorAll(".drag-order-list").forEach((list) => {
+    const probIdx = list.id.replace("orderlist_", "");
+    list.addEventListener("dragover", allowDrop);
+    list.addEventListener("drop", (ev) => handleOrderDrop(ev, probIdx));
+    list.querySelectorAll(".drag-order-row").forEach((row) => {
+      row.addEventListener("dragend", () => row.classList.remove("dragging"));
     });
   });
 };

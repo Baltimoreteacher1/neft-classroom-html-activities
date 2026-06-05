@@ -160,7 +160,137 @@ header.homework-header h1 {
   margin: 0 0 16px 0;
 }
 
+/* Family guide */
+.family-guide {
+  background: linear-gradient(180deg, #fffdf8 0%, var(--white) 100%);
+  border-color: #ead9b8;
+}
+
+.family-guide-header {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.family-guide-emoji {
+  font-size: 34px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.family-guide-title {
+  margin-bottom: 4px;
+}
+
+.family-guide-sub {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14.5px;
+}
+
+.family-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.family-panel {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+
+.family-panel-heading {
+  margin: 0 0 8px 0;
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--navy);
+}
+
+.family-tip-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.family-tip-list li {
+  margin-bottom: 6px;
+}
+
+.family-try-text {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.45;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.family-print-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.try-at-home {
+  background: linear-gradient(180deg, var(--teal-light) 0%, var(--white) 100%);
+  border-color: #b8ddd8;
+}
+
+.try-narrative {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.try-challenge {
+  margin: 0;
+  padding: 12px 14px;
+  background: var(--amber-light);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--amber);
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.family-problem-tip {
+  margin: -8px 0 14px 0;
+  padding: 10px 12px;
+  background: var(--amber-light);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  color: var(--hint);
+}
+
+.family-hint-box {
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  color: var(--navy);
+}
+
+.family-hint-box p {
+  margin: 0 0 6px 0;
+}
+
+.family-hint-box p:last-child {
+  margin-bottom: 0;
+}
+
 /* Vocabulary Flashcards */
+.vocab-family-note {
+  margin: -6px 0 14px 0;
+  font-size: 14px;
+  color: var(--muted);
+}
 .vocab-container {
   display: flex;
   gap: 16px;
@@ -179,10 +309,26 @@ header.homework-header h1 {
 }
 
 .vocab-card {
-  flex: 0 0 240px;
-  height: 160px;
+  flex: 0 0 260px;
+  height: 210px;
   perspective: 1000px;
   cursor: pointer;
+}
+
+.vocab-thumb-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.vocab-thumb {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  padding: 4px;
 }
 
 .vocab-card-inner {
@@ -271,6 +417,13 @@ header.homework-header h1 {
   color: var(--amber);
   margin: 6px 0 0 0;
   font-style: italic;
+}
+
+.vocab-back-visual {
+  margin: 10px 0 0 0;
+  font-size: 12px;
+  color: var(--teal-light);
+  line-height: 1.35;
 }
 
 /* Practice Problem Cards */
@@ -550,6 +703,92 @@ header.homework-header h1 {
 .drag-card:active {
   cursor: grabbing;
   transform: scale(0.98);
+}
+
+.drag-card.dragging {
+  opacity: 0.55;
+}
+
+.drag-column.over,
+.drag-source-pile.over {
+  border-color: var(--teal);
+  background: var(--teal-light);
+}
+
+/* Drag order (sequencing) */
+.drag-order-workspace {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.drag-order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drag-order-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--white);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  cursor: grab;
+  user-select: none;
+}
+
+.drag-order-row.dragging {
+  opacity: 0.55;
+}
+
+.drag-order-handle {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.drag-order-num {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--teal);
+  color: var(--white);
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.drag-order-text {
+  flex: 1;
+  font-weight: 600;
+  font-size: 14.5px;
+}
+
+.drag-order-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.order-move-btn {
+  min-width: 0;
+  padding: 4px 10px;
+}
+
+.drag-order-row.is-correct {
+  border-color: var(--success);
+  background: var(--success-bg);
+}
+
+.drag-order-row.is-incorrect {
+  border-color: var(--error);
+  background: var(--error-bg);
 }
 
 .drag-handle {
@@ -1035,13 +1274,61 @@ header.homework-header h1 {
   </header>
 
   
+    <section class="family-guide card" aria-label="Family guide">
+      <div class="family-guide-header">
+        <span class="family-guide-emoji">🔍</span>
+        <div>
+          <h2 class="section-title family-guide-title">Family Guide</h2>
+          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+        </div>
+      </div>
+
+      <div class="family-guide-grid">
+        <div class="family-panel family-panel-tips">
+          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
+          <ul class="family-tip-list">
+            <li>Let your student try each problem first. Use <strong>Check Answers</strong> for friendly feedback.</li>
+            <li>Tap vocabulary cards to flip between term and definition.</li>
+            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
+          </ul>
+        </div>
+
+        <div class="family-panel family-panel-home">
+          <h3 class="family-panel-heading">🏡 Try this at home</h3>
+          <p class="family-try-text">Agent Rivera splits a 3/4-pound evidence bag into 1/8-pound portions. Will she get more or fewer than 1 portion? Estimate before solving.</p>
+        </div>
+      </div>
+
+      
+        <div class="family-panel family-panel-legend">
+          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
+          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>fill table:</strong> Encourage your student to show their work on paper if a box feels tricky.</li><li><strong>matching game:</strong> Say each term out loud, then talk through which match makes sense before choosing.</li></ul>
+        </div>
+
+      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
+    </section>
+  
+
+  
+    <section class="try-at-home card" aria-label="Try this at home">
+      <h2 class="section-title">🔍 Real-World Connection</h2>
+      <p class="try-narrative">Agent Rivera is dividing a 3/4-pound evidence bag into portions that each weigh 1/8 pound. She needs to know exactly how many portions she can make for testing. Can you solve the case?</p>
+      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    </section>
+  
+
+  
     <section class="vocab-section card">
       <h2 class="section-title">🔑 Key Vocabulary</h2>
+      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/dividend.svg" alt="Illustration of Dividend: The number you are splitting up in a division problem." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Dividend</h3>
                   <p class="vocab-es">Dividendo</p>
                   <div class="vocab-visual-hint">💡 Example: In 3/4 ÷ 1/2, the dividend is 3/4 — the total amount being split</div>
@@ -1050,6 +1337,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">The number you are splitting up in a division problem.</p>
                   <p class="vocab-def-es">El número que estás repartiendo en una división.</p>
+                  <p class="vocab-back-visual">📌 In 3/4 ÷ 1/2, the dividend is 3/4 — the total amount being split</p>
                 </div>
               </div>
             </div>
@@ -1057,6 +1345,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/divisor.svg" alt="Illustration of Divisor: The number you split by in a division problem." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Divisor</h3>
                   <p class="vocab-es">Divisor</p>
                   <div class="vocab-visual-hint">💡 Example: In 3/4 ÷ 1/2, the divisor is 1/2 — the size of each group</div>
@@ -1065,6 +1356,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">The number you split by in a division problem.</p>
                   <p class="vocab-def-es">El número entre el que divides en una división.</p>
+                  <p class="vocab-back-visual">📌 In 3/4 ÷ 1/2, the divisor is 1/2 — the size of each group</p>
                 </div>
               </div>
             </div>
@@ -1072,6 +1364,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/reciprocal.svg" alt="Illustration of Reciprocal: A fraction turned upside down." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Reciprocal</h3>
                   <p class="vocab-es">Recíproco</p>
                   <div class="vocab-visual-hint">💡 Example: The reciprocal of 2/3 is 3/2. To divide by 2/3, multiply by 3/2.</div>
@@ -1080,6 +1375,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">A fraction turned upside down.</p>
                   <p class="vocab-def-es">Una fracción volteada de arriba abajo.</p>
+                  <p class="vocab-back-visual">📌 The reciprocal of 2/3 is 3/2. To divide by 2/3, multiply by 3/2.</p>
                 </div>
               </div>
             </div>
@@ -1087,6 +1383,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/quotient.svg" alt="Illustration of Quotient: The answer when you divide." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Quotient</h3>
                   <p class="vocab-es">Cociente</p>
                   <div class="vocab-visual-hint">💡 Example: In 3/4 ÷ 1/4 = 3, the quotient is 3 — three 1/4-size pieces fit into 3/4</div>
@@ -1095,6 +1394,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">The answer when you divide.</p>
                   <p class="vocab-def-es">La respuesta cuando divides.</p>
+                  <p class="vocab-back-visual">📌 In 3/4 ÷ 1/4 = 3, the quotient is 3 — three 1/4-size pieces fit into 3/4</p>
                 </div>
               </div>
             </div>
@@ -1102,6 +1402,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/fraction.svg" alt="Illustration of Simplify: To make a fraction smaller using the same parts, like 2/4 = 1/2." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Simplify</h3>
                   <p class="vocab-es">Simplificar</p>
                   <div class="vocab-visual-hint">💡 Example: 8/12 → GCF is 4 → 8÷4 / 12÷4 = 2/3</div>
@@ -1110,6 +1413,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">To make a fraction smaller using the same parts, like 2/4 = 1/2.</p>
                   <p class="vocab-def-es">Hacer una fracción más pequeña con las mismas partes, como 2/4 = 1/2.</p>
+                  <p class="vocab-back-visual">📌 8/12 → GCF is 4 → 8÷4 / 12÷4 = 2/3</p>
                 </div>
               </div>
             </div>
@@ -1128,6 +1432,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">What is the reciprocal of 3/5?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="To find the reciprocal, flip the fraction. The reciprocal of 3/5 is 5/3.">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1168,6 +1473,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">What is 1/2 ÷ 1/4?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="1/2 ÷ 1/4 = 1/2 × 4/1 = 4/2 = 2. Two 1/4-size pieces fit into 1/2.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1208,6 +1514,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">Divide each pair of fractions using Keep, Change, Flip.</p>
+        <p class="family-problem-tip">👪 Family tip: Encourage your student to show their work on paper if a box feels tricky.</p>
         <div class="table-responsive">
           <table class="fill-table">
             <thead>
@@ -1297,6 +1604,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">Match each fraction division to its quotient.</p>
+        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
         <div class="matching-pairs">
           
             <div class="matching-row" data-term="4/5 ÷ 2/5" data-correct="2">
@@ -1379,6 +1687,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">A recipe needs 2/3 cup of sugar. You only have a 1/6-cup scoop. How many scoops do you need?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="2/3 ÷ 1/6 = 2/3 × 6/1 = 12/3 = 4 scoops.">
           
             <label class="mc-option-label" id="label_q_4_0">
@@ -1419,6 +1728,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">What is (3/4) ÷ (1/2)?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="(3/4) ÷ (1/2) = (3/4) × (2/1) = 6/4 = 3/2.">
           
             <label class="mc-option-label" id="label_q_5_0">
@@ -1459,6 +1769,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">What is (2/3) ÷ (4/9)?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="(2/3) × (9/4) = 18/12 = 3/2.">
           
             <label class="mc-option-label" id="label_q_6_0">
@@ -1499,6 +1810,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">What is (5/6) ÷ (5/12)?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="(5/6) × (12/5) = 60/30 = 2.">
           
             <label class="mc-option-label" id="label_q_7_0">
@@ -1539,6 +1851,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">What is (7/8) ÷ (1/4)?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="(7/8) × (4/1) = 28/8 = 7/2.">
           
             <label class="mc-option-label" id="label_q_8_0">
@@ -1571,66 +1884,41 @@ header.homework-header h1 {
     </section>
   
 
-    <section class="problem-section card" id="problem_9" data-problem-type="error-analysis">
+    <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ Find the Division Error</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_9_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Problem:</span>
-                <span class="step-work">2/5 ÷ 3/4</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Keep, Change, Flip:</span>
-                <span class="step-work">2/5 × 3/4</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Multiply:</span>
-                <span class="step-work">6/20</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_4">
-                <span class="step-badge">Step 4</span>
-                <span class="step-label">Simplify:</span>
-                <span class="step-work">3/10</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_9">Which step has the error?</label>
-            <select id="error_step_select_9" class="custom-select error-step-select" data-correct="2" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option><option value="4">Step 4</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
+        <p class="problem-stem">Lock 1 — Crack the code: What is (1/2) ÷ (1/4) in simplest form?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <div class="mc-options" data-correct="0" data-explanation="(1/2) ÷ (1/4) = (1/2) × (4/1) = 4/2 = 2. Two 1/4-size pieces fit into 1/2, so the lock opens on 2.">
           
-          <div class="error-explain-row">
-            <label for="error_explain_input_9">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_9" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
+            <label class="mc-option-label" id="label_q_9_0">
+              <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">2</span>
+            </label>
           
-          <div class="reveal-box" id="error_correct_work_9" style="display:none;">
-            <strong>Correct Work Reference:</strong> The student forgot to flip. 2/5 × 4/3 (flip the divisor 3/4 to get 4/3). Then 2/5 × 4/3 = 8/15.
-          </div>
+            <label class="mc-option-label" id="label_q_9_1">
+              <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">1/8</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_9_2">
+              <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">4</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_9_3">
+              <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">1/2</span>
+            </label>
+          
         </div>
       </div>
     
@@ -1740,29 +2028,50 @@ function playFailureSound() {
 // Drag & Drop engine
 function allowDrop(ev) {
   ev.preventDefault();
+  const zone = ev.currentTarget;
+  if (zone && zone.classList) {
+    zone.classList.add("over");
+  }
 }
 
 function handleDragStart(ev) {
-  ev.dataTransfer.setData("text", ev.target.id);
+  const card = ev.currentTarget.closest(".drag-card");
+  if (!card) return;
+  ev.dataTransfer.setData("text/plain", card.id);
+  ev.dataTransfer.effectAllowed = "move";
+  card.classList.add("dragging");
+}
+
+function handleDragEnd(ev) {
+  const el = ev.currentTarget;
+  if (el) el.classList.remove("dragging");
+  clearDragOver();
+}
+
+function clearDragOver() {
+  document.querySelectorAll(".drag-column.over, .drag-source-pile.over, .drag-column-slots.over")
+    .forEach((el) => el.classList.remove("over"));
 }
 
 function handleDrop(ev, probIdx, categoryId) {
   ev.preventDefault();
-  const cardId = ev.dataTransfer.getData("text");
+  clearDragOver();
+  const cardId = ev.dataTransfer.getData("text/plain") || ev.dataTransfer.getData("text");
   const card = document.getElementById(cardId);
   if (!card) return;
-  
-  // Check if dropping card belongs to this problem
+
+  document.querySelectorAll(".drag-card.dragging").forEach((el) => el.classList.remove("dragging"));
+
   const prefix = "card_" + probIdx + "_";
   if (!card.id.startsWith(prefix)) return;
-  
+
   let targetContainer;
   if (categoryId) {
     targetContainer = document.getElementById("slots_" + probIdx + "_" + categoryId);
   } else {
     targetContainer = document.getElementById("pile_" + probIdx);
   }
-  
+
   if (targetContainer) {
     targetContainer.appendChild(card);
     const select = card.querySelector(".mobile-cat-select");
@@ -1770,6 +2079,127 @@ function handleDrop(ev, probIdx, categoryId) {
     saveState();
     updateProgress();
   }
+}
+
+function handleOrderDragStart(ev) {
+  const row = ev.currentTarget.closest(".drag-order-row");
+  if (!row) return;
+  ev.dataTransfer.setData("text/plain", row.id);
+  ev.dataTransfer.effectAllowed = "move";
+  row.classList.add("dragging");
+}
+
+function handleOrderDrop(ev, probIdx) {
+  ev.preventDefault();
+  const list = document.getElementById("orderlist_" + probIdx);
+  const rowId = ev.dataTransfer.getData("text/plain") || ev.dataTransfer.getData("text");
+  const row = document.getElementById(rowId);
+  if (!list || !row || !row.id.startsWith("order_" + probIdx + "_")) return;
+  document.querySelectorAll(".drag-order-row.dragging").forEach((el) => el.classList.remove("dragging"));
+
+  const afterEl = getOrderInsertBefore(list, ev.clientY);
+  if (afterEl) {
+    list.insertBefore(row, afterEl);
+  } else {
+    list.appendChild(row);
+  }
+  renumberOrderRows(probIdx);
+  saveState();
+  updateProgress();
+}
+
+function getOrderInsertBefore(list, clientY) {
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  for (const child of rows) {
+    const box = child.getBoundingClientRect();
+    if (clientY < box.top + box.height / 2) return child;
+  }
+  return null;
+}
+
+function moveOrderRowByEl(probIdx, btn, direction) {
+  const row = btn.closest(".drag-order-row");
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!row || !list) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  const rowIdx = rows.indexOf(row);
+  const nextIdx = rowIdx + direction;
+  if (nextIdx < 0 || nextIdx >= rows.length) return;
+  const neighbor = rows[nextIdx];
+  if (direction < 0) {
+    list.insertBefore(row, neighbor);
+  } else {
+    list.insertBefore(neighbor, row.nextSibling);
+  }
+  renumberOrderRows(probIdx);
+  saveState();
+  updateProgress();
+}
+
+function renumberOrderRows(probIdx) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list) return;
+  list.querySelectorAll(".drag-order-row").forEach((row, idx) => {
+    const num = row.querySelector(".drag-order-num");
+    if (num) num.textContent = String(idx + 1);
+  });
+}
+
+function restoreOrderList(probIdx, order) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list || !Array.isArray(order)) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  const byText = new Map(rows.map((row) => [row.dataset.stepText, row]));
+  list.innerHTML = "";
+  order.forEach((text) => {
+    const row = byText.get(text);
+    if (row) {
+      list.appendChild(row);
+      row.classList.remove("is-correct", "is-incorrect");
+    }
+  });
+  rows.forEach((row) => {
+    if (!list.contains(row)) list.appendChild(row);
+  });
+  renumberOrderRows(probIdx);
+}
+
+function resetDragOrder(probIdx) {
+  const workspace = document.getElementById("dragorder_" + probIdx);
+  if (!workspace) return;
+  let initial = [];
+  try {
+    initial = JSON.parse(workspace.dataset.initialOrder || "[]");
+  } catch (e) {
+    initial = [];
+  }
+  if (!initial.length) {
+    shuffleOrderRows(probIdx);
+  } else {
+    restoreOrderList(probIdx, initial);
+  }
+  const pCard = document.getElementById("problem_" + probIdx);
+  if (pCard) pCard.classList.remove("correct", "incorrect");
+}
+
+function shuffleOrderRows(probIdx) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  if (rows.length < 2) return;
+  for (let i = rows.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [rows[i], rows[j]] = [rows[j], rows[i]];
+  }
+  list.innerHTML = "";
+  rows.forEach((row) => list.appendChild(row));
+  if (rows.every((row, idx) => row.dataset.stepText === JSON.parse(document.getElementById("dragorder_" + probIdx).dataset.correctOrder || "[]")[idx])) {
+    const last = rows.pop();
+    rows.unshift(last);
+    list.innerHTML = "";
+    rows.forEach((row) => list.appendChild(row));
+  }
+  renumberOrderRows(probIdx);
 }
 
 function mobileMoveCard(select, cardId, probIdx) {
@@ -1853,7 +2283,8 @@ const STORAGE_KEY = "hw_state_lesson_" + "2-3";
 function saveState() {
   const state = {
     inputs: {},
-    dragPositions: {}
+    dragPositions: {},
+    orderPositions: {}
   };
   
   // Save text inputs, select dropdowns, textareas, and radios
@@ -1873,6 +2304,11 @@ function saveState() {
     if (parentContainer) {
       state.dragPositions[card.id] = parentContainer.id;
     }
+  });
+
+  document.querySelectorAll(".drag-order-list").forEach((list) => {
+    const probIdx = list.id.replace("orderlist_", "");
+    state.orderPositions[probIdx] = Array.from(list.querySelectorAll(".drag-order-row")).map((row) => row.dataset.stepText);
   });
   
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -1906,18 +2342,34 @@ function loadState() {
         const parent = document.getElementById(parentId);
         if (card && parent) {
           parent.appendChild(card);
-          // Sync select dropdown for mobile
           const select = card.querySelector(".mobile-cat-select");
           if (select) {
-            // parentId is like slots_0_prime
             const parts = parentId.split("_");
-            if (parts.length >= 3) {
+            if (parts.length >= 3 && parts[0] === "slots") {
               select.value = parts.slice(2).join("_");
             } else {
               select.value = "";
             }
           }
         }
+      }
+    }
+
+    if (state.orderPositions) {
+      for (const [probIdx, order] of Object.entries(state.orderPositions)) {
+        const list = document.getElementById("orderlist_" + probIdx);
+        if (!list || !Array.isArray(order)) continue;
+        const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+        const byText = new Map(rows.map((row) => [row.dataset.stepText, row]));
+        list.innerHTML = "";
+        order.forEach((text) => {
+          const row = byText.get(text);
+          if (row) list.appendChild(row);
+        });
+        rows.forEach((row) => {
+          if (!list.contains(row)) list.appendChild(row);
+        });
+        renumberOrderRows(probIdx);
       }
     }
   } catch (e) {
@@ -1956,8 +2408,12 @@ function updateProgress() {
       const answered = selects.filter(s => s.value !== "");
       if (answered.length > 0) hasValue = true;
     } else if (type === "drag-sort") {
-      const itemsInColumns = Array.from(section.querySelectorAll(".drag-column-slots .drag-card"));
-      if (itemsInColumns.length > 0) hasValue = true;
+      if (section.dataset.problemSubtype === "drag-order") {
+        hasValue = true;
+      } else {
+        const itemsInColumns = Array.from(section.querySelectorAll(".drag-column-slots .drag-card"));
+        if (itemsInColumns.length > 0) hasValue = true;
+      }
     } else if (type === "fill-table") {
       const inputs = Array.from(section.querySelectorAll(".table-input"));
       const filled = inputs.filter(i => i.value.trim() !== "");
@@ -2057,28 +2513,49 @@ function checkWorksheet() {
       });
       
     } else if (type === "drag-sort") {
-      const dragCards = section.querySelectorAll(".drag-card");
-      
-      dragCards.forEach(card => {
-        card.classList.remove("is-correct", "is-incorrect");
-        const correctCat = card.dataset.correctCategory;
-        const parentCol = card.parentElement;
-        
-        if (parentCol && parentCol.parentElement && parentCol.parentElement.classList.contains("drag-column")) {
-          const actualCat = parentCol.parentElement.dataset.categoryId;
-          if (actualCat === correctCat) {
-            card.classList.add("is-correct");
+      if (section.dataset.problemSubtype === "drag-order") {
+        const workspace = section.querySelector(".drag-order-workspace");
+        const list = section.querySelector(".drag-order-list");
+        let correct = [];
+        try {
+          correct = JSON.parse(workspace?.dataset.correctOrder || "[]");
+        } catch (e) {
+          correct = [];
+        }
+        const rows = Array.from(list?.querySelectorAll(".drag-order-row") || []);
+        rows.forEach((row, i) => {
+          row.classList.remove("is-correct", "is-incorrect");
+          if (row.dataset.stepText === correct[i]) {
+            row.classList.add("is-correct");
+          } else {
+            isProblemCorrect = false;
+            row.classList.add("is-incorrect");
+          }
+        });
+      } else {
+        const dragCards = section.querySelectorAll(".drag-card");
+
+        dragCards.forEach(card => {
+          card.classList.remove("is-correct", "is-incorrect");
+          const correctCat = card.dataset.correctCategory;
+          const parentCol = card.parentElement;
+
+          const column = card.closest(".drag-column");
+          if (column) {
+            const actualCat = column.dataset.categoryId;
+            if (actualCat === correctCat) {
+              card.classList.add("is-correct");
+            } else {
+              isProblemCorrect = false;
+              card.classList.add("is-incorrect");
+            }
           } else {
             isProblemCorrect = false;
             card.classList.add("is-incorrect");
           }
-        } else {
-          // Card still in source pile
-          isProblemCorrect = false;
-          card.classList.add("is-incorrect");
-        }
-      });
-      
+        });
+      }
+
     } else if (type === "fill-table") {
       const inputs = section.querySelectorAll(".table-input");
       
@@ -2270,7 +2747,12 @@ function resetWorksheet() {
       if (type === "drag-sort") {
         const parts = s.id.split("_");
         const idx = parts[1];
-        resetDragSort(idx);
+        if (s.dataset.problemSubtype === "drag-order") {
+          resetDragOrder(idx);
+          shuffleOrderRows(idx);
+        } else {
+          resetDragSort(idx);
+        }
       }
     });
     
@@ -2300,54 +2782,78 @@ function resetWorksheet() {
 
 // Initial configuration
 window.onload = function() {
+  const hadSavedState = !!localStorage.getItem(STORAGE_KEY);
   loadState();
+  if (!hadSavedState) {
+    document.querySelectorAll(".drag-order-workspace").forEach((workspace) => {
+      const probIdx = workspace.id.replace("dragorder_", "");
+      shuffleOrderRows(probIdx);
+    });
+  }
   updateProgress();
-  
-  // Set up dragging listeners for mobile touch screen card clicks
+
+  document.addEventListener("dragend", function() {
+    document.querySelectorAll(".drag-card.dragging, .drag-order-row.dragging")
+      .forEach((el) => el.classList.remove("dragging"));
+    clearDragOver();
+  });
+
+  document.querySelectorAll(".drag-card").forEach((card) => {
+    card.addEventListener("dragend", () => card.classList.remove("dragging"));
+  });
+
+  // Tap-to-move fallback for touch devices
   let selectedDragCard = null;
-  const cards = document.querySelectorAll(".drag-card");
-  
-  cards.forEach(card => {
+  document.querySelectorAll(".drag-card").forEach((card) => {
     card.addEventListener("click", function(e) {
-      if (e.target.tagName === "SELECT") return; // Let dropdown clicks handle themselves
-      
-      // Toggle select state
+      if (e.target.tagName === "SELECT" || e.target.tagName === "OPTION") return;
       if (selectedDragCard === this) {
         this.style.borderColor = "var(--line)";
         selectedDragCard = null;
       } else {
-        if (selectedDragCard) {
-          selectedDragCard.style.borderColor = "var(--line)";
-        }
+        if (selectedDragCard) selectedDragCard.style.borderColor = "var(--line)";
         selectedDragCard = this;
         this.style.borderColor = "var(--teal)";
       }
     });
   });
-  
-  const columns = document.querySelectorAll(".drag-column");
-  columns.forEach(col => {
-    col.addEventListener("click", function() {
-      if (selectedDragCard) {
-        const probIdx = selectedDragCard.id.split("_")[1];
-        const targetColId = this.dataset.categoryId;
-        
-        // Ensure the card belongs to this problem
-        if (selectedDragCard.id.startsWith("card_" + probIdx + "_")) {
-          const slots = this.querySelector(".drag-column-slots");
-          slots.appendChild(selectedDragCard);
-          
-          // Update corresponding select
-          const select = selectedDragCard.querySelector(".mobile-cat-select");
-          if (select) select.value = targetColId;
-          
-          selectedDragCard.style.borderColor = "var(--line)";
-          selectedDragCard = null;
-          
-          saveState();
-          updateProgress();
-        }
+
+  document.querySelectorAll(".drag-column, .drag-source-pile, .drag-column-slots").forEach((zone) => {
+    zone.addEventListener("click", function() {
+      if (!selectedDragCard) return;
+      const probIdx = selectedDragCard.id.split("_")[1];
+      if (!selectedDragCard.id.startsWith("card_" + probIdx + "_")) return;
+
+      let targetContainer = null;
+      let categoryId = "";
+      if (this.classList.contains("drag-column")) {
+        categoryId = this.dataset.categoryId || "";
+        targetContainer = this.querySelector(".drag-column-slots");
+      } else if (this.classList.contains("drag-column-slots")) {
+        categoryId = this.id.split("_").slice(2).join("_");
+        targetContainer = this;
+      } else if (this.classList.contains("drag-source-pile")) {
+        targetContainer = this;
       }
+
+      if (targetContainer) {
+        targetContainer.appendChild(selectedDragCard);
+        const select = selectedDragCard.querySelector(".mobile-cat-select");
+        if (select) select.value = categoryId;
+        selectedDragCard.style.borderColor = "var(--line)";
+        selectedDragCard = null;
+        saveState();
+        updateProgress();
+      }
+    });
+  });
+
+  document.querySelectorAll(".drag-order-list").forEach((list) => {
+    const probIdx = list.id.replace("orderlist_", "");
+    list.addEventListener("dragover", allowDrop);
+    list.addEventListener("drop", (ev) => handleOrderDrop(ev, probIdx));
+    list.querySelectorAll(".drag-order-row").forEach((row) => {
+      row.addEventListener("dragend", () => row.classList.remove("dragging"));
     });
   });
 };

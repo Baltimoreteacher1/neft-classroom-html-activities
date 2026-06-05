@@ -160,7 +160,137 @@ header.homework-header h1 {
   margin: 0 0 16px 0;
 }
 
+/* Family guide */
+.family-guide {
+  background: linear-gradient(180deg, #fffdf8 0%, var(--white) 100%);
+  border-color: #ead9b8;
+}
+
+.family-guide-header {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.family-guide-emoji {
+  font-size: 34px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.family-guide-title {
+  margin-bottom: 4px;
+}
+
+.family-guide-sub {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14.5px;
+}
+
+.family-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.family-panel {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+
+.family-panel-heading {
+  margin: 0 0 8px 0;
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--navy);
+}
+
+.family-tip-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.family-tip-list li {
+  margin-bottom: 6px;
+}
+
+.family-try-text {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.45;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.family-print-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.try-at-home {
+  background: linear-gradient(180deg, var(--teal-light) 0%, var(--white) 100%);
+  border-color: #b8ddd8;
+}
+
+.try-narrative {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.try-challenge {
+  margin: 0;
+  padding: 12px 14px;
+  background: var(--amber-light);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--amber);
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.family-problem-tip {
+  margin: -8px 0 14px 0;
+  padding: 10px 12px;
+  background: var(--amber-light);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  color: var(--hint);
+}
+
+.family-hint-box {
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  color: var(--navy);
+}
+
+.family-hint-box p {
+  margin: 0 0 6px 0;
+}
+
+.family-hint-box p:last-child {
+  margin-bottom: 0;
+}
+
 /* Vocabulary Flashcards */
+.vocab-family-note {
+  margin: -6px 0 14px 0;
+  font-size: 14px;
+  color: var(--muted);
+}
 .vocab-container {
   display: flex;
   gap: 16px;
@@ -179,10 +309,26 @@ header.homework-header h1 {
 }
 
 .vocab-card {
-  flex: 0 0 240px;
-  height: 160px;
+  flex: 0 0 260px;
+  height: 210px;
   perspective: 1000px;
   cursor: pointer;
+}
+
+.vocab-thumb-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.vocab-thumb {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  padding: 4px;
 }
 
 .vocab-card-inner {
@@ -271,6 +417,13 @@ header.homework-header h1 {
   color: var(--amber);
   margin: 6px 0 0 0;
   font-style: italic;
+}
+
+.vocab-back-visual {
+  margin: 10px 0 0 0;
+  font-size: 12px;
+  color: var(--teal-light);
+  line-height: 1.35;
 }
 
 /* Practice Problem Cards */
@@ -550,6 +703,92 @@ header.homework-header h1 {
 .drag-card:active {
   cursor: grabbing;
   transform: scale(0.98);
+}
+
+.drag-card.dragging {
+  opacity: 0.55;
+}
+
+.drag-column.over,
+.drag-source-pile.over {
+  border-color: var(--teal);
+  background: var(--teal-light);
+}
+
+/* Drag order (sequencing) */
+.drag-order-workspace {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.drag-order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drag-order-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--white);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  cursor: grab;
+  user-select: none;
+}
+
+.drag-order-row.dragging {
+  opacity: 0.55;
+}
+
+.drag-order-handle {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.drag-order-num {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--teal);
+  color: var(--white);
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.drag-order-text {
+  flex: 1;
+  font-weight: 600;
+  font-size: 14.5px;
+}
+
+.drag-order-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.order-move-btn {
+  min-width: 0;
+  padding: 4px 10px;
+}
+
+.drag-order-row.is-correct {
+  border-color: var(--success);
+  background: var(--success-bg);
+}
+
+.drag-order-row.is-incorrect {
+  border-color: var(--error);
+  background: var(--error-bg);
 }
 
 .drag-handle {
@@ -1035,13 +1274,61 @@ header.homework-header h1 {
   </header>
 
   
+    <section class="family-guide card" aria-label="Family guide">
+      <div class="family-guide-header">
+        <span class="family-guide-emoji">🕹️</span>
+        <div>
+          <h2 class="section-title family-guide-title">Family Guide</h2>
+          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+        </div>
+      </div>
+
+      <div class="family-guide-grid">
+        <div class="family-panel family-panel-tips">
+          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
+          <ul class="family-tip-list">
+            <li>Let your student try each problem first. Use <strong>Check Answers</strong> for friendly feedback.</li>
+            <li>Tap vocabulary cards to flip between term and definition.</li>
+            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
+          </ul>
+        </div>
+
+        <div class="family-panel family-panel-home">
+          <h3 class="family-panel-heading">🏡 Try this at home</h3>
+          <p class="family-try-text">As supply manager you compare token deals like 500 for $60 and 350 for $38.50. You can&#039;t compare totals directly, so what does finding the cost &#039;per unit&#039; let you do?</p>
+        </div>
+      </div>
+
+      
+        <div class="family-panel family-panel-legend">
+          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
+          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>fill table:</strong> Encourage your student to show their work on paper if a box feels tricky.</li><li><strong>drag sort:</strong> On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</li></ul>
+        </div>
+
+      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
+    </section>
+  
+
+  
+    <section class="try-at-home card" aria-label="Try this at home">
+      <h2 class="section-title">🕹️ Real-World Connection</h2>
+      <p class="try-narrative">You&#039;re the new supply manager for the arcade! You need to order tokens, prizes, and snacks from different suppliers. Each supplier offers a different package deal. Your job is to find the unit rate for each deal and figure out which supplier gives you the best value for every item you need to order.</p>
+      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    </section>
+  
+
+  
     <section class="vocab-section card">
       <h2 class="section-title">🔑 Key Vocabulary</h2>
+      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/unit-rate.svg" alt="Illustration of Unit Rate: A rate for just 1 of something, like cost for 1 item." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Unit Rate</h3>
                   <p class="vocab-es">Tasa unitaria</p>
                   <div class="vocab-visual-hint">💡 Example: $2.50 per pound means $2.50 for every 1 pound</div>
@@ -1050,6 +1337,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">A rate for just 1 of something, like cost for 1 item.</p>
                   <p class="vocab-def-es">Una tasa para solo 1 de algo, como el precio de 1 artículo.</p>
+                  <p class="vocab-back-visual">📌 $2.50 per pound means $2.50 for every 1 pound</p>
                 </div>
               </div>
             </div>
@@ -1057,6 +1345,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/unit-rate.svg" alt="Illustration of Better Buy: The choice that costs less for each item." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Better Buy</h3>
                   <p class="vocab-es">Mejor compra</p>
                   <div class="vocab-visual-hint">💡 Example: $0.10 each vs $0.15 each — the $0.10 option is the better buy</div>
@@ -1065,6 +1356,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">The choice that costs less for each item.</p>
                   <p class="vocab-def-es">La opción que cuesta menos por cada artículo.</p>
+                  <p class="vocab-back-visual">📌 $0.10 each vs $0.15 each — the $0.10 option is the better buy</p>
                 </div>
               </div>
             </div>
@@ -1072,6 +1364,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/ratio.svg" alt="Illustration of Comparison: Looking at numbers to see which is bigger or smaller." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Comparison</h3>
                   <p class="vocab-es">Comparación</p>
                   <div class="vocab-visual-hint">💡 Example: $3 per game &lt; $4 per game</div>
@@ -1080,6 +1375,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">Looking at numbers to see which is bigger or smaller.</p>
                   <p class="vocab-def-es">Mirar números para ver cuál es mayor o menor.</p>
+                  <p class="vocab-back-visual">📌 $3 per game &lt; $4 per game</p>
                 </div>
               </div>
             </div>
@@ -1087,6 +1383,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/unit-rate.svg" alt="Illustration of Per Unit: For each single item." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Per Unit</h3>
                   <p class="vocab-es">Por unidad</p>
                   <div class="vocab-visual-hint">💡 Example: $0.50 per token means each token costs $0.50</div>
@@ -1095,6 +1394,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">For each single item.</p>
                   <p class="vocab-def-es">Por cada artículo.</p>
+                  <p class="vocab-back-visual">📌 $0.50 per token means each token costs $0.50</p>
                 </div>
               </div>
             </div>
@@ -1102,6 +1402,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/rate.svg" alt="Illustration of Rate: A ratio comparing two amounts with different units, like miles per hour." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Rate</h3>
                   <p class="vocab-es">Tasa</p>
                   <div class="vocab-visual-hint">💡 Example: 120 miles in 3 hours is a rate (miles and hours are different units)</div>
@@ -1110,6 +1413,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">A ratio comparing two amounts with different units, like miles per hour.</p>
                   <p class="vocab-def-es">Una razón que compara dos cantidades con unidades distintas, como millas por hora.</p>
+                  <p class="vocab-back-visual">📌 120 miles in 3 hours is a rate (miles and hours are different units)</p>
                 </div>
               </div>
             </div>
@@ -1117,6 +1421,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/proportion.svg" alt="Illustration of Proportion: A math sentence saying two ratios are equal. It helps find a missing number." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Proportion</h3>
                   <p class="vocab-es">Proporción</p>
                   <div class="vocab-visual-hint">💡 Example: 5/3 = x/12 → x = 20</div>
@@ -1125,6 +1432,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">A math sentence saying two ratios are equal. It helps find a missing number.</p>
                   <p class="vocab-def-es">Una oración matemática que dice que dos razones son iguales. Ayuda a hallar un número que falta.</p>
+                  <p class="vocab-back-visual">📌 5/3 = x/12 → x = 20</p>
                 </div>
               </div>
             </div>
@@ -1143,6 +1451,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">Which is the better buy: 6 bouncy balls for $4.50 or 10 bouncy balls for $8.00?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="$4.50 ÷ 6 = $0.75 each. $8.00 ÷ 10 = $0.80 each. $0.75 &lt; $0.80, so 6 for $4.50 is the better buy.">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1183,6 +1492,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">A faucet drips 15 ounces of water in 5 minutes. What is the unit rate?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="15 ÷ 5 = 3 ounces per minute.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1223,6 +1533,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">Find the unit rate for each deal and identify the better buy.</p>
+        <p class="family-problem-tip">👪 Family tip: Encourage your student to show their work on paper if a box feels tricky.</p>
         <div class="table-responsive">
           <table class="fill-table">
             <thead>
@@ -1312,6 +1623,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">A machine dispenses 24 tokens in 3 minutes. At this rate, how many tokens does it dispense in 10 minutes?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="Unit rate: 24 ÷ 3 = 8 tokens per minute. In 10 minutes: 8 × 10 = 80 tokens.">
           
             <label class="mc-option-label" id="label_q_3_0">
@@ -1344,7 +1656,7 @@ header.homework-header h1 {
     </section>
   
 
-    <section class="problem-section card" id="problem_4" data-problem-type="drag-sort">
+    <section class="problem-section card" id="problem_4" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Problem 5</div>
         <div class="problem-type-badge">DRAG SORT</div>
@@ -1352,38 +1664,36 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">Three friends each walked different distances in different times. Sort them from fastest to slowest.</p>
+        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
+        
         <div class="drag-sort-workspace" id="dragsort_4">
-          
           <div class="drag-columns">
             
               <div class="drag-column" data-category-id="fastest" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'fastest')">
                 <div class="drag-column-header">Fastest</div>
-                <div class="drag-column-slots" id="slots_4_fastest"></div>
+                <div class="drag-column-slots" id="slots_4_fastest" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'fastest')"></div>
               </div>
-            
               <div class="drag-column" data-category-id="middle" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'middle')">
                 <div class="drag-column-header">Middle</div>
-                <div class="drag-column-slots" id="slots_4_middle"></div>
+                <div class="drag-column-slots" id="slots_4_middle" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'middle')"></div>
               </div>
-            
               <div class="drag-column" data-category-id="slowest" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'slowest')">
                 <div class="drag-column-header">Slowest</div>
-                <div class="drag-column-slots" id="slots_4_slowest"></div>
+                <div class="drag-column-slots" id="slots_4_slowest" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'slowest')"></div>
               </div>
-            
           </div>
-          
           <div class="drag-source-section">
-            <div class="drag-source-header">Items to Sort (Drag or use dropdown for mobile):</div>
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
             <div class="drag-source-pile" id="pile_4" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, '')">
               
-                <div class="drag-card" 
-                     draggable="true" 
-                     id="card_4_0" 
-                     data-item-index="0" 
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_4_0"
+                     data-item-index="0"
                      data-correct-category="fastest"
-                     ondragstart="handleDragStart(event)">
-                  <span class="drag-handle">☰</span>
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">Aiden: 6 miles in 2 hours (3 mph)</span>
                   <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_0', 4); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
@@ -1391,14 +1701,14 @@ header.homework-header h1 {
                     <option value="">Unsorted Pile</option>
                   </select>
                 </div>
-              
-                <div class="drag-card" 
-                     draggable="true" 
-                     id="card_4_1" 
-                     data-item-index="1" 
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_4_1"
+                     data-item-index="1"
                      data-correct-category="middle"
-                     ondragstart="handleDragStart(event)">
-                  <span class="drag-handle">☰</span>
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">Bella: 10 miles in 4 hours (2.5 mph)</span>
                   <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_1', 4); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
@@ -1406,14 +1716,14 @@ header.homework-header h1 {
                     <option value="">Unsorted Pile</option>
                   </select>
                 </div>
-              
-                <div class="drag-card" 
-                     draggable="true" 
-                     id="card_4_2" 
-                     data-item-index="2" 
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_4_2"
+                     data-item-index="2"
                      data-correct-category="slowest"
-                     ondragstart="handleDragStart(event)">
-                  <span class="drag-handle">☰</span>
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">Carlos: 4 miles in 2 hours (2 mph)</span>
                   <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_2', 4); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
@@ -1421,10 +1731,8 @@ header.homework-header h1 {
                     <option value="">Unsorted Pile</option>
                   </select>
                 </div>
-              
             </div>
           </div>
-          
         </div>
         <div class="drag-controls">
           <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(4); saveState(); updateProgress();">Reset Sorting</button>
@@ -1442,6 +1750,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">A factory produces 360 widgets in 8 hours. At the same rate, how many widgets are produced in a 12-hour shift?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="Unit rate: 360 ÷ 8 = 45 widgets per hour. In 12 hours: 45 × 12 = 540 widgets.">
           
             <label class="mc-option-label" id="label_q_5_0">
@@ -1481,31 +1790,32 @@ header.homework-header h1 {
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">Apples cost $3 for 2 pounds. What is the price per pound?</p>
-        <div class="mc-options" data-correct="0" data-explanation="3 ÷ 2 = $1.50 per pound.">
+        <p class="problem-stem">The snack bar compares two popcorn deals: 12 oz for $3.00 or 20 oz for $4.00. Which is the better buy?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <div class="mc-options" data-correct="0" data-explanation="12 oz: $3.00 ÷ 12 = $0.25 per oz. 20 oz: $4.00 ÷ 20 = $0.20 per oz. $0.20 &lt; $0.25, so 20 oz for $4.00 is the better buy.">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$1.50</span>
+              <span class="choice-text">20 oz for $4.00 — $0.20 per oz</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_1">
               <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$6.00</span>
+              <span class="choice-text">12 oz for $3.00 — $0.25 per oz</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_2">
               <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$0.67</span>
+              <span class="choice-text">They cost the same per ounce</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_3">
               <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$5.00</span>
+              <span class="choice-text">Not enough information</span>
             </label>
           
         </div>
@@ -1521,31 +1831,32 @@ header.homework-header h1 {
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">A printer prints 90 pages in 6 minutes. How many pages per minute?</p>
-        <div class="mc-options" data-correct="0" data-explanation="90 ÷ 6 = 15 pages per minute.">
+        <p class="problem-stem">The delivery van brings arcade supplies 150 miles in 3 hours. What is the unit rate in miles per hour?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <div class="mc-options" data-correct="0" data-explanation="150 ÷ 3 = 50 miles per hour.">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">15</span>
+              <span class="choice-text">50 miles per hour</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_1">
               <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">540</span>
+              <span class="choice-text">45 miles per hour</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_2">
               <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">84</span>
+              <span class="choice-text">153 miles per hour</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_3">
               <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12</span>
+              <span class="choice-text">30 miles per hour</span>
             </label>
           
         </div>
@@ -1561,31 +1872,32 @@ header.homework-header h1 {
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">At 55 miles per hour, how far do you travel in 4 hours?</p>
-        <div class="mc-options" data-correct="0" data-explanation="55 × 4 = 220 miles.">
+        <p class="problem-stem">The ticket counter sells redemption tickets two ways: 8 tickets for $2.00 or 15 tickets for $3.00. Which costs less per ticket?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <div class="mc-options" data-correct="0" data-explanation="8 for $2.00: $2.00 ÷ 8 = $0.25 each. 15 for $3.00: $3.00 ÷ 15 = $0.20 each. $0.20 &lt; $0.25, so 15 for $3.00 is cheaper per ticket.">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">220 miles</span>
+              <span class="choice-text">15 tickets for $3.00 — $0.20 each</span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_1">
               <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">59 miles</span>
+              <span class="choice-text">8 tickets for $2.00 — $0.25 each</span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_2">
               <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">14 miles</span>
+              <span class="choice-text">They cost the same per ticket</span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_3">
               <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">200 miles</span>
+              <span class="choice-text">Cannot determine</span>
             </label>
           
         </div>
@@ -1594,40 +1906,127 @@ header.homework-header h1 {
     </section>
   
 
-    <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_9" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge">DRAG SORT</div>
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">A worker earns $54 for 6 hours. At the same rate, how much for 9 hours?</p>
-        <div class="mc-options" data-correct="0" data-explanation="$54 ÷ 6 = $9 per hour; 9 × $9 = $81.">
-          
-            <label class="mc-option-label" id="label_q_9_0">
-              <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">$81</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_1">
-              <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">$72</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_2">
-              <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">$90</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_3">
-              <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">$60</span>
-            </label>
-          
+        <p class="problem-stem">For each prize item, find the unit rate of both deals and sort each card into Better Buy or Worse Buy.</p>
+        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
+        
+        <div class="drag-sort-workspace" id="dragsort_9">
+          <div class="drag-columns">
+            
+              <div class="drag-column" data-category-id="better" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'better')">
+                <div class="drag-column-header">Better Buy (lower unit rate)</div>
+                <div class="drag-column-slots" id="slots_9_better" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'better')"></div>
+              </div>
+              <div class="drag-column" data-category-id="worse" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'worse')">
+                <div class="drag-column-header">Worse Buy (higher unit rate)</div>
+                <div class="drag-column-slots" id="slots_9_worse" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'worse')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_9" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_0"
+                     data-item-index="0"
+                     data-correct-category="better"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Snack packs: 4 for $5.00 ($1.25 each)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_0', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="better">Better Buy (lower unit rate)</option><option value="worse">Worse Buy (higher unit rate)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_1"
+                     data-item-index="1"
+                     data-correct-category="worse"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Snack packs: 6 for $9.00 ($1.50 each)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_1', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="better">Better Buy (lower unit rate)</option><option value="worse">Worse Buy (higher unit rate)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_2"
+                     data-item-index="2"
+                     data-correct-category="better"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Stickers: 25 for $8.75 ($0.35 each)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_2', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="better">Better Buy (lower unit rate)</option><option value="worse">Worse Buy (higher unit rate)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_3"
+                     data-item-index="3"
+                     data-correct-category="worse"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Stickers: 10 for $4.00 ($0.40 each)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_3', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="better">Better Buy (lower unit rate)</option><option value="worse">Worse Buy (higher unit rate)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_4"
+                     data-item-index="4"
+                     data-correct-category="better"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Tokens: 250 for $20.00 ($0.08 each)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_4', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="better">Better Buy (lower unit rate)</option><option value="worse">Worse Buy (higher unit rate)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_5"
+                     data-item-index="5"
+                     data-correct-category="worse"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Tokens: 100 for $9.00 ($0.09 each)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_5', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="better">Better Buy (lower unit rate)</option><option value="worse">Worse Buy (higher unit rate)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(9); saveState(); updateProgress();">Reset Sorting</button>
         </div>
       </div>
     
@@ -1737,29 +2136,50 @@ function playFailureSound() {
 // Drag & Drop engine
 function allowDrop(ev) {
   ev.preventDefault();
+  const zone = ev.currentTarget;
+  if (zone && zone.classList) {
+    zone.classList.add("over");
+  }
 }
 
 function handleDragStart(ev) {
-  ev.dataTransfer.setData("text", ev.target.id);
+  const card = ev.currentTarget.closest(".drag-card");
+  if (!card) return;
+  ev.dataTransfer.setData("text/plain", card.id);
+  ev.dataTransfer.effectAllowed = "move";
+  card.classList.add("dragging");
+}
+
+function handleDragEnd(ev) {
+  const el = ev.currentTarget;
+  if (el) el.classList.remove("dragging");
+  clearDragOver();
+}
+
+function clearDragOver() {
+  document.querySelectorAll(".drag-column.over, .drag-source-pile.over, .drag-column-slots.over")
+    .forEach((el) => el.classList.remove("over"));
 }
 
 function handleDrop(ev, probIdx, categoryId) {
   ev.preventDefault();
-  const cardId = ev.dataTransfer.getData("text");
+  clearDragOver();
+  const cardId = ev.dataTransfer.getData("text/plain") || ev.dataTransfer.getData("text");
   const card = document.getElementById(cardId);
   if (!card) return;
-  
-  // Check if dropping card belongs to this problem
+
+  document.querySelectorAll(".drag-card.dragging").forEach((el) => el.classList.remove("dragging"));
+
   const prefix = "card_" + probIdx + "_";
   if (!card.id.startsWith(prefix)) return;
-  
+
   let targetContainer;
   if (categoryId) {
     targetContainer = document.getElementById("slots_" + probIdx + "_" + categoryId);
   } else {
     targetContainer = document.getElementById("pile_" + probIdx);
   }
-  
+
   if (targetContainer) {
     targetContainer.appendChild(card);
     const select = card.querySelector(".mobile-cat-select");
@@ -1767,6 +2187,127 @@ function handleDrop(ev, probIdx, categoryId) {
     saveState();
     updateProgress();
   }
+}
+
+function handleOrderDragStart(ev) {
+  const row = ev.currentTarget.closest(".drag-order-row");
+  if (!row) return;
+  ev.dataTransfer.setData("text/plain", row.id);
+  ev.dataTransfer.effectAllowed = "move";
+  row.classList.add("dragging");
+}
+
+function handleOrderDrop(ev, probIdx) {
+  ev.preventDefault();
+  const list = document.getElementById("orderlist_" + probIdx);
+  const rowId = ev.dataTransfer.getData("text/plain") || ev.dataTransfer.getData("text");
+  const row = document.getElementById(rowId);
+  if (!list || !row || !row.id.startsWith("order_" + probIdx + "_")) return;
+  document.querySelectorAll(".drag-order-row.dragging").forEach((el) => el.classList.remove("dragging"));
+
+  const afterEl = getOrderInsertBefore(list, ev.clientY);
+  if (afterEl) {
+    list.insertBefore(row, afterEl);
+  } else {
+    list.appendChild(row);
+  }
+  renumberOrderRows(probIdx);
+  saveState();
+  updateProgress();
+}
+
+function getOrderInsertBefore(list, clientY) {
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  for (const child of rows) {
+    const box = child.getBoundingClientRect();
+    if (clientY < box.top + box.height / 2) return child;
+  }
+  return null;
+}
+
+function moveOrderRowByEl(probIdx, btn, direction) {
+  const row = btn.closest(".drag-order-row");
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!row || !list) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  const rowIdx = rows.indexOf(row);
+  const nextIdx = rowIdx + direction;
+  if (nextIdx < 0 || nextIdx >= rows.length) return;
+  const neighbor = rows[nextIdx];
+  if (direction < 0) {
+    list.insertBefore(row, neighbor);
+  } else {
+    list.insertBefore(neighbor, row.nextSibling);
+  }
+  renumberOrderRows(probIdx);
+  saveState();
+  updateProgress();
+}
+
+function renumberOrderRows(probIdx) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list) return;
+  list.querySelectorAll(".drag-order-row").forEach((row, idx) => {
+    const num = row.querySelector(".drag-order-num");
+    if (num) num.textContent = String(idx + 1);
+  });
+}
+
+function restoreOrderList(probIdx, order) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list || !Array.isArray(order)) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  const byText = new Map(rows.map((row) => [row.dataset.stepText, row]));
+  list.innerHTML = "";
+  order.forEach((text) => {
+    const row = byText.get(text);
+    if (row) {
+      list.appendChild(row);
+      row.classList.remove("is-correct", "is-incorrect");
+    }
+  });
+  rows.forEach((row) => {
+    if (!list.contains(row)) list.appendChild(row);
+  });
+  renumberOrderRows(probIdx);
+}
+
+function resetDragOrder(probIdx) {
+  const workspace = document.getElementById("dragorder_" + probIdx);
+  if (!workspace) return;
+  let initial = [];
+  try {
+    initial = JSON.parse(workspace.dataset.initialOrder || "[]");
+  } catch (e) {
+    initial = [];
+  }
+  if (!initial.length) {
+    shuffleOrderRows(probIdx);
+  } else {
+    restoreOrderList(probIdx, initial);
+  }
+  const pCard = document.getElementById("problem_" + probIdx);
+  if (pCard) pCard.classList.remove("correct", "incorrect");
+}
+
+function shuffleOrderRows(probIdx) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  if (rows.length < 2) return;
+  for (let i = rows.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [rows[i], rows[j]] = [rows[j], rows[i]];
+  }
+  list.innerHTML = "";
+  rows.forEach((row) => list.appendChild(row));
+  if (rows.every((row, idx) => row.dataset.stepText === JSON.parse(document.getElementById("dragorder_" + probIdx).dataset.correctOrder || "[]")[idx])) {
+    const last = rows.pop();
+    rows.unshift(last);
+    list.innerHTML = "";
+    rows.forEach((row) => list.appendChild(row));
+  }
+  renumberOrderRows(probIdx);
 }
 
 function mobileMoveCard(select, cardId, probIdx) {
@@ -1850,7 +2391,8 @@ const STORAGE_KEY = "hw_state_lesson_" + "4-7";
 function saveState() {
   const state = {
     inputs: {},
-    dragPositions: {}
+    dragPositions: {},
+    orderPositions: {}
   };
   
   // Save text inputs, select dropdowns, textareas, and radios
@@ -1870,6 +2412,11 @@ function saveState() {
     if (parentContainer) {
       state.dragPositions[card.id] = parentContainer.id;
     }
+  });
+
+  document.querySelectorAll(".drag-order-list").forEach((list) => {
+    const probIdx = list.id.replace("orderlist_", "");
+    state.orderPositions[probIdx] = Array.from(list.querySelectorAll(".drag-order-row")).map((row) => row.dataset.stepText);
   });
   
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -1903,18 +2450,34 @@ function loadState() {
         const parent = document.getElementById(parentId);
         if (card && parent) {
           parent.appendChild(card);
-          // Sync select dropdown for mobile
           const select = card.querySelector(".mobile-cat-select");
           if (select) {
-            // parentId is like slots_0_prime
             const parts = parentId.split("_");
-            if (parts.length >= 3) {
+            if (parts.length >= 3 && parts[0] === "slots") {
               select.value = parts.slice(2).join("_");
             } else {
               select.value = "";
             }
           }
         }
+      }
+    }
+
+    if (state.orderPositions) {
+      for (const [probIdx, order] of Object.entries(state.orderPositions)) {
+        const list = document.getElementById("orderlist_" + probIdx);
+        if (!list || !Array.isArray(order)) continue;
+        const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+        const byText = new Map(rows.map((row) => [row.dataset.stepText, row]));
+        list.innerHTML = "";
+        order.forEach((text) => {
+          const row = byText.get(text);
+          if (row) list.appendChild(row);
+        });
+        rows.forEach((row) => {
+          if (!list.contains(row)) list.appendChild(row);
+        });
+        renumberOrderRows(probIdx);
       }
     }
   } catch (e) {
@@ -1953,8 +2516,12 @@ function updateProgress() {
       const answered = selects.filter(s => s.value !== "");
       if (answered.length > 0) hasValue = true;
     } else if (type === "drag-sort") {
-      const itemsInColumns = Array.from(section.querySelectorAll(".drag-column-slots .drag-card"));
-      if (itemsInColumns.length > 0) hasValue = true;
+      if (section.dataset.problemSubtype === "drag-order") {
+        hasValue = true;
+      } else {
+        const itemsInColumns = Array.from(section.querySelectorAll(".drag-column-slots .drag-card"));
+        if (itemsInColumns.length > 0) hasValue = true;
+      }
     } else if (type === "fill-table") {
       const inputs = Array.from(section.querySelectorAll(".table-input"));
       const filled = inputs.filter(i => i.value.trim() !== "");
@@ -2054,28 +2621,49 @@ function checkWorksheet() {
       });
       
     } else if (type === "drag-sort") {
-      const dragCards = section.querySelectorAll(".drag-card");
-      
-      dragCards.forEach(card => {
-        card.classList.remove("is-correct", "is-incorrect");
-        const correctCat = card.dataset.correctCategory;
-        const parentCol = card.parentElement;
-        
-        if (parentCol && parentCol.parentElement && parentCol.parentElement.classList.contains("drag-column")) {
-          const actualCat = parentCol.parentElement.dataset.categoryId;
-          if (actualCat === correctCat) {
-            card.classList.add("is-correct");
+      if (section.dataset.problemSubtype === "drag-order") {
+        const workspace = section.querySelector(".drag-order-workspace");
+        const list = section.querySelector(".drag-order-list");
+        let correct = [];
+        try {
+          correct = JSON.parse(workspace?.dataset.correctOrder || "[]");
+        } catch (e) {
+          correct = [];
+        }
+        const rows = Array.from(list?.querySelectorAll(".drag-order-row") || []);
+        rows.forEach((row, i) => {
+          row.classList.remove("is-correct", "is-incorrect");
+          if (row.dataset.stepText === correct[i]) {
+            row.classList.add("is-correct");
+          } else {
+            isProblemCorrect = false;
+            row.classList.add("is-incorrect");
+          }
+        });
+      } else {
+        const dragCards = section.querySelectorAll(".drag-card");
+
+        dragCards.forEach(card => {
+          card.classList.remove("is-correct", "is-incorrect");
+          const correctCat = card.dataset.correctCategory;
+          const parentCol = card.parentElement;
+
+          const column = card.closest(".drag-column");
+          if (column) {
+            const actualCat = column.dataset.categoryId;
+            if (actualCat === correctCat) {
+              card.classList.add("is-correct");
+            } else {
+              isProblemCorrect = false;
+              card.classList.add("is-incorrect");
+            }
           } else {
             isProblemCorrect = false;
             card.classList.add("is-incorrect");
           }
-        } else {
-          // Card still in source pile
-          isProblemCorrect = false;
-          card.classList.add("is-incorrect");
-        }
-      });
-      
+        });
+      }
+
     } else if (type === "fill-table") {
       const inputs = section.querySelectorAll(".table-input");
       
@@ -2267,7 +2855,12 @@ function resetWorksheet() {
       if (type === "drag-sort") {
         const parts = s.id.split("_");
         const idx = parts[1];
-        resetDragSort(idx);
+        if (s.dataset.problemSubtype === "drag-order") {
+          resetDragOrder(idx);
+          shuffleOrderRows(idx);
+        } else {
+          resetDragSort(idx);
+        }
       }
     });
     
@@ -2297,54 +2890,78 @@ function resetWorksheet() {
 
 // Initial configuration
 window.onload = function() {
+  const hadSavedState = !!localStorage.getItem(STORAGE_KEY);
   loadState();
+  if (!hadSavedState) {
+    document.querySelectorAll(".drag-order-workspace").forEach((workspace) => {
+      const probIdx = workspace.id.replace("dragorder_", "");
+      shuffleOrderRows(probIdx);
+    });
+  }
   updateProgress();
-  
-  // Set up dragging listeners for mobile touch screen card clicks
+
+  document.addEventListener("dragend", function() {
+    document.querySelectorAll(".drag-card.dragging, .drag-order-row.dragging")
+      .forEach((el) => el.classList.remove("dragging"));
+    clearDragOver();
+  });
+
+  document.querySelectorAll(".drag-card").forEach((card) => {
+    card.addEventListener("dragend", () => card.classList.remove("dragging"));
+  });
+
+  // Tap-to-move fallback for touch devices
   let selectedDragCard = null;
-  const cards = document.querySelectorAll(".drag-card");
-  
-  cards.forEach(card => {
+  document.querySelectorAll(".drag-card").forEach((card) => {
     card.addEventListener("click", function(e) {
-      if (e.target.tagName === "SELECT") return; // Let dropdown clicks handle themselves
-      
-      // Toggle select state
+      if (e.target.tagName === "SELECT" || e.target.tagName === "OPTION") return;
       if (selectedDragCard === this) {
         this.style.borderColor = "var(--line)";
         selectedDragCard = null;
       } else {
-        if (selectedDragCard) {
-          selectedDragCard.style.borderColor = "var(--line)";
-        }
+        if (selectedDragCard) selectedDragCard.style.borderColor = "var(--line)";
         selectedDragCard = this;
         this.style.borderColor = "var(--teal)";
       }
     });
   });
-  
-  const columns = document.querySelectorAll(".drag-column");
-  columns.forEach(col => {
-    col.addEventListener("click", function() {
-      if (selectedDragCard) {
-        const probIdx = selectedDragCard.id.split("_")[1];
-        const targetColId = this.dataset.categoryId;
-        
-        // Ensure the card belongs to this problem
-        if (selectedDragCard.id.startsWith("card_" + probIdx + "_")) {
-          const slots = this.querySelector(".drag-column-slots");
-          slots.appendChild(selectedDragCard);
-          
-          // Update corresponding select
-          const select = selectedDragCard.querySelector(".mobile-cat-select");
-          if (select) select.value = targetColId;
-          
-          selectedDragCard.style.borderColor = "var(--line)";
-          selectedDragCard = null;
-          
-          saveState();
-          updateProgress();
-        }
+
+  document.querySelectorAll(".drag-column, .drag-source-pile, .drag-column-slots").forEach((zone) => {
+    zone.addEventListener("click", function() {
+      if (!selectedDragCard) return;
+      const probIdx = selectedDragCard.id.split("_")[1];
+      if (!selectedDragCard.id.startsWith("card_" + probIdx + "_")) return;
+
+      let targetContainer = null;
+      let categoryId = "";
+      if (this.classList.contains("drag-column")) {
+        categoryId = this.dataset.categoryId || "";
+        targetContainer = this.querySelector(".drag-column-slots");
+      } else if (this.classList.contains("drag-column-slots")) {
+        categoryId = this.id.split("_").slice(2).join("_");
+        targetContainer = this;
+      } else if (this.classList.contains("drag-source-pile")) {
+        targetContainer = this;
       }
+
+      if (targetContainer) {
+        targetContainer.appendChild(selectedDragCard);
+        const select = selectedDragCard.querySelector(".mobile-cat-select");
+        if (select) select.value = categoryId;
+        selectedDragCard.style.borderColor = "var(--line)";
+        selectedDragCard = null;
+        saveState();
+        updateProgress();
+      }
+    });
+  });
+
+  document.querySelectorAll(".drag-order-list").forEach((list) => {
+    const probIdx = list.id.replace("orderlist_", "");
+    list.addEventListener("dragover", allowDrop);
+    list.addEventListener("drop", (ev) => handleOrderDrop(ev, probIdx));
+    list.querySelectorAll(".drag-order-row").forEach((row) => {
+      row.addEventListener("dragend", () => row.classList.remove("dragging"));
     });
   });
 };

@@ -160,7 +160,137 @@ header.homework-header h1 {
   margin: 0 0 16px 0;
 }
 
+/* Family guide */
+.family-guide {
+  background: linear-gradient(180deg, #fffdf8 0%, var(--white) 100%);
+  border-color: #ead9b8;
+}
+
+.family-guide-header {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.family-guide-emoji {
+  font-size: 34px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.family-guide-title {
+  margin-bottom: 4px;
+}
+
+.family-guide-sub {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14.5px;
+}
+
+.family-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.family-panel {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+
+.family-panel-heading {
+  margin: 0 0 8px 0;
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--navy);
+}
+
+.family-tip-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.family-tip-list li {
+  margin-bottom: 6px;
+}
+
+.family-try-text {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.45;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.family-print-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.try-at-home {
+  background: linear-gradient(180deg, var(--teal-light) 0%, var(--white) 100%);
+  border-color: #b8ddd8;
+}
+
+.try-narrative {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.try-challenge {
+  margin: 0;
+  padding: 12px 14px;
+  background: var(--amber-light);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--amber);
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.family-problem-tip {
+  margin: -8px 0 14px 0;
+  padding: 10px 12px;
+  background: var(--amber-light);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  color: var(--hint);
+}
+
+.family-hint-box {
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  color: var(--navy);
+}
+
+.family-hint-box p {
+  margin: 0 0 6px 0;
+}
+
+.family-hint-box p:last-child {
+  margin-bottom: 0;
+}
+
 /* Vocabulary Flashcards */
+.vocab-family-note {
+  margin: -6px 0 14px 0;
+  font-size: 14px;
+  color: var(--muted);
+}
 .vocab-container {
   display: flex;
   gap: 16px;
@@ -179,10 +309,26 @@ header.homework-header h1 {
 }
 
 .vocab-card {
-  flex: 0 0 240px;
-  height: 160px;
+  flex: 0 0 260px;
+  height: 210px;
   perspective: 1000px;
   cursor: pointer;
+}
+
+.vocab-thumb-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.vocab-thumb {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  padding: 4px;
 }
 
 .vocab-card-inner {
@@ -271,6 +417,13 @@ header.homework-header h1 {
   color: var(--amber);
   margin: 6px 0 0 0;
   font-style: italic;
+}
+
+.vocab-back-visual {
+  margin: 10px 0 0 0;
+  font-size: 12px;
+  color: var(--teal-light);
+  line-height: 1.35;
 }
 
 /* Practice Problem Cards */
@@ -550,6 +703,92 @@ header.homework-header h1 {
 .drag-card:active {
   cursor: grabbing;
   transform: scale(0.98);
+}
+
+.drag-card.dragging {
+  opacity: 0.55;
+}
+
+.drag-column.over,
+.drag-source-pile.over {
+  border-color: var(--teal);
+  background: var(--teal-light);
+}
+
+/* Drag order (sequencing) */
+.drag-order-workspace {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.drag-order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drag-order-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--white);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  cursor: grab;
+  user-select: none;
+}
+
+.drag-order-row.dragging {
+  opacity: 0.55;
+}
+
+.drag-order-handle {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.drag-order-num {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--teal);
+  color: var(--white);
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.drag-order-text {
+  flex: 1;
+  font-weight: 600;
+  font-size: 14.5px;
+}
+
+.drag-order-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.order-move-btn {
+  min-width: 0;
+  padding: 4px 10px;
+}
+
+.drag-order-row.is-correct {
+  border-color: var(--success);
+  background: var(--success-bg);
+}
+
+.drag-order-row.is-incorrect {
+  border-color: var(--error);
+  background: var(--error-bg);
 }
 
 .drag-handle {
@@ -1035,13 +1274,61 @@ header.homework-header h1 {
   </header>
 
   
+    <section class="family-guide card" aria-label="Family guide">
+      <div class="family-guide-header">
+        <span class="family-guide-emoji">🔍</span>
+        <div>
+          <h2 class="section-title family-guide-title">Family Guide</h2>
+          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+        </div>
+      </div>
+
+      <div class="family-guide-grid">
+        <div class="family-panel family-panel-tips">
+          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
+          <ul class="family-tip-list">
+            <li>Let your student try each problem first. Use <strong>Check Answers</strong> for friendly feedback.</li>
+            <li>Tap vocabulary cards to flip between term and definition.</li>
+            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
+          </ul>
+        </div>
+
+        <div class="family-panel family-panel-home">
+          <h3 class="family-panel-heading">🏡 Try this at home</h3>
+          <p class="family-try-text">Agent Reyes cuts a 3-foot strip of tape into 1/4-foot sections. Before calculating, will the number of sections be more or less than 3? Why?</p>
+        </div>
+      </div>
+
+      
+        <div class="family-panel family-panel-legend">
+          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
+          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>matching game:</strong> Say each term out loud, then talk through which match makes sense before choosing.</li><li><strong>drag sort:</strong> On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</li><li><strong>error analysis:</strong> Read each step aloud and ask: does this step follow the math rules we learned?</li></ul>
+        </div>
+
+      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
+    </section>
+  
+
+  
+    <section class="try-at-home card" aria-label="Try this at home">
+      <h2 class="section-title">🔍 Real-World Connection</h2>
+      <p class="try-narrative">Agent Reyes finds a 3-foot strip of tape at the crime scene. The lab needs the tape cut into 1/4-foot sections for analysis. How many sections can be made? The answer cracks the code to the locked evidence vault.</p>
+      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    </section>
+  
+
+  
     <section class="vocab-section card">
       <h2 class="section-title">🔑 Key Vocabulary</h2>
+      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/dividend.svg" alt="Illustration of Dividend: The number you are splitting up in a division problem." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Dividend</h3>
                   <p class="vocab-es">Dividendo</p>
                   <div class="vocab-visual-hint">💡 Example: In 3 ÷ 1/4 = 12, the dividend is 3 — it is the total being split</div>
@@ -1050,6 +1337,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">The number you are splitting up in a division problem.</p>
                   <p class="vocab-def-es">El número que estás repartiendo en una división.</p>
+                  <p class="vocab-back-visual">📌 In 3 ÷ 1/4 = 12, the dividend is 3 — it is the total being split</p>
                 </div>
               </div>
             </div>
@@ -1057,6 +1345,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/divisor.svg" alt="Illustration of Divisor: The number you split by in a division problem." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Divisor</h3>
                   <p class="vocab-es">Divisor</p>
                   <div class="vocab-visual-hint">💡 Example: In 3 ÷ 1/4 = 12, the divisor is 1/4 — it is the size of each piece</div>
@@ -1065,6 +1356,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">The number you split by in a division problem.</p>
                   <p class="vocab-def-es">El número entre el que divides en una división.</p>
+                  <p class="vocab-back-visual">📌 In 3 ÷ 1/4 = 12, the divisor is 1/4 — it is the size of each piece</p>
                 </div>
               </div>
             </div>
@@ -1072,6 +1364,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/quotient.svg" alt="Illustration of Quotient: The answer when you divide." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Quotient</h3>
                   <p class="vocab-es">Cociente</p>
                   <div class="vocab-visual-hint">💡 Example: In 3 ÷ 1/4 = 12, the quotient is 12 — there are 12 quarter-size pieces in 3</div>
@@ -1080,6 +1375,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">The answer when you divide.</p>
                   <p class="vocab-def-es">La respuesta cuando divides.</p>
+                  <p class="vocab-back-visual">📌 In 3 ÷ 1/4 = 12, the quotient is 12 — there are 12 quarter-size pieces in 3</p>
                 </div>
               </div>
             </div>
@@ -1087,6 +1383,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/reciprocal.svg" alt="Illustration of Reciprocal: A fraction turned upside down." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Reciprocal</h3>
                   <p class="vocab-es">Recíproco</p>
                   <div class="vocab-visual-hint">💡 Example: The reciprocal of 1/4 is 4/1 = 4. Multiplying by the reciprocal gives the same result as dividing.</div>
@@ -1095,6 +1394,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">A fraction turned upside down.</p>
                   <p class="vocab-def-es">Una fracción volteada de arriba abajo.</p>
+                  <p class="vocab-back-visual">📌 The reciprocal of 1/4 is 4/1 = 4. Multiplying by the reciprocal gives the same result as dividing.</p>
                 </div>
               </div>
             </div>
@@ -1102,6 +1402,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/fraction.svg" alt="Illustration of Unit fraction: A fraction with 1 on top, like 1/4." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Unit fraction</h3>
                   <p class="vocab-es">Fracción unitaria</p>
                   <div class="vocab-visual-hint">💡 Example: 1/2, 1/3, 1/4, 1/5 — each represents one equal part of a whole</div>
@@ -1110,6 +1413,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">A fraction with 1 on top, like 1/4.</p>
                   <p class="vocab-def-es">Una fracción con 1 arriba, como 1/4.</p>
+                  <p class="vocab-back-visual">📌 1/2, 1/3, 1/4, 1/5 — each represents one equal part of a whole</p>
                 </div>
               </div>
             </div>
@@ -1128,6 +1432,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">What does 3 ÷ 1/4 mean?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="3 ÷ 1/4 asks: how many 1/4-size pieces fit into 3? The answer is 12, because each whole has 4 fourths, and 3 × 4 = 12.">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1168,6 +1473,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">Which expression means &#039;how many 1/3-size pieces are in 2&#039;?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="Finding how many 1/3-size pieces fit into 2 is represented by 2 ÷ 1/3. The answer is 6.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1208,6 +1514,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">Match each division expression to its quotient.</p>
+        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
         <div class="matching-pairs">
           
             <div class="matching-row" data-term="5 ÷ 1/2" data-correct="10">
@@ -1290,6 +1597,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">A shelf is 5 feet long. Books are each 1/4 foot wide. How many books fit on the shelf? Which expression represents this?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="You are finding how many 1/4-foot pieces fit into 5 feet, which is 5 ÷ 1/4 = 5 × 4 = 20 books.">
           
             <label class="mc-option-label" id="label_q_3_0">
@@ -1329,31 +1637,32 @@ header.homework-header h1 {
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">What does 6 ÷ (1/3) mean?</p>
-        <div class="mc-options" data-correct="0" data-explanation="Dividing by 1/3 asks how many one-third pieces fit into 6. The answer is 18.">
+        <p class="problem-stem">Agent Cole has 8 feet of evidence rope and cuts it into 1/3-foot pieces for tagging. What does 8 ÷ 1/3 mean?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <div class="mc-options" data-correct="0" data-explanation="Dividing by 1/3 asks how many 1/3-foot pieces fit into 8 feet. Each foot holds 3 thirds, so 8 × 3 = 24 pieces.">
           
             <label class="mc-option-label" id="label_q_4_0">
               <input type="radio" name="q_4" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">How many thirds are in 6</span>
+              <span class="choice-text">How many 1/3-foot pieces fit into 8 feet</span>
             </label>
           
             <label class="mc-option-label" id="label_q_4_1">
               <input type="radio" name="q_4" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">One third of 6</span>
+              <span class="choice-text">1/3 of the 8 feet of rope</span>
             </label>
           
             <label class="mc-option-label" id="label_q_4_2">
               <input type="radio" name="q_4" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">6 minus a third</span>
+              <span class="choice-text">8 feet shortened by 1/3 of a foot</span>
             </label>
           
             <label class="mc-option-label" id="label_q_4_3">
               <input type="radio" name="q_4" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">6 times 3 then minus</span>
+              <span class="choice-text">8 pieces that are each 1/3 foot long</span>
             </label>
           
         </div>
@@ -1369,31 +1678,32 @@ header.homework-header h1 {
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">A teacher has 4 cups of juice and pours 1/2 cup per serving. How many servings?</p>
-        <div class="mc-options" data-correct="0" data-explanation="4 ÷ (1/2) = 4 × 2 = 8 servings.">
+        <p class="problem-stem">Picture clue: a 5-inch fingerprint strip is split into 1/6-inch slivers under the microscope. Which division does the picture show, and what is the count?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <div class="mc-options" data-correct="0" data-explanation="How many 1/6-inch slivers fit into 5 inches? Each inch holds 6 sixths, so 5 × 6 = 30 slivers.">
           
             <label class="mc-option-label" id="label_q_5_0">
               <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">8</span>
+              <span class="choice-text">5 ÷ 1/6 = 30 slivers</span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_1">
               <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">2</span>
+              <span class="choice-text">5 ÷ 6 = 5/6 of a sliver</span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_2">
               <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">4</span>
+              <span class="choice-text">1/6 ÷ 5 = 1/30 sliver</span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_3">
               <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">6</span>
+              <span class="choice-text">5 × 1/6 = 5/6 of an inch</span>
             </label>
           
         </div>
@@ -1402,39 +1712,71 @@ header.homework-header h1 {
     </section>
   
 
-    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_6" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Problem 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge">MATCHING GAME</div>
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which division does this picture show: a length of 3 split into 1/4-size pieces?</p>
-        <div class="mc-options" data-correct="0" data-explanation="Each whole holds 4 fourths, so 3 wholes hold 12 fourths.">
+        <p class="problem-stem">Match each detective story to the fraction-division expression and quotient that solves it.</p>
+        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
+        <div class="matching-pairs">
           
-            <label class="mc-option-label" id="label_q_6_0">
-              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">3 ÷ (1/4) = 12</span>
-            </label>
+            <div class="matching-row" data-term="A 9-yard trail of footprints is marked off in 1/3-yard steps." data-correct="9 ÷ 1/3 = 27">
+              <div class="matching-term">A 9-yard trail of footprints is marked off in 1/3-yard steps.</div>
+              <div class="matching-select-container">
+                <select name="q_6_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="10 ÷ 1/2 = 20">10 ÷ 1/2 = 20</option><option value="6 ÷ 1/6 = 36">6 ÷ 1/6 = 36</option><option value="7 ÷ 1/4 = 28">7 ÷ 1/4 = 28</option><option value="8 ÷ 1/5 = 40">8 ÷ 1/5 = 40</option><option value="9 ÷ 1/3 = 27">9 ÷ 1/3 = 27</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
           
-            <label class="mc-option-label" id="label_q_6_1">
-              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">3 ÷ 4 = 3/4</span>
-            </label>
+            <div class="matching-row" data-term="A 7-foot crime-scene barrier is taped into 1/4-foot zones." data-correct="7 ÷ 1/4 = 28">
+              <div class="matching-term">A 7-foot crime-scene barrier is taped into 1/4-foot zones.</div>
+              <div class="matching-select-container">
+                <select name="q_6_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="10 ÷ 1/2 = 20">10 ÷ 1/2 = 20</option><option value="6 ÷ 1/6 = 36">6 ÷ 1/6 = 36</option><option value="7 ÷ 1/4 = 28">7 ÷ 1/4 = 28</option><option value="8 ÷ 1/5 = 40">8 ÷ 1/5 = 40</option><option value="9 ÷ 1/3 = 27">9 ÷ 1/3 = 27</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
           
-            <label class="mc-option-label" id="label_q_6_2">
-              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">1/4 ÷ 3</span>
-            </label>
+            <div class="matching-row" data-term="A 10-cup batch of fingerprint powder is bottled in 1/2-cup jars." data-correct="10 ÷ 1/2 = 20">
+              <div class="matching-term">A 10-cup batch of fingerprint powder is bottled in 1/2-cup jars.</div>
+              <div class="matching-select-container">
+                <select name="q_6_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="10 ÷ 1/2 = 20">10 ÷ 1/2 = 20</option><option value="6 ÷ 1/6 = 36">6 ÷ 1/6 = 36</option><option value="7 ÷ 1/4 = 28">7 ÷ 1/4 = 28</option><option value="8 ÷ 1/5 = 40">8 ÷ 1/5 = 40</option><option value="9 ÷ 1/3 = 27">9 ÷ 1/3 = 27</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
           
-            <label class="mc-option-label" id="label_q_6_3">
-              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">3 × 4 = 7</span>
-            </label>
+            <div class="matching-row" data-term="A 6-foot wire of evidence is cut into 1/6-foot samples." data-correct="6 ÷ 1/6 = 36">
+              <div class="matching-term">A 6-foot wire of evidence is cut into 1/6-foot samples.</div>
+              <div class="matching-select-container">
+                <select name="q_6_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="10 ÷ 1/2 = 20">10 ÷ 1/2 = 20</option><option value="6 ÷ 1/6 = 36">6 ÷ 1/6 = 36</option><option value="7 ÷ 1/4 = 28">7 ÷ 1/4 = 28</option><option value="8 ÷ 1/5 = 40">8 ÷ 1/5 = 40</option><option value="9 ÷ 1/3 = 27">9 ÷ 1/3 = 27</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="An 8-meter surveillance reel is logged in 1/5-meter clips." data-correct="8 ÷ 1/5 = 40">
+              <div class="matching-term">An 8-meter surveillance reel is logged in 1/5-meter clips.</div>
+              <div class="matching-select-container">
+                <select name="q_6_pair_4" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="10 ÷ 1/2 = 20">10 ÷ 1/2 = 20</option><option value="6 ÷ 1/6 = 36">6 ÷ 1/6 = 36</option><option value="7 ÷ 1/4 = 28">7 ÷ 1/4 = 28</option><option value="8 ÷ 1/5 = 40">8 ÷ 1/5 = 40</option><option value="9 ÷ 1/3 = 27">9 ÷ 1/3 = 27</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
           
         </div>
       </div>
@@ -1442,40 +1784,127 @@ header.homework-header h1 {
     </section>
   
 
-    <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_7" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Problem 8</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge">DRAG SORT</div>
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">How many 2/3-cup scoops are in 4 cups?</p>
-        <div class="mc-options" data-correct="0" data-explanation="4 ÷ (2/3) = 4 × (3/2) = 12/2 = 6 scoops.">
-          
-            <label class="mc-option-label" id="label_q_7_0">
-              <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">6</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_1">
-              <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">8</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_2">
-              <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">3</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_3">
-              <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">2</span>
-            </label>
-          
+        <p class="problem-stem">A detective must label each story: is the question asking &#039;how many groups (pieces)?&#039; or &#039;how big is each share?&#039;</p>
+        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
+        
+        <div class="drag-sort-workspace" id="dragsort_7">
+          <div class="drag-columns">
+            
+              <div class="drag-column" data-category-id="groups" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'groups')">
+                <div class="drag-column-header">Asking: How Many Groups (Pieces)?</div>
+                <div class="drag-column-slots" id="slots_7_groups" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'groups')"></div>
+              </div>
+              <div class="drag-column" data-category-id="size" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'size')">
+                <div class="drag-column-header">Asking: How Big Is Each Share?</div>
+                <div class="drag-column-slots" id="slots_7_size" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'size')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_7" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_7_0"
+                     data-item-index="0"
+                     data-correct-category="groups"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">How many 1/4-foot pieces fit into 9 feet of tape? (9 ÷ 1/4)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_0', 7); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="groups">Asking: How Many Groups (Pieces)?</option><option value="size">Asking: How Big Is Each Share?</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_7_1"
+                     data-item-index="1"
+                     data-correct-category="groups"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">How many 1/3-yard steps fit into 9 yards of footprints? (9 ÷ 1/3)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_1', 7); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="groups">Asking: How Many Groups (Pieces)?</option><option value="size">Asking: How Big Is Each Share?</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_7_2"
+                     data-item-index="2"
+                     data-correct-category="groups"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">How many 1/5-meter clips are in an 8-meter reel? (8 ÷ 1/5)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_2', 7); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="groups">Asking: How Many Groups (Pieces)?</option><option value="size">Asking: How Big Is Each Share?</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_7_3"
+                     data-item-index="3"
+                     data-correct-category="size"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">6 feet of wire shared equally among 3 agents — how long is each share?</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_3', 7); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="groups">Asking: How Many Groups (Pieces)?</option><option value="size">Asking: How Big Is Each Share?</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_7_4"
+                     data-item-index="4"
+                     data-correct-category="size"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">12 photos sorted equally into 4 case files — how many per file?</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_4', 7); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="groups">Asking: How Many Groups (Pieces)?</option><option value="size">Asking: How Big Is Each Share?</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_7_5"
+                     data-item-index="5"
+                     data-correct-category="size"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">20 minutes of footage split evenly across 5 suspects — how long is each clip?</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_5', 7); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="groups">Asking: How Many Groups (Pieces)?</option><option value="size">Asking: How Big Is Each Share?</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(7); saveState(); updateProgress();">Reset Sorting</button>
         </div>
       </div>
     
@@ -1489,8 +1918,9 @@ header.homework-header h1 {
       </div>
       
       <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ Find the Interpretation Error</h3>
+        <h3 class="error-analysis-title">⚠️ Level 2 Extension — Which Question Is Being Asked?</h3>
         <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
+        <p class="family-problem-tip">👪 Family tip: Read each step aloud and ask: does this step follow the math rules we learned?</p>
         
         <div class="clipboard-box">
           <div class="clipboard-top"></div>
@@ -1498,20 +1928,20 @@ header.homework-header h1 {
             
               <div class="worked-step" id="step_q_8_1">
                 <span class="step-badge">Step 1</span>
-                <span class="step-label">Problem:</span>
-                <span class="step-work">Interpret 4 ÷ 1/5</span>
+                <span class="step-label">Case file:</span>
+                <span class="step-work">A 9-foot strip of evidence tape is cut into 1/4-foot pieces. How many pieces?</span>
               </div>
             
               <div class="worked-step" id="step_q_8_2">
                 <span class="step-badge">Step 2</span>
-                <span class="step-label">Student says:</span>
-                <span class="step-work">4 ÷ 1/5 means 1/5 of 4</span>
+                <span class="step-label">Detective writes:</span>
+                <span class="step-work">This is 1/4 ÷ 9 — split the 1/4-foot piece among 9 sections.</span>
               </div>
             
               <div class="worked-step" id="step_q_8_3">
                 <span class="step-badge">Step 3</span>
-                <span class="step-label">Student&#039;s answer:</span>
-                <span class="step-work">4/5</span>
+                <span class="step-label">Detective&#039;s answer:</span>
+                <span class="step-work">1/36 of a foot per piece</span>
               </div>
             
           </div>
@@ -1534,7 +1964,7 @@ header.homework-header h1 {
           </div>
           
           <div class="reveal-box" id="error_correct_work_8" style="display:none;">
-            <strong>Correct Work Reference:</strong> 4 ÷ 1/5 means &#039;how many 1/5-size pieces fit into 4,&#039; not &#039;1/5 of 4.&#039; The correct answer is 4 × 5 = 20.
+            <strong>Correct Work Reference:</strong> The story asks &#039;how many 1/4-foot pieces fit into 9 feet,&#039; so the dividend is the whole (9) and the divisor is the piece size (1/4): 9 ÷ 1/4. The detective swapped the dividend and divisor. The correct answer is 9 × 4 = 36 pieces.
           </div>
         </div>
       </div>
@@ -1542,41 +1972,62 @@ header.homework-header h1 {
     </section>
   
 
-    <section class="problem-section card" id="problem_9" data-problem-type="open-response">
+    <section class="problem-section card" id="problem_9" data-problem-type="error-analysis">
       <div class="problem-header-row">
         <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">OPEN RESPONSE</div>
+        <div class="problem-type-badge">ERROR ANALYSIS</div>
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">Dividing 6 by 1/2 gives 12, but dividing 6 by 2 gives 3. How can dividing by a smaller number (1/2) give a bigger answer than dividing by a larger number (2)? Explain using a real-world example.</p>
+        <h3 class="error-analysis-title">⚠️ Find the Interpretation Error</h3>
+        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
+        <p class="family-problem-tip">👪 Family tip: Read each step aloud and ask: does this step follow the math rules we learned?</p>
         
-        
-          <div class="sentence-frame-card">
-            <span class="sentence-frame-tag">💡 Sentence Starter:</span>
-            <span class="sentence-frame-text" onclick="insertSentenceStarter(9, 'When I divide 6 by 2, I am ___. When I divide 6 by 1/2, I am ___. The answer is bigger because ___.')">"When I divide 6 by 2, I am ___. When I divide 6 by 1/2, I am ___. The answer is bigger because ___."</span>
-            <span class="click-to-insert-hint">(Click to insert starter)</span>
+        <div class="clipboard-box">
+          <div class="clipboard-top"></div>
+          <div class="clipboard-paper">
+            
+              <div class="worked-step" id="step_q_9_1">
+                <span class="step-badge">Step 1</span>
+                <span class="step-label">Problem:</span>
+                <span class="step-work">Interpret 4 ÷ 1/5</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_9_2">
+                <span class="step-badge">Step 2</span>
+                <span class="step-label">Student says:</span>
+                <span class="step-work">4 ÷ 1/5 means 1/5 of 4</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_9_3">
+                <span class="step-badge">Step 3</span>
+                <span class="step-label">Student&#039;s answer:</span>
+                <span class="step-work">4/5</span>
+              </div>
+            
           </div>
-        
-        
-        <div class="open-response-wrapper">
-          <textarea id="open_response_9" 
-                    class="custom-textarea open-response-textarea" 
-                    data-min-length="30" 
-                    data-keywords="[&quot;smaller pieces&quot;,&quot;more fit&quot;,&quot;halves&quot;,&quot;groups&quot;,&quot;12&quot;,&quot;3&quot;]"
-                    placeholder="Write your mathematical explanation here..." 
-                    oninput="saveState(); updateProgress();"></textarea>
-          <span class="feedback-badge"></span>
         </div>
         
-        
-          <div class="word-bank-container">
-            <div class="word-bank-label">Key Vocabulary to include (click to insert):</div>
-            <div class="word-bank-chips">
-              <span class="word-chip" onclick="insertWord(9, 'smaller pieces')">smaller pieces</span><span class="word-chip" onclick="insertWord(9, 'more fit')">more fit</span><span class="word-chip" onclick="insertWord(9, 'halves')">halves</span><span class="word-chip" onclick="insertWord(9, 'groups')">groups</span><span class="word-chip" onclick="insertWord(9, '12')">12</span><span class="word-chip" onclick="insertWord(9, '3')">3</span>
-            </div>
+        <div class="error-controls">
+          <div class="error-select-row">
+            <label for="error_step_select_9">Which step has the error?</label>
+            <select id="error_step_select_9" class="custom-select error-step-select" data-correct="2" onchange="saveState(); updateProgress();">
+              <option value="">-- Choose Step --</option>
+              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option>
+            </select>
+            <span class="feedback-badge"></span>
           </div>
-        
+          
+          <div class="error-explain-row">
+            <label for="error_explain_input_9">Explain the error and write the correct calculation:</label>
+            <textarea id="error_explain_input_9" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="reveal-box" id="error_correct_work_9" style="display:none;">
+            <strong>Correct Work Reference:</strong> 4 ÷ 1/5 means &#039;how many 1/5-size pieces fit into 4,&#039; not &#039;1/5 of 4.&#039; The correct answer is 4 × 5 = 20.
+          </div>
+        </div>
       </div>
     
     </section>
@@ -1685,29 +2136,50 @@ function playFailureSound() {
 // Drag & Drop engine
 function allowDrop(ev) {
   ev.preventDefault();
+  const zone = ev.currentTarget;
+  if (zone && zone.classList) {
+    zone.classList.add("over");
+  }
 }
 
 function handleDragStart(ev) {
-  ev.dataTransfer.setData("text", ev.target.id);
+  const card = ev.currentTarget.closest(".drag-card");
+  if (!card) return;
+  ev.dataTransfer.setData("text/plain", card.id);
+  ev.dataTransfer.effectAllowed = "move";
+  card.classList.add("dragging");
+}
+
+function handleDragEnd(ev) {
+  const el = ev.currentTarget;
+  if (el) el.classList.remove("dragging");
+  clearDragOver();
+}
+
+function clearDragOver() {
+  document.querySelectorAll(".drag-column.over, .drag-source-pile.over, .drag-column-slots.over")
+    .forEach((el) => el.classList.remove("over"));
 }
 
 function handleDrop(ev, probIdx, categoryId) {
   ev.preventDefault();
-  const cardId = ev.dataTransfer.getData("text");
+  clearDragOver();
+  const cardId = ev.dataTransfer.getData("text/plain") || ev.dataTransfer.getData("text");
   const card = document.getElementById(cardId);
   if (!card) return;
-  
-  // Check if dropping card belongs to this problem
+
+  document.querySelectorAll(".drag-card.dragging").forEach((el) => el.classList.remove("dragging"));
+
   const prefix = "card_" + probIdx + "_";
   if (!card.id.startsWith(prefix)) return;
-  
+
   let targetContainer;
   if (categoryId) {
     targetContainer = document.getElementById("slots_" + probIdx + "_" + categoryId);
   } else {
     targetContainer = document.getElementById("pile_" + probIdx);
   }
-  
+
   if (targetContainer) {
     targetContainer.appendChild(card);
     const select = card.querySelector(".mobile-cat-select");
@@ -1715,6 +2187,127 @@ function handleDrop(ev, probIdx, categoryId) {
     saveState();
     updateProgress();
   }
+}
+
+function handleOrderDragStart(ev) {
+  const row = ev.currentTarget.closest(".drag-order-row");
+  if (!row) return;
+  ev.dataTransfer.setData("text/plain", row.id);
+  ev.dataTransfer.effectAllowed = "move";
+  row.classList.add("dragging");
+}
+
+function handleOrderDrop(ev, probIdx) {
+  ev.preventDefault();
+  const list = document.getElementById("orderlist_" + probIdx);
+  const rowId = ev.dataTransfer.getData("text/plain") || ev.dataTransfer.getData("text");
+  const row = document.getElementById(rowId);
+  if (!list || !row || !row.id.startsWith("order_" + probIdx + "_")) return;
+  document.querySelectorAll(".drag-order-row.dragging").forEach((el) => el.classList.remove("dragging"));
+
+  const afterEl = getOrderInsertBefore(list, ev.clientY);
+  if (afterEl) {
+    list.insertBefore(row, afterEl);
+  } else {
+    list.appendChild(row);
+  }
+  renumberOrderRows(probIdx);
+  saveState();
+  updateProgress();
+}
+
+function getOrderInsertBefore(list, clientY) {
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  for (const child of rows) {
+    const box = child.getBoundingClientRect();
+    if (clientY < box.top + box.height / 2) return child;
+  }
+  return null;
+}
+
+function moveOrderRowByEl(probIdx, btn, direction) {
+  const row = btn.closest(".drag-order-row");
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!row || !list) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  const rowIdx = rows.indexOf(row);
+  const nextIdx = rowIdx + direction;
+  if (nextIdx < 0 || nextIdx >= rows.length) return;
+  const neighbor = rows[nextIdx];
+  if (direction < 0) {
+    list.insertBefore(row, neighbor);
+  } else {
+    list.insertBefore(neighbor, row.nextSibling);
+  }
+  renumberOrderRows(probIdx);
+  saveState();
+  updateProgress();
+}
+
+function renumberOrderRows(probIdx) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list) return;
+  list.querySelectorAll(".drag-order-row").forEach((row, idx) => {
+    const num = row.querySelector(".drag-order-num");
+    if (num) num.textContent = String(idx + 1);
+  });
+}
+
+function restoreOrderList(probIdx, order) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list || !Array.isArray(order)) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  const byText = new Map(rows.map((row) => [row.dataset.stepText, row]));
+  list.innerHTML = "";
+  order.forEach((text) => {
+    const row = byText.get(text);
+    if (row) {
+      list.appendChild(row);
+      row.classList.remove("is-correct", "is-incorrect");
+    }
+  });
+  rows.forEach((row) => {
+    if (!list.contains(row)) list.appendChild(row);
+  });
+  renumberOrderRows(probIdx);
+}
+
+function resetDragOrder(probIdx) {
+  const workspace = document.getElementById("dragorder_" + probIdx);
+  if (!workspace) return;
+  let initial = [];
+  try {
+    initial = JSON.parse(workspace.dataset.initialOrder || "[]");
+  } catch (e) {
+    initial = [];
+  }
+  if (!initial.length) {
+    shuffleOrderRows(probIdx);
+  } else {
+    restoreOrderList(probIdx, initial);
+  }
+  const pCard = document.getElementById("problem_" + probIdx);
+  if (pCard) pCard.classList.remove("correct", "incorrect");
+}
+
+function shuffleOrderRows(probIdx) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  if (rows.length < 2) return;
+  for (let i = rows.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [rows[i], rows[j]] = [rows[j], rows[i]];
+  }
+  list.innerHTML = "";
+  rows.forEach((row) => list.appendChild(row));
+  if (rows.every((row, idx) => row.dataset.stepText === JSON.parse(document.getElementById("dragorder_" + probIdx).dataset.correctOrder || "[]")[idx])) {
+    const last = rows.pop();
+    rows.unshift(last);
+    list.innerHTML = "";
+    rows.forEach((row) => list.appendChild(row));
+  }
+  renumberOrderRows(probIdx);
 }
 
 function mobileMoveCard(select, cardId, probIdx) {
@@ -1798,7 +2391,8 @@ const STORAGE_KEY = "hw_state_lesson_" + "2-1";
 function saveState() {
   const state = {
     inputs: {},
-    dragPositions: {}
+    dragPositions: {},
+    orderPositions: {}
   };
   
   // Save text inputs, select dropdowns, textareas, and radios
@@ -1818,6 +2412,11 @@ function saveState() {
     if (parentContainer) {
       state.dragPositions[card.id] = parentContainer.id;
     }
+  });
+
+  document.querySelectorAll(".drag-order-list").forEach((list) => {
+    const probIdx = list.id.replace("orderlist_", "");
+    state.orderPositions[probIdx] = Array.from(list.querySelectorAll(".drag-order-row")).map((row) => row.dataset.stepText);
   });
   
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -1851,18 +2450,34 @@ function loadState() {
         const parent = document.getElementById(parentId);
         if (card && parent) {
           parent.appendChild(card);
-          // Sync select dropdown for mobile
           const select = card.querySelector(".mobile-cat-select");
           if (select) {
-            // parentId is like slots_0_prime
             const parts = parentId.split("_");
-            if (parts.length >= 3) {
+            if (parts.length >= 3 && parts[0] === "slots") {
               select.value = parts.slice(2).join("_");
             } else {
               select.value = "";
             }
           }
         }
+      }
+    }
+
+    if (state.orderPositions) {
+      for (const [probIdx, order] of Object.entries(state.orderPositions)) {
+        const list = document.getElementById("orderlist_" + probIdx);
+        if (!list || !Array.isArray(order)) continue;
+        const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+        const byText = new Map(rows.map((row) => [row.dataset.stepText, row]));
+        list.innerHTML = "";
+        order.forEach((text) => {
+          const row = byText.get(text);
+          if (row) list.appendChild(row);
+        });
+        rows.forEach((row) => {
+          if (!list.contains(row)) list.appendChild(row);
+        });
+        renumberOrderRows(probIdx);
       }
     }
   } catch (e) {
@@ -1901,8 +2516,12 @@ function updateProgress() {
       const answered = selects.filter(s => s.value !== "");
       if (answered.length > 0) hasValue = true;
     } else if (type === "drag-sort") {
-      const itemsInColumns = Array.from(section.querySelectorAll(".drag-column-slots .drag-card"));
-      if (itemsInColumns.length > 0) hasValue = true;
+      if (section.dataset.problemSubtype === "drag-order") {
+        hasValue = true;
+      } else {
+        const itemsInColumns = Array.from(section.querySelectorAll(".drag-column-slots .drag-card"));
+        if (itemsInColumns.length > 0) hasValue = true;
+      }
     } else if (type === "fill-table") {
       const inputs = Array.from(section.querySelectorAll(".table-input"));
       const filled = inputs.filter(i => i.value.trim() !== "");
@@ -2002,28 +2621,49 @@ function checkWorksheet() {
       });
       
     } else if (type === "drag-sort") {
-      const dragCards = section.querySelectorAll(".drag-card");
-      
-      dragCards.forEach(card => {
-        card.classList.remove("is-correct", "is-incorrect");
-        const correctCat = card.dataset.correctCategory;
-        const parentCol = card.parentElement;
-        
-        if (parentCol && parentCol.parentElement && parentCol.parentElement.classList.contains("drag-column")) {
-          const actualCat = parentCol.parentElement.dataset.categoryId;
-          if (actualCat === correctCat) {
-            card.classList.add("is-correct");
+      if (section.dataset.problemSubtype === "drag-order") {
+        const workspace = section.querySelector(".drag-order-workspace");
+        const list = section.querySelector(".drag-order-list");
+        let correct = [];
+        try {
+          correct = JSON.parse(workspace?.dataset.correctOrder || "[]");
+        } catch (e) {
+          correct = [];
+        }
+        const rows = Array.from(list?.querySelectorAll(".drag-order-row") || []);
+        rows.forEach((row, i) => {
+          row.classList.remove("is-correct", "is-incorrect");
+          if (row.dataset.stepText === correct[i]) {
+            row.classList.add("is-correct");
+          } else {
+            isProblemCorrect = false;
+            row.classList.add("is-incorrect");
+          }
+        });
+      } else {
+        const dragCards = section.querySelectorAll(".drag-card");
+
+        dragCards.forEach(card => {
+          card.classList.remove("is-correct", "is-incorrect");
+          const correctCat = card.dataset.correctCategory;
+          const parentCol = card.parentElement;
+
+          const column = card.closest(".drag-column");
+          if (column) {
+            const actualCat = column.dataset.categoryId;
+            if (actualCat === correctCat) {
+              card.classList.add("is-correct");
+            } else {
+              isProblemCorrect = false;
+              card.classList.add("is-incorrect");
+            }
           } else {
             isProblemCorrect = false;
             card.classList.add("is-incorrect");
           }
-        } else {
-          // Card still in source pile
-          isProblemCorrect = false;
-          card.classList.add("is-incorrect");
-        }
-      });
-      
+        });
+      }
+
     } else if (type === "fill-table") {
       const inputs = section.querySelectorAll(".table-input");
       
@@ -2215,7 +2855,12 @@ function resetWorksheet() {
       if (type === "drag-sort") {
         const parts = s.id.split("_");
         const idx = parts[1];
-        resetDragSort(idx);
+        if (s.dataset.problemSubtype === "drag-order") {
+          resetDragOrder(idx);
+          shuffleOrderRows(idx);
+        } else {
+          resetDragSort(idx);
+        }
       }
     });
     
@@ -2245,54 +2890,78 @@ function resetWorksheet() {
 
 // Initial configuration
 window.onload = function() {
+  const hadSavedState = !!localStorage.getItem(STORAGE_KEY);
   loadState();
+  if (!hadSavedState) {
+    document.querySelectorAll(".drag-order-workspace").forEach((workspace) => {
+      const probIdx = workspace.id.replace("dragorder_", "");
+      shuffleOrderRows(probIdx);
+    });
+  }
   updateProgress();
-  
-  // Set up dragging listeners for mobile touch screen card clicks
+
+  document.addEventListener("dragend", function() {
+    document.querySelectorAll(".drag-card.dragging, .drag-order-row.dragging")
+      .forEach((el) => el.classList.remove("dragging"));
+    clearDragOver();
+  });
+
+  document.querySelectorAll(".drag-card").forEach((card) => {
+    card.addEventListener("dragend", () => card.classList.remove("dragging"));
+  });
+
+  // Tap-to-move fallback for touch devices
   let selectedDragCard = null;
-  const cards = document.querySelectorAll(".drag-card");
-  
-  cards.forEach(card => {
+  document.querySelectorAll(".drag-card").forEach((card) => {
     card.addEventListener("click", function(e) {
-      if (e.target.tagName === "SELECT") return; // Let dropdown clicks handle themselves
-      
-      // Toggle select state
+      if (e.target.tagName === "SELECT" || e.target.tagName === "OPTION") return;
       if (selectedDragCard === this) {
         this.style.borderColor = "var(--line)";
         selectedDragCard = null;
       } else {
-        if (selectedDragCard) {
-          selectedDragCard.style.borderColor = "var(--line)";
-        }
+        if (selectedDragCard) selectedDragCard.style.borderColor = "var(--line)";
         selectedDragCard = this;
         this.style.borderColor = "var(--teal)";
       }
     });
   });
-  
-  const columns = document.querySelectorAll(".drag-column");
-  columns.forEach(col => {
-    col.addEventListener("click", function() {
-      if (selectedDragCard) {
-        const probIdx = selectedDragCard.id.split("_")[1];
-        const targetColId = this.dataset.categoryId;
-        
-        // Ensure the card belongs to this problem
-        if (selectedDragCard.id.startsWith("card_" + probIdx + "_")) {
-          const slots = this.querySelector(".drag-column-slots");
-          slots.appendChild(selectedDragCard);
-          
-          // Update corresponding select
-          const select = selectedDragCard.querySelector(".mobile-cat-select");
-          if (select) select.value = targetColId;
-          
-          selectedDragCard.style.borderColor = "var(--line)";
-          selectedDragCard = null;
-          
-          saveState();
-          updateProgress();
-        }
+
+  document.querySelectorAll(".drag-column, .drag-source-pile, .drag-column-slots").forEach((zone) => {
+    zone.addEventListener("click", function() {
+      if (!selectedDragCard) return;
+      const probIdx = selectedDragCard.id.split("_")[1];
+      if (!selectedDragCard.id.startsWith("card_" + probIdx + "_")) return;
+
+      let targetContainer = null;
+      let categoryId = "";
+      if (this.classList.contains("drag-column")) {
+        categoryId = this.dataset.categoryId || "";
+        targetContainer = this.querySelector(".drag-column-slots");
+      } else if (this.classList.contains("drag-column-slots")) {
+        categoryId = this.id.split("_").slice(2).join("_");
+        targetContainer = this;
+      } else if (this.classList.contains("drag-source-pile")) {
+        targetContainer = this;
       }
+
+      if (targetContainer) {
+        targetContainer.appendChild(selectedDragCard);
+        const select = selectedDragCard.querySelector(".mobile-cat-select");
+        if (select) select.value = categoryId;
+        selectedDragCard.style.borderColor = "var(--line)";
+        selectedDragCard = null;
+        saveState();
+        updateProgress();
+      }
+    });
+  });
+
+  document.querySelectorAll(".drag-order-list").forEach((list) => {
+    const probIdx = list.id.replace("orderlist_", "");
+    list.addEventListener("dragover", allowDrop);
+    list.addEventListener("drop", (ev) => handleOrderDrop(ev, probIdx));
+    list.querySelectorAll(".drag-order-row").forEach((row) => {
+      row.addEventListener("dragend", () => row.classList.remove("dragging"));
     });
   });
 };

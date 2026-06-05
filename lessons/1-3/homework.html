@@ -160,7 +160,137 @@ header.homework-header h1 {
   margin: 0 0 16px 0;
 }
 
+/* Family guide */
+.family-guide {
+  background: linear-gradient(180deg, #fffdf8 0%, var(--white) 100%);
+  border-color: #ead9b8;
+}
+
+.family-guide-header {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.family-guide-emoji {
+  font-size: 34px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.family-guide-title {
+  margin-bottom: 4px;
+}
+
+.family-guide-sub {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14.5px;
+}
+
+.family-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.family-panel {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+
+.family-panel-heading {
+  margin: 0 0 8px 0;
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--navy);
+}
+
+.family-tip-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.family-tip-list li {
+  margin-bottom: 6px;
+}
+
+.family-try-text {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.45;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.family-print-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.try-at-home {
+  background: linear-gradient(180deg, var(--teal-light) 0%, var(--white) 100%);
+  border-color: #b8ddd8;
+}
+
+.try-narrative {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.try-challenge {
+  margin: 0;
+  padding: 12px 14px;
+  background: var(--amber-light);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--amber);
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.family-problem-tip {
+  margin: -8px 0 14px 0;
+  padding: 10px 12px;
+  background: var(--amber-light);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  color: var(--hint);
+}
+
+.family-hint-box {
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  color: var(--navy);
+}
+
+.family-hint-box p {
+  margin: 0 0 6px 0;
+}
+
+.family-hint-box p:last-child {
+  margin-bottom: 0;
+}
+
 /* Vocabulary Flashcards */
+.vocab-family-note {
+  margin: -6px 0 14px 0;
+  font-size: 14px;
+  color: var(--muted);
+}
 .vocab-container {
   display: flex;
   gap: 16px;
@@ -179,10 +309,26 @@ header.homework-header h1 {
 }
 
 .vocab-card {
-  flex: 0 0 240px;
-  height: 160px;
+  flex: 0 0 260px;
+  height: 210px;
   perspective: 1000px;
   cursor: pointer;
+}
+
+.vocab-thumb-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.vocab-thumb {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  padding: 4px;
 }
 
 .vocab-card-inner {
@@ -271,6 +417,13 @@ header.homework-header h1 {
   color: var(--amber);
   margin: 6px 0 0 0;
   font-style: italic;
+}
+
+.vocab-back-visual {
+  margin: 10px 0 0 0;
+  font-size: 12px;
+  color: var(--teal-light);
+  line-height: 1.35;
 }
 
 /* Practice Problem Cards */
@@ -550,6 +703,92 @@ header.homework-header h1 {
 .drag-card:active {
   cursor: grabbing;
   transform: scale(0.98);
+}
+
+.drag-card.dragging {
+  opacity: 0.55;
+}
+
+.drag-column.over,
+.drag-source-pile.over {
+  border-color: var(--teal);
+  background: var(--teal-light);
+}
+
+/* Drag order (sequencing) */
+.drag-order-workspace {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.drag-order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drag-order-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--white);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  cursor: grab;
+  user-select: none;
+}
+
+.drag-order-row.dragging {
+  opacity: 0.55;
+}
+
+.drag-order-handle {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.drag-order-num {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--teal);
+  color: var(--white);
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.drag-order-text {
+  flex: 1;
+  font-weight: 600;
+  font-size: 14.5px;
+}
+
+.drag-order-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.order-move-btn {
+  min-width: 0;
+  padding: 4px 10px;
+}
+
+.drag-order-row.is-correct {
+  border-color: var(--success);
+  background: var(--success-bg);
+}
+
+.drag-order-row.is-incorrect {
+  border-color: var(--error);
+  background: var(--error-bg);
 }
 
 .drag-handle {
@@ -1035,13 +1274,61 @@ header.homework-header h1 {
   </header>
 
   
+    <section class="family-guide card" aria-label="Family guide">
+      <div class="family-guide-header">
+        <span class="family-guide-emoji">🚀</span>
+        <div>
+          <h2 class="section-title family-guide-title">Family Guide</h2>
+          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+        </div>
+      </div>
+
+      <div class="family-guide-grid">
+        <div class="family-panel family-panel-tips">
+          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
+          <ul class="family-tip-list">
+            <li>Let your student try each problem first. Use <strong>Check Answers</strong> for friendly feedback.</li>
+            <li>Tap vocabulary cards to flip between term and definition.</li>
+            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
+          </ul>
+        </div>
+
+        <div class="family-panel family-panel-home">
+          <h3 class="family-panel-heading">🏡 Try this at home</h3>
+          <p class="family-try-text">Astronaut Reyes checks oxygen every 4 hours and Chen checks water every 6 hours, both starting at 6:00 AM. Why isn&#039;t the next shared check simply 10 hours later (4 + 6)?</p>
+        </div>
+      </div>
+
+      
+        <div class="family-panel family-panel-legend">
+          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
+          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>matching game:</strong> Say each term out loud, then talk through which match makes sense before choosing.</li><li><strong>fill table:</strong> Encourage your student to show their work on paper if a box feels tricky.</li><li><strong>drag sort:</strong> On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</li></ul>
+        </div>
+
+      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
+    </section>
+  
+
+  
+    <section class="try-at-home card" aria-label="Try this at home">
+      <h2 class="section-title">🚀 Real-World Connection</h2>
+      <p class="try-narrative">Astronaut Reyes checks the oxygen system every 4 hours. Astronaut Chen checks the water recycler every 6 hours. They both start their shifts at 6:00 AM. When is the next time both astronauts will be checking their systems at the same time?</p>
+      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    </section>
+  
+
+  
     <section class="vocab-section card">
       <h2 class="section-title">🔑 Key Vocabulary</h2>
+      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/multiple.svg" alt="Illustration of Multiple: What you get when you multiply a number by 1, 2, 3, and so on." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Multiple</h3>
                   <p class="vocab-es">Múltiplo</p>
                   <div class="vocab-visual-hint">💡 Example: Multiples of 4: 4, 8, 12, 16, 20 — found by multiplying 4 × 1, 4 × 2, 4 × 3, ...</div>
@@ -1050,6 +1337,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">What you get when you multiply a number by 1, 2, 3, and so on.</p>
                   <p class="vocab-def-es">Lo que obtienes al multiplicar un número por 1, 2, 3, y así.</p>
+                  <p class="vocab-back-visual">📌 Multiples of 4: 4, 8, 12, 16, 20 — found by multiplying 4 × 1, 4 × 2, 4 × 3, ...</p>
                 </div>
               </div>
             </div>
@@ -1057,6 +1345,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/least-common-multiple.svg" alt="Illustration of Least common multiple: The smallest number that two or more numbers both go into." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Least common multiple</h3>
                   <p class="vocab-es">Mínimo común múltiplo</p>
                   <div class="vocab-visual-hint">💡 Example: Multiples of 4: 4, 8, 12, 16, 20, 24. Multiples of 6: 6, 12, 18, 24. First match: 12 → LCM = 12</div>
@@ -1065,6 +1356,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">The smallest number that two or more numbers both go into.</p>
                   <p class="vocab-def-es">El número más pequeño al que llegan dos o más números al multiplicar.</p>
+                  <p class="vocab-back-visual">📌 Multiples of 4: 4, 8, 12, 16, 20, 24. Multiples of 6: 6, 12, 18, 24. First match: 12 → LCM = 12</p>
                 </div>
               </div>
             </div>
@@ -1072,6 +1364,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/least-common-multiple.svg" alt="Illustration of Common multiple: A number that two or more numbers both go into." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Common multiple</h3>
                   <p class="vocab-es">Múltiplo común</p>
                   <div class="vocab-visual-hint">💡 Example: 12, 24, and 36 are all common multiples of both 3 and 4</div>
@@ -1080,6 +1375,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">A number that two or more numbers both go into.</p>
                   <p class="vocab-def-es">Un número al que llegan dos o más números al multiplicar.</p>
+                  <p class="vocab-back-visual">📌 12, 24, and 36 are all common multiples of both 3 and 4</p>
                 </div>
               </div>
             </div>
@@ -1087,6 +1383,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/multiple.svg" alt="Illustration of Skip counting: Counting by a number, like 2, 4, 6, to list its multiples." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Skip counting</h3>
                   <p class="vocab-es">Conteo salteado</p>
                   <div class="vocab-visual-hint">💡 Example: Skip count by 6: 6, 12, 18, 24, 30 — each jump adds 6</div>
@@ -1095,6 +1394,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">Counting by a number, like 2, 4, 6, to list its multiples.</p>
                   <p class="vocab-def-es">Contar de un número en un número, como 2, 4, 6, para listar sus múltiplos.</p>
+                  <p class="vocab-back-visual">📌 Skip count by 6: 6, 12, 18, 24, 30 — each jump adds 6</p>
                 </div>
               </div>
             </div>
@@ -1102,6 +1402,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/prime-factorization.svg" alt="Illustration of Prime factorization: Writing a number as prime numbers multiplied together. It helps you find the LCM." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Prime factorization</h3>
                   <p class="vocab-es">Factorización prima</p>
                   <div class="vocab-visual-hint">💡 Example: 4 = 2 × 2, 6 = 2 × 3. LCM uses the highest power of each prime: 2² × 3 = 12</div>
@@ -1110,6 +1413,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">Writing a number as prime numbers multiplied together. It helps you find the LCM.</p>
                   <p class="vocab-def-es">Escribir un número como números primos multiplicados. Ayuda a encontrar el mcm.</p>
+                  <p class="vocab-back-visual">📌 4 = 2 × 2, 6 = 2 × 3. LCM uses the highest power of each prime: 2² × 3 = 12</p>
                 </div>
               </div>
             </div>
@@ -1128,6 +1432,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">What is the LCM of 3 and 5?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="Multiples of 3: 3, 6, 9, 12, 15, ... Multiples of 5: 5, 10, 15, ... The smallest common multiple is 15.">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1168,6 +1473,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">What is the LCM of 6 and 8?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="Multiples of 6: 6, 12, 18, 24, ... Multiples of 8: 8, 16, 24, ... The smallest common multiple is 24.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1208,6 +1514,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">Match each pair of numbers to their LCM.</p>
+        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
         <div class="matching-pairs">
           
             <div class="matching-row" data-term="LCM(2, 5)" data-correct="10">
@@ -1290,6 +1597,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">List multiples of each number until you find the LCM.</p>
+        <p class="family-problem-tip">👪 Family tip: Encourage your student to show their work on paper if a box feels tricky.</p>
         <div class="table-responsive">
           <table class="fill-table">
             <thead>
@@ -1363,6 +1671,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">Two buses leave the station at 8:00 AM. Bus A returns every 15 minutes and Bus B returns every 20 minutes. When is the next time both buses are at the station together?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="LCM(15, 20) = 60 minutes. Both buses return together 60 minutes after 8:00 AM, at 9:00 AM.">
           
             <label class="mc-option-label" id="label_q_4_0">
@@ -1395,7 +1704,7 @@ header.homework-header h1 {
     </section>
   
 
-    <section class="problem-section card" id="problem_5" data-problem-type="drag-sort">
+    <section class="problem-section card" id="problem_5" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Problem 6</div>
         <div class="problem-type-badge">DRAG SORT</div>
@@ -1403,33 +1712,32 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">Sort each pair: does the LCM equal the product of the two numbers, or is the LCM less than the product?</p>
+        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
+        
         <div class="drag-sort-workspace" id="dragsort_5">
-          
           <div class="drag-columns">
             
               <div class="drag-column" data-category-id="equals-product" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, 'equals-product')">
                 <div class="drag-column-header">LCM = Product (no shared factors)</div>
-                <div class="drag-column-slots" id="slots_5_equals-product"></div>
+                <div class="drag-column-slots" id="slots_5_equals-product" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, 'equals-product')"></div>
               </div>
-            
               <div class="drag-column" data-category-id="less-than-product" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, 'less-than-product')">
                 <div class="drag-column-header">LCM &lt; Product (shared factors)</div>
-                <div class="drag-column-slots" id="slots_5_less-than-product"></div>
+                <div class="drag-column-slots" id="slots_5_less-than-product" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, 'less-than-product')"></div>
               </div>
-            
           </div>
-          
           <div class="drag-source-section">
-            <div class="drag-source-header">Items to Sort (Drag or use dropdown for mobile):</div>
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
             <div class="drag-source-pile" id="pile_5" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, '')">
               
-                <div class="drag-card" 
-                     draggable="true" 
-                     id="card_5_0" 
-                     data-item-index="0" 
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_5_0"
+                     data-item-index="0"
                      data-correct-category="equals-product"
-                     ondragstart="handleDragStart(event)">
-                  <span class="drag-handle">☰</span>
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">3 and 7 → LCM = 21 = 3 × 7</span>
                   <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_0', 5); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
@@ -1437,14 +1745,14 @@ header.homework-header h1 {
                     <option value="">Unsorted Pile</option>
                   </select>
                 </div>
-              
-                <div class="drag-card" 
-                     draggable="true" 
-                     id="card_5_1" 
-                     data-item-index="1" 
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_5_1"
+                     data-item-index="1"
                      data-correct-category="equals-product"
-                     ondragstart="handleDragStart(event)">
-                  <span class="drag-handle">☰</span>
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">5 and 11 → LCM = 55 = 5 × 11</span>
                   <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_1', 5); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
@@ -1452,14 +1760,14 @@ header.homework-header h1 {
                     <option value="">Unsorted Pile</option>
                   </select>
                 </div>
-              
-                <div class="drag-card" 
-                     draggable="true" 
-                     id="card_5_2" 
-                     data-item-index="2" 
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_5_2"
+                     data-item-index="2"
                      data-correct-category="equals-product"
-                     ondragstart="handleDragStart(event)">
-                  <span class="drag-handle">☰</span>
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">2 and 9 → LCM = 18 = 2 × 9</span>
                   <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_2', 5); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
@@ -1467,14 +1775,14 @@ header.homework-header h1 {
                     <option value="">Unsorted Pile</option>
                   </select>
                 </div>
-              
-                <div class="drag-card" 
-                     draggable="true" 
-                     id="card_5_3" 
-                     data-item-index="3" 
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_5_3"
+                     data-item-index="3"
                      data-correct-category="less-than-product"
-                     ondragstart="handleDragStart(event)">
-                  <span class="drag-handle">☰</span>
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">4 and 6 → LCM = 12 &lt; 4 × 6 = 24</span>
                   <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_3', 5); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
@@ -1482,14 +1790,14 @@ header.homework-header h1 {
                     <option value="">Unsorted Pile</option>
                   </select>
                 </div>
-              
-                <div class="drag-card" 
-                     draggable="true" 
-                     id="card_5_4" 
-                     data-item-index="4" 
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_5_4"
+                     data-item-index="4"
                      data-correct-category="less-than-product"
-                     ondragstart="handleDragStart(event)">
-                  <span class="drag-handle">☰</span>
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">6 and 8 → LCM = 24 &lt; 6 × 8 = 48</span>
                   <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_4', 5); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
@@ -1497,14 +1805,14 @@ header.homework-header h1 {
                     <option value="">Unsorted Pile</option>
                   </select>
                 </div>
-              
-                <div class="drag-card" 
-                     draggable="true" 
-                     id="card_5_5" 
-                     data-item-index="5" 
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_5_5"
+                     data-item-index="5"
                      data-correct-category="less-than-product"
-                     ondragstart="handleDragStart(event)">
-                  <span class="drag-handle">☰</span>
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">10 and 15 → LCM = 30 &lt; 10 × 15 = 150</span>
                   <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_5', 5); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
@@ -1512,10 +1820,8 @@ header.homework-header h1 {
                     <option value="">Unsorted Pile</option>
                   </select>
                 </div>
-              
             </div>
           </div>
-          
         </div>
         <div class="drag-controls">
           <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(5); saveState(); updateProgress();">Reset Sorting</button>
@@ -1532,31 +1838,32 @@ header.homework-header h1 {
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the LCM of 6 and 8?</p>
-        <div class="mc-options" data-correct="0" data-explanation="6 = 2 × 3, 8 = 2³. LCM = 2³ × 3 = 24.">
+        <p class="problem-stem">Stop 1 — Oxygen Bay: The oxygen scrubber cycles every 4 minutes and the air filter cycles every 6 minutes. They both just ran together. After how many minutes do they next run together?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <div class="mc-options" data-correct="0" data-explanation="Skip count: multiples of 4 are 4, 8, 12; multiples of 6 are 6, 12. The first shared multiple is LCM(4, 6) = 12 minutes.">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">24</span>
+              <span class="choice-text">12</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_1">
               <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">48</span>
+              <span class="choice-text">10</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_2">
               <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12</span>
+              <span class="choice-text">24</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_3">
               <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">16</span>
+              <span class="choice-text">6</span>
             </label>
           
         </div>
@@ -1572,31 +1879,32 @@ header.homework-header h1 {
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the LCM of 4 and 10?</p>
-        <div class="mc-options" data-correct="0" data-explanation="4 = 2², 10 = 2 × 5. LCM = 2² × 5 = 20.">
+        <p class="problem-stem">Stop 2 — Docking Ring: A supply pod arrives every 8 minutes and a cargo shuttle arrives every 12 minutes. They just docked together. After how many minutes do they next dock together?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <div class="mc-options" data-correct="0" data-explanation="LCM(8, 12) = 24. Multiples of 8: 8, 16, 24; multiples of 12: 12, 24. The first shared multiple is 24 minutes.">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">20</span>
+              <span class="choice-text">24</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_1">
               <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">40</span>
+              <span class="choice-text">20</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_2">
               <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">30</span>
+              <span class="choice-text">48</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_3">
               <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12</span>
+              <span class="choice-text">16</span>
             </label>
           
         </div>
@@ -1605,39 +1913,60 @@ header.homework-header h1 {
     </section>
   
 
-    <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_8" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Problem 9</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge">MATCHING GAME</div>
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">One bus leaves every 12 minutes and another every 15 minutes. They leave together at 9:00. When do they next leave together?</p>
-        <div class="mc-options" data-correct="0" data-explanation="LCM of 12 and 15 is 60, so they leave together again 60 minutes later.">
+        <p class="problem-stem">Stop 3 — Engineering Deck: Match each pair of station systems to the LCM of their cycle times (when they next sync).</p>
+        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
+        <div class="matching-pairs">
           
-            <label class="mc-option-label" id="label_q_8_0">
-              <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">After 60 minutes</span>
-            </label>
+            <div class="matching-row" data-term="Solar panels (LCM 6 &amp; 10 min)" data-correct="30">
+              <div class="matching-term">Solar panels (LCM 6 &amp; 10 min)</div>
+              <div class="matching-select-container">
+                <select name="q_8_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="12">12</option><option value="30">30</option><option value="40">40</option><option value="9">9</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
           
-            <label class="mc-option-label" id="label_q_8_1">
-              <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">After 30 minutes</span>
-            </label>
+            <div class="matching-row" data-term="Coolant pumps (LCM 5 &amp; 8 min)" data-correct="40">
+              <div class="matching-term">Coolant pumps (LCM 5 &amp; 8 min)</div>
+              <div class="matching-select-container">
+                <select name="q_8_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="12">12</option><option value="30">30</option><option value="40">40</option><option value="9">9</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
           
-            <label class="mc-option-label" id="label_q_8_2">
-              <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">After 45 minutes</span>
-            </label>
+            <div class="matching-row" data-term="Comms relay (LCM 3 &amp; 9 min)" data-correct="9">
+              <div class="matching-term">Comms relay (LCM 3 &amp; 9 min)</div>
+              <div class="matching-select-container">
+                <select name="q_8_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="12">12</option><option value="30">30</option><option value="40">40</option><option value="9">9</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
           
-            <label class="mc-option-label" id="label_q_8_3">
-              <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">After 27 minutes</span>
-            </label>
+            <div class="matching-row" data-term="Lab fans (LCM 4 &amp; 6 min)" data-correct="12">
+              <div class="matching-term">Lab fans (LCM 4 &amp; 6 min)</div>
+              <div class="matching-select-container">
+                <select name="q_8_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="12">12</option><option value="30">30</option><option value="40">40</option><option value="9">9</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
           
         </div>
       </div>
@@ -1645,40 +1974,127 @@ header.homework-header h1 {
     </section>
   
 
-    <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_9" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge">DRAG SORT</div>
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the LCM of 9 and 12?</p>
-        <div class="mc-options" data-correct="0" data-explanation="9 = 3², 12 = 2² × 3. LCM = 2² × 3² = 36.">
-          
-            <label class="mc-option-label" id="label_q_9_0">
-              <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">36</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_1">
-              <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">72</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_2">
-              <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">18</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_3">
-              <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">108</span>
-            </label>
-          
+        <p class="problem-stem">Stop 4 — Mission Control: Each clue points to your next stop. Sort each crew schedule by whether the two systems sync again in UNDER 25 minutes or 25 MINUTES OR MORE. Skip count to find each LCM.</p>
+        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
+        
+        <div class="drag-sort-workspace" id="dragsort_9">
+          <div class="drag-columns">
+            
+              <div class="drag-column" data-category-id="under-25" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'under-25')">
+                <div class="drag-column-header">Sync again in under 25 minutes</div>
+                <div class="drag-column-slots" id="slots_9_under-25" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'under-25')"></div>
+              </div>
+              <div class="drag-column" data-category-id="25-or-more" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, '25-or-more')">
+                <div class="drag-column-header">Sync again in 25 minutes or more</div>
+                <div class="drag-column-slots" id="slots_9_25-or-more" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, '25-or-more')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_9" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_0"
+                     data-item-index="0"
+                     data-correct-category="under-25"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Reactor checks: every 4 and 6 min</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_0', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="under-25">Sync again in under 25 minutes</option><option value="25-or-more">Sync again in 25 minutes or more</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_1"
+                     data-item-index="1"
+                     data-correct-category="under-25"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Window shutters: every 8 and 12 min</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_1', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="under-25">Sync again in under 25 minutes</option><option value="25-or-more">Sync again in 25 minutes or more</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_2"
+                     data-item-index="2"
+                     data-correct-category="under-25"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Galley ovens: every 2 and 7 min</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_2', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="under-25">Sync again in under 25 minutes</option><option value="25-or-more">Sync again in 25 minutes or more</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_3"
+                     data-item-index="3"
+                     data-correct-category="25-or-more"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Solar arrays: every 6 and 10 min</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_3', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="under-25">Sync again in under 25 minutes</option><option value="25-or-more">Sync again in 25 minutes or more</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_4"
+                     data-item-index="4"
+                     data-correct-category="25-or-more"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Coolant pumps: every 5 and 8 min</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_4', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="under-25">Sync again in under 25 minutes</option><option value="25-or-more">Sync again in 25 minutes or more</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_5"
+                     data-item-index="5"
+                     data-correct-category="25-or-more"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Antenna sweeps: every 4 and 9 min</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_5', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="under-25">Sync again in under 25 minutes</option><option value="25-or-more">Sync again in 25 minutes or more</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(9); saveState(); updateProgress();">Reset Sorting</button>
         </div>
       </div>
     
@@ -1788,29 +2204,50 @@ function playFailureSound() {
 // Drag & Drop engine
 function allowDrop(ev) {
   ev.preventDefault();
+  const zone = ev.currentTarget;
+  if (zone && zone.classList) {
+    zone.classList.add("over");
+  }
 }
 
 function handleDragStart(ev) {
-  ev.dataTransfer.setData("text", ev.target.id);
+  const card = ev.currentTarget.closest(".drag-card");
+  if (!card) return;
+  ev.dataTransfer.setData("text/plain", card.id);
+  ev.dataTransfer.effectAllowed = "move";
+  card.classList.add("dragging");
+}
+
+function handleDragEnd(ev) {
+  const el = ev.currentTarget;
+  if (el) el.classList.remove("dragging");
+  clearDragOver();
+}
+
+function clearDragOver() {
+  document.querySelectorAll(".drag-column.over, .drag-source-pile.over, .drag-column-slots.over")
+    .forEach((el) => el.classList.remove("over"));
 }
 
 function handleDrop(ev, probIdx, categoryId) {
   ev.preventDefault();
-  const cardId = ev.dataTransfer.getData("text");
+  clearDragOver();
+  const cardId = ev.dataTransfer.getData("text/plain") || ev.dataTransfer.getData("text");
   const card = document.getElementById(cardId);
   if (!card) return;
-  
-  // Check if dropping card belongs to this problem
+
+  document.querySelectorAll(".drag-card.dragging").forEach((el) => el.classList.remove("dragging"));
+
   const prefix = "card_" + probIdx + "_";
   if (!card.id.startsWith(prefix)) return;
-  
+
   let targetContainer;
   if (categoryId) {
     targetContainer = document.getElementById("slots_" + probIdx + "_" + categoryId);
   } else {
     targetContainer = document.getElementById("pile_" + probIdx);
   }
-  
+
   if (targetContainer) {
     targetContainer.appendChild(card);
     const select = card.querySelector(".mobile-cat-select");
@@ -1818,6 +2255,127 @@ function handleDrop(ev, probIdx, categoryId) {
     saveState();
     updateProgress();
   }
+}
+
+function handleOrderDragStart(ev) {
+  const row = ev.currentTarget.closest(".drag-order-row");
+  if (!row) return;
+  ev.dataTransfer.setData("text/plain", row.id);
+  ev.dataTransfer.effectAllowed = "move";
+  row.classList.add("dragging");
+}
+
+function handleOrderDrop(ev, probIdx) {
+  ev.preventDefault();
+  const list = document.getElementById("orderlist_" + probIdx);
+  const rowId = ev.dataTransfer.getData("text/plain") || ev.dataTransfer.getData("text");
+  const row = document.getElementById(rowId);
+  if (!list || !row || !row.id.startsWith("order_" + probIdx + "_")) return;
+  document.querySelectorAll(".drag-order-row.dragging").forEach((el) => el.classList.remove("dragging"));
+
+  const afterEl = getOrderInsertBefore(list, ev.clientY);
+  if (afterEl) {
+    list.insertBefore(row, afterEl);
+  } else {
+    list.appendChild(row);
+  }
+  renumberOrderRows(probIdx);
+  saveState();
+  updateProgress();
+}
+
+function getOrderInsertBefore(list, clientY) {
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  for (const child of rows) {
+    const box = child.getBoundingClientRect();
+    if (clientY < box.top + box.height / 2) return child;
+  }
+  return null;
+}
+
+function moveOrderRowByEl(probIdx, btn, direction) {
+  const row = btn.closest(".drag-order-row");
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!row || !list) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  const rowIdx = rows.indexOf(row);
+  const nextIdx = rowIdx + direction;
+  if (nextIdx < 0 || nextIdx >= rows.length) return;
+  const neighbor = rows[nextIdx];
+  if (direction < 0) {
+    list.insertBefore(row, neighbor);
+  } else {
+    list.insertBefore(neighbor, row.nextSibling);
+  }
+  renumberOrderRows(probIdx);
+  saveState();
+  updateProgress();
+}
+
+function renumberOrderRows(probIdx) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list) return;
+  list.querySelectorAll(".drag-order-row").forEach((row, idx) => {
+    const num = row.querySelector(".drag-order-num");
+    if (num) num.textContent = String(idx + 1);
+  });
+}
+
+function restoreOrderList(probIdx, order) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list || !Array.isArray(order)) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  const byText = new Map(rows.map((row) => [row.dataset.stepText, row]));
+  list.innerHTML = "";
+  order.forEach((text) => {
+    const row = byText.get(text);
+    if (row) {
+      list.appendChild(row);
+      row.classList.remove("is-correct", "is-incorrect");
+    }
+  });
+  rows.forEach((row) => {
+    if (!list.contains(row)) list.appendChild(row);
+  });
+  renumberOrderRows(probIdx);
+}
+
+function resetDragOrder(probIdx) {
+  const workspace = document.getElementById("dragorder_" + probIdx);
+  if (!workspace) return;
+  let initial = [];
+  try {
+    initial = JSON.parse(workspace.dataset.initialOrder || "[]");
+  } catch (e) {
+    initial = [];
+  }
+  if (!initial.length) {
+    shuffleOrderRows(probIdx);
+  } else {
+    restoreOrderList(probIdx, initial);
+  }
+  const pCard = document.getElementById("problem_" + probIdx);
+  if (pCard) pCard.classList.remove("correct", "incorrect");
+}
+
+function shuffleOrderRows(probIdx) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  if (rows.length < 2) return;
+  for (let i = rows.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [rows[i], rows[j]] = [rows[j], rows[i]];
+  }
+  list.innerHTML = "";
+  rows.forEach((row) => list.appendChild(row));
+  if (rows.every((row, idx) => row.dataset.stepText === JSON.parse(document.getElementById("dragorder_" + probIdx).dataset.correctOrder || "[]")[idx])) {
+    const last = rows.pop();
+    rows.unshift(last);
+    list.innerHTML = "";
+    rows.forEach((row) => list.appendChild(row));
+  }
+  renumberOrderRows(probIdx);
 }
 
 function mobileMoveCard(select, cardId, probIdx) {
@@ -1901,7 +2459,8 @@ const STORAGE_KEY = "hw_state_lesson_" + "1-3";
 function saveState() {
   const state = {
     inputs: {},
-    dragPositions: {}
+    dragPositions: {},
+    orderPositions: {}
   };
   
   // Save text inputs, select dropdowns, textareas, and radios
@@ -1921,6 +2480,11 @@ function saveState() {
     if (parentContainer) {
       state.dragPositions[card.id] = parentContainer.id;
     }
+  });
+
+  document.querySelectorAll(".drag-order-list").forEach((list) => {
+    const probIdx = list.id.replace("orderlist_", "");
+    state.orderPositions[probIdx] = Array.from(list.querySelectorAll(".drag-order-row")).map((row) => row.dataset.stepText);
   });
   
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -1954,18 +2518,34 @@ function loadState() {
         const parent = document.getElementById(parentId);
         if (card && parent) {
           parent.appendChild(card);
-          // Sync select dropdown for mobile
           const select = card.querySelector(".mobile-cat-select");
           if (select) {
-            // parentId is like slots_0_prime
             const parts = parentId.split("_");
-            if (parts.length >= 3) {
+            if (parts.length >= 3 && parts[0] === "slots") {
               select.value = parts.slice(2).join("_");
             } else {
               select.value = "";
             }
           }
         }
+      }
+    }
+
+    if (state.orderPositions) {
+      for (const [probIdx, order] of Object.entries(state.orderPositions)) {
+        const list = document.getElementById("orderlist_" + probIdx);
+        if (!list || !Array.isArray(order)) continue;
+        const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+        const byText = new Map(rows.map((row) => [row.dataset.stepText, row]));
+        list.innerHTML = "";
+        order.forEach((text) => {
+          const row = byText.get(text);
+          if (row) list.appendChild(row);
+        });
+        rows.forEach((row) => {
+          if (!list.contains(row)) list.appendChild(row);
+        });
+        renumberOrderRows(probIdx);
       }
     }
   } catch (e) {
@@ -2004,8 +2584,12 @@ function updateProgress() {
       const answered = selects.filter(s => s.value !== "");
       if (answered.length > 0) hasValue = true;
     } else if (type === "drag-sort") {
-      const itemsInColumns = Array.from(section.querySelectorAll(".drag-column-slots .drag-card"));
-      if (itemsInColumns.length > 0) hasValue = true;
+      if (section.dataset.problemSubtype === "drag-order") {
+        hasValue = true;
+      } else {
+        const itemsInColumns = Array.from(section.querySelectorAll(".drag-column-slots .drag-card"));
+        if (itemsInColumns.length > 0) hasValue = true;
+      }
     } else if (type === "fill-table") {
       const inputs = Array.from(section.querySelectorAll(".table-input"));
       const filled = inputs.filter(i => i.value.trim() !== "");
@@ -2105,28 +2689,49 @@ function checkWorksheet() {
       });
       
     } else if (type === "drag-sort") {
-      const dragCards = section.querySelectorAll(".drag-card");
-      
-      dragCards.forEach(card => {
-        card.classList.remove("is-correct", "is-incorrect");
-        const correctCat = card.dataset.correctCategory;
-        const parentCol = card.parentElement;
-        
-        if (parentCol && parentCol.parentElement && parentCol.parentElement.classList.contains("drag-column")) {
-          const actualCat = parentCol.parentElement.dataset.categoryId;
-          if (actualCat === correctCat) {
-            card.classList.add("is-correct");
+      if (section.dataset.problemSubtype === "drag-order") {
+        const workspace = section.querySelector(".drag-order-workspace");
+        const list = section.querySelector(".drag-order-list");
+        let correct = [];
+        try {
+          correct = JSON.parse(workspace?.dataset.correctOrder || "[]");
+        } catch (e) {
+          correct = [];
+        }
+        const rows = Array.from(list?.querySelectorAll(".drag-order-row") || []);
+        rows.forEach((row, i) => {
+          row.classList.remove("is-correct", "is-incorrect");
+          if (row.dataset.stepText === correct[i]) {
+            row.classList.add("is-correct");
+          } else {
+            isProblemCorrect = false;
+            row.classList.add("is-incorrect");
+          }
+        });
+      } else {
+        const dragCards = section.querySelectorAll(".drag-card");
+
+        dragCards.forEach(card => {
+          card.classList.remove("is-correct", "is-incorrect");
+          const correctCat = card.dataset.correctCategory;
+          const parentCol = card.parentElement;
+
+          const column = card.closest(".drag-column");
+          if (column) {
+            const actualCat = column.dataset.categoryId;
+            if (actualCat === correctCat) {
+              card.classList.add("is-correct");
+            } else {
+              isProblemCorrect = false;
+              card.classList.add("is-incorrect");
+            }
           } else {
             isProblemCorrect = false;
             card.classList.add("is-incorrect");
           }
-        } else {
-          // Card still in source pile
-          isProblemCorrect = false;
-          card.classList.add("is-incorrect");
-        }
-      });
-      
+        });
+      }
+
     } else if (type === "fill-table") {
       const inputs = section.querySelectorAll(".table-input");
       
@@ -2318,7 +2923,12 @@ function resetWorksheet() {
       if (type === "drag-sort") {
         const parts = s.id.split("_");
         const idx = parts[1];
-        resetDragSort(idx);
+        if (s.dataset.problemSubtype === "drag-order") {
+          resetDragOrder(idx);
+          shuffleOrderRows(idx);
+        } else {
+          resetDragSort(idx);
+        }
       }
     });
     
@@ -2348,54 +2958,78 @@ function resetWorksheet() {
 
 // Initial configuration
 window.onload = function() {
+  const hadSavedState = !!localStorage.getItem(STORAGE_KEY);
   loadState();
+  if (!hadSavedState) {
+    document.querySelectorAll(".drag-order-workspace").forEach((workspace) => {
+      const probIdx = workspace.id.replace("dragorder_", "");
+      shuffleOrderRows(probIdx);
+    });
+  }
   updateProgress();
-  
-  // Set up dragging listeners for mobile touch screen card clicks
+
+  document.addEventListener("dragend", function() {
+    document.querySelectorAll(".drag-card.dragging, .drag-order-row.dragging")
+      .forEach((el) => el.classList.remove("dragging"));
+    clearDragOver();
+  });
+
+  document.querySelectorAll(".drag-card").forEach((card) => {
+    card.addEventListener("dragend", () => card.classList.remove("dragging"));
+  });
+
+  // Tap-to-move fallback for touch devices
   let selectedDragCard = null;
-  const cards = document.querySelectorAll(".drag-card");
-  
-  cards.forEach(card => {
+  document.querySelectorAll(".drag-card").forEach((card) => {
     card.addEventListener("click", function(e) {
-      if (e.target.tagName === "SELECT") return; // Let dropdown clicks handle themselves
-      
-      // Toggle select state
+      if (e.target.tagName === "SELECT" || e.target.tagName === "OPTION") return;
       if (selectedDragCard === this) {
         this.style.borderColor = "var(--line)";
         selectedDragCard = null;
       } else {
-        if (selectedDragCard) {
-          selectedDragCard.style.borderColor = "var(--line)";
-        }
+        if (selectedDragCard) selectedDragCard.style.borderColor = "var(--line)";
         selectedDragCard = this;
         this.style.borderColor = "var(--teal)";
       }
     });
   });
-  
-  const columns = document.querySelectorAll(".drag-column");
-  columns.forEach(col => {
-    col.addEventListener("click", function() {
-      if (selectedDragCard) {
-        const probIdx = selectedDragCard.id.split("_")[1];
-        const targetColId = this.dataset.categoryId;
-        
-        // Ensure the card belongs to this problem
-        if (selectedDragCard.id.startsWith("card_" + probIdx + "_")) {
-          const slots = this.querySelector(".drag-column-slots");
-          slots.appendChild(selectedDragCard);
-          
-          // Update corresponding select
-          const select = selectedDragCard.querySelector(".mobile-cat-select");
-          if (select) select.value = targetColId;
-          
-          selectedDragCard.style.borderColor = "var(--line)";
-          selectedDragCard = null;
-          
-          saveState();
-          updateProgress();
-        }
+
+  document.querySelectorAll(".drag-column, .drag-source-pile, .drag-column-slots").forEach((zone) => {
+    zone.addEventListener("click", function() {
+      if (!selectedDragCard) return;
+      const probIdx = selectedDragCard.id.split("_")[1];
+      if (!selectedDragCard.id.startsWith("card_" + probIdx + "_")) return;
+
+      let targetContainer = null;
+      let categoryId = "";
+      if (this.classList.contains("drag-column")) {
+        categoryId = this.dataset.categoryId || "";
+        targetContainer = this.querySelector(".drag-column-slots");
+      } else if (this.classList.contains("drag-column-slots")) {
+        categoryId = this.id.split("_").slice(2).join("_");
+        targetContainer = this;
+      } else if (this.classList.contains("drag-source-pile")) {
+        targetContainer = this;
       }
+
+      if (targetContainer) {
+        targetContainer.appendChild(selectedDragCard);
+        const select = selectedDragCard.querySelector(".mobile-cat-select");
+        if (select) select.value = categoryId;
+        selectedDragCard.style.borderColor = "var(--line)";
+        selectedDragCard = null;
+        saveState();
+        updateProgress();
+      }
+    });
+  });
+
+  document.querySelectorAll(".drag-order-list").forEach((list) => {
+    const probIdx = list.id.replace("orderlist_", "");
+    list.addEventListener("dragover", allowDrop);
+    list.addEventListener("drop", (ev) => handleOrderDrop(ev, probIdx));
+    list.querySelectorAll(".drag-order-row").forEach((row) => {
+      row.addEventListener("dragend", () => row.classList.remove("dragging"));
     });
   });
 };

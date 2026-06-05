@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { resolveVocabImage, vocabImageAlt } from "../engine/core/vocab-images.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -16,6 +17,216 @@ function esc(s) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+
+function escAttr(s) {
+  return String(s ?? "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+}
+
+function slugId(label, idx) {
+  return (
+    String(label || `cat-${idx}`)
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || `cat-${idx}`
+  );
+}
+
+// Normalize drag-sort configs (ordering, nested categories, string categories).
+function normalizeDragSort(it) {
+  const rawItems = it.items || [];
+  const hasStringItems =
+    Array.isArray(rawItems) && rawItems.length > 0 && typeof rawItems[0] === "string";
+  const hasCorrectOrder = Array.isArray(it.correctOrder) && it.correctOrder.length > 0;
+  const hasCategoryItems =
+    Array.isArray(rawItems) &&
+    rawItems.length > 0 &&
+    typeof rawItems[0] === "object" &&
+    rawItems[0]?.category;
+
+  if (hasStringItems && (hasCorrectOrder || !hasCategoryItems)) {
+    const steps = rawItems.map(String);
+    const correctOrder = (it.correctOrder || steps).map(String);
+    return {
+      kind: "order",
+      steps,
+      correctOrder,
+      label: it.label || it.instructions || "Put the steps in the correct order.",
+      hints: it.hints || [],
+    };
+  }
+
+  let categories = Array.isArray(it.categories) ? [...it.categories] : [];
+  let items = Array.isArray(it.items) ? [...it.items] : [];
+
+  categories = categories.map((cat, idx) => {
+    if (typeof cat === "string") {
+      const id = slugId(cat, idx);
+      return { id, label: cat };
+    }
+    if (cat && typeof cat === "object") {
+      const label = cat.label || cat.id || `Group ${idx + 1}`;
+      const id = cat.id || slugId(label, idx);
+      return { id, label, items: cat.items };
+    }
+    return { id: `cat-${idx}`, label: `Group ${idx + 1}` };
+  });
+
+  if (!items.length && categories.some((c) => Array.isArray(c.items))) {
+    items = categories.flatMap((cat) =>
+      (cat.items || []).map((text) => ({
+        text: String(text),
+        category: cat.id,
+      })),
+    );
+    categories = categories.map(({ id, label }) => ({ id, label }));
+  }
+
+  if (!items.length && Array.isArray(it.cards) && categories.length) {
+    const normCats = categories.map((cat, idx) => {
+      if (typeof cat === "string") return { id: slugId(cat, idx), label: cat };
+      const label = cat.label || cat.id || `Group ${idx + 1}`;
+      return { id: cat.id || slugId(label, idx), label };
+    });
+    categories = normCats;
+    items = it.cards.map((card) => ({
+      text: String(card.text || ""),
+      category: normCats[card.correct]?.id || normCats[0]?.id || "",
+    }));
+  }
+
+  items = items.map((item) => {
+    if (typeof item === "string") return { text: item, category: "" };
+    return {
+      text: String(item.text || item.label || ""),
+      category: String(item.category || ""),
+    };
+  });
+
+  return {
+    kind: "sort",
+    categories,
+    items,
+    label: it.label || it.instructions || "Sort the items into the correct groups.",
+    hints: it.hints || [],
+  };
+}
+
+const FAMILY_TIPS_BY_TYPE = {
+  "multiple-choice": "Read the question together, then let your student pick an answer before you discuss why.",
+  "matching-game": "Say each term out loud, then talk through which match makes sense before choosing.",
+  "drag-sort": "On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.",
+  "drag-order": "Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.",
+  "fill-table": "Encourage your student to show their work on paper if a box feels tricky.",
+  "error-analysis": "Read each step aloud and ask: does this step follow the math rules we learned?",
+  "open-response": "A complete sentence with math vocabulary is the goal — not a perfect paragraph.",
+};
+
+function familyTryAtHome(config) {
+  const talk = Array.isArray(config.turnAndTalk) ? config.turnAndTalk[0] : null;
+  if (talk?.question) return talk.question;
+  const youDo = config.launch?.conceptIntro?.youDo?.lines;
+  if (Array.isArray(youDo) && youDo.length) return youDo[0];
+  const intro = config.launch?.conceptIntro?.intro;
+  if (intro) return intro;
+  return "Ask your student to explain one problem out loud using the vocabulary words from this lesson.";
+}
+
+function renderTryAtHome(config) {
+  const narrative = config.launch?.narrative || config.explore?.narrative || "";
+  if (!narrative) return "";
+  const emoji = config.themeEmoji || "🏠";
+  return `
+    <section class="try-at-home card" aria-label="Try this at home">
+      <h2 class="section-title">${emoji} Real-World Connection</h2>
+      <p class="try-narrative">${esc(narrative)}</p>
+      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    </section>
+  `;
+}
+
+function shuffleSteps(steps, correctOrder) {
+  const out = [...steps];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  if (
+    correctOrder.length > 1 &&
+    out.every((s, i) => s === correctOrder[i])
+  ) {
+    return [out[out.length - 1], ...out.slice(0, -1)];
+  }
+  return out;
+}
+
+function renderFamilyGuide(config, selected) {
+  const themeEmoji = config.themeEmoji || "📚";
+  const tryAtHome = familyTryAtHome(config);
+  const legendEntries = [];
+  const typesPresent = [...new Set(selected.map((p) => p.type))];
+  for (const type of typesPresent) {
+    if (type === "drag-sort") {
+      const hasOrder = selected.some(
+        (p) => p.type === "drag-sort" && normalizeDragSort(p).kind === "order",
+      );
+      const hasSort = selected.some(
+        (p) => p.type === "drag-sort" && normalizeDragSort(p).kind === "sort",
+      );
+      if (hasOrder) legendEntries.push(["drag-order", "drag order"]);
+      if (hasSort) legendEntries.push(["drag-sort", "drag sort"]);
+      continue;
+    }
+    legendEntries.push([type, type.replace(/-/g, " ")]);
+  }
+
+  const typeLegend = legendEntries
+    .map(([key, label]) => {
+      const tip = FAMILY_TIPS_BY_TYPE[key] || "Work through one problem at a time together.";
+      return `<li><strong>${esc(label)}:</strong> ${esc(tip)}</li>`;
+    })
+    .join("");
+
+  return `
+    <section class="family-guide card" aria-label="Family guide">
+      <div class="family-guide-header">
+        <span class="family-guide-emoji">${esc(themeEmoji)}</span>
+        <div>
+          <h2 class="section-title family-guide-title">Family Guide</h2>
+          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+        </div>
+      </div>
+
+      <div class="family-guide-grid">
+        <div class="family-panel family-panel-tips">
+          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
+          <ul class="family-tip-list">
+            <li>Let your student try each problem first. Use <strong>Check Answers</strong> for friendly feedback.</li>
+            <li>Tap vocabulary cards to flip between term and definition.</li>
+            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
+          </ul>
+        </div>
+
+        <div class="family-panel family-panel-home">
+          <h3 class="family-panel-heading">🏡 Try this at home</h3>
+          <p class="family-try-text">${esc(tryAtHome)}</p>
+        </div>
+      </div>
+
+      ${
+        typesPresent.length
+          ? `
+        <div class="family-panel family-panel-legend">
+          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
+          <ul class="family-tip-list family-type-legend">${typeLegend}</ul>
+        </div>`
+          : ""
+      }
+
+      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
+    </section>
+  `;
 }
 
 function isPrintable(it) {
@@ -97,21 +308,28 @@ function lessonConfigs() {
 
 function renderVocabulary(vocabList) {
   if (!Array.isArray(vocabList) || vocabList.length === 0) return "";
-  
+
   return `
     <section class="vocab-section card">
       <h2 class="section-title">🔑 Key Vocabulary</h2>
+      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
       <div class="vocab-container">
-        ${vocabList.map((v, idx) => {
-          const term = v.term || "";
-          const termEs = v.termEs || "";
-          const definition = v.definition || "";
-          const definitionEs = v.definitionEs || "";
-          const visual = v.visual || "";
-          return `
+        ${vocabList
+          .map((v) => {
+            const term = v.term || "";
+            const termEs = v.termEs || "";
+            const definition = v.definition || "";
+            const definitionEs = v.definitionEs || "";
+            const visual = v.visual || "";
+            const imgSrc = resolveVocabImage(term, v.image);
+            const imgAlt = vocabImageAlt(term, definition);
+            return `
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="${esc(imgSrc)}" alt="${esc(imgAlt)}" loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>${esc(term)}</h3>
                   ${termEs ? `<p class="vocab-es">${esc(termEs)}</p>` : ""}
                   ${visual ? `<div class="vocab-visual-hint">💡 Example: ${esc(visual)}</div>` : ""}
@@ -120,11 +338,13 @@ function renderVocabulary(vocabList) {
                 <div class="vocab-card-back">
                   <p class="vocab-def">${esc(definition)}</p>
                   ${definitionEs ? `<p class="vocab-def-es">${esc(definitionEs)}</p>` : ""}
+                  ${visual ? `<p class="vocab-back-visual">📌 ${esc(visual)}</p>` : ""}
                 </div>
               </div>
             </div>
           `;
-        }).join("")}
+          })
+          .join("")}
       </div>
     </section>
   `;
@@ -132,9 +352,10 @@ function renderVocabulary(vocabList) {
 
 function renderProblem(it, pIdx) {
   const type = it.type;
-  
+  let problemSubtype = "";
+
   let content = "";
-  
+
   if (type === "multiple-choice") {
     const stem = it.stem || "";
     const choices = it.choices || [];
@@ -144,6 +365,7 @@ function renderProblem(it, pIdx) {
     content = `
       <div class="problem-body">
         <p class="problem-stem">${esc(stem)}</p>
+        <p class="family-problem-tip">👪 Family tip: ${esc(FAMILY_TIPS_BY_TYPE["multiple-choice"])}</p>
         <div class="mc-options" data-correct="${correctIdx}" data-explanation="${esc(explanation)}">
           ${choices.map((choice, cIdx) => `
             <label class="mc-option-label" id="label_q_${pIdx}_${cIdx}">
@@ -166,6 +388,7 @@ function renderProblem(it, pIdx) {
     content = `
       <div class="problem-body">
         <p class="problem-stem">${esc(label)}</p>
+        <p class="family-problem-tip">👪 Family tip: ${esc(FAMILY_TIPS_BY_TYPE["matching-game"])}</p>
         <div class="matching-pairs">
           ${pairs.map((p, pairIdx) => `
             <div class="matching-row" data-term="${esc(p.term)}" data-correct="${esc(p.match)}">
@@ -183,52 +406,96 @@ function renderProblem(it, pIdx) {
       </div>
     `;
   } else if (type === "drag-sort") {
-    const label = it.instructions || it.label || "Sort the items into the correct groups.";
-    const categories = it.categories || [];
-    const items = it.items || [];
-    
-    content = `
+    const norm = normalizeDragSort(it);
+    const familyTip = FAMILY_TIPS_BY_TYPE[norm.kind === "order" ? "drag-order" : "drag-sort"];
+
+    if (norm.kind === "order") {
+      problemSubtype = "drag-order";
+      const shuffledSteps = shuffleSteps(norm.steps, norm.correctOrder);
+      content = `
       <div class="problem-body">
-        <p class="problem-stem">${esc(label)}</p>
-        <div class="drag-sort-workspace" id="dragsort_${pIdx}">
-          
-          <div class="drag-columns">
-            ${categories.map(cat => `
-              <div class="drag-column" data-category-id="${cat.id}" ondragover="allowDrop(event)" ondrop="handleDrop(event, ${pIdx}, '${cat.id}')">
-                <div class="drag-column-header">${esc(cat.label)}</div>
-                <div class="drag-column-slots" id="slots_${pIdx}_${cat.id}"></div>
-              </div>
-            `).join("")}
+        <p class="problem-stem">${esc(norm.label)}</p>
+        <p class="family-problem-tip">👪 Family tip: ${esc(familyTip)}</p>
+        <div class="drag-order-workspace" id="dragorder_${pIdx}" data-correct-order='${esc(JSON.stringify(norm.correctOrder))}' data-initial-order='${esc(JSON.stringify(shuffledSteps))}'>
+          <div class="drag-order-list" id="orderlist_${pIdx}">
+            ${shuffledSteps
+              .map(
+                (step, stepIdx) => `
+              <div class="drag-order-row" draggable="true" id="order_${pIdx}_${stepIdx}" data-step-text="${esc(step)}" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">${stepIdx + 1}</span>
+                <span class="drag-order-text">${esc(step)}</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(${pIdx}, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(${pIdx}, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>`,
+              )
+              .join("")}
           </div>
-          
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragOrder(${pIdx}); saveState(); updateProgress();">Reset Order</button>
+        </div>
+      </div>
+    `;
+    } else {
+      problemSubtype = "drag-sort";
+      const categories = norm.categories || [];
+      const items = norm.items || [];
+      content = `
+      <div class="problem-body">
+        <p class="problem-stem">${esc(norm.label)}</p>
+        <p class="family-problem-tip">👪 Family tip: ${esc(familyTip)}</p>
+        ${
+          norm.hints?.length
+            ? `<div class="family-hint-box">${norm.hints.map((h) => `<p>💡 ${esc(h)}</p>`).join("")}</div>`
+            : ""
+        }
+        <div class="drag-sort-workspace" id="dragsort_${pIdx}">
+          <div class="drag-columns">
+            ${categories
+              .map(
+                (cat) => `
+              <div class="drag-column" data-category-id="${esc(cat.id)}" ondragover="allowDrop(event)" ondrop="handleDrop(event, ${pIdx}, '${escAttr(cat.id)}')">
+                <div class="drag-column-header">${esc(cat.label)}</div>
+                <div class="drag-column-slots" id="slots_${pIdx}_${esc(cat.id)}" ondragover="allowDrop(event)" ondrop="handleDrop(event, ${pIdx}, '${escAttr(cat.id)}')"></div>
+              </div>`,
+              )
+              .join("")}
+          </div>
           <div class="drag-source-section">
-            <div class="drag-source-header">Items to Sort (Drag or use dropdown for mobile):</div>
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
             <div class="drag-source-pile" id="pile_${pIdx}" ondragover="allowDrop(event)" ondrop="handleDrop(event, ${pIdx}, '')">
-              ${items.map((item, itemIdx) => `
-                <div class="drag-card" 
-                     draggable="true" 
-                     id="card_${pIdx}_${itemIdx}" 
-                     data-item-index="${itemIdx}" 
+              ${items
+                .map(
+                  (item, itemIdx) => `
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_${pIdx}_${itemIdx}"
+                     data-item-index="${itemIdx}"
                      data-correct-category="${esc(item.category)}"
-                     ondragstart="handleDragStart(event)">
-                  <span class="drag-handle">☰</span>
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">${esc(item.text)}</span>
                   <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_${pIdx}_${itemIdx}', ${pIdx}); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
-                    ${categories.map(cat => `<option value="${cat.id}">${esc(cat.label)}</option>`).join("")}
+                    ${categories.map((cat) => `<option value="${esc(cat.id)}">${esc(cat.label)}</option>`).join("")}
                     <option value="">Unsorted Pile</option>
                   </select>
-                </div>
-              `).join("")}
+                </div>`,
+                )
+                .join("")}
             </div>
           </div>
-          
         </div>
         <div class="drag-controls">
           <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(${pIdx}); saveState(); updateProgress();">Reset Sorting</button>
         </div>
       </div>
     `;
+    }
   } else if (type === "fill-table") {
     const label = it.label || it.instructions || "Complete the table.";
     
@@ -270,6 +537,7 @@ function renderProblem(it, pIdx) {
     content = `
       <div class="problem-body">
         <p class="problem-stem">${esc(label)}</p>
+        <p class="family-problem-tip">👪 Family tip: ${esc(FAMILY_TIPS_BY_TYPE["fill-table"])}</p>
         <div class="table-responsive">
           <table class="fill-table">
             <thead>
@@ -316,6 +584,7 @@ function renderProblem(it, pIdx) {
       <div class="problem-body">
         <h3 class="error-analysis-title">⚠️ ${esc(title)}</h3>
         <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
+        <p class="family-problem-tip">👪 Family tip: ${esc(FAMILY_TIPS_BY_TYPE["error-analysis"])}</p>
         
         <div class="clipboard-box">
           <div class="clipboard-top"></div>
@@ -361,6 +630,7 @@ function renderProblem(it, pIdx) {
     content = `
       <div class="problem-body">
         <p class="problem-stem">${esc(prompt)}</p>
+        <p class="family-problem-tip">👪 Family tip: ${esc(FAMILY_TIPS_BY_TYPE["open-response"])}</p>
         
         ${sentenceFrame ? `
           <div class="sentence-frame-card">
@@ -392,11 +662,12 @@ function renderProblem(it, pIdx) {
     `;
   }
   
+  const displayType = problemSubtype || type;
   return `
-    <section class="problem-section card" id="problem_${pIdx}" data-problem-type="${type}">
+    <section class="problem-section card" id="problem_${pIdx}" data-problem-type="${type}"${problemSubtype ? ` data-problem-subtype="${problemSubtype}"` : ""}>
       <div class="problem-header-row">
         <div class="problem-number-badge">Problem ${pIdx + 1}</div>
-        <div class="problem-type-badge">${esc(type.replace("-", " ").toUpperCase())}</div>
+        <div class="problem-type-badge">${esc(displayType.replace(/-/g, " ").toUpperCase())}</div>
       </div>
       ${content}
     </section>
@@ -414,6 +685,8 @@ function generateHtml(lessonId, config) {
   const selected = selectProblems(config.practice || {});
   
   const vocabHtml = renderVocabulary(vocab);
+  const familyGuideHtml = renderFamilyGuide(config, selected);
+  const tryAtHomeHtml = renderTryAtHome(config);
   const problemsHtml = selected.map((p, idx) => renderProblem(p, idx)).join("\n");
   
   return `<!doctype html>
@@ -578,7 +851,137 @@ header.homework-header h1 {
   margin: 0 0 16px 0;
 }
 
+/* Family guide */
+.family-guide {
+  background: linear-gradient(180deg, #fffdf8 0%, var(--white) 100%);
+  border-color: #ead9b8;
+}
+
+.family-guide-header {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.family-guide-emoji {
+  font-size: 34px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.family-guide-title {
+  margin-bottom: 4px;
+}
+
+.family-guide-sub {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14.5px;
+}
+
+.family-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.family-panel {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+
+.family-panel-heading {
+  margin: 0 0 8px 0;
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--navy);
+}
+
+.family-tip-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.family-tip-list li {
+  margin-bottom: 6px;
+}
+
+.family-try-text {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.45;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.family-print-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.try-at-home {
+  background: linear-gradient(180deg, var(--teal-light) 0%, var(--white) 100%);
+  border-color: #b8ddd8;
+}
+
+.try-narrative {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.try-challenge {
+  margin: 0;
+  padding: 12px 14px;
+  background: var(--amber-light);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--amber);
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.family-problem-tip {
+  margin: -8px 0 14px 0;
+  padding: 10px 12px;
+  background: var(--amber-light);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  color: var(--hint);
+}
+
+.family-hint-box {
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  color: var(--navy);
+}
+
+.family-hint-box p {
+  margin: 0 0 6px 0;
+}
+
+.family-hint-box p:last-child {
+  margin-bottom: 0;
+}
+
 /* Vocabulary Flashcards */
+.vocab-family-note {
+  margin: -6px 0 14px 0;
+  font-size: 14px;
+  color: var(--muted);
+}
 .vocab-container {
   display: flex;
   gap: 16px;
@@ -597,10 +1000,26 @@ header.homework-header h1 {
 }
 
 .vocab-card {
-  flex: 0 0 240px;
-  height: 160px;
+  flex: 0 0 260px;
+  height: 210px;
   perspective: 1000px;
   cursor: pointer;
+}
+
+.vocab-thumb-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.vocab-thumb {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  padding: 4px;
 }
 
 .vocab-card-inner {
@@ -689,6 +1108,13 @@ header.homework-header h1 {
   color: var(--amber);
   margin: 6px 0 0 0;
   font-style: italic;
+}
+
+.vocab-back-visual {
+  margin: 10px 0 0 0;
+  font-size: 12px;
+  color: var(--teal-light);
+  line-height: 1.35;
 }
 
 /* Practice Problem Cards */
@@ -968,6 +1394,92 @@ header.homework-header h1 {
 .drag-card:active {
   cursor: grabbing;
   transform: scale(0.98);
+}
+
+.drag-card.dragging {
+  opacity: 0.55;
+}
+
+.drag-column.over,
+.drag-source-pile.over {
+  border-color: var(--teal);
+  background: var(--teal-light);
+}
+
+/* Drag order (sequencing) */
+.drag-order-workspace {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.drag-order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drag-order-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--white);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  cursor: grab;
+  user-select: none;
+}
+
+.drag-order-row.dragging {
+  opacity: 0.55;
+}
+
+.drag-order-handle {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.drag-order-num {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--teal);
+  color: var(--white);
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.drag-order-text {
+  flex: 1;
+  font-weight: 600;
+  font-size: 14.5px;
+}
+
+.drag-order-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.order-move-btn {
+  min-width: 0;
+  padding: 4px 10px;
+}
+
+.drag-order-row.is-correct {
+  border-color: var(--success);
+  background: var(--success-bg);
+}
+
+.drag-order-row.is-incorrect {
+  border-color: var(--error);
+  background: var(--error-bg);
 }
 
 .drag-handle {
@@ -1452,6 +1964,10 @@ header.homework-header h1 {
     </div>
   </header>
 
+  ${familyGuideHtml}
+
+  ${tryAtHomeHtml}
+
   ${vocabHtml}
   
   <main class="problems-container">
@@ -1560,29 +2076,50 @@ function playFailureSound() {
 // Drag & Drop engine
 function allowDrop(ev) {
   ev.preventDefault();
+  const zone = ev.currentTarget;
+  if (zone && zone.classList) {
+    zone.classList.add("over");
+  }
 }
 
 function handleDragStart(ev) {
-  ev.dataTransfer.setData("text", ev.target.id);
+  const card = ev.currentTarget.closest(".drag-card");
+  if (!card) return;
+  ev.dataTransfer.setData("text/plain", card.id);
+  ev.dataTransfer.effectAllowed = "move";
+  card.classList.add("dragging");
+}
+
+function handleDragEnd(ev) {
+  const el = ev.currentTarget;
+  if (el) el.classList.remove("dragging");
+  clearDragOver();
+}
+
+function clearDragOver() {
+  document.querySelectorAll(".drag-column.over, .drag-source-pile.over, .drag-column-slots.over")
+    .forEach((el) => el.classList.remove("over"));
 }
 
 function handleDrop(ev, probIdx, categoryId) {
   ev.preventDefault();
-  const cardId = ev.dataTransfer.getData("text");
+  clearDragOver();
+  const cardId = ev.dataTransfer.getData("text/plain") || ev.dataTransfer.getData("text");
   const card = document.getElementById(cardId);
   if (!card) return;
-  
-  // Check if dropping card belongs to this problem
+
+  document.querySelectorAll(".drag-card.dragging").forEach((el) => el.classList.remove("dragging"));
+
   const prefix = "card_" + probIdx + "_";
   if (!card.id.startsWith(prefix)) return;
-  
+
   let targetContainer;
   if (categoryId) {
     targetContainer = document.getElementById("slots_" + probIdx + "_" + categoryId);
   } else {
     targetContainer = document.getElementById("pile_" + probIdx);
   }
-  
+
   if (targetContainer) {
     targetContainer.appendChild(card);
     const select = card.querySelector(".mobile-cat-select");
@@ -1590,6 +2127,127 @@ function handleDrop(ev, probIdx, categoryId) {
     saveState();
     updateProgress();
   }
+}
+
+function handleOrderDragStart(ev) {
+  const row = ev.currentTarget.closest(".drag-order-row");
+  if (!row) return;
+  ev.dataTransfer.setData("text/plain", row.id);
+  ev.dataTransfer.effectAllowed = "move";
+  row.classList.add("dragging");
+}
+
+function handleOrderDrop(ev, probIdx) {
+  ev.preventDefault();
+  const list = document.getElementById("orderlist_" + probIdx);
+  const rowId = ev.dataTransfer.getData("text/plain") || ev.dataTransfer.getData("text");
+  const row = document.getElementById(rowId);
+  if (!list || !row || !row.id.startsWith("order_" + probIdx + "_")) return;
+  document.querySelectorAll(".drag-order-row.dragging").forEach((el) => el.classList.remove("dragging"));
+
+  const afterEl = getOrderInsertBefore(list, ev.clientY);
+  if (afterEl) {
+    list.insertBefore(row, afterEl);
+  } else {
+    list.appendChild(row);
+  }
+  renumberOrderRows(probIdx);
+  saveState();
+  updateProgress();
+}
+
+function getOrderInsertBefore(list, clientY) {
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  for (const child of rows) {
+    const box = child.getBoundingClientRect();
+    if (clientY < box.top + box.height / 2) return child;
+  }
+  return null;
+}
+
+function moveOrderRowByEl(probIdx, btn, direction) {
+  const row = btn.closest(".drag-order-row");
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!row || !list) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  const rowIdx = rows.indexOf(row);
+  const nextIdx = rowIdx + direction;
+  if (nextIdx < 0 || nextIdx >= rows.length) return;
+  const neighbor = rows[nextIdx];
+  if (direction < 0) {
+    list.insertBefore(row, neighbor);
+  } else {
+    list.insertBefore(neighbor, row.nextSibling);
+  }
+  renumberOrderRows(probIdx);
+  saveState();
+  updateProgress();
+}
+
+function renumberOrderRows(probIdx) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list) return;
+  list.querySelectorAll(".drag-order-row").forEach((row, idx) => {
+    const num = row.querySelector(".drag-order-num");
+    if (num) num.textContent = String(idx + 1);
+  });
+}
+
+function restoreOrderList(probIdx, order) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list || !Array.isArray(order)) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  const byText = new Map(rows.map((row) => [row.dataset.stepText, row]));
+  list.innerHTML = "";
+  order.forEach((text) => {
+    const row = byText.get(text);
+    if (row) {
+      list.appendChild(row);
+      row.classList.remove("is-correct", "is-incorrect");
+    }
+  });
+  rows.forEach((row) => {
+    if (!list.contains(row)) list.appendChild(row);
+  });
+  renumberOrderRows(probIdx);
+}
+
+function resetDragOrder(probIdx) {
+  const workspace = document.getElementById("dragorder_" + probIdx);
+  if (!workspace) return;
+  let initial = [];
+  try {
+    initial = JSON.parse(workspace.dataset.initialOrder || "[]");
+  } catch (e) {
+    initial = [];
+  }
+  if (!initial.length) {
+    shuffleOrderRows(probIdx);
+  } else {
+    restoreOrderList(probIdx, initial);
+  }
+  const pCard = document.getElementById("problem_" + probIdx);
+  if (pCard) pCard.classList.remove("correct", "incorrect");
+}
+
+function shuffleOrderRows(probIdx) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  if (rows.length < 2) return;
+  for (let i = rows.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [rows[i], rows[j]] = [rows[j], rows[i]];
+  }
+  list.innerHTML = "";
+  rows.forEach((row) => list.appendChild(row));
+  if (rows.every((row, idx) => row.dataset.stepText === JSON.parse(document.getElementById("dragorder_" + probIdx).dataset.correctOrder || "[]")[idx])) {
+    const last = rows.pop();
+    rows.unshift(last);
+    list.innerHTML = "";
+    rows.forEach((row) => list.appendChild(row));
+  }
+  renumberOrderRows(probIdx);
 }
 
 function mobileMoveCard(select, cardId, probIdx) {
@@ -1673,7 +2331,8 @@ const STORAGE_KEY = "hw_state_lesson_" + ${JSON.stringify(lessonId)};
 function saveState() {
   const state = {
     inputs: {},
-    dragPositions: {}
+    dragPositions: {},
+    orderPositions: {}
   };
   
   // Save text inputs, select dropdowns, textareas, and radios
@@ -1693,6 +2352,11 @@ function saveState() {
     if (parentContainer) {
       state.dragPositions[card.id] = parentContainer.id;
     }
+  });
+
+  document.querySelectorAll(".drag-order-list").forEach((list) => {
+    const probIdx = list.id.replace("orderlist_", "");
+    state.orderPositions[probIdx] = Array.from(list.querySelectorAll(".drag-order-row")).map((row) => row.dataset.stepText);
   });
   
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -1726,18 +2390,34 @@ function loadState() {
         const parent = document.getElementById(parentId);
         if (card && parent) {
           parent.appendChild(card);
-          // Sync select dropdown for mobile
           const select = card.querySelector(".mobile-cat-select");
           if (select) {
-            // parentId is like slots_0_prime
             const parts = parentId.split("_");
-            if (parts.length >= 3) {
+            if (parts.length >= 3 && parts[0] === "slots") {
               select.value = parts.slice(2).join("_");
             } else {
               select.value = "";
             }
           }
         }
+      }
+    }
+
+    if (state.orderPositions) {
+      for (const [probIdx, order] of Object.entries(state.orderPositions)) {
+        const list = document.getElementById("orderlist_" + probIdx);
+        if (!list || !Array.isArray(order)) continue;
+        const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+        const byText = new Map(rows.map((row) => [row.dataset.stepText, row]));
+        list.innerHTML = "";
+        order.forEach((text) => {
+          const row = byText.get(text);
+          if (row) list.appendChild(row);
+        });
+        rows.forEach((row) => {
+          if (!list.contains(row)) list.appendChild(row);
+        });
+        renumberOrderRows(probIdx);
       }
     }
   } catch (e) {
@@ -1776,8 +2456,12 @@ function updateProgress() {
       const answered = selects.filter(s => s.value !== "");
       if (answered.length > 0) hasValue = true;
     } else if (type === "drag-sort") {
-      const itemsInColumns = Array.from(section.querySelectorAll(".drag-column-slots .drag-card"));
-      if (itemsInColumns.length > 0) hasValue = true;
+      if (section.dataset.problemSubtype === "drag-order") {
+        hasValue = true;
+      } else {
+        const itemsInColumns = Array.from(section.querySelectorAll(".drag-column-slots .drag-card"));
+        if (itemsInColumns.length > 0) hasValue = true;
+      }
     } else if (type === "fill-table") {
       const inputs = Array.from(section.querySelectorAll(".table-input"));
       const filled = inputs.filter(i => i.value.trim() !== "");
@@ -1877,28 +2561,49 @@ function checkWorksheet() {
       });
       
     } else if (type === "drag-sort") {
-      const dragCards = section.querySelectorAll(".drag-card");
-      
-      dragCards.forEach(card => {
-        card.classList.remove("is-correct", "is-incorrect");
-        const correctCat = card.dataset.correctCategory;
-        const parentCol = card.parentElement;
-        
-        if (parentCol && parentCol.parentElement && parentCol.parentElement.classList.contains("drag-column")) {
-          const actualCat = parentCol.parentElement.dataset.categoryId;
-          if (actualCat === correctCat) {
-            card.classList.add("is-correct");
+      if (section.dataset.problemSubtype === "drag-order") {
+        const workspace = section.querySelector(".drag-order-workspace");
+        const list = section.querySelector(".drag-order-list");
+        let correct = [];
+        try {
+          correct = JSON.parse(workspace?.dataset.correctOrder || "[]");
+        } catch (e) {
+          correct = [];
+        }
+        const rows = Array.from(list?.querySelectorAll(".drag-order-row") || []);
+        rows.forEach((row, i) => {
+          row.classList.remove("is-correct", "is-incorrect");
+          if (row.dataset.stepText === correct[i]) {
+            row.classList.add("is-correct");
+          } else {
+            isProblemCorrect = false;
+            row.classList.add("is-incorrect");
+          }
+        });
+      } else {
+        const dragCards = section.querySelectorAll(".drag-card");
+
+        dragCards.forEach(card => {
+          card.classList.remove("is-correct", "is-incorrect");
+          const correctCat = card.dataset.correctCategory;
+          const parentCol = card.parentElement;
+
+          const column = card.closest(".drag-column");
+          if (column) {
+            const actualCat = column.dataset.categoryId;
+            if (actualCat === correctCat) {
+              card.classList.add("is-correct");
+            } else {
+              isProblemCorrect = false;
+              card.classList.add("is-incorrect");
+            }
           } else {
             isProblemCorrect = false;
             card.classList.add("is-incorrect");
           }
-        } else {
-          // Card still in source pile
-          isProblemCorrect = false;
-          card.classList.add("is-incorrect");
-        }
-      });
-      
+        });
+      }
+
     } else if (type === "fill-table") {
       const inputs = section.querySelectorAll(".table-input");
       
@@ -2090,7 +2795,12 @@ function resetWorksheet() {
       if (type === "drag-sort") {
         const parts = s.id.split("_");
         const idx = parts[1];
-        resetDragSort(idx);
+        if (s.dataset.problemSubtype === "drag-order") {
+          resetDragOrder(idx);
+          shuffleOrderRows(idx);
+        } else {
+          resetDragSort(idx);
+        }
       }
     });
     
@@ -2120,54 +2830,78 @@ function resetWorksheet() {
 
 // Initial configuration
 window.onload = function() {
+  const hadSavedState = !!localStorage.getItem(STORAGE_KEY);
   loadState();
+  if (!hadSavedState) {
+    document.querySelectorAll(".drag-order-workspace").forEach((workspace) => {
+      const probIdx = workspace.id.replace("dragorder_", "");
+      shuffleOrderRows(probIdx);
+    });
+  }
   updateProgress();
-  
-  // Set up dragging listeners for mobile touch screen card clicks
+
+  document.addEventListener("dragend", function() {
+    document.querySelectorAll(".drag-card.dragging, .drag-order-row.dragging")
+      .forEach((el) => el.classList.remove("dragging"));
+    clearDragOver();
+  });
+
+  document.querySelectorAll(".drag-card").forEach((card) => {
+    card.addEventListener("dragend", () => card.classList.remove("dragging"));
+  });
+
+  // Tap-to-move fallback for touch devices
   let selectedDragCard = null;
-  const cards = document.querySelectorAll(".drag-card");
-  
-  cards.forEach(card => {
+  document.querySelectorAll(".drag-card").forEach((card) => {
     card.addEventListener("click", function(e) {
-      if (e.target.tagName === "SELECT") return; // Let dropdown clicks handle themselves
-      
-      // Toggle select state
+      if (e.target.tagName === "SELECT" || e.target.tagName === "OPTION") return;
       if (selectedDragCard === this) {
         this.style.borderColor = "var(--line)";
         selectedDragCard = null;
       } else {
-        if (selectedDragCard) {
-          selectedDragCard.style.borderColor = "var(--line)";
-        }
+        if (selectedDragCard) selectedDragCard.style.borderColor = "var(--line)";
         selectedDragCard = this;
         this.style.borderColor = "var(--teal)";
       }
     });
   });
-  
-  const columns = document.querySelectorAll(".drag-column");
-  columns.forEach(col => {
-    col.addEventListener("click", function() {
-      if (selectedDragCard) {
-        const probIdx = selectedDragCard.id.split("_")[1];
-        const targetColId = this.dataset.categoryId;
-        
-        // Ensure the card belongs to this problem
-        if (selectedDragCard.id.startsWith("card_" + probIdx + "_")) {
-          const slots = this.querySelector(".drag-column-slots");
-          slots.appendChild(selectedDragCard);
-          
-          // Update corresponding select
-          const select = selectedDragCard.querySelector(".mobile-cat-select");
-          if (select) select.value = targetColId;
-          
-          selectedDragCard.style.borderColor = "var(--line)";
-          selectedDragCard = null;
-          
-          saveState();
-          updateProgress();
-        }
+
+  document.querySelectorAll(".drag-column, .drag-source-pile, .drag-column-slots").forEach((zone) => {
+    zone.addEventListener("click", function() {
+      if (!selectedDragCard) return;
+      const probIdx = selectedDragCard.id.split("_")[1];
+      if (!selectedDragCard.id.startsWith("card_" + probIdx + "_")) return;
+
+      let targetContainer = null;
+      let categoryId = "";
+      if (this.classList.contains("drag-column")) {
+        categoryId = this.dataset.categoryId || "";
+        targetContainer = this.querySelector(".drag-column-slots");
+      } else if (this.classList.contains("drag-column-slots")) {
+        categoryId = this.id.split("_").slice(2).join("_");
+        targetContainer = this;
+      } else if (this.classList.contains("drag-source-pile")) {
+        targetContainer = this;
       }
+
+      if (targetContainer) {
+        targetContainer.appendChild(selectedDragCard);
+        const select = selectedDragCard.querySelector(".mobile-cat-select");
+        if (select) select.value = categoryId;
+        selectedDragCard.style.borderColor = "var(--line)";
+        selectedDragCard = null;
+        saveState();
+        updateProgress();
+      }
+    });
+  });
+
+  document.querySelectorAll(".drag-order-list").forEach((list) => {
+    const probIdx = list.id.replace("orderlist_", "");
+    list.addEventListener("dragover", allowDrop);
+    list.addEventListener("drop", (ev) => handleOrderDrop(ev, probIdx));
+    list.querySelectorAll(".drag-order-row").forEach((row) => {
+      row.addEventListener("dragend", () => row.classList.remove("dragging"));
     });
   });
 };

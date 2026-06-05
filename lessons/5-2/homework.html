@@ -160,7 +160,137 @@ header.homework-header h1 {
   margin: 0 0 16px 0;
 }
 
+/* Family guide */
+.family-guide {
+  background: linear-gradient(180deg, #fffdf8 0%, var(--white) 100%);
+  border-color: #ead9b8;
+}
+
+.family-guide-header {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.family-guide-emoji {
+  font-size: 34px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.family-guide-title {
+  margin-bottom: 4px;
+}
+
+.family-guide-sub {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14.5px;
+}
+
+.family-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.family-panel {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+
+.family-panel-heading {
+  margin: 0 0 8px 0;
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--navy);
+}
+
+.family-tip-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.family-tip-list li {
+  margin-bottom: 6px;
+}
+
+.family-try-text {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.45;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.family-print-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.try-at-home {
+  background: linear-gradient(180deg, var(--teal-light) 0%, var(--white) 100%);
+  border-color: #b8ddd8;
+}
+
+.try-narrative {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.try-challenge {
+  margin: 0;
+  padding: 12px 14px;
+  background: var(--amber-light);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--amber);
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.family-problem-tip {
+  margin: -8px 0 14px 0;
+  padding: 10px 12px;
+  background: var(--amber-light);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  color: var(--hint);
+}
+
+.family-hint-box {
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  color: var(--navy);
+}
+
+.family-hint-box p {
+  margin: 0 0 6px 0;
+}
+
+.family-hint-box p:last-child {
+  margin-bottom: 0;
+}
+
 /* Vocabulary Flashcards */
+.vocab-family-note {
+  margin: -6px 0 14px 0;
+  font-size: 14px;
+  color: var(--muted);
+}
 .vocab-container {
   display: flex;
   gap: 16px;
@@ -179,10 +309,26 @@ header.homework-header h1 {
 }
 
 .vocab-card {
-  flex: 0 0 240px;
-  height: 160px;
+  flex: 0 0 260px;
+  height: 210px;
   perspective: 1000px;
   cursor: pointer;
+}
+
+.vocab-thumb-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.vocab-thumb {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  padding: 4px;
 }
 
 .vocab-card-inner {
@@ -271,6 +417,13 @@ header.homework-header h1 {
   color: var(--amber);
   margin: 6px 0 0 0;
   font-style: italic;
+}
+
+.vocab-back-visual {
+  margin: 10px 0 0 0;
+  font-size: 12px;
+  color: var(--teal-light);
+  line-height: 1.35;
 }
 
 /* Practice Problem Cards */
@@ -550,6 +703,92 @@ header.homework-header h1 {
 .drag-card:active {
   cursor: grabbing;
   transform: scale(0.98);
+}
+
+.drag-card.dragging {
+  opacity: 0.55;
+}
+
+.drag-column.over,
+.drag-source-pile.over {
+  border-color: var(--teal);
+  background: var(--teal-light);
+}
+
+/* Drag order (sequencing) */
+.drag-order-workspace {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.drag-order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drag-order-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--white);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  cursor: grab;
+  user-select: none;
+}
+
+.drag-order-row.dragging {
+  opacity: 0.55;
+}
+
+.drag-order-handle {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.drag-order-num {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--teal);
+  color: var(--white);
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.drag-order-text {
+  flex: 1;
+  font-weight: 600;
+  font-size: 14.5px;
+}
+
+.drag-order-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.order-move-btn {
+  min-width: 0;
+  padding: 4px 10px;
+}
+
+.drag-order-row.is-correct {
+  border-color: var(--success);
+  background: var(--success-bg);
+}
+
+.drag-order-row.is-incorrect {
+  border-color: var(--error);
+  background: var(--error-bg);
 }
 
 .drag-handle {
@@ -1035,13 +1274,61 @@ header.homework-header h1 {
   </header>
 
   
+    <section class="family-guide card" aria-label="Family guide">
+      <div class="family-guide-header">
+        <span class="family-guide-emoji">📐</span>
+        <div>
+          <h2 class="section-title family-guide-title">Family Guide</h2>
+          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+        </div>
+      </div>
+
+      <div class="family-guide-grid">
+        <div class="family-panel family-panel-tips">
+          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
+          <ul class="family-tip-list">
+            <li>Let your student try each problem first. Use <strong>Check Answers</strong> for friendly feedback.</li>
+            <li>Tap vocabulary cards to flip between term and definition.</li>
+            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
+          </ul>
+        </div>
+
+        <div class="family-panel family-panel-home">
+          <h3 class="family-panel-heading">🏡 Try this at home</h3>
+          <p class="family-try-text">The trapezoidal window has a top edge of 4 feet and a bottom edge of 8 feet. Why does the area formula use BOTH bases instead of just one?</p>
+        </div>
+      </div>
+
+      
+        <div class="family-panel family-panel-legend">
+          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
+          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>fill table:</strong> Encourage your student to show their work on paper if a box feels tricky.</li><li><strong>matching game:</strong> Say each term out loud, then talk through which match makes sense before choosing.</li><li><strong>drag sort:</strong> On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</li></ul>
+        </div>
+
+      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
+    </section>
+  
+
+  
+    <section class="try-at-home card" aria-label="Try this at home">
+      <h2 class="section-title">📐 Real-World Connection</h2>
+      <p class="try-narrative">Your architecture firm is designing a trapezoidal window for a modern building. The glass supplier charges by the square foot, so the team must calculate the exact area. The window has a top edge of 4 feet, a bottom edge of 8 feet, and a height of 5 feet.</p>
+      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    </section>
+  
+
+  
     <section class="vocab-section card">
       <h2 class="section-title">🔑 Key Vocabulary</h2>
+      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/trapezoid.svg" alt="Illustration of Trapezoid: A four-sided shape with just one pair of parallel sides." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Trapezoid</h3>
                   <p class="vocab-es">Trapecio</p>
                   <div class="vocab-visual-hint">💡 Example: A table top wider than the bottom shelf — the top and bottom edges are parallel, the two sides slant inward</div>
@@ -1050,6 +1337,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">A four-sided shape with just one pair of parallel sides.</p>
                   <p class="vocab-def-es">Una figura de cuatro lados con solo un par de lados paralelos.</p>
+                  <p class="vocab-back-visual">📌 A table top wider than the bottom shelf — the top and bottom edges are parallel, the two sides slant inward</p>
                 </div>
               </div>
             </div>
@@ -1057,6 +1345,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/trapezoid.svg" alt="Illustration of Base 1 (b1): One of the two parallel sides of a trapezoid." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Base 1 (b1)</h3>
                   <p class="vocab-es">Base 1 (b1)</p>
                   <div class="vocab-visual-hint">💡 Example: If the bottom of the trapezoid is 10 ft, then b₁ = 10 ft in the formula A = ½(b₁ + b₂) × h</div>
@@ -1065,6 +1356,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">One of the two parallel sides of a trapezoid.</p>
                   <p class="vocab-def-es">Uno de los dos lados paralelos de un trapecio.</p>
+                  <p class="vocab-back-visual">📌 If the bottom of the trapezoid is 10 ft, then b₁ = 10 ft in the formula A = ½(b₁ + b₂) × h</p>
                 </div>
               </div>
             </div>
@@ -1072,6 +1364,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/trapezoid.svg" alt="Illustration of Base 2 (b2): The other parallel side of a trapezoid." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Base 2 (b2)</h3>
                   <p class="vocab-es">Base 2 (b2)</p>
                   <div class="vocab-visual-hint">💡 Example: If the top of the trapezoid is 6 ft, then b₂ = 6 ft; both bases are parallel to each other</div>
@@ -1080,6 +1375,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">The other parallel side of a trapezoid.</p>
                   <p class="vocab-def-es">El otro lado paralelo de un trapecio.</p>
+                  <p class="vocab-back-visual">📌 If the top of the trapezoid is 6 ft, then b₂ = 6 ft; both bases are parallel to each other</p>
                 </div>
               </div>
             </div>
@@ -1087,6 +1383,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/height.svg" alt="Illustration of Height: The straight-up distance between the two parallel sides." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Height</h3>
                   <p class="vocab-es">Altura</p>
                   <div class="vocab-visual-hint">💡 Example: A dashed vertical line from the top base straight down to the bottom base at a 90° angle — NOT the slanted side</div>
@@ -1095,6 +1394,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">The straight-up distance between the two parallel sides.</p>
                   <p class="vocab-def-es">La distancia recta entre los dos lados paralelos.</p>
+                  <p class="vocab-back-visual">📌 A dashed vertical line from the top base straight down to the bottom base at a 90° angle — NOT the slanted side</p>
                 </div>
               </div>
             </div>
@@ -1102,6 +1402,9 @@ header.homework-header h1 {
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/area.svg" alt="Illustration of Area: How much space is inside a flat shape." loading="lazy" width="72" height="72" />
+                  </div>
                   <h3>Area</h3>
                   <p class="vocab-es">Área</p>
                   <div class="vocab-visual-hint">💡 Example: A trapezoid with b₁ = 10, b₂ = 6, h = 4 has area = ½(10 + 6) × 4 = 32 sq units</div>
@@ -1110,6 +1413,7 @@ header.homework-header h1 {
                 <div class="vocab-card-back">
                   <p class="vocab-def">How much space is inside a flat shape.</p>
                   <p class="vocab-def-es">Cuánto espacio hay dentro de una figura plana.</p>
+                  <p class="vocab-back-visual">📌 A trapezoid with b₁ = 10, b₂ = 6, h = 4 has area = ½(10 + 6) × 4 = 32 sq units</p>
                 </div>
               </div>
             </div>
@@ -1128,6 +1432,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">What is the area of a trapezoid with bases 6 cm and 10 cm, and height 4 cm?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="A = ½ × (b₁ + b₂) × h = ½ × (6 + 10) × 4 = ½ × 16 × 4 = 32 sq cm.">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1168,6 +1473,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">A trapezoid has an area of 45 sq ft, bases of 7 ft and 11 ft. What is the height?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
         <div class="mc-options" data-correct="0" data-explanation="A = ½ × (b₁ + b₂) × h → 45 = ½ × 18 × h → 45 = 9h → h = 5 ft.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1208,6 +1514,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">Complete the table.</p>
+        <p class="family-problem-tip">👪 Family tip: Encourage your student to show their work on paper if a box feels tricky.</p>
         <div class="table-responsive">
           <table class="fill-table">
             <thead>
@@ -1297,6 +1604,7 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">Match each shape to its area.</p>
+        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
         <div class="matching-pairs">
           
             <div class="matching-row" data-term="Trapezoid b₁=10, b₂=6, h=4" data-correct="32 sq units">
@@ -1371,7 +1679,7 @@ header.homework-header h1 {
     </section>
   
 
-    <section class="problem-section card" id="problem_4" data-problem-type="drag-sort">
+    <section class="problem-section card" id="problem_4" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Problem 5</div>
         <div class="problem-type-badge">DRAG SORT</div>
@@ -1379,33 +1687,32 @@ header.homework-header h1 {
       
       <div class="problem-body">
         <p class="problem-stem">Calculate the area of each trapezoid, then sort by whether the area is greater than 40 sq units or not.</p>
+        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
+        
         <div class="drag-sort-workspace" id="dragsort_4">
-          
           <div class="drag-columns">
             
               <div class="drag-column" data-category-id="greater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'greater')">
                 <div class="drag-column-header">Area &gt; 40 sq units</div>
-                <div class="drag-column-slots" id="slots_4_greater"></div>
+                <div class="drag-column-slots" id="slots_4_greater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'greater')"></div>
               </div>
-            
               <div class="drag-column" data-category-id="notgreater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'notgreater')">
                 <div class="drag-column-header">Area ≤ 40 sq units</div>
-                <div class="drag-column-slots" id="slots_4_notgreater"></div>
+                <div class="drag-column-slots" id="slots_4_notgreater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'notgreater')"></div>
               </div>
-            
           </div>
-          
           <div class="drag-source-section">
-            <div class="drag-source-header">Items to Sort (Drag or use dropdown for mobile):</div>
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
             <div class="drag-source-pile" id="pile_4" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, '')">
               
-                <div class="drag-card" 
-                     draggable="true" 
-                     id="card_4_0" 
-                     data-item-index="0" 
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_4_0"
+                     data-item-index="0"
                      data-correct-category="notgreater"
-                     ondragstart="handleDragStart(event)">
-                  <span class="drag-handle">☰</span>
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">b₁=10, b₂=6, h=4 → A=32</span>
                   <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_0', 4); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
@@ -1413,14 +1720,14 @@ header.homework-header h1 {
                     <option value="">Unsorted Pile</option>
                   </select>
                 </div>
-              
-                <div class="drag-card" 
-                     draggable="true" 
-                     id="card_4_1" 
-                     data-item-index="1" 
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_4_1"
+                     data-item-index="1"
                      data-correct-category="greater"
-                     ondragstart="handleDragStart(event)">
-                  <span class="drag-handle">☰</span>
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">b₁=12, b₂=8, h=5 → A=50</span>
                   <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_1', 4); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
@@ -1428,14 +1735,14 @@ header.homework-header h1 {
                     <option value="">Unsorted Pile</option>
                   </select>
                 </div>
-              
-                <div class="drag-card" 
-                     draggable="true" 
-                     id="card_4_2" 
-                     data-item-index="2" 
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_4_2"
+                     data-item-index="2"
                      data-correct-category="notgreater"
-                     ondragstart="handleDragStart(event)">
-                  <span class="drag-handle">☰</span>
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">b₁=6, b₂=4, h=7 → A=35</span>
                   <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_2', 4); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
@@ -1443,14 +1750,14 @@ header.homework-header h1 {
                     <option value="">Unsorted Pile</option>
                   </select>
                 </div>
-              
-                <div class="drag-card" 
-                     draggable="true" 
-                     id="card_4_3" 
-                     data-item-index="3" 
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_4_3"
+                     data-item-index="3"
                      data-correct-category="greater"
-                     ondragstart="handleDragStart(event)">
-                  <span class="drag-handle">☰</span>
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">b₁=9, b₂=7, h=6 → A=48</span>
                   <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_3', 4); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
@@ -1458,14 +1765,14 @@ header.homework-header h1 {
                     <option value="">Unsorted Pile</option>
                   </select>
                 </div>
-              
-                <div class="drag-card" 
-                     draggable="true" 
-                     id="card_4_4" 
-                     data-item-index="4" 
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_4_4"
+                     data-item-index="4"
                      data-correct-category="notgreater"
-                     ondragstart="handleDragStart(event)">
-                  <span class="drag-handle">☰</span>
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">b₁=5, b₂=3, h=8 → A=32</span>
                   <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_4', 4); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
@@ -1473,14 +1780,14 @@ header.homework-header h1 {
                     <option value="">Unsorted Pile</option>
                   </select>
                 </div>
-              
-                <div class="drag-card" 
-                     draggable="true" 
-                     id="card_4_5" 
-                     data-item-index="5" 
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_4_5"
+                     data-item-index="5"
                      data-correct-category="greater"
-                     ondragstart="handleDragStart(event)">
-                  <span class="drag-handle">☰</span>
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">b₁=14, b₂=6, h=5 → A=50</span>
                   <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_5', 4); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
@@ -1488,10 +1795,8 @@ header.homework-header h1 {
                     <option value="">Unsorted Pile</option>
                   </select>
                 </div>
-              
             </div>
           </div>
-          
         </div>
         <div class="drag-controls">
           <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(4); saveState(); updateProgress();">Reset Sorting</button>
@@ -1508,31 +1813,32 @@ header.homework-header h1 {
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">A trapezoid has parallel sides 6 cm and 10 cm and height 4 cm. What is its area?</p>
-        <div class="mc-options" data-correct="0" data-explanation="Area = ½(b1 + b2)h = ½(6 + 10)(4) = ½ × 16 × 4 = 32 cm².">
+        <p class="problem-stem">Blueprint 1: A trapezoidal lobby window has bases of 6 ft and 10 ft and a height of 4 ft. What is its area for the glass order?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <div class="mc-options" data-correct="0" data-explanation="Use A = ½ × (b1 + b2) × h = ½ × (6 + 10) × 4 = ½ × 16 × 4 = 32 sq ft.">
           
             <label class="mc-option-label" id="label_q_5_0">
               <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">32 cm²</span>
+              <span class="choice-text">32 sq ft</span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_1">
               <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">40 cm²</span>
+              <span class="choice-text">40 sq ft</span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_2">
               <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">64 cm²</span>
+              <span class="choice-text">16 sq ft</span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_3">
               <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">16 cm²</span>
+              <span class="choice-text">60 sq ft</span>
             </label>
           
         </div>
@@ -1548,31 +1854,32 @@ header.homework-header h1 {
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">A trapezoid has bases 8 m and 12 m and height 5 m. What is its area?</p>
-        <div class="mc-options" data-correct="0" data-explanation="½(8 + 12)(5) = ½ × 20 × 5 = 50 m².">
+        <p class="problem-stem">Blueprint 2: A trapezoidal skylight has bases of 9 ft and 7 ft and a height of 6 ft. What is its area?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <div class="mc-options" data-correct="0" data-explanation="A = ½ × (9 + 7) × 6 = ½ × 16 × 6 = ½ × 96 = 48 sq ft.">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">50 m²</span>
+              <span class="choice-text">48 sq ft</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_1">
               <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">100 m²</span>
+              <span class="choice-text">96 sq ft</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_2">
               <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">40 m²</span>
+              <span class="choice-text">63 sq ft</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_3">
               <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">60 m²</span>
+              <span class="choice-text">44 sq ft</span>
             </label>
           
         </div>
@@ -1581,79 +1888,187 @@ header.homework-header h1 {
     </section>
   
 
-    <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_7" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Problem 8</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge">DRAG SORT</div>
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">A trapezoid has area 36 in² and bases 5 in and 7 in. What is its height?</p>
-        <div class="mc-options" data-correct="0" data-explanation="36 = ½(5 + 7)h = 6h, so h = 6 in.">
-          
-            <label class="mc-option-label" id="label_q_7_0">
-              <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">6 in</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_1">
-              <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">3 in</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_2">
-              <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">12 in</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_3">
-              <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">18 in</span>
-            </label>
-          
+        <p class="problem-stem">Each blueprint window lists its bases and height. Find each area, then sort the windows by whether they need more than 40 sq ft of glass.</p>
+        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
+        
+        <div class="drag-sort-workspace" id="dragsort_7">
+          <div class="drag-columns">
+            
+              <div class="drag-column" data-category-id="over" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'over')">
+                <div class="drag-column-header">More than 40 sq ft of glass</div>
+                <div class="drag-column-slots" id="slots_7_over" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'over')"></div>
+              </div>
+              <div class="drag-column" data-category-id="under" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'under')">
+                <div class="drag-column-header">40 sq ft of glass or less</div>
+                <div class="drag-column-slots" id="slots_7_under" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'under')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_7" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_7_0"
+                     data-item-index="0"
+                     data-correct-category="under"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Window: b1=8, b2=6, h=5 → A=35</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_0', 7); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="over">More than 40 sq ft of glass</option><option value="under">40 sq ft of glass or less</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_7_1"
+                     data-item-index="1"
+                     data-correct-category="over"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Window: b1=10, b2=8, h=6 → A=54</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_1', 7); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="over">More than 40 sq ft of glass</option><option value="under">40 sq ft of glass or less</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_7_2"
+                     data-item-index="2"
+                     data-correct-category="under"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Window: b1=4, b2=2, h=9 → A=27</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_2', 7); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="over">More than 40 sq ft of glass</option><option value="under">40 sq ft of glass or less</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_7_3"
+                     data-item-index="3"
+                     data-correct-category="over"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Window: b1=11, b2=9, h=5 → A=50</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_3', 7); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="over">More than 40 sq ft of glass</option><option value="under">40 sq ft of glass or less</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_7_4"
+                     data-item-index="4"
+                     data-correct-category="under"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Window: b1=7, b2=3, h=6 → A=30</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_4', 7); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="over">More than 40 sq ft of glass</option><option value="under">40 sq ft of glass or less</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_7_5"
+                     data-item-index="5"
+                     data-correct-category="over"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Window: b1=13, b2=7, h=8 → A=80</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_5', 7); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="over">More than 40 sq ft of glass</option><option value="under">40 sq ft of glass or less</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(7); saveState(); updateProgress();">Reset Sorting</button>
         </div>
       </div>
     
     </section>
   
 
-    <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_8" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Problem 9</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge">MATCHING GAME</div>
       </div>
       
       <div class="problem-body">
-        <p class="problem-stem">Why is the trapezoid area formula ½(b1 + b2)h?</p>
-        <div class="mc-options" data-correct="0" data-explanation="½(b1 + b2) is the average of the two parallel sides, multiplied by the height.">
+        <p class="problem-stem">Match each blueprint window to the area of glass it needs.</p>
+        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
+        <div class="matching-pairs">
           
-            <label class="mc-option-label" id="label_q_8_0">
-              <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">It averages the two bases, then multiplies by the height</span>
-            </label>
+            <div class="matching-row" data-term="Trapezoid window b1=6, b2=4, h=3" data-correct="15 sq ft">
+              <div class="matching-term">Trapezoid window b1=6, b2=4, h=3</div>
+              <div class="matching-select-container">
+                <select name="q_8_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="15 sq ft">15 sq ft</option><option value="28 sq ft">28 sq ft</option><option value="40 sq ft">40 sq ft</option><option value="60 sq ft">60 sq ft</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
           
-            <label class="mc-option-label" id="label_q_8_1">
-              <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">It adds all four sides</span>
-            </label>
+            <div class="matching-row" data-term="Trapezoid window b1=9, b2=5, h=4" data-correct="28 sq ft">
+              <div class="matching-term">Trapezoid window b1=9, b2=5, h=4</div>
+              <div class="matching-select-container">
+                <select name="q_8_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="15 sq ft">15 sq ft</option><option value="28 sq ft">28 sq ft</option><option value="40 sq ft">40 sq ft</option><option value="60 sq ft">60 sq ft</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
           
-            <label class="mc-option-label" id="label_q_8_2">
-              <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">It uses only the longer base</span>
-            </label>
+            <div class="matching-row" data-term="Trapezoid window b1=10, b2=6, h=5" data-correct="40 sq ft">
+              <div class="matching-term">Trapezoid window b1=10, b2=6, h=5</div>
+              <div class="matching-select-container">
+                <select name="q_8_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="15 sq ft">15 sq ft</option><option value="28 sq ft">28 sq ft</option><option value="40 sq ft">40 sq ft</option><option value="60 sq ft">60 sq ft</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
           
-            <label class="mc-option-label" id="label_q_8_3">
-              <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Trapezoids have no height</span>
-            </label>
+            <div class="matching-row" data-term="Trapezoid window b1=12, b2=8, h=6" data-correct="60 sq ft">
+              <div class="matching-term">Trapezoid window b1=12, b2=8, h=6</div>
+              <div class="matching-select-container">
+                <select name="q_8_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="15 sq ft">15 sq ft</option><option value="28 sq ft">28 sq ft</option><option value="40 sq ft">40 sq ft</option><option value="60 sq ft">60 sq ft</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
           
         </div>
       </div>
@@ -1661,66 +2076,41 @@ header.homework-header h1 {
     </section>
   
 
-    <section class="problem-section card" id="problem_9" data-problem-type="error-analysis">
+    <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ Find the Area Error</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_9_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Identify the bases and height:</span>
-                <span class="step-work">b₁ = 10 m, b₂ = 6 m, h = 7 m</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Write the formula:</span>
-                <span class="step-work">A = ½ × (b₁ + b₂) × h</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Substitute values:</span>
-                <span class="step-work">A = ½ × (10 + 6) × 7</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_4">
-                <span class="step-badge">Step 4</span>
-                <span class="step-label">Calculate:</span>
-                <span class="step-work">A = (10 + 6) × 7 = 112 sq m</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_9">Which step has the error?</label>
-            <select id="error_step_select_9" class="custom-select error-step-select" data-correct="4" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option><option value="4">Step 4</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
+        <p class="problem-stem">Level 2 Extension: Two copies of a trapezoidal window (bases 5 ft and 11 ft) are flipped and joined to make a parallelogram with height 6 ft. The parallelogram&#039;s base is 5 + 11 = 16 ft, so its area is 96 sq ft. What is the area of ONE trapezoid window?</p>
+        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <div class="mc-options" data-correct="0" data-explanation="One trapezoid is half the parallelogram: 96 ÷ 2 = 48 sq ft. This matches A = ½ × (5 + 11) × 6 = ½ × 16 × 6 = 48 sq ft — the ½ comes from the trapezoid being half of the parallelogram.">
           
-          <div class="error-explain-row">
-            <label for="error_explain_input_9">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_9" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
+            <label class="mc-option-label" id="label_q_9_0">
+              <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">48 sq ft</span>
+            </label>
           
-          <div class="reveal-box" id="error_correct_work_9" style="display:none;">
-            <strong>Correct Work Reference:</strong> The student forgot to multiply by ½. A = ½ × 16 × 7 = ½ × 112 = 56 sq m.
-          </div>
+            <label class="mc-option-label" id="label_q_9_1">
+              <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">96 sq ft</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_9_2">
+              <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">16 sq ft</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_9_3">
+              <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">192 sq ft</span>
+            </label>
+          
         </div>
       </div>
     
@@ -1830,29 +2220,50 @@ function playFailureSound() {
 // Drag & Drop engine
 function allowDrop(ev) {
   ev.preventDefault();
+  const zone = ev.currentTarget;
+  if (zone && zone.classList) {
+    zone.classList.add("over");
+  }
 }
 
 function handleDragStart(ev) {
-  ev.dataTransfer.setData("text", ev.target.id);
+  const card = ev.currentTarget.closest(".drag-card");
+  if (!card) return;
+  ev.dataTransfer.setData("text/plain", card.id);
+  ev.dataTransfer.effectAllowed = "move";
+  card.classList.add("dragging");
+}
+
+function handleDragEnd(ev) {
+  const el = ev.currentTarget;
+  if (el) el.classList.remove("dragging");
+  clearDragOver();
+}
+
+function clearDragOver() {
+  document.querySelectorAll(".drag-column.over, .drag-source-pile.over, .drag-column-slots.over")
+    .forEach((el) => el.classList.remove("over"));
 }
 
 function handleDrop(ev, probIdx, categoryId) {
   ev.preventDefault();
-  const cardId = ev.dataTransfer.getData("text");
+  clearDragOver();
+  const cardId = ev.dataTransfer.getData("text/plain") || ev.dataTransfer.getData("text");
   const card = document.getElementById(cardId);
   if (!card) return;
-  
-  // Check if dropping card belongs to this problem
+
+  document.querySelectorAll(".drag-card.dragging").forEach((el) => el.classList.remove("dragging"));
+
   const prefix = "card_" + probIdx + "_";
   if (!card.id.startsWith(prefix)) return;
-  
+
   let targetContainer;
   if (categoryId) {
     targetContainer = document.getElementById("slots_" + probIdx + "_" + categoryId);
   } else {
     targetContainer = document.getElementById("pile_" + probIdx);
   }
-  
+
   if (targetContainer) {
     targetContainer.appendChild(card);
     const select = card.querySelector(".mobile-cat-select");
@@ -1860,6 +2271,127 @@ function handleDrop(ev, probIdx, categoryId) {
     saveState();
     updateProgress();
   }
+}
+
+function handleOrderDragStart(ev) {
+  const row = ev.currentTarget.closest(".drag-order-row");
+  if (!row) return;
+  ev.dataTransfer.setData("text/plain", row.id);
+  ev.dataTransfer.effectAllowed = "move";
+  row.classList.add("dragging");
+}
+
+function handleOrderDrop(ev, probIdx) {
+  ev.preventDefault();
+  const list = document.getElementById("orderlist_" + probIdx);
+  const rowId = ev.dataTransfer.getData("text/plain") || ev.dataTransfer.getData("text");
+  const row = document.getElementById(rowId);
+  if (!list || !row || !row.id.startsWith("order_" + probIdx + "_")) return;
+  document.querySelectorAll(".drag-order-row.dragging").forEach((el) => el.classList.remove("dragging"));
+
+  const afterEl = getOrderInsertBefore(list, ev.clientY);
+  if (afterEl) {
+    list.insertBefore(row, afterEl);
+  } else {
+    list.appendChild(row);
+  }
+  renumberOrderRows(probIdx);
+  saveState();
+  updateProgress();
+}
+
+function getOrderInsertBefore(list, clientY) {
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  for (const child of rows) {
+    const box = child.getBoundingClientRect();
+    if (clientY < box.top + box.height / 2) return child;
+  }
+  return null;
+}
+
+function moveOrderRowByEl(probIdx, btn, direction) {
+  const row = btn.closest(".drag-order-row");
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!row || !list) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  const rowIdx = rows.indexOf(row);
+  const nextIdx = rowIdx + direction;
+  if (nextIdx < 0 || nextIdx >= rows.length) return;
+  const neighbor = rows[nextIdx];
+  if (direction < 0) {
+    list.insertBefore(row, neighbor);
+  } else {
+    list.insertBefore(neighbor, row.nextSibling);
+  }
+  renumberOrderRows(probIdx);
+  saveState();
+  updateProgress();
+}
+
+function renumberOrderRows(probIdx) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list) return;
+  list.querySelectorAll(".drag-order-row").forEach((row, idx) => {
+    const num = row.querySelector(".drag-order-num");
+    if (num) num.textContent = String(idx + 1);
+  });
+}
+
+function restoreOrderList(probIdx, order) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list || !Array.isArray(order)) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  const byText = new Map(rows.map((row) => [row.dataset.stepText, row]));
+  list.innerHTML = "";
+  order.forEach((text) => {
+    const row = byText.get(text);
+    if (row) {
+      list.appendChild(row);
+      row.classList.remove("is-correct", "is-incorrect");
+    }
+  });
+  rows.forEach((row) => {
+    if (!list.contains(row)) list.appendChild(row);
+  });
+  renumberOrderRows(probIdx);
+}
+
+function resetDragOrder(probIdx) {
+  const workspace = document.getElementById("dragorder_" + probIdx);
+  if (!workspace) return;
+  let initial = [];
+  try {
+    initial = JSON.parse(workspace.dataset.initialOrder || "[]");
+  } catch (e) {
+    initial = [];
+  }
+  if (!initial.length) {
+    shuffleOrderRows(probIdx);
+  } else {
+    restoreOrderList(probIdx, initial);
+  }
+  const pCard = document.getElementById("problem_" + probIdx);
+  if (pCard) pCard.classList.remove("correct", "incorrect");
+}
+
+function shuffleOrderRows(probIdx) {
+  const list = document.getElementById("orderlist_" + probIdx);
+  if (!list) return;
+  const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+  if (rows.length < 2) return;
+  for (let i = rows.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [rows[i], rows[j]] = [rows[j], rows[i]];
+  }
+  list.innerHTML = "";
+  rows.forEach((row) => list.appendChild(row));
+  if (rows.every((row, idx) => row.dataset.stepText === JSON.parse(document.getElementById("dragorder_" + probIdx).dataset.correctOrder || "[]")[idx])) {
+    const last = rows.pop();
+    rows.unshift(last);
+    list.innerHTML = "";
+    rows.forEach((row) => list.appendChild(row));
+  }
+  renumberOrderRows(probIdx);
 }
 
 function mobileMoveCard(select, cardId, probIdx) {
@@ -1943,7 +2475,8 @@ const STORAGE_KEY = "hw_state_lesson_" + "5-2";
 function saveState() {
   const state = {
     inputs: {},
-    dragPositions: {}
+    dragPositions: {},
+    orderPositions: {}
   };
   
   // Save text inputs, select dropdowns, textareas, and radios
@@ -1963,6 +2496,11 @@ function saveState() {
     if (parentContainer) {
       state.dragPositions[card.id] = parentContainer.id;
     }
+  });
+
+  document.querySelectorAll(".drag-order-list").forEach((list) => {
+    const probIdx = list.id.replace("orderlist_", "");
+    state.orderPositions[probIdx] = Array.from(list.querySelectorAll(".drag-order-row")).map((row) => row.dataset.stepText);
   });
   
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -1996,18 +2534,34 @@ function loadState() {
         const parent = document.getElementById(parentId);
         if (card && parent) {
           parent.appendChild(card);
-          // Sync select dropdown for mobile
           const select = card.querySelector(".mobile-cat-select");
           if (select) {
-            // parentId is like slots_0_prime
             const parts = parentId.split("_");
-            if (parts.length >= 3) {
+            if (parts.length >= 3 && parts[0] === "slots") {
               select.value = parts.slice(2).join("_");
             } else {
               select.value = "";
             }
           }
         }
+      }
+    }
+
+    if (state.orderPositions) {
+      for (const [probIdx, order] of Object.entries(state.orderPositions)) {
+        const list = document.getElementById("orderlist_" + probIdx);
+        if (!list || !Array.isArray(order)) continue;
+        const rows = Array.from(list.querySelectorAll(".drag-order-row"));
+        const byText = new Map(rows.map((row) => [row.dataset.stepText, row]));
+        list.innerHTML = "";
+        order.forEach((text) => {
+          const row = byText.get(text);
+          if (row) list.appendChild(row);
+        });
+        rows.forEach((row) => {
+          if (!list.contains(row)) list.appendChild(row);
+        });
+        renumberOrderRows(probIdx);
       }
     }
   } catch (e) {
@@ -2046,8 +2600,12 @@ function updateProgress() {
       const answered = selects.filter(s => s.value !== "");
       if (answered.length > 0) hasValue = true;
     } else if (type === "drag-sort") {
-      const itemsInColumns = Array.from(section.querySelectorAll(".drag-column-slots .drag-card"));
-      if (itemsInColumns.length > 0) hasValue = true;
+      if (section.dataset.problemSubtype === "drag-order") {
+        hasValue = true;
+      } else {
+        const itemsInColumns = Array.from(section.querySelectorAll(".drag-column-slots .drag-card"));
+        if (itemsInColumns.length > 0) hasValue = true;
+      }
     } else if (type === "fill-table") {
       const inputs = Array.from(section.querySelectorAll(".table-input"));
       const filled = inputs.filter(i => i.value.trim() !== "");
@@ -2147,28 +2705,49 @@ function checkWorksheet() {
       });
       
     } else if (type === "drag-sort") {
-      const dragCards = section.querySelectorAll(".drag-card");
-      
-      dragCards.forEach(card => {
-        card.classList.remove("is-correct", "is-incorrect");
-        const correctCat = card.dataset.correctCategory;
-        const parentCol = card.parentElement;
-        
-        if (parentCol && parentCol.parentElement && parentCol.parentElement.classList.contains("drag-column")) {
-          const actualCat = parentCol.parentElement.dataset.categoryId;
-          if (actualCat === correctCat) {
-            card.classList.add("is-correct");
+      if (section.dataset.problemSubtype === "drag-order") {
+        const workspace = section.querySelector(".drag-order-workspace");
+        const list = section.querySelector(".drag-order-list");
+        let correct = [];
+        try {
+          correct = JSON.parse(workspace?.dataset.correctOrder || "[]");
+        } catch (e) {
+          correct = [];
+        }
+        const rows = Array.from(list?.querySelectorAll(".drag-order-row") || []);
+        rows.forEach((row, i) => {
+          row.classList.remove("is-correct", "is-incorrect");
+          if (row.dataset.stepText === correct[i]) {
+            row.classList.add("is-correct");
+          } else {
+            isProblemCorrect = false;
+            row.classList.add("is-incorrect");
+          }
+        });
+      } else {
+        const dragCards = section.querySelectorAll(".drag-card");
+
+        dragCards.forEach(card => {
+          card.classList.remove("is-correct", "is-incorrect");
+          const correctCat = card.dataset.correctCategory;
+          const parentCol = card.parentElement;
+
+          const column = card.closest(".drag-column");
+          if (column) {
+            const actualCat = column.dataset.categoryId;
+            if (actualCat === correctCat) {
+              card.classList.add("is-correct");
+            } else {
+              isProblemCorrect = false;
+              card.classList.add("is-incorrect");
+            }
           } else {
             isProblemCorrect = false;
             card.classList.add("is-incorrect");
           }
-        } else {
-          // Card still in source pile
-          isProblemCorrect = false;
-          card.classList.add("is-incorrect");
-        }
-      });
-      
+        });
+      }
+
     } else if (type === "fill-table") {
       const inputs = section.querySelectorAll(".table-input");
       
@@ -2360,7 +2939,12 @@ function resetWorksheet() {
       if (type === "drag-sort") {
         const parts = s.id.split("_");
         const idx = parts[1];
-        resetDragSort(idx);
+        if (s.dataset.problemSubtype === "drag-order") {
+          resetDragOrder(idx);
+          shuffleOrderRows(idx);
+        } else {
+          resetDragSort(idx);
+        }
       }
     });
     
@@ -2390,54 +2974,78 @@ function resetWorksheet() {
 
 // Initial configuration
 window.onload = function() {
+  const hadSavedState = !!localStorage.getItem(STORAGE_KEY);
   loadState();
+  if (!hadSavedState) {
+    document.querySelectorAll(".drag-order-workspace").forEach((workspace) => {
+      const probIdx = workspace.id.replace("dragorder_", "");
+      shuffleOrderRows(probIdx);
+    });
+  }
   updateProgress();
-  
-  // Set up dragging listeners for mobile touch screen card clicks
+
+  document.addEventListener("dragend", function() {
+    document.querySelectorAll(".drag-card.dragging, .drag-order-row.dragging")
+      .forEach((el) => el.classList.remove("dragging"));
+    clearDragOver();
+  });
+
+  document.querySelectorAll(".drag-card").forEach((card) => {
+    card.addEventListener("dragend", () => card.classList.remove("dragging"));
+  });
+
+  // Tap-to-move fallback for touch devices
   let selectedDragCard = null;
-  const cards = document.querySelectorAll(".drag-card");
-  
-  cards.forEach(card => {
+  document.querySelectorAll(".drag-card").forEach((card) => {
     card.addEventListener("click", function(e) {
-      if (e.target.tagName === "SELECT") return; // Let dropdown clicks handle themselves
-      
-      // Toggle select state
+      if (e.target.tagName === "SELECT" || e.target.tagName === "OPTION") return;
       if (selectedDragCard === this) {
         this.style.borderColor = "var(--line)";
         selectedDragCard = null;
       } else {
-        if (selectedDragCard) {
-          selectedDragCard.style.borderColor = "var(--line)";
-        }
+        if (selectedDragCard) selectedDragCard.style.borderColor = "var(--line)";
         selectedDragCard = this;
         this.style.borderColor = "var(--teal)";
       }
     });
   });
-  
-  const columns = document.querySelectorAll(".drag-column");
-  columns.forEach(col => {
-    col.addEventListener("click", function() {
-      if (selectedDragCard) {
-        const probIdx = selectedDragCard.id.split("_")[1];
-        const targetColId = this.dataset.categoryId;
-        
-        // Ensure the card belongs to this problem
-        if (selectedDragCard.id.startsWith("card_" + probIdx + "_")) {
-          const slots = this.querySelector(".drag-column-slots");
-          slots.appendChild(selectedDragCard);
-          
-          // Update corresponding select
-          const select = selectedDragCard.querySelector(".mobile-cat-select");
-          if (select) select.value = targetColId;
-          
-          selectedDragCard.style.borderColor = "var(--line)";
-          selectedDragCard = null;
-          
-          saveState();
-          updateProgress();
-        }
+
+  document.querySelectorAll(".drag-column, .drag-source-pile, .drag-column-slots").forEach((zone) => {
+    zone.addEventListener("click", function() {
+      if (!selectedDragCard) return;
+      const probIdx = selectedDragCard.id.split("_")[1];
+      if (!selectedDragCard.id.startsWith("card_" + probIdx + "_")) return;
+
+      let targetContainer = null;
+      let categoryId = "";
+      if (this.classList.contains("drag-column")) {
+        categoryId = this.dataset.categoryId || "";
+        targetContainer = this.querySelector(".drag-column-slots");
+      } else if (this.classList.contains("drag-column-slots")) {
+        categoryId = this.id.split("_").slice(2).join("_");
+        targetContainer = this;
+      } else if (this.classList.contains("drag-source-pile")) {
+        targetContainer = this;
       }
+
+      if (targetContainer) {
+        targetContainer.appendChild(selectedDragCard);
+        const select = selectedDragCard.querySelector(".mobile-cat-select");
+        if (select) select.value = categoryId;
+        selectedDragCard.style.borderColor = "var(--line)";
+        selectedDragCard = null;
+        saveState();
+        updateProgress();
+      }
+    });
+  });
+
+  document.querySelectorAll(".drag-order-list").forEach((list) => {
+    const probIdx = list.id.replace("orderlist_", "");
+    list.addEventListener("dragover", allowDrop);
+    list.addEventListener("drop", (ev) => handleOrderDrop(ev, probIdx));
+    list.querySelectorAll(".drag-order-row").forEach((row) => {
+      row.addEventListener("dragend", () => row.classList.remove("dragging"));
     });
   });
 };
