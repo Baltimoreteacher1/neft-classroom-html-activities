@@ -431,6 +431,55 @@ header.homework-header h1 {
   position: relative;
 }
 
+.problem-check-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 2px solid var(--teal-light);
+}
+
+.btn-check-one {
+  align-self: flex-start;
+  min-height: 44px;
+  font-size: 14px;
+}
+
+.problem-check-result {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: var(--cream);
+  color: var(--muted);
+  min-height: 0;
+}
+
+.problem-check-result:empty {
+  display: none;
+}
+
+.problem-check-result.is-correct {
+  background: var(--success-bg);
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.problem-check-result.is-incorrect {
+  background: var(--error-bg);
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.problem-check-result.is-hint {
+  background: var(--hint-bg);
+  border-color: var(--amber);
+  color: var(--hint);
+}
+
 .problem-header-row {
   display: flex;
   justify-content: space-between;
@@ -1287,7 +1336,7 @@ header.homework-header h1 {
         <div class="family-panel family-panel-tips">
           <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
           <ul class="family-tip-list">
-            <li>Let your student try each problem first. Use <strong>Check Answers</strong> for friendly feedback.</li>
+            <li>Let your student try each problem first. Tap <strong>Check This Problem</strong> on any question for instant feedback — no need to finish the whole page.</li>
             <li>Tap vocabulary cards to flip between term and definition.</li>
             <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
           </ul>
@@ -1462,6 +1511,12 @@ header.homework-header h1 {
         </div>
       </div>
     
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">
+          ✓ Check This Problem
+        </button>
+        <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
     </section>
   
 
@@ -1503,6 +1558,12 @@ header.homework-header h1 {
         </div>
       </div>
     
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
+          ✓ Check This Problem
+        </button>
+        <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
     </section>
   
 
@@ -1577,6 +1638,12 @@ header.homework-header h1 {
         </div>
       </div>
     
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">
+          ✓ Check This Problem
+        </button>
+        <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
     </section>
   
 
@@ -1618,6 +1685,12 @@ header.homework-header h1 {
         </div>
       </div>
     
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">
+          ✓ Check This Problem
+        </button>
+        <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
     </section>
   
 
@@ -1630,13 +1703,13 @@ header.homework-header h1 {
       <div class="problem-body">
         <p class="problem-stem">Sort these rectangular prisms from LEAST surface area to GREATEST surface area.</p>
         <p class="family-problem-tip">👪 Family tip: Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</p>
-        <div class="drag-order-workspace" id="dragorder_4" data-correct-order='[&quot;2 × 2 × 2: SA = 24&quot;,&quot;10 × 1 × 1: SA = 42&quot;,&quot;3 × 3 × 3: SA = 54&quot;,&quot;6 × 4 × 2: SA = 88&quot;,&quot;5 × 4 × 3: SA = 94&quot;]' data-initial-order='[&quot;6 × 4 × 2: SA = 88&quot;,&quot;10 × 1 × 1: SA = 42&quot;,&quot;2 × 2 × 2: SA = 24&quot;,&quot;5 × 4 × 3: SA = 94&quot;,&quot;3 × 3 × 3: SA = 54&quot;]'>
+        <div class="drag-order-workspace" id="dragorder_4" data-correct-order='[&quot;2 × 2 × 2: SA = 24&quot;,&quot;10 × 1 × 1: SA = 42&quot;,&quot;3 × 3 × 3: SA = 54&quot;,&quot;6 × 4 × 2: SA = 88&quot;,&quot;5 × 4 × 3: SA = 94&quot;]' data-initial-order='[&quot;5 × 4 × 3: SA = 94&quot;,&quot;10 × 1 × 1: SA = 42&quot;,&quot;3 × 3 × 3: SA = 54&quot;,&quot;2 × 2 × 2: SA = 24&quot;,&quot;6 × 4 × 2: SA = 88&quot;]'>
           <div class="drag-order-list" id="orderlist_4">
             
-              <div class="drag-order-row" draggable="true" id="order_4_0" data-step-text="6 × 4 × 2: SA = 88" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_4_0" data-step-text="5 × 4 × 3: SA = 94" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">1</span>
-                <span class="drag-order-text">6 × 4 × 2: SA = 88</span>
+                <span class="drag-order-text">5 × 4 × 3: SA = 94</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
@@ -1651,28 +1724,28 @@ header.homework-header h1 {
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_4_2" data-step-text="2 × 2 × 2: SA = 24" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_4_2" data-step-text="3 × 3 × 3: SA = 54" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">3</span>
+                <span class="drag-order-text">3 × 3 × 3: SA = 54</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+              <div class="drag-order-row" draggable="true" id="order_4_3" data-step-text="2 × 2 × 2: SA = 24" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">4</span>
                 <span class="drag-order-text">2 × 2 × 2: SA = 24</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_4_3" data-step-text="5 × 4 × 3: SA = 94" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">4</span>
-                <span class="drag-order-text">5 × 4 × 3: SA = 94</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_4_4" data-step-text="3 × 3 × 3: SA = 54" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_4_4" data-step-text="6 × 4 × 2: SA = 88" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">5</span>
-                <span class="drag-order-text">3 × 3 × 3: SA = 54</span>
+                <span class="drag-order-text">6 × 4 × 2: SA = 88</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
@@ -1685,6 +1758,12 @@ header.homework-header h1 {
         </div>
       </div>
     
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">
+          ✓ Check This Problem
+        </button>
+        <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
     </section>
   
 
@@ -1726,6 +1805,12 @@ header.homework-header h1 {
         </div>
       </div>
     
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
+          ✓ Check This Problem
+        </button>
+        <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
     </section>
   
 
@@ -1767,6 +1852,12 @@ header.homework-header h1 {
         </div>
       </div>
     
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
+          ✓ Check This Problem
+        </button>
+        <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
     </section>
   
 
@@ -1850,6 +1941,12 @@ header.homework-header h1 {
         </div>
       </div>
     
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">
+          ✓ Check This Problem
+        </button>
+        <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
     </section>
   
 
@@ -1977,6 +2074,12 @@ header.homework-header h1 {
         </div>
       </div>
     
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
+          ✓ Check This Problem
+        </button>
+        <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
     </section>
   
 
@@ -2018,6 +2121,12 @@ header.homework-header h1 {
         </div>
       </div>
     
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
+          ✓ Check This Problem
+        </button>
+        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
     </section>
   
   </main>
@@ -2040,7 +2149,7 @@ header.homework-header h1 {
     
     <div class="action-buttons">
       <button class="btn btn-secondary" onclick="resetWorksheet()">Reset</button>
-      <button class="btn btn-primary" onclick="checkWorksheet()">Check Answers</button>
+      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All Problems</button>
     </div>
   </div>
 </div>
@@ -2532,21 +2641,53 @@ function updateProgress() {
   document.getElementById("progress_text").textContent = completedCount + " / " + total + " Completed";
 }
 
-function checkWorksheet() {
-  const problems = document.querySelectorAll(".problem-section");
-  let correctCount = 0;
-  let hasIncorrect = false;
-  
-  problems.forEach((section, idx) => {
-    const type = section.dataset.problemType;
-    let isProblemCorrect = true;
-    
-    // Clear previous check classes
-    section.classList.remove("correct", "incorrect");
-    const explanationBoxes = section.querySelectorAll(".explanation-box");
-    explanationBoxes.forEach(b => b.remove());
-    
-    if (type === "multiple-choice") {
+function setProblemCheckResult(idx, isCorrect, message, tone) {
+  const resultEl = document.getElementById("problem_result_" + idx);
+  if (!resultEl) return;
+  resultEl.textContent = message || "";
+  resultEl.className = "problem-check-result";
+  if (message) {
+    resultEl.classList.add(tone || (isCorrect ? "is-correct" : "is-incorrect"));
+  }
+}
+
+function playCheckSound(isCorrect) {
+  if (isCorrect) {
+    if (!soundEnabled) return;
+    try {
+      initAudio();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(523.25, now);
+      gain.gain.setValueAtTime(0.07, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.22);
+    } catch (e) {}
+  } else {
+    playFailureSound();
+  }
+}
+
+function checkProblem(idx, options) {
+  const silent = options && options.silent;
+  const section = document.getElementById("problem_" + idx);
+  if (!section) return { correct: false, message: "" };
+
+  const type = section.dataset.problemType;
+  let isProblemCorrect = true;
+  let feedbackMessage = "";
+
+  section.classList.remove("correct", "incorrect");
+  const explanationBoxes = section.querySelectorAll(".explanation-box");
+  explanationBoxes.forEach((b) => b.remove());
+
+  if (type === "multiple-choice") {
       const container = section.querySelector(".mc-options");
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
@@ -2770,23 +2911,108 @@ function checkWorksheet() {
         expDiv.style.color = "var(--error)";
         expDiv.innerHTML = "<strong>Hint:</strong> " + msg;
         textarea.parentElement.parentElement.appendChild(expDiv);
+        feedbackMessage = msg;
       }
     }
-    
-    if (isProblemCorrect) {
-      correctCount++;
-      section.classList.add("correct");
-    } else {
-      hasIncorrect = true;
-      section.classList.add("incorrect");
+
+  // Build per-problem feedback message
+  if (!feedbackMessage) {
+    if (type === "multiple-choice") {
+      const container = section.querySelector(".mc-options");
+      const explanation = container?.dataset.explanation || "";
+      if (isProblemCorrect) {
+        feedbackMessage = explanation
+          ? "Correct! " + explanation
+          : "Correct! Nice work on this one.";
+      } else if (!section.querySelector("input[type='radio']:checked")) {
+        feedbackMessage = "Choose an answer, then check again.";
+      } else {
+        feedbackMessage = explanation
+          ? "Not quite — the correct choice is highlighted. " + explanation
+          : "Not quite — the correct choice is highlighted in green.";
+      }
+    } else if (type === "matching-game") {
+      const rows = section.querySelectorAll(".matching-row");
+      const right = Array.from(rows).filter((row) => {
+        const sel = row.querySelector(".matching-select");
+        return sel && sel.value === row.dataset.correct;
+      }).length;
+      feedbackMessage = isProblemCorrect
+        ? "All " + rows.length + " matches are correct!"
+        : right + " of " + rows.length + " matches correct. Fix the red dropdowns and check again.";
+    } else if (type === "drag-sort") {
+      if (section.dataset.problemSubtype === "drag-order") {
+        const rows = section.querySelectorAll(".drag-order-row");
+        const right = Array.from(rows).filter((r) => r.classList.contains("is-correct")).length;
+        feedbackMessage = isProblemCorrect
+          ? "Perfect order! Every step is in the right sequence."
+          : right + " of " + rows.length + " steps in the right spot. Use ▲ ▼ to rearrange.";
+      } else {
+        const cards = section.querySelectorAll(".drag-card");
+        const right = Array.from(cards).filter((c) => c.classList.contains("is-correct")).length;
+        feedbackMessage = isProblemCorrect
+          ? "Every card is sorted into the correct column!"
+          : right + " of " + cards.length + " cards in the right place. Move the highlighted cards.";
+      }
+    } else if (type === "fill-table") {
+      const inputs = section.querySelectorAll(".table-input");
+      const right = Array.from(inputs).filter((i) => i.classList.contains("is-correct")).length;
+      feedbackMessage = isProblemCorrect
+        ? "Table complete — all answers look good!"
+        : right + " of " + inputs.length + " cells correct. Check the red boxes.";
+    } else if (type === "error-analysis") {
+      feedbackMessage = isProblemCorrect
+        ? "Great detective work! You found the error and explained it."
+        : "Check the step you selected and write a fuller explanation (at least 15 characters).";
+    } else if (type === "open-response") {
+      feedbackMessage = isProblemCorrect
+        ? "Strong explanation! You included enough detail and vocabulary."
+        : feedbackMessage || "Add more detail or key vocabulary, then check again.";
     }
+  }
+
+  if (isProblemCorrect) {
+    section.classList.add("correct");
+  } else {
+    section.classList.add("incorrect");
+  }
+
+  setProblemCheckResult(idx, isProblemCorrect, feedbackMessage);
+
+  if (!silent) {
+    playCheckSound(isProblemCorrect);
+    updateScoreSummary();
+  }
+
+  return { correct: isProblemCorrect, message: feedbackMessage };
+}
+
+function updateScoreSummary() {
+  const problems = document.querySelectorAll(".problem-section");
+  const checked = Array.from(problems).filter((s) => s.classList.contains("correct") || s.classList.contains("incorrect"));
+  const correctCount = Array.from(problems).filter((s) => s.classList.contains("correct")).length;
+  const total = problems.length;
+  if (checked.length > 0) {
+    document.getElementById("progress_text").textContent = "Score: " + correctCount + " / " + total + " Correct";
+    document.getElementById("progress_bar").style.width = (correctCount / total * 100) + "%";
+  } else {
+    updateProgress();
+  }
+}
+
+function checkWorksheet() {
+  const problems = document.querySelectorAll(".problem-section");
+  let correctCount = 0;
+
+  problems.forEach((section, idx) => {
+    const result = checkProblem(idx, { silent: true });
+    if (result.correct) correctCount++;
   });
-  
-  // Dynamic Score Feedback & Sound Effects
+
   const total = problems.length;
   document.getElementById("progress_text").textContent = "Score: " + correctCount + " / " + total + " Correct";
   document.getElementById("progress_bar").style.width = (correctCount / total * 100) + "%";
-  
+
   if (correctCount === total) {
     playSuccessArpeggio();
   } else {
@@ -2828,6 +3054,11 @@ function resetWorksheet() {
     badges.forEach(b => b.className = "feedback-badge");
     
     const sections = document.querySelectorAll(".problem-section");
+    document.querySelectorAll(".problem-check-result").forEach((el) => {
+      el.textContent = "";
+      el.className = "problem-check-result";
+    });
+
     sections.forEach(s => {
       s.classList.remove("correct", "incorrect");
       const expBoxes = s.querySelectorAll(".explanation-box");
