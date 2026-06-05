@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interactive Homework — Lesson 10-5: Surface Area of Pyramids</title>
+<title>Help Your Student — Lesson 10-5: Surface Area of Pyramids</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -266,6 +266,13 @@ header.homework-header h1 {
   border-radius: var(--radius-sm);
   font-size: 13.5px;
   color: var(--hint);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.family-problem-tip .lang-es {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .family-hint-box {
@@ -1306,70 +1313,348 @@ header.homework-header h1 {
     justify-content: center;
   }
 }
+
+/* Family guided notes layout */
+.family-welcome {
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  color: var(--white);
+  border: none;
+  padding: 28px 24px;
+}
+.welcome-hero {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.welcome-emoji { font-size: 48px; line-height: 1; }
+.welcome-tag {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal-light);
+  font-weight: 800;
+}
+.welcome-title-en, .welcome-title-es {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 5vw, 34px);
+  font-weight: 800;
+  line-height: 1.15;
+}
+.welcome-title-es { color: var(--amber); font-size: clamp(22px, 4.5vw, 30px); margin-top: 2px; }
+.welcome-lesson { margin: 8px 0 0; font-size: 16px; color: var(--teal-light); font-weight: 600; }
+.welcome-lead { margin: 0 0 12px; font-size: 15px; line-height: 1.5; }
+.family-welcome .back-link { color: var(--amber); margin: 0; }
+.family-welcome .back-link:hover { color: var(--white); }
+
+.bilingual-block, .bilingual-grid { display: flex; flex-direction: column; gap: 10px; }
+.bilingual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 640px) {
+  .bilingual-grid { grid-template-columns: 1fr; }
+}
+.bilingual-col {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.lang-label {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal);
+  margin-bottom: 6px;
+}
+.lang-en { margin: 0 0 6px; }
+.lang-es { margin: 0; color: var(--muted); font-style: normal; }
+.learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
+.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+
+.guided-section { scroll-margin-top: 16px; }
+.section-learn { border-left: 4px solid var(--teal); }
+.section-visual { border-left: 4px solid var(--amber); }
+.section-together { border-left: 4px solid #5b8def; }
+.section-vocab { border-left: 4px solid var(--coral); }
+.section-stuck { border-left: 4px solid #9b59b6; }
+.section-quick-intro { border-left: 4px solid var(--success); }
+.section-celebrate {
+  border-left: 4px solid var(--amber);
+  background: linear-gradient(180deg, var(--amber-light), var(--white));
+  text-align: center;
+}
+
+.concept-visual-wrap { margin: 12px 0 16px; overflow-x: auto; }
+.concept-svg { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.concept-fallback-visual { display: flex; flex-direction: column; gap: 8px; }
+.concept-fallback-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  font-weight: 600; font-size: 14px;
+}
+.step-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; color: var(--white);
+  flex-shrink: 0;
+}
+.step-color-1 .step-dot, .step-color-1.step-badge { background: #5b8def; }
+.step-color-2 .step-dot, .step-color-2.step-badge { background: var(--success); }
+.step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
+.step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
+
+.key-idea-banner {
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid #b8ddd8;
+}
+.key-idea-banner p { margin: 0 0 6px; font-size: 14.5px; }
+.key-idea-banner p:last-child { margin-bottom: 0; }
+
+.guided-steps, .together-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.guided-step, .together-step {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  background: var(--white);
+}
+.step-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  padding: 3px 8px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+}
+.guided-step p, .together-step p { margin: 0 0 6px; font-size: 14.5px; line-height: 1.45; }
+.step-hint {
+  margin: 8px 0 0 !important;
+  padding: 8px 10px;
+  background: var(--hint-bg);
+  border-radius: var(--radius-sm);
+  font-size: 13px !important;
+  color: var(--hint);
+}
+
+.watch-for-list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.watch-for-list li {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
+}
+.watch-icon { font-size: 20px; flex-shrink: 0; }
+
+.try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
+.try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
+
+.stuck-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+@media (max-width: 640px) { .stuck-grid { grid-template-columns: 1fr; } }
+.stuck-panel {
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+}
+.stuck-say { background: var(--success-bg); border-color: var(--success); }
+.stuck-dont { background: var(--error-bg); border-color: var(--error); }
+.stuck-heading { margin: 0 0 10px; font-family: var(--font-display); font-size: 14px; color: var(--navy); }
+.stuck-panel ul { margin: 0; padding-left: 16px; }
+.stuck-panel li { margin-bottom: 10px; font-size: 14px; }
+.stuck-panel li p { margin: 0 0 4px; }
+.stuck-footer { font-size: 14px; color: var(--muted); margin: 0; }
+
+.celebrate-text { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; }
+.celebrate-sub { font-size: 14px; margin: 0; }
+
+.problems-container .problem-section { border-left: 4px solid var(--teal); }
+.problems-container .problem-number-badge::after {
+  content: " / Repaso";
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
 </style>
 </head>
 <body>
 
 <div class="container">
-  
-  <header class="homework-header">
-    <a href="/curriculum/" class="back-link">⬅ Curriculum Hub</a>
-    <div class="header-meta">Unit 10 · Standard 6.G.4 · Homework</div>
-    <h1>Surface Area of Pyramids</h1>
-    <div class="objectives-card">
-      <div class="objective-row"><span class="objective-badge">Target</span> <strong>I can find the surface area of a pyramid by adding the base area and the lateral faces.</strong></div>
-      <div class="objective-row"><span class="objective-badge">Discuss</span> <strong>I can explain my work using the words pyramid, slant height, lateral face, and base.</strong></div>
-    </div>
-  </header>
 
   
-    <section class="family-guide card" aria-label="Family guide">
-      <div class="family-guide-header">
-        <span class="family-guide-emoji">📦</span>
-        <div>
-          <h2 class="section-title family-guide-title">Family Guide</h2>
-          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+    <header class="family-welcome card" aria-label="Family Math Night welcome">
+      <div class="welcome-hero">
+        <span class="welcome-emoji" aria-hidden="true">📦</span>
+        <div class="welcome-titles">
+          <p class="welcome-tag">Unit 10 · 6.G.4</p>
+          <h1 class="welcome-title-en">Family Math Night</h1>
+          <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
+          <p class="welcome-lesson">Surface Area of Pyramids · Lesson 10-5</p>
         </div>
       </div>
+      <p class="welcome-lead bilingual-block">
+        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+      </p>
+      <a href="/curriculum/" class="back-link">⬅ Curriculum Hub / Centro curricular</a>
+    </header>
 
-      <div class="family-guide-grid">
-        <div class="family-panel family-panel-tips">
-          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
-          <ul class="family-tip-list">
-            <li>Let your student try each problem first. Tap <strong>Check This Problem</strong> on any question for instant feedback — no need to finish the whole page.</li>
-            <li>Tap vocabulary cards to flip between term and definition.</li>
-            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
-          </ul>
+  
+    <section class="guided-section card section-learn" aria-label="What we are learning tonight">
+      <h2 class="section-title">📖 What we're learning tonight / Qué aprendemos hoy</h2>
+      <div class="bilingual-grid">
+        <div class="bilingual-col lang-en">
+          <span class="lang-label">English</span>
+          <p class="learning-big">Find the surface area of a pyramid by adding the base area and the lateral faces.</p>
+          <p class="learning-sub">Also practice saying: <em>explain my work using the words pyramid, slant height, lateral face, and base</em></p>
         </div>
-
-        <div class="family-panel family-panel-home">
-          <h3 class="family-panel-heading">🏡 Try this at home</h3>
-          <p class="family-try-text">A square pyramid time capsule display has a square base and four triangular faces that meet at a point on top. To find its surface area, which parts do you need to measure?</p>
+        <div class="bilingual-col lang-es" lang="es">
+          <span class="lang-label">Español</span>
+          <p class="learning-big">Puedo encontrar el área de superficie de una pirámide sumando el área de la Base y las caras laterales.</p>
+          <p class="learning-sub">También practiquen: <em>explicar mi trabajo usando las palabras Pirámide, Altura inclinada (apotema), Cara lateral, y Base</em></p>
         </div>
       </div>
-
-      
-        <div class="family-panel family-panel-legend">
-          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
-          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>fill table:</strong> Encourage your student to show their work on paper if a box feels tricky.</li><li><strong>drag order:</strong> Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</li><li><strong>drag sort:</strong> On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</li><li><strong>matching game:</strong> Say each term out loud, then talk through which match makes sense before choosing.</li></ul>
-        </div>
-
-      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
     </section>
-  
 
   
-    <section class="try-at-home card" aria-label="Try this at home">
-      <h2 class="section-title">📦 Real-World Connection</h2>
-      <p class="try-narrative">Your class is building a pyramid-shaped display to showcase the time capsule at the school entrance. The pyramid will be covered in gold leaf to make it shine. To figure out how much gold leaf you need, you must calculate the total surface area — the base plus all the triangular faces!</p>
-      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    <section class="guided-section card section-visual" aria-label="Visual concept explainer">
+      <h2 class="section-title">🎯 The big idea / La idea principal</h2>
+      <div class="concept-visual-wrap">
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Volume prism">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fce6de" stroke="#d9795d" stroke-width="2"/>
+        <polygon points="80,140 180,140 210,110 110,110" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
+        <polygon points="180,140 210,110 210,60 180,90" fill="#b8ddd8" stroke="#1fa6a2" stroke-width="2"/>
+        <polygon points="80,140 110,110 110,60 80,90" fill="#1fa6a2" opacity="0.35" stroke="#1fa6a2" stroke-width="2"/>
+        <text x="95" y="155" font-size="11" fill="#12355b">L</text>
+        <text x="195" y="155" font-size="11" fill="#12355b">W</text>
+        <text x="218" y="88" font-size="11" fill="#12355b">H</text>
+        <text x="240" y="80" font-size="16" font-weight="700" fill="#12355b">V = L × W × H</text>
+        <text x="240" y="105" font-size="13" fill="#21313f">Volume = cubic units (in³)</text>
+        <text x="240" y="125" font-size="13" fill="#21313f" lang="es">Volumen = unidades cúbicas (in³)</text>
+      </svg></div>
+      <div class="key-idea-banner">
+        <p class="lang-en"><strong>Watch for this:</strong> Surface area of a pyramid = base area + the area of all the triangular lateral faces.</p>
+        <p class="lang-es" lang="es"><strong>Observa esto:</strong> Esta noche practican: encontrar el área de superficie de una pirámide sumando el área de la Base y las caras laterales. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+      </div>
+      <ol class="guided-steps">
+        
+          <li class="guided-step step-color-1">
+            <span class="step-badge">Step 1 / Paso 1</span>
+            <p class="lang-en">Surface area of a pyramid is the base area plus all the triangular side faces. A square pyramid has 1 square base and 4 triangular faces. Each triangle uses the slant height: ½ × base × slant height.</p>
+            <p class="lang-es" lang="es">Esta noche practican: encontrar el área de superficie de una pirámide sumando el área de la Base y las caras laterales. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-2">
+            <span class="step-badge">Step 2 / Paso 2</span>
+            <p class="lang-en">My square pyramid has a 6 × 6 base and a slant height of 8.</p>
+            <p class="lang-es" lang="es">Esta noche practican: encontrar el área de superficie de una pirámide sumando el área de la Base y las caras laterales. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-3">
+            <span class="step-badge">Step 3 / Paso 3</span>
+            <p class="lang-en">First the base area: 6 × 6 = 36.</p>
+            <p class="lang-es" lang="es">Esta noche practican: encontrar el área de superficie de una pirámide sumando el área de la Base y las caras laterales. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-4">
+            <span class="step-badge">Step 4 / Paso 4</span>
+            <p class="lang-en">Now one triangular face: ½ × 6 × 8 = 24. A square pyramid has 4 of them, so 4 × 24 = 96.</p>
+            <p class="lang-es" lang="es">Esta noche practican: encontrar el área de superficie de una pirámide sumando el área de la Base y las caras laterales. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+      </ol>
+      <ul class="watch-for-list">
+        
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Pyramid&quot; — it means: A solid with a flat bottom and triangle sides that meet at one point on top.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Pirámide&quot; — significa: Un sólido con un fondo plano y lados triangulares que se unen en un punto arriba.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Slant height&quot; — it means: The height of a side triangle, measured along its slanted face.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Altura inclinada (apotema)&quot; — significa: La altura de un triángulo lateral, medida por su cara inclinada.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Lateral face&quot; — it means: A triangle side of a pyramid, not the bottom.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Cara lateral&quot; — significa: Un lado triangular de una pirámide, no el fondo.</p>
+            </div>
+          </li>
+      </ul>
     </section>
-  
 
   
-    <section class="vocab-section card">
-      <h2 class="section-title">🔑 Key Vocabulary</h2>
-      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
+    <section class="guided-section card section-together" aria-label="Try this together">
+      <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
+      <p class="try-scenario lang-en">Your class is building a pyramid-shaped display to showcase the time capsule at the school entrance.</p>
+             <p class="try-scenario lang-es" lang="es">Your class is building a pirámide-shaped display to showcase the time capsule at the school entrance.</p>
+      <p class="try-together-note bilingual-block">
+        <span class="lang-en">Work side by side. You ask questions; your student does the thinking.</span>
+        <span class="lang-es" lang="es">Trabajen juntos. Tú haces preguntas; tu estudiante piensa.</span>
+      </p>
+      <ol class="together-steps">
+        
+          <li class="together-step step-color-1">
+            <div class="together-step-head">
+              <span class="step-badge">Step 1 / Paso 1</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Now a smaller square pyramid: base 4 × 4, slant height 5. What is the base area?</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Now a smaller square pirámide: Base 4 × 4, altura inclinada 5. What is the área de la Base?.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-2">
+            <div class="together-step-head">
+              <span class="step-badge">Step 2 / Paso 2</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Right, 4 × 4 = 16. Now one triangular face: ½ × 4 × 5. What do you get?</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Right, 4 × 4 = 16. Now one triangular cara: ½ × 4 × 5. What do you get?.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-3">
+            <div class="together-step-head">
+              <span class="step-badge">Step 3 / Paso 3</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Yes, 10. Four faces is 4 × 10 = 40. Now add the base: 16 + 40. What is the surface area?</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Yes, 10. Four faces is 4 × 10 = 40. Now add the Base: 16 + 40. What is the área de superficie?.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-4">
+            <div class="together-step-head">
+              <span class="step-badge">Step 4 / Paso 4</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Yes, SA = 56 in². Don&#039;t forget to add the base area!</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Yes, SA = 56 in². Don&#039;t forget to add the área de la Base!.</p>
+            <p class="step-hint">💡 Both numbers must change the same way. · Ambos números deben cambiar de la misma manera.</p>
+          </li>
+      </ol>
+    </section>
+
+  
+    <section class="guided-section card section-vocab vocab-section" aria-label="Words to know">
+      <h2 class="section-title">📚 Words to know / Palabras clave</h2>
+      <p class="vocab-family-note bilingual-block">
+        <span class="lang-en">Tap a card to flip. Use these words when you talk about the math together.</span>
+        <span class="lang-es" lang="es">Toquen una tarjeta para voltearla. Usen estas palabras cuando hablen de la matemática juntos.</span>
+      </p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
@@ -1379,18 +1664,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/pyramid.svg" alt="Illustration of Pyramid: A solid with a flat bottom and triangle sides that meet at one point on top." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Pyramid</h3>
-                  <p class="vocab-es">Pirámide</p>
-                  <div class="vocab-visual-hint">💡 Example: Like the Great Pyramid of Giza — a square on the bottom, 4 triangles slanting up to a point</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Pirámide</p>
+                  <div class="vocab-visual-hint">💡 Like the Great Pyramid of Giza — a square on the bottom, 4 triangles slanting up to a point</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A solid with a flat bottom and triangle sides that meet at one point on top.</p>
-                  <p class="vocab-def-es">Un sólido con un fondo plano y lados triangulares que se unen en un punto arriba.</p>
+                  <p class="vocab-def-es" lang="es">Un sólido con un fondo plano y lados triangulares que se unen en un punto arriba.</p>
                   <p class="vocab-back-visual">📌 Like the Great Pyramid of Giza — a square on the bottom, 4 triangles slanting up to a point</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1398,18 +1682,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/height.svg" alt="Illustration of Slant height: The height of a side triangle, measured along its slanted face." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Slant height</h3>
-                  <p class="vocab-es">Altura inclinada (apotema)</p>
-                  <div class="vocab-visual-hint">💡 Example: If you slide your finger from the bottom edge up the triangle face to the top point — that distance is the slant height</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Altura inclinada (apotema)</p>
+                  <div class="vocab-visual-hint">💡 If you slide your finger from the bottom edge up the triangle face to the top point — that distance is the slant height</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">The height of a side triangle, measured along its slanted face.</p>
-                  <p class="vocab-def-es">La altura de un triángulo lateral, medida por su cara inclinada.</p>
+                  <p class="vocab-def-es" lang="es">La altura de un triángulo lateral, medida por su cara inclinada.</p>
                   <p class="vocab-back-visual">📌 If you slide your finger from the bottom edge up the triangle face to the top point — that distance is the slant height</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1417,18 +1700,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/surface-area.svg" alt="Illustration of Lateral face: A triangle side of a pyramid, not the bottom." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Lateral face</h3>
-                  <p class="vocab-es">Cara lateral</p>
-                  <div class="vocab-visual-hint">💡 Example: A square pyramid has 4 lateral faces — one triangle for each side of the square base</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Cara lateral</p>
+                  <div class="vocab-visual-hint">💡 A square pyramid has 4 lateral faces — one triangle for each side of the square base</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A triangle side of a pyramid, not the bottom.</p>
-                  <p class="vocab-def-es">Un lado triangular de una pirámide, no el fondo.</p>
+                  <p class="vocab-def-es" lang="es">Un lado triangular de una pirámide, no el fondo.</p>
                   <p class="vocab-back-visual">📌 A square pyramid has 4 lateral faces — one triangle for each side of the square base</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1436,18 +1718,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/base.svg" alt="Illustration of Base: The flat bottom of a pyramid." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Base</h3>
-                  <p class="vocab-es">Base</p>
-                  <div class="vocab-visual-hint">💡 Example: A square pyramid sits on a square base; base area = side × side</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Base</p>
+                  <div class="vocab-visual-hint">💡 A square pyramid sits on a square base; base area = side × side</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">The flat bottom of a pyramid.</p>
-                  <p class="vocab-def-es">El fondo plano de una pirámide.</p>
+                  <p class="vocab-def-es" lang="es">El fondo plano de una pirámide.</p>
                   <p class="vocab-back-visual">📌 A square pyramid sits on a square base; base area = side × side</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1455,18 +1736,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/pyramid.svg" alt="Illustration of Apex: The point at the top of a pyramid where the sides meet." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Apex</h3>
-                  <p class="vocab-es">Ápice</p>
-                  <div class="vocab-visual-hint">💡 Example: The pointy top of a pyramid — all the slanted edges connect here</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Ápice</p>
+                  <div class="vocab-visual-hint">💡 The pointy top of a pyramid — all the slanted edges connect here</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">The point at the top of a pyramid where the sides meet.</p>
-                  <p class="vocab-def-es">El punto en la parte de arriba de una pirámide donde se unen los lados.</p>
+                  <p class="vocab-def-es" lang="es">El punto en la parte de arriba de una pirámide donde se unen los lados.</p>
                   <p class="vocab-back-visual">📌 The pointy top of a pyramid — all the slanted edges connect here</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1474,33 +1754,63 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/surface-area.svg" alt="Illustration of Lateral area: The total area of just the side triangles, not the bottom." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Lateral area</h3>
-                  <p class="vocab-es">Área lateral</p>
-                  <div class="vocab-visual-hint">💡 Example: For a square pyramid: lateral area = 4 × (½ × base edge × slant height)</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Área lateral</p>
+                  <div class="vocab-visual-hint">💡 For a square pyramid: lateral area = 4 × (½ × base edge × slant height)</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">The total area of just the side triangles, not the bottom.</p>
-                  <p class="vocab-def-es">El área total solo de los triángulos laterales, sin el fondo.</p>
+                  <p class="vocab-def-es" lang="es">El área total solo de los triángulos laterales, sin el fondo.</p>
                   <p class="vocab-back-visual">📌 For a square pyramid: lateral area = 4 × (½ × base edge × slant height)</p>
                 </div>
               </div>
             </div>
-          
       </div>
     </section>
+
   
+    <section class="guided-section card section-stuck" aria-label="If your student gets stuck">
+      <h2 class="section-title">💬 If your student gets stuck / Si se atora</h2>
+      <div class="stuck-grid">
+        <div class="stuck-panel stuck-say">
+          <h3 class="stuck-heading">✅ What to say / Qué decir</h3>
+          <ul>
+            <li><p class="lang-en">What do you already know that could help?</p><p class="lang-es" lang="es">¿Qué ya sabes que podría ayudarte?</p></li><li><p class="lang-en">Can you draw a picture or table for this?</p><p class="lang-es" lang="es">¿Puedes dibujar un dibujo o una tabla para esto?</p></li><li><p class="lang-en">Let&#039;s check one step at a time — no rush.</p><p class="lang-es" lang="es">Revisemos un paso a la vez — sin prisa.</p></li>
+          </ul>
+        </div>
+        <div class="stuck-panel stuck-dont">
+          <h3 class="stuck-heading">🚫 What NOT to say / Qué evitar</h3>
+          <ul>
+            <li><p class="lang-en">That&#039;s wrong — let me just tell you.</p><p class="lang-es" lang="es">Está mal — déjame decírtelo yo.</p></li><li><p class="lang-en">I was never good at math either.</p><p class="lang-es" lang="es">Yo tampoco era bueno en matemáticas.</p></li><li><p class="lang-en">This should be easy.</p><p class="lang-es" lang="es">Esto debería ser fácil.</p></li>
+          </ul>
+        </div>
+      </div>
+      <p class="stuck-footer bilingual-block">
+        <span class="lang-en">Struggle is part of learning. Short breaks and snacks are allowed!</span>
+        <span class="lang-es" lang="es">La dificultad es parte del aprendizaje. ¡Descansos y meriendas están permitidos!</span>
+      </p>
+    </section>
+
   
+    <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
+      <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
+      <p class="bilingual-block">
+        <span class="lang-en">One or two problems to try on the screen. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
+        <span class="lang-es" lang="es">Una o dos preguntas en pantalla. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+      </p>
+    </section>
+
   <main class="problems-container">
     
     <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 1</div>
+        <div class="problem-number-badge">Quick Check 1</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">A square pyramid has a base edge of 5 in and a slant height of 7 in. What is the surface area?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="Base: 5 × 5 = 25 in². Each lateral face: ½ × 5 × 7 = 17.5 in². Four faces: 4 × 17.5 = 70 in². SA = 25 + 70 = 95 in².">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1532,7 +1842,7 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
@@ -1541,13 +1851,13 @@ header.homework-header h1 {
 
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 2</div>
+        <div class="problem-number-badge">Quick Check 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">How many lateral (triangular) faces does a square pyramid have?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="A square pyramid has a square base and 4 triangular lateral faces — one for each side of the square.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1579,582 +1889,25 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
   
-
-    <section class="problem-section card" id="problem_2" data-problem-type="fill-table">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 3</div>
-        <div class="problem-type-badge">FILL TABLE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Find the surface area of each square pyramid.</p>
-        <p class="family-problem-tip">👪 Family tip: Encourage your student to show their work on paper if a box feels tricky.</p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Pyramid</th><th>Base Edge</th><th>Slant Height</th><th>Base Area</th><th>Total SA</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>Pyramid X</td><td>12 in</td><td>10 in</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_0_3"
-                                   data-correct="144 in²" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_0_4"
-                                   data-correct="384 in²" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Pyramid Y</td><td>8 cm</td><td>6 cm</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_1_3"
-                                   data-correct="64 cm²" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_1_4"
-                                   data-correct="160 cm²" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Pyramid Z</td><td>14 ft</td><td>11 ft</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_2_3"
-                                   data-correct="196 ft²" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_2_4"
-                                   data-correct="504 ft²" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-            </tbody>
-          </table>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_3" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A square pyramid has a base area of 49 cm² and a total lateral area of 84 cm². What is the surface area?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="SA = Base Area + Lateral Area = 49 + 84 = 133 cm².">
-          
-            <label class="mc-option-label" id="label_q_3_0">
-              <input type="radio" name="q_3" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">133 cm²</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_1">
-              <input type="radio" name="q_3" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">84 cm²</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_2">
-              <input type="radio" name="q_3" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">49 cm²</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_3">
-              <input type="radio" name="q_3" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">133 cm³</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_4" data-problem-type="drag-sort" data-problem-subtype="drag-order">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 5</div>
-        <div class="problem-type-badge">DRAG ORDER</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Sort these pyramids from LEAST surface area to GREATEST.</p>
-        <p class="family-problem-tip">👪 Family tip: Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</p>
-        <div class="drag-order-workspace" id="dragorder_4" data-correct-order='[&quot;Base 4×4, slant 5: SA = 56&quot;,&quot;Base 6×6, slant 5: SA = 96&quot;,&quot;Base 6×6, slant 8: SA = 132&quot;,&quot;Base 10×10, slant 9: SA = 280&quot;]' data-initial-order='[&quot;Base 6×6, slant 5: SA = 96&quot;,&quot;Base 6×6, slant 8: SA = 132&quot;,&quot;Base 4×4, slant 5: SA = 56&quot;,&quot;Base 10×10, slant 9: SA = 280&quot;]'>
-          <div class="drag-order-list" id="orderlist_4">
-            
-              <div class="drag-order-row" draggable="true" id="order_4_0" data-step-text="Base 6×6, slant 5: SA = 96" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">1</span>
-                <span class="drag-order-text">Base 6×6, slant 5: SA = 96</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_4_1" data-step-text="Base 6×6, slant 8: SA = 132" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">2</span>
-                <span class="drag-order-text">Base 6×6, slant 8: SA = 132</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_4_2" data-step-text="Base 4×4, slant 5: SA = 56" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">3</span>
-                <span class="drag-order-text">Base 4×4, slant 5: SA = 56</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_4_3" data-step-text="Base 10×10, slant 9: SA = 280" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">4</span>
-                <span class="drag-order-text">Base 10×10, slant 9: SA = 280</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragOrder(4); saveState(); updateProgress();">Reset Order</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Your first gift box is a square pyramid with a base edge of 7 in and a slant height of 9 in. How much wrapping paper (total surface area) covers it?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Base: 7 × 7 = 49 in². One triangular face: ½ × 7 × 9 = 31.5 in². Four faces: 4 × 31.5 = 126 in². SA = 49 + 126 = 175 in². Surface area uses square units (in²).">
-          
-            <label class="mc-option-label" id="label_q_5_0">
-              <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">175 in²</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_1">
-              <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">126 in²</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_2">
-              <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">144 in²</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_3">
-              <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">175 in³</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Before adding the base, you need the area of just one triangular face of a gift box with base edge 8 in and slant height 5 in. What is it?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Area of a triangle = ½ × base × height = ½ × 8 × 5 = 20 in². You use the slant height (5) as the triangle&#039;s height, not the pyramid&#039;s vertical height.">
-          
-            <label class="mc-option-label" id="label_q_6_0">
-              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">20 in²</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_1">
-              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">40 in²</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_2">
-              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">13 in²</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_3">
-              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">20 in³</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 8</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A gift box is a square pyramid with a base edge of 9 in. What is the area of its square base (the part that sits on the table)?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="The base is a square, so base area = side × side = 9 × 9 = 81 in². You would still add the four triangular faces to get the full surface area.">
-          
-            <label class="mc-option-label" id="label_q_7_0">
-              <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">81 in²</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_1">
-              <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">36 in²</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_2">
-              <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">18 in²</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_3">
-              <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">324 in²</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_8" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 9</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Match each square-pyramid gift box (base edge × slant height) to its total surface area.</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="Base 5 in, slant 8 in" data-correct="105 in²">
-              <div class="matching-term">Base 5 in, slant 8 in</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="105 in²">105 in²</option><option value="120 in²">120 in²</option><option value="208 in²">208 in²</option><option value="220 in²">220 in²</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Base 6 in, slant 7 in" data-correct="120 in²">
-              <div class="matching-term">Base 6 in, slant 7 in</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="105 in²">105 in²</option><option value="120 in²">120 in²</option><option value="208 in²">208 in²</option><option value="220 in²">220 in²</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Base 8 in, slant 9 in" data-correct="208 in²">
-              <div class="matching-term">Base 8 in, slant 9 in</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="105 in²">105 in²</option><option value="120 in²">120 in²</option><option value="208 in²">208 in²</option><option value="220 in²">220 in²</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Base 10 in, slant 6 in" data-correct="220 in²">
-              <div class="matching-term">Base 10 in, slant 6 in</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="105 in²">105 in²</option><option value="120 in²">120 in²</option><option value="208 in²">208 in²</option><option value="220 in²">220 in²</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_9" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A gift box can be a square pyramid (4 triangle faces) or a rectangular pyramid (a rectangle base with 4 triangle faces). Sort each measurement into the box part it describes.</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        
-        <div class="drag-sort-workspace" id="dragsort_9">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="base" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'base')">
-                <div class="drag-column-header">Base (bottom)</div>
-                <div class="drag-column-slots" id="slots_9_base" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'base')"></div>
-              </div>
-              <div class="drag-column" data-category-id="faces" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'faces')">
-                <div class="drag-column-header">Triangular faces</div>
-                <div class="drag-column-slots" id="slots_9_faces" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'faces')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_9" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_9_0"
-                     data-item-index="0"
-                     data-correct-category="base"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Square: side × side</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_0', 9); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="base">Base (bottom)</option><option value="faces">Triangular faces</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_9_1"
-                     data-item-index="1"
-                     data-correct-category="base"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Rectangle: length × width</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_1', 9); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="base">Base (bottom)</option><option value="faces">Triangular faces</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_9_2"
-                     data-item-index="2"
-                     data-correct-category="faces"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">½ × base edge × slant height</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_2', 9); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="base">Base (bottom)</option><option value="faces">Triangular faces</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_9_3"
-                     data-item-index="3"
-                     data-correct-category="faces"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Uses the slant height as its height</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_3', 9); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="base">Base (bottom)</option><option value="faces">Triangular faces</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_9_4"
-                     data-item-index="4"
-                     data-correct-category="faces"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Add 4 of these together</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_4', 9); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="base">Base (bottom)</option><option value="faces">Triangular faces</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_9_5"
-                     data-item-index="5"
-                     data-correct-category="base"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Only one of these on the box</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_5', 9); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="base">Base (bottom)</option><option value="faces">Triangular faces</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(9); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
   </main>
+
   
+    <section class="guided-section card section-celebrate" aria-label="Celebration">
+      <h2 class="section-title">🎉 You did it together! / ¡Lo lograron juntos!</h2>
+      <p class="celebrate-text lang-en">High five! Whether every answer was perfect or not, you showed up for your student tonight. That matters.</p>
+      <p class="celebrate-text lang-es" lang="es">¡Chócalas! No importa si cada respuesta fue perfecta — estuviste con tu estudiante esta noche. Eso importa.</p>
+      <p class="celebrate-sub bilingual-block">
+        <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
+        <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
+      </p>
+    </section>
+
 </div>
 
 <!-- Sticky bottom actions bar -->
@@ -2164,7 +1917,7 @@ header.homework-header h1 {
     
     <div class="score-progress-container">
       <div class="score-text">
-        Homework Progress: <span id="progress_text">0 / 10 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 2 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -2172,8 +1925,8 @@ header.homework-header h1 {
     </div>
     
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset</button>
-      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All Problems</button>
+      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset / Reiniciar</button>
+      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All / Revisar todo</button>
     </div>
   </div>
 </div>

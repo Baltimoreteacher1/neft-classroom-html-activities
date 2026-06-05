@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interactive Homework — Lesson 10-3: Surface Area Using Nets</title>
+<title>Help Your Student — Lesson 10-3: Surface Area Using Nets</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -266,6 +266,13 @@ header.homework-header h1 {
   border-radius: var(--radius-sm);
   font-size: 13.5px;
   color: var(--hint);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.family-problem-tip .lang-es {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .family-hint-box {
@@ -1306,70 +1313,348 @@ header.homework-header h1 {
     justify-content: center;
   }
 }
+
+/* Family guided notes layout */
+.family-welcome {
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  color: var(--white);
+  border: none;
+  padding: 28px 24px;
+}
+.welcome-hero {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.welcome-emoji { font-size: 48px; line-height: 1; }
+.welcome-tag {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal-light);
+  font-weight: 800;
+}
+.welcome-title-en, .welcome-title-es {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 5vw, 34px);
+  font-weight: 800;
+  line-height: 1.15;
+}
+.welcome-title-es { color: var(--amber); font-size: clamp(22px, 4.5vw, 30px); margin-top: 2px; }
+.welcome-lesson { margin: 8px 0 0; font-size: 16px; color: var(--teal-light); font-weight: 600; }
+.welcome-lead { margin: 0 0 12px; font-size: 15px; line-height: 1.5; }
+.family-welcome .back-link { color: var(--amber); margin: 0; }
+.family-welcome .back-link:hover { color: var(--white); }
+
+.bilingual-block, .bilingual-grid { display: flex; flex-direction: column; gap: 10px; }
+.bilingual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 640px) {
+  .bilingual-grid { grid-template-columns: 1fr; }
+}
+.bilingual-col {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.lang-label {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal);
+  margin-bottom: 6px;
+}
+.lang-en { margin: 0 0 6px; }
+.lang-es { margin: 0; color: var(--muted); font-style: normal; }
+.learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
+.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+
+.guided-section { scroll-margin-top: 16px; }
+.section-learn { border-left: 4px solid var(--teal); }
+.section-visual { border-left: 4px solid var(--amber); }
+.section-together { border-left: 4px solid #5b8def; }
+.section-vocab { border-left: 4px solid var(--coral); }
+.section-stuck { border-left: 4px solid #9b59b6; }
+.section-quick-intro { border-left: 4px solid var(--success); }
+.section-celebrate {
+  border-left: 4px solid var(--amber);
+  background: linear-gradient(180deg, var(--amber-light), var(--white));
+  text-align: center;
+}
+
+.concept-visual-wrap { margin: 12px 0 16px; overflow-x: auto; }
+.concept-svg { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.concept-fallback-visual { display: flex; flex-direction: column; gap: 8px; }
+.concept-fallback-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  font-weight: 600; font-size: 14px;
+}
+.step-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; color: var(--white);
+  flex-shrink: 0;
+}
+.step-color-1 .step-dot, .step-color-1.step-badge { background: #5b8def; }
+.step-color-2 .step-dot, .step-color-2.step-badge { background: var(--success); }
+.step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
+.step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
+
+.key-idea-banner {
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid #b8ddd8;
+}
+.key-idea-banner p { margin: 0 0 6px; font-size: 14.5px; }
+.key-idea-banner p:last-child { margin-bottom: 0; }
+
+.guided-steps, .together-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.guided-step, .together-step {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  background: var(--white);
+}
+.step-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  padding: 3px 8px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+}
+.guided-step p, .together-step p { margin: 0 0 6px; font-size: 14.5px; line-height: 1.45; }
+.step-hint {
+  margin: 8px 0 0 !important;
+  padding: 8px 10px;
+  background: var(--hint-bg);
+  border-radius: var(--radius-sm);
+  font-size: 13px !important;
+  color: var(--hint);
+}
+
+.watch-for-list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.watch-for-list li {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
+}
+.watch-icon { font-size: 20px; flex-shrink: 0; }
+
+.try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
+.try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
+
+.stuck-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+@media (max-width: 640px) { .stuck-grid { grid-template-columns: 1fr; } }
+.stuck-panel {
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+}
+.stuck-say { background: var(--success-bg); border-color: var(--success); }
+.stuck-dont { background: var(--error-bg); border-color: var(--error); }
+.stuck-heading { margin: 0 0 10px; font-family: var(--font-display); font-size: 14px; color: var(--navy); }
+.stuck-panel ul { margin: 0; padding-left: 16px; }
+.stuck-panel li { margin-bottom: 10px; font-size: 14px; }
+.stuck-panel li p { margin: 0 0 4px; }
+.stuck-footer { font-size: 14px; color: var(--muted); margin: 0; }
+
+.celebrate-text { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; }
+.celebrate-sub { font-size: 14px; margin: 0; }
+
+.problems-container .problem-section { border-left: 4px solid var(--teal); }
+.problems-container .problem-number-badge::after {
+  content: " / Repaso";
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
 </style>
 </head>
 <body>
 
 <div class="container">
-  
-  <header class="homework-header">
-    <a href="/curriculum/" class="back-link">⬅ Curriculum Hub</a>
-    <div class="header-meta">Unit 10 · Standard 6.G.4 · Homework</div>
-    <h1>Surface Area Using Nets</h1>
-    <div class="objectives-card">
-      <div class="objective-row"><span class="objective-badge">Target</span> <strong>I can find the surface area of a solid by using its net.</strong></div>
-      <div class="objective-row"><span class="objective-badge">Discuss</span> <strong>I can explain my work using the words surface area, net, face, and two-dimensional.</strong></div>
-    </div>
-  </header>
 
   
-    <section class="family-guide card" aria-label="Family guide">
-      <div class="family-guide-header">
-        <span class="family-guide-emoji">📦</span>
-        <div>
-          <h2 class="section-title family-guide-title">Family Guide</h2>
-          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+    <header class="family-welcome card" aria-label="Family Math Night welcome">
+      <div class="welcome-hero">
+        <span class="welcome-emoji" aria-hidden="true">📦</span>
+        <div class="welcome-titles">
+          <p class="welcome-tag">Unit 10 · 6.G.4</p>
+          <h1 class="welcome-title-en">Family Math Night</h1>
+          <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
+          <p class="welcome-lesson">Surface Area Using Nets · Lesson 10-3</p>
         </div>
       </div>
+      <p class="welcome-lead bilingual-block">
+        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+      </p>
+      <a href="/curriculum/" class="back-link">⬅ Curriculum Hub / Centro curricular</a>
+    </header>
 
-      <div class="family-guide-grid">
-        <div class="family-panel family-panel-tips">
-          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
-          <ul class="family-tip-list">
-            <li>Let your student try each problem first. Tap <strong>Check This Problem</strong> on any question for instant feedback — no need to finish the whole page.</li>
-            <li>Tap vocabulary cards to flip between term and definition.</li>
-            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
-          </ul>
+  
+    <section class="guided-section card section-learn" aria-label="What we are learning tonight">
+      <h2 class="section-title">📖 What we're learning tonight / Qué aprendemos hoy</h2>
+      <div class="bilingual-grid">
+        <div class="bilingual-col lang-en">
+          <span class="lang-label">English</span>
+          <p class="learning-big">Find the surface area of a solid by using its net.</p>
+          <p class="learning-sub">Also practice saying: <em>explain my work using the words surface area, net, face, and two-dimensional</em></p>
         </div>
-
-        <div class="family-panel family-panel-home">
-          <h3 class="family-panel-heading">🏡 Try this at home</h3>
-          <p class="family-try-text">To find how much wrapping paper a time capsule box needs, why is unfolding it into a net more helpful than looking at the 3D box?</p>
+        <div class="bilingual-col lang-es" lang="es">
+          <span class="lang-label">Español</span>
+          <p class="learning-big">Puedo encontrar el área de superficie de un sólido usando su red.</p>
+          <p class="learning-sub">También practiquen: <em>explicar mi trabajo usando las palabras Área de superficie, Plantilla (desarrollo plano), Cara, y Bidimensional</em></p>
         </div>
       </div>
-
-      
-        <div class="family-panel family-panel-legend">
-          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
-          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>fill table:</strong> Encourage your student to show their work on paper if a box feels tricky.</li><li><strong>drag order:</strong> Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</li><li><strong>drag sort:</strong> On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</li><li><strong>matching game:</strong> Say each term out loud, then talk through which match makes sense before choosing.</li></ul>
-        </div>
-
-      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
     </section>
-  
 
   
-    <section class="try-at-home card" aria-label="Try this at home">
-      <h2 class="section-title">📦 Real-World Connection</h2>
-      <p class="try-narrative">Your class is designing custom wrapping paper for time capsule boxes. To figure out how much paper you need, you have to find the total surface area of each box. The trick? Unfold the box into a net so you can see every face laid flat!</p>
-      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    <section class="guided-section card section-visual" aria-label="Visual concept explainer">
+      <h2 class="section-title">🎯 The big idea / La idea principal</h2>
+      <div class="concept-visual-wrap">
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Volume prism">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fce6de" stroke="#d9795d" stroke-width="2"/>
+        <polygon points="80,140 180,140 210,110 110,110" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
+        <polygon points="180,140 210,110 210,60 180,90" fill="#b8ddd8" stroke="#1fa6a2" stroke-width="2"/>
+        <polygon points="80,140 110,110 110,60 80,90" fill="#1fa6a2" opacity="0.35" stroke="#1fa6a2" stroke-width="2"/>
+        <text x="95" y="155" font-size="11" fill="#12355b">L</text>
+        <text x="195" y="155" font-size="11" fill="#12355b">W</text>
+        <text x="218" y="88" font-size="11" fill="#12355b">H</text>
+        <text x="240" y="80" font-size="16" font-weight="700" fill="#12355b">V = L × W × H</text>
+        <text x="240" y="105" font-size="13" fill="#21313f">Volume = cubic units (in³)</text>
+        <text x="240" y="125" font-size="13" fill="#21313f" lang="es">Volumen = unidades cúbicas (in³)</text>
+      </svg></div>
+      <div class="key-idea-banner">
+        <p class="lang-en"><strong>Watch for this:</strong> A box has 3 pairs of matching faces, so add up all 6 faces to get the surface area.</p>
+        <p class="lang-es" lang="es"><strong>Observa esto:</strong> Esta noche practican: encontrar el área de superficie de un sólido usando su red. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+      </div>
+      <ol class="guided-steps">
+        
+          <li class="guided-step step-color-1">
+            <span class="step-badge">Step 1 / Paso 1</span>
+            <p class="lang-en">Surface area is the total area of all the flat faces of a solid. A net unfolds the box flat so you can see and add all 6 faces. The answer uses square units.</p>
+            <p class="lang-es" lang="es">Esta noche practican: encontrar el área de superficie de un sólido usando su red. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-2">
+            <span class="step-badge">Step 2 / Paso 2</span>
+            <p class="lang-en">My box is 8 long, 5 wide, and 3 tall. I unfold it into a net and see 3 pairs of faces.</p>
+            <p class="lang-es" lang="es">Esta noche practican: encontrar el área de superficie de un sólido usando su red. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-3">
+            <span class="step-badge">Step 3 / Paso 3</span>
+            <p class="lang-en">Top and bottom: each is 8 × 5 = 40, and there are 2 of them, so 2 × 40 = 80.</p>
+            <p class="lang-es" lang="es">Esta noche practican: encontrar el área de superficie de un sólido usando su red. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-4">
+            <span class="step-badge">Step 4 / Paso 4</span>
+            <p class="lang-en">Front and back: each is 8 × 3 = 24, so 2 × 24 = 48.</p>
+            <p class="lang-es" lang="es">Esta noche practican: encontrar el área de superficie de un sólido usando su red. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+      </ol>
+      <ul class="watch-for-list">
+        
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Surface area&quot; — it means: The total area of all the flat sides of a solid.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Área de superficie&quot; — significa: El área total de todos los lados planos de un sólido.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Net&quot; — it means: A flat shape that folds up into a solid.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Plantilla (desarrollo plano)&quot; — significa: Una figura plana que se dobla y forma un sólido.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Face&quot; — it means: One flat side of a solid shape.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Cara&quot; — significa: Un lado plano de una figura sólida.</p>
+            </div>
+          </li>
+      </ul>
     </section>
-  
 
   
-    <section class="vocab-section card">
-      <h2 class="section-title">🔑 Key Vocabulary</h2>
-      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
+    <section class="guided-section card section-together" aria-label="Try this together">
+      <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
+      <p class="try-scenario lang-en">Your class is designing custom wrapping paper for time capsule boxes.</p>
+             <p class="try-scenario lang-es" lang="es">Your class is designing custom wrapping paper for time capsule boxes.</p>
+      <p class="try-together-note bilingual-block">
+        <span class="lang-en">Work side by side. You ask questions; your student does the thinking.</span>
+        <span class="lang-es" lang="es">Trabajen juntos. Tú haces preguntas; tu estudiante piensa.</span>
+      </p>
+      <ol class="together-steps">
+        
+          <li class="together-step step-color-1">
+            <div class="together-step-head">
+              <span class="step-badge">Step 1 / Paso 1</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Now a smaller box: 4 long, 3 wide, 2 tall. How many pairs of faces does it have?</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Now a smaller box: 4 long, 3 wide, 2 tall. How many pairs of faces does it have?.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-2">
+            <div class="together-step-head">
+              <span class="step-badge">Step 2 / Paso 2</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Top and bottom: 4 × 3 = 12, times 2 = 24. Front and back: 4 × 2 = 8, times 2 = 16.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Top and bottom: 4 × 3 = 12, times 2 = 24. Front and back: 4 × 2 = 8, times 2 = 16.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-3">
+            <div class="together-step-head">
+              <span class="step-badge">Step 3 / Paso 3</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Left and right: 3 × 2 = 6, times 2 = 12. Now add 24 + 16 + 12. What is the surface area?</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Left and right: 3 × 2 = 6, times 2 = 12. Now add 24 + 16 + 12. What is the área de superficie?.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-4">
+            <div class="together-step-head">
+              <span class="step-badge">Step 4 / Paso 4</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Yes, SA = 52 in². Remember to use square units.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Yes, SA = 52 in². Remember to use square units.</p>
+            <p class="step-hint">💡 Both numbers must change the same way. · Ambos números deben cambiar de la misma manera.</p>
+          </li>
+      </ol>
+    </section>
+
+  
+    <section class="guided-section card section-vocab vocab-section" aria-label="Words to know">
+      <h2 class="section-title">📚 Words to know / Palabras clave</h2>
+      <p class="vocab-family-note bilingual-block">
+        <span class="lang-en">Tap a card to flip. Use these words when you talk about the math together.</span>
+        <span class="lang-es" lang="es">Toquen una tarjeta para voltearla. Usen estas palabras cuando hablen de la matemática juntos.</span>
+      </p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
@@ -1379,18 +1664,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/surface-area.svg" alt="Illustration of Surface area: The total area of all the flat sides of a solid." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Surface area</h3>
-                  <p class="vocab-es">Área de superficie</p>
-                  <div class="vocab-visual-hint">💡 Example: A box 6 × 4 × 2: SA = 2(24) + 2(12) + 2(8) = 88 in² — like wrapping paper needed</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Área de superficie</p>
+                  <div class="vocab-visual-hint">💡 A box 6 × 4 × 2: SA = 2(24) + 2(12) + 2(8) = 88 in² — like wrapping paper needed</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">The total area of all the flat sides of a solid.</p>
-                  <p class="vocab-def-es">El área total de todos los lados planos de un sólido.</p>
+                  <p class="vocab-def-es" lang="es">El área total de todos los lados planos de un sólido.</p>
                   <p class="vocab-back-visual">📌 A box 6 × 4 × 2: SA = 2(24) + 2(12) + 2(8) = 88 in² — like wrapping paper needed</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1398,18 +1682,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/net.svg" alt="Illustration of Net: A flat shape that folds up into a solid." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Net</h3>
-                  <p class="vocab-es">Plantilla (desarrollo plano)</p>
-                  <div class="vocab-visual-hint">💡 Example: Cut along the edges of a cereal box and unfold it flat — you see all 6 faces</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Plantilla (desarrollo plano)</p>
+                  <div class="vocab-visual-hint">💡 Cut along the edges of a cereal box and unfold it flat — you see all 6 faces</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A flat shape that folds up into a solid.</p>
-                  <p class="vocab-def-es">Una figura plana que se dobla y forma un sólido.</p>
+                  <p class="vocab-def-es" lang="es">Una figura plana que se dobla y forma un sólido.</p>
                   <p class="vocab-back-visual">📌 Cut along the edges of a cereal box and unfold it flat — you see all 6 faces</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1417,18 +1700,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/rectangular-prism.svg" alt="Illustration of Face: One flat side of a solid shape." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Face</h3>
-                  <p class="vocab-es">Cara</p>
-                  <div class="vocab-visual-hint">💡 Example: A rectangular prism has 6 faces: top, bottom, front, back, left, right</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Cara</p>
+                  <div class="vocab-visual-hint">💡 A rectangular prism has 6 faces: top, bottom, front, back, left, right</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">One flat side of a solid shape.</p>
-                  <p class="vocab-def-es">Un lado plano de una figura sólida.</p>
+                  <p class="vocab-def-es" lang="es">Un lado plano de una figura sólida.</p>
                   <p class="vocab-back-visual">📌 A rectangular prism has 6 faces: top, bottom, front, back, left, right</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1436,18 +1718,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/square-unit.svg" alt="Illustration of Two-dimensional: A flat shape with length and width, but no thickness." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Two-dimensional</h3>
-                  <p class="vocab-es">Bidimensional</p>
-                  <div class="vocab-visual-hint">💡 Example: A rectangle drawn on paper is 2D — it has length and width but no depth</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Bidimensional</p>
+                  <div class="vocab-visual-hint">💡 A rectangle drawn on paper is 2D — it has length and width but no depth</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A flat shape with length and width, but no thickness.</p>
-                  <p class="vocab-def-es">Una figura plana con largo y ancho, pero sin grosor.</p>
+                  <p class="vocab-def-es" lang="es">Una figura plana con largo y ancho, pero sin grosor.</p>
                   <p class="vocab-back-visual">📌 A rectangle drawn on paper is 2D — it has length and width but no depth</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1455,33 +1736,63 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/rectangular-prism.svg" alt="Illustration of Edge: The line where two flat sides of a solid meet." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Edge</h3>
-                  <p class="vocab-es">Arista</p>
-                  <div class="vocab-visual-hint">💡 Example: A cube has 12 edges — the lines where two flat faces connect</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Arista</p>
+                  <div class="vocab-visual-hint">💡 A cube has 12 edges — the lines where two flat faces connect</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">The line where two flat sides of a solid meet.</p>
-                  <p class="vocab-def-es">La línea donde se unen dos lados planos de un sólido.</p>
+                  <p class="vocab-def-es" lang="es">La línea donde se unen dos lados planos de un sólido.</p>
                   <p class="vocab-back-visual">📌 A cube has 12 edges — the lines where two flat faces connect</p>
                 </div>
               </div>
             </div>
-          
       </div>
     </section>
+
   
+    <section class="guided-section card section-stuck" aria-label="If your student gets stuck">
+      <h2 class="section-title">💬 If your student gets stuck / Si se atora</h2>
+      <div class="stuck-grid">
+        <div class="stuck-panel stuck-say">
+          <h3 class="stuck-heading">✅ What to say / Qué decir</h3>
+          <ul>
+            <li><p class="lang-en">What do you already know that could help?</p><p class="lang-es" lang="es">¿Qué ya sabes que podría ayudarte?</p></li><li><p class="lang-en">Can you draw a picture or table for this?</p><p class="lang-es" lang="es">¿Puedes dibujar un dibujo o una tabla para esto?</p></li><li><p class="lang-en">Let&#039;s check one step at a time — no rush.</p><p class="lang-es" lang="es">Revisemos un paso a la vez — sin prisa.</p></li>
+          </ul>
+        </div>
+        <div class="stuck-panel stuck-dont">
+          <h3 class="stuck-heading">🚫 What NOT to say / Qué evitar</h3>
+          <ul>
+            <li><p class="lang-en">That&#039;s wrong — let me just tell you.</p><p class="lang-es" lang="es">Está mal — déjame decírtelo yo.</p></li><li><p class="lang-en">I was never good at math either.</p><p class="lang-es" lang="es">Yo tampoco era bueno en matemáticas.</p></li><li><p class="lang-en">This should be easy.</p><p class="lang-es" lang="es">Esto debería ser fácil.</p></li>
+          </ul>
+        </div>
+      </div>
+      <p class="stuck-footer bilingual-block">
+        <span class="lang-en">Struggle is part of learning. Short breaks and snacks are allowed!</span>
+        <span class="lang-es" lang="es">La dificultad es parte del aprendizaje. ¡Descansos y meriendas están permitidos!</span>
+      </p>
+    </section>
+
   
+    <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
+      <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
+      <p class="bilingual-block">
+        <span class="lang-en">One or two problems to try on the screen. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
+        <span class="lang-es" lang="es">Una o dos preguntas en pantalla. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+      </p>
+    </section>
+
   <main class="problems-container">
     
     <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 1</div>
+        <div class="problem-number-badge">Quick Check 1</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">A rectangular prism has l = 6 in, w = 4 in, h = 2 in. What is its surface area?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="SA = 2(6×4) + 2(6×2) + 2(4×2) = 48 + 24 + 16 = 88 in².">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1513,7 +1824,7 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
@@ -1522,13 +1833,13 @@ header.homework-header h1 {
 
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 2</div>
+        <div class="problem-number-badge">Quick Check 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">How many faces does a rectangular prism have?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="A rectangular prism has 6 faces: top, bottom, front, back, left, and right.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1560,577 +1871,25 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
   
-
-    <section class="problem-section card" id="problem_2" data-problem-type="fill-table">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 3</div>
-        <div class="problem-type-badge">FILL TABLE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Find the surface area of each time capsule box using its net.</p>
-        <p class="family-problem-tip">👪 Family tip: Encourage your student to show their work on paper if a box feels tricky.</p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Box</th><th>Length</th><th>Width</th><th>Height</th><th>Surface Area</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>Box A</td><td>10 in</td><td>6 in</td><td>4 in</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_0_4"
-                                   data-correct="248 in²" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Box B</td><td>7 cm</td><td>7 cm</td><td>3 cm</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_1_4"
-                                   data-correct="182 cm²" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Box C</td><td>12 ft</td><td>5 ft</td><td>2 ft</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_2_4"
-                                   data-correct="188 ft²" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-            </tbody>
-          </table>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_3" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A cube has edges of 5 cm. What is its surface area?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="A cube has 6 identical faces. Each face: 5 × 5 = 25 cm². Total SA = 6 × 25 = 150 cm².">
-          
-            <label class="mc-option-label" id="label_q_3_0">
-              <input type="radio" name="q_3" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">150 cm²</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_1">
-              <input type="radio" name="q_3" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">125 cm²</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_2">
-              <input type="radio" name="q_3" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">150 cm³</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_3">
-              <input type="radio" name="q_3" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">30 cm²</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_4" data-problem-type="drag-sort" data-problem-subtype="drag-order">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 5</div>
-        <div class="problem-type-badge">DRAG ORDER</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Sort these rectangular prisms from LEAST surface area to GREATEST surface area.</p>
-        <p class="family-problem-tip">👪 Family tip: Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</p>
-        <div class="drag-order-workspace" id="dragorder_4" data-correct-order='[&quot;2 × 2 × 2: SA = 24&quot;,&quot;10 × 1 × 1: SA = 42&quot;,&quot;3 × 3 × 3: SA = 54&quot;,&quot;6 × 4 × 2: SA = 88&quot;,&quot;5 × 4 × 3: SA = 94&quot;]' data-initial-order='[&quot;6 × 4 × 2: SA = 88&quot;,&quot;3 × 3 × 3: SA = 54&quot;,&quot;5 × 4 × 3: SA = 94&quot;,&quot;10 × 1 × 1: SA = 42&quot;,&quot;2 × 2 × 2: SA = 24&quot;]'>
-          <div class="drag-order-list" id="orderlist_4">
-            
-              <div class="drag-order-row" draggable="true" id="order_4_0" data-step-text="6 × 4 × 2: SA = 88" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">1</span>
-                <span class="drag-order-text">6 × 4 × 2: SA = 88</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_4_1" data-step-text="3 × 3 × 3: SA = 54" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">2</span>
-                <span class="drag-order-text">3 × 3 × 3: SA = 54</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_4_2" data-step-text="5 × 4 × 3: SA = 94" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">3</span>
-                <span class="drag-order-text">5 × 4 × 3: SA = 94</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_4_3" data-step-text="10 × 1 × 1: SA = 42" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">4</span>
-                <span class="drag-order-text">10 × 1 × 1: SA = 42</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_4_4" data-step-text="2 × 2 × 2: SA = 24" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">5</span>
-                <span class="drag-order-text">2 × 2 × 2: SA = 24</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragOrder(4); saveState(); updateProgress();">Reset Order</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">You unfold a time capsule that is a cube. Its net shows 6 equal squares, and each square has an area of 4 cm². What is the cube&#039;s total surface area?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="A cube net has 6 equal square faces. With each face 4 cm², the surface area is 6 × 4 = 24 cm².">
-          
-            <label class="mc-option-label" id="label_q_5_0">
-              <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">24 cm²</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_1">
-              <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">10 cm²</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_2">
-              <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">16 cm²</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_3">
-              <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">12 cm²</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Your team unfolds a rectangular time capsule box into a flat net. How many faces (flat sides) will the net show in all?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="A rectangular prism has 6 faces — top, bottom, front, back, left, and right — so its net shows 6 faces.">
-          
-            <label class="mc-option-label" id="label_q_6_0">
-              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">6</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_1">
-              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">4</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_2">
-              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">5</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_3">
-              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">8</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_7" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 8</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Match each solid to the net it folds up from.</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="Cube" data-correct="Net of 6 equal squares">
-              <div class="matching-term">Cube</div>
-              <div class="matching-select-container">
-                <select name="q_7_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="6 faces">6 faces</option><option value="How surface area is measured">How surface area is measured</option><option value="Net of 1 square and 4 triangles">Net of 1 square and 4 triangles</option><option value="Net of 2 triangles and 3 rectangles">Net of 2 triangles and 3 rectangles</option><option value="Net of 6 equal squares">Net of 6 equal squares</option><option value="Net of 6 rectangles (3 matching pairs)">Net of 6 rectangles (3 matching pairs)</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Rectangular prism" data-correct="Net of 6 rectangles (3 matching pairs)">
-              <div class="matching-term">Rectangular prism</div>
-              <div class="matching-select-container">
-                <select name="q_7_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="6 faces">6 faces</option><option value="How surface area is measured">How surface area is measured</option><option value="Net of 1 square and 4 triangles">Net of 1 square and 4 triangles</option><option value="Net of 2 triangles and 3 rectangles">Net of 2 triangles and 3 rectangles</option><option value="Net of 6 equal squares">Net of 6 equal squares</option><option value="Net of 6 rectangles (3 matching pairs)">Net of 6 rectangles (3 matching pairs)</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Triangular prism" data-correct="Net of 2 triangles and 3 rectangles">
-              <div class="matching-term">Triangular prism</div>
-              <div class="matching-select-container">
-                <select name="q_7_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="6 faces">6 faces</option><option value="How surface area is measured">How surface area is measured</option><option value="Net of 1 square and 4 triangles">Net of 1 square and 4 triangles</option><option value="Net of 2 triangles and 3 rectangles">Net of 2 triangles and 3 rectangles</option><option value="Net of 6 equal squares">Net of 6 equal squares</option><option value="Net of 6 rectangles (3 matching pairs)">Net of 6 rectangles (3 matching pairs)</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Square pyramid" data-correct="Net of 1 square and 4 triangles">
-              <div class="matching-term">Square pyramid</div>
-              <div class="matching-select-container">
-                <select name="q_7_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="6 faces">6 faces</option><option value="How surface area is measured">How surface area is measured</option><option value="Net of 1 square and 4 triangles">Net of 1 square and 4 triangles</option><option value="Net of 2 triangles and 3 rectangles">Net of 2 triangles and 3 rectangles</option><option value="Net of 6 equal squares">Net of 6 equal squares</option><option value="Net of 6 rectangles (3 matching pairs)">Net of 6 rectangles (3 matching pairs)</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Faces on any rectangular prism" data-correct="6 faces">
-              <div class="matching-term">Faces on any rectangular prism</div>
-              <div class="matching-select-container">
-                <select name="q_7_pair_4" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="6 faces">6 faces</option><option value="How surface area is measured">How surface area is measured</option><option value="Net of 1 square and 4 triangles">Net of 1 square and 4 triangles</option><option value="Net of 2 triangles and 3 rectangles">Net of 2 triangles and 3 rectangles</option><option value="Net of 6 equal squares">Net of 6 equal squares</option><option value="Net of 6 rectangles (3 matching pairs)">Net of 6 rectangles (3 matching pairs)</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Square units (in², cm²)" data-correct="How surface area is measured">
-              <div class="matching-term">Square units (in², cm²)</div>
-              <div class="matching-select-container">
-                <select name="q_7_pair_5" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="6 faces">6 faces</option><option value="How surface area is measured">How surface area is measured</option><option value="Net of 1 square and 4 triangles">Net of 1 square and 4 triangles</option><option value="Net of 2 triangles and 3 rectangles">Net of 2 triangles and 3 rectangles</option><option value="Net of 6 equal squares">Net of 6 equal squares</option><option value="Net of 6 rectangles (3 matching pairs)">Net of 6 rectangles (3 matching pairs)</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_8" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 9</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Sort each flat shape: is it a valid net that folds into a closed time capsule box, or not a complete net?</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        
-        <div class="drag-sort-workspace" id="dragsort_8">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="valid" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'valid')">
-                <div class="drag-column-header">Valid net (folds into a closed box)</div>
-                <div class="drag-column-slots" id="slots_8_valid" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'valid')"></div>
-              </div>
-              <div class="drag-column" data-category-id="invalid" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'invalid')">
-                <div class="drag-column-header">Not a complete net</div>
-                <div class="drag-column-slots" id="slots_8_invalid" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'invalid')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_8" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_0"
-                     data-item-index="0"
-                     data-correct-category="valid"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Six rectangles arranged in a cross shape</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_0', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="valid">Valid net (folds into a closed box)</option><option value="invalid">Not a complete net</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_1"
-                     data-item-index="1"
-                     data-correct-category="valid"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Six equal squares in a T shape</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_1', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="valid">Valid net (folds into a closed box)</option><option value="invalid">Not a complete net</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_2"
-                     data-item-index="2"
-                     data-correct-category="invalid"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Four rectangles in a straight row (top and bottom missing)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_2', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="valid">Valid net (folds into a closed box)</option><option value="invalid">Not a complete net</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_3"
-                     data-item-index="3"
-                     data-correct-category="invalid"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">A single rectangle by itself</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_3', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="valid">Valid net (folds into a closed box)</option><option value="invalid">Not a complete net</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_4"
-                     data-item-index="4"
-                     data-correct-category="valid"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Two squares and four rectangles for a box</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_4', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="valid">Valid net (folds into a closed box)</option><option value="invalid">Not a complete net</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_5"
-                     data-item-index="5"
-                     data-correct-category="invalid"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Seven rectangles (one extra face)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_5', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="valid">Valid net (folds into a closed box)</option><option value="invalid">Not a complete net</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(8); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A time capsule box measures 2 in × 3 in × 4 in. Using its net, you add up all six faces. What is the total surface area?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="From the net: SA = 2(2×3) + 2(2×4) + 2(3×4) = 12 + 16 + 24 = 52 in².">
-          
-            <label class="mc-option-label" id="label_q_9_0">
-              <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">52 in²</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_1">
-              <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">24 in²</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_2">
-              <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">26 in²</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_3">
-              <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">48 in²</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
   </main>
+
   
+    <section class="guided-section card section-celebrate" aria-label="Celebration">
+      <h2 class="section-title">🎉 You did it together! / ¡Lo lograron juntos!</h2>
+      <p class="celebrate-text lang-en">High five! Whether every answer was perfect or not, you showed up for your student tonight. That matters.</p>
+      <p class="celebrate-text lang-es" lang="es">¡Chócalas! No importa si cada respuesta fue perfecta — estuviste con tu estudiante esta noche. Eso importa.</p>
+      <p class="celebrate-sub bilingual-block">
+        <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
+        <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
+      </p>
+    </section>
+
 </div>
 
 <!-- Sticky bottom actions bar -->
@@ -2140,7 +1899,7 @@ header.homework-header h1 {
     
     <div class="score-progress-container">
       <div class="score-text">
-        Homework Progress: <span id="progress_text">0 / 10 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 2 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -2148,8 +1907,8 @@ header.homework-header h1 {
     </div>
     
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset</button>
-      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All Problems</button>
+      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset / Reiniciar</button>
+      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All / Revisar todo</button>
     </div>
   </div>
 </div>

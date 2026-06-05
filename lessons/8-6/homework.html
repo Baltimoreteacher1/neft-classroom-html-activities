@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interactive Homework — Lesson 8-6: Display Data: Histograms</title>
+<title>Help Your Student — Lesson 8-6: Display Data: Histograms</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -266,6 +266,13 @@ header.homework-header h1 {
   border-radius: var(--radius-sm);
   font-size: 13.5px;
   color: var(--hint);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.family-problem-tip .lang-es {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .family-hint-box {
@@ -1306,70 +1313,331 @@ header.homework-header h1 {
     justify-content: center;
   }
 }
+
+/* Family guided notes layout */
+.family-welcome {
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  color: var(--white);
+  border: none;
+  padding: 28px 24px;
+}
+.welcome-hero {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.welcome-emoji { font-size: 48px; line-height: 1; }
+.welcome-tag {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal-light);
+  font-weight: 800;
+}
+.welcome-title-en, .welcome-title-es {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 5vw, 34px);
+  font-weight: 800;
+  line-height: 1.15;
+}
+.welcome-title-es { color: var(--amber); font-size: clamp(22px, 4.5vw, 30px); margin-top: 2px; }
+.welcome-lesson { margin: 8px 0 0; font-size: 16px; color: var(--teal-light); font-weight: 600; }
+.welcome-lead { margin: 0 0 12px; font-size: 15px; line-height: 1.5; }
+.family-welcome .back-link { color: var(--amber); margin: 0; }
+.family-welcome .back-link:hover { color: var(--white); }
+
+.bilingual-block, .bilingual-grid { display: flex; flex-direction: column; gap: 10px; }
+.bilingual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 640px) {
+  .bilingual-grid { grid-template-columns: 1fr; }
+}
+.bilingual-col {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.lang-label {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal);
+  margin-bottom: 6px;
+}
+.lang-en { margin: 0 0 6px; }
+.lang-es { margin: 0; color: var(--muted); font-style: normal; }
+.learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
+.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+
+.guided-section { scroll-margin-top: 16px; }
+.section-learn { border-left: 4px solid var(--teal); }
+.section-visual { border-left: 4px solid var(--amber); }
+.section-together { border-left: 4px solid #5b8def; }
+.section-vocab { border-left: 4px solid var(--coral); }
+.section-stuck { border-left: 4px solid #9b59b6; }
+.section-quick-intro { border-left: 4px solid var(--success); }
+.section-celebrate {
+  border-left: 4px solid var(--amber);
+  background: linear-gradient(180deg, var(--amber-light), var(--white));
+  text-align: center;
+}
+
+.concept-visual-wrap { margin: 12px 0 16px; overflow-x: auto; }
+.concept-svg { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.concept-fallback-visual { display: flex; flex-direction: column; gap: 8px; }
+.concept-fallback-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  font-weight: 600; font-size: 14px;
+}
+.step-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; color: var(--white);
+  flex-shrink: 0;
+}
+.step-color-1 .step-dot, .step-color-1.step-badge { background: #5b8def; }
+.step-color-2 .step-dot, .step-color-2.step-badge { background: var(--success); }
+.step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
+.step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
+
+.key-idea-banner {
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid #b8ddd8;
+}
+.key-idea-banner p { margin: 0 0 6px; font-size: 14.5px; }
+.key-idea-banner p:last-child { margin-bottom: 0; }
+
+.guided-steps, .together-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.guided-step, .together-step {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  background: var(--white);
+}
+.step-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  padding: 3px 8px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+}
+.guided-step p, .together-step p { margin: 0 0 6px; font-size: 14.5px; line-height: 1.45; }
+.step-hint {
+  margin: 8px 0 0 !important;
+  padding: 8px 10px;
+  background: var(--hint-bg);
+  border-radius: var(--radius-sm);
+  font-size: 13px !important;
+  color: var(--hint);
+}
+
+.watch-for-list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.watch-for-list li {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
+}
+.watch-icon { font-size: 20px; flex-shrink: 0; }
+
+.try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
+.try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
+
+.stuck-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+@media (max-width: 640px) { .stuck-grid { grid-template-columns: 1fr; } }
+.stuck-panel {
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+}
+.stuck-say { background: var(--success-bg); border-color: var(--success); }
+.stuck-dont { background: var(--error-bg); border-color: var(--error); }
+.stuck-heading { margin: 0 0 10px; font-family: var(--font-display); font-size: 14px; color: var(--navy); }
+.stuck-panel ul { margin: 0; padding-left: 16px; }
+.stuck-panel li { margin-bottom: 10px; font-size: 14px; }
+.stuck-panel li p { margin: 0 0 4px; }
+.stuck-footer { font-size: 14px; color: var(--muted); margin: 0; }
+
+.celebrate-text { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; }
+.celebrate-sub { font-size: 14px; margin: 0; }
+
+.problems-container .problem-section { border-left: 4px solid var(--teal); }
+.problems-container .problem-number-badge::after {
+  content: " / Repaso";
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
 </style>
 </head>
 <body>
 
 <div class="container">
-  
-  <header class="homework-header">
-    <a href="/curriculum/" class="back-link">⬅ Curriculum Hub</a>
-    <div class="header-meta">Unit 8 · Standard 6.SP.4 · Homework</div>
-    <h1>Display Data: Histograms</h1>
-    <div class="objectives-card">
-      <div class="objective-row"><span class="objective-badge">Target</span> <strong>I can make and read a histogram to display data in intervals.</strong></div>
-      <div class="objective-row"><span class="objective-badge">Discuss</span> <strong>I can explain my histogram using the words histogram, frequency, interval, and distribution.</strong></div>
-    </div>
-  </header>
 
   
-    <section class="family-guide card" aria-label="Family guide">
-      <div class="family-guide-header">
-        <span class="family-guide-emoji">🏀</span>
-        <div>
-          <h2 class="section-title family-guide-title">Family Guide</h2>
-          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+    <header class="family-welcome card" aria-label="Family Math Night welcome">
+      <div class="welcome-hero">
+        <span class="welcome-emoji" aria-hidden="true">🏀</span>
+        <div class="welcome-titles">
+          <p class="welcome-tag">Unit 8 · 6.SP.4</p>
+          <h1 class="welcome-title-en">Family Math Night</h1>
+          <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
+          <p class="welcome-lesson">Display Data: Histograms · Lesson 8-6</p>
         </div>
       </div>
+      <p class="welcome-lead bilingual-block">
+        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+      </p>
+      <a href="/curriculum/" class="back-link">⬅ Curriculum Hub / Centro curricular</a>
+    </header>
 
-      <div class="family-guide-grid">
-        <div class="family-panel family-panel-tips">
-          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
-          <ul class="family-tip-list">
-            <li>Let your student try each problem first. Tap <strong>Check This Problem</strong> on any question for instant feedback — no need to finish the whole page.</li>
-            <li>Tap vocabulary cards to flip between term and definition.</li>
-            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
-          </ul>
+  
+    <section class="guided-section card section-learn" aria-label="What we are learning tonight">
+      <h2 class="section-title">📖 What we're learning tonight / Qué aprendemos hoy</h2>
+      <div class="bilingual-grid">
+        <div class="bilingual-col lang-en">
+          <span class="lang-label">English</span>
+          <p class="learning-big">Make and read a histogram to display data in intervals.</p>
+          <p class="learning-sub">Also practice saying: <em>explain my histogram using the words histogram, frequency, interval, and distribution</em></p>
         </div>
-
-        <div class="family-panel family-panel-home">
-          <h3 class="family-panel-heading">🏡 Try this at home</h3>
-          <p class="family-try-text">You have 30 players&#039; points-per-game averages. Why is it easier to display them in a histogram with intervals than to list all 30 numbers?</p>
+        <div class="bilingual-col lang-es" lang="es">
+          <span class="lang-label">Español</span>
+          <p class="learning-big">Puedo make and read a histograma to display datos in intervals.</p>
+          <p class="learning-sub">También practiquen: <em>explicar mi histograma usando las palabras Histograma, Frecuencia, Intervalo, y Distribución</em></p>
         </div>
       </div>
-
-      
-        <div class="family-panel family-panel-legend">
-          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
-          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>fill table:</strong> Encourage your student to show their work on paper if a box feels tricky.</li><li><strong>matching game:</strong> Say each term out loud, then talk through which match makes sense before choosing.</li><li><strong>drag sort:</strong> On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</li></ul>
-        </div>
-
-      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
     </section>
-  
 
   
-    <section class="try-at-home card" aria-label="Try this at home">
-      <h2 class="section-title">🏀 Real-World Connection</h2>
-      <p class="try-narrative">The basketball league has 30 players and wants to display everyone&#039;s points-per-game average in a way that shows how the data is distributed. The raw averages are: 2, 5, 7, 8, 9, 10, 11, 11, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 18, 18, 19, 20, 21, 22, 23, 24, 25, 28, 30, 32. Listing all 30 numbers is hard to read — a histogram will reveal the pattern!</p>
-      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    <section class="guided-section card section-visual" aria-label="Visual concept explainer">
+      <h2 class="section-title">🎯 The big idea / La idea principal</h2>
+      <div class="concept-visual-wrap">
+    <div class="concept-fallback-visual" aria-hidden="true">
+      <div class="concept-fallback-step step-color-1"><span class="step-dot">1</span><span>A histogram is a bar graph that groups numbers into equal ranges called intervals</span></div><div class="concept-fallback-step step-color-2"><span class="step-dot">2</span><span>My data: 3, 7, 12, 15, 18, 24</span></div><div class="concept-fallback-step step-color-3"><span class="step-dot">3</span><span>Interval 0–9: the values 3 and 7 fit, so the frequency is 2</span></div>
+    </div></div>
+      <div class="key-idea-banner">
+        <p class="lang-en"><strong>Watch for this:</strong> Each bar&#039;s height shows how many data values land inside that interval.</p>
+        <p class="lang-es" lang="es"><strong>Observa esto:</strong> Esta noche practican: make and read a histograma to display datos in intervals. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+      </div>
+      <ol class="guided-steps">
+        
+          <li class="guided-step step-color-1">
+            <span class="step-badge">Step 1 / Paso 1</span>
+            <p class="lang-en">A histogram is a bar graph that groups numbers into equal ranges called intervals. The height of each bar is the frequency: how many values fall in that interval. The bars touch because the intervals are continuous.</p>
+            <p class="lang-es" lang="es">Esta noche practican: make and read a histograma to display datos in intervals. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-2">
+            <span class="step-badge">Step 2 / Paso 2</span>
+            <p class="lang-en">My data: 3, 7, 12, 15, 18, 24. I will use intervals of 10: 0–9, 10–19, 20–29.</p>
+            <p class="lang-es" lang="es">Esta noche practican: make and read a histograma to display datos in intervals. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-3">
+            <span class="step-badge">Step 3 / Paso 3</span>
+            <p class="lang-en">Interval 0–9: the values 3 and 7 fit, so the frequency is 2.</p>
+            <p class="lang-es" lang="es">Esta noche practican: make and read a histograma to display datos in intervals. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-4">
+            <span class="step-badge">Step 4 / Paso 4</span>
+            <p class="lang-en">Interval 10–19: the values 12, 15, and 18 fit, so the frequency is 3.</p>
+            <p class="lang-es" lang="es">Esta noche practican: make and read a histograma to display datos in intervals. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+      </ol>
+      <ul class="watch-for-list">
+        
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Histogram&quot; — it means: A bar graph that groups data into equal ranges. The bars touch.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Histograma&quot; — significa: Una gráfica de barras que agrupa datos en rangos iguales. Las barras se tocan.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Frequency&quot; — it means: How many times a value shows up.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Frecuencia&quot; — significa: Cuántas veces aparece un valor.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Interval&quot; — it means: A range of numbers used to group data.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Intervalo&quot; — significa: Un rango de números para agrupar datos.</p>
+            </div>
+          </li>
+      </ul>
     </section>
-  
 
   
-    <section class="vocab-section card">
-      <h2 class="section-title">🔑 Key Vocabulary</h2>
-      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
+    <section class="guided-section card section-together" aria-label="Try this together">
+      <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
+      <p class="try-scenario lang-en">The basketball league has 30 players and wants to display everyone&#039;s points-per-game average in a way that shows how the data is distributed.</p>
+             <p class="try-scenario lang-es" lang="es">The basketball league has 30 players and wants to display everyone&#039;s points-per-game average in a way that shows how the datos is distributed.</p>
+      <p class="try-together-note bilingual-block">
+        <span class="lang-en">Work side by side. You ask questions; your student does the thinking.</span>
+        <span class="lang-es" lang="es">Trabajen juntos. Tú haces preguntas; tu estudiante piensa.</span>
+      </p>
+      <ol class="together-steps">
+        
+          <li class="together-step step-color-1">
+            <div class="together-step-head">
+              <span class="step-badge">Step 1 / Paso 1</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> New data: 2, 4, 8, 11, 13, 16, 21. We will use intervals of 10 again: 0–9, 10–19, 20–29.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> New datos: 2, 4, 8, 11, 13, 16, 21. We will use intervals of 10 again: 0–9, 10–19, 20–29.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-2">
+            <div class="together-step-head">
+              <span class="step-badge">Step 2 / Paso 2</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> How many values fall in 0–9? Count them. How many fall in 10–19?</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> How many values fall in 0–9? Count them. How many fall in 10–19?.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-3">
+            <div class="together-step-head">
+              <span class="step-badge">Step 3 / Paso 3</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> How many fall in 20–29? Which interval would have the tallest bar?</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> How many fall in 20–29? Which intervalo would have the tallest bar?.</p>
+            <p class="step-hint">💡 Both numbers must change the same way. · Ambos números deben cambiar de la misma manera.</p>
+          </li>
+      </ol>
+    </section>
+
+  
+    <section class="guided-section card section-vocab vocab-section" aria-label="Words to know">
+      <h2 class="section-title">📚 Words to know / Palabras clave</h2>
+      <p class="vocab-family-note bilingual-block">
+        <span class="lang-en">Tap a card to flip. Use these words when you talk about the math together.</span>
+        <span class="lang-es" lang="es">Toquen una tarjeta para voltearla. Usen estas palabras cuando hablen de la matemática juntos.</span>
+      </p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
@@ -1379,18 +1647,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/histogram.svg" alt="Illustration of Histogram: A bar graph that groups data into equal ranges. The bars touch." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Histogram</h3>
-                  <p class="vocab-es">Histograma</p>
-                  <div class="vocab-visual-hint">💡 Example: Bars side by side: 0-9 pts (3 players), 10-19 pts (8 players), 20-29 pts (4 players)</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Histograma</p>
+                  <div class="vocab-visual-hint">💡 Bars side by side: 0-9 pts (3 players), 10-19 pts (8 players), 20-29 pts (4 players)</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A bar graph that groups data into equal ranges. The bars touch.</p>
-                  <p class="vocab-def-es">Una gráfica de barras que agrupa datos en rangos iguales. Las barras se tocan.</p>
+                  <p class="vocab-def-es" lang="es">Una gráfica de barras que agrupa datos en rangos iguales. Las barras se tocan.</p>
                   <p class="vocab-back-visual">📌 Bars side by side: 0-9 pts (3 players), 10-19 pts (8 players), 20-29 pts (4 players)</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1398,18 +1665,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/frequency.svg" alt="Illustration of Frequency: How many times a value shows up." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Frequency</h3>
-                  <p class="vocab-es">Frecuencia</p>
-                  <div class="vocab-visual-hint">💡 Example: If 5 players scored 10-19 points, the frequency for that interval is 5</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Frecuencia</p>
+                  <div class="vocab-visual-hint">💡 If 5 players scored 10-19 points, the frequency for that interval is 5</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">How many times a value shows up.</p>
-                  <p class="vocab-def-es">Cuántas veces aparece un valor.</p>
+                  <p class="vocab-def-es" lang="es">Cuántas veces aparece un valor.</p>
                   <p class="vocab-back-visual">📌 If 5 players scored 10-19 points, the frequency for that interval is 5</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1417,18 +1683,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/histogram.svg" alt="Illustration of Interval: A range of numbers used to group data." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Interval</h3>
-                  <p class="vocab-es">Intervalo</p>
-                  <div class="vocab-visual-hint">💡 Example: 0-9, 10-19, 20-29 are intervals of width 10 — each covers 10 values</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Intervalo</p>
+                  <div class="vocab-visual-hint">💡 0-9, 10-19, 20-29 are intervals of width 10 — each covers 10 values</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A range of numbers used to group data.</p>
-                  <p class="vocab-def-es">Un rango de números para agrupar datos.</p>
+                  <p class="vocab-def-es" lang="es">Un rango de números para agrupar datos.</p>
                   <p class="vocab-back-visual">📌 0-9, 10-19, 20-29 are intervals of width 10 — each covers 10 values</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1436,18 +1701,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/distribution.svg" alt="Illustration of Distribution: How the data is spread out." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Distribution</h3>
-                  <p class="vocab-es">Distribución</p>
-                  <div class="vocab-visual-hint">💡 Example: Most data in the middle with fewer at the ends = bell-shaped; most on one side with a tail = skewed</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Distribución</p>
+                  <div class="vocab-visual-hint">💡 Most data in the middle with fewer at the ends = bell-shaped; most on one side with a tail = skewed</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">How the data is spread out.</p>
-                  <p class="vocab-def-es">Cómo están repartidos los datos.</p>
+                  <p class="vocab-def-es" lang="es">Cómo están repartidos los datos.</p>
                   <p class="vocab-back-visual">📌 Most data in the middle with fewer at the ends = bell-shaped; most on one side with a tail = skewed</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1455,18 +1719,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/distribution.svg" alt="Illustration of Data distribution: How the data looks: where it sits and how spread out it is." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Data distribution</h3>
-                  <p class="vocab-es">Distribución de datos</p>
-                  <div class="vocab-visual-hint">💡 Example: A histogram that is tallest in the middle and shorter on both sides is symmetric</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Distribución de datos</p>
+                  <div class="vocab-visual-hint">💡 A histogram that is tallest in the middle and shorter on both sides is symmetric</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">How the data looks: where it sits and how spread out it is.</p>
-                  <p class="vocab-def-es">Cómo se ven los datos: dónde están y qué tan separados están.</p>
+                  <p class="vocab-def-es" lang="es">Cómo se ven los datos: dónde están y qué tan separados están.</p>
                   <p class="vocab-back-visual">📌 A histogram that is tallest in the middle and shorter on both sides is symmetric</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1474,33 +1737,63 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/spread.svg" alt="Illustration of Variability: How spread out the numbers are." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Variability</h3>
-                  <p class="vocab-es">Variabilidad</p>
-                  <div class="vocab-visual-hint">💡 Example: Data in just 2 intervals = low variability. Data across 6 intervals = high variability</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Variabilidad</p>
+                  <div class="vocab-visual-hint">💡 Data in just 2 intervals = low variability. Data across 6 intervals = high variability</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">How spread out the numbers are.</p>
-                  <p class="vocab-def-es">Qué tan separados están los números.</p>
+                  <p class="vocab-def-es" lang="es">Qué tan separados están los números.</p>
                   <p class="vocab-back-visual">📌 Data in just 2 intervals = low variability. Data across 6 intervals = high variability</p>
                 </div>
               </div>
             </div>
-          
       </div>
     </section>
+
   
+    <section class="guided-section card section-stuck" aria-label="If your student gets stuck">
+      <h2 class="section-title">💬 If your student gets stuck / Si se atora</h2>
+      <div class="stuck-grid">
+        <div class="stuck-panel stuck-say">
+          <h3 class="stuck-heading">✅ What to say / Qué decir</h3>
+          <ul>
+            <li><p class="lang-en">What do you already know that could help?</p><p class="lang-es" lang="es">¿Qué ya sabes que podría ayudarte?</p></li><li><p class="lang-en">Can you draw a picture or table for this?</p><p class="lang-es" lang="es">¿Puedes dibujar un dibujo o una tabla para esto?</p></li><li><p class="lang-en">Let&#039;s check one step at a time — no rush.</p><p class="lang-es" lang="es">Revisemos un paso a la vez — sin prisa.</p></li>
+          </ul>
+        </div>
+        <div class="stuck-panel stuck-dont">
+          <h3 class="stuck-heading">🚫 What NOT to say / Qué evitar</h3>
+          <ul>
+            <li><p class="lang-en">That&#039;s wrong — let me just tell you.</p><p class="lang-es" lang="es">Está mal — déjame decírtelo yo.</p></li><li><p class="lang-en">I was never good at math either.</p><p class="lang-es" lang="es">Yo tampoco era bueno en matemáticas.</p></li><li><p class="lang-en">This should be easy.</p><p class="lang-es" lang="es">Esto debería ser fácil.</p></li>
+          </ul>
+        </div>
+      </div>
+      <p class="stuck-footer bilingual-block">
+        <span class="lang-en">Struggle is part of learning. Short breaks and snacks are allowed!</span>
+        <span class="lang-es" lang="es">La dificultad es parte del aprendizaje. ¡Descansos y meriendas están permitidos!</span>
+      </p>
+    </section>
+
   
+    <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
+      <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
+      <p class="bilingual-block">
+        <span class="lang-en">One or two problems to try on the screen. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
+        <span class="lang-es" lang="es">Una o dos preguntas en pantalla. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+      </p>
+    </section>
+
   <main class="problems-container">
     
     <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 1</div>
+        <div class="problem-number-badge">Quick Check 1</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">A histogram shows these frequencies: 0–4: 3 players, 5–9: 8 players, 10–14: 12 players, 15–19: 5 players. How many players are represented in total?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="Add all frequencies: 3 + 8 + 12 + 5 = 28 players.">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1532,7 +1825,7 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
@@ -1541,13 +1834,13 @@ header.homework-header h1 {
 
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 2</div>
+        <div class="problem-number-badge">Quick Check 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">In a histogram, what does the height of each bar represent?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="Each bar&#039;s height shows the frequency — how many data values fall within that interval.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1579,580 +1872,25 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
   
-
-    <section class="problem-section card" id="problem_2" data-problem-type="fill-table">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 3</div>
-        <div class="problem-type-badge">FILL TABLE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Complete the table.</p>
-        <p class="family-problem-tip">👪 Family tip: Encourage your student to show their work on paper if a box feels tricky.</p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Interval (Yards)</th><th>Frequency</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>Player rushing yards per game: 0, 5, 12, 15, 18, 22, 25, 28, 31, 35, 40, 45</td><td></td>
-                </tr>
-              
-                <tr>
-                  <td>0–9</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_1_1"
-                                   data-correct="2" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>10–19</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_2_1"
-                                   data-correct="3" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>20–29</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_3_1"
-                                   data-correct="3" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>30–39</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_4_1"
-                                   data-correct="2" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>40–49</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_5_1"
-                                   data-correct="2" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-            </tbody>
-          </table>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_3" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A histogram of test scores shows: 50–59: 2, 60–69: 5, 70–79: 10, 80–89: 8, 90–99: 3. Which interval has the most students?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="The 70–79 interval has the highest frequency of 10 students.">
-          
-            <label class="mc-option-label" id="label_q_3_0">
-              <input type="radio" name="q_3" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">70–79 with 10 students</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_1">
-              <input type="radio" name="q_3" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">80–89 with 8 students</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_2">
-              <input type="radio" name="q_3" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">60–69 with 5 students</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_3">
-              <input type="radio" name="q_3" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">90–99 with 3 students</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_4" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 5</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Match each term to its description.</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="Histogram" data-correct="Bars touch, shows frequency by interval">
-              <div class="matching-term">Histogram</div>
-              <div class="matching-select-container">
-                <select name="q_4_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Bars separated, shows categories">Bars separated, shows categories</option><option value="Bars touch, shows frequency by interval">Bars touch, shows frequency by interval</option><option value="Count of values in an interval">Count of values in an interval</option><option value="Range of values grouped together">Range of values grouped together</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Bar graph" data-correct="Bars separated, shows categories">
-              <div class="matching-term">Bar graph</div>
-              <div class="matching-select-container">
-                <select name="q_4_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Bars separated, shows categories">Bars separated, shows categories</option><option value="Bars touch, shows frequency by interval">Bars touch, shows frequency by interval</option><option value="Count of values in an interval">Count of values in an interval</option><option value="Range of values grouped together">Range of values grouped together</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Frequency" data-correct="Count of values in an interval">
-              <div class="matching-term">Frequency</div>
-              <div class="matching-select-container">
-                <select name="q_4_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Bars separated, shows categories">Bars separated, shows categories</option><option value="Bars touch, shows frequency by interval">Bars touch, shows frequency by interval</option><option value="Count of values in an interval">Count of values in an interval</option><option value="Range of values grouped together">Range of values grouped together</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Interval" data-correct="Range of values grouped together">
-              <div class="matching-term">Interval</div>
-              <div class="matching-select-container">
-                <select name="q_4_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Bars separated, shows categories">Bars separated, shows categories</option><option value="Bars touch, shows frequency by interval">Bars touch, shows frequency by interval</option><option value="Count of values in an interval">Count of values in an interval</option><option value="Range of values grouped together">Range of values grouped together</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_5" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 6</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Rank the intervals from highest to lowest frequency.</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        <div class="family-hint-box"><p>💡 Compare the frequencies: 11 &gt; 7 &gt; 4 &gt; 2.</p><p>💡 The tallest bar (most players) goes first.</p></div>
-        <div class="drag-sort-workspace" id="dragsort_5">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="most-to-fewest-players" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, 'most-to-fewest-players')">
-                <div class="drag-column-header">Most to fewest players</div>
-                <div class="drag-column-slots" id="slots_5_most-to-fewest-players" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, 'most-to-fewest-players')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_5" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_5_0"
-                     data-item-index="0"
-                     data-correct-category="most-to-fewest-players"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">10–19: 11 players</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_0', 5); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="most-to-fewest-players">Most to fewest players</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_5_1"
-                     data-item-index="1"
-                     data-correct-category="most-to-fewest-players"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">20–29: 7 players</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_1', 5); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="most-to-fewest-players">Most to fewest players</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_5_2"
-                     data-item-index="2"
-                     data-correct-category="most-to-fewest-players"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">0–9: 4 players</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_2', 5); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="most-to-fewest-players">Most to fewest players</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_5_3"
-                     data-item-index="3"
-                     data-correct-category="most-to-fewest-players"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">30–39: 2 players</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_3', 5); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="most-to-fewest-players">Most to fewest players</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(5); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A histogram of goals-per-game shows: 0–1: 9 players, 2–3: 6, 4–5: 3, 6–7: 1. What shape is this distribution?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="The tallest bars are at the low end (0–1) and the bars shrink as goals increase — the tail points right, so it is skewed right.">
-          
-            <label class="mc-option-label" id="label_q_6_0">
-              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Skewed right (most players low, tail toward high values)</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_1">
-              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Skewed left (most players high, tail toward low values)</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_2">
-              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Perfectly symmetric</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_3">
-              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Flat / uniform (all bars equal)</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_7" data-problem-type="fill-table">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 8</div>
-        <div class="problem-type-badge">FILL TABLE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Use this data set of rebounds per game to complete the frequency table (intervals of 5): 1, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 16.</p>
-        <p class="family-problem-tip">👪 Family tip: Encourage your student to show their work on paper if a box feels tricky.</p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Interval (Rebounds)</th><th>Frequency</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>0–4</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_7_table_0_1"
-                                   data-correct="3" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>5–9</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_7_table_1_1"
-                                   data-correct="4" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>10–14</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_7_table_2_1"
-                                   data-correct="4" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>15–19</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_7_table_3_1"
-                                   data-correct="1" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-            </tbody>
-          </table>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 9</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Coach recorded these minutes played by 14 players: 4, 8, 9, 12, 14, 15, 17, 18, 19, 22, 24, 27, 31, 33. Using intervals of 10, how many values fall in the 10–19 interval?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="The values 12, 14, 15, 17, 18, and 19 all fall between 10 and 19, so the frequency for that bin is 6.">
-          
-            <label class="mc-option-label" id="label_q_8_0">
-              <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">6</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_8_1">
-              <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">3</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_8_2">
-              <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">9</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_8_3">
-              <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">5</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A histogram of steals per game has these frequencies — 0–9: 3 players, 10–19: 9 players, 20–29: 5 players, 30–39: 2 players. Which interval has the highest frequency (tallest bar)?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="The 10–19 interval has the greatest frequency (9 players), so its bar is the tallest.">
-          
-            <label class="mc-option-label" id="label_q_9_0">
-              <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">10–19 with 9 players</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_1">
-              <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">20–29 with 5 players</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_2">
-              <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">0–9 with 3 players</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_3">
-              <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">30–39 with 2 players</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
   </main>
+
   
+    <section class="guided-section card section-celebrate" aria-label="Celebration">
+      <h2 class="section-title">🎉 You did it together! / ¡Lo lograron juntos!</h2>
+      <p class="celebrate-text lang-en">High five! Whether every answer was perfect or not, you showed up for your student tonight. That matters.</p>
+      <p class="celebrate-text lang-es" lang="es">¡Chócalas! No importa si cada respuesta fue perfecta — estuviste con tu estudiante esta noche. Eso importa.</p>
+      <p class="celebrate-sub bilingual-block">
+        <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
+        <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
+      </p>
+    </section>
+
 </div>
 
 <!-- Sticky bottom actions bar -->
@@ -2162,7 +1900,7 @@ header.homework-header h1 {
     
     <div class="score-progress-container">
       <div class="score-text">
-        Homework Progress: <span id="progress_text">0 / 10 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 2 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -2170,8 +1908,8 @@ header.homework-header h1 {
     </div>
     
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset</button>
-      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All Problems</button>
+      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset / Reiniciar</button>
+      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All / Revisar todo</button>
     </div>
   </div>
 </div>

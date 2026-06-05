@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interactive Homework — Lesson 4-6: Convert Measurement Units</title>
+<title>Help Your Student — Lesson 4-6: Convert Measurement Units</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -266,6 +266,13 @@ header.homework-header h1 {
   border-radius: var(--radius-sm);
   font-size: 13.5px;
   color: var(--hint);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.family-problem-tip .lang-es {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .family-hint-box {
@@ -1306,70 +1313,334 @@ header.homework-header h1 {
     justify-content: center;
   }
 }
+
+/* Family guided notes layout */
+.family-welcome {
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  color: var(--white);
+  border: none;
+  padding: 28px 24px;
+}
+.welcome-hero {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.welcome-emoji { font-size: 48px; line-height: 1; }
+.welcome-tag {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal-light);
+  font-weight: 800;
+}
+.welcome-title-en, .welcome-title-es {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 5vw, 34px);
+  font-weight: 800;
+  line-height: 1.15;
+}
+.welcome-title-es { color: var(--amber); font-size: clamp(22px, 4.5vw, 30px); margin-top: 2px; }
+.welcome-lesson { margin: 8px 0 0; font-size: 16px; color: var(--teal-light); font-weight: 600; }
+.welcome-lead { margin: 0 0 12px; font-size: 15px; line-height: 1.5; }
+.family-welcome .back-link { color: var(--amber); margin: 0; }
+.family-welcome .back-link:hover { color: var(--white); }
+
+.bilingual-block, .bilingual-grid { display: flex; flex-direction: column; gap: 10px; }
+.bilingual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 640px) {
+  .bilingual-grid { grid-template-columns: 1fr; }
+}
+.bilingual-col {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.lang-label {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal);
+  margin-bottom: 6px;
+}
+.lang-en { margin: 0 0 6px; }
+.lang-es { margin: 0; color: var(--muted); font-style: normal; }
+.learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
+.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+
+.guided-section { scroll-margin-top: 16px; }
+.section-learn { border-left: 4px solid var(--teal); }
+.section-visual { border-left: 4px solid var(--amber); }
+.section-together { border-left: 4px solid #5b8def; }
+.section-vocab { border-left: 4px solid var(--coral); }
+.section-stuck { border-left: 4px solid #9b59b6; }
+.section-quick-intro { border-left: 4px solid var(--success); }
+.section-celebrate {
+  border-left: 4px solid var(--amber);
+  background: linear-gradient(180deg, var(--amber-light), var(--white));
+  text-align: center;
+}
+
+.concept-visual-wrap { margin: 12px 0 16px; overflow-x: auto; }
+.concept-svg { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.concept-fallback-visual { display: flex; flex-direction: column; gap: 8px; }
+.concept-fallback-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  font-weight: 600; font-size: 14px;
+}
+.step-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; color: var(--white);
+  flex-shrink: 0;
+}
+.step-color-1 .step-dot, .step-color-1.step-badge { background: #5b8def; }
+.step-color-2 .step-dot, .step-color-2.step-badge { background: var(--success); }
+.step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
+.step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
+
+.key-idea-banner {
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid #b8ddd8;
+}
+.key-idea-banner p { margin: 0 0 6px; font-size: 14.5px; }
+.key-idea-banner p:last-child { margin-bottom: 0; }
+
+.guided-steps, .together-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.guided-step, .together-step {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  background: var(--white);
+}
+.step-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  padding: 3px 8px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+}
+.guided-step p, .together-step p { margin: 0 0 6px; font-size: 14.5px; line-height: 1.45; }
+.step-hint {
+  margin: 8px 0 0 !important;
+  padding: 8px 10px;
+  background: var(--hint-bg);
+  border-radius: var(--radius-sm);
+  font-size: 13px !important;
+  color: var(--hint);
+}
+
+.watch-for-list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.watch-for-list li {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
+}
+.watch-icon { font-size: 20px; flex-shrink: 0; }
+
+.try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
+.try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
+
+.stuck-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+@media (max-width: 640px) { .stuck-grid { grid-template-columns: 1fr; } }
+.stuck-panel {
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+}
+.stuck-say { background: var(--success-bg); border-color: var(--success); }
+.stuck-dont { background: var(--error-bg); border-color: var(--error); }
+.stuck-heading { margin: 0 0 10px; font-family: var(--font-display); font-size: 14px; color: var(--navy); }
+.stuck-panel ul { margin: 0; padding-left: 16px; }
+.stuck-panel li { margin-bottom: 10px; font-size: 14px; }
+.stuck-panel li p { margin: 0 0 4px; }
+.stuck-footer { font-size: 14px; color: var(--muted); margin: 0; }
+
+.celebrate-text { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; }
+.celebrate-sub { font-size: 14px; margin: 0; }
+
+.problems-container .problem-section { border-left: 4px solid var(--teal); }
+.problems-container .problem-number-badge::after {
+  content: " / Repaso";
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
 </style>
 </head>
 <body>
 
 <div class="container">
-  
-  <header class="homework-header">
-    <a href="/curriculum/" class="back-link">⬅ Curriculum Hub</a>
-    <div class="header-meta">Unit 4 · Standard 6.RP.3d · Homework</div>
-    <h1>Convert Measurement Units</h1>
-    <div class="objectives-card">
-      <div class="objective-row"><span class="objective-badge">Target</span> <strong>I can convert measurement units using ratios and conversion factors.</strong></div>
-      <div class="objective-row"><span class="objective-badge">Discuss</span> <strong>I can explain my conversion using the words conversion factor, unit, equivalent, and ratio.</strong></div>
-    </div>
-  </header>
 
   
-    <section class="family-guide card" aria-label="Family guide">
-      <div class="family-guide-header">
-        <span class="family-guide-emoji">🕹️</span>
-        <div>
-          <h2 class="section-title family-guide-title">Family Guide</h2>
-          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+    <header class="family-welcome card" aria-label="Family Math Night welcome">
+      <div class="welcome-hero">
+        <span class="welcome-emoji" aria-hidden="true">🕹️</span>
+        <div class="welcome-titles">
+          <p class="welcome-tag">Unit 4 · 6.RP.3d</p>
+          <h1 class="welcome-title-en">Family Math Night</h1>
+          <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
+          <p class="welcome-lesson">Convert Measurement Units · Lesson 4-6</p>
         </div>
       </div>
+      <p class="welcome-lead bilingual-block">
+        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+      </p>
+      <a href="/curriculum/" class="back-link">⬅ Curriculum Hub / Centro curricular</a>
+    </header>
 
-      <div class="family-guide-grid">
-        <div class="family-panel family-panel-tips">
-          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
-          <ul class="family-tip-list">
-            <li>Let your student try each problem first. Tap <strong>Check This Problem</strong> on any question for instant feedback — no need to finish the whole page.</li>
-            <li>Tap vocabulary cards to flip between term and definition.</li>
-            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
-          </ul>
+  
+    <section class="guided-section card section-learn" aria-label="What we are learning tonight">
+      <h2 class="section-title">📖 What we're learning tonight / Qué aprendemos hoy</h2>
+      <div class="bilingual-grid">
+        <div class="bilingual-col lang-en">
+          <span class="lang-label">English</span>
+          <p class="learning-big">Convert measurement units using ratios and conversion factors.</p>
+          <p class="learning-sub">Also practice saying: <em>explain my conversion using the words conversion factor, unit, equivalent, and ratio</em></p>
         </div>
-
-        <div class="family-panel family-panel-home">
-          <h3 class="family-panel-heading">🏡 Try this at home</h3>
-          <p class="family-try-text">The cabinet blueprint uses feet but the parts catalog uses inches. Why do you have to convert, and which is the bigger unit, a foot or an inch?</p>
+        <div class="bilingual-col lang-es" lang="es">
+          <span class="lang-label">Español</span>
+          <p class="learning-big">Puedo convertir measurement units using ratios and conversion factors.</p>
+          <p class="learning-sub">También practiquen: <em>explicar my conversion usando las palabras Factor de conversión, Unidad, Equivalente, y Razón</em></p>
         </div>
       </div>
-
-      
-        <div class="family-panel family-panel-legend">
-          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
-          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>matching game:</strong> Say each term out loud, then talk through which match makes sense before choosing.</li><li><strong>fill table:</strong> Encourage your student to show their work on paper if a box feels tricky.</li><li><strong>drag sort:</strong> On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</li></ul>
-        </div>
-
-      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
     </section>
-  
 
   
-    <section class="try-at-home card" aria-label="Try this at home">
-      <h2 class="section-title">🕹️ Real-World Connection</h2>
-      <p class="try-narrative">You&#039;re building a brand-new arcade cabinet! The blueprints use feet, but the parts catalog lists measurements in inches. The wiring instructions use yards, and the weight limits are in pounds — but the shipping labels use ounces. You need to convert between units to make sure everything fits and ships correctly.</p>
-      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    <section class="guided-section card section-visual" aria-label="Visual concept explainer">
+      <h2 class="section-title">🎯 The big idea / La idea principal</h2>
+      <div class="concept-visual-wrap">
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Ratio table example">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
+        <text x="210" y="48" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Ratio Table / Tabla de razones</text>
+        <rect x="40" y="70" width="100" height="24" rx="4" fill="#12355b" stroke="#d7e2ed"/><text x="90" y="86" text-anchor="middle" font-size="12" font-weight="600" fill="#ffffff">Batch</text><rect x="150" y="70" width="100" height="24" rx="4" fill="#12355b" stroke="#d7e2ed"/><text x="200" y="86" text-anchor="middle" font-size="12" font-weight="600" fill="#ffffff">A</text><rect x="260" y="70" width="100" height="24" rx="4" fill="#12355b" stroke="#d7e2ed"/><text x="310" y="86" text-anchor="middle" font-size="12" font-weight="600" fill="#ffffff">B</text><rect x="40" y="98" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="90" y="114" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">1</text><rect x="150" y="98" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="200" y="114" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">2</text><rect x="260" y="98" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="310" y="114" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">3</text><rect x="40" y="126" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="90" y="142" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">2</text><rect x="150" y="126" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="200" y="142" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">4</text><rect x="260" y="126" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="310" y="142" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">6</text><rect x="40" y="154" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="90" y="170" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">3</text><rect x="150" y="154" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="200" y="170" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">6</text><rect x="260" y="154" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="310" y="170" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">9</text>
+        <text x="210" y="188" text-anchor="middle" font-size="11" fill="#5f6f80">× same number on BOTH columns → equivalent ratio</text>
+      </svg></div>
+      <div class="key-idea-banner">
+        <p class="lang-en"><strong>Watch for this:</strong> Multiply when changing to a smaller unit, and divide when changing to a bigger unit.</p>
+        <p class="lang-es" lang="es"><strong>Observa esto:</strong> Esta noche practican: convertir measurement units using ratios and conversion factors. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+      </div>
+      <ol class="guided-steps">
+        
+          <li class="guided-step step-color-1">
+            <span class="step-badge">Step 1 / Paso 1</span>
+            <p class="lang-en">A unit is a standard amount used to measure, like a foot or an inch. A conversion factor is a ratio that relates two units, like 1 foot = 12 inches.</p>
+            <p class="lang-es" lang="es">Esta noche practican: convertir measurement units using ratios and conversion factors. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-2">
+            <span class="step-badge">Step 2 / Paso 2</span>
+            <p class="lang-en">The cabinet is 5 feet tall. I want to know how many inches that is.</p>
+            <p class="lang-es" lang="es">Esta noche practican: convertir measurement units using ratios and conversion factors. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-3">
+            <span class="step-badge">Step 3 / Paso 3</span>
+            <p class="lang-en">My conversion factor is 1 foot = 12 inches.</p>
+            <p class="lang-es" lang="es">Esta noche practican: convertir measurement units using ratios and conversion factors. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-4">
+            <span class="step-badge">Step 4 / Paso 4</span>
+            <p class="lang-en">Inches are smaller than feet, so I multiply: 5 × 12 = 60.</p>
+            <p class="lang-es" lang="es">Esta noche practican: convertir measurement units using ratios and conversion factors. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+      </ol>
+      <ul class="watch-for-list">
+        
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Conversion Factor&quot; — it means: A ratio that helps you change one unit into another.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Factor de conversión&quot; — significa: Una razón que te ayuda a cambiar una unidad por otra.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Unit&quot; — it means: A standard amount used to measure, like an inch or a liter.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Unidad&quot; — significa: Una cantidad estándar para medir, como una pulgada o un litro.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Equivalent&quot; — it means: Having the same value, just in different units.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Equivalente&quot; — significa: Tener el mismo valor, solo en unidades distintas.</p>
+            </div>
+          </li>
+      </ul>
     </section>
-  
 
   
-    <section class="vocab-section card">
-      <h2 class="section-title">🔑 Key Vocabulary</h2>
-      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
+    <section class="guided-section card section-together" aria-label="Try this together">
+      <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
+      <p class="try-scenario lang-en">You&#039;re building a brand-new arcade cabinet! The blueprints use feet, but the parts catalog lists measurements in inches.</p>
+             <p class="try-scenario lang-es" lang="es">You&#039;re building a brand-new arcade cabinet! The blueprints use feet, but the parts catalog lists measurements in inches.</p>
+      <p class="try-together-note bilingual-block">
+        <span class="lang-en">Work side by side. You ask questions; your student does the thinking.</span>
+        <span class="lang-es" lang="es">Trabajen juntos. Tú haces preguntas; tu estudiante piensa.</span>
+      </p>
+      <ol class="together-steps">
+        
+          <li class="together-step step-color-1">
+            <div class="together-step-head">
+              <span class="step-badge">Step 1 / Paso 1</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> A wire is 4 yards long. The factor is 1 yard = 3 feet.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> A wire is 4 yards long. The factor is 1 yard = 3 feet.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-2">
+            <div class="together-step-head">
+              <span class="step-badge">Step 2 / Paso 2</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Feet are smaller than yards, so do we multiply or divide? (Multiply)</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Feet are smaller than yards, so do we multiply or divide? (Multiply).</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-3">
+            <div class="together-step-head">
+              <span class="step-badge">Step 3 / Paso 3</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> What is 4 × 3 feet? (12 feet)</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> What is 4 × 3 feet? (12 feet).</p>
+            <p class="step-hint">💡 Both numbers must change the same way. · Ambos números deben cambiar de la misma manera.</p>
+          </li>
+      </ol>
+    </section>
+
+  
+    <section class="guided-section card section-vocab vocab-section" aria-label="Words to know">
+      <h2 class="section-title">📚 Words to know / Palabras clave</h2>
+      <p class="vocab-family-note bilingual-block">
+        <span class="lang-en">Tap a card to flip. Use these words when you talk about the math together.</span>
+        <span class="lang-es" lang="es">Toquen una tarjeta para voltearla. Usen estas palabras cuando hablen de la matemática juntos.</span>
+      </p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
@@ -1379,18 +1650,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/measurement.svg" alt="Illustration of Conversion Factor: A ratio that helps you change one unit into another." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Conversion Factor</h3>
-                  <p class="vocab-es">Factor de conversión</p>
-                  <div class="vocab-visual-hint">💡 Example: 1 foot = 12 inches, so the factor is 12</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Factor de conversión</p>
+                  <div class="vocab-visual-hint">💡 1 foot = 12 inches, so the factor is 12</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A ratio that helps you change one unit into another.</p>
-                  <p class="vocab-def-es">Una razón que te ayuda a cambiar una unidad por otra.</p>
+                  <p class="vocab-def-es" lang="es">Una razón que te ayuda a cambiar una unidad por otra.</p>
                   <p class="vocab-back-visual">📌 1 foot = 12 inches, so the factor is 12</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1398,18 +1668,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/measurement.svg" alt="Illustration of Unit: A standard amount used to measure, like an inch or a liter." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Unit</h3>
-                  <p class="vocab-es">Unidad</p>
-                  <div class="vocab-visual-hint">💡 Example: Inches, feet, pounds, ounces</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Unidad</p>
+                  <div class="vocab-visual-hint">💡 Inches, feet, pounds, ounces</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A standard amount used to measure, like an inch or a liter.</p>
-                  <p class="vocab-def-es">Una cantidad estándar para medir, como una pulgada o un litro.</p>
+                  <p class="vocab-def-es" lang="es">Una cantidad estándar para medir, como una pulgada o un litro.</p>
                   <p class="vocab-back-visual">📌 Inches, feet, pounds, ounces</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1417,18 +1686,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/fraction.svg" alt="Illustration of Equivalent: Having the same value, just in different units." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Equivalent</h3>
-                  <p class="vocab-es">Equivalente</p>
-                  <div class="vocab-visual-hint">💡 Example: 2 feet = 24 inches</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Equivalente</p>
+                  <div class="vocab-visual-hint">💡 2 feet = 24 inches</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">Having the same value, just in different units.</p>
-                  <p class="vocab-def-es">Tener el mismo valor, solo en unidades distintas.</p>
+                  <p class="vocab-def-es" lang="es">Tener el mismo valor, solo en unidades distintas.</p>
                   <p class="vocab-back-visual">📌 2 feet = 24 inches</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1436,18 +1704,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/ratio.svg" alt="Illustration of Ratio: A way to compare two amounts." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Ratio</h3>
-                  <p class="vocab-es">Razón</p>
-                  <div class="vocab-visual-hint">💡 Example: 12 inches per 1 foot</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Razón</p>
+                  <div class="vocab-visual-hint">💡 12 inches per 1 foot</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A way to compare two amounts.</p>
-                  <p class="vocab-def-es">Una manera de comparar dos cantidades.</p>
+                  <p class="vocab-def-es" lang="es">Una manera de comparar dos cantidades.</p>
                   <p class="vocab-back-visual">📌 12 inches per 1 foot</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1455,18 +1722,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/measurement.svg" alt="Illustration of Customary units: The U.S. way of measuring, like inches, feet, and pounds." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Customary units</h3>
-                  <p class="vocab-es">Unidades usuales (sistema inglés)</p>
-                  <div class="vocab-visual-hint">💡 Example: 12 inches = 1 foot, 3 feet = 1 yard, 16 ounces = 1 pound</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Unidades usuales (sistema inglés)</p>
+                  <div class="vocab-visual-hint">💡 12 inches = 1 foot, 3 feet = 1 yard, 16 ounces = 1 pound</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">The U.S. way of measuring, like inches, feet, and pounds.</p>
-                  <p class="vocab-def-es">La forma de medir de EE. UU., como pulgadas, pies y libras.</p>
+                  <p class="vocab-def-es" lang="es">La forma de medir de EE. UU., como pulgadas, pies y libras.</p>
                   <p class="vocab-back-visual">📌 12 inches = 1 foot, 3 feet = 1 yard, 16 ounces = 1 pound</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1474,33 +1740,63 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/measurement.svg" alt="Illustration of Metric units: A way of measuring by 10s, like meters, liters, and grams." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Metric units</h3>
-                  <p class="vocab-es">Unidades métricas</p>
-                  <div class="vocab-visual-hint">💡 Example: 1 meter = 100 centimeters, 1 kilogram = 1,000 grams</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Unidades métricas</p>
+                  <div class="vocab-visual-hint">💡 1 meter = 100 centimeters, 1 kilogram = 1,000 grams</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A way of measuring by 10s, like meters, liters, and grams.</p>
-                  <p class="vocab-def-es">Una forma de medir de 10 en 10, como metros, litros y gramos.</p>
+                  <p class="vocab-def-es" lang="es">Una forma de medir de 10 en 10, como metros, litros y gramos.</p>
                   <p class="vocab-back-visual">📌 1 meter = 100 centimeters, 1 kilogram = 1,000 grams</p>
                 </div>
               </div>
             </div>
-          
       </div>
     </section>
+
   
+    <section class="guided-section card section-stuck" aria-label="If your student gets stuck">
+      <h2 class="section-title">💬 If your student gets stuck / Si se atora</h2>
+      <div class="stuck-grid">
+        <div class="stuck-panel stuck-say">
+          <h3 class="stuck-heading">✅ What to say / Qué decir</h3>
+          <ul>
+            <li><p class="lang-en">What do you already know that could help?</p><p class="lang-es" lang="es">¿Qué ya sabes que podría ayudarte?</p></li><li><p class="lang-en">Can you draw a picture or table for this?</p><p class="lang-es" lang="es">¿Puedes dibujar un dibujo o una tabla para esto?</p></li><li><p class="lang-en">Let&#039;s check one step at a time — no rush.</p><p class="lang-es" lang="es">Revisemos un paso a la vez — sin prisa.</p></li>
+          </ul>
+        </div>
+        <div class="stuck-panel stuck-dont">
+          <h3 class="stuck-heading">🚫 What NOT to say / Qué evitar</h3>
+          <ul>
+            <li><p class="lang-en">That&#039;s wrong — let me just tell you.</p><p class="lang-es" lang="es">Está mal — déjame decírtelo yo.</p></li><li><p class="lang-en">I was never good at math either.</p><p class="lang-es" lang="es">Yo tampoco era bueno en matemáticas.</p></li><li><p class="lang-en">This should be easy.</p><p class="lang-es" lang="es">Esto debería ser fácil.</p></li>
+          </ul>
+        </div>
+      </div>
+      <p class="stuck-footer bilingual-block">
+        <span class="lang-en">Struggle is part of learning. Short breaks and snacks are allowed!</span>
+        <span class="lang-es" lang="es">La dificultad es parte del aprendizaje. ¡Descansos y meriendas están permitidos!</span>
+      </p>
+    </section>
+
   
+    <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
+      <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
+      <p class="bilingual-block">
+        <span class="lang-en">One or two problems to try on the screen. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
+        <span class="lang-es" lang="es">Una o dos preguntas en pantalla. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+      </p>
+    </section>
+
   <main class="problems-container">
     
     <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 1</div>
+        <div class="problem-number-badge">Quick Check 1</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">How many inches are in 7 feet?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="7 × 12 = 84 inches.">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1532,7 +1828,7 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
@@ -1541,13 +1837,13 @@ header.homework-header h1 {
 
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 2</div>
+        <div class="problem-number-badge">Quick Check 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">How many feet are in 3 yards?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="1 yard = 3 feet. 3 × 3 = 9 feet.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1579,598 +1875,25 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
   
-
-    <section class="problem-section card" id="problem_2" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 3</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Match each measurement to its equivalent value.</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="3 yards" data-correct="9 feet">
-              <div class="matching-term">3 yards</div>
-              <div class="matching-select-container">
-                <select name="q_2_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="3 feet">3 feet</option><option value="48 inches">48 inches</option><option value="48 ounces">48 ounces</option><option value="72 inches">72 inches</option><option value="80 ounces">80 ounces</option><option value="9 feet">9 feet</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="4 feet" data-correct="48 inches">
-              <div class="matching-term">4 feet</div>
-              <div class="matching-select-container">
-                <select name="q_2_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="3 feet">3 feet</option><option value="48 inches">48 inches</option><option value="48 ounces">48 ounces</option><option value="72 inches">72 inches</option><option value="80 ounces">80 ounces</option><option value="9 feet">9 feet</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="5 pounds" data-correct="80 ounces">
-              <div class="matching-term">5 pounds</div>
-              <div class="matching-select-container">
-                <select name="q_2_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="3 feet">3 feet</option><option value="48 inches">48 inches</option><option value="48 ounces">48 ounces</option><option value="72 inches">72 inches</option><option value="80 ounces">80 ounces</option><option value="9 feet">9 feet</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="2 yards" data-correct="72 inches">
-              <div class="matching-term">2 yards</div>
-              <div class="matching-select-container">
-                <select name="q_2_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="3 feet">3 feet</option><option value="48 inches">48 inches</option><option value="48 ounces">48 ounces</option><option value="72 inches">72 inches</option><option value="80 ounces">80 ounces</option><option value="9 feet">9 feet</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="36 inches" data-correct="3 feet">
-              <div class="matching-term">36 inches</div>
-              <div class="matching-select-container">
-                <select name="q_2_pair_4" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="3 feet">3 feet</option><option value="48 inches">48 inches</option><option value="48 ounces">48 ounces</option><option value="72 inches">72 inches</option><option value="80 ounces">80 ounces</option><option value="9 feet">9 feet</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="3 pounds" data-correct="48 ounces">
-              <div class="matching-term">3 pounds</div>
-              <div class="matching-select-container">
-                <select name="q_2_pair_5" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="3 feet">3 feet</option><option value="48 inches">48 inches</option><option value="48 ounces">48 ounces</option><option value="72 inches">72 inches</option><option value="80 ounces">80 ounces</option><option value="9 feet">9 feet</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_3" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A shelf is 30 inches long. How many feet and inches is that?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="30 ÷ 12 = 2 remainder 6. So 30 inches = 2 feet 6 inches.">
-          
-            <label class="mc-option-label" id="label_q_3_0">
-              <input type="radio" name="q_3" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">2 feet 6 inches</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_1">
-              <input type="radio" name="q_3" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">3 feet 0 inches</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_2">
-              <input type="radio" name="q_3" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">2 feet 8 inches</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_3">
-              <input type="radio" name="q_3" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">1 foot 18 inches</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_4" data-problem-type="fill-table">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 5</div>
-        <div class="problem-type-badge">FILL TABLE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">An arcade cabinet has parts measured in different units. Convert each to the target unit.</p>
-        <p class="family-problem-tip">👪 Family tip: Encourage your student to show their work on paper if a box feels tricky.</p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Part</th><th>Measurement</th><th>Target Unit</th><th>Converted</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>Power cord</td><td>2 yards</td><td>inches</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_4_table_0_3"
-                                   data-correct="72 inches" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Top panel</td><td>54 inches</td><td>feet</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_4_table_1_3"
-                                   data-correct="4.5 feet" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Weight</td><td>96 ounces</td><td>pounds</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_4_table_2_3"
-                                   data-correct="6 pounds" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Side rail</td><td>5 feet</td><td>inches</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_4_table_3_3"
-                                   data-correct="60 inches" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-            </tbody>
-          </table>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_5" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 6</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">When converting, do you multiply or divide? Sort each conversion by the correct operation.</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        
-        <div class="drag-sort-workspace" id="dragsort_5">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="multiply" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, 'multiply')">
-                <div class="drag-column-header">Multiply</div>
-                <div class="drag-column-slots" id="slots_5_multiply" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, 'multiply')"></div>
-              </div>
-              <div class="drag-column" data-category-id="divide" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, 'divide')">
-                <div class="drag-column-header">Divide</div>
-                <div class="drag-column-slots" id="slots_5_divide" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, 'divide')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_5" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_5_0"
-                     data-item-index="0"
-                     data-correct-category="multiply"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Feet → inches</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_0', 5); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="multiply">Multiply</option><option value="divide">Divide</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_5_1"
-                     data-item-index="1"
-                     data-correct-category="multiply"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Yards → feet</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_1', 5); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="multiply">Multiply</option><option value="divide">Divide</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_5_2"
-                     data-item-index="2"
-                     data-correct-category="multiply"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Pounds → ounces</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_2', 5); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="multiply">Multiply</option><option value="divide">Divide</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_5_3"
-                     data-item-index="3"
-                     data-correct-category="divide"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Inches → feet</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_3', 5); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="multiply">Multiply</option><option value="divide">Divide</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_5_4"
-                     data-item-index="4"
-                     data-correct-category="divide"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Ounces → pounds</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_4', 5); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="multiply">Multiply</option><option value="divide">Divide</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_5_5"
-                     data-item-index="5"
-                     data-correct-category="divide"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Feet → yards</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_5', 5); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="multiply">Multiply</option><option value="divide">Divide</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(5); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Leg 1: The joystick rod is 3 feet long, but the parts catalog lists it in inches. How many inches is that? (1 ft = 12 in)</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Inches are smaller than feet, so multiply: 3 × 12 = 36 inches.">
-          
-            <label class="mc-option-label" id="label_q_6_0">
-              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">36 inches</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_1">
-              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">15 inches</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_2">
-              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">30 inches</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_3">
-              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">33 inches</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 8</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Leg 2: A power cable on the cabinet plan measures 2.5 kilometers across the whole arcade network. How many meters is that? (1 km = 1,000 m)</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Meters are smaller than kilometers, so multiply: 2.5 × 1,000 = 2,500 meters.">
-          
-            <label class="mc-option-label" id="label_q_7_0">
-              <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">2,500 meters</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_1">
-              <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">250 meters</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_2">
-              <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">25 meters</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_3">
-              <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">25,000 meters</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 9</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Leg 3: The coin box weighs 5 pounds, but the shipping label needs the weight in ounces. How many ounces is that? (1 lb = 16 oz)</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Ounces are smaller than pounds, so multiply: 5 × 16 = 80 ounces.">
-          
-            <label class="mc-option-label" id="label_q_8_0">
-              <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">80 ounces</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_8_1">
-              <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">21 ounces</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_8_2">
-              <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">75 ounces</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_8_3">
-              <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">16 ounces</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_9" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Equivalent Measurements</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="2 gallons of coolant" data-correct="8 quarts">
-              <div class="matching-term">2 gallons of coolant</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="120 inches">120 inches</option><option value="2 pounds">2 pounds</option><option value="3 kilometers">3 kilometers</option><option value="5 feet">5 feet</option><option value="8 quarts">8 quarts</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="60 inches of trim" data-correct="5 feet">
-              <div class="matching-term">60 inches of trim</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="120 inches">120 inches</option><option value="2 pounds">2 pounds</option><option value="3 kilometers">3 kilometers</option><option value="5 feet">5 feet</option><option value="8 quarts">8 quarts</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="3,000 meters of cable" data-correct="3 kilometers">
-              <div class="matching-term">3,000 meters of cable</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="120 inches">120 inches</option><option value="2 pounds">2 pounds</option><option value="3 kilometers">3 kilometers</option><option value="5 feet">5 feet</option><option value="8 quarts">8 quarts</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="32 ounces of bolts" data-correct="2 pounds">
-              <div class="matching-term">32 ounces of bolts</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="120 inches">120 inches</option><option value="2 pounds">2 pounds</option><option value="3 kilometers">3 kilometers</option><option value="5 feet">5 feet</option><option value="8 quarts">8 quarts</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="10 feet of railing" data-correct="120 inches">
-              <div class="matching-term">10 feet of railing</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_4" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="120 inches">120 inches</option><option value="2 pounds">2 pounds</option><option value="3 kilometers">3 kilometers</option><option value="5 feet">5 feet</option><option value="8 quarts">8 quarts</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
   </main>
+
   
+    <section class="guided-section card section-celebrate" aria-label="Celebration">
+      <h2 class="section-title">🎉 You did it together! / ¡Lo lograron juntos!</h2>
+      <p class="celebrate-text lang-en">High five! Whether every answer was perfect or not, you showed up for your student tonight. That matters.</p>
+      <p class="celebrate-text lang-es" lang="es">¡Chócalas! No importa si cada respuesta fue perfecta — estuviste con tu estudiante esta noche. Eso importa.</p>
+      <p class="celebrate-sub bilingual-block">
+        <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
+        <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
+      </p>
+    </section>
+
 </div>
 
 <!-- Sticky bottom actions bar -->
@@ -2180,7 +1903,7 @@ header.homework-header h1 {
     
     <div class="score-progress-container">
       <div class="score-text">
-        Homework Progress: <span id="progress_text">0 / 10 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 2 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -2188,8 +1911,8 @@ header.homework-header h1 {
     </div>
     
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset</button>
-      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All Problems</button>
+      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset / Reiniciar</button>
+      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All / Revisar todo</button>
     </div>
   </div>
 </div>

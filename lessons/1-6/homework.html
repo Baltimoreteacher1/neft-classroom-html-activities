@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interactive Homework — Lesson 1-6: Multiply Decimals</title>
+<title>Help Your Student — Lesson 1-6: Multiply Decimals</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -266,6 +266,13 @@ header.homework-header h1 {
   border-radius: var(--radius-sm);
   font-size: 13.5px;
   color: var(--hint);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.family-problem-tip .lang-es {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .family-hint-box {
@@ -1306,70 +1313,331 @@ header.homework-header h1 {
     justify-content: center;
   }
 }
+
+/* Family guided notes layout */
+.family-welcome {
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  color: var(--white);
+  border: none;
+  padding: 28px 24px;
+}
+.welcome-hero {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.welcome-emoji { font-size: 48px; line-height: 1; }
+.welcome-tag {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal-light);
+  font-weight: 800;
+}
+.welcome-title-en, .welcome-title-es {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 5vw, 34px);
+  font-weight: 800;
+  line-height: 1.15;
+}
+.welcome-title-es { color: var(--amber); font-size: clamp(22px, 4.5vw, 30px); margin-top: 2px; }
+.welcome-lesson { margin: 8px 0 0; font-size: 16px; color: var(--teal-light); font-weight: 600; }
+.welcome-lead { margin: 0 0 12px; font-size: 15px; line-height: 1.5; }
+.family-welcome .back-link { color: var(--amber); margin: 0; }
+.family-welcome .back-link:hover { color: var(--white); }
+
+.bilingual-block, .bilingual-grid { display: flex; flex-direction: column; gap: 10px; }
+.bilingual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 640px) {
+  .bilingual-grid { grid-template-columns: 1fr; }
+}
+.bilingual-col {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.lang-label {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal);
+  margin-bottom: 6px;
+}
+.lang-en { margin: 0 0 6px; }
+.lang-es { margin: 0; color: var(--muted); font-style: normal; }
+.learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
+.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+
+.guided-section { scroll-margin-top: 16px; }
+.section-learn { border-left: 4px solid var(--teal); }
+.section-visual { border-left: 4px solid var(--amber); }
+.section-together { border-left: 4px solid #5b8def; }
+.section-vocab { border-left: 4px solid var(--coral); }
+.section-stuck { border-left: 4px solid #9b59b6; }
+.section-quick-intro { border-left: 4px solid var(--success); }
+.section-celebrate {
+  border-left: 4px solid var(--amber);
+  background: linear-gradient(180deg, var(--amber-light), var(--white));
+  text-align: center;
+}
+
+.concept-visual-wrap { margin: 12px 0 16px; overflow-x: auto; }
+.concept-svg { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.concept-fallback-visual { display: flex; flex-direction: column; gap: 8px; }
+.concept-fallback-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  font-weight: 600; font-size: 14px;
+}
+.step-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; color: var(--white);
+  flex-shrink: 0;
+}
+.step-color-1 .step-dot, .step-color-1.step-badge { background: #5b8def; }
+.step-color-2 .step-dot, .step-color-2.step-badge { background: var(--success); }
+.step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
+.step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
+
+.key-idea-banner {
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid #b8ddd8;
+}
+.key-idea-banner p { margin: 0 0 6px; font-size: 14.5px; }
+.key-idea-banner p:last-child { margin-bottom: 0; }
+
+.guided-steps, .together-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.guided-step, .together-step {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  background: var(--white);
+}
+.step-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  padding: 3px 8px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+}
+.guided-step p, .together-step p { margin: 0 0 6px; font-size: 14.5px; line-height: 1.45; }
+.step-hint {
+  margin: 8px 0 0 !important;
+  padding: 8px 10px;
+  background: var(--hint-bg);
+  border-radius: var(--radius-sm);
+  font-size: 13px !important;
+  color: var(--hint);
+}
+
+.watch-for-list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.watch-for-list li {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
+}
+.watch-icon { font-size: 20px; flex-shrink: 0; }
+
+.try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
+.try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
+
+.stuck-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+@media (max-width: 640px) { .stuck-grid { grid-template-columns: 1fr; } }
+.stuck-panel {
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+}
+.stuck-say { background: var(--success-bg); border-color: var(--success); }
+.stuck-dont { background: var(--error-bg); border-color: var(--error); }
+.stuck-heading { margin: 0 0 10px; font-family: var(--font-display); font-size: 14px; color: var(--navy); }
+.stuck-panel ul { margin: 0; padding-left: 16px; }
+.stuck-panel li { margin-bottom: 10px; font-size: 14px; }
+.stuck-panel li p { margin: 0 0 4px; }
+.stuck-footer { font-size: 14px; color: var(--muted); margin: 0; }
+
+.celebrate-text { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; }
+.celebrate-sub { font-size: 14px; margin: 0; }
+
+.problems-container .problem-section { border-left: 4px solid var(--teal); }
+.problems-container .problem-number-badge::after {
+  content: " / Repaso";
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
 </style>
 </head>
 <body>
 
 <div class="container">
-  
-  <header class="homework-header">
-    <a href="/curriculum/" class="back-link">⬅ Curriculum Hub</a>
-    <div class="header-meta">Unit 1 · Standard 6.NS.3 · Homework</div>
-    <h1>Multiply Decimals</h1>
-    <div class="objectives-card">
-      <div class="objective-row"><span class="objective-badge">Target</span> <strong>I can multiply decimals and place the decimal point correctly in the product.</strong></div>
-      <div class="objective-row"><span class="objective-badge">Discuss</span> <strong>I can explain my work using the words product, decimal point, estimate, and decimal places.</strong></div>
-    </div>
-  </header>
 
   
-    <section class="family-guide card" aria-label="Family guide">
-      <div class="family-guide-header">
-        <span class="family-guide-emoji">🚀</span>
-        <div>
-          <h2 class="section-title family-guide-title">Family Guide</h2>
-          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+    <header class="family-welcome card" aria-label="Family Math Night welcome">
+      <div class="welcome-hero">
+        <span class="welcome-emoji" aria-hidden="true">🚀</span>
+        <div class="welcome-titles">
+          <p class="welcome-tag">Unit 1 · 6.NS.3</p>
+          <h1 class="welcome-title-en">Family Math Night</h1>
+          <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
+          <p class="welcome-lesson">Multiply Decimals · Lesson 1-6</p>
         </div>
       </div>
+      <p class="welcome-lead bilingual-block">
+        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+      </p>
+      <a href="/curriculum/" class="back-link">⬅ Curriculum Hub / Centro curricular</a>
+    </header>
 
-      <div class="family-guide-grid">
-        <div class="family-panel family-panel-tips">
-          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
-          <ul class="family-tip-list">
-            <li>Let your student try each problem first. Tap <strong>Check This Problem</strong> on any question for instant feedback — no need to finish the whole page.</li>
-            <li>Tap vocabulary cards to flip between term and definition.</li>
-            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
-          </ul>
+  
+    <section class="guided-section card section-learn" aria-label="What we are learning tonight">
+      <h2 class="section-title">📖 What we're learning tonight / Qué aprendemos hoy</h2>
+      <div class="bilingual-grid">
+        <div class="bilingual-col lang-en">
+          <span class="lang-label">English</span>
+          <p class="learning-big">Multiply decimals and place the decimal point correctly in the product.</p>
+          <p class="learning-sub">Also practice saying: <em>explain my work using the words product, decimal point, estimate, and decimal places</em></p>
         </div>
-
-        <div class="family-panel family-panel-home">
-          <h3 class="family-panel-heading">🏡 Try this at home</h3>
-          <p class="family-try-text">The station needs 4.5 meters of heat shielding at $12.60 per meter. About how much will it cost, and how did you estimate before multiplying?</p>
+        <div class="bilingual-col lang-es" lang="es">
+          <span class="lang-label">Español</span>
+          <p class="learning-big">Puedo multiplicar decimals and place the Punto decimal correctly in the Producto.</p>
+          <p class="learning-sub">También practiquen: <em>explicar mi trabajo usando las palabras Producto, Punto decimal, Estimar, y Cifras decimales</em></p>
         </div>
       </div>
-
-      
-        <div class="family-panel family-panel-legend">
-          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
-          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>matching game:</strong> Say each term out loud, then talk through which match makes sense before choosing.</li><li><strong>fill table:</strong> Encourage your student to show their work on paper if a box feels tricky.</li><li><strong>drag sort:</strong> On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</li></ul>
-        </div>
-
-      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
     </section>
-  
 
   
-    <section class="try-at-home card" aria-label="Try this at home">
-      <h2 class="section-title">🚀 Real-World Connection</h2>
-      <p class="try-narrative">The station needs 4.5 meters of heat shielding that costs $12.60 per meter. Commander Diaz needs to calculate the total cost before submitting the supply order. What is the total cost of the shielding?</p>
-      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    <section class="guided-section card section-visual" aria-label="Visual concept explainer">
+      <h2 class="section-title">🎯 The big idea / La idea principal</h2>
+      <div class="concept-visual-wrap">
+    <div class="concept-fallback-visual" aria-hidden="true">
+      <div class="concept-fallback-step step-color-1"><span class="step-dot">1</span><span>To multiply decimals, you multiply the numbers as if there were no decimal points</span></div><div class="concept-fallback-step step-color-2"><span class="step-dot">2</span><span>I want 4</span></div><div class="concept-fallback-step step-color-3"><span class="step-dot">3</span><span>First I multiply without points, like whole numbers: 45 × 1260 = 56,700</span></div>
+    </div></div>
+      <div class="key-idea-banner">
+        <p class="lang-en"><strong>Watch for this:</strong> Multiply like whole numbers, then the product has the SAME total of decimal places as both factors combined.</p>
+        <p class="lang-es" lang="es"><strong>Observa esto:</strong> Rounding the factors gives a reasonable Estimar of the Producto.</p>
+      </div>
+      <ol class="guided-steps">
+        
+          <li class="guided-step step-color-1">
+            <span class="step-badge">Step 1 / Paso 1</span>
+            <p class="lang-en">To multiply decimals, you multiply the numbers as if there were no decimal points. Then you count the decimal places and put the point back in the answer.</p>
+            <p class="lang-es" lang="es">Rounding the factors gives a reasonable Estimar of the Producto.</p>
+          </li>
+          <li class="guided-step step-color-2">
+            <span class="step-badge">Step 2 / Paso 2</span>
+            <p class="lang-en">I want 4.5 × 12.60, the cost of 4.5 meters at $12.60 each.</p>
+            <p class="lang-es" lang="es">Rounding the factors gives a reasonable Estimar of the Producto.</p>
+          </li>
+          <li class="guided-step step-color-3">
+            <span class="step-badge">Step 3 / Paso 3</span>
+            <p class="lang-en">First I multiply without points, like whole numbers: 45 × 1260 = 56,700.</p>
+            <p class="lang-es" lang="es">Rounding the factors gives a reasonable Estimar of the Producto.</p>
+          </li>
+          <li class="guided-step step-color-4">
+            <span class="step-badge">Step 4 / Paso 4</span>
+            <p class="lang-en">Now I count decimal places: 4.5 has 1, and 12.60 has 2, so 1 + 2 = 3 decimal places.</p>
+            <p class="lang-es" lang="es">Rounding the factors gives a reasonable Estimar of the Producto.</p>
+          </li>
+      </ol>
+      <ul class="watch-for-list">
+        
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Product&quot; — it means: The answer when you multiply.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Producto&quot; — significa: La respuesta cuando multiplicas.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Decimal point&quot; — it means: The dot that splits the whole number from the part after it.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Punto decimal&quot; — significa: El punto que separa el número entero de la parte que sigue.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Estimate&quot; — it means: A close answer you get by rounding first.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Estimar&quot; — significa: Una respuesta cercana que obtienes al redondear primero.</p>
+            </div>
+          </li>
+      </ul>
     </section>
-  
 
   
-    <section class="vocab-section card">
-      <h2 class="section-title">🔑 Key Vocabulary</h2>
-      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
+    <section class="guided-section card section-together" aria-label="Try this together">
+      <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
+      <p class="try-scenario lang-en">The station needs 4.</p>
+             <p class="try-scenario lang-es" lang="es">The station needs 4.</p>
+      <p class="try-together-note bilingual-block">
+        <span class="lang-en">Work side by side. You ask questions; your student does the thinking.</span>
+        <span class="lang-es" lang="es">Trabajen juntos. Tú haces preguntas; tu estudiante piensa.</span>
+      </p>
+      <ol class="together-steps">
+        
+          <li class="together-step step-color-1">
+            <div class="together-step-head">
+              <span class="step-badge">Step 1 / Paso 1</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Let&#039;s multiply 0.4 × 0.7. First multiply like whole numbers: what is 4 × 7? (28.)</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Let&#039;s multiply 0.4 × 0.7. First multiply like whole numbers: what is 4 × 7? (28.).</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-2">
+            <div class="together-step-head">
+              <span class="step-badge">Step 2 / Paso 2</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Now count decimal places: 0.4 has 1 and 0.7 has 1, so that is 2 places total.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Now count Cifras decimales: 0.4 has 1 and 0.7 has 1, so that is 2 places total.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-3">
+            <div class="together-step-head">
+              <span class="step-badge">Step 3 / Paso 3</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Put the point 2 places from the right in 28: 0.28. So 0.4 × 0.7 = 0.28.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Put the point 2 places from the right in 28: 0.28. So 0.4 × 0.7 = 0.28.</p>
+            <p class="step-hint">💡 Both numbers must change the same way. · Ambos números deben cambiar de la misma manera.</p>
+          </li>
+      </ol>
+    </section>
+
+  
+    <section class="guided-section card section-vocab vocab-section" aria-label="Words to know">
+      <h2 class="section-title">📚 Words to know / Palabras clave</h2>
+      <p class="vocab-family-note bilingual-block">
+        <span class="lang-en">Tap a card to flip. Use these words when you talk about the math together.</span>
+        <span class="lang-es" lang="es">Toquen una tarjeta para voltearla. Usen estas palabras cuando hablen de la matemática juntos.</span>
+      </p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
@@ -1379,18 +1647,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/product.svg" alt="Illustration of Product: The answer when you multiply." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Product</h3>
-                  <p class="vocab-es">Producto</p>
-                  <div class="vocab-visual-hint">💡 Example: 4 × 7 = 28, so the product is 28</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Producto</p>
+                  <div class="vocab-visual-hint">💡 4 × 7 = 28, so the product is 28</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">The answer when you multiply.</p>
-                  <p class="vocab-def-es">La respuesta cuando multiplicas.</p>
+                  <p class="vocab-def-es" lang="es">La respuesta cuando multiplicas.</p>
                   <p class="vocab-back-visual">📌 4 × 7 = 28, so the product is 28</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1398,18 +1665,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/decimal.svg" alt="Illustration of Decimal point: The dot that splits the whole number from the part after it." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Decimal point</h3>
-                  <p class="vocab-es">Punto decimal</p>
-                  <div class="vocab-visual-hint">💡 Example: In 3.25, the decimal point separates 3 (ones) from 25 (tenths and hundredths)</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Punto decimal</p>
+                  <div class="vocab-visual-hint">💡 In 3.25, the decimal point separates 3 (ones) from 25 (tenths and hundredths)</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">The dot that splits the whole number from the part after it.</p>
-                  <p class="vocab-def-es">El punto que separa el número entero de la parte que sigue.</p>
+                  <p class="vocab-def-es" lang="es">El punto que separa el número entero de la parte que sigue.</p>
                   <p class="vocab-back-visual">📌 In 3.25, the decimal point separates 3 (ones) from 25 (tenths and hundredths)</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1417,18 +1683,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/estimate.svg" alt="Illustration of Estimate: A close answer you get by rounding first." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Estimate</h3>
-                  <p class="vocab-es">Estimar</p>
-                  <div class="vocab-visual-hint">💡 Example: 3.7 × 4.2: round to 4 × 4 = 16, so the exact answer should be near 16</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Estimar</p>
+                  <div class="vocab-visual-hint">💡 3.7 × 4.2: round to 4 × 4 = 16, so the exact answer should be near 16</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A close answer you get by rounding first.</p>
-                  <p class="vocab-def-es">Una respuesta cercana que obtienes al redondear primero.</p>
+                  <p class="vocab-def-es" lang="es">Una respuesta cercana que obtienes al redondear primero.</p>
                   <p class="vocab-back-visual">📌 3.7 × 4.2: round to 4 × 4 = 16, so the exact answer should be near 16</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1436,18 +1701,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/decimal.svg" alt="Illustration of Place value: What a digit is worth based on where it sits in a number." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Place value</h3>
-                  <p class="vocab-es">Valor posicional</p>
-                  <div class="vocab-visual-hint">💡 Example: In 0.36: the 3 is in the tenths place (0.3) and the 6 is in the hundredths place (0.06)</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Valor posicional</p>
+                  <div class="vocab-visual-hint">💡 In 0.36: the 3 is in the tenths place (0.3) and the 6 is in the hundredths place (0.06)</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">What a digit is worth based on where it sits in a number.</p>
-                  <p class="vocab-def-es">Lo que vale un dígito según el lugar que ocupa en el número.</p>
+                  <p class="vocab-def-es" lang="es">Lo que vale un dígito según el lugar que ocupa en el número.</p>
                   <p class="vocab-back-visual">📌 In 0.36: the 3 is in the tenths place (0.3) and the 6 is in the hundredths place (0.06)</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1455,33 +1719,63 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/decimal.svg" alt="Illustration of Decimal places: How many digits come after the decimal point." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Decimal places</h3>
-                  <p class="vocab-es">Cifras decimales</p>
-                  <div class="vocab-visual-hint">💡 Example: 3.4 (1 place) × 2.6 (1 place) = 8.84 (2 places total)</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Cifras decimales</p>
+                  <div class="vocab-visual-hint">💡 3.4 (1 place) × 2.6 (1 place) = 8.84 (2 places total)</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">How many digits come after the decimal point.</p>
-                  <p class="vocab-def-es">Cuántos dígitos hay después del punto decimal.</p>
+                  <p class="vocab-def-es" lang="es">Cuántos dígitos hay después del punto decimal.</p>
                   <p class="vocab-back-visual">📌 3.4 (1 place) × 2.6 (1 place) = 8.84 (2 places total)</p>
                 </div>
               </div>
             </div>
-          
       </div>
     </section>
+
   
+    <section class="guided-section card section-stuck" aria-label="If your student gets stuck">
+      <h2 class="section-title">💬 If your student gets stuck / Si se atora</h2>
+      <div class="stuck-grid">
+        <div class="stuck-panel stuck-say">
+          <h3 class="stuck-heading">✅ What to say / Qué decir</h3>
+          <ul>
+            <li><p class="lang-en">What do you already know that could help?</p><p class="lang-es" lang="es">¿Qué ya sabes que podría ayudarte?</p></li><li><p class="lang-en">Can you draw a picture or table for this?</p><p class="lang-es" lang="es">¿Puedes dibujar un dibujo o una tabla para esto?</p></li><li><p class="lang-en">Let&#039;s check one step at a time — no rush.</p><p class="lang-es" lang="es">Revisemos un paso a la vez — sin prisa.</p></li>
+          </ul>
+        </div>
+        <div class="stuck-panel stuck-dont">
+          <h3 class="stuck-heading">🚫 What NOT to say / Qué evitar</h3>
+          <ul>
+            <li><p class="lang-en">That&#039;s wrong — let me just tell you.</p><p class="lang-es" lang="es">Está mal — déjame decírtelo yo.</p></li><li><p class="lang-en">I was never good at math either.</p><p class="lang-es" lang="es">Yo tampoco era bueno en matemáticas.</p></li><li><p class="lang-en">This should be easy.</p><p class="lang-es" lang="es">Esto debería ser fácil.</p></li>
+          </ul>
+        </div>
+      </div>
+      <p class="stuck-footer bilingual-block">
+        <span class="lang-en">Struggle is part of learning. Short breaks and snacks are allowed!</span>
+        <span class="lang-es" lang="es">La dificultad es parte del aprendizaje. ¡Descansos y meriendas están permitidos!</span>
+      </p>
+    </section>
+
   
+    <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
+      <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
+      <p class="bilingual-block">
+        <span class="lang-en">One or two problems to try on the screen. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
+        <span class="lang-es" lang="es">Una o dos preguntas en pantalla. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+      </p>
+    </section>
+
   <main class="problems-container">
     
     <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 1</div>
+        <div class="problem-number-badge">Quick Check 1</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">What is 3.4 × 2.6?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="34 × 26 = 884. There are 2 total decimal places (1 + 1), so place the decimal to get 8.84.">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1513,7 +1807,7 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
@@ -1522,13 +1816,13 @@ header.homework-header h1 {
 
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 2</div>
+        <div class="problem-number-badge">Quick Check 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">What is 0.7 × 1.5?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="7 × 15 = 105. There are 2 total decimal places (1 + 1), so place the decimal to get 1.05.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1560,598 +1854,25 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
   
-
-    <section class="problem-section card" id="problem_2" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 3</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Match each expression to its product.</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="2.5 × 4" data-correct="10">
-              <div class="matching-term">2.5 × 4</div>
-              <div class="matching-select-container">
-                <select name="q_2_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="0.36">0.36</option><option value="0.48">0.48</option><option value="1.8">1.8</option><option value="10">10</option><option value="12">12</option><option value="9">9</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="1.2 × 0.3" data-correct="0.36">
-              <div class="matching-term">1.2 × 0.3</div>
-              <div class="matching-select-container">
-                <select name="q_2_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="0.36">0.36</option><option value="0.48">0.48</option><option value="1.8">1.8</option><option value="10">10</option><option value="12">12</option><option value="9">9</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="3.6 × 0.5" data-correct="1.8">
-              <div class="matching-term">3.6 × 0.5</div>
-              <div class="matching-select-container">
-                <select name="q_2_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="0.36">0.36</option><option value="0.48">0.48</option><option value="1.8">1.8</option><option value="10">10</option><option value="12">12</option><option value="9">9</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="4.8 × 2.5" data-correct="12">
-              <div class="matching-term">4.8 × 2.5</div>
-              <div class="matching-select-container">
-                <select name="q_2_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="0.36">0.36</option><option value="0.48">0.48</option><option value="1.8">1.8</option><option value="10">10</option><option value="12">12</option><option value="9">9</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="0.6 × 0.8" data-correct="0.48">
-              <div class="matching-term">0.6 × 0.8</div>
-              <div class="matching-select-container">
-                <select name="q_2_pair_4" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="0.36">0.36</option><option value="0.48">0.48</option><option value="1.8">1.8</option><option value="10">10</option><option value="12">12</option><option value="9">9</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="7.5 × 1.2" data-correct="9">
-              <div class="matching-term">7.5 × 1.2</div>
-              <div class="matching-select-container">
-                <select name="q_2_pair_5" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="0.36">0.36</option><option value="0.48">0.48</option><option value="1.8">1.8</option><option value="10">10</option><option value="12">12</option><option value="9">9</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_3" data-problem-type="fill-table">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 4</div>
-        <div class="problem-type-badge">FILL TABLE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Complete each decimal multiplication.</p>
-        <p class="family-problem-tip">👪 Family tip: Encourage your student to show their work on paper if a box feels tricky.</p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Problem</th><th>Product</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>6.4 × 3.5</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_3_table_0_1"
-                                   data-correct="22.4" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>0.25 × 0.4</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_3_table_1_1"
-                                   data-correct="0.1" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>8.3 × 2.1</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_3_table_2_1"
-                                   data-correct="17.43" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>12.5 × 0.8</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_3_table_3_1"
-                                   data-correct="10" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-            </tbody>
-          </table>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_4" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 5</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A car travels 55.5 miles per hour for 2.4 hours. How far does it go?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="555 × 24 = 13,320. Total decimal places: 1 + 1 = 2. Answer: 133.20 = 133.2 miles.">
-          
-            <label class="mc-option-label" id="label_q_4_0">
-              <input type="radio" name="q_4" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">133.2 miles</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_4_1">
-              <input type="radio" name="q_4" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">13.32 miles</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_4_2">
-              <input type="radio" name="q_4" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">1,332 miles</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_4_3">
-              <input type="radio" name="q_4" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">57.9 miles</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_5" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 6</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Sort: when you multiply two decimals, is the product GREATER than both factors, or LESS than at least one factor?</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        
-        <div class="drag-sort-workspace" id="dragsort_5">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="greater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, 'greater')">
-                <div class="drag-column-header">Product Greater Than Both Factors</div>
-                <div class="drag-column-slots" id="slots_5_greater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, 'greater')"></div>
-              </div>
-              <div class="drag-column" data-category-id="less" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, 'less')">
-                <div class="drag-column-header">Product Less Than at Least One Factor</div>
-                <div class="drag-column-slots" id="slots_5_less" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, 'less')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_5" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_5_0"
-                     data-item-index="0"
-                     data-correct-category="greater"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">3.5 × 4 = 14 (greater than both)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_0', 5); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Product Greater Than Both Factors</option><option value="less">Product Less Than at Least One Factor</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_5_1"
-                     data-item-index="1"
-                     data-correct-category="greater"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">6 × 2.5 = 15 (greater than both)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_1', 5); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Product Greater Than Both Factors</option><option value="less">Product Less Than at Least One Factor</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_5_2"
-                     data-item-index="2"
-                     data-correct-category="greater"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">10 × 1.5 = 15 (greater than both)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_2', 5); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Product Greater Than Both Factors</option><option value="less">Product Less Than at Least One Factor</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_5_3"
-                     data-item-index="3"
-                     data-correct-category="less"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">0.5 × 8 = 4 (less than 8)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_3', 5); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Product Greater Than Both Factors</option><option value="less">Product Less Than at Least One Factor</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_5_4"
-                     data-item-index="4"
-                     data-correct-category="less"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">0.3 × 0.4 = 0.12 (less than both)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_4', 5); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Product Greater Than Both Factors</option><option value="less">Product Less Than at Least One Factor</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_5_5"
-                     data-item-index="5"
-                     data-correct-category="less"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">0.7 × 6 = 4.2 (less than 6)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_5', 5); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Product Greater Than Both Factors</option><option value="less">Product Less Than at Least One Factor</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(5); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A customer orders 3 taco baskets at $4.25 each. What is the total before tax?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="3 × 425 = 1,275. The factor $4.25 has 2 decimal places, so 3 × $4.25 = $12.75.">
-          
-            <label class="mc-option-label" id="label_q_6_0">
-              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">$12.75</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_1">
-              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">$12.15</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_2">
-              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">$1.275</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_3">
-              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">$127.50</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 8</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Each lemonade uses 0.6 of a cup of sugar, and sugar costs $0.40 per cup. How much sugar cost is in one lemonade? (0.6 × 0.4)</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="6 × 4 = 24. There are 2 total decimal places (1 + 1), so 0.6 × 0.4 = 0.24, which is $0.24.">
-          
-            <label class="mc-option-label" id="label_q_7_0">
-              <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">$0.24</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_1">
-              <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">$2.40</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_2">
-              <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">$0.024</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_3">
-              <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">$24.00</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 9</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">The truck sells 2.5 pounds of fries, and each pound earns $1.20 in profit. What is the total profit? (2.5 × 1.2)</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="25 × 12 = 300. There are 2 total decimal places (1 + 1), so 2.5 × 1.2 = 3.00 = $3.00.">
-          
-            <label class="mc-option-label" id="label_q_8_0">
-              <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">$3.00</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_8_1">
-              <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">$30.00</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_8_2">
-              <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">$0.30</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_8_3">
-              <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">$3.70</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_9" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Match each food truck order to its total.</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="4 × $3.75 (combo meals)" data-correct="$15.00">
-              <div class="matching-term">4 × $3.75 (combo meals)</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="$0.40">$0.40</option><option value="$15.00">$15.00</option><option value="$29.40">$29.40</option><option value="$7.20">$7.20</option><option value="$9.00">$9.00</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="5 × $1.80 (sodas)" data-correct="$9.00">
-              <div class="matching-term">5 × $1.80 (sodas)</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="$0.40">$0.40</option><option value="$15.00">$15.00</option><option value="$29.40">$29.40</option><option value="$7.20">$7.20</option><option value="$9.00">$9.00</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="3 × $2.40 (cookies)" data-correct="$7.20">
-              <div class="matching-term">3 × $2.40 (cookies)</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="$0.40">$0.40</option><option value="$15.00">$15.00</option><option value="$29.40">$29.40</option><option value="$7.20">$7.20</option><option value="$9.00">$9.00</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="7 × $4.20 (burritos)" data-correct="$29.40">
-              <div class="matching-term">7 × $4.20 (burritos)</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="$0.40">$0.40</option><option value="$15.00">$15.00</option><option value="$29.40">$29.40</option><option value="$7.20">$7.20</option><option value="$9.00">$9.00</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="0.5 × $0.80 (napkin pack)" data-correct="$0.40">
-              <div class="matching-term">0.5 × $0.80 (napkin pack)</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_4" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="$0.40">$0.40</option><option value="$15.00">$15.00</option><option value="$29.40">$29.40</option><option value="$7.20">$7.20</option><option value="$9.00">$9.00</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
   </main>
+
   
+    <section class="guided-section card section-celebrate" aria-label="Celebration">
+      <h2 class="section-title">🎉 You did it together! / ¡Lo lograron juntos!</h2>
+      <p class="celebrate-text lang-en">High five! Whether every answer was perfect or not, you showed up for your student tonight. That matters.</p>
+      <p class="celebrate-text lang-es" lang="es">¡Chócalas! No importa si cada respuesta fue perfecta — estuviste con tu estudiante esta noche. Eso importa.</p>
+      <p class="celebrate-sub bilingual-block">
+        <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
+        <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
+      </p>
+    </section>
+
 </div>
 
 <!-- Sticky bottom actions bar -->
@@ -2161,7 +1882,7 @@ header.homework-header h1 {
     
     <div class="score-progress-container">
       <div class="score-text">
-        Homework Progress: <span id="progress_text">0 / 10 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 2 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -2169,8 +1890,8 @@ header.homework-header h1 {
     </div>
     
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset</button>
-      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All Problems</button>
+      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset / Reiniciar</button>
+      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All / Revisar todo</button>
     </div>
   </div>
 </div>

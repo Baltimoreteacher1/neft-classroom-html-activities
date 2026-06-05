@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interactive Homework — Lesson 3-6: Use Ratio Reasoning</title>
+<title>Help Your Student — Lesson 3-6: Use Ratio Reasoning</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -266,6 +266,13 @@ header.homework-header h1 {
   border-radius: var(--radius-sm);
   font-size: 13.5px;
   color: var(--hint);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.family-problem-tip .lang-es {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .family-hint-box {
@@ -1306,70 +1313,334 @@ header.homework-header h1 {
     justify-content: center;
   }
 }
+
+/* Family guided notes layout */
+.family-welcome {
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  color: var(--white);
+  border: none;
+  padding: 28px 24px;
+}
+.welcome-hero {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.welcome-emoji { font-size: 48px; line-height: 1; }
+.welcome-tag {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal-light);
+  font-weight: 800;
+}
+.welcome-title-en, .welcome-title-es {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 5vw, 34px);
+  font-weight: 800;
+  line-height: 1.15;
+}
+.welcome-title-es { color: var(--amber); font-size: clamp(22px, 4.5vw, 30px); margin-top: 2px; }
+.welcome-lesson { margin: 8px 0 0; font-size: 16px; color: var(--teal-light); font-weight: 600; }
+.welcome-lead { margin: 0 0 12px; font-size: 15px; line-height: 1.5; }
+.family-welcome .back-link { color: var(--amber); margin: 0; }
+.family-welcome .back-link:hover { color: var(--white); }
+
+.bilingual-block, .bilingual-grid { display: flex; flex-direction: column; gap: 10px; }
+.bilingual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 640px) {
+  .bilingual-grid { grid-template-columns: 1fr; }
+}
+.bilingual-col {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.lang-label {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal);
+  margin-bottom: 6px;
+}
+.lang-en { margin: 0 0 6px; }
+.lang-es { margin: 0; color: var(--muted); font-style: normal; }
+.learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
+.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+
+.guided-section { scroll-margin-top: 16px; }
+.section-learn { border-left: 4px solid var(--teal); }
+.section-visual { border-left: 4px solid var(--amber); }
+.section-together { border-left: 4px solid #5b8def; }
+.section-vocab { border-left: 4px solid var(--coral); }
+.section-stuck { border-left: 4px solid #9b59b6; }
+.section-quick-intro { border-left: 4px solid var(--success); }
+.section-celebrate {
+  border-left: 4px solid var(--amber);
+  background: linear-gradient(180deg, var(--amber-light), var(--white));
+  text-align: center;
+}
+
+.concept-visual-wrap { margin: 12px 0 16px; overflow-x: auto; }
+.concept-svg { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.concept-fallback-visual { display: flex; flex-direction: column; gap: 8px; }
+.concept-fallback-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  font-weight: 600; font-size: 14px;
+}
+.step-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; color: var(--white);
+  flex-shrink: 0;
+}
+.step-color-1 .step-dot, .step-color-1.step-badge { background: #5b8def; }
+.step-color-2 .step-dot, .step-color-2.step-badge { background: var(--success); }
+.step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
+.step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
+
+.key-idea-banner {
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid #b8ddd8;
+}
+.key-idea-banner p { margin: 0 0 6px; font-size: 14.5px; }
+.key-idea-banner p:last-child { margin-bottom: 0; }
+
+.guided-steps, .together-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.guided-step, .together-step {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  background: var(--white);
+}
+.step-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  padding: 3px 8px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+}
+.guided-step p, .together-step p { margin: 0 0 6px; font-size: 14.5px; line-height: 1.45; }
+.step-hint {
+  margin: 8px 0 0 !important;
+  padding: 8px 10px;
+  background: var(--hint-bg);
+  border-radius: var(--radius-sm);
+  font-size: 13px !important;
+  color: var(--hint);
+}
+
+.watch-for-list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.watch-for-list li {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
+}
+.watch-icon { font-size: 20px; flex-shrink: 0; }
+
+.try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
+.try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
+
+.stuck-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+@media (max-width: 640px) { .stuck-grid { grid-template-columns: 1fr; } }
+.stuck-panel {
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+}
+.stuck-say { background: var(--success-bg); border-color: var(--success); }
+.stuck-dont { background: var(--error-bg); border-color: var(--error); }
+.stuck-heading { margin: 0 0 10px; font-family: var(--font-display); font-size: 14px; color: var(--navy); }
+.stuck-panel ul { margin: 0; padding-left: 16px; }
+.stuck-panel li { margin-bottom: 10px; font-size: 14px; }
+.stuck-panel li p { margin: 0 0 4px; }
+.stuck-footer { font-size: 14px; color: var(--muted); margin: 0; }
+
+.celebrate-text { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; }
+.celebrate-sub { font-size: 14px; margin: 0; }
+
+.problems-container .problem-section { border-left: 4px solid var(--teal); }
+.problems-container .problem-number-badge::after {
+  content: " / Repaso";
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
 </style>
 </head>
 <body>
 
 <div class="container">
-  
-  <header class="homework-header">
-    <a href="/curriculum/" class="back-link">⬅ Curriculum Hub</a>
-    <div class="header-meta">Unit 3 · Standard 6.RP.3 · Homework</div>
-    <h1>Use Ratio Reasoning</h1>
-    <div class="objectives-card">
-      <div class="objective-row"><span class="objective-badge">Target</span> <strong>I can use ratio reasoning to solve problems with proportions and scaling.</strong></div>
-      <div class="objective-row"><span class="objective-badge">Discuss</span> <strong>I can explain my reasoning using the words proportion, scale, equivalent, and unit rate.</strong></div>
-    </div>
-  </header>
 
   
-    <section class="family-guide card" aria-label="Family guide">
-      <div class="family-guide-header">
-        <span class="family-guide-emoji">👨‍🍳</span>
-        <div>
-          <h2 class="section-title family-guide-title">Family Guide</h2>
-          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+    <header class="family-welcome card" aria-label="Family Math Night welcome">
+      <div class="welcome-hero">
+        <span class="welcome-emoji" aria-hidden="true">👨‍🍳</span>
+        <div class="welcome-titles">
+          <p class="welcome-tag">Unit 3 · 6.RP.3</p>
+          <h1 class="welcome-title-en">Family Math Night</h1>
+          <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
+          <p class="welcome-lesson">Use Ratio Reasoning · Lesson 3-6</p>
         </div>
       </div>
+      <p class="welcome-lead bilingual-block">
+        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+      </p>
+      <a href="/curriculum/" class="back-link">⬅ Curriculum Hub / Centro curricular</a>
+    </header>
 
-      <div class="family-guide-grid">
-        <div class="family-panel family-panel-tips">
-          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
-          <ul class="family-tip-list">
-            <li>Let your student try each problem first. Tap <strong>Check This Problem</strong> on any question for instant feedback — no need to finish the whole page.</li>
-            <li>Tap vocabulary cards to flip between term and definition.</li>
-            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
-          </ul>
+  
+    <section class="guided-section card section-learn" aria-label="What we are learning tonight">
+      <h2 class="section-title">📖 What we're learning tonight / Qué aprendemos hoy</h2>
+      <div class="bilingual-grid">
+        <div class="bilingual-col lang-en">
+          <span class="lang-label">English</span>
+          <p class="learning-big">Use ratio reasoning to solve problems with proportions and scaling.</p>
+          <p class="learning-sub">Also practice saying: <em>explain my reasoning using the words proportion, scale, equivalent, and unit rate</em></p>
         </div>
-
-        <div class="family-panel family-panel-home">
-          <h3 class="family-panel-heading">🏡 Try this at home</h3>
-          <p class="family-try-text">Chef Reyes&#039;s recipe serves 8 people, but the banquet has 120 guests. How many times bigger is 120 than 8, and how does that scale factor help you adjust the tomatoes and mozzarella?</p>
+        <div class="bilingual-col lang-es" lang="es">
+          <span class="lang-label">Español</span>
+          <p class="learning-big">Puedo usar ratio reasoning to solve problems with proportions and scaling.</p>
+          <p class="learning-sub">También practiquen: <em>explicar mi razonamiento usando las palabras Proporción, Escalar, Equivalente, y Tasa unitaria</em></p>
         </div>
       </div>
-
-      
-        <div class="family-panel family-panel-legend">
-          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
-          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>fill table:</strong> Encourage your student to show their work on paper if a box feels tricky.</li><li><strong>drag sort:</strong> On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</li><li><strong>matching game:</strong> Say each term out loud, then talk through which match makes sense before choosing.</li></ul>
-        </div>
-
-      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
     </section>
-  
 
   
-    <section class="try-at-home card" aria-label="Try this at home">
-      <h2 class="section-title">👨‍🍳 Real-World Connection</h2>
-      <p class="try-narrative">Chef Academy received a huge catering order — a banquet for 120 guests! Chef Reyes&#039;s original appetizer recipe serves 8 people and calls for 5 cups of diced tomatoes and 3 cups of mozzarella. The students need to use ratio reasoning to scale the recipe so every guest gets the same delicious flavor.</p>
-      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    <section class="guided-section card section-visual" aria-label="Visual concept explainer">
+      <h2 class="section-title">🎯 The big idea / La idea principal</h2>
+      <div class="concept-visual-wrap">
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Ratio table example">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
+        <text x="210" y="48" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Ratio Table / Tabla de razones</text>
+        <rect x="40" y="70" width="100" height="24" rx="4" fill="#12355b" stroke="#d7e2ed"/><text x="90" y="86" text-anchor="middle" font-size="12" font-weight="600" fill="#ffffff">Batch</text><rect x="150" y="70" width="100" height="24" rx="4" fill="#12355b" stroke="#d7e2ed"/><text x="200" y="86" text-anchor="middle" font-size="12" font-weight="600" fill="#ffffff">A</text><rect x="260" y="70" width="100" height="24" rx="4" fill="#12355b" stroke="#d7e2ed"/><text x="310" y="86" text-anchor="middle" font-size="12" font-weight="600" fill="#ffffff">B</text><rect x="40" y="98" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="90" y="114" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">1</text><rect x="150" y="98" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="200" y="114" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">2</text><rect x="260" y="98" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="310" y="114" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">3</text><rect x="40" y="126" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="90" y="142" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">2</text><rect x="150" y="126" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="200" y="142" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">4</text><rect x="260" y="126" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="310" y="142" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">6</text><rect x="40" y="154" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="90" y="170" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">3</text><rect x="150" y="154" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="200" y="170" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">6</text><rect x="260" y="154" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="310" y="170" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">9</text>
+        <text x="210" y="188" text-anchor="middle" font-size="11" fill="#5f6f80">× same number on BOTH columns → equivalent ratio</text>
+      </svg></div>
+      <div class="key-idea-banner">
+        <p class="lang-en"><strong>Watch for this:</strong> Find the scale factor, then multiply both parts; cross-multiply to check a proportion.</p>
+        <p class="lang-es" lang="es"><strong>Observa esto:</strong> Esta noche practican: usar ratio reasoning to solve problems with proportions and scaling. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+      </div>
+      <ol class="guided-steps">
+        
+          <li class="guided-step step-color-1">
+            <span class="step-badge">Step 1 / Paso 1</span>
+            <p class="lang-en">Ratio reasoning means using a scale factor or a proportion to find a missing amount. A proportion is two equal ratios. You can check it by cross-multiplying.</p>
+            <p class="lang-es" lang="es">Esta noche practican: usar ratio reasoning to solve problems with proportions and scaling. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-2">
+            <span class="step-badge">Step 2 / Paso 2</span>
+            <p class="lang-en">Chef Reyes&#039;s recipe serves 8 people and uses 5 cups of tomatoes. The banquet has 120 guests.</p>
+            <p class="lang-es" lang="es">Esta noche practican: usar ratio reasoning to solve problems with proportions and scaling. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-3">
+            <span class="step-badge">Step 3 / Paso 3</span>
+            <p class="lang-en">I find the scale factor: 120 divided by 8 = 15.</p>
+            <p class="lang-es" lang="es">I find the factor de escala: 120 divided by 8 = 15.</p>
+          </li>
+          <li class="guided-step step-color-4">
+            <span class="step-badge">Step 4 / Paso 4</span>
+            <p class="lang-en">I multiply the tomatoes by 15: 5 x 15 = 75 cups of tomatoes.</p>
+            <p class="lang-es" lang="es">Esta noche practican: usar ratio reasoning to solve problems with proportions and scaling. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+      </ol>
+      <ul class="watch-for-list">
+        
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Proportion&quot; — it means: A math sentence saying two ratios are equal.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Proporción&quot; — significa: Una oración matemática que dice que dos razones son iguales.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Cross-multiply&quot; — it means: Multiplying across two ratios to check if they are equal.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Multiplicación cruzada&quot; — significa: Multiplicar en cruz dos razones para ver si son iguales.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Scale&quot; — it means: To multiply or divide both parts of a ratio by the same number.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Escalar&quot; — significa: Multiplicar o dividir ambas partes de una razón por el mismo número.</p>
+            </div>
+          </li>
+      </ul>
     </section>
-  
 
   
-    <section class="vocab-section card">
-      <h2 class="section-title">🔑 Key Vocabulary</h2>
-      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
+    <section class="guided-section card section-together" aria-label="Try this together">
+      <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
+      <p class="try-scenario lang-en">Chef Academy received a huge catering order — a banquet for 120 guests! Chef Reyes&#039;s original appetizer recipe serves 8 people and calls for 5 cups of diced tomatoes and 3 cups of mozzarella.</p>
+             <p class="try-scenario lang-es" lang="es">Chef Academy received a huge catering ordenar — a banquet for 120 guests! Chef Reyes&#039;s original appetizer recipe serves 8 people and calls for 5 cups of diced tomatoes and 3 cups of mozzarella.</p>
+      <p class="try-together-note bilingual-block">
+        <span class="lang-en">Work side by side. You ask questions; your student does the thinking.</span>
+        <span class="lang-es" lang="es">Trabajen juntos. Tú haces preguntas; tu estudiante piensa.</span>
+      </p>
+      <ol class="together-steps">
+        
+          <li class="together-step step-color-1">
+            <div class="together-step-head">
+              <span class="step-badge">Step 1 / Paso 1</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> A recipe uses 2 cups of rice for every 6 servings. We need 18 servings.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> A recipe uses 2 cups of rice for every 6 servings. We need 18 servings.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-2">
+            <div class="together-step-head">
+              <span class="step-badge">Step 2 / Paso 2</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Find the scale factor: 18 divided by 6 = 3.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Find the factor de escala: 18 divided by 6 = 3.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-3">
+            <div class="together-step-head">
+              <span class="step-badge">Step 3 / Paso 3</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Multiply the rice by 3: 2 x 3 = 6 cups of rice.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Multiply the rice by 3: 2 x 3 = 6 cups of rice.</p>
+            <p class="step-hint">💡 Both numbers must change the same way. · Ambos números deben cambiar de la misma manera.</p>
+          </li>
+      </ol>
+    </section>
+
+  
+    <section class="guided-section card section-vocab vocab-section" aria-label="Words to know">
+      <h2 class="section-title">📚 Words to know / Palabras clave</h2>
+      <p class="vocab-family-note bilingual-block">
+        <span class="lang-en">Tap a card to flip. Use these words when you talk about the math together.</span>
+        <span class="lang-es" lang="es">Toquen una tarjeta para voltearla. Usen estas palabras cuando hablen de la matemática juntos.</span>
+      </p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
@@ -1379,18 +1650,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/proportion.svg" alt="Illustration of Proportion: A math sentence saying two ratios are equal." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Proportion</h3>
-                  <p class="vocab-es">Proporción</p>
-                  <div class="vocab-visual-hint">💡 Example: 2/3 = 8/12</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Proporción</p>
+                  <div class="vocab-visual-hint">💡 2/3 = 8/12</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A math sentence saying two ratios are equal.</p>
-                  <p class="vocab-def-es">Una oración matemática que dice que dos razones son iguales.</p>
+                  <p class="vocab-def-es" lang="es">Una oración matemática que dice que dos razones son iguales.</p>
                   <p class="vocab-back-visual">📌 2/3 = 8/12</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1398,18 +1668,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/proportion.svg" alt="Illustration of Cross-multiply: Multiplying across two ratios to check if they are equal." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Cross-multiply</h3>
-                  <p class="vocab-es">Multiplicación cruzada</p>
-                  <div class="vocab-visual-hint">💡 Example: 2/3 = 8/12 → 2×12 = 24 and 3×8 = 24 ✓</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Multiplicación cruzada</p>
+                  <div class="vocab-visual-hint">💡 2/3 = 8/12 → 2×12 = 24 and 3×8 = 24 ✓</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">Multiplying across two ratios to check if they are equal.</p>
-                  <p class="vocab-def-es">Multiplicar en cruz dos razones para ver si son iguales.</p>
+                  <p class="vocab-def-es" lang="es">Multiplicar en cruz dos razones para ver si son iguales.</p>
                   <p class="vocab-back-visual">📌 2/3 = 8/12 → 2×12 = 24 and 3×8 = 24 ✓</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1417,18 +1686,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/scale-factor.svg" alt="Illustration of Scale: To multiply or divide both parts of a ratio by the same number." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Scale</h3>
-                  <p class="vocab-es">Escalar</p>
-                  <div class="vocab-visual-hint">💡 Example: 5:8 × 3 → 15:24</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Escalar</p>
+                  <div class="vocab-visual-hint">💡 5:8 × 3 → 15:24</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">To multiply or divide both parts of a ratio by the same number.</p>
-                  <p class="vocab-def-es">Multiplicar o dividir ambas partes de una razón por el mismo número.</p>
+                  <p class="vocab-def-es" lang="es">Multiplicar o dividir ambas partes de una razón por el mismo número.</p>
                   <p class="vocab-back-visual">📌 5:8 × 3 → 15:24</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1436,18 +1704,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/fraction.svg" alt="Illustration of Equivalent: Having the same value." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Equivalent</h3>
-                  <p class="vocab-es">Equivalente</p>
-                  <div class="vocab-visual-hint">💡 Example: 1/2 and 3/6 and 5/10 all equal the same amount — half</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Equivalente</p>
+                  <div class="vocab-visual-hint">💡 1/2 and 3/6 and 5/10 all equal the same amount — half</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">Having the same value.</p>
-                  <p class="vocab-def-es">Tener el mismo valor.</p>
+                  <p class="vocab-def-es" lang="es">Tener el mismo valor.</p>
                   <p class="vocab-back-visual">📌 1/2 and 3/6 and 5/10 all equal the same amount — half</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1455,33 +1722,63 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/unit-rate.svg" alt="Illustration of Unit rate: A rate for just 1 of something. You find it by dividing." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Unit rate</h3>
-                  <p class="vocab-es">Tasa unitaria</p>
-                  <div class="vocab-visual-hint">💡 Example: 60 miles in 3 hours → 20 miles per 1 hour</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Tasa unitaria</p>
+                  <div class="vocab-visual-hint">💡 60 miles in 3 hours → 20 miles per 1 hour</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A rate for just 1 of something. You find it by dividing.</p>
-                  <p class="vocab-def-es">Una tasa para solo 1 de algo. La encuentras al dividir.</p>
+                  <p class="vocab-def-es" lang="es">Una tasa para solo 1 de algo. La encuentras al dividir.</p>
                   <p class="vocab-back-visual">📌 60 miles in 3 hours → 20 miles per 1 hour</p>
                 </div>
               </div>
             </div>
-          
       </div>
     </section>
+
   
+    <section class="guided-section card section-stuck" aria-label="If your student gets stuck">
+      <h2 class="section-title">💬 If your student gets stuck / Si se atora</h2>
+      <div class="stuck-grid">
+        <div class="stuck-panel stuck-say">
+          <h3 class="stuck-heading">✅ What to say / Qué decir</h3>
+          <ul>
+            <li><p class="lang-en">What do you already know that could help?</p><p class="lang-es" lang="es">¿Qué ya sabes que podría ayudarte?</p></li><li><p class="lang-en">Can you draw a picture or table for this?</p><p class="lang-es" lang="es">¿Puedes dibujar un dibujo o una tabla para esto?</p></li><li><p class="lang-en">Let&#039;s check one step at a time — no rush.</p><p class="lang-es" lang="es">Revisemos un paso a la vez — sin prisa.</p></li>
+          </ul>
+        </div>
+        <div class="stuck-panel stuck-dont">
+          <h3 class="stuck-heading">🚫 What NOT to say / Qué evitar</h3>
+          <ul>
+            <li><p class="lang-en">That&#039;s wrong — let me just tell you.</p><p class="lang-es" lang="es">Está mal — déjame decírtelo yo.</p></li><li><p class="lang-en">I was never good at math either.</p><p class="lang-es" lang="es">Yo tampoco era bueno en matemáticas.</p></li><li><p class="lang-en">This should be easy.</p><p class="lang-es" lang="es">Esto debería ser fácil.</p></li>
+          </ul>
+        </div>
+      </div>
+      <p class="stuck-footer bilingual-block">
+        <span class="lang-en">Struggle is part of learning. Short breaks and snacks are allowed!</span>
+        <span class="lang-es" lang="es">La dificultad es parte del aprendizaje. ¡Descansos y meriendas están permitidos!</span>
+      </p>
+    </section>
+
   
+    <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
+      <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
+      <p class="bilingual-block">
+        <span class="lang-en">One or two problems to try on the screen. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
+        <span class="lang-es" lang="es">Una o dos preguntas en pantalla. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+      </p>
+    </section>
+
   <main class="problems-container">
     
     <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 1</div>
+        <div class="problem-number-badge">Quick Check 1</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">A recipe uses 4 cups of broth for every 10 servings. How many cups of broth are needed for 30 servings?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="Scale factor: 30 ÷ 10 = 3. Multiply broth by 3: 4 × 3 = 12 cups.">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1513,7 +1810,7 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
@@ -1522,13 +1819,13 @@ header.homework-header h1 {
 
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 2</div>
+        <div class="problem-number-badge">Quick Check 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">Are the ratios 6:9 and 2:3 equivalent?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="Divide 6:9 by 3 to get 2:3. Since both ratios simplify to 2:3, they are equivalent.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1560,595 +1857,25 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
   
-
-    <section class="problem-section card" id="problem_2" data-problem-type="fill-table">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 3</div>
-        <div class="problem-type-badge">FILL TABLE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Chef Reyes&#039;s appetizer uses 5 cups of tomatoes for every 3 cups of mozzarella. Scale the recipe for different group sizes.</p>
-        <p class="family-problem-tip">👪 Family tip: Encourage your student to show their work on paper if a box feels tricky.</p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Servings</th><th>Tomatoes (cups)</th><th>Mozzarella (cups)</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>8</td><td>5</td><td>3</td>
-                </tr>
-              
-                <tr>
-                  <td>16</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_1_1"
-                                   data-correct="10" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_1_2"
-                                   data-correct="6" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>40</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_2_1"
-                                   data-correct="25" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_2_2"
-                                   data-correct="15" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>120</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_3_1"
-                                   data-correct="75" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_3_2"
-                                   data-correct="45" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-            </tbody>
-          </table>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_3" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A chef uses the proportion 3/7 = x/28 to scale a recipe. What is x?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Scale factor: 28 ÷ 7 = 4. Multiply: 3 × 4 = 12. So x = 12.">
-          
-            <label class="mc-option-label" id="label_q_3_0">
-              <input type="radio" name="q_3" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">12</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_1">
-              <input type="radio" name="q_3" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">14</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_2">
-              <input type="radio" name="q_3" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">9</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_3">
-              <input type="radio" name="q_3" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">21</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_4" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 5</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">For each proportion, sort whether it is set up correctly or incorrectly to solve &#039;4 cups for 6 servings = ? cups for 18 servings&#039;.</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        
-        <div class="drag-sort-workspace" id="dragsort_4">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="correct" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'correct')">
-                <div class="drag-column-header">Correct Setup</div>
-                <div class="drag-column-slots" id="slots_4_correct" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'correct')"></div>
-              </div>
-              <div class="drag-column" data-category-id="incorrect" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'incorrect')">
-                <div class="drag-column-header">Incorrect Setup</div>
-                <div class="drag-column-slots" id="slots_4_incorrect" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'incorrect')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_4" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_0"
-                     data-item-index="0"
-                     data-correct-category="correct"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">4/6 = x/18</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_0', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="correct">Correct Setup</option><option value="incorrect">Incorrect Setup</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_1"
-                     data-item-index="1"
-                     data-correct-category="correct"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">6/4 = 18/x</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_1', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="correct">Correct Setup</option><option value="incorrect">Incorrect Setup</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_2"
-                     data-item-index="2"
-                     data-correct-category="incorrect"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">4/18 = x/6</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_2', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="correct">Correct Setup</option><option value="incorrect">Incorrect Setup</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_3"
-                     data-item-index="3"
-                     data-correct-category="incorrect"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">6/18 = x/4</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_3', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="correct">Correct Setup</option><option value="incorrect">Incorrect Setup</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(4); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Chef Reyes&#039;s pasta dough uses 2 eggs for every 3 cups of flour. For a banquet, the kitchen mixes 9 cups of flour. How many eggs are needed to keep the same ratio?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Scale factor: 9 cups divided by 3 cups = 3. Multiply the eggs by the same factor: 2 x 3 = 6 eggs.">
-          
-            <label class="mc-option-label" id="label_q_5_0">
-              <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">6 eggs</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_1">
-              <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">5 eggs</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_2">
-              <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">8 eggs</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_3">
-              <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">4 eggs</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A marinara recipe uses 4 cups of tomatoes for every 6 servings. The chef needs 18 servings. How many cups of tomatoes should she use?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Scale factor: 18 servings divided by 6 servings = 3. Multiply the tomatoes by 3: 4 x 3 = 12 cups.">
-          
-            <label class="mc-option-label" id="label_q_6_0">
-              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">12 cups</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_1">
-              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">10 cups</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_2">
-              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">16 cups</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_3">
-              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">9 cups</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 8</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">During a cooking-team relay, a chef plates 3 finished dishes for every 5 minutes she works. At the same rate, how many dishes will she plate in 20 minutes?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Scale factor: 20 minutes divided by 5 minutes = 4. Multiply the dishes by 4: 3 x 4 = 12 dishes.">
-          
-            <label class="mc-option-label" id="label_q_7_0">
-              <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">12 dishes</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_1">
-              <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">10 dishes</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_2">
-              <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">15 dishes</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_3">
-              <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">8 dishes</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_8" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 9</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Match each kitchen problem to the smartest ratio-reasoning strategy.</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="Find the cost of 1 onion when 6 onions cost $3" data-correct="Unit rate (divide $3 by 6)">
-              <div class="matching-term">Find the cost of 1 onion when 6 onions cost $3</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Cross-multiply and compare products">Cross-multiply and compare products</option><option value="Ratio table (add a column each time)">Ratio table (add a column each time)</option><option value="Scale factor (multiply both parts)">Scale factor (multiply both parts)</option><option value="Unit rate (divide $3 by 6)">Unit rate (divide $3 by 6)</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Scale a 5:3 tomato-to-cheese recipe up to 120 guests" data-correct="Scale factor (multiply both parts)">
-              <div class="matching-term">Scale a 5:3 tomato-to-cheese recipe up to 120 guests</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Cross-multiply and compare products">Cross-multiply and compare products</option><option value="Ratio table (add a column each time)">Ratio table (add a column each time)</option><option value="Scale factor (multiply both parts)">Scale factor (multiply both parts)</option><option value="Unit rate (divide $3 by 6)">Unit rate (divide $3 by 6)</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Check if 4:6 and 6:9 are equivalent ratios" data-correct="Cross-multiply and compare products">
-              <div class="matching-term">Check if 4:6 and 6:9 are equivalent ratios</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Cross-multiply and compare products">Cross-multiply and compare products</option><option value="Ratio table (add a column each time)">Ratio table (add a column each time)</option><option value="Scale factor (multiply both parts)">Scale factor (multiply both parts)</option><option value="Unit rate (divide $3 by 6)">Unit rate (divide $3 by 6)</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Show 2 cups broth per 5 servings for 5, 10, and 15 servings" data-correct="Ratio table (add a column each time)">
-              <div class="matching-term">Show 2 cups broth per 5 servings for 5, 10, and 15 servings</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Cross-multiply and compare products">Cross-multiply and compare products</option><option value="Ratio table (add a column each time)">Ratio table (add a column each time)</option><option value="Scale factor (multiply both parts)">Scale factor (multiply both parts)</option><option value="Unit rate (divide $3 by 6)">Unit rate (divide $3 by 6)</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_9" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Chef Reyes scales each recipe by the same factor. Sort each situation under the correct scaled supply amount.</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        
-        <div class="drag-sort-workspace" id="dragsort_9">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="12" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, '12')">
-                <div class="drag-column-header">Makes 12 cups</div>
-                <div class="drag-column-slots" id="slots_9_12" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, '12')"></div>
-              </div>
-              <div class="drag-column" data-category-id="15" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, '15')">
-                <div class="drag-column-header">Makes 15 cups</div>
-                <div class="drag-column-slots" id="slots_9_15" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, '15')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_9" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_9_0"
-                     data-item-index="0"
-                     data-correct-category="12"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">6 cups of flour scaled by 2</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_0', 9); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="12">Makes 12 cups</option><option value="15">Makes 15 cups</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_9_1"
-                     data-item-index="1"
-                     data-correct-category="12"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">4 cups of flour scaled by 3</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_1', 9); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="12">Makes 12 cups</option><option value="15">Makes 15 cups</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_9_2"
-                     data-item-index="2"
-                     data-correct-category="15"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">5 cups of broth scaled by 3</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_2', 9); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="12">Makes 12 cups</option><option value="15">Makes 15 cups</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_9_3"
-                     data-item-index="3"
-                     data-correct-category="15"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">3 cups of broth scaled by 5</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_3', 9); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="12">Makes 12 cups</option><option value="15">Makes 15 cups</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(9); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
   </main>
+
   
+    <section class="guided-section card section-celebrate" aria-label="Celebration">
+      <h2 class="section-title">🎉 You did it together! / ¡Lo lograron juntos!</h2>
+      <p class="celebrate-text lang-en">High five! Whether every answer was perfect or not, you showed up for your student tonight. That matters.</p>
+      <p class="celebrate-text lang-es" lang="es">¡Chócalas! No importa si cada respuesta fue perfecta — estuviste con tu estudiante esta noche. Eso importa.</p>
+      <p class="celebrate-sub bilingual-block">
+        <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
+        <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
+      </p>
+    </section>
+
 </div>
 
 <!-- Sticky bottom actions bar -->
@@ -2158,7 +1885,7 @@ header.homework-header h1 {
     
     <div class="score-progress-container">
       <div class="score-text">
-        Homework Progress: <span id="progress_text">0 / 10 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 2 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -2166,8 +1893,8 @@ header.homework-header h1 {
     </div>
     
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset</button>
-      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All Problems</button>
+      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset / Reiniciar</button>
+      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All / Revisar todo</button>
     </div>
   </div>
 </div>

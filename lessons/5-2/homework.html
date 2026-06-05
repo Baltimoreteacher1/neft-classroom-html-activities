@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interactive Homework — Lesson 5-2: Area of Trapezoids</title>
+<title>Help Your Student — Lesson 5-2: Area of Trapezoids</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -266,6 +266,13 @@ header.homework-header h1 {
   border-radius: var(--radius-sm);
   font-size: 13.5px;
   color: var(--hint);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.family-problem-tip .lang-es {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .family-hint-box {
@@ -1306,70 +1313,348 @@ header.homework-header h1 {
     justify-content: center;
   }
 }
+
+/* Family guided notes layout */
+.family-welcome {
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  color: var(--white);
+  border: none;
+  padding: 28px 24px;
+}
+.welcome-hero {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.welcome-emoji { font-size: 48px; line-height: 1; }
+.welcome-tag {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal-light);
+  font-weight: 800;
+}
+.welcome-title-en, .welcome-title-es {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 5vw, 34px);
+  font-weight: 800;
+  line-height: 1.15;
+}
+.welcome-title-es { color: var(--amber); font-size: clamp(22px, 4.5vw, 30px); margin-top: 2px; }
+.welcome-lesson { margin: 8px 0 0; font-size: 16px; color: var(--teal-light); font-weight: 600; }
+.welcome-lead { margin: 0 0 12px; font-size: 15px; line-height: 1.5; }
+.family-welcome .back-link { color: var(--amber); margin: 0; }
+.family-welcome .back-link:hover { color: var(--white); }
+
+.bilingual-block, .bilingual-grid { display: flex; flex-direction: column; gap: 10px; }
+.bilingual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 640px) {
+  .bilingual-grid { grid-template-columns: 1fr; }
+}
+.bilingual-col {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.lang-label {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal);
+  margin-bottom: 6px;
+}
+.lang-en { margin: 0 0 6px; }
+.lang-es { margin: 0; color: var(--muted); font-style: normal; }
+.learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
+.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+
+.guided-section { scroll-margin-top: 16px; }
+.section-learn { border-left: 4px solid var(--teal); }
+.section-visual { border-left: 4px solid var(--amber); }
+.section-together { border-left: 4px solid #5b8def; }
+.section-vocab { border-left: 4px solid var(--coral); }
+.section-stuck { border-left: 4px solid #9b59b6; }
+.section-quick-intro { border-left: 4px solid var(--success); }
+.section-celebrate {
+  border-left: 4px solid var(--amber);
+  background: linear-gradient(180deg, var(--amber-light), var(--white));
+  text-align: center;
+}
+
+.concept-visual-wrap { margin: 12px 0 16px; overflow-x: auto; }
+.concept-svg { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.concept-fallback-visual { display: flex; flex-direction: column; gap: 8px; }
+.concept-fallback-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  font-weight: 600; font-size: 14px;
+}
+.step-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; color: var(--white);
+  flex-shrink: 0;
+}
+.step-color-1 .step-dot, .step-color-1.step-badge { background: #5b8def; }
+.step-color-2 .step-dot, .step-color-2.step-badge { background: var(--success); }
+.step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
+.step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
+
+.key-idea-banner {
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid #b8ddd8;
+}
+.key-idea-banner p { margin: 0 0 6px; font-size: 14.5px; }
+.key-idea-banner p:last-child { margin-bottom: 0; }
+
+.guided-steps, .together-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.guided-step, .together-step {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  background: var(--white);
+}
+.step-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  padding: 3px 8px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+}
+.guided-step p, .together-step p { margin: 0 0 6px; font-size: 14.5px; line-height: 1.45; }
+.step-hint {
+  margin: 8px 0 0 !important;
+  padding: 8px 10px;
+  background: var(--hint-bg);
+  border-radius: var(--radius-sm);
+  font-size: 13px !important;
+  color: var(--hint);
+}
+
+.watch-for-list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.watch-for-list li {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
+}
+.watch-icon { font-size: 20px; flex-shrink: 0; }
+
+.try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
+.try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
+
+.stuck-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+@media (max-width: 640px) { .stuck-grid { grid-template-columns: 1fr; } }
+.stuck-panel {
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+}
+.stuck-say { background: var(--success-bg); border-color: var(--success); }
+.stuck-dont { background: var(--error-bg); border-color: var(--error); }
+.stuck-heading { margin: 0 0 10px; font-family: var(--font-display); font-size: 14px; color: var(--navy); }
+.stuck-panel ul { margin: 0; padding-left: 16px; }
+.stuck-panel li { margin-bottom: 10px; font-size: 14px; }
+.stuck-panel li p { margin: 0 0 4px; }
+.stuck-footer { font-size: 14px; color: var(--muted); margin: 0; }
+
+.celebrate-text { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; }
+.celebrate-sub { font-size: 14px; margin: 0; }
+
+.problems-container .problem-section { border-left: 4px solid var(--teal); }
+.problems-container .problem-number-badge::after {
+  content: " / Repaso";
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
 </style>
 </head>
 <body>
 
 <div class="container">
-  
-  <header class="homework-header">
-    <a href="/curriculum/" class="back-link">⬅ Curriculum Hub</a>
-    <div class="header-meta">Unit 5 · Standard 6.G.1 · Homework</div>
-    <h1>Area of Trapezoids</h1>
-    <div class="objectives-card">
-      <div class="objective-row"><span class="objective-badge">Target</span> <strong>I can find the area of a trapezoid using the formula A = ½(b1 + b2) × h.</strong></div>
-      <div class="objective-row"><span class="objective-badge">Discuss</span> <strong>I can explain my steps using the words trapezoid, base, height, and area.</strong></div>
-    </div>
-  </header>
 
   
-    <section class="family-guide card" aria-label="Family guide">
-      <div class="family-guide-header">
-        <span class="family-guide-emoji">📐</span>
-        <div>
-          <h2 class="section-title family-guide-title">Family Guide</h2>
-          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+    <header class="family-welcome card" aria-label="Family Math Night welcome">
+      <div class="welcome-hero">
+        <span class="welcome-emoji" aria-hidden="true">📐</span>
+        <div class="welcome-titles">
+          <p class="welcome-tag">Unit 5 · 6.G.1</p>
+          <h1 class="welcome-title-en">Family Math Night</h1>
+          <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
+          <p class="welcome-lesson">Area of Trapezoids · Lesson 5-2</p>
         </div>
       </div>
+      <p class="welcome-lead bilingual-block">
+        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+      </p>
+      <a href="/curriculum/" class="back-link">⬅ Curriculum Hub / Centro curricular</a>
+    </header>
 
-      <div class="family-guide-grid">
-        <div class="family-panel family-panel-tips">
-          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
-          <ul class="family-tip-list">
-            <li>Let your student try each problem first. Tap <strong>Check This Problem</strong> on any question for instant feedback — no need to finish the whole page.</li>
-            <li>Tap vocabulary cards to flip between term and definition.</li>
-            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
-          </ul>
+  
+    <section class="guided-section card section-learn" aria-label="What we are learning tonight">
+      <h2 class="section-title">📖 What we're learning tonight / Qué aprendemos hoy</h2>
+      <div class="bilingual-grid">
+        <div class="bilingual-col lang-en">
+          <span class="lang-label">English</span>
+          <p class="learning-big">Find the area of a trapezoid using the formula A = ½(b1 + b2) × h.</p>
+          <p class="learning-sub">Also practice saying: <em>explain my steps using the words trapezoid, base, height, and area</em></p>
         </div>
-
-        <div class="family-panel family-panel-home">
-          <h3 class="family-panel-heading">🏡 Try this at home</h3>
-          <p class="family-try-text">The trapezoidal window has a top edge of 4 feet and a bottom edge of 8 feet. Why does the area formula use BOTH bases instead of just one?</p>
+        <div class="bilingual-col lang-es" lang="es">
+          <span class="lang-label">Español</span>
+          <p class="learning-big">Puedo encontrar el área de un trapecio usando la fórmula A = ½(b1 + b2) × h.</p>
+          <p class="learning-sub">También practiquen: <em>explicar my steps usando las palabras Trapecio, base, Altura, y Área</em></p>
         </div>
       </div>
-
-      
-        <div class="family-panel family-panel-legend">
-          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
-          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>fill table:</strong> Encourage your student to show their work on paper if a box feels tricky.</li><li><strong>matching game:</strong> Say each term out loud, then talk through which match makes sense before choosing.</li><li><strong>drag sort:</strong> On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</li></ul>
-        </div>
-
-      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
     </section>
-  
 
   
-    <section class="try-at-home card" aria-label="Try this at home">
-      <h2 class="section-title">📐 Real-World Connection</h2>
-      <p class="try-narrative">Your architecture firm is designing a trapezoidal window for a modern building. The glass supplier charges by the square foot, so the team must calculate the exact area. The window has a top edge of 4 feet, a bottom edge of 8 feet, and a height of 5 feet.</p>
-      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    <section class="guided-section card section-visual" aria-label="Visual concept explainer">
+      <h2 class="section-title">🎯 The big idea / La idea principal</h2>
+      <div class="concept-visual-wrap">
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Volume prism">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fce6de" stroke="#d9795d" stroke-width="2"/>
+        <polygon points="80,140 180,140 210,110 110,110" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
+        <polygon points="180,140 210,110 210,60 180,90" fill="#b8ddd8" stroke="#1fa6a2" stroke-width="2"/>
+        <polygon points="80,140 110,110 110,60 80,90" fill="#1fa6a2" opacity="0.35" stroke="#1fa6a2" stroke-width="2"/>
+        <text x="95" y="155" font-size="11" fill="#12355b">L</text>
+        <text x="195" y="155" font-size="11" fill="#12355b">W</text>
+        <text x="218" y="88" font-size="11" fill="#12355b">H</text>
+        <text x="240" y="80" font-size="16" font-weight="700" fill="#12355b">V = L × W × H</text>
+        <text x="240" y="105" font-size="13" fill="#21313f">Volume = cubic units (in³)</text>
+        <text x="240" y="125" font-size="13" fill="#21313f" lang="es">Volumen = unidades cúbicas (in³)</text>
+      </svg></div>
+      <div class="key-idea-banner">
+        <p class="lang-en"><strong>Watch for this:</strong> Area of a trapezoid = ½ × (base 1 + base 2) × height. We add the two bases first, then take half.</p>
+        <p class="lang-es" lang="es"><strong>Observa esto:</strong> Área de un trapecio = ½ × (base 1 + base 2) × altura. Primero sumamos las dos bases y luego tomamos la mitad.</p>
+      </div>
+      <ol class="guided-steps">
+        
+          <li class="guided-step step-color-1">
+            <span class="step-badge">Step 1 / Paso 1</span>
+            <p class="lang-en">A trapezoid is a four-sided shape with one pair of parallel sides. The two parallel sides are called the bases, and they have different lengths.</p>
+            <p class="lang-es" lang="es">Esta noche practican: encontrar el área de un trapecio usando la fórmula A = ½(b1 + b2) × h. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-2">
+            <span class="step-badge">Step 2 / Paso 2</span>
+            <p class="lang-en">My trapezoid window has a top base of 4 feet, a bottom base of 8 feet, and a height of 5 feet.</p>
+            <p class="lang-es" lang="es">Esta noche practican: encontrar el área de un trapecio usando la fórmula A = ½(b1 + b2) × h. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-3">
+            <span class="step-badge">Step 3 / Paso 3</span>
+            <p class="lang-en">I write the formula: A = ½ × (b1 + b2) × h.</p>
+            <p class="lang-es" lang="es">Esta noche practican: encontrar el área de un trapecio usando la fórmula A = ½(b1 + b2) × h. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-4">
+            <span class="step-badge">Step 4 / Paso 4</span>
+            <p class="lang-en">I add the bases first: 4 + 8 = 12.</p>
+            <p class="lang-es" lang="es">Esta noche practican: encontrar el área de un trapecio usando la fórmula A = ½(b1 + b2) × h. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+      </ol>
+      <ul class="watch-for-list">
+        
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Trapezoid&quot; — it means: A four-sided shape with just one pair of parallel sides.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Trapecio&quot; — significa: Una figura de cuatro lados con solo un par de lados paralelos.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Base 1 (b1)&quot; — it means: One of the two parallel sides of a trapezoid.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Base 1 (b1)&quot; — significa: Uno de los dos lados paralelos de un trapecio.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Base 2 (b2)&quot; — it means: The other parallel side of a trapezoid.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Base 2 (b2)&quot; — significa: El otro lado paralelo de un trapecio.</p>
+            </div>
+          </li>
+      </ul>
     </section>
-  
 
   
-    <section class="vocab-section card">
-      <h2 class="section-title">🔑 Key Vocabulary</h2>
-      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
+    <section class="guided-section card section-together" aria-label="Try this together">
+      <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
+      <p class="try-scenario lang-en">Your architecture firm is designing a trapezoidal window for a modern building.</p>
+             <p class="try-scenario lang-es" lang="es">Your architecture firm is designing a trapezoidal window for a modern building.</p>
+      <p class="try-together-note bilingual-block">
+        <span class="lang-en">Work side by side. You ask questions; your student does the thinking.</span>
+        <span class="lang-es" lang="es">Trabajen juntos. Tú haces preguntas; tu estudiante piensa.</span>
+      </p>
+      <ol class="together-steps">
+        
+          <li class="together-step step-color-1">
+            <div class="together-step-head">
+              <span class="step-badge">Step 1 / Paso 1</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Now a smaller trapezoid: bases 3 cm and 5 cm, height 2 cm.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Now a smaller trapecio: bases 3 cm and 5 cm, altura 2 cm.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-2">
+            <div class="together-step-head">
+              <span class="step-badge">Step 2 / Paso 2</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> First, what is 3 + 5? Yes, 8.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> First, what is 3 + 5? Yes, 8.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-3">
+            <div class="together-step-head">
+              <span class="step-badge">Step 3 / Paso 3</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Next, what is 8 × 2? Yes, 16.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Next, what is 8 × 2? Yes, 16.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-4">
+            <div class="together-step-head">
+              <span class="step-badge">Step 4 / Paso 4</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Now take half: ½ × 16 = 8, so the area is 8 square centimeters.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Now take half: ½ × 16 = 8, so the área is 8 square centimeters.</p>
+            <p class="step-hint">💡 Both numbers must change the same way. · Ambos números deben cambiar de la misma manera.</p>
+          </li>
+      </ol>
+    </section>
+
+  
+    <section class="guided-section card section-vocab vocab-section" aria-label="Words to know">
+      <h2 class="section-title">📚 Words to know / Palabras clave</h2>
+      <p class="vocab-family-note bilingual-block">
+        <span class="lang-en">Tap a card to flip. Use these words when you talk about the math together.</span>
+        <span class="lang-es" lang="es">Toquen una tarjeta para voltearla. Usen estas palabras cuando hablen de la matemática juntos.</span>
+      </p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
@@ -1379,18 +1664,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/trapezoid.svg" alt="Illustration of Trapezoid: A four-sided shape with just one pair of parallel sides." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Trapezoid</h3>
-                  <p class="vocab-es">Trapecio</p>
-                  <div class="vocab-visual-hint">💡 Example: A table top wider than the bottom shelf — the top and bottom edges are parallel, the two sides slant inward</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Trapecio</p>
+                  <div class="vocab-visual-hint">💡 A table top wider than the bottom shelf — the top and bottom edges are parallel, the two sides slant inward</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A four-sided shape with just one pair of parallel sides.</p>
-                  <p class="vocab-def-es">Una figura de cuatro lados con solo un par de lados paralelos.</p>
+                  <p class="vocab-def-es" lang="es">Una figura de cuatro lados con solo un par de lados paralelos.</p>
                   <p class="vocab-back-visual">📌 A table top wider than the bottom shelf — the top and bottom edges are parallel, the two sides slant inward</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1398,18 +1682,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/trapezoid.svg" alt="Illustration of Base 1 (b1): One of the two parallel sides of a trapezoid." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Base 1 (b1)</h3>
-                  <p class="vocab-es">Base 1 (b1)</p>
-                  <div class="vocab-visual-hint">💡 Example: If the bottom of the trapezoid is 10 ft, then b₁ = 10 ft in the formula A = ½(b₁ + b₂) × h</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Base 1 (b1)</p>
+                  <div class="vocab-visual-hint">💡 If the bottom of the trapezoid is 10 ft, then b₁ = 10 ft in the formula A = ½(b₁ + b₂) × h</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">One of the two parallel sides of a trapezoid.</p>
-                  <p class="vocab-def-es">Uno de los dos lados paralelos de un trapecio.</p>
+                  <p class="vocab-def-es" lang="es">Uno de los dos lados paralelos de un trapecio.</p>
                   <p class="vocab-back-visual">📌 If the bottom of the trapezoid is 10 ft, then b₁ = 10 ft in the formula A = ½(b₁ + b₂) × h</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1417,18 +1700,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/trapezoid.svg" alt="Illustration of Base 2 (b2): The other parallel side of a trapezoid." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Base 2 (b2)</h3>
-                  <p class="vocab-es">Base 2 (b2)</p>
-                  <div class="vocab-visual-hint">💡 Example: If the top of the trapezoid is 6 ft, then b₂ = 6 ft; both bases are parallel to each other</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Base 2 (b2)</p>
+                  <div class="vocab-visual-hint">💡 If the top of the trapezoid is 6 ft, then b₂ = 6 ft; both bases are parallel to each other</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">The other parallel side of a trapezoid.</p>
-                  <p class="vocab-def-es">El otro lado paralelo de un trapecio.</p>
+                  <p class="vocab-def-es" lang="es">El otro lado paralelo de un trapecio.</p>
                   <p class="vocab-back-visual">📌 If the top of the trapezoid is 6 ft, then b₂ = 6 ft; both bases are parallel to each other</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1436,18 +1718,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/height.svg" alt="Illustration of Height: The straight-up distance between the two parallel sides." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Height</h3>
-                  <p class="vocab-es">Altura</p>
-                  <div class="vocab-visual-hint">💡 Example: A dashed vertical line from the top base straight down to the bottom base at a 90° angle — NOT the slanted side</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Altura</p>
+                  <div class="vocab-visual-hint">💡 A dashed vertical line from the top base straight down to the bottom base at a 90° angle — NOT the slanted side</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">The straight-up distance between the two parallel sides.</p>
-                  <p class="vocab-def-es">La distancia recta entre los dos lados paralelos.</p>
+                  <p class="vocab-def-es" lang="es">La distancia recta entre los dos lados paralelos.</p>
                   <p class="vocab-back-visual">📌 A dashed vertical line from the top base straight down to the bottom base at a 90° angle — NOT the slanted side</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1455,33 +1736,63 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/area.svg" alt="Illustration of Area: How much space is inside a flat shape." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Area</h3>
-                  <p class="vocab-es">Área</p>
-                  <div class="vocab-visual-hint">💡 Example: A trapezoid with b₁ = 10, b₂ = 6, h = 4 has area = ½(10 + 6) × 4 = 32 sq units</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Área</p>
+                  <div class="vocab-visual-hint">💡 A trapezoid with b₁ = 10, b₂ = 6, h = 4 has area = ½(10 + 6) × 4 = 32 sq units</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">How much space is inside a flat shape.</p>
-                  <p class="vocab-def-es">Cuánto espacio hay dentro de una figura plana.</p>
+                  <p class="vocab-def-es" lang="es">Cuánto espacio hay dentro de una figura plana.</p>
                   <p class="vocab-back-visual">📌 A trapezoid with b₁ = 10, b₂ = 6, h = 4 has area = ½(10 + 6) × 4 = 32 sq units</p>
                 </div>
               </div>
             </div>
-          
       </div>
     </section>
+
   
+    <section class="guided-section card section-stuck" aria-label="If your student gets stuck">
+      <h2 class="section-title">💬 If your student gets stuck / Si se atora</h2>
+      <div class="stuck-grid">
+        <div class="stuck-panel stuck-say">
+          <h3 class="stuck-heading">✅ What to say / Qué decir</h3>
+          <ul>
+            <li><p class="lang-en">What do you already know that could help?</p><p class="lang-es" lang="es">¿Qué ya sabes que podría ayudarte?</p></li><li><p class="lang-en">Can you draw a picture or table for this?</p><p class="lang-es" lang="es">¿Puedes dibujar un dibujo o una tabla para esto?</p></li><li><p class="lang-en">Let&#039;s check one step at a time — no rush.</p><p class="lang-es" lang="es">Revisemos un paso a la vez — sin prisa.</p></li>
+          </ul>
+        </div>
+        <div class="stuck-panel stuck-dont">
+          <h3 class="stuck-heading">🚫 What NOT to say / Qué evitar</h3>
+          <ul>
+            <li><p class="lang-en">That&#039;s wrong — let me just tell you.</p><p class="lang-es" lang="es">Está mal — déjame decírtelo yo.</p></li><li><p class="lang-en">I was never good at math either.</p><p class="lang-es" lang="es">Yo tampoco era bueno en matemáticas.</p></li><li><p class="lang-en">This should be easy.</p><p class="lang-es" lang="es">Esto debería ser fácil.</p></li>
+          </ul>
+        </div>
+      </div>
+      <p class="stuck-footer bilingual-block">
+        <span class="lang-en">Struggle is part of learning. Short breaks and snacks are allowed!</span>
+        <span class="lang-es" lang="es">La dificultad es parte del aprendizaje. ¡Descansos y meriendas están permitidos!</span>
+      </p>
+    </section>
+
   
+    <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
+      <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
+      <p class="bilingual-block">
+        <span class="lang-en">One or two problems to try on the screen. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
+        <span class="lang-es" lang="es">Una o dos preguntas en pantalla. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+      </p>
+    </section>
+
   <main class="problems-container">
     
     <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 1</div>
+        <div class="problem-number-badge">Quick Check 1</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">What is the area of a trapezoid with bases 6 cm and 10 cm, and height 4 cm?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="A = ½ × (b₁ + b₂) × h = ½ × (6 + 10) × 4 = ½ × 16 × 4 = 32 sq cm.">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1513,7 +1824,7 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
@@ -1522,13 +1833,13 @@ header.homework-header h1 {
 
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 2</div>
+        <div class="problem-number-badge">Quick Check 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">A trapezoid has an area of 45 sq ft, bases of 7 ft and 11 ft. What is the height?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="A = ½ × (b₁ + b₂) × h → 45 = ½ × 18 × h → 45 = 9h → h = 5 ft.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1560,673 +1871,25 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
   
-
-    <section class="problem-section card" id="problem_2" data-problem-type="fill-table">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 3</div>
-        <div class="problem-type-badge">FILL TABLE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Complete the table.</p>
-        <p class="family-problem-tip">👪 Family tip: Encourage your student to show their work on paper if a box feels tricky.</p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Trapezoid</th><th>Base 1</th><th>Base 2</th><th>Height</th><th>Area</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>Window A</td><td>8 ft</td><td>4 ft</td><td>5 ft</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_0_4"
-                                   data-correct="30 sq ft" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Window B</td><td>12 ft</td><td>6 ft</td><td>4 ft</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_1_4"
-                                   data-correct="36 sq ft" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Window C</td><td>10 ft</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_2_2"
-                                   data-correct="8 ft" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      <td>8 ft</td><td>72 sq ft</td>
-                </tr>
-              
-                <tr>
-                  <td>Window D</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_3_1"
-                                   data-correct="11 ft" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      <td>5 ft</td><td>6 ft</td><td>48 sq ft</td>
-                </tr>
-              
-            </tbody>
-          </table>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_3" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 4</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Match each shape to its area.</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="Trapezoid b₁=10, b₂=6, h=4" data-correct="32 sq units">
-              <div class="matching-term">Trapezoid b₁=10, b₂=6, h=4</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="21 sq units">21 sq units</option><option value="30 sq units">30 sq units</option><option value="32 sq units">32 sq units</option><option value="42 sq units">42 sq units</option><option value="45 sq units">45 sq units</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Trapezoid b₁=8, b₂=4, h=5" data-correct="30 sq units">
-              <div class="matching-term">Trapezoid b₁=8, b₂=4, h=5</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="21 sq units">21 sq units</option><option value="30 sq units">30 sq units</option><option value="32 sq units">32 sq units</option><option value="42 sq units">42 sq units</option><option value="45 sq units">45 sq units</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Trapezoid b₁=12, b₂=8, h=3" data-correct="30 sq units">
-              <div class="matching-term">Trapezoid b₁=12, b₂=8, h=3</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="21 sq units">21 sq units</option><option value="30 sq units">30 sq units</option><option value="32 sq units">32 sq units</option><option value="42 sq units">42 sq units</option><option value="45 sq units">45 sq units</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Triangle b=14, h=6" data-correct="42 sq units">
-              <div class="matching-term">Triangle b=14, h=6</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="21 sq units">21 sq units</option><option value="30 sq units">30 sq units</option><option value="32 sq units">32 sq units</option><option value="42 sq units">42 sq units</option><option value="45 sq units">45 sq units</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Parallelogram b=9, h=5" data-correct="45 sq units">
-              <div class="matching-term">Parallelogram b=9, h=5</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_4" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="21 sq units">21 sq units</option><option value="30 sq units">30 sq units</option><option value="32 sq units">32 sq units</option><option value="42 sq units">42 sq units</option><option value="45 sq units">45 sq units</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Rectangle 7×3" data-correct="21 sq units">
-              <div class="matching-term">Rectangle 7×3</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_5" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="21 sq units">21 sq units</option><option value="30 sq units">30 sq units</option><option value="32 sq units">32 sq units</option><option value="42 sq units">42 sq units</option><option value="45 sq units">45 sq units</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_4" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 5</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Calculate the area of each trapezoid, then sort by whether the area is greater than 40 sq units or not.</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        
-        <div class="drag-sort-workspace" id="dragsort_4">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="greater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'greater')">
-                <div class="drag-column-header">Area &gt; 40 sq units</div>
-                <div class="drag-column-slots" id="slots_4_greater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'greater')"></div>
-              </div>
-              <div class="drag-column" data-category-id="notgreater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'notgreater')">
-                <div class="drag-column-header">Area ≤ 40 sq units</div>
-                <div class="drag-column-slots" id="slots_4_notgreater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'notgreater')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_4" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_0"
-                     data-item-index="0"
-                     data-correct-category="notgreater"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">b₁=10, b₂=6, h=4 → A=32</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_0', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Area &gt; 40 sq units</option><option value="notgreater">Area ≤ 40 sq units</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_1"
-                     data-item-index="1"
-                     data-correct-category="greater"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">b₁=12, b₂=8, h=5 → A=50</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_1', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Area &gt; 40 sq units</option><option value="notgreater">Area ≤ 40 sq units</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_2"
-                     data-item-index="2"
-                     data-correct-category="notgreater"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">b₁=6, b₂=4, h=7 → A=35</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_2', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Area &gt; 40 sq units</option><option value="notgreater">Area ≤ 40 sq units</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_3"
-                     data-item-index="3"
-                     data-correct-category="greater"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">b₁=9, b₂=7, h=6 → A=48</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_3', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Area &gt; 40 sq units</option><option value="notgreater">Area ≤ 40 sq units</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_4"
-                     data-item-index="4"
-                     data-correct-category="notgreater"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">b₁=5, b₂=3, h=8 → A=32</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_4', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Area &gt; 40 sq units</option><option value="notgreater">Area ≤ 40 sq units</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_5"
-                     data-item-index="5"
-                     data-correct-category="greater"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">b₁=14, b₂=6, h=5 → A=50</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_5', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Area &gt; 40 sq units</option><option value="notgreater">Area ≤ 40 sq units</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(4); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Blueprint 1: A trapezoidal lobby window has bases of 6 ft and 10 ft and a height of 4 ft. What is its area for the glass order?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Use A = ½ × (b1 + b2) × h = ½ × (6 + 10) × 4 = ½ × 16 × 4 = 32 sq ft.">
-          
-            <label class="mc-option-label" id="label_q_5_0">
-              <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">32 sq ft</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_1">
-              <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">40 sq ft</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_2">
-              <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">16 sq ft</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_3">
-              <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">60 sq ft</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Blueprint 2: A trapezoidal skylight has bases of 9 ft and 7 ft and a height of 6 ft. What is its area?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="A = ½ × (9 + 7) × 6 = ½ × 16 × 6 = ½ × 96 = 48 sq ft.">
-          
-            <label class="mc-option-label" id="label_q_6_0">
-              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">48 sq ft</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_1">
-              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">96 sq ft</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_2">
-              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">63 sq ft</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_3">
-              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">44 sq ft</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_7" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 8</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Each blueprint window lists its bases and height. Find each area, then sort the windows by whether they need more than 40 sq ft of glass.</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        
-        <div class="drag-sort-workspace" id="dragsort_7">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="over" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'over')">
-                <div class="drag-column-header">More than 40 sq ft of glass</div>
-                <div class="drag-column-slots" id="slots_7_over" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'over')"></div>
-              </div>
-              <div class="drag-column" data-category-id="under" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'under')">
-                <div class="drag-column-header">40 sq ft of glass or less</div>
-                <div class="drag-column-slots" id="slots_7_under" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'under')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_7" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_0"
-                     data-item-index="0"
-                     data-correct-category="under"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Window: b1=8, b2=6, h=5 → A=35</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_0', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="over">More than 40 sq ft of glass</option><option value="under">40 sq ft of glass or less</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_1"
-                     data-item-index="1"
-                     data-correct-category="over"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Window: b1=10, b2=8, h=6 → A=54</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_1', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="over">More than 40 sq ft of glass</option><option value="under">40 sq ft of glass or less</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_2"
-                     data-item-index="2"
-                     data-correct-category="under"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Window: b1=4, b2=2, h=9 → A=27</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_2', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="over">More than 40 sq ft of glass</option><option value="under">40 sq ft of glass or less</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_3"
-                     data-item-index="3"
-                     data-correct-category="over"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Window: b1=11, b2=9, h=5 → A=50</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_3', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="over">More than 40 sq ft of glass</option><option value="under">40 sq ft of glass or less</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_4"
-                     data-item-index="4"
-                     data-correct-category="under"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Window: b1=7, b2=3, h=6 → A=30</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_4', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="over">More than 40 sq ft of glass</option><option value="under">40 sq ft of glass or less</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_5"
-                     data-item-index="5"
-                     data-correct-category="over"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Window: b1=13, b2=7, h=8 → A=80</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_5', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="over">More than 40 sq ft of glass</option><option value="under">40 sq ft of glass or less</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(7); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_8" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 9</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Match each blueprint window to the area of glass it needs.</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="Trapezoid window b1=6, b2=4, h=3" data-correct="15 sq ft">
-              <div class="matching-term">Trapezoid window b1=6, b2=4, h=3</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="15 sq ft">15 sq ft</option><option value="28 sq ft">28 sq ft</option><option value="40 sq ft">40 sq ft</option><option value="60 sq ft">60 sq ft</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Trapezoid window b1=9, b2=5, h=4" data-correct="28 sq ft">
-              <div class="matching-term">Trapezoid window b1=9, b2=5, h=4</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="15 sq ft">15 sq ft</option><option value="28 sq ft">28 sq ft</option><option value="40 sq ft">40 sq ft</option><option value="60 sq ft">60 sq ft</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Trapezoid window b1=10, b2=6, h=5" data-correct="40 sq ft">
-              <div class="matching-term">Trapezoid window b1=10, b2=6, h=5</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="15 sq ft">15 sq ft</option><option value="28 sq ft">28 sq ft</option><option value="40 sq ft">40 sq ft</option><option value="60 sq ft">60 sq ft</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Trapezoid window b1=12, b2=8, h=6" data-correct="60 sq ft">
-              <div class="matching-term">Trapezoid window b1=12, b2=8, h=6</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="15 sq ft">15 sq ft</option><option value="28 sq ft">28 sq ft</option><option value="40 sq ft">40 sq ft</option><option value="60 sq ft">60 sq ft</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Level 2 Extension: Two copies of a trapezoidal window (bases 5 ft and 11 ft) are flipped and joined to make a parallelogram with height 6 ft. The parallelogram&#039;s base is 5 + 11 = 16 ft, so its area is 96 sq ft. What is the area of ONE trapezoid window?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="One trapezoid is half the parallelogram: 96 ÷ 2 = 48 sq ft. This matches A = ½ × (5 + 11) × 6 = ½ × 16 × 6 = 48 sq ft — the ½ comes from the trapezoid being half of the parallelogram.">
-          
-            <label class="mc-option-label" id="label_q_9_0">
-              <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">48 sq ft</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_1">
-              <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">96 sq ft</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_2">
-              <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">16 sq ft</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_3">
-              <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">192 sq ft</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
   </main>
+
   
+    <section class="guided-section card section-celebrate" aria-label="Celebration">
+      <h2 class="section-title">🎉 You did it together! / ¡Lo lograron juntos!</h2>
+      <p class="celebrate-text lang-en">High five! Whether every answer was perfect or not, you showed up for your student tonight. That matters.</p>
+      <p class="celebrate-text lang-es" lang="es">¡Chócalas! No importa si cada respuesta fue perfecta — estuviste con tu estudiante esta noche. Eso importa.</p>
+      <p class="celebrate-sub bilingual-block">
+        <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
+        <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
+      </p>
+    </section>
+
 </div>
 
 <!-- Sticky bottom actions bar -->
@@ -2236,7 +1899,7 @@ header.homework-header h1 {
     
     <div class="score-progress-container">
       <div class="score-text">
-        Homework Progress: <span id="progress_text">0 / 10 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 2 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -2244,8 +1907,8 @@ header.homework-header h1 {
     </div>
     
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset</button>
-      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All Problems</button>
+      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset / Reiniciar</button>
+      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All / Revisar todo</button>
     </div>
   </div>
 </div>

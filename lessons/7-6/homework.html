@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interactive Homework — Lesson 7-6: Solve and Graph Inequalities</title>
+<title>Help Your Student — Lesson 7-6: Solve and Graph Inequalities</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -266,6 +266,13 @@ header.homework-header h1 {
   border-radius: var(--radius-sm);
   font-size: 13.5px;
   color: var(--hint);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.family-problem-tip .lang-es {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .family-hint-box {
@@ -1306,70 +1313,345 @@ header.homework-header h1 {
     justify-content: center;
   }
 }
+
+/* Family guided notes layout */
+.family-welcome {
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  color: var(--white);
+  border: none;
+  padding: 28px 24px;
+}
+.welcome-hero {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.welcome-emoji { font-size: 48px; line-height: 1; }
+.welcome-tag {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal-light);
+  font-weight: 800;
+}
+.welcome-title-en, .welcome-title-es {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 5vw, 34px);
+  font-weight: 800;
+  line-height: 1.15;
+}
+.welcome-title-es { color: var(--amber); font-size: clamp(22px, 4.5vw, 30px); margin-top: 2px; }
+.welcome-lesson { margin: 8px 0 0; font-size: 16px; color: var(--teal-light); font-weight: 600; }
+.welcome-lead { margin: 0 0 12px; font-size: 15px; line-height: 1.5; }
+.family-welcome .back-link { color: var(--amber); margin: 0; }
+.family-welcome .back-link:hover { color: var(--white); }
+
+.bilingual-block, .bilingual-grid { display: flex; flex-direction: column; gap: 10px; }
+.bilingual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 640px) {
+  .bilingual-grid { grid-template-columns: 1fr; }
+}
+.bilingual-col {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.lang-label {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal);
+  margin-bottom: 6px;
+}
+.lang-en { margin: 0 0 6px; }
+.lang-es { margin: 0; color: var(--muted); font-style: normal; }
+.learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
+.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+
+.guided-section { scroll-margin-top: 16px; }
+.section-learn { border-left: 4px solid var(--teal); }
+.section-visual { border-left: 4px solid var(--amber); }
+.section-together { border-left: 4px solid #5b8def; }
+.section-vocab { border-left: 4px solid var(--coral); }
+.section-stuck { border-left: 4px solid #9b59b6; }
+.section-quick-intro { border-left: 4px solid var(--success); }
+.section-celebrate {
+  border-left: 4px solid var(--amber);
+  background: linear-gradient(180deg, var(--amber-light), var(--white));
+  text-align: center;
+}
+
+.concept-visual-wrap { margin: 12px 0 16px; overflow-x: auto; }
+.concept-svg { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.concept-fallback-visual { display: flex; flex-direction: column; gap: 8px; }
+.concept-fallback-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  font-weight: 600; font-size: 14px;
+}
+.step-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; color: var(--white);
+  flex-shrink: 0;
+}
+.step-color-1 .step-dot, .step-color-1.step-badge { background: #5b8def; }
+.step-color-2 .step-dot, .step-color-2.step-badge { background: var(--success); }
+.step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
+.step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
+
+.key-idea-banner {
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid #b8ddd8;
+}
+.key-idea-banner p { margin: 0 0 6px; font-size: 14.5px; }
+.key-idea-banner p:last-child { margin-bottom: 0; }
+
+.guided-steps, .together-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.guided-step, .together-step {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  background: var(--white);
+}
+.step-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  padding: 3px 8px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+}
+.guided-step p, .together-step p { margin: 0 0 6px; font-size: 14.5px; line-height: 1.45; }
+.step-hint {
+  margin: 8px 0 0 !important;
+  padding: 8px 10px;
+  background: var(--hint-bg);
+  border-radius: var(--radius-sm);
+  font-size: 13px !important;
+  color: var(--hint);
+}
+
+.watch-for-list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.watch-for-list li {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
+}
+.watch-icon { font-size: 20px; flex-shrink: 0; }
+
+.try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
+.try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
+
+.stuck-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+@media (max-width: 640px) { .stuck-grid { grid-template-columns: 1fr; } }
+.stuck-panel {
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+}
+.stuck-say { background: var(--success-bg); border-color: var(--success); }
+.stuck-dont { background: var(--error-bg); border-color: var(--error); }
+.stuck-heading { margin: 0 0 10px; font-family: var(--font-display); font-size: 14px; color: var(--navy); }
+.stuck-panel ul { margin: 0; padding-left: 16px; }
+.stuck-panel li { margin-bottom: 10px; font-size: 14px; }
+.stuck-panel li p { margin: 0 0 4px; }
+.stuck-footer { font-size: 14px; color: var(--muted); margin: 0; }
+
+.celebrate-text { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; }
+.celebrate-sub { font-size: 14px; margin: 0; }
+
+.problems-container .problem-section { border-left: 4px solid var(--teal); }
+.problems-container .problem-number-badge::after {
+  content: " / Repaso";
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
 </style>
 </head>
 <body>
 
 <div class="container">
-  
-  <header class="homework-header">
-    <a href="/curriculum/" class="back-link">⬅ Curriculum Hub</a>
-    <div class="header-meta">Unit 7 · Standard 6.EE.5 · Homework</div>
-    <h1>Solve and Graph Inequalities</h1>
-    <div class="objectives-card">
-      <div class="objective-row"><span class="objective-badge">Target</span> <strong>I can solve an inequality and graph its solution set on a number line.</strong></div>
-      <div class="objective-row"><span class="objective-badge">Discuss</span> <strong>I can explain my work using the words solve, graph, solution, and substitute.</strong></div>
-    </div>
-  </header>
 
   
-    <section class="family-guide card" aria-label="Family guide">
-      <div class="family-guide-header">
-        <span class="family-guide-emoji">🔍</span>
-        <div>
-          <h2 class="section-title family-guide-title">Family Guide</h2>
-          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+    <header class="family-welcome card" aria-label="Family Math Night welcome">
+      <div class="welcome-hero">
+        <span class="welcome-emoji" aria-hidden="true">🔍</span>
+        <div class="welcome-titles">
+          <p class="welcome-tag">Unit 7 · 6.EE.5</p>
+          <h1 class="welcome-title-en">Family Math Night</h1>
+          <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
+          <p class="welcome-lesson">Solve and Graph Inequalities · Lesson 7-6</p>
         </div>
       </div>
+      <p class="welcome-lead bilingual-block">
+        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+      </p>
+      <a href="/curriculum/" class="back-link">⬅ Curriculum Hub / Centro curricular</a>
+    </header>
 
-      <div class="family-guide-grid">
-        <div class="family-panel family-panel-tips">
-          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
-          <ul class="family-tip-list">
-            <li>Let your student try each problem first. Tap <strong>Check This Problem</strong> on any question for instant feedback — no need to finish the whole page.</li>
-            <li>Tap vocabulary cards to flip between term and definition.</li>
-            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
-          </ul>
+  
+    <section class="guided-section card section-learn" aria-label="What we are learning tonight">
+      <h2 class="section-title">📖 What we're learning tonight / Qué aprendemos hoy</h2>
+      <div class="bilingual-grid">
+        <div class="bilingual-col lang-en">
+          <span class="lang-label">English</span>
+          <p class="learning-big">Solve an inequality and graph its solution set on a number line.</p>
+          <p class="learning-sub">Also practice saying: <em>explain my work using the words solve, graph, solution, and substitute</em></p>
         </div>
-
-        <div class="family-panel family-panel-home">
-          <h3 class="family-panel-heading">🏡 Try this at home</h3>
-          <p class="family-try-text">Solving an inequality and solving an equation both isolate the variable. What is the same about your steps, and what is different about the answer you get?</p>
+        <div class="bilingual-col lang-es" lang="es">
+          <span class="lang-label">Español</span>
+          <p class="learning-big">Puedo resolver an inequality and Graficar its Conjunto solución on a recta numérica.</p>
+          <p class="learning-sub">También practiquen: <em>explicar mi trabajo usando las palabras Resolver, Graficar, Solución, y Sustituir</em></p>
         </div>
       </div>
-
-      
-        <div class="family-panel family-panel-legend">
-          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
-          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>fill table:</strong> Encourage your student to show their work on paper if a box feels tricky.</li><li><strong>drag sort:</strong> On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</li><li><strong>matching game:</strong> Say each term out loud, then talk through which match makes sense before choosing.</li></ul>
-        </div>
-
-      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
     </section>
-  
 
   
-    <section class="try-at-home card" aria-label="Try this at home">
-      <h2 class="section-title">🔍 Real-World Connection</h2>
-      <p class="try-narrative">Detective Kim knows that the suspect withdrew more than $50 from an ATM. The amount plus a $3 fee totaled more than $53. She writes x + 3 &gt; 53 and needs to solve for x, then graph the solution set to share with the bank. How can she find and display all possible withdrawal amounts?</p>
-      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    <section class="guided-section card section-visual" aria-label="Visual concept explainer">
+      <h2 class="section-title">🎯 The big idea / La idea principal</h2>
+      <div class="concept-visual-wrap">
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Exponent example">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
+        <text x="60" y="70" font-size="42" font-weight="800" fill="#12355b">2</text>
+        <text x="78" y="55" font-size="22" font-weight="800" fill="#d9795d">3</text>
+        <text x="120" y="70" font-size="28" fill="#12355b">= 2 × 2 × 2 = 8</text>
+        <text x="40" y="110" font-size="13" fill="#21313f">Base = 2 · Exponent = 3 · Multiply 2 three times</text>
+        <text x="40" y="135" font-size="13" fill="#21313f" lang="es">Base = 2 · Exponente = 3 · Multiplica 2 tres veces</text>
+        <text x="40" y="165" font-size="12" fill="#5f6f80">🔍 NOT 2 + 2 + 2 — that's addition!</text>
+      </svg></div>
+      <div class="key-idea-banner">
+        <p class="lang-en"><strong>Watch for this:</strong> Solve with inverse operations, then graph the solution set: open circle for &lt; or &gt;, closed for ≤ or ≥.</p>
+        <p class="lang-es" lang="es"><strong>Observa esto:</strong> Esta noche practican: resolver an inequality and Graficar its Conjunto solución on a recta numérica. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+      </div>
+      <ol class="guided-steps">
+        
+          <li class="guided-step step-color-1">
+            <span class="step-badge">Step 1 / Paso 1</span>
+            <p class="lang-en">I solve an inequality the same way as an equation: use inverse operations to get the variable alone. But the answer is a range of values, so I show all of them on a number line.</p>
+            <p class="lang-es" lang="es">Esta noche practican: resolver an inequality and Graficar its Conjunto solución on a recta numérica. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-2">
+            <span class="step-badge">Step 2 / Paso 2</span>
+            <p class="lang-en">Solve x + 3 &gt; 53. The inverse of adding 3 is subtracting 3.</p>
+            <p class="lang-es" lang="es">Esta noche practican: resolver an inequality and Graficar its Conjunto solución on a recta numérica. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-3">
+            <span class="step-badge">Step 3 / Paso 3</span>
+            <p class="lang-en">I subtract 3 from both sides: x + 3 − 3 &gt; 53 − 3, so x &gt; 50.</p>
+            <p class="lang-es" lang="es">Esta noche practican: resolver an inequality and Graficar its Conjunto solución on a recta numérica. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-4">
+            <span class="step-badge">Step 4 / Paso 4</span>
+            <p class="lang-en">The symbol &gt; does not include 50, so I use an open circle at 50.</p>
+            <p class="lang-es" lang="es">Esta noche practican: resolver an inequality and Graficar its Conjunto solución on a recta numérica. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+      </ol>
+      <ul class="watch-for-list">
+        
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Solve&quot; — it means: To find the number that makes it true.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Resolver&quot; — significa: Encontrar el número que la hace verdadera.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Graph&quot; — it means: To show answers on a number line with circles and shading.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Graficar&quot; — significa: Mostrar respuestas en una recta numérica con círculos y sombreado.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Solution&quot; — it means: A number that makes the equation or inequality true.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Solución&quot; — significa: Un número que hace verdadera la ecuación o desigualdad.</p>
+            </div>
+          </li>
+      </ul>
     </section>
-  
 
   
-    <section class="vocab-section card">
-      <h2 class="section-title">🔑 Key Vocabulary</h2>
-      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
+    <section class="guided-section card section-together" aria-label="Try this together">
+      <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
+      <p class="try-scenario lang-en">Detective Kim knows that the suspect withdrew more than $50 from an ATM.</p>
+             <p class="try-scenario lang-es" lang="es">Detective Kim knows that the suspect withdrew more than $50 from an ATM.</p>
+      <p class="try-together-note bilingual-block">
+        <span class="lang-en">Work side by side. You ask questions; your student does the thinking.</span>
+        <span class="lang-es" lang="es">Trabajen juntos. Tú haces preguntas; tu estudiante piensa.</span>
+      </p>
+      <ol class="together-steps">
+        
+          <li class="together-step step-color-1">
+            <div class="together-step-head">
+              <span class="step-badge">Step 1 / Paso 1</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Solve x − 5 ≤ 8. What is the inverse of subtracting 5?</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Resolver x − 5 ≤ 8. What is the inverse of subtracting 5?.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-2">
+            <div class="together-step-head">
+              <span class="step-badge">Step 2 / Paso 2</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> We add 5 to both sides: x ≤ 8 + 5, so x ≤ 13.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> We add 5 to both sides: x ≤ 8 + 5, so x ≤ 13.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-3">
+            <div class="together-step-head">
+              <span class="step-badge">Step 3 / Paso 3</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> ≤ includes 13, so we use a closed circle and shade left.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> ≤ includes 13, so we use a closed circle and shade left.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-4">
+            <div class="together-step-head">
+              <span class="step-badge">Step 4 / Paso 4</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Substitute x = 10: 10 − 5 = 5 ≤ 8. True?</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Sustituir x = 10: 10 − 5 = 5 ≤ 8. True?.</p>
+            <p class="step-hint">💡 Both numbers must change the same way. · Ambos números deben cambiar de la misma manera.</p>
+          </li>
+      </ol>
+    </section>
+
+  
+    <section class="guided-section card section-vocab vocab-section" aria-label="Words to know">
+      <h2 class="section-title">📚 Words to know / Palabras clave</h2>
+      <p class="vocab-family-note bilingual-block">
+        <span class="lang-en">Tap a card to flip. Use these words when you talk about the math together.</span>
+        <span class="lang-es" lang="es">Toquen una tarjeta para voltearla. Usen estas palabras cuando hablen de la matemática juntos.</span>
+      </p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
@@ -1379,18 +1661,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/equation.svg" alt="Illustration of Solve: To find the number that makes it true." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Solve</h3>
-                  <p class="vocab-es">Resolver</p>
-                  <div class="vocab-visual-hint">💡 Example: x + 3 &gt; 10 → subtract 3 → x &gt; 7 — any number greater than 7 works</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Resolver</p>
+                  <div class="vocab-visual-hint">💡 x + 3 &gt; 10 → subtract 3 → x &gt; 7 — any number greater than 7 works</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">To find the number that makes it true.</p>
-                  <p class="vocab-def-es">Encontrar el número que la hace verdadera.</p>
+                  <p class="vocab-def-es" lang="es">Encontrar el número que la hace verdadera.</p>
                   <p class="vocab-back-visual">📌 x + 3 &gt; 10 → subtract 3 → x &gt; 7 — any number greater than 7 works</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1398,18 +1679,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/histogram.svg" alt="Illustration of Graph: To show answers on a number line with circles and shading." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Graph</h3>
-                  <p class="vocab-es">Graficar</p>
-                  <div class="vocab-visual-hint">💡 Example: x &gt; 7: open circle at 7, shade right — shows all solutions at a glance</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Graficar</p>
+                  <div class="vocab-visual-hint">💡 x &gt; 7: open circle at 7, shade right — shows all solutions at a glance</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">To show answers on a number line with circles and shading.</p>
-                  <p class="vocab-def-es">Mostrar respuestas en una recta numérica con círculos y sombreado.</p>
+                  <p class="vocab-def-es" lang="es">Mostrar respuestas en una recta numérica con círculos y sombreado.</p>
                   <p class="vocab-back-visual">📌 x &gt; 7: open circle at 7, shade right — shows all solutions at a glance</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1417,18 +1697,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/equation.svg" alt="Illustration of Solution: A number that makes the equation or inequality true." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Solution</h3>
-                  <p class="vocab-es">Solución</p>
-                  <div class="vocab-visual-hint">💡 Example: x = 8 is a solution to x &gt; 7 because 8 &gt; 7 is true; x = 5 is not because 5 &gt; 7 is false</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Solución</p>
+                  <div class="vocab-visual-hint">💡 x = 8 is a solution to x &gt; 7 because 8 &gt; 7 is true; x = 5 is not because 5 &gt; 7 is false</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A number that makes the equation or inequality true.</p>
-                  <p class="vocab-def-es">Un número que hace verdadera la ecuación o desigualdad.</p>
+                  <p class="vocab-def-es" lang="es">Un número que hace verdadera la ecuación o desigualdad.</p>
                   <p class="vocab-back-visual">📌 x = 8 is a solution to x &gt; 7 because 8 &gt; 7 is true; x = 5 is not because 5 &gt; 7 is false</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1436,18 +1715,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/substitute.svg" alt="Illustration of Substitute: To put a number in for the letter to check if it works." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Substitute</h3>
-                  <p class="vocab-es">Sustituir</p>
-                  <div class="vocab-visual-hint">💡 Example: Substitute x = 5 into x + 3 &gt; 10: 5 + 3 = 8, and 8 &gt; 10 is false, so x = 5 is not a solution</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Sustituir</p>
+                  <div class="vocab-visual-hint">💡 Substitute x = 5 into x + 3 &gt; 10: 5 + 3 = 8, and 8 &gt; 10 is false, so x = 5 is not a solution</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">To put a number in for the letter to check if it works.</p>
-                  <p class="vocab-def-es">Poner un número en lugar de la letra para ver si funciona.</p>
+                  <p class="vocab-def-es" lang="es">Poner un número en lugar de la letra para ver si funciona.</p>
                   <p class="vocab-back-visual">📌 Substitute x = 5 into x + 3 &gt; 10: 5 + 3 = 8, and 8 &gt; 10 is false, so x = 5 is not a solution</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1455,18 +1733,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/inequality.svg" alt="Illustration of Solution set: All of the values that make an inequality true." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Solution set</h3>
-                  <p class="vocab-es">Conjunto solución</p>
-                  <div class="vocab-visual-hint">💡 Example: For x &gt; 4, the solution set is every number greater than 4, such as 5, 6, 7, ...</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Conjunto solución</p>
+                  <div class="vocab-visual-hint">💡 For x &gt; 4, the solution set is every number greater than 4, such as 5, 6, 7, ...</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">All of the values that make an inequality true.</p>
-                  <p class="vocab-def-es">Todos los valores que hacen verdadera una desigualdad.</p>
+                  <p class="vocab-def-es" lang="es">Todos los valores que hacen verdadera una desigualdad.</p>
                   <p class="vocab-back-visual">📌 For x &gt; 4, the solution set is every number greater than 4, such as 5, 6, 7, ...</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1474,33 +1751,63 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/equation.svg" alt="Illustration of Inverse operation: An operation that undoes another, used to isolate the variable." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Inverse operation</h3>
-                  <p class="vocab-es">Operación inversa</p>
-                  <div class="vocab-visual-hint">💡 Example: To solve x + 3 &gt; 7, use the inverse of adding 3: subtract 3 to get x &gt; 4.</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Operación inversa</p>
+                  <div class="vocab-visual-hint">💡 To solve x + 3 &gt; 7, use the inverse of adding 3: subtract 3 to get x &gt; 4.</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">An operation that undoes another, used to isolate the variable.</p>
-                  <p class="vocab-def-es">Una operación que deshace otra, usada para despejar la variable.</p>
+                  <p class="vocab-def-es" lang="es">Una operación que deshace otra, usada para despejar la variable.</p>
                   <p class="vocab-back-visual">📌 To solve x + 3 &gt; 7, use the inverse of adding 3: subtract 3 to get x &gt; 4.</p>
                 </div>
               </div>
             </div>
-          
       </div>
     </section>
+
   
+    <section class="guided-section card section-stuck" aria-label="If your student gets stuck">
+      <h2 class="section-title">💬 If your student gets stuck / Si se atora</h2>
+      <div class="stuck-grid">
+        <div class="stuck-panel stuck-say">
+          <h3 class="stuck-heading">✅ What to say / Qué decir</h3>
+          <ul>
+            <li><p class="lang-en">What do you already know that could help?</p><p class="lang-es" lang="es">¿Qué ya sabes que podría ayudarte?</p></li><li><p class="lang-en">Can you draw a picture or table for this?</p><p class="lang-es" lang="es">¿Puedes dibujar un dibujo o una tabla para esto?</p></li><li><p class="lang-en">Let&#039;s check one step at a time — no rush.</p><p class="lang-es" lang="es">Revisemos un paso a la vez — sin prisa.</p></li>
+          </ul>
+        </div>
+        <div class="stuck-panel stuck-dont">
+          <h3 class="stuck-heading">🚫 What NOT to say / Qué evitar</h3>
+          <ul>
+            <li><p class="lang-en">That&#039;s wrong — let me just tell you.</p><p class="lang-es" lang="es">Está mal — déjame decírtelo yo.</p></li><li><p class="lang-en">I was never good at math either.</p><p class="lang-es" lang="es">Yo tampoco era bueno en matemáticas.</p></li><li><p class="lang-en">This should be easy.</p><p class="lang-es" lang="es">Esto debería ser fácil.</p></li>
+          </ul>
+        </div>
+      </div>
+      <p class="stuck-footer bilingual-block">
+        <span class="lang-en">Struggle is part of learning. Short breaks and snacks are allowed!</span>
+        <span class="lang-es" lang="es">La dificultad es parte del aprendizaje. ¡Descansos y meriendas están permitidos!</span>
+      </p>
+    </section>
+
   
+    <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
+      <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
+      <p class="bilingual-block">
+        <span class="lang-en">One or two problems to try on the screen. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
+        <span class="lang-es" lang="es">Una o dos preguntas en pantalla. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+      </p>
+    </section>
+
   <main class="problems-container">
     
     <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 1</div>
+        <div class="problem-number-badge">Quick Check 1</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">Solve: x + 6 &gt; 14</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="Subtract 6 from both sides: x &gt; 14 − 6 = 8. Graph: open circle at 8, shade right.">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1532,7 +1839,7 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
@@ -1541,13 +1848,13 @@ header.homework-header h1 {
 
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 2</div>
+        <div class="problem-number-badge">Quick Check 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">Solve: x − 9 ≤ 3</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="Add 9 to both sides: x ≤ 3 + 9 = 12. Graph: closed circle at 12, shade left.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1579,579 +1886,25 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
   
-
-    <section class="problem-section card" id="problem_2" data-problem-type="fill-table">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 3</div>
-        <div class="problem-type-badge">FILL TABLE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Solve each inequality, describe the inverse operation, and describe the graph.</p>
-        <p class="family-problem-tip">👪 Family tip: Encourage your student to show their work on paper if a box feels tricky.</p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Inequality</th><th>Inverse Operation</th><th>Solution</th><th>Graph Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>x + 11 ≥ 20</td><td>Subtract 11</td><td>x ≥ 9</td><td>Closed circle at 9, shade right</td>
-                </tr>
-              
-                <tr>
-                  <td>x − 3 &lt; 7</td><td>Add 3</td><td>x &lt; 10</td><td>Open circle at 10, shade left</td>
-                </tr>
-              
-                <tr>
-                  <td>x + 8 ≤ 20</td><td>Subtract 8</td><td>x ≤ 12</td><td>Closed circle at 12, shade left</td>
-                </tr>
-              
-            </tbody>
-          </table>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_3" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Is x = 5 a solution to x + 4 &gt; 12?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Substitute: 5 + 4 = 9. Since 9 &gt; 12 is false, x = 5 is NOT a solution.">
-          
-            <label class="mc-option-label" id="label_q_3_0">
-              <input type="radio" name="q_3" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">No, because 5 + 4 = 9, and 9 is not greater than 12</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_1">
-              <input type="radio" name="q_3" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Yes, because 5 + 4 = 9</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_2">
-              <input type="radio" name="q_3" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Yes, because 5 &gt; 4</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_3">
-              <input type="radio" name="q_3" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">No, because 5 &lt; 12</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_4" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 5</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Solve each inequality, then test if x = 10 is a solution.</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        <div class="family-hint-box"><p>💡 First solve the inequality to find the solution set. Then check if 10 is in that set.</p><p>💡 For x &gt; 12: is 10 &gt; 12? No. For x &gt; 6: is 10 &gt; 6? Yes.</p></div>
-        <div class="drag-sort-workspace" id="dragsort_4">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="x-10-is-a-solution" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'x-10-is-a-solution')">
-                <div class="drag-column-header">x = 10 IS a solution</div>
-                <div class="drag-column-slots" id="slots_4_x-10-is-a-solution" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'x-10-is-a-solution')"></div>
-              </div>
-              <div class="drag-column" data-category-id="x-10-is-not-a-solution" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'x-10-is-not-a-solution')">
-                <div class="drag-column-header">x = 10 is NOT a solution</div>
-                <div class="drag-column-slots" id="slots_4_x-10-is-not-a-solution" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'x-10-is-not-a-solution')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_4" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_0"
-                     data-item-index="0"
-                     data-correct-category="x-10-is-a-solution"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">x + 2 &gt; 8 (x &gt; 6)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_0', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="x-10-is-a-solution">x = 10 IS a solution</option><option value="x-10-is-not-a-solution">x = 10 is NOT a solution</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_1"
-                     data-item-index="1"
-                     data-correct-category="x-10-is-a-solution"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">x − 5 ≥ 3 (x ≥ 8)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_1', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="x-10-is-a-solution">x = 10 IS a solution</option><option value="x-10-is-not-a-solution">x = 10 is NOT a solution</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_2"
-                     data-item-index="2"
-                     data-correct-category="x-10-is-a-solution"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">x + 1 ≤ 15 (x ≤ 14)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_2', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="x-10-is-a-solution">x = 10 IS a solution</option><option value="x-10-is-not-a-solution">x = 10 is NOT a solution</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_3"
-                     data-item-index="3"
-                     data-correct-category="x-10-is-not-a-solution"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">x + 3 &gt; 15 (x &gt; 12)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_3', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="x-10-is-a-solution">x = 10 IS a solution</option><option value="x-10-is-not-a-solution">x = 10 is NOT a solution</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_4"
-                     data-item-index="4"
-                     data-correct-category="x-10-is-not-a-solution"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">x − 2 ≥ 9 (x ≥ 11)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_4', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="x-10-is-a-solution">x = 10 IS a solution</option><option value="x-10-is-not-a-solution">x = 10 is NOT a solution</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_5"
-                     data-item-index="5"
-                     data-correct-category="x-10-is-not-a-solution"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">x + 6 &lt; 10 (x &lt; 4)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_5', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="x-10-is-a-solution">x = 10 IS a solution</option><option value="x-10-is-not-a-solution">x = 10 is NOT a solution</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(4); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Clue 1: Which value is a solution of x &gt; 7?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="A solution makes x &gt; 7 true. Substitute each: 9 &gt; 7 is true, but 7 &gt; 7, 5 &gt; 7, and 3 &gt; 7 are all false. So 9 is the solution that opens the gate.">
-          
-            <label class="mc-option-label" id="label_q_5_0">
-              <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">9</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_1">
-              <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">7</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_2">
-              <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">5</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_3">
-              <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">3</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Clue 2: Is 5 a solution of x ≤ 5?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Substitute x = 5 into x ≤ 5: 5 ≤ 5 is true because ≤ means &#039;less than OR equal to.&#039; The boundary value 5 IS a solution, so the gate opens.">
-          
-            <label class="mc-option-label" id="label_q_6_0">
-              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Yes, because 5 ≤ 5 is true</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_1">
-              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">No, because 5 is not less than 5</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_2">
-              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">No, because ≤ means only smaller numbers</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_3">
-              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Yes, but only because 5 is odd</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_7" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 8</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Detective, sort each suspect&#039;s badge number into the right vault door for the rule x ≥ 4. A value is a solution if it makes x ≥ 4 true.</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        
-        <div class="drag-sort-workspace" id="dragsort_7">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="solution" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'solution')">
-                <div class="drag-column-header">Solution of x ≥ 4</div>
-                <div class="drag-column-slots" id="slots_7_solution" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'solution')"></div>
-              </div>
-              <div class="drag-column" data-category-id="notsolution" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'notsolution')">
-                <div class="drag-column-header">NOT a solution of x ≥ 4</div>
-                <div class="drag-column-slots" id="slots_7_notsolution" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'notsolution')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_7" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_0"
-                     data-item-index="0"
-                     data-correct-category="solution"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">9</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_0', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="solution">Solution of x ≥ 4</option><option value="notsolution">NOT a solution of x ≥ 4</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_1"
-                     data-item-index="1"
-                     data-correct-category="solution"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">5</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_1', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="solution">Solution of x ≥ 4</option><option value="notsolution">NOT a solution of x ≥ 4</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_2"
-                     data-item-index="2"
-                     data-correct-category="solution"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">4</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_2', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="solution">Solution of x ≥ 4</option><option value="notsolution">NOT a solution of x ≥ 4</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_3"
-                     data-item-index="3"
-                     data-correct-category="notsolution"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">3</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_3', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="solution">Solution of x ≥ 4</option><option value="notsolution">NOT a solution of x ≥ 4</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_4"
-                     data-item-index="4"
-                     data-correct-category="notsolution"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">2</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_4', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="solution">Solution of x ≥ 4</option><option value="notsolution">NOT a solution of x ≥ 4</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_5"
-                     data-item-index="5"
-                     data-correct-category="notsolution"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">0</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_5', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="solution">Solution of x ≥ 4</option><option value="notsolution">NOT a solution of x ≥ 4</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(7); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_8" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 9</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Lock-and-key match: connect each badge number to the one inequality it is a solution of. Substitute to check that each value makes its inequality true.</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="12" data-correct="x &gt; 10">
-              <div class="matching-term">12</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="x &lt; 5">x &lt; 5</option><option value="x &gt; 10">x &gt; 10</option><option value="x ≤ 6">x ≤ 6</option><option value="x ≥ 8">x ≥ 8</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="6" data-correct="x ≤ 6">
-              <div class="matching-term">6</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="x &lt; 5">x &lt; 5</option><option value="x &gt; 10">x &gt; 10</option><option value="x ≤ 6">x ≤ 6</option><option value="x ≥ 8">x ≥ 8</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="8" data-correct="x ≥ 8">
-              <div class="matching-term">8</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="x &lt; 5">x &lt; 5</option><option value="x &gt; 10">x &gt; 10</option><option value="x ≤ 6">x ≤ 6</option><option value="x ≥ 8">x ≥ 8</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="3" data-correct="x &lt; 5">
-              <div class="matching-term">3</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="x &lt; 5">x &lt; 5</option><option value="x &gt; 10">x &gt; 10</option><option value="x ≤ 6">x ≤ 6</option><option value="x ≥ 8">x ≥ 8</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Final gate — describe the solution set. The vault rule is x &gt; 7. What does the solution set mean?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="The solution set is every value that makes x &gt; 7 true. That means all numbers greater than 7, such as 8, 9, 10, and beyond. Because &gt; does not include the boundary, 7 itself is NOT in the solution set.">
-          
-            <label class="mc-option-label" id="label_q_9_0">
-              <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">All numbers greater than 7, like 8, 9, 10, … (but NOT 7 itself)</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_1">
-              <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Only the number 7</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_2">
-              <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">All numbers less than 7</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_3">
-              <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Every number, including 7</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
   </main>
+
   
+    <section class="guided-section card section-celebrate" aria-label="Celebration">
+      <h2 class="section-title">🎉 You did it together! / ¡Lo lograron juntos!</h2>
+      <p class="celebrate-text lang-en">High five! Whether every answer was perfect or not, you showed up for your student tonight. That matters.</p>
+      <p class="celebrate-text lang-es" lang="es">¡Chócalas! No importa si cada respuesta fue perfecta — estuviste con tu estudiante esta noche. Eso importa.</p>
+      <p class="celebrate-sub bilingual-block">
+        <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
+        <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
+      </p>
+    </section>
+
 </div>
 
 <!-- Sticky bottom actions bar -->
@@ -2161,7 +1914,7 @@ header.homework-header h1 {
     
     <div class="score-progress-container">
       <div class="score-text">
-        Homework Progress: <span id="progress_text">0 / 10 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 2 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -2169,8 +1922,8 @@ header.homework-header h1 {
     </div>
     
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset</button>
-      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All Problems</button>
+      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset / Reiniciar</button>
+      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All / Revisar todo</button>
     </div>
   </div>
 </div>

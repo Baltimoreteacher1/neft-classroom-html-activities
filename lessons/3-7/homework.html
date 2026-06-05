@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interactive Homework — Lesson 3-7: Ratio and Rate Problem Solving</title>
+<title>Help Your Student — Lesson 3-7: Ratio and Rate Problem Solving</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -266,6 +266,13 @@ header.homework-header h1 {
   border-radius: var(--radius-sm);
   font-size: 13.5px;
   color: var(--hint);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.family-problem-tip .lang-es {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .family-hint-box {
@@ -1306,70 +1313,334 @@ header.homework-header h1 {
     justify-content: center;
   }
 }
+
+/* Family guided notes layout */
+.family-welcome {
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  color: var(--white);
+  border: none;
+  padding: 28px 24px;
+}
+.welcome-hero {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.welcome-emoji { font-size: 48px; line-height: 1; }
+.welcome-tag {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal-light);
+  font-weight: 800;
+}
+.welcome-title-en, .welcome-title-es {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 5vw, 34px);
+  font-weight: 800;
+  line-height: 1.15;
+}
+.welcome-title-es { color: var(--amber); font-size: clamp(22px, 4.5vw, 30px); margin-top: 2px; }
+.welcome-lesson { margin: 8px 0 0; font-size: 16px; color: var(--teal-light); font-weight: 600; }
+.welcome-lead { margin: 0 0 12px; font-size: 15px; line-height: 1.5; }
+.family-welcome .back-link { color: var(--amber); margin: 0; }
+.family-welcome .back-link:hover { color: var(--white); }
+
+.bilingual-block, .bilingual-grid { display: flex; flex-direction: column; gap: 10px; }
+.bilingual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 640px) {
+  .bilingual-grid { grid-template-columns: 1fr; }
+}
+.bilingual-col {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.lang-label {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal);
+  margin-bottom: 6px;
+}
+.lang-en { margin: 0 0 6px; }
+.lang-es { margin: 0; color: var(--muted); font-style: normal; }
+.learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
+.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+
+.guided-section { scroll-margin-top: 16px; }
+.section-learn { border-left: 4px solid var(--teal); }
+.section-visual { border-left: 4px solid var(--amber); }
+.section-together { border-left: 4px solid #5b8def; }
+.section-vocab { border-left: 4px solid var(--coral); }
+.section-stuck { border-left: 4px solid #9b59b6; }
+.section-quick-intro { border-left: 4px solid var(--success); }
+.section-celebrate {
+  border-left: 4px solid var(--amber);
+  background: linear-gradient(180deg, var(--amber-light), var(--white));
+  text-align: center;
+}
+
+.concept-visual-wrap { margin: 12px 0 16px; overflow-x: auto; }
+.concept-svg { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.concept-fallback-visual { display: flex; flex-direction: column; gap: 8px; }
+.concept-fallback-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  font-weight: 600; font-size: 14px;
+}
+.step-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; color: var(--white);
+  flex-shrink: 0;
+}
+.step-color-1 .step-dot, .step-color-1.step-badge { background: #5b8def; }
+.step-color-2 .step-dot, .step-color-2.step-badge { background: var(--success); }
+.step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
+.step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
+
+.key-idea-banner {
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid #b8ddd8;
+}
+.key-idea-banner p { margin: 0 0 6px; font-size: 14.5px; }
+.key-idea-banner p:last-child { margin-bottom: 0; }
+
+.guided-steps, .together-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.guided-step, .together-step {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  background: var(--white);
+}
+.step-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  padding: 3px 8px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+}
+.guided-step p, .together-step p { margin: 0 0 6px; font-size: 14.5px; line-height: 1.45; }
+.step-hint {
+  margin: 8px 0 0 !important;
+  padding: 8px 10px;
+  background: var(--hint-bg);
+  border-radius: var(--radius-sm);
+  font-size: 13px !important;
+  color: var(--hint);
+}
+
+.watch-for-list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.watch-for-list li {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
+}
+.watch-icon { font-size: 20px; flex-shrink: 0; }
+
+.try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
+.try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
+
+.stuck-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+@media (max-width: 640px) { .stuck-grid { grid-template-columns: 1fr; } }
+.stuck-panel {
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+}
+.stuck-say { background: var(--success-bg); border-color: var(--success); }
+.stuck-dont { background: var(--error-bg); border-color: var(--error); }
+.stuck-heading { margin: 0 0 10px; font-family: var(--font-display); font-size: 14px; color: var(--navy); }
+.stuck-panel ul { margin: 0; padding-left: 16px; }
+.stuck-panel li { margin-bottom: 10px; font-size: 14px; }
+.stuck-panel li p { margin: 0 0 4px; }
+.stuck-footer { font-size: 14px; color: var(--muted); margin: 0; }
+
+.celebrate-text { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; }
+.celebrate-sub { font-size: 14px; margin: 0; }
+
+.problems-container .problem-section { border-left: 4px solid var(--teal); }
+.problems-container .problem-number-badge::after {
+  content: " / Repaso";
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
 </style>
 </head>
 <body>
 
 <div class="container">
-  
-  <header class="homework-header">
-    <a href="/curriculum/" class="back-link">⬅ Curriculum Hub</a>
-    <div class="header-meta">Unit 3 · Standard 6.RP.3 · Homework</div>
-    <h1>Ratio and Rate Problem Solving</h1>
-    <div class="objectives-card">
-      <div class="objective-row"><span class="objective-badge">Target</span> <strong>I can solve real-world rate problems by finding and using unit rates.</strong></div>
-      <div class="objective-row"><span class="objective-badge">Discuss</span> <strong>I can explain my solution using the words rate, unit rate, per, and proportion.</strong></div>
-    </div>
-  </header>
 
   
-    <section class="family-guide card" aria-label="Family guide">
-      <div class="family-guide-header">
-        <span class="family-guide-emoji">👨‍🍳</span>
-        <div>
-          <h2 class="section-title family-guide-title">Family Guide</h2>
-          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+    <header class="family-welcome card" aria-label="Family Math Night welcome">
+      <div class="welcome-hero">
+        <span class="welcome-emoji" aria-hidden="true">👨‍🍳</span>
+        <div class="welcome-titles">
+          <p class="welcome-tag">Unit 3 · 6.RP.3</p>
+          <h1 class="welcome-title-en">Family Math Night</h1>
+          <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
+          <p class="welcome-lesson">Ratio and Rate Problem Solving · Lesson 3-7</p>
         </div>
       </div>
+      <p class="welcome-lead bilingual-block">
+        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+      </p>
+      <a href="/curriculum/" class="back-link">⬅ Curriculum Hub / Centro curricular</a>
+    </header>
 
-      <div class="family-guide-grid">
-        <div class="family-panel family-panel-tips">
-          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
-          <ul class="family-tip-list">
-            <li>Let your student try each problem first. Tap <strong>Check This Problem</strong> on any question for instant feedback — no need to finish the whole page.</li>
-            <li>Tap vocabulary cards to flip between term and definition.</li>
-            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
-          </ul>
+  
+    <section class="guided-section card section-learn" aria-label="What we are learning tonight">
+      <h2 class="section-title">📖 What we're learning tonight / Qué aprendemos hoy</h2>
+      <div class="bilingual-grid">
+        <div class="bilingual-col lang-en">
+          <span class="lang-label">English</span>
+          <p class="learning-big">Solve real-world rate problems by finding and using unit rates.</p>
+          <p class="learning-sub">Also practice saying: <em>explain my solution using the words rate, unit rate, per, and proportion</em></p>
         </div>
-
-        <div class="family-panel family-panel-home">
-          <h3 class="family-panel-heading">🏡 Try this at home</h3>
-          <p class="family-try-text">Team 1 knows 3 pounds of chicken cost $18. What was your plan to find the cost of just 1 pound, and why is that unit rate useful?</p>
+        <div class="bilingual-col lang-es" lang="es">
+          <span class="lang-label">Español</span>
+          <p class="learning-big">Puedo resolver real-world Tasa problems by finding and using unit rates.</p>
+          <p class="learning-sub">También practiquen: <em>explicar my solution usando las palabras Tasa, Tasa unitaria, Por, y Proporción</em></p>
         </div>
       </div>
-
-      
-        <div class="family-panel family-panel-legend">
-          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
-          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>fill table:</strong> Encourage your student to show their work on paper if a box feels tricky.</li><li><strong>drag sort:</strong> On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</li><li><strong>matching game:</strong> Say each term out loud, then talk through which match makes sense before choosing.</li><li><strong>error analysis:</strong> Read each step aloud and ask: does this step follow the math rules we learned?</li></ul>
-        </div>
-
-      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
     </section>
-  
 
   
-    <section class="try-at-home card" aria-label="Try this at home">
-      <h2 class="section-title">👨‍🍳 Real-World Connection</h2>
-      <p class="try-narrative">It&#039;s the final day of Chef Academy — the Culinary Competition! Teams must solve ratio and rate problems to earn ingredients for their dishes. Team 1 needs to figure out how much chicken costs if 3 pounds cost $18. Team 2 must calculate how many cupcakes they can frost if they decorate 5 cupcakes every 4 minutes. The clock is ticking!</p>
-      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    <section class="guided-section card section-visual" aria-label="Visual concept explainer">
+      <h2 class="section-title">🎯 The big idea / La idea principal</h2>
+      <div class="concept-visual-wrap">
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Ratio table example">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
+        <text x="210" y="48" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Ratio Table / Tabla de razones</text>
+        <rect x="40" y="70" width="100" height="24" rx="4" fill="#12355b" stroke="#d7e2ed"/><text x="90" y="86" text-anchor="middle" font-size="12" font-weight="600" fill="#ffffff">Batch</text><rect x="150" y="70" width="100" height="24" rx="4" fill="#12355b" stroke="#d7e2ed"/><text x="200" y="86" text-anchor="middle" font-size="12" font-weight="600" fill="#ffffff">A</text><rect x="260" y="70" width="100" height="24" rx="4" fill="#12355b" stroke="#d7e2ed"/><text x="310" y="86" text-anchor="middle" font-size="12" font-weight="600" fill="#ffffff">B</text><rect x="40" y="98" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="90" y="114" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">1</text><rect x="150" y="98" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="200" y="114" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">2</text><rect x="260" y="98" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="310" y="114" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">3</text><rect x="40" y="126" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="90" y="142" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">2</text><rect x="150" y="126" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="200" y="142" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">4</text><rect x="260" y="126" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="310" y="142" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">6</text><rect x="40" y="154" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="90" y="170" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">3</text><rect x="150" y="154" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="200" y="170" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">6</text><rect x="260" y="154" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="310" y="170" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">9</text>
+        <text x="210" y="188" text-anchor="middle" font-size="11" fill="#5f6f80">× same number on BOTH columns → equivalent ratio</text>
+      </svg></div>
+      <div class="key-idea-banner">
+        <p class="lang-en"><strong>Watch for this:</strong> Find the unit rate by dividing, then multiply it to find the amount you need.</p>
+        <p class="lang-es" lang="es"><strong>Observa esto:</strong> Esta noche practican: resolver real-world Tasa problems by finding and using unit rates. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+      </div>
+      <ol class="guided-steps">
+        
+          <li class="guided-step step-color-1">
+            <span class="step-badge">Step 1 / Paso 1</span>
+            <p class="lang-en">A rate compares two amounts with different units, like dollars and pounds. A unit rate is the amount for just 1. You find it by dividing, and you can use it to find any amount.</p>
+            <p class="lang-es" lang="es">Esta noche practican: resolver real-world Tasa problems by finding and using unit rates. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-2">
+            <span class="step-badge">Step 2 / Paso 2</span>
+            <p class="lang-en">Team 1 knows that 3 pounds of chicken cost $18.</p>
+            <p class="lang-es" lang="es">Esta noche practican: resolver real-world Tasa problems by finding and using unit rates. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-3">
+            <span class="step-badge">Step 3 / Paso 3</span>
+            <p class="lang-en">To find the unit rate, I divide the cost by the pounds: 18 divided by 3 = $6 per pound.</p>
+            <p class="lang-es" lang="es">Esta noche practican: resolver real-world Tasa problems by finding and using unit rates. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-4">
+            <span class="step-badge">Step 4 / Paso 4</span>
+            <p class="lang-en">Now I can find any amount. For 5 pounds, I multiply: 6 x 5 = $30.</p>
+            <p class="lang-es" lang="es">Esta noche practican: resolver real-world Tasa problems by finding and using unit rates. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+      </ol>
+      <ul class="watch-for-list">
+        
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Rate&quot; — it means: A ratio comparing two amounts with different units, like miles per hour.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Tasa&quot; — significa: Una razón que compara dos cantidades con unidades distintas, como millas por hora.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Unit rate&quot; — it means: A rate for just 1 of something, like cost for 1 item.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Tasa unitaria&quot; — significa: Una tasa para solo 1 de algo, como el precio de 1 artículo.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Per&quot; — it means: For each one. Example: 5 dollars per book.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Por&quot; — significa: Por cada uno. Ejemplo: 5 dólares por libro.</p>
+            </div>
+          </li>
+      </ul>
     </section>
-  
 
   
-    <section class="vocab-section card">
-      <h2 class="section-title">🔑 Key Vocabulary</h2>
-      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
+    <section class="guided-section card section-together" aria-label="Try this together">
+      <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
+      <p class="try-scenario lang-en">It&#039;s the final day of Chef Academy — the Culinary Competition! Teams must solve ratio and rate problems to earn ingredients for their dishes.</p>
+             <p class="try-scenario lang-es" lang="es">It&#039;s the final day of Chef Academy — the Culinary Competition! Teams must solve ratio and Tasa problems to earn ingredients for their dishes.</p>
+      <p class="try-together-note bilingual-block">
+        <span class="lang-en">Work side by side. You ask questions; your student does the thinking.</span>
+        <span class="lang-es" lang="es">Trabajen juntos. Tú haces preguntas; tu estudiante piensa.</span>
+      </p>
+      <ol class="together-steps">
+        
+          <li class="together-step step-color-1">
+            <div class="together-step-head">
+              <span class="step-badge">Step 1 / Paso 1</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> A car drives 100 miles in 2 hours. What is the unit rate in miles per hour?</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> A car drives 100 miles in 2 hours. What is the Tasa unitaria in miles Por hour?.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-2">
+            <div class="together-step-head">
+              <span class="step-badge">Step 2 / Paso 2</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Divide: 100 divided by 2 = 50 miles per hour.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Divide: 100 divided by 2 = 50 miles Por hour.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-3">
+            <div class="together-step-head">
+              <span class="step-badge">Step 3 / Paso 3</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> How far in 4 hours? Multiply: 50 x 4 = 200 miles.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> How far in 4 hours? Multiply: 50 x 4 = 200 miles.</p>
+            <p class="step-hint">💡 Both numbers must change the same way. · Ambos números deben cambiar de la misma manera.</p>
+          </li>
+      </ol>
+    </section>
+
+  
+    <section class="guided-section card section-vocab vocab-section" aria-label="Words to know">
+      <h2 class="section-title">📚 Words to know / Palabras clave</h2>
+      <p class="vocab-family-note bilingual-block">
+        <span class="lang-en">Tap a card to flip. Use these words when you talk about the math together.</span>
+        <span class="lang-es" lang="es">Toquen una tarjeta para voltearla. Usen estas palabras cuando hablen de la matemática juntos.</span>
+      </p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
@@ -1379,18 +1650,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/rate.svg" alt="Illustration of Rate: A ratio comparing two amounts with different units, like miles per hour." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Rate</h3>
-                  <p class="vocab-es">Tasa</p>
-                  <div class="vocab-visual-hint">💡 Example: $12 for 4 pounds → dollars per pound</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Tasa</p>
+                  <div class="vocab-visual-hint">💡 $12 for 4 pounds → dollars per pound</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A ratio comparing two amounts with different units, like miles per hour.</p>
-                  <p class="vocab-def-es">Una razón que compara dos cantidades con unidades distintas, como millas por hora.</p>
+                  <p class="vocab-def-es" lang="es">Una razón que compara dos cantidades con unidades distintas, como millas por hora.</p>
                   <p class="vocab-back-visual">📌 $12 for 4 pounds → dollars per pound</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1398,18 +1668,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/unit-rate.svg" alt="Illustration of Unit rate: A rate for just 1 of something, like cost for 1 item." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Unit rate</h3>
-                  <p class="vocab-es">Tasa unitaria</p>
-                  <div class="vocab-visual-hint">💡 Example: $12 ÷ 4 = $3 per 1 pound</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Tasa unitaria</p>
+                  <div class="vocab-visual-hint">💡 $12 ÷ 4 = $3 per 1 pound</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A rate for just 1 of something, like cost for 1 item.</p>
-                  <p class="vocab-def-es">Una tasa para solo 1 de algo, como el precio de 1 artículo.</p>
+                  <p class="vocab-def-es" lang="es">Una tasa para solo 1 de algo, como el precio de 1 artículo.</p>
                   <p class="vocab-back-visual">📌 $12 ÷ 4 = $3 per 1 pound</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1417,18 +1686,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/unit-rate.svg" alt="Illustration of Per: For each one. Example: 5 dollars per book." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Per</h3>
-                  <p class="vocab-es">Por</p>
-                  <div class="vocab-visual-hint">💡 Example: 60 miles per hour, $5 per ticket</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Por</p>
+                  <div class="vocab-visual-hint">💡 60 miles per hour, $5 per ticket</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">For each one. Example: 5 dollars per book.</p>
-                  <p class="vocab-def-es">Por cada uno. Ejemplo: 5 dólares por libro.</p>
+                  <p class="vocab-def-es" lang="es">Por cada uno. Ejemplo: 5 dólares por libro.</p>
                   <p class="vocab-back-visual">📌 60 miles per hour, $5 per ticket</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1436,18 +1704,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/number.svg" alt="Illustration of Problem solving: Using ratios and rates to find a missing amount." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Problem solving</h3>
-                  <p class="vocab-es">Resolución de problemas</p>
-                  <div class="vocab-visual-hint">💡 Example: Set up → Plan → Solve → Check</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Resolución de problemas</p>
+                  <div class="vocab-visual-hint">💡 Set up → Plan → Solve → Check</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">Using ratios and rates to find a missing amount.</p>
-                  <p class="vocab-def-es">Usar razones y tasas para encontrar una cantidad que falta.</p>
+                  <p class="vocab-def-es" lang="es">Usar razones y tasas para encontrar una cantidad que falta.</p>
                   <p class="vocab-back-visual">📌 Set up → Plan → Solve → Check</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1455,33 +1722,63 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/proportion.svg" alt="Illustration of Proportion: A math sentence saying two ratios are equal. It helps find a missing number." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Proportion</h3>
-                  <p class="vocab-es">Proporción</p>
-                  <div class="vocab-visual-hint">💡 Example: 3/5 = x/20 → x = 12</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Proporción</p>
+                  <div class="vocab-visual-hint">💡 3/5 = x/20 → x = 12</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A math sentence saying two ratios are equal. It helps find a missing number.</p>
-                  <p class="vocab-def-es">Una oración matemática que dice que dos razones son iguales. Ayuda a hallar un número que falta.</p>
+                  <p class="vocab-def-es" lang="es">Una oración matemática que dice que dos razones son iguales. Ayuda a hallar un número que falta.</p>
                   <p class="vocab-back-visual">📌 3/5 = x/20 → x = 12</p>
                 </div>
               </div>
             </div>
-          
       </div>
     </section>
+
   
+    <section class="guided-section card section-stuck" aria-label="If your student gets stuck">
+      <h2 class="section-title">💬 If your student gets stuck / Si se atora</h2>
+      <div class="stuck-grid">
+        <div class="stuck-panel stuck-say">
+          <h3 class="stuck-heading">✅ What to say / Qué decir</h3>
+          <ul>
+            <li><p class="lang-en">What do you already know that could help?</p><p class="lang-es" lang="es">¿Qué ya sabes que podría ayudarte?</p></li><li><p class="lang-en">Can you draw a picture or table for this?</p><p class="lang-es" lang="es">¿Puedes dibujar un dibujo o una tabla para esto?</p></li><li><p class="lang-en">Let&#039;s check one step at a time — no rush.</p><p class="lang-es" lang="es">Revisemos un paso a la vez — sin prisa.</p></li>
+          </ul>
+        </div>
+        <div class="stuck-panel stuck-dont">
+          <h3 class="stuck-heading">🚫 What NOT to say / Qué evitar</h3>
+          <ul>
+            <li><p class="lang-en">That&#039;s wrong — let me just tell you.</p><p class="lang-es" lang="es">Está mal — déjame decírtelo yo.</p></li><li><p class="lang-en">I was never good at math either.</p><p class="lang-es" lang="es">Yo tampoco era bueno en matemáticas.</p></li><li><p class="lang-en">This should be easy.</p><p class="lang-es" lang="es">Esto debería ser fácil.</p></li>
+          </ul>
+        </div>
+      </div>
+      <p class="stuck-footer bilingual-block">
+        <span class="lang-en">Struggle is part of learning. Short breaks and snacks are allowed!</span>
+        <span class="lang-es" lang="es">La dificultad es parte del aprendizaje. ¡Descansos y meriendas están permitidos!</span>
+      </p>
+    </section>
+
   
+    <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
+      <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
+      <p class="bilingual-block">
+        <span class="lang-en">One or two problems to try on the screen. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
+        <span class="lang-es" lang="es">Una o dos preguntas en pantalla. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+      </p>
+    </section>
+
   <main class="problems-container">
     
     <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 1</div>
+        <div class="problem-number-badge">Quick Check 1</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">A bakery makes 24 cookies in 3 batches. What is the unit rate of cookies per batch?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="Unit rate: 24 cookies ÷ 3 batches = 8 cookies per batch.">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1513,7 +1810,7 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
@@ -1522,13 +1819,13 @@ header.homework-header h1 {
 
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 2</div>
+        <div class="problem-number-badge">Quick Check 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">Apples cost $5 for 4 pounds. What is the cost per pound?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="Unit rate: $5 ÷ 4 pounds = $1.25 per pound.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1560,529 +1857,25 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
   
-
-    <section class="problem-section card" id="problem_2" data-problem-type="fill-table">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 3</div>
-        <div class="problem-type-badge">FILL TABLE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Team 2 frosts 5 cupcakes every 4 minutes. Complete the ratio table to find how many cupcakes they can frost in different times.</p>
-        <p class="family-problem-tip">👪 Family tip: Encourage your student to show their work on paper if a box feels tricky.</p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Minutes</th><th>Cupcakes Frosted</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>4</td><td>5</td>
-                </tr>
-              
-                <tr>
-                  <td>8</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_1_1"
-                                   data-correct="10" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>12</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_2_1"
-                                   data-correct="15" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>20</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_3_1"
-                                   data-correct="25" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-            </tbody>
-          </table>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_3" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A car travels 150 miles in 3 hours. A bus travels 200 miles in 5 hours. Which vehicle is faster?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Car: 150÷3 = 50 mph. Bus: 200÷5 = 40 mph. The car travels faster at 50 mph vs. 40 mph.">
-          
-            <label class="mc-option-label" id="label_q_3_0">
-              <input type="radio" name="q_3" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">The car</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_1">
-              <input type="radio" name="q_3" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">The bus</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_2">
-              <input type="radio" name="q_3" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Same speed</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_3">
-              <input type="radio" name="q_3" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Cannot determine</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_4" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 5</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Sort each rate problem by the strategy that works BEST to solve it.</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        
-        <div class="drag-sort-workspace" id="dragsort_4">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="unit-rate" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'unit-rate')">
-                <div class="drag-column-header">Use Unit Rate</div>
-                <div class="drag-column-slots" id="slots_4_unit-rate" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'unit-rate')"></div>
-              </div>
-              <div class="drag-column" data-category-id="ratio-table" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'ratio-table')">
-                <div class="drag-column-header">Use Ratio Table / Proportion</div>
-                <div class="drag-column-slots" id="slots_4_ratio-table" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'ratio-table')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_4" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_0"
-                     data-item-index="0"
-                     data-correct-category="unit-rate"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Find cost per pound when 5 lb costs $12</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_0', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="unit-rate">Use Unit Rate</option><option value="ratio-table">Use Ratio Table / Proportion</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_1"
-                     data-item-index="1"
-                     data-correct-category="ratio-table"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">If 3 shirts cost $24, find cost of 9 shirts</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_1', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="unit-rate">Use Unit Rate</option><option value="ratio-table">Use Ratio Table / Proportion</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_2"
-                     data-item-index="2"
-                     data-correct-category="unit-rate"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">A car goes 55 mph — how far in 4 hours?</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_2', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="unit-rate">Use Unit Rate</option><option value="ratio-table">Use Ratio Table / Proportion</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_3"
-                     data-item-index="3"
-                     data-correct-category="ratio-table"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Scale a recipe from 4 servings to 20 servings</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_3', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="unit-rate">Use Unit Rate</option><option value="ratio-table">Use Ratio Table / Proportion</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(4); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">In the kitchen, 3 pizzas feed exactly 12 people. At the same rate, how many pizzas are needed to feed 20 people?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="First find the unit rate: 12 people ÷ 3 pizzas = 4 people per pizza. Then 20 people ÷ 4 people per pizza = 5 pizzas.">
-          
-            <label class="mc-option-label" id="label_q_5_0">
-              <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">5 pizzas</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_1">
-              <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">4 pizzas</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_2">
-              <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">6 pizzas</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_3">
-              <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">8 pizzas</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A line cook chops 8 carrots in 2 minutes. Working at the same steady rate, how many carrots can the cook chop in 7 minutes?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Unit rate: 8 carrots ÷ 2 minutes = 4 carrots per minute. In 7 minutes: 4 × 7 = 28 carrots.">
-          
-            <label class="mc-option-label" id="label_q_6_0">
-              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">28 carrots</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_1">
-              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">24 carrots</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_2">
-              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">32 carrots</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_3">
-              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">16 carrots</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_7" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 8</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Match each kitchen rate to its correct unit rate. Decide what is being compared first.</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="24 cups of soup poured into 6 bowls" data-correct="4 cups per bowl">
-              <div class="matching-term">24 cups of soup poured into 6 bowls</div>
-              <div class="matching-select-container">
-                <select name="q_7_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="15 ounces per jar">15 ounces per jar</option><option value="4 cups per bowl">4 cups per bowl</option><option value="5 minutes per cake">5 minutes per cake</option><option value="6 dumplings per plate">6 dumplings per plate</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="30 dumplings served on 5 plates" data-correct="6 dumplings per plate">
-              <div class="matching-term">30 dumplings served on 5 plates</div>
-              <div class="matching-select-container">
-                <select name="q_7_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="15 ounces per jar">15 ounces per jar</option><option value="4 cups per bowl">4 cups per bowl</option><option value="5 minutes per cake">5 minutes per cake</option><option value="6 dumplings per plate">6 dumplings per plate</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Baking 9 cakes takes 45 minutes" data-correct="5 minutes per cake">
-              <div class="matching-term">Baking 9 cakes takes 45 minutes</div>
-              <div class="matching-select-container">
-                <select name="q_7_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="15 ounces per jar">15 ounces per jar</option><option value="4 cups per bowl">4 cups per bowl</option><option value="5 minutes per cake">5 minutes per cake</option><option value="6 dumplings per plate">6 dumplings per plate</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="60 ounces of sauce split into 4 jars" data-correct="15 ounces per jar">
-              <div class="matching-term">60 ounces of sauce split into 4 jars</div>
-              <div class="matching-select-container">
-                <select name="q_7_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="15 ounces per jar">15 ounces per jar</option><option value="4 cups per bowl">4 cups per bowl</option><option value="5 minutes per cake">5 minutes per cake</option><option value="6 dumplings per plate">6 dumplings per plate</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 9</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Level 2 Extension — Mixed review: A recipe uses 18 ounces of flour to make 3 loaves of bread. How many ounces of flour are needed to make 7 loaves at the same rate?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Unit rate: 18 ounces ÷ 3 loaves = 6 ounces per loaf. For 7 loaves: 6 × 7 = 42 ounces. The equivalent ratio 18/3 = 42/7 confirms it.">
-          
-            <label class="mc-option-label" id="label_q_8_0">
-              <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">42 ounces</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_8_1">
-              <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">36 ounces</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_8_2">
-              <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">48 ounces</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_8_3">
-              <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">21 ounces</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_9" data-problem-type="error-analysis">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
-      </div>
-      
-      <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ Level 2 Extension — Catch the Recipe Mistake</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        <p class="family-problem-tip">👪 Family tip: Read each step aloud and ask: does this step follow the math rules we learned?</p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_9_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Read the problem:</span>
-                <span class="step-work">9 cups of batter fill 12 muffin cups. How many cups of batter are needed for 16 muffin cups?</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Set up the unit rate:</span>
-                <span class="step-work">12 muffins ÷ 9 cups = about 1.33 muffins per cup</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Multiply for 16 muffins:</span>
-                <span class="step-work">1.33 × 16 = about 21.3 cups</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_4">
-                <span class="step-badge">Step 4</span>
-                <span class="step-label">Answer:</span>
-                <span class="step-work">About 21.3 cups of batter are needed</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_9">Which step has the error?</label>
-            <select id="error_step_select_9" class="custom-select error-step-select" data-correct="2" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option><option value="4">Step 4</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
-          
-          <div class="error-explain-row">
-            <label for="error_explain_input_9">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_9" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
-          
-          <div class="reveal-box" id="error_correct_work_9" style="display:none;">
-            <strong>Correct Work Reference:</strong> The unit rate was set up in the wrong order. Divide cups by muffins: 9 cups ÷ 12 muffins = 0.75 cup per muffin. Then 0.75 × 16 = 12 cups of batter.
-          </div>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
   </main>
+
   
+    <section class="guided-section card section-celebrate" aria-label="Celebration">
+      <h2 class="section-title">🎉 You did it together! / ¡Lo lograron juntos!</h2>
+      <p class="celebrate-text lang-en">High five! Whether every answer was perfect or not, you showed up for your student tonight. That matters.</p>
+      <p class="celebrate-text lang-es" lang="es">¡Chócalas! No importa si cada respuesta fue perfecta — estuviste con tu estudiante esta noche. Eso importa.</p>
+      <p class="celebrate-sub bilingual-block">
+        <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
+        <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
+      </p>
+    </section>
+
 </div>
 
 <!-- Sticky bottom actions bar -->
@@ -2092,7 +1885,7 @@ header.homework-header h1 {
     
     <div class="score-progress-container">
       <div class="score-text">
-        Homework Progress: <span id="progress_text">0 / 10 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 2 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -2100,8 +1893,8 @@ header.homework-header h1 {
     </div>
     
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset</button>
-      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All Problems</button>
+      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset / Reiniciar</button>
+      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All / Revisar todo</button>
     </div>
   </div>
 </div>

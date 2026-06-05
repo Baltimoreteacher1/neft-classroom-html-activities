@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interactive Homework — Lesson 1-2: Greatest Common Factor</title>
+<title>Help Your Student — Lesson 1-2: Greatest Common Factor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -266,6 +266,13 @@ header.homework-header h1 {
   border-radius: var(--radius-sm);
   font-size: 13.5px;
   color: var(--hint);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.family-problem-tip .lang-es {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .family-hint-box {
@@ -1306,70 +1313,331 @@ header.homework-header h1 {
     justify-content: center;
   }
 }
+
+/* Family guided notes layout */
+.family-welcome {
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  color: var(--white);
+  border: none;
+  padding: 28px 24px;
+}
+.welcome-hero {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.welcome-emoji { font-size: 48px; line-height: 1; }
+.welcome-tag {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal-light);
+  font-weight: 800;
+}
+.welcome-title-en, .welcome-title-es {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 5vw, 34px);
+  font-weight: 800;
+  line-height: 1.15;
+}
+.welcome-title-es { color: var(--amber); font-size: clamp(22px, 4.5vw, 30px); margin-top: 2px; }
+.welcome-lesson { margin: 8px 0 0; font-size: 16px; color: var(--teal-light); font-weight: 600; }
+.welcome-lead { margin: 0 0 12px; font-size: 15px; line-height: 1.5; }
+.family-welcome .back-link { color: var(--amber); margin: 0; }
+.family-welcome .back-link:hover { color: var(--white); }
+
+.bilingual-block, .bilingual-grid { display: flex; flex-direction: column; gap: 10px; }
+.bilingual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 640px) {
+  .bilingual-grid { grid-template-columns: 1fr; }
+}
+.bilingual-col {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.lang-label {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal);
+  margin-bottom: 6px;
+}
+.lang-en { margin: 0 0 6px; }
+.lang-es { margin: 0; color: var(--muted); font-style: normal; }
+.learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
+.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+
+.guided-section { scroll-margin-top: 16px; }
+.section-learn { border-left: 4px solid var(--teal); }
+.section-visual { border-left: 4px solid var(--amber); }
+.section-together { border-left: 4px solid #5b8def; }
+.section-vocab { border-left: 4px solid var(--coral); }
+.section-stuck { border-left: 4px solid #9b59b6; }
+.section-quick-intro { border-left: 4px solid var(--success); }
+.section-celebrate {
+  border-left: 4px solid var(--amber);
+  background: linear-gradient(180deg, var(--amber-light), var(--white));
+  text-align: center;
+}
+
+.concept-visual-wrap { margin: 12px 0 16px; overflow-x: auto; }
+.concept-svg { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.concept-fallback-visual { display: flex; flex-direction: column; gap: 8px; }
+.concept-fallback-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  font-weight: 600; font-size: 14px;
+}
+.step-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; color: var(--white);
+  flex-shrink: 0;
+}
+.step-color-1 .step-dot, .step-color-1.step-badge { background: #5b8def; }
+.step-color-2 .step-dot, .step-color-2.step-badge { background: var(--success); }
+.step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
+.step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
+
+.key-idea-banner {
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid #b8ddd8;
+}
+.key-idea-banner p { margin: 0 0 6px; font-size: 14.5px; }
+.key-idea-banner p:last-child { margin-bottom: 0; }
+
+.guided-steps, .together-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.guided-step, .together-step {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  background: var(--white);
+}
+.step-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  padding: 3px 8px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+}
+.guided-step p, .together-step p { margin: 0 0 6px; font-size: 14.5px; line-height: 1.45; }
+.step-hint {
+  margin: 8px 0 0 !important;
+  padding: 8px 10px;
+  background: var(--hint-bg);
+  border-radius: var(--radius-sm);
+  font-size: 13px !important;
+  color: var(--hint);
+}
+
+.watch-for-list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.watch-for-list li {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
+}
+.watch-icon { font-size: 20px; flex-shrink: 0; }
+
+.try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
+.try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
+
+.stuck-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+@media (max-width: 640px) { .stuck-grid { grid-template-columns: 1fr; } }
+.stuck-panel {
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+}
+.stuck-say { background: var(--success-bg); border-color: var(--success); }
+.stuck-dont { background: var(--error-bg); border-color: var(--error); }
+.stuck-heading { margin: 0 0 10px; font-family: var(--font-display); font-size: 14px; color: var(--navy); }
+.stuck-panel ul { margin: 0; padding-left: 16px; }
+.stuck-panel li { margin-bottom: 10px; font-size: 14px; }
+.stuck-panel li p { margin: 0 0 4px; }
+.stuck-footer { font-size: 14px; color: var(--muted); margin: 0; }
+
+.celebrate-text { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; }
+.celebrate-sub { font-size: 14px; margin: 0; }
+
+.problems-container .problem-section { border-left: 4px solid var(--teal); }
+.problems-container .problem-number-badge::after {
+  content: " / Repaso";
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
 </style>
 </head>
 <body>
 
 <div class="container">
-  
-  <header class="homework-header">
-    <a href="/curriculum/" class="back-link">⬅ Curriculum Hub</a>
-    <div class="header-meta">Unit 1 · Standard 6.NS.4 · Homework</div>
-    <h1>Greatest Common Factor</h1>
-    <div class="objectives-card">
-      <div class="objective-row"><span class="objective-badge">Target</span> <strong>I can find the greatest common factor (GCF) of two numbers by listing or comparing their factors.</strong></div>
-      <div class="objective-row"><span class="objective-badge">Discuss</span> <strong>I can explain how I found the GCF using the words factor, common factor, divisible, and greatest common factor.</strong></div>
-    </div>
-  </header>
 
   
-    <section class="family-guide card" aria-label="Family guide">
-      <div class="family-guide-header">
-        <span class="family-guide-emoji">🚀</span>
-        <div>
-          <h2 class="section-title family-guide-title">Family Guide</h2>
-          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+    <header class="family-welcome card" aria-label="Family Math Night welcome">
+      <div class="welcome-hero">
+        <span class="welcome-emoji" aria-hidden="true">🚀</span>
+        <div class="welcome-titles">
+          <p class="welcome-tag">Unit 1 · 6.NS.4</p>
+          <h1 class="welcome-title-en">Family Math Night</h1>
+          <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
+          <p class="welcome-lesson">Greatest Common Factor · Lesson 1-2</p>
         </div>
       </div>
+      <p class="welcome-lead bilingual-block">
+        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+      </p>
+      <a href="/curriculum/" class="back-link">⬅ Curriculum Hub / Centro curricular</a>
+    </header>
 
-      <div class="family-guide-grid">
-        <div class="family-panel family-panel-tips">
-          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
-          <ul class="family-tip-list">
-            <li>Let your student try each problem first. Tap <strong>Check This Problem</strong> on any question for instant feedback — no need to finish the whole page.</li>
-            <li>Tap vocabulary cards to flip between term and definition.</li>
-            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
-          </ul>
+  
+    <section class="guided-section card section-learn" aria-label="What we are learning tonight">
+      <h2 class="section-title">📖 What we're learning tonight / Qué aprendemos hoy</h2>
+      <div class="bilingual-grid">
+        <div class="bilingual-col lang-en">
+          <span class="lang-label">English</span>
+          <p class="learning-big">Find the greatest common factor (GCF) of two numbers by listing or comparing their factors.</p>
+          <p class="learning-sub">Also practice saying: <em>explain how I found the GCF using the words factor, common factor, divisible, and greatest common factor</em></p>
         </div>
-
-        <div class="family-panel family-panel-home">
-          <h3 class="family-panel-heading">🏡 Try this at home</h3>
-          <p class="family-try-text">Mission Control must split 24 food packs and 36 water containers into equal crew pods, with each pod getting the same of each. Why won&#039;t the answer just be 24 or 36?</p>
+        <div class="bilingual-col lang-es" lang="es">
+          <span class="lang-label">Español</span>
+          <p class="learning-big">Puedo encontrar el Máximo común divisor (GCF) of two numbers by listing or comparing their factors.</p>
+          <p class="learning-sub">También practiquen: <em>explicar how I found the GCF usando las palabras Factor, Factor común, Divisible, y Máximo común divisor</em></p>
         </div>
       </div>
-
-      
-        <div class="family-panel family-panel-legend">
-          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
-          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>matching game:</strong> Say each term out loud, then talk through which match makes sense before choosing.</li><li><strong>fill table:</strong> Encourage your student to show their work on paper if a box feels tricky.</li><li><strong>drag sort:</strong> On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</li></ul>
-        </div>
-
-      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
     </section>
-  
 
   
-    <section class="try-at-home card" aria-label="Try this at home">
-      <h2 class="section-title">🚀 Real-World Connection</h2>
-      <p class="try-narrative">Mission Control needs to organize 24 food packs and 36 water containers into equal groups for the crew pods. Each pod must get the same number of food packs AND the same number of water containers. What is the largest number of pods they can fill equally?</p>
-      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    <section class="guided-section card section-visual" aria-label="Visual concept explainer">
+      <h2 class="section-title">🎯 The big idea / La idea principal</h2>
+      <div class="concept-visual-wrap">
+    <div class="concept-fallback-visual" aria-hidden="true">
+      <div class="concept-fallback-step step-color-1"><span class="step-dot">1</span><span>A factor is a number that divides another number evenly, with nothing left over</span></div><div class="concept-fallback-step step-color-2"><span class="step-dot">2</span><span>I want the GCF of 24 and 36</span></div><div class="concept-fallback-step step-color-3"><span class="step-dot">3</span><span>Next I list the factors of 36: 1, 2, 3, 4, 6, 9, 12, 18, 36</span></div>
+    </div></div>
+      <div class="key-idea-banner">
+        <p class="lang-en"><strong>Watch for this:</strong> The GCF is the largest number that divides BOTH numbers with no remainder.</p>
+        <p class="lang-es" lang="es"><strong>Observa esto:</strong> Esta noche practican: encontrar el Máximo común divisor (GCF) of two numbers by listing or comparing their factors. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+      </div>
+      <ol class="guided-steps">
+        
+          <li class="guided-step step-color-1">
+            <span class="step-badge">Step 1 / Paso 1</span>
+            <p class="lang-en">A factor is a number that divides another number evenly, with nothing left over. The greatest common factor is the biggest factor that two numbers share.</p>
+            <p class="lang-es" lang="es">Esta noche practican: encontrar el Máximo común divisor (GCF) of two numbers by listing or comparing their factors. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-2">
+            <span class="step-badge">Step 2 / Paso 2</span>
+            <p class="lang-en">I want the GCF of 24 and 36. First I list the factors of 24: 1, 2, 3, 4, 6, 8, 12, 24.</p>
+            <p class="lang-es" lang="es">Esta noche practican: encontrar el Máximo común divisor (GCF) of two numbers by listing or comparing their factors. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-3">
+            <span class="step-badge">Step 3 / Paso 3</span>
+            <p class="lang-en">Next I list the factors of 36: 1, 2, 3, 4, 6, 9, 12, 18, 36.</p>
+            <p class="lang-es" lang="es">Esta noche practican: encontrar el Máximo común divisor (GCF) of two numbers by listing or comparing their factors. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-4">
+            <span class="step-badge">Step 4 / Paso 4</span>
+            <p class="lang-en">Now I circle the factors in BOTH lists: 1, 2, 3, 4, 6, 12. These are the common factors.</p>
+            <p class="lang-es" lang="es">Esta noche practican: encontrar el Máximo común divisor (GCF) of two numbers by listing or comparing their factors. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+      </ol>
+      <ul class="watch-for-list">
+        
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Factor&quot; — it means: A number that divides another number with nothing left over.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Factor&quot; — significa: Un número que divide a otro sin que sobre nada.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Greatest Common Factor&quot; — it means: The biggest number that divides two or more numbers evenly.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Máximo común divisor&quot; — significa: El número más grande que divide a dos o más números sin que sobre nada.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Common factor&quot; — it means: A number that divides two or more numbers evenly.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Factor común&quot; — significa: Un número que divide a dos o más números sin que sobre nada.</p>
+            </div>
+          </li>
+      </ul>
     </section>
-  
 
   
-    <section class="vocab-section card">
-      <h2 class="section-title">🔑 Key Vocabulary</h2>
-      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
+    <section class="guided-section card section-together" aria-label="Try this together">
+      <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
+      <p class="try-scenario lang-en">Mission Control needs to organize 24 food packs and 36 water containers into equal groups for the crew pods.</p>
+             <p class="try-scenario lang-es" lang="es">Mission Control needs to organize 24 food packs and 36 water containers into equal groups for the crew pods.</p>
+      <p class="try-together-note bilingual-block">
+        <span class="lang-en">Work side by side. You ask questions; your student does the thinking.</span>
+        <span class="lang-es" lang="es">Trabajen juntos. Tú haces preguntas; tu estudiante piensa.</span>
+      </p>
+      <ol class="together-steps">
+        
+          <li class="together-step step-color-1">
+            <div class="together-step-head">
+              <span class="step-badge">Step 1 / Paso 1</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Let&#039;s find the GCF of 8 and 12. What are the factors of 8? (1, 2, 4, 8.)</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Let&#039;s find the GCF of 8 and 12. What are the factors of 8? (1, 2, 4, 8.).</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-2">
+            <div class="together-step-head">
+              <span class="step-badge">Step 2 / Paso 2</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> What are the factors of 12? (1, 2, 3, 4, 6, 12.) Which numbers are in both lists? (1, 2, 4.)</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> What are the factors of 12? (1, 2, 3, 4, 6, 12.) Which numbers are in both lists? (1, 2, 4.).</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-3">
+            <div class="together-step-head">
+              <span class="step-badge">Step 3 / Paso 3</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Which shared factor is the largest? (4.) So the GCF of 8 and 12 is 4.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Which shared Factor is the largest? (4.) So the GCF of 8 and 12 is 4.</p>
+            <p class="step-hint">💡 Both numbers must change the same way. · Ambos números deben cambiar de la misma manera.</p>
+          </li>
+      </ol>
+    </section>
+
+  
+    <section class="guided-section card section-vocab vocab-section" aria-label="Words to know">
+      <h2 class="section-title">📚 Words to know / Palabras clave</h2>
+      <p class="vocab-family-note bilingual-block">
+        <span class="lang-en">Tap a card to flip. Use these words when you talk about the math together.</span>
+        <span class="lang-es" lang="es">Toquen una tarjeta para voltearla. Usen estas palabras cuando hablen de la matemática juntos.</span>
+      </p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
@@ -1379,18 +1647,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/factor.svg" alt="Illustration of Factor: A number that divides another number with nothing left over." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Factor</h3>
-                  <p class="vocab-es">Factor</p>
-                  <div class="vocab-visual-hint">💡 Example: Factors of 12: 1, 2, 3, 4, 6, 12 — each divides 12 with no remainder</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Factor</p>
+                  <div class="vocab-visual-hint">💡 Factors of 12: 1, 2, 3, 4, 6, 12 — each divides 12 with no remainder</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A number that divides another number with nothing left over.</p>
-                  <p class="vocab-def-es">Un número que divide a otro sin que sobre nada.</p>
+                  <p class="vocab-def-es" lang="es">Un número que divide a otro sin que sobre nada.</p>
                   <p class="vocab-back-visual">📌 Factors of 12: 1, 2, 3, 4, 6, 12 — each divides 12 with no remainder</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1398,18 +1665,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/greatest-common-factor.svg" alt="Illustration of Greatest Common Factor: The biggest number that divides two or more numbers evenly." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Greatest Common Factor</h3>
-                  <p class="vocab-es">Máximo común divisor</p>
-                  <div class="vocab-visual-hint">💡 Example: Factors of 12: {1, 2, 3, 4, 6, 12}. Factors of 18: {1, 2, 3, 6, 9, 18}. Shared: 1, 2, 3, 6. GCF = 6</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Máximo común divisor</p>
+                  <div class="vocab-visual-hint">💡 Factors of 12: {1, 2, 3, 4, 6, 12}. Factors of 18: {1, 2, 3, 6, 9, 18}. Shared: 1, 2, 3, 6. GCF = 6</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">The biggest number that divides two or more numbers evenly.</p>
-                  <p class="vocab-def-es">El número más grande que divide a dos o más números sin que sobre nada.</p>
+                  <p class="vocab-def-es" lang="es">El número más grande que divide a dos o más números sin que sobre nada.</p>
                   <p class="vocab-back-visual">📌 Factors of 12: {1, 2, 3, 4, 6, 12}. Factors of 18: {1, 2, 3, 6, 9, 18}. Shared: 1, 2, 3, 6. GCF = 6</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1417,18 +1683,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/greatest-common-factor.svg" alt="Illustration of Common factor: A number that divides two or more numbers evenly." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Common factor</h3>
-                  <p class="vocab-es">Factor común</p>
-                  <div class="vocab-visual-hint">💡 Example: 8 and 12 both divide evenly by 1, 2, and 4 — those are their common factors</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Factor común</p>
+                  <div class="vocab-visual-hint">💡 8 and 12 both divide evenly by 1, 2, and 4 — those are their common factors</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A number that divides two or more numbers evenly.</p>
-                  <p class="vocab-def-es">Un número que divide a dos o más números sin que sobre nada.</p>
+                  <p class="vocab-def-es" lang="es">Un número que divide a dos o más números sin que sobre nada.</p>
                   <p class="vocab-back-visual">📌 8 and 12 both divide evenly by 1, 2, and 4 — those are their common factors</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1436,18 +1701,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/divide.svg" alt="Illustration of Divisible: A number you can divide evenly, with nothing left over." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Divisible</h3>
-                  <p class="vocab-es">Divisible</p>
-                  <div class="vocab-visual-hint">💡 Example: 15 ÷ 3 = 5 with no remainder, so 15 is divisible by 3</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Divisible</p>
+                  <div class="vocab-visual-hint">💡 15 ÷ 3 = 5 with no remainder, so 15 is divisible by 3</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A number you can divide evenly, with nothing left over.</p>
-                  <p class="vocab-def-es">Un número que se puede dividir sin que sobre nada.</p>
+                  <p class="vocab-def-es" lang="es">Un número que se puede dividir sin que sobre nada.</p>
                   <p class="vocab-back-visual">📌 15 ÷ 3 = 5 with no remainder, so 15 is divisible by 3</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1455,33 +1719,63 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/prime-factorization.svg" alt="Illustration of Prime factorization: Writing a number as prime numbers multiplied together. It helps you find the GCF." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Prime factorization</h3>
-                  <p class="vocab-es">Factorización prima</p>
-                  <div class="vocab-visual-hint">💡 Example: 12 = 2 × 2 × 3 and 18 = 2 × 3 × 3. Shared primes: 2 × 3 = 6 = GCF</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Factorización prima</p>
+                  <div class="vocab-visual-hint">💡 12 = 2 × 2 × 3 and 18 = 2 × 3 × 3. Shared primes: 2 × 3 = 6 = GCF</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">Writing a number as prime numbers multiplied together. It helps you find the GCF.</p>
-                  <p class="vocab-def-es">Escribir un número como números primos multiplicados. Ayuda a encontrar el MCD.</p>
+                  <p class="vocab-def-es" lang="es">Escribir un número como números primos multiplicados. Ayuda a encontrar el MCD.</p>
                   <p class="vocab-back-visual">📌 12 = 2 × 2 × 3 and 18 = 2 × 3 × 3. Shared primes: 2 × 3 = 6 = GCF</p>
                 </div>
               </div>
             </div>
-          
       </div>
     </section>
+
   
+    <section class="guided-section card section-stuck" aria-label="If your student gets stuck">
+      <h2 class="section-title">💬 If your student gets stuck / Si se atora</h2>
+      <div class="stuck-grid">
+        <div class="stuck-panel stuck-say">
+          <h3 class="stuck-heading">✅ What to say / Qué decir</h3>
+          <ul>
+            <li><p class="lang-en">What do you already know that could help?</p><p class="lang-es" lang="es">¿Qué ya sabes que podría ayudarte?</p></li><li><p class="lang-en">Can you draw a picture or table for this?</p><p class="lang-es" lang="es">¿Puedes dibujar un dibujo o una tabla para esto?</p></li><li><p class="lang-en">Let&#039;s check one step at a time — no rush.</p><p class="lang-es" lang="es">Revisemos un paso a la vez — sin prisa.</p></li>
+          </ul>
+        </div>
+        <div class="stuck-panel stuck-dont">
+          <h3 class="stuck-heading">🚫 What NOT to say / Qué evitar</h3>
+          <ul>
+            <li><p class="lang-en">That&#039;s wrong — let me just tell you.</p><p class="lang-es" lang="es">Está mal — déjame decírtelo yo.</p></li><li><p class="lang-en">I was never good at math either.</p><p class="lang-es" lang="es">Yo tampoco era bueno en matemáticas.</p></li><li><p class="lang-en">This should be easy.</p><p class="lang-es" lang="es">Esto debería ser fácil.</p></li>
+          </ul>
+        </div>
+      </div>
+      <p class="stuck-footer bilingual-block">
+        <span class="lang-en">Struggle is part of learning. Short breaks and snacks are allowed!</span>
+        <span class="lang-es" lang="es">La dificultad es parte del aprendizaje. ¡Descansos y meriendas están permitidos!</span>
+      </p>
+    </section>
+
   
+    <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
+      <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
+      <p class="bilingual-block">
+        <span class="lang-en">One or two problems to try on the screen. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
+        <span class="lang-es" lang="es">Una o dos preguntas en pantalla. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+      </p>
+    </section>
+
   <main class="problems-container">
     
     <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 1</div>
+        <div class="problem-number-badge">Quick Check 1</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">What is the GCF of 8 and 12?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="Factors of 8: 1, 2, 4, 8. Factors of 12: 1, 2, 3, 4, 6, 12. The largest common factor is 4.">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1513,7 +1807,7 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
@@ -1522,13 +1816,13 @@ header.homework-header h1 {
 
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 2</div>
+        <div class="problem-number-badge">Quick Check 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">Which pair of numbers has a GCF of 5?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="15 = 3 × 5, 25 = 5 × 5. Both share the factor 5, and 5 is the largest shared factor.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1560,627 +1854,25 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
   
-
-    <section class="problem-section card" id="problem_2" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 3</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Match each pair of numbers to their GCF.</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="GCF(6, 9)" data-correct="3">
-              <div class="matching-term">GCF(6, 9)</div>
-              <div class="matching-select-container">
-                <select name="q_2_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="10">10</option><option value="3">3</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="GCF(12, 18)" data-correct="6">
-              <div class="matching-term">GCF(12, 18)</div>
-              <div class="matching-select-container">
-                <select name="q_2_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="10">10</option><option value="3">3</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="GCF(16, 24)" data-correct="8">
-              <div class="matching-term">GCF(16, 24)</div>
-              <div class="matching-select-container">
-                <select name="q_2_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="10">10</option><option value="3">3</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="GCF(20, 30)" data-correct="10">
-              <div class="matching-term">GCF(20, 30)</div>
-              <div class="matching-select-container">
-                <select name="q_2_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="10">10</option><option value="3">3</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="GCF(15, 35)" data-correct="5">
-              <div class="matching-term">GCF(15, 35)</div>
-              <div class="matching-select-container">
-                <select name="q_2_pair_4" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="10">10</option><option value="3">3</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="GCF(14, 21)" data-correct="7">
-              <div class="matching-term">GCF(14, 21)</div>
-              <div class="matching-select-container">
-                <select name="q_2_pair_5" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="10">10</option><option value="3">3</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_3" data-problem-type="fill-table">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 4</div>
-        <div class="problem-type-badge">FILL TABLE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Use prime factorization to find the GCF.</p>
-        <p class="family-problem-tip">👪 Family tip: Encourage your student to show their work on paper if a box feels tricky.</p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Numbers</th><th>Prime Factorization</th><th>Shared Prime Factors</th><th>GCF</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>18 and 24</td><td>18 = 2 × 3 × 3, 24 = 2 × 2 × 2 × 3</td><td>2 × 3</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_3_table_0_3"
-                                   data-correct="6" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>30 and 45</td><td>30 = 2 × 3 × 5, 45 = 3 × 3 × 5</td><td>3 × 5</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_3_table_1_3"
-                                   data-correct="15" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>28 and 42</td><td>28 = 2 × 2 × 7, 42 = 2 × 3 × 7</td><td>2 × 7</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_3_table_2_3"
-                                   data-correct="14" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-            </tbody>
-          </table>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_4" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 5</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A teacher has 36 pencils and 48 erasers. She wants to make identical supply bags with no items left over. What is the greatest number of bags she can make?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="GCF(36, 48) = 12. She can make 12 bags, each with 3 pencils and 4 erasers.">
-          
-            <label class="mc-option-label" id="label_q_4_0">
-              <input type="radio" name="q_4" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">12 bags</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_4_1">
-              <input type="radio" name="q_4" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">6 bags</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_4_2">
-              <input type="radio" name="q_4" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">4 bags</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_4_3">
-              <input type="radio" name="q_4" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">36 bags</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_5" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 6</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Sort: which pairs have a GCF greater than 1, and which are relatively prime (GCF = 1)?</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        
-        <div class="drag-sort-workspace" id="dragsort_5">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="greater-than-1" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, 'greater-than-1')">
-                <div class="drag-column-header">GCF Greater Than 1</div>
-                <div class="drag-column-slots" id="slots_5_greater-than-1" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, 'greater-than-1')"></div>
-              </div>
-              <div class="drag-column" data-category-id="relatively-prime" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, 'relatively-prime')">
-                <div class="drag-column-header">Relatively Prime (GCF = 1)</div>
-                <div class="drag-column-slots" id="slots_5_relatively-prime" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, 'relatively-prime')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_5" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_5_0"
-                     data-item-index="0"
-                     data-correct-category="greater-than-1"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">8 and 12 (GCF = 4)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_0', 5); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater-than-1">GCF Greater Than 1</option><option value="relatively-prime">Relatively Prime (GCF = 1)</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_5_1"
-                     data-item-index="1"
-                     data-correct-category="greater-than-1"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">6 and 15 (GCF = 3)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_1', 5); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater-than-1">GCF Greater Than 1</option><option value="relatively-prime">Relatively Prime (GCF = 1)</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_5_2"
-                     data-item-index="2"
-                     data-correct-category="greater-than-1"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">10 and 25 (GCF = 5)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_2', 5); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater-than-1">GCF Greater Than 1</option><option value="relatively-prime">Relatively Prime (GCF = 1)</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_5_3"
-                     data-item-index="3"
-                     data-correct-category="relatively-prime"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">7 and 11 (GCF = 1)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_3', 5); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater-than-1">GCF Greater Than 1</option><option value="relatively-prime">Relatively Prime (GCF = 1)</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_5_4"
-                     data-item-index="4"
-                     data-correct-category="relatively-prime"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">8 and 15 (GCF = 1)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_4', 5); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater-than-1">GCF Greater Than 1</option><option value="relatively-prime">Relatively Prime (GCF = 1)</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_5_5"
-                     data-item-index="5"
-                     data-correct-category="relatively-prime"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">9 and 14 (GCF = 1)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_5', 5); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater-than-1">GCF Greater Than 1</option><option value="relatively-prime">Relatively Prime (GCF = 1)</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(5); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Mission Control must split 24 oxygen tanks and 36 ration packs into identical crew pods with none left over. What is the GCF of 24 and 36?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Factors of 24: 1, 2, 3, 4, 6, 8, 12, 24. Factors of 36: 1, 2, 3, 4, 6, 9, 12, 18, 36. The greatest shared factor is 12, so 12 pods can be filled equally.">
-          
-            <label class="mc-option-label" id="label_q_6_0">
-              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">12</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_1">
-              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">6</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_2">
-              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">8</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_3">
-              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">72</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 8</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">The astronaut crew has 40 solar cells and 60 battery cells to load into matching storage bins with nothing left over. What is the GCF of 40 and 60?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Factors of 40: 1, 2, 4, 5, 8, 10, 20, 40. Factors of 60: 1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30, 60. The greatest shared factor is 20, so 20 bins can be filled equally.">
-          
-            <label class="mc-option-label" id="label_q_7_0">
-              <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">20</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_1">
-              <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">10</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_2">
-              <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">4</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_3">
-              <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">120</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_8" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 9</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Each crew pod needs the same number of each supply with none left over. Match each supply pair to the greatest number of equal pods (the GCF).</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="Pods from 18 tanks &amp; 27 packs" data-correct="9">
-              <div class="matching-term">Pods from 18 tanks &amp; 27 packs</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="16">16</option><option value="5">5</option><option value="7">7</option><option value="9">9</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Pods from 21 tanks &amp; 28 packs" data-correct="7">
-              <div class="matching-term">Pods from 21 tanks &amp; 28 packs</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="16">16</option><option value="5">5</option><option value="7">7</option><option value="9">9</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Pods from 32 tanks &amp; 48 packs" data-correct="16">
-              <div class="matching-term">Pods from 32 tanks &amp; 48 packs</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="16">16</option><option value="5">5</option><option value="7">7</option><option value="9">9</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Pods from 25 tanks &amp; 35 packs" data-correct="5">
-              <div class="matching-term">Pods from 25 tanks &amp; 35 packs</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="16">16</option><option value="5">5</option><option value="7">7</option><option value="9">9</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_9" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Mission Control is packing supply pairs into equal pods. Sort each pair by the largest number of equal pods it can fill (its GCF).</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        
-        <div class="drag-sort-workspace" id="dragsort_9">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="gcf-5" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'gcf-5')">
-                <div class="drag-column-header">Fills 5 equal pods (GCF = 5)</div>
-                <div class="drag-column-slots" id="slots_9_gcf-5" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'gcf-5')"></div>
-              </div>
-              <div class="drag-column" data-category-id="gcf-6" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'gcf-6')">
-                <div class="drag-column-header">Fills 6 equal pods (GCF = 6)</div>
-                <div class="drag-column-slots" id="slots_9_gcf-6" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'gcf-6')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_9" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_9_0"
-                     data-item-index="0"
-                     data-correct-category="gcf-5"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">15 tanks &amp; 25 packs</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_0', 9); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="gcf-5">Fills 5 equal pods (GCF = 5)</option><option value="gcf-6">Fills 6 equal pods (GCF = 6)</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_9_1"
-                     data-item-index="1"
-                     data-correct-category="gcf-5"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">20 tanks &amp; 35 packs</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_1', 9); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="gcf-5">Fills 5 equal pods (GCF = 5)</option><option value="gcf-6">Fills 6 equal pods (GCF = 6)</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_9_2"
-                     data-item-index="2"
-                     data-correct-category="gcf-6"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">30 tanks &amp; 42 packs</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_2', 9); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="gcf-5">Fills 5 equal pods (GCF = 5)</option><option value="gcf-6">Fills 6 equal pods (GCF = 6)</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_9_3"
-                     data-item-index="3"
-                     data-correct-category="gcf-6"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">18 tanks &amp; 24 packs</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_3', 9); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="gcf-5">Fills 5 equal pods (GCF = 5)</option><option value="gcf-6">Fills 6 equal pods (GCF = 6)</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(9); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
   </main>
+
   
+    <section class="guided-section card section-celebrate" aria-label="Celebration">
+      <h2 class="section-title">🎉 You did it together! / ¡Lo lograron juntos!</h2>
+      <p class="celebrate-text lang-en">High five! Whether every answer was perfect or not, you showed up for your student tonight. That matters.</p>
+      <p class="celebrate-text lang-es" lang="es">¡Chócalas! No importa si cada respuesta fue perfecta — estuviste con tu estudiante esta noche. Eso importa.</p>
+      <p class="celebrate-sub bilingual-block">
+        <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
+        <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
+      </p>
+    </section>
+
 </div>
 
 <!-- Sticky bottom actions bar -->
@@ -2190,7 +1882,7 @@ header.homework-header h1 {
     
     <div class="score-progress-container">
       <div class="score-text">
-        Homework Progress: <span id="progress_text">0 / 10 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 2 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -2198,8 +1890,8 @@ header.homework-header h1 {
     </div>
     
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset</button>
-      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All Problems</button>
+      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset / Reiniciar</button>
+      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All / Revisar todo</button>
     </div>
   </div>
 </div>

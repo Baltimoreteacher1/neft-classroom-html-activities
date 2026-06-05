@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interactive Homework — Lesson 6-1: Powers and Exponents</title>
+<title>Help Your Student — Lesson 6-1: Powers and Exponents</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -266,6 +266,13 @@ header.homework-header h1 {
   border-radius: var(--radius-sm);
   font-size: 13.5px;
   color: var(--hint);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.family-problem-tip .lang-es {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .family-hint-box {
@@ -1306,70 +1313,337 @@ header.homework-header h1 {
     justify-content: center;
   }
 }
+
+/* Family guided notes layout */
+.family-welcome {
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  color: var(--white);
+  border: none;
+  padding: 28px 24px;
+}
+.welcome-hero {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.welcome-emoji { font-size: 48px; line-height: 1; }
+.welcome-tag {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal-light);
+  font-weight: 800;
+}
+.welcome-title-en, .welcome-title-es {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 5vw, 34px);
+  font-weight: 800;
+  line-height: 1.15;
+}
+.welcome-title-es { color: var(--amber); font-size: clamp(22px, 4.5vw, 30px); margin-top: 2px; }
+.welcome-lesson { margin: 8px 0 0; font-size: 16px; color: var(--teal-light); font-weight: 600; }
+.welcome-lead { margin: 0 0 12px; font-size: 15px; line-height: 1.5; }
+.family-welcome .back-link { color: var(--amber); margin: 0; }
+.family-welcome .back-link:hover { color: var(--white); }
+
+.bilingual-block, .bilingual-grid { display: flex; flex-direction: column; gap: 10px; }
+.bilingual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 640px) {
+  .bilingual-grid { grid-template-columns: 1fr; }
+}
+.bilingual-col {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.lang-label {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal);
+  margin-bottom: 6px;
+}
+.lang-en { margin: 0 0 6px; }
+.lang-es { margin: 0; color: var(--muted); font-style: normal; }
+.learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
+.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+
+.guided-section { scroll-margin-top: 16px; }
+.section-learn { border-left: 4px solid var(--teal); }
+.section-visual { border-left: 4px solid var(--amber); }
+.section-together { border-left: 4px solid #5b8def; }
+.section-vocab { border-left: 4px solid var(--coral); }
+.section-stuck { border-left: 4px solid #9b59b6; }
+.section-quick-intro { border-left: 4px solid var(--success); }
+.section-celebrate {
+  border-left: 4px solid var(--amber);
+  background: linear-gradient(180deg, var(--amber-light), var(--white));
+  text-align: center;
+}
+
+.concept-visual-wrap { margin: 12px 0 16px; overflow-x: auto; }
+.concept-svg { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.concept-fallback-visual { display: flex; flex-direction: column; gap: 8px; }
+.concept-fallback-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  font-weight: 600; font-size: 14px;
+}
+.step-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; color: var(--white);
+  flex-shrink: 0;
+}
+.step-color-1 .step-dot, .step-color-1.step-badge { background: #5b8def; }
+.step-color-2 .step-dot, .step-color-2.step-badge { background: var(--success); }
+.step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
+.step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
+
+.key-idea-banner {
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid #b8ddd8;
+}
+.key-idea-banner p { margin: 0 0 6px; font-size: 14.5px; }
+.key-idea-banner p:last-child { margin-bottom: 0; }
+
+.guided-steps, .together-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.guided-step, .together-step {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  background: var(--white);
+}
+.step-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  padding: 3px 8px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+}
+.guided-step p, .together-step p { margin: 0 0 6px; font-size: 14.5px; line-height: 1.45; }
+.step-hint {
+  margin: 8px 0 0 !important;
+  padding: 8px 10px;
+  background: var(--hint-bg);
+  border-radius: var(--radius-sm);
+  font-size: 13px !important;
+  color: var(--hint);
+}
+
+.watch-for-list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.watch-for-list li {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
+}
+.watch-icon { font-size: 20px; flex-shrink: 0; }
+
+.try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
+.try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
+
+.stuck-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+@media (max-width: 640px) { .stuck-grid { grid-template-columns: 1fr; } }
+.stuck-panel {
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+}
+.stuck-say { background: var(--success-bg); border-color: var(--success); }
+.stuck-dont { background: var(--error-bg); border-color: var(--error); }
+.stuck-heading { margin: 0 0 10px; font-family: var(--font-display); font-size: 14px; color: var(--navy); }
+.stuck-panel ul { margin: 0; padding-left: 16px; }
+.stuck-panel li { margin-bottom: 10px; font-size: 14px; }
+.stuck-panel li p { margin: 0 0 4px; }
+.stuck-footer { font-size: 14px; color: var(--muted); margin: 0; }
+
+.celebrate-text { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; }
+.celebrate-sub { font-size: 14px; margin: 0; }
+
+.problems-container .problem-section { border-left: 4px solid var(--teal); }
+.problems-container .problem-number-badge::after {
+  content: " / Repaso";
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
 </style>
 </head>
 <body>
 
 <div class="container">
-  
-  <header class="homework-header">
-    <a href="/curriculum/" class="back-link">⬅ Curriculum Hub</a>
-    <div class="header-meta">Unit 6 · Standard 6.EE.1 · Homework</div>
-    <h1>Powers and Exponents</h1>
-    <div class="objectives-card">
-      <div class="objective-row"><span class="objective-badge">Target</span> <strong>I can write and evaluate numbers in exponent form using a base and a power.</strong></div>
-      <div class="objective-row"><span class="objective-badge">Discuss</span> <strong>I can explain my work using the words exponent, base, power, and evaluate.</strong></div>
-    </div>
-  </header>
 
   
-    <section class="family-guide card" aria-label="Family guide">
-      <div class="family-guide-header">
-        <span class="family-guide-emoji">🎵</span>
-        <div>
-          <h2 class="section-title family-guide-title">Family Guide</h2>
-          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+    <header class="family-welcome card" aria-label="Family Math Night welcome">
+      <div class="welcome-hero">
+        <span class="welcome-emoji" aria-hidden="true">🎵</span>
+        <div class="welcome-titles">
+          <p class="welcome-tag">Unit 6 · 6.EE.1</p>
+          <h1 class="welcome-title-en">Family Math Night</h1>
+          <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
+          <p class="welcome-lesson">Powers and Exponents · Lesson 6-1</p>
         </div>
       </div>
+      <p class="welcome-lead bilingual-block">
+        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+      </p>
+      <a href="/curriculum/" class="back-link">⬅ Curriculum Hub / Centro curricular</a>
+    </header>
 
-      <div class="family-guide-grid">
-        <div class="family-panel family-panel-tips">
-          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
-          <ul class="family-tip-list">
-            <li>Let your student try each problem first. Tap <strong>Check This Problem</strong> on any question for instant feedback — no need to finish the whole page.</li>
-            <li>Tap vocabulary cards to flip between term and definition.</li>
-            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
-          </ul>
+  
+    <section class="guided-section card section-learn" aria-label="What we are learning tonight">
+      <h2 class="section-title">📖 What we're learning tonight / Qué aprendemos hoy</h2>
+      <div class="bilingual-grid">
+        <div class="bilingual-col lang-en">
+          <span class="lang-label">English</span>
+          <p class="learning-big">Write and evaluate numbers in exponent form using a base and a power.</p>
+          <p class="learning-sub">Also practice saying: <em>explain my work using the words exponent, base, power, and evaluate</em></p>
         </div>
-
-        <div class="family-panel family-panel-home">
-          <h3 class="family-panel-heading">🏡 Try this at home</h3>
-          <p class="family-try-text">In the sound studio, the volume doubles each time you flip the switch. Why is the volume after 3 flips 2³ = 8 and not 2 × 3 = 6?</p>
+        <div class="bilingual-col lang-es" lang="es">
+          <span class="lang-label">Español</span>
+          <p class="learning-big">Puedo escribir y evaluar números en forma de exponente usando una Base y una potencia.</p>
+          <p class="learning-sub">También practiquen: <em>explicar mi trabajo usando las palabras Exponente, Base, Potencia, y Evaluar</em></p>
         </div>
       </div>
-
-      
-        <div class="family-panel family-panel-legend">
-          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
-          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>fill table:</strong> Encourage your student to show their work on paper if a box feels tricky.</li><li><strong>drag sort:</strong> On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</li><li><strong>matching game:</strong> Say each term out loud, then talk through which match makes sense before choosing.</li></ul>
-        </div>
-
-      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
     </section>
-  
 
   
-    <section class="try-at-home card" aria-label="Try this at home">
-      <h2 class="section-title">🎵 Real-World Connection</h2>
-      <p class="try-narrative">You&#039;re a sound engineer at a music studio. Each time you flip a switch, the volume doubles. The starting volume is 1 unit. After flipping the switch 3 times, the volume is 2³ = 2 × 2 × 2 = 8 units — that&#039;s 8 times louder! How loud does it get after more flips?</p>
-      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    <section class="guided-section card section-visual" aria-label="Visual concept explainer">
+      <h2 class="section-title">🎯 The big idea / La idea principal</h2>
+      <div class="concept-visual-wrap">
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Exponent example">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
+        <text x="60" y="70" font-size="42" font-weight="800" fill="#12355b">2</text>
+        <text x="78" y="55" font-size="22" font-weight="800" fill="#d9795d">3</text>
+        <text x="120" y="70" font-size="28" fill="#12355b">= 2 × 2 × 2 = 8</text>
+        <text x="40" y="110" font-size="13" fill="#21313f">Base = 2 · Exponent = 3 · Multiply 2 three times</text>
+        <text x="40" y="135" font-size="13" fill="#21313f" lang="es">Base = 2 · Exponente = 3 · Multiplica 2 tres veces</text>
+        <text x="40" y="165" font-size="12" fill="#5f6f80">🎵 NOT 2 + 2 + 2 — that's addition!</text>
+      </svg></div>
+      <div class="key-idea-banner">
+        <p class="lang-en"><strong>Watch for this:</strong> A power like 2³ is a short way to write repeated multiplication: 2 × 2 × 2.</p>
+        <p class="lang-es" lang="es"><strong>Observa esto:</strong> Una potencia como 2³ es una forma breve de escribir multiplicación repetida: 2 × 2 × 2.</p>
+      </div>
+      <ol class="guided-steps">
+        
+          <li class="guided-step step-color-1">
+            <span class="step-badge">Step 1 / Paso 1</span>
+            <p class="lang-en">An exponent is a small raised number that tells you how many times to multiply a number by itself. We say 2³ as &quot;two to the third power.&quot;</p>
+            <p class="lang-es" lang="es">Puedo escribir y evaluar números en forma de exponente usando una Base y una potencia.</p>
+          </li>
+          <li class="guided-step step-color-2">
+            <span class="step-badge">Step 2 / Paso 2</span>
+            <p class="lang-en">I want to find the value of 2³.</p>
+            <p class="lang-es" lang="es">Puedo escribir y evaluar números en forma de exponente usando una Base y una potencia.</p>
+          </li>
+          <li class="guided-step step-color-3">
+            <span class="step-badge">Step 3 / Paso 3</span>
+            <p class="lang-en">The small 3 tells me to multiply 2 by itself 3 times.</p>
+            <p class="lang-es" lang="es">Puedo escribir y evaluar números en forma de exponente usando una Base y una potencia.</p>
+          </li>
+          <li class="guided-step step-color-4">
+            <span class="step-badge">Step 4 / Paso 4</span>
+            <p class="lang-en">So I write 2 × 2 × 2.</p>
+            <p class="lang-es" lang="es">Puedo escribir y evaluar números en forma de exponente usando una Base y una potencia.</p>
+          </li>
+      </ol>
+      <ul class="watch-for-list">
+        
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Exponent&quot; — it means: A small number that tells how many times to multiply the number by itself.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Exponente&quot; — significa: Un número pequeño que dice cuántas veces multiplicar el número por sí mismo.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Base&quot; — it means: The number that gets multiplied by itself.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Base&quot; — significa: El número que se multiplica por sí mismo.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Power&quot; — it means: A number written with a base and an exponent, like 2³.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Potencia&quot; — significa: Un número escrito con una base y un exponente, como 2³.</p>
+            </div>
+          </li>
+      </ul>
     </section>
-  
 
   
-    <section class="vocab-section card">
-      <h2 class="section-title">🔑 Key Vocabulary</h2>
-      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
+    <section class="guided-section card section-together" aria-label="Try this together">
+      <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
+      <p class="try-scenario lang-en">You&#039;re a sound engineer at a music studio.</p>
+             <p class="try-scenario lang-es" lang="es">You&#039;re a sound engineer at a music studio.</p>
+      <p class="try-together-note bilingual-block">
+        <span class="lang-en">Work side by side. You ask questions; your student does the thinking.</span>
+        <span class="lang-es" lang="es">Trabajen juntos. Tú haces preguntas; tu estudiante piensa.</span>
+      </p>
+      <ol class="together-steps">
+        
+          <li class="together-step step-color-1">
+            <div class="together-step-head">
+              <span class="step-badge">Step 1 / Paso 1</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Now let&#039;s find 5². How many times do we multiply 5 by itself?</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Now let&#039;s find 5². How many times do we multiply 5 by itself?.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-2">
+            <div class="together-step-head">
+              <span class="step-badge">Step 2 / Paso 2</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> The exponent is 2, so we write 5 × 5.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> The exponente is 2, so we write 5 × 5.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-3">
+            <div class="together-step-head">
+              <span class="step-badge">Step 3 / Paso 3</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> What is 5 × 5? Yes, 25. So 5² = 25.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> What is 5 × 5? Yes, 25. So 5² = 25.</p>
+            <p class="step-hint">💡 Both numbers must change the same way. · Ambos números deben cambiar de la misma manera.</p>
+          </li>
+      </ol>
+    </section>
+
+  
+    <section class="guided-section card section-vocab vocab-section" aria-label="Words to know">
+      <h2 class="section-title">📚 Words to know / Palabras clave</h2>
+      <p class="vocab-family-note bilingual-block">
+        <span class="lang-en">Tap a card to flip. Use these words when you talk about the math together.</span>
+        <span class="lang-es" lang="es">Toquen una tarjeta para voltearla. Usen estas palabras cuando hablen de la matemática juntos.</span>
+      </p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
@@ -1379,18 +1653,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/exponent.svg" alt="Illustration of Exponent: A small number that tells how many times to multiply the number by itself." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Exponent</h3>
-                  <p class="vocab-es">Exponente</p>
-                  <div class="vocab-visual-hint">💡 Example: In 2³, the small 3 means multiply 2 by itself 3 times: 2 × 2 × 2 = 8</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Exponente</p>
+                  <div class="vocab-visual-hint">💡 In 2³, the small 3 means multiply 2 by itself 3 times: 2 × 2 × 2 = 8</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A small number that tells how many times to multiply the number by itself.</p>
-                  <p class="vocab-def-es">Un número pequeño que dice cuántas veces multiplicar el número por sí mismo.</p>
+                  <p class="vocab-def-es" lang="es">Un número pequeño que dice cuántas veces multiplicar el número por sí mismo.</p>
                   <p class="vocab-back-visual">📌 In 2³, the small 3 means multiply 2 by itself 3 times: 2 × 2 × 2 = 8</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1398,18 +1671,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/base.svg" alt="Illustration of Base: The number that gets multiplied by itself." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Base</h3>
-                  <p class="vocab-es">Base</p>
-                  <div class="vocab-visual-hint">💡 Example: In 5², the base is 5 — it is the number being multiplied: 5 × 5 = 25</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Base</p>
+                  <div class="vocab-visual-hint">💡 In 5², the base is 5 — it is the number being multiplied: 5 × 5 = 25</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">The number that gets multiplied by itself.</p>
-                  <p class="vocab-def-es">El número que se multiplica por sí mismo.</p>
+                  <p class="vocab-def-es" lang="es">El número que se multiplica por sí mismo.</p>
                   <p class="vocab-back-visual">📌 In 5², the base is 5 — it is the number being multiplied: 5 × 5 = 25</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1417,18 +1689,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/exponent.svg" alt="Illustration of Power: A number written with a base and an exponent, like 2³." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Power</h3>
-                  <p class="vocab-es">Potencia</p>
-                  <div class="vocab-visual-hint">💡 Example: 10³ = 10 × 10 × 10 = 1,000 — read as &#039;10 to the third power&#039; or &#039;10 cubed&#039;</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Potencia</p>
+                  <div class="vocab-visual-hint">💡 10³ = 10 × 10 × 10 = 1,000 — read as &#039;10 to the third power&#039; or &#039;10 cubed&#039;</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A number written with a base and an exponent, like 2³.</p>
-                  <p class="vocab-def-es">Un número escrito con una base y un exponente, como 2³.</p>
+                  <p class="vocab-def-es" lang="es">Un número escrito con una base y un exponente, como 2³.</p>
                   <p class="vocab-back-visual">📌 10³ = 10 × 10 × 10 = 1,000 — read as &#039;10 to the third power&#039; or &#039;10 cubed&#039;</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1436,18 +1707,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/expression.svg" alt="Illustration of Evaluate: To find the value of an expression." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Evaluate</h3>
-                  <p class="vocab-es">Evaluar</p>
-                  <div class="vocab-visual-hint">💡 Example: Evaluate 3⁴: write 3 × 3 × 3 × 3, then multiply step by step: 9 × 9 = 81</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Evaluar</p>
+                  <div class="vocab-visual-hint">💡 Evaluate 3⁴: write 3 × 3 × 3 × 3, then multiply step by step: 9 × 9 = 81</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">To find the value of an expression.</p>
-                  <p class="vocab-def-es">Encontrar el valor de una expresión.</p>
+                  <p class="vocab-def-es" lang="es">Encontrar el valor de una expresión.</p>
                   <p class="vocab-back-visual">📌 Evaluate 3⁴: write 3 × 3 × 3 × 3, then multiply step by step: 9 × 9 = 81</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1455,18 +1725,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/coefficient.svg" alt="Illustration of Coefficient: The number in front of a letter, like the 3 in 3x." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Coefficient</h3>
-                  <p class="vocab-es">Coeficiente</p>
-                  <div class="vocab-visual-hint">💡 Example: In 3x, the 3 is the coefficient — if x = 4, then 3x = 3 × 4 = 12</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Coeficiente</p>
+                  <div class="vocab-visual-hint">💡 In 3x, the 3 is the coefficient — if x = 4, then 3x = 3 × 4 = 12</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">The number in front of a letter, like the 3 in 3x.</p>
-                  <p class="vocab-def-es">El número frente a una letra, como el 3 en 3x.</p>
+                  <p class="vocab-def-es" lang="es">El número frente a una letra, como el 3 en 3x.</p>
                   <p class="vocab-back-visual">📌 In 3x, the 3 is the coefficient — if x = 4, then 3x = 3 × 4 = 12</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1474,33 +1743,63 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/like-terms.svg" alt="Illustration of Like terms: Terms with the same letter, like 2x and 5x." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Like terms</h3>
-                  <p class="vocab-es">Términos semejantes</p>
-                  <div class="vocab-visual-hint">💡 Example: 4x and 2x are like terms (both have x); 4x and 4x² are NOT like terms (different powers)</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Términos semejantes</p>
+                  <div class="vocab-visual-hint">💡 4x and 2x are like terms (both have x); 4x and 4x² are NOT like terms (different powers)</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">Terms with the same letter, like 2x and 5x.</p>
-                  <p class="vocab-def-es">Términos con la misma letra, como 2x y 5x.</p>
+                  <p class="vocab-def-es" lang="es">Términos con la misma letra, como 2x y 5x.</p>
                   <p class="vocab-back-visual">📌 4x and 2x are like terms (both have x); 4x and 4x² are NOT like terms (different powers)</p>
                 </div>
               </div>
             </div>
-          
       </div>
     </section>
+
   
+    <section class="guided-section card section-stuck" aria-label="If your student gets stuck">
+      <h2 class="section-title">💬 If your student gets stuck / Si se atora</h2>
+      <div class="stuck-grid">
+        <div class="stuck-panel stuck-say">
+          <h3 class="stuck-heading">✅ What to say / Qué decir</h3>
+          <ul>
+            <li><p class="lang-en">What do you already know that could help?</p><p class="lang-es" lang="es">¿Qué ya sabes que podría ayudarte?</p></li><li><p class="lang-en">Can you draw a picture or table for this?</p><p class="lang-es" lang="es">¿Puedes dibujar un dibujo o una tabla para esto?</p></li><li><p class="lang-en">Let&#039;s check one step at a time — no rush.</p><p class="lang-es" lang="es">Revisemos un paso a la vez — sin prisa.</p></li>
+          </ul>
+        </div>
+        <div class="stuck-panel stuck-dont">
+          <h3 class="stuck-heading">🚫 What NOT to say / Qué evitar</h3>
+          <ul>
+            <li><p class="lang-en">That&#039;s wrong — let me just tell you.</p><p class="lang-es" lang="es">Está mal — déjame decírtelo yo.</p></li><li><p class="lang-en">I was never good at math either.</p><p class="lang-es" lang="es">Yo tampoco era bueno en matemáticas.</p></li><li><p class="lang-en">This should be easy.</p><p class="lang-es" lang="es">Esto debería ser fácil.</p></li>
+          </ul>
+        </div>
+      </div>
+      <p class="stuck-footer bilingual-block">
+        <span class="lang-en">Struggle is part of learning. Short breaks and snacks are allowed!</span>
+        <span class="lang-es" lang="es">La dificultad es parte del aprendizaje. ¡Descansos y meriendas están permitidos!</span>
+      </p>
+    </section>
+
   
+    <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
+      <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
+      <p class="bilingual-block">
+        <span class="lang-en">One or two problems to try on the screen. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
+        <span class="lang-es" lang="es">Una o dos preguntas en pantalla. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+      </p>
+    </section>
+
   <main class="problems-container">
     
     <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 1</div>
+        <div class="problem-number-badge">Quick Check 1</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">What is the value of 4³?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="4³ = 4 × 4 × 4 = 64.">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1532,7 +1831,7 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
@@ -1541,13 +1840,13 @@ header.homework-header h1 {
 
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 2</div>
+        <div class="problem-number-badge">Quick Check 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">What is the value of 6²?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="6² = 6 × 6 = 36.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1579,673 +1878,25 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
   
-
-    <section class="problem-section card" id="problem_2" data-problem-type="fill-table">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 3</div>
-        <div class="problem-type-badge">FILL TABLE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Evaluate each exponential expression. Show the repeated multiplication and the final value.</p>
-        <p class="family-problem-tip">👪 Family tip: Encourage your student to show their work on paper if a box feels tricky.</p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Power</th><th>Repeated Multiplication</th><th>Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>4³</td><td>4 × 4 × 4</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_0_2"
-                                   data-correct="64" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>2⁶</td><td>2 × 2 × 2 × 2 × 2 × 2</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_1_2"
-                                   data-correct="64" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>5³</td><td>5 × 5 × 5</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_2_2"
-                                   data-correct="125" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>10⁴</td><td>10 × 10 × 10 × 10</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_3_2"
-                                   data-correct="10000" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-            </tbody>
-          </table>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_3" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 4</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Sort each power by whether its value is greater than 50 or not.</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        
-        <div class="drag-sort-workspace" id="dragsort_3">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="greater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 3, 'greater')">
-                <div class="drag-column-header">Value &gt; 50</div>
-                <div class="drag-column-slots" id="slots_3_greater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 3, 'greater')"></div>
-              </div>
-              <div class="drag-column" data-category-id="notgreater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 3, 'notgreater')">
-                <div class="drag-column-header">Value ≤ 50</div>
-                <div class="drag-column-slots" id="slots_3_notgreater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 3, 'notgreater')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_3" ondragover="allowDrop(event)" ondrop="handleDrop(event, 3, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_3_0"
-                     data-item-index="0"
-                     data-correct-category="notgreater"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">2⁵ = 32</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_3_0', 3); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Value &gt; 50</option><option value="notgreater">Value ≤ 50</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_3_1"
-                     data-item-index="1"
-                     data-correct-category="greater"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">3⁴ = 81</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_3_1', 3); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Value &gt; 50</option><option value="notgreater">Value ≤ 50</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_3_2"
-                     data-item-index="2"
-                     data-correct-category="notgreater"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">7² = 49</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_3_2', 3); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Value &gt; 50</option><option value="notgreater">Value ≤ 50</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_3_3"
-                     data-item-index="3"
-                     data-correct-category="greater"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">10² = 100</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_3_3', 3); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Value &gt; 50</option><option value="notgreater">Value ≤ 50</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_3_4"
-                     data-item-index="4"
-                     data-correct-category="greater"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">5³ = 125</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_3_4', 3); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Value &gt; 50</option><option value="notgreater">Value ≤ 50</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_3_5"
-                     data-item-index="5"
-                     data-correct-category="notgreater"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">4² = 16</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_3_5', 3); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Value &gt; 50</option><option value="notgreater">Value ≤ 50</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(3); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_4" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 5</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Match each power to its value.</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="2⁵" data-correct="32">
-              <div class="matching-term">2⁵</div>
-              <div class="matching-select-container">
-                <select name="q_4_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="1000">1000</option><option value="128">128</option><option value="25">25</option><option value="27">27</option><option value="32">32</option><option value="64">64</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="3³" data-correct="27">
-              <div class="matching-term">3³</div>
-              <div class="matching-select-container">
-                <select name="q_4_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="1000">1000</option><option value="128">128</option><option value="25">25</option><option value="27">27</option><option value="32">32</option><option value="64">64</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="4³" data-correct="64">
-              <div class="matching-term">4³</div>
-              <div class="matching-select-container">
-                <select name="q_4_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="1000">1000</option><option value="128">128</option><option value="25">25</option><option value="27">27</option><option value="32">32</option><option value="64">64</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="10³" data-correct="1000">
-              <div class="matching-term">10³</div>
-              <div class="matching-select-container">
-                <select name="q_4_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="1000">1000</option><option value="128">128</option><option value="25">25</option><option value="27">27</option><option value="32">32</option><option value="64">64</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="5²" data-correct="25">
-              <div class="matching-term">5²</div>
-              <div class="matching-select-container">
-                <select name="q_4_pair_4" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="1000">1000</option><option value="128">128</option><option value="25">25</option><option value="27">27</option><option value="32">32</option><option value="64">64</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="2⁷" data-correct="128">
-              <div class="matching-term">2⁷</div>
-              <div class="matching-select-container">
-                <select name="q_4_pair_5" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="1000">1000</option><option value="128">128</option><option value="25">25</option><option value="27">27</option><option value="32">32</option><option value="64">64</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">The drum loop plays 3⁴ beats. What is the value of 3⁴?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="3⁴ means use 3 as a factor 4 times: 3 × 3 × 3 × 3 = 81. It is NOT 3 × 4 = 12.">
-          
-            <label class="mc-option-label" id="label_q_5_0">
-              <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">81</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_1">
-              <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">12</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_2">
-              <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">7</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_3">
-              <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">27</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A synth pattern repeats 7 × 7 × 7. How do you write that as a power?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="The base 7 is used as a factor 3 times, so the power is 7³. 7³ = 7 × 7 × 7 = 343.">
-          
-            <label class="mc-option-label" id="label_q_6_0">
-              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">7³</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_1">
-              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">3⁷</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_2">
-              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">7 × 3</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_3">
-              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">21³</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 8</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">The bass line doubles for 2⁶ counts. What is the value of 2⁶?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="2⁶ = 2 × 2 × 2 × 2 × 2 × 2 = 64. The exponent 6 counts how many times 2 is a factor.">
-          
-            <label class="mc-option-label" id="label_q_7_0">
-              <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">64</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_1">
-              <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">12</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_2">
-              <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">32</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_3">
-              <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">36</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_8" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 9</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Drag each repeated-multiplication beat next to its matching exponential form.</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        
-        <div class="drag-sort-workspace" id="dragsort_8">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="p7" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'p7')">
-                <div class="drag-column-header">7³</div>
-                <div class="drag-column-slots" id="slots_8_p7" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'p7')"></div>
-              </div>
-              <div class="drag-column" data-category-id="p6" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'p6')">
-                <div class="drag-column-header">6²</div>
-                <div class="drag-column-slots" id="slots_8_p6" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'p6')"></div>
-              </div>
-              <div class="drag-column" data-category-id="p4" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'p4')">
-                <div class="drag-column-header">4⁴</div>
-                <div class="drag-column-slots" id="slots_8_p4" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'p4')"></div>
-              </div>
-              <div class="drag-column" data-category-id="p9" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'p9')">
-                <div class="drag-column-header">9²</div>
-                <div class="drag-column-slots" id="slots_8_p9" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'p9')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_8" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_0"
-                     data-item-index="0"
-                     data-correct-category="p7"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">7 × 7 × 7</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_0', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="p7">7³</option><option value="p6">6²</option><option value="p4">4⁴</option><option value="p9">9²</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_1"
-                     data-item-index="1"
-                     data-correct-category="p6"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">6 × 6</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_1', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="p7">7³</option><option value="p6">6²</option><option value="p4">4⁴</option><option value="p9">9²</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_2"
-                     data-item-index="2"
-                     data-correct-category="p4"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">4 × 4 × 4 × 4</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_2', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="p7">7³</option><option value="p6">6²</option><option value="p4">4⁴</option><option value="p9">9²</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_3"
-                     data-item-index="3"
-                     data-correct-category="p9"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">9 × 9</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_3', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="p7">7³</option><option value="p6">6²</option><option value="p4">4⁴</option><option value="p9">9²</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(8); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_9" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Match each power to the number of beats it plays (its value).</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="7³" data-correct="343">
-              <div class="matching-term">7³</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="216">216</option><option value="256">256</option><option value="343">343</option><option value="36">36</option><option value="49">49</option><option value="81">81</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="6²" data-correct="36">
-              <div class="matching-term">6²</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="216">216</option><option value="256">256</option><option value="343">343</option><option value="36">36</option><option value="49">49</option><option value="81">81</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="4⁴" data-correct="256">
-              <div class="matching-term">4⁴</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="216">216</option><option value="256">256</option><option value="343">343</option><option value="36">36</option><option value="49">49</option><option value="81">81</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="9²" data-correct="81">
-              <div class="matching-term">9²</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="216">216</option><option value="256">256</option><option value="343">343</option><option value="36">36</option><option value="49">49</option><option value="81">81</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="6³" data-correct="216">
-              <div class="matching-term">6³</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_4" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="216">216</option><option value="256">256</option><option value="343">343</option><option value="36">36</option><option value="49">49</option><option value="81">81</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="7²" data-correct="49">
-              <div class="matching-term">7²</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_5" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="216">216</option><option value="256">256</option><option value="343">343</option><option value="36">36</option><option value="49">49</option><option value="81">81</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
   </main>
+
   
+    <section class="guided-section card section-celebrate" aria-label="Celebration">
+      <h2 class="section-title">🎉 You did it together! / ¡Lo lograron juntos!</h2>
+      <p class="celebrate-text lang-en">High five! Whether every answer was perfect or not, you showed up for your student tonight. That matters.</p>
+      <p class="celebrate-text lang-es" lang="es">¡Chócalas! No importa si cada respuesta fue perfecta — estuviste con tu estudiante esta noche. Eso importa.</p>
+      <p class="celebrate-sub bilingual-block">
+        <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
+        <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
+      </p>
+    </section>
+
 </div>
 
 <!-- Sticky bottom actions bar -->
@@ -2255,7 +1906,7 @@ header.homework-header h1 {
     
     <div class="score-progress-container">
       <div class="score-text">
-        Homework Progress: <span id="progress_text">0 / 10 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 2 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -2263,8 +1914,8 @@ header.homework-header h1 {
     </div>
     
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset</button>
-      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All Problems</button>
+      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset / Reiniciar</button>
+      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All / Revisar todo</button>
     </div>
   </div>
 </div>

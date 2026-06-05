@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interactive Homework — Lesson 8-7: Shape of Data Distributions</title>
+<title>Help Your Student — Lesson 8-7: Shape of Data Distributions</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -266,6 +266,13 @@ header.homework-header h1 {
   border-radius: var(--radius-sm);
   font-size: 13.5px;
   color: var(--hint);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.family-problem-tip .lang-es {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .family-hint-box {
@@ -1306,70 +1313,331 @@ header.homework-header h1 {
     justify-content: center;
   }
 }
+
+/* Family guided notes layout */
+.family-welcome {
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  color: var(--white);
+  border: none;
+  padding: 28px 24px;
+}
+.welcome-hero {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.welcome-emoji { font-size: 48px; line-height: 1; }
+.welcome-tag {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal-light);
+  font-weight: 800;
+}
+.welcome-title-en, .welcome-title-es {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 5vw, 34px);
+  font-weight: 800;
+  line-height: 1.15;
+}
+.welcome-title-es { color: var(--amber); font-size: clamp(22px, 4.5vw, 30px); margin-top: 2px; }
+.welcome-lesson { margin: 8px 0 0; font-size: 16px; color: var(--teal-light); font-weight: 600; }
+.welcome-lead { margin: 0 0 12px; font-size: 15px; line-height: 1.5; }
+.family-welcome .back-link { color: var(--amber); margin: 0; }
+.family-welcome .back-link:hover { color: var(--white); }
+
+.bilingual-block, .bilingual-grid { display: flex; flex-direction: column; gap: 10px; }
+.bilingual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 640px) {
+  .bilingual-grid { grid-template-columns: 1fr; }
+}
+.bilingual-col {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.lang-label {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal);
+  margin-bottom: 6px;
+}
+.lang-en { margin: 0 0 6px; }
+.lang-es { margin: 0; color: var(--muted); font-style: normal; }
+.learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
+.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+
+.guided-section { scroll-margin-top: 16px; }
+.section-learn { border-left: 4px solid var(--teal); }
+.section-visual { border-left: 4px solid var(--amber); }
+.section-together { border-left: 4px solid #5b8def; }
+.section-vocab { border-left: 4px solid var(--coral); }
+.section-stuck { border-left: 4px solid #9b59b6; }
+.section-quick-intro { border-left: 4px solid var(--success); }
+.section-celebrate {
+  border-left: 4px solid var(--amber);
+  background: linear-gradient(180deg, var(--amber-light), var(--white));
+  text-align: center;
+}
+
+.concept-visual-wrap { margin: 12px 0 16px; overflow-x: auto; }
+.concept-svg { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.concept-fallback-visual { display: flex; flex-direction: column; gap: 8px; }
+.concept-fallback-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  font-weight: 600; font-size: 14px;
+}
+.step-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; color: var(--white);
+  flex-shrink: 0;
+}
+.step-color-1 .step-dot, .step-color-1.step-badge { background: #5b8def; }
+.step-color-2 .step-dot, .step-color-2.step-badge { background: var(--success); }
+.step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
+.step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
+
+.key-idea-banner {
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid #b8ddd8;
+}
+.key-idea-banner p { margin: 0 0 6px; font-size: 14.5px; }
+.key-idea-banner p:last-child { margin-bottom: 0; }
+
+.guided-steps, .together-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.guided-step, .together-step {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  background: var(--white);
+}
+.step-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  padding: 3px 8px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+}
+.guided-step p, .together-step p { margin: 0 0 6px; font-size: 14.5px; line-height: 1.45; }
+.step-hint {
+  margin: 8px 0 0 !important;
+  padding: 8px 10px;
+  background: var(--hint-bg);
+  border-radius: var(--radius-sm);
+  font-size: 13px !important;
+  color: var(--hint);
+}
+
+.watch-for-list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.watch-for-list li {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
+}
+.watch-icon { font-size: 20px; flex-shrink: 0; }
+
+.try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
+.try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
+
+.stuck-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+@media (max-width: 640px) { .stuck-grid { grid-template-columns: 1fr; } }
+.stuck-panel {
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+}
+.stuck-say { background: var(--success-bg); border-color: var(--success); }
+.stuck-dont { background: var(--error-bg); border-color: var(--error); }
+.stuck-heading { margin: 0 0 10px; font-family: var(--font-display); font-size: 14px; color: var(--navy); }
+.stuck-panel ul { margin: 0; padding-left: 16px; }
+.stuck-panel li { margin-bottom: 10px; font-size: 14px; }
+.stuck-panel li p { margin: 0 0 4px; }
+.stuck-footer { font-size: 14px; color: var(--muted); margin: 0; }
+
+.celebrate-text { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; }
+.celebrate-sub { font-size: 14px; margin: 0; }
+
+.problems-container .problem-section { border-left: 4px solid var(--teal); }
+.problems-container .problem-number-badge::after {
+  content: " / Repaso";
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
 </style>
 </head>
 <body>
 
 <div class="container">
-  
-  <header class="homework-header">
-    <a href="/curriculum/" class="back-link">⬅ Curriculum Hub</a>
-    <div class="header-meta">Unit 8 · Standard 6.SP.2 · Homework</div>
-    <h1>Shape of Data Distributions</h1>
-    <div class="objectives-card">
-      <div class="objective-row"><span class="objective-badge">Target</span> <strong>I can describe the shape of a data distribution as symmetric, skewed, or having clusters and gaps.</strong></div>
-      <div class="objective-row"><span class="objective-badge">Discuss</span> <strong>I can explain my description using the words symmetric, skewed, cluster, and gap.</strong></div>
-    </div>
-  </header>
 
   
-    <section class="family-guide card" aria-label="Family guide">
-      <div class="family-guide-header">
-        <span class="family-guide-emoji">🏀</span>
-        <div>
-          <h2 class="section-title family-guide-title">Family Guide</h2>
-          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+    <header class="family-welcome card" aria-label="Family Math Night welcome">
+      <div class="welcome-hero">
+        <span class="welcome-emoji" aria-hidden="true">🏀</span>
+        <div class="welcome-titles">
+          <p class="welcome-tag">Unit 8 · 6.SP.2</p>
+          <h1 class="welcome-title-en">Family Math Night</h1>
+          <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
+          <p class="welcome-lesson">Shape of Data Distributions · Lesson 8-7</p>
         </div>
       </div>
+      <p class="welcome-lead bilingual-block">
+        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+      </p>
+      <a href="/curriculum/" class="back-link">⬅ Curriculum Hub / Centro curricular</a>
+    </header>
 
-      <div class="family-guide-grid">
-        <div class="family-panel family-panel-tips">
-          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
-          <ul class="family-tip-list">
-            <li>Let your student try each problem first. Tap <strong>Check This Problem</strong> on any question for instant feedback — no need to finish the whole page.</li>
-            <li>Tap vocabulary cards to flip between term and definition.</li>
-            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
-          </ul>
+  
+    <section class="guided-section card section-learn" aria-label="What we are learning tonight">
+      <h2 class="section-title">📖 What we're learning tonight / Qué aprendemos hoy</h2>
+      <div class="bilingual-grid">
+        <div class="bilingual-col lang-en">
+          <span class="lang-label">English</span>
+          <p class="learning-big">Describe the shape of a data distribution as symmetric, skewed, or having clusters and gaps.</p>
+          <p class="learning-sub">Also practice saying: <em>explain my description using the words symmetric, skewed, cluster, and gap</em></p>
         </div>
-
-        <div class="family-panel family-panel-home">
-          <h3 class="family-panel-heading">🏡 Try this at home</h3>
-          <p class="family-try-text">The analyst graphs player heights, 3-pointers per game, and coaches&#039; years of experience. Why might each data set have a DIFFERENT shape when graphed?</p>
+        <div class="bilingual-col lang-es" lang="es">
+          <span class="lang-label">Español</span>
+          <p class="learning-big">Puedo describir la forma de una distribución de datos como simétrica, sesgada o con agrupamientos y huecos.</p>
+          <p class="learning-sub">También practiquen: <em>explicar mi descripción usando las palabras Simétrico, Sesgado, Agrupamiento, y Hueco (espacio)</em></p>
         </div>
       </div>
-
-      
-        <div class="family-panel family-panel-legend">
-          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
-          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>matching game:</strong> Say each term out loud, then talk through which match makes sense before choosing.</li><li><strong>drag sort:</strong> On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</li></ul>
-        </div>
-
-      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
     </section>
-  
 
   
-    <section class="try-at-home card" aria-label="Try this at home">
-      <h2 class="section-title">🏀 Real-World Connection</h2>
-      <p class="try-narrative">The league analyst is studying three different data sets from the season: (1) Player heights across all teams, (2) Number of 3-pointers per game by each player, and (3) Years of experience for all coaches. Each data set has a different shape when graphed. Your job is to describe each shape and explain what it tells us about the data.</p>
-      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    <section class="guided-section card section-visual" aria-label="Visual concept explainer">
+      <h2 class="section-title">🎯 The big idea / La idea principal</h2>
+      <div class="concept-visual-wrap">
+    <div class="concept-fallback-visual" aria-hidden="true">
+      <div class="concept-fallback-step step-color-1"><span class="step-dot">1</span><span>The shape of a data distribution describes how the values are spread out</span></div><div class="concept-fallback-step step-color-2"><span class="step-dot">2</span><span>Example 1, bar heights from left to right: 2, 5, 8, 5, 2</span></div><div class="concept-fallback-step step-color-3"><span class="step-dot">3</span><span>Both sides look like mirror images, so this shape is symmetric</span></div>
+    </div></div>
+      <div class="key-idea-banner">
+        <p class="lang-en"><strong>Watch for this:</strong> Symmetric data mirrors around the center; skewed data has a long tail, and the skew is named for the direction the tail points.</p>
+        <p class="lang-es" lang="es"><strong>Observa esto:</strong> Puedo describir la forma de una distribución de datos como simétrica, sesgada o con agrupamientos y huecos.</p>
+      </div>
+      <ol class="guided-steps">
+        
+          <li class="guided-step step-color-1">
+            <span class="step-badge">Step 1 / Paso 1</span>
+            <p class="lang-en">The shape of a data distribution describes how the values are spread out. Data can be symmetric (the same on both sides), skewed (bunched on one side with a long tail on the other), or have clusters and gaps.</p>
+            <p class="lang-es" lang="es">Puedo describir la forma de una distribución de datos como simétrica, sesgada o con agrupamientos y huecos.</p>
+          </li>
+          <li class="guided-step step-color-2">
+            <span class="step-badge">Step 2 / Paso 2</span>
+            <p class="lang-en">Example 1, bar heights from left to right: 2, 5, 8, 5, 2. The bars rise to a peak in the middle and fall evenly on both sides.</p>
+            <p class="lang-es" lang="es">Puedo describir la forma de una distribución de datos como simétrica, sesgada o con agrupamientos y huecos.</p>
+          </li>
+          <li class="guided-step step-color-3">
+            <span class="step-badge">Step 3 / Paso 3</span>
+            <p class="lang-en">Both sides look like mirror images, so this shape is symmetric.</p>
+            <p class="lang-es" lang="es">Puedo describir la forma de una distribución de datos como simétrica, sesgada o con agrupamientos y huecos.</p>
+          </li>
+          <li class="guided-step step-color-4">
+            <span class="step-badge">Step 4 / Paso 4</span>
+            <p class="lang-en">Example 2, bar heights: 9, 6, 3, 1. The tallest bars are on the left and the bars get shorter going right.</p>
+            <p class="lang-es" lang="es">Puedo describir la forma de una distribución de datos como simétrica, sesgada o con agrupamientos y huecos.</p>
+          </li>
+      </ol>
+      <ul class="watch-for-list">
+        
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Symmetric&quot; — it means: Data that looks about the same on the left and right.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Simétrico&quot; — significa: Datos que se ven casi iguales a la izquierda y a la derecha.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Skewed&quot; — it means: Data bunched on one side with a tail on the other.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Sesgado&quot; — significa: Datos amontonados de un lado con una cola del otro.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Cluster&quot; — it means: A group of numbers that are close together.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Agrupamiento&quot; — significa: Un grupo de números que están cerca unos de otros.</p>
+            </div>
+          </li>
+      </ul>
     </section>
-  
 
   
-    <section class="vocab-section card">
-      <h2 class="section-title">🔑 Key Vocabulary</h2>
-      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
+    <section class="guided-section card section-together" aria-label="Try this together">
+      <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
+      <p class="try-scenario lang-en">The league analyst is studying three different data sets from the season: (1) Player heights across all teams, (2) Number of 3-pointers per game by each player, and (3) Years of experience for all coaches.</p>
+             <p class="try-scenario lang-es" lang="es">The league analyst is studying three different datos sets from the season: (1) Player heights across all teams, (2) Number of 3-pointers per game by each player, and (3) Years of experience for all coaches.</p>
+      <p class="try-together-note bilingual-block">
+        <span class="lang-en">Work side by side. You ask questions; your student does the thinking.</span>
+        <span class="lang-es" lang="es">Trabajen juntos. Tú haces preguntas; tu estudiante piensa.</span>
+      </p>
+      <ol class="together-steps">
+        
+          <li class="together-step step-color-1">
+            <div class="together-step-head">
+              <span class="step-badge">Step 1 / Paso 1</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> New bar heights: 1, 3, 6, 9. Where are the tallest bars, and which way does the tail point?</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> New bar heights: 1, 3, 6, 9. Where are the tallest bars, and which way does the tail point?.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-2">
+            <div class="together-step-head">
+              <span class="step-badge">Step 2 / Paso 2</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Since the tail points left, is this symmetric, skewed right, or skewed left?</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Since the tail points left, is this simétrico, sesgado right, or sesgado left?.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-3">
+            <div class="together-step-head">
+              <span class="step-badge">Step 3 / Paso 3</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Now picture heights 2, 6, 6, 2. Do both sides match? What shape is that?</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Now picture heights 2, 6, 6, 2. Do both sides match? What shape is that?.</p>
+            <p class="step-hint">💡 Both numbers must change the same way. · Ambos números deben cambiar de la misma manera.</p>
+          </li>
+      </ol>
+    </section>
+
+  
+    <section class="guided-section card section-vocab vocab-section" aria-label="Words to know">
+      <h2 class="section-title">📚 Words to know / Palabras clave</h2>
+      <p class="vocab-family-note bilingual-block">
+        <span class="lang-en">Tap a card to flip. Use these words when you talk about the math together.</span>
+        <span class="lang-es" lang="es">Toquen una tarjeta para voltearla. Usen estas palabras cuando hablen de la matemática juntos.</span>
+      </p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
@@ -1379,18 +1647,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/histogram.svg" alt="Illustration of Symmetric: Data that looks about the same on the left and right." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Symmetric</h3>
-                  <p class="vocab-es">Simétrico</p>
-                  <div class="vocab-visual-hint">💡 Example: Heights: 60, 62, 64, 66, 68, 66, 64, 62, 60 — rises and falls evenly like a hill</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Simétrico</p>
+                  <div class="vocab-visual-hint">💡 Heights: 60, 62, 64, 66, 68, 66, 64, 62, 60 — rises and falls evenly like a hill</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">Data that looks about the same on the left and right.</p>
-                  <p class="vocab-def-es">Datos que se ven casi iguales a la izquierda y a la derecha.</p>
+                  <p class="vocab-def-es" lang="es">Datos que se ven casi iguales a la izquierda y a la derecha.</p>
                   <p class="vocab-back-visual">📌 Heights: 60, 62, 64, 66, 68, 66, 64, 62, 60 — rises and falls evenly like a hill</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1398,18 +1665,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/histogram.svg" alt="Illustration of Skewed: Data bunched on one side with a tail on the other." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Skewed</h3>
-                  <p class="vocab-es">Sesgado</p>
-                  <div class="vocab-visual-hint">💡 Example: Skewed right: most data low (1,2,2,3,3,3,15) — tail stretches toward the high value</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Sesgado</p>
+                  <div class="vocab-visual-hint">💡 Skewed right: most data low (1,2,2,3,3,3,15) — tail stretches toward the high value</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">Data bunched on one side with a tail on the other.</p>
-                  <p class="vocab-def-es">Datos amontonados de un lado con una cola del otro.</p>
+                  <p class="vocab-def-es" lang="es">Datos amontonados de un lado con una cola del otro.</p>
                   <p class="vocab-back-visual">📌 Skewed right: most data low (1,2,2,3,3,3,15) — tail stretches toward the high value</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1417,18 +1683,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/cluster.svg" alt="Illustration of Cluster: A group of numbers that are close together." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Cluster</h3>
-                  <p class="vocab-es">Agrupamiento</p>
-                  <div class="vocab-visual-hint">💡 Example: Scores 18, 19, 20, 21, 22 form a cluster around 20 — they are tightly grouped</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Agrupamiento</p>
+                  <div class="vocab-visual-hint">💡 Scores 18, 19, 20, 21, 22 form a cluster around 20 — they are tightly grouped</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A group of numbers that are close together.</p>
-                  <p class="vocab-def-es">Un grupo de números que están cerca unos de otros.</p>
+                  <p class="vocab-def-es" lang="es">Un grupo de números que están cerca unos de otros.</p>
                   <p class="vocab-back-visual">📌 Scores 18, 19, 20, 21, 22 form a cluster around 20 — they are tightly grouped</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1436,18 +1701,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/histogram.svg" alt="Illustration of Gap: A big empty space where there is no data." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Gap</h3>
-                  <p class="vocab-es">Hueco (espacio)</p>
-                  <div class="vocab-visual-hint">💡 Example: Data: 5, 6, 7, 8, ___, ___, ___, 20 — the empty space from 9 to 19 is a gap</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Hueco (espacio)</p>
+                  <div class="vocab-visual-hint">💡 Data: 5, 6, 7, 8, ___, ___, ___, 20 — the empty space from 9 to 19 is a gap</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A big empty space where there is no data.</p>
-                  <p class="vocab-def-es">Un espacio grande y vacío donde no hay datos.</p>
+                  <p class="vocab-def-es" lang="es">Un espacio grande y vacío donde no hay datos.</p>
                   <p class="vocab-back-visual">📌 Data: 5, 6, 7, 8, ___, ___, ___, 20 — the empty space from 9 to 19 is a gap</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1455,18 +1719,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/distribution.svg" alt="Illustration of Data distribution: How the data looks: where it sits and how spread out it is." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Data distribution</h3>
-                  <p class="vocab-es">Distribución de datos</p>
-                  <div class="vocab-visual-hint">💡 Example: Looking at a dot plot or histogram, you can see if data is symmetric, skewed, clustered, or has gaps</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Distribución de datos</p>
+                  <div class="vocab-visual-hint">💡 Looking at a dot plot or histogram, you can see if data is symmetric, skewed, clustered, or has gaps</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">How the data looks: where it sits and how spread out it is.</p>
-                  <p class="vocab-def-es">Cómo se ven los datos: dónde están y qué tan separados están.</p>
+                  <p class="vocab-def-es" lang="es">Cómo se ven los datos: dónde están y qué tan separados están.</p>
                   <p class="vocab-back-visual">📌 Looking at a dot plot or histogram, you can see if data is symmetric, skewed, clustered, or has gaps</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1474,33 +1737,63 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/spread.svg" alt="Illustration of Variability: How spread out the numbers are." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Variability</h3>
-                  <p class="vocab-es">Variabilidad</p>
-                  <div class="vocab-visual-hint">💡 Example: Symmetric data with low variability: tightly packed around the center. Skewed data: spread unevenly</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Variabilidad</p>
+                  <div class="vocab-visual-hint">💡 Symmetric data with low variability: tightly packed around the center. Skewed data: spread unevenly</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">How spread out the numbers are.</p>
-                  <p class="vocab-def-es">Qué tan separados están los números.</p>
+                  <p class="vocab-def-es" lang="es">Qué tan separados están los números.</p>
                   <p class="vocab-back-visual">📌 Symmetric data with low variability: tightly packed around the center. Skewed data: spread unevenly</p>
                 </div>
               </div>
             </div>
-          
       </div>
     </section>
+
   
+    <section class="guided-section card section-stuck" aria-label="If your student gets stuck">
+      <h2 class="section-title">💬 If your student gets stuck / Si se atora</h2>
+      <div class="stuck-grid">
+        <div class="stuck-panel stuck-say">
+          <h3 class="stuck-heading">✅ What to say / Qué decir</h3>
+          <ul>
+            <li><p class="lang-en">What do you already know that could help?</p><p class="lang-es" lang="es">¿Qué ya sabes que podría ayudarte?</p></li><li><p class="lang-en">Can you draw a picture or table for this?</p><p class="lang-es" lang="es">¿Puedes dibujar un dibujo o una tabla para esto?</p></li><li><p class="lang-en">Let&#039;s check one step at a time — no rush.</p><p class="lang-es" lang="es">Revisemos un paso a la vez — sin prisa.</p></li>
+          </ul>
+        </div>
+        <div class="stuck-panel stuck-dont">
+          <h3 class="stuck-heading">🚫 What NOT to say / Qué evitar</h3>
+          <ul>
+            <li><p class="lang-en">That&#039;s wrong — let me just tell you.</p><p class="lang-es" lang="es">Está mal — déjame decírtelo yo.</p></li><li><p class="lang-en">I was never good at math either.</p><p class="lang-es" lang="es">Yo tampoco era bueno en matemáticas.</p></li><li><p class="lang-en">This should be easy.</p><p class="lang-es" lang="es">Esto debería ser fácil.</p></li>
+          </ul>
+        </div>
+      </div>
+      <p class="stuck-footer bilingual-block">
+        <span class="lang-en">Struggle is part of learning. Short breaks and snacks are allowed!</span>
+        <span class="lang-es" lang="es">La dificultad es parte del aprendizaje. ¡Descansos y meriendas están permitidos!</span>
+      </p>
+    </section>
+
   
+    <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
+      <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
+      <p class="bilingual-block">
+        <span class="lang-en">One or two problems to try on the screen. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
+        <span class="lang-es" lang="es">Una o dos preguntas en pantalla. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+      </p>
+    </section>
+
   <main class="problems-container">
     
     <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 1</div>
+        <div class="problem-number-badge">Quick Check 1</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">A histogram of basketball players&#039; ages shows: most players are 22–28, with a long tail of older players up to age 40. What is the shape of this distribution?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="Most data is on the left (younger ages) with a tail stretching right (older ages). This is skewed right.">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1532,7 +1825,7 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
@@ -1541,13 +1834,13 @@ header.homework-header h1 {
 
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 2</div>
+        <div class="problem-number-badge">Quick Check 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">A data set is symmetric. What is likely true about the mean and median?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="In a symmetric distribution, the mean and median are approximately equal because the data is balanced on both sides.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1579,547 +1872,25 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
   
-
-    <section class="problem-section card" id="problem_2" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A dot plot of goals scored per game shows: 0(5 dots), 1(7 dots), 2(4 dots), 3(2 dots), 4(1 dot). What is the shape?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="The data peaks at 0–1 goals and tails off toward 4. Most data is on the left with fewer values stretching right — this is skewed right.">
-          
-            <label class="mc-option-label" id="label_q_2_0">
-              <input type="radio" name="q_2" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Skewed right — most values at the low end with a tail to the right</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_2_1">
-              <input type="radio" name="q_2" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Symmetric — equal on both sides</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_2_2">
-              <input type="radio" name="q_2" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Skewed left — most values at the high end</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_2_3">
-              <input type="radio" name="q_2" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Uniform — all bars the same height</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_3" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 4</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Match each distribution shape to how its mean and median compare.</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="Symmetric" data-correct="Mean ≈ Median — use either (mean is fine)">
-              <div class="matching-term">Symmetric</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Mean &lt; Median — use the median (low tail pulls the mean down)">Mean &lt; Median — use the median (low tail pulls the mean down)</option><option value="Mean &gt; Median — use the median (high tail pulls the mean up)">Mean &gt; Median — use the median (high tail pulls the mean up)</option><option value="Mean ≈ Median — use either (mean is fine)">Mean ≈ Median — use either (mean is fine)</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Skewed Right" data-correct="Mean &gt; Median — use the median (high tail pulls the mean up)">
-              <div class="matching-term">Skewed Right</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Mean &lt; Median — use the median (low tail pulls the mean down)">Mean &lt; Median — use the median (low tail pulls the mean down)</option><option value="Mean &gt; Median — use the median (high tail pulls the mean up)">Mean &gt; Median — use the median (high tail pulls the mean up)</option><option value="Mean ≈ Median — use either (mean is fine)">Mean ≈ Median — use either (mean is fine)</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Skewed Left" data-correct="Mean &lt; Median — use the median (low tail pulls the mean down)">
-              <div class="matching-term">Skewed Left</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Mean &lt; Median — use the median (low tail pulls the mean down)">Mean &lt; Median — use the median (low tail pulls the mean down)</option><option value="Mean &gt; Median — use the median (high tail pulls the mean up)">Mean &gt; Median — use the median (high tail pulls the mean up)</option><option value="Mean ≈ Median — use either (mean is fine)">Mean ≈ Median — use either (mean is fine)</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_4" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 5</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Classify each data set by its distribution shape.</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        <div class="family-hint-box"><p>💡 Look for outliers or tails. A high outlier creates a right skew. A low outlier creates a left skew.</p><p>💡 If data is roughly even on both sides of the center, it is symmetric.</p></div>
-        <div class="drag-sort-workspace" id="dragsort_4">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="symmetric" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'symmetric')">
-                <div class="drag-column-header">Symmetric</div>
-                <div class="drag-column-slots" id="slots_4_symmetric" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'symmetric')"></div>
-              </div>
-              <div class="drag-column" data-category-id="skewed-right" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'skewed-right')">
-                <div class="drag-column-header">Skewed Right</div>
-                <div class="drag-column-slots" id="slots_4_skewed-right" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'skewed-right')"></div>
-              </div>
-              <div class="drag-column" data-category-id="skewed-left" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'skewed-left')">
-                <div class="drag-column-header">Skewed Left</div>
-                <div class="drag-column-slots" id="slots_4_skewed-left" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'skewed-left')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_4" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_0"
-                     data-item-index="0"
-                     data-correct-category="symmetric"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Test scores: 70, 75, 80, 80, 85, 90</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_0', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="symmetric">Symmetric</option><option value="skewed-right">Skewed Right</option><option value="skewed-left">Skewed Left</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_1"
-                     data-item-index="1"
-                     data-correct-category="skewed-right"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Donations: $5, $5, $10, $10, $10, $15, $200</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_1', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="symmetric">Symmetric</option><option value="skewed-right">Skewed Right</option><option value="skewed-left">Skewed Left</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_2"
-                     data-item-index="2"
-                     data-correct-category="skewed-left"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Quiz scores: 30, 75, 80, 85, 90, 90, 95</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_2', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="symmetric">Symmetric</option><option value="skewed-right">Skewed Right</option><option value="skewed-left">Skewed Left</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(4); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Display 1: A histogram of points-per-game has a few short bars stretching out to the high-scoring side, with a long tail of high values on the right. What shape is this distribution?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="A tail of high values stretching to the right means the distribution is skewed right. The skew is named for the tail&#039;s direction.">
-          
-            <label class="mc-option-label" id="label_q_5_0">
-              <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Skewed right</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_1">
-              <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Skewed left</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_2">
-              <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Symmetric</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_3">
-              <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Uniform</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Display 2: A dot plot of starting players&#039; heights has one clear peak in the middle, with roughly even sides falling away from that peak. What shape best describes this distribution?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="One peak in the middle with roughly even sides means the data mirrors around the center, so it is symmetric with a single cluster at the peak.">
-          
-            <label class="mc-option-label" id="label_q_6_0">
-              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Symmetric with one cluster around the peak</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_1">
-              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Skewed right</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_2">
-              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Skewed left</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_3">
-              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Has a large gap</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_7" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 8</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Sort each described sports display into the shape feature it shows best.</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        
-        <div class="drag-sort-workspace" id="dragsort_7">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="symmetric" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'symmetric')">
-                <div class="drag-column-header">Symmetric</div>
-                <div class="drag-column-slots" id="slots_7_symmetric" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'symmetric')"></div>
-              </div>
-              <div class="drag-column" data-category-id="skewed-right" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'skewed-right')">
-                <div class="drag-column-header">Skewed Right</div>
-                <div class="drag-column-slots" id="slots_7_skewed-right" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'skewed-right')"></div>
-              </div>
-              <div class="drag-column" data-category-id="skewed-left" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'skewed-left')">
-                <div class="drag-column-header">Skewed Left</div>
-                <div class="drag-column-slots" id="slots_7_skewed-left" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'skewed-left')"></div>
-              </div>
-              <div class="drag-column" data-category-id="has-a-gap" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'has-a-gap')">
-                <div class="drag-column-header">Has a Gap</div>
-                <div class="drag-column-slots" id="slots_7_has-a-gap" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'has-a-gap')"></div>
-              </div>
-              <div class="drag-column" data-category-id="has-a-cluster" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'has-a-cluster')">
-                <div class="drag-column-header">Has a Cluster</div>
-                <div class="drag-column-slots" id="slots_7_has-a-cluster" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'has-a-cluster')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_7" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_0"
-                     data-item-index="0"
-                     data-correct-category="symmetric"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Goals per game: one peak at 1 goal, an even rise and fall on both sides</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_0', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="symmetric">Symmetric</option><option value="skewed-right">Skewed Right</option><option value="skewed-left">Skewed Left</option><option value="has-a-gap">Has a Gap</option><option value="has-a-cluster">Has a Cluster</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_1"
-                     data-item-index="1"
-                     data-correct-category="skewed-right"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Coach experience (years): most coaches at 1-5 years, a long tail out to 30+ years</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_1', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="symmetric">Symmetric</option><option value="skewed-right">Skewed Right</option><option value="skewed-left">Skewed Left</option><option value="has-a-gap">Has a Gap</option><option value="has-a-cluster">Has a Cluster</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_2"
-                     data-item-index="2"
-                     data-correct-category="skewed-left"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Veteran kickers&#039; field-goal %: most near 90%, a long tail down to a few near 40%</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_2', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="symmetric">Symmetric</option><option value="skewed-right">Skewed Right</option><option value="skewed-left">Skewed Left</option><option value="has-a-gap">Has a Gap</option><option value="has-a-cluster">Has a Cluster</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_3"
-                     data-item-index="3"
-                     data-correct-category="has-a-gap"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Race times: a group at 12s, nothing from 13-19s, then a group at 20s</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_3', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="symmetric">Symmetric</option><option value="skewed-right">Skewed Right</option><option value="skewed-left">Skewed Left</option><option value="has-a-gap">Has a Gap</option><option value="has-a-cluster">Has a Cluster</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_4"
-                     data-item-index="4"
-                     data-correct-category="has-a-cluster"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Jersey numbers: most players bunched tightly between 20 and 29</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_4', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="symmetric">Symmetric</option><option value="skewed-right">Skewed Right</option><option value="skewed-left">Skewed Left</option><option value="has-a-gap">Has a Gap</option><option value="has-a-cluster">Has a Cluster</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(7); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_8" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 9</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Display 4: Match each feature you spot in a data display to the term that names it.</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="The tallest point of the display where data piles up" data-correct="Peak">
-              <div class="matching-term">The tallest point of the display where data piles up</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Cluster">Cluster</option><option value="Gap">Gap</option><option value="Peak">Peak</option><option value="Tail">Tail</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="An empty interval with no data values between two groups" data-correct="Gap">
-              <div class="matching-term">An empty interval with no data values between two groups</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Cluster">Cluster</option><option value="Gap">Gap</option><option value="Peak">Peak</option><option value="Tail">Tail</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="A group of values bunched close together" data-correct="Cluster">
-              <div class="matching-term">A group of values bunched close together</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Cluster">Cluster</option><option value="Gap">Gap</option><option value="Peak">Peak</option><option value="Tail">Tail</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="A long stretch of low bars trailing off to one side" data-correct="Tail">
-              <div class="matching-term">A long stretch of low bars trailing off to one side</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Cluster">Cluster</option><option value="Gap">Gap</option><option value="Peak">Peak</option><option value="Tail">Tail</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Display 5: A free-throw percentage histogram has most players clustered between 70% and 85%, a clear empty interval from 50% to 65%, and a few players down at 40%-50%. Which features are present, and what is the overall shape?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="The data clusters at the high end (70-85%), there is an empty gap (50-65%), and the few low values form a tail on the left, so the display is skewed left.">
-          
-            <label class="mc-option-label" id="label_q_9_0">
-              <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">A cluster (70-85%), a gap (50-65%), and a left tail — so skewed left</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_1">
-              <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">A symmetric display with no gaps</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_2">
-              <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">A right tail of high values — so skewed right</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_3">
-              <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Two equal peaks with no cluster or gap</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
   </main>
+
   
+    <section class="guided-section card section-celebrate" aria-label="Celebration">
+      <h2 class="section-title">🎉 You did it together! / ¡Lo lograron juntos!</h2>
+      <p class="celebrate-text lang-en">High five! Whether every answer was perfect or not, you showed up for your student tonight. That matters.</p>
+      <p class="celebrate-text lang-es" lang="es">¡Chócalas! No importa si cada respuesta fue perfecta — estuviste con tu estudiante esta noche. Eso importa.</p>
+      <p class="celebrate-sub bilingual-block">
+        <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
+        <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
+      </p>
+    </section>
+
 </div>
 
 <!-- Sticky bottom actions bar -->
@@ -2129,7 +1900,7 @@ header.homework-header h1 {
     
     <div class="score-progress-container">
       <div class="score-text">
-        Homework Progress: <span id="progress_text">0 / 10 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 2 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -2137,8 +1908,8 @@ header.homework-header h1 {
     </div>
     
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset</button>
-      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All Problems</button>
+      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset / Reiniciar</button>
+      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All / Revisar todo</button>
     </div>
   </div>
 </div>

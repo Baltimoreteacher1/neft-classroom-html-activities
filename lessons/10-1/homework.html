@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interactive Homework — Lesson 10-1: Volume with Whole Number Edges</title>
+<title>Help Your Student — Lesson 10-1: Volume with Whole Number Edges</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -266,6 +266,13 @@ header.homework-header h1 {
   border-radius: var(--radius-sm);
   font-size: 13.5px;
   color: var(--hint);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.family-problem-tip .lang-es {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .family-hint-box {
@@ -1306,70 +1313,348 @@ header.homework-header h1 {
     justify-content: center;
   }
 }
+
+/* Family guided notes layout */
+.family-welcome {
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  color: var(--white);
+  border: none;
+  padding: 28px 24px;
+}
+.welcome-hero {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.welcome-emoji { font-size: 48px; line-height: 1; }
+.welcome-tag {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal-light);
+  font-weight: 800;
+}
+.welcome-title-en, .welcome-title-es {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 5vw, 34px);
+  font-weight: 800;
+  line-height: 1.15;
+}
+.welcome-title-es { color: var(--amber); font-size: clamp(22px, 4.5vw, 30px); margin-top: 2px; }
+.welcome-lesson { margin: 8px 0 0; font-size: 16px; color: var(--teal-light); font-weight: 600; }
+.welcome-lead { margin: 0 0 12px; font-size: 15px; line-height: 1.5; }
+.family-welcome .back-link { color: var(--amber); margin: 0; }
+.family-welcome .back-link:hover { color: var(--white); }
+
+.bilingual-block, .bilingual-grid { display: flex; flex-direction: column; gap: 10px; }
+.bilingual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 640px) {
+  .bilingual-grid { grid-template-columns: 1fr; }
+}
+.bilingual-col {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.lang-label {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal);
+  margin-bottom: 6px;
+}
+.lang-en { margin: 0 0 6px; }
+.lang-es { margin: 0; color: var(--muted); font-style: normal; }
+.learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
+.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+
+.guided-section { scroll-margin-top: 16px; }
+.section-learn { border-left: 4px solid var(--teal); }
+.section-visual { border-left: 4px solid var(--amber); }
+.section-together { border-left: 4px solid #5b8def; }
+.section-vocab { border-left: 4px solid var(--coral); }
+.section-stuck { border-left: 4px solid #9b59b6; }
+.section-quick-intro { border-left: 4px solid var(--success); }
+.section-celebrate {
+  border-left: 4px solid var(--amber);
+  background: linear-gradient(180deg, var(--amber-light), var(--white));
+  text-align: center;
+}
+
+.concept-visual-wrap { margin: 12px 0 16px; overflow-x: auto; }
+.concept-svg { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.concept-fallback-visual { display: flex; flex-direction: column; gap: 8px; }
+.concept-fallback-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  font-weight: 600; font-size: 14px;
+}
+.step-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; color: var(--white);
+  flex-shrink: 0;
+}
+.step-color-1 .step-dot, .step-color-1.step-badge { background: #5b8def; }
+.step-color-2 .step-dot, .step-color-2.step-badge { background: var(--success); }
+.step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
+.step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
+
+.key-idea-banner {
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid #b8ddd8;
+}
+.key-idea-banner p { margin: 0 0 6px; font-size: 14.5px; }
+.key-idea-banner p:last-child { margin-bottom: 0; }
+
+.guided-steps, .together-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.guided-step, .together-step {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  background: var(--white);
+}
+.step-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  padding: 3px 8px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+}
+.guided-step p, .together-step p { margin: 0 0 6px; font-size: 14.5px; line-height: 1.45; }
+.step-hint {
+  margin: 8px 0 0 !important;
+  padding: 8px 10px;
+  background: var(--hint-bg);
+  border-radius: var(--radius-sm);
+  font-size: 13px !important;
+  color: var(--hint);
+}
+
+.watch-for-list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.watch-for-list li {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
+}
+.watch-icon { font-size: 20px; flex-shrink: 0; }
+
+.try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
+.try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
+
+.stuck-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+@media (max-width: 640px) { .stuck-grid { grid-template-columns: 1fr; } }
+.stuck-panel {
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+}
+.stuck-say { background: var(--success-bg); border-color: var(--success); }
+.stuck-dont { background: var(--error-bg); border-color: var(--error); }
+.stuck-heading { margin: 0 0 10px; font-family: var(--font-display); font-size: 14px; color: var(--navy); }
+.stuck-panel ul { margin: 0; padding-left: 16px; }
+.stuck-panel li { margin-bottom: 10px; font-size: 14px; }
+.stuck-panel li p { margin: 0 0 4px; }
+.stuck-footer { font-size: 14px; color: var(--muted); margin: 0; }
+
+.celebrate-text { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; }
+.celebrate-sub { font-size: 14px; margin: 0; }
+
+.problems-container .problem-section { border-left: 4px solid var(--teal); }
+.problems-container .problem-number-badge::after {
+  content: " / Repaso";
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
 </style>
 </head>
 <body>
 
 <div class="container">
-  
-  <header class="homework-header">
-    <a href="/curriculum/" class="back-link">⬅ Curriculum Hub</a>
-    <div class="header-meta">Unit 10 · Standard 6.G.2 · Homework</div>
-    <h1>Volume with Whole Number Edges</h1>
-    <div class="objectives-card">
-      <div class="objective-row"><span class="objective-badge">Target</span> <strong>I can find the volume of a rectangular prism with whole-number edges using length × width × height.</strong></div>
-      <div class="objective-row"><span class="objective-badge">Discuss</span> <strong>I can explain my work using the words volume, rectangular prism, cubic units, and edge.</strong></div>
-    </div>
-  </header>
 
   
-    <section class="family-guide card" aria-label="Family guide">
-      <div class="family-guide-header">
-        <span class="family-guide-emoji">📦</span>
-        <div>
-          <h2 class="section-title family-guide-title">Family Guide</h2>
-          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+    <header class="family-welcome card" aria-label="Family Math Night welcome">
+      <div class="welcome-hero">
+        <span class="welcome-emoji" aria-hidden="true">📦</span>
+        <div class="welcome-titles">
+          <p class="welcome-tag">Unit 10 · 6.G.2</p>
+          <h1 class="welcome-title-en">Family Math Night</h1>
+          <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
+          <p class="welcome-lesson">Volume with Whole Number Edges · Lesson 10-1</p>
         </div>
       </div>
+      <p class="welcome-lead bilingual-block">
+        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+      </p>
+      <a href="/curriculum/" class="back-link">⬅ Curriculum Hub / Centro curricular</a>
+    </header>
 
-      <div class="family-guide-grid">
-        <div class="family-panel family-panel-tips">
-          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
-          <ul class="family-tip-list">
-            <li>Let your student try each problem first. Tap <strong>Check This Problem</strong> on any question for instant feedback — no need to finish the whole page.</li>
-            <li>Tap vocabulary cards to flip between term and definition.</li>
-            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
-          </ul>
+  
+    <section class="guided-section card section-learn" aria-label="What we are learning tonight">
+      <h2 class="section-title">📖 What we're learning tonight / Qué aprendemos hoy</h2>
+      <div class="bilingual-grid">
+        <div class="bilingual-col lang-en">
+          <span class="lang-label">English</span>
+          <p class="learning-big">Find the volume of a rectangular prism with whole-number edges using length × width × height.</p>
+          <p class="learning-sub">Also practice saying: <em>explain my work using the words volume, rectangular prism, cubic units, and edge</em></p>
         </div>
-
-        <div class="family-panel family-panel-home">
-          <h3 class="family-panel-heading">🏡 Try this at home</h3>
-          <p class="family-try-text">Your time capsule container is a rectangular prism. To find how much it can hold, why do you need three measurements (length, width, and height) instead of just one or two?</p>
+        <div class="bilingual-col lang-es" lang="es">
+          <span class="lang-label">Español</span>
+          <p class="learning-big">Puedo encontrar el volumen de un prisma rectangular con aristas enteras usando largo × ancho × alto.</p>
+          <p class="learning-sub">También practiquen: <em>explicar mi trabajo usando las palabras Volumen, Prisma rectangular, Unidades cúbicas, y Arista</em></p>
         </div>
       </div>
-
-      
-        <div class="family-panel family-panel-legend">
-          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
-          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>fill table:</strong> Encourage your student to show their work on paper if a box feels tricky.</li><li><strong>drag order:</strong> Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</li><li><strong>drag sort:</strong> On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</li><li><strong>matching game:</strong> Say each term out loud, then talk through which match makes sense before choosing.</li><li><strong>error analysis:</strong> Read each step aloud and ask: does this step follow the math rules we learned?</li></ul>
-        </div>
-
-      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
     </section>
-  
 
   
-    <section class="try-at-home card" aria-label="Try this at home">
-      <h2 class="section-title">📦 Real-World Connection</h2>
-      <p class="try-narrative">Your team is building time capsule containers to store class memories. Each container is a rectangular prism, and you need to figure out how much each one can hold. That means calculating the volume using whole number dimensions!</p>
-      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    <section class="guided-section card section-visual" aria-label="Visual concept explainer">
+      <h2 class="section-title">🎯 The big idea / La idea principal</h2>
+      <div class="concept-visual-wrap">
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Volume prism">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fce6de" stroke="#d9795d" stroke-width="2"/>
+        <polygon points="80,140 180,140 210,110 110,110" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
+        <polygon points="180,140 210,110 210,60 180,90" fill="#b8ddd8" stroke="#1fa6a2" stroke-width="2"/>
+        <polygon points="80,140 110,110 110,60 80,90" fill="#1fa6a2" opacity="0.35" stroke="#1fa6a2" stroke-width="2"/>
+        <text x="95" y="155" font-size="11" fill="#12355b">L</text>
+        <text x="195" y="155" font-size="11" fill="#12355b">W</text>
+        <text x="218" y="88" font-size="11" fill="#12355b">H</text>
+        <text x="240" y="80" font-size="16" font-weight="700" fill="#12355b">V = L × W × H</text>
+        <text x="240" y="105" font-size="13" fill="#21313f">Volume = cubic units (in³)</text>
+        <text x="240" y="125" font-size="13" fill="#21313f" lang="es">Volumen = unidades cúbicas (in³)</text>
+      </svg></div>
+      <div class="key-idea-banner">
+        <p class="lang-en"><strong>Watch for this:</strong> To find the volume of a box, multiply all three edges: V = length × width × height.</p>
+        <p class="lang-es" lang="es"><strong>Observa esto:</strong> Para encontrar el volumen de una caja, multiplica las tres aristas: V = largo × ancho × alto.</p>
+      </div>
+      <ol class="guided-steps">
+        
+          <li class="guided-step step-color-1">
+            <span class="step-badge">Step 1 / Paso 1</span>
+            <p class="lang-en">Volume is how much space is inside a 3D shape. For a rectangular prism (a box), volume = length × width × height, measured in cubic units.</p>
+            <p class="lang-es" lang="es">El volumen es cuánto espacio hay dentro de una figura tridimensional. Para un prisma rectangular (una caja), volumen = largo × ancho × alto, medido en unidades cúbicas.</p>
+          </li>
+          <li class="guided-step step-color-2">
+            <span class="step-badge">Step 2 / Paso 2</span>
+            <p class="lang-en">My time capsule box is 6 long, 4 wide, and 3 tall. I write the formula: V = length × width × height.</p>
+            <p class="lang-es" lang="es">Puedo encontrar el volumen de un prisma rectangular con aristas enteras usando largo × ancho × alto.</p>
+          </li>
+          <li class="guided-step step-color-3">
+            <span class="step-badge">Step 3 / Paso 3</span>
+            <p class="lang-en">I put in the numbers: V = 6 × 4 × 3.</p>
+            <p class="lang-es" lang="es">Puedo encontrar el volumen de un prisma rectangular con aristas enteras usando largo × ancho × alto.</p>
+          </li>
+          <li class="guided-step step-color-4">
+            <span class="step-badge">Step 4 / Paso 4</span>
+            <p class="lang-en">First I multiply two of them: 6 × 4 = 24.</p>
+            <p class="lang-es" lang="es">Puedo encontrar el volumen de un prisma rectangular con aristas enteras usando largo × ancho × alto.</p>
+          </li>
+      </ol>
+      <ul class="watch-for-list">
+        
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Volume&quot; — it means: How much space is inside a solid shape.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Volumen&quot; — significa: Cuánto espacio hay dentro de una figura sólida.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Rectangular prism&quot; — it means: A solid box shape with six flat rectangle sides.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Prisma rectangular&quot; — significa: Una figura sólida en forma de caja con seis lados rectangulares.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Cubic units&quot; — it means: The units used to measure space inside, like cubic inches.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Unidades cúbicas&quot; — significa: Las unidades para medir el espacio interior, como pulgadas cúbicas.</p>
+            </div>
+          </li>
+      </ul>
     </section>
-  
 
   
-    <section class="vocab-section card">
-      <h2 class="section-title">🔑 Key Vocabulary</h2>
-      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
+    <section class="guided-section card section-together" aria-label="Try this together">
+      <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
+      <p class="try-scenario lang-en">Your team is building time capsule containers to store class memories.</p>
+             <p class="try-scenario lang-es" lang="es">Your team is building time capsule containers to store class memories.</p>
+      <p class="try-together-note bilingual-block">
+        <span class="lang-en">Work side by side. You ask questions; your student does the thinking.</span>
+        <span class="lang-es" lang="es">Trabajen juntos. Tú haces preguntas; tu estudiante piensa.</span>
+      </p>
+      <ol class="together-steps">
+        
+          <li class="together-step step-color-1">
+            <div class="together-step-head">
+              <span class="step-badge">Step 1 / Paso 1</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Now a smaller box: 5 long, 2 wide, 2 tall. What formula do we use?</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Now a smaller box: 5 long, 2 wide, 2 tall. What formula do we use?.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-2">
+            <div class="together-step-head">
+              <span class="step-badge">Step 2 / Paso 2</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Let&#039;s put in the numbers: V = 5 × 2 × 2. What is 5 × 2?</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Let&#039;s put in the numbers: V = 5 × 2 × 2. What is 5 × 2?.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-3">
+            <div class="together-step-head">
+              <span class="step-badge">Step 3 / Paso 3</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> We got 10. Now multiply 10 × 2. What is the volume?</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> We got 10. Now multiply 10 × 2. What is the volumen?.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-4">
+            <div class="together-step-head">
+              <span class="step-badge">Step 4 / Paso 4</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Yes, V = 20 cubic units. Don&#039;t forget the cubic units!</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Yes, V = 20 unidades cúbicas. Don&#039;t forget the unidades cúbicas!.</p>
+            <p class="step-hint">💡 Both numbers must change the same way. · Ambos números deben cambiar de la misma manera.</p>
+          </li>
+      </ol>
+    </section>
+
+  
+    <section class="guided-section card section-vocab vocab-section" aria-label="Words to know">
+      <h2 class="section-title">📚 Words to know / Palabras clave</h2>
+      <p class="vocab-family-note bilingual-block">
+        <span class="lang-en">Tap a card to flip. Use these words when you talk about the math together.</span>
+        <span class="lang-es" lang="es">Toquen una tarjeta para voltearla. Usen estas palabras cuando hablen de la matemática juntos.</span>
+      </p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
@@ -1379,18 +1664,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/volume.svg" alt="Illustration of Volume: How much space is inside a solid shape." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Volume</h3>
-                  <p class="vocab-es">Volumen</p>
-                  <div class="vocab-visual-hint">💡 Example: A box 3 × 2 × 4 holds 24 unit cubes, so V = 24 cubic units</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Volumen</p>
+                  <div class="vocab-visual-hint">💡 A box 3 × 2 × 4 holds 24 unit cubes, so V = 24 cubic units</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">How much space is inside a solid shape.</p>
-                  <p class="vocab-def-es">Cuánto espacio hay dentro de una figura sólida.</p>
+                  <p class="vocab-def-es" lang="es">Cuánto espacio hay dentro de una figura sólida.</p>
                   <p class="vocab-back-visual">📌 A box 3 × 2 × 4 holds 24 unit cubes, so V = 24 cubic units</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1398,18 +1682,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/rectangular-prism.svg" alt="Illustration of Rectangular prism: A solid box shape with six flat rectangle sides." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Rectangular prism</h3>
-                  <p class="vocab-es">Prisma rectangular</p>
-                  <div class="vocab-visual-hint">💡 Example: A cereal box or shoe box — it has length, width, and height</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Prisma rectangular</p>
+                  <div class="vocab-visual-hint">💡 A cereal box or shoe box — it has length, width, and height</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A solid box shape with six flat rectangle sides.</p>
-                  <p class="vocab-def-es">Una figura sólida en forma de caja con seis lados rectangulares.</p>
+                  <p class="vocab-def-es" lang="es">Una figura sólida en forma de caja con seis lados rectangulares.</p>
                   <p class="vocab-back-visual">📌 A cereal box or shoe box — it has length, width, and height</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1417,18 +1700,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/volume.svg" alt="Illustration of Cubic units: The units used to measure space inside, like cubic inches." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Cubic units</h3>
-                  <p class="vocab-es">Unidades cúbicas</p>
-                  <div class="vocab-visual-hint">💡 Example: A tiny cube that is 1 in × 1 in × 1 in = 1 in³ (one cubic inch)</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Unidades cúbicas</p>
+                  <div class="vocab-visual-hint">💡 A tiny cube that is 1 in × 1 in × 1 in = 1 in³ (one cubic inch)</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">The units used to measure space inside, like cubic inches.</p>
-                  <p class="vocab-def-es">Las unidades para medir el espacio interior, como pulgadas cúbicas.</p>
+                  <p class="vocab-def-es" lang="es">Las unidades para medir el espacio interior, como pulgadas cúbicas.</p>
                   <p class="vocab-back-visual">📌 A tiny cube that is 1 in × 1 in × 1 in = 1 in³ (one cubic inch)</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1436,18 +1718,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/dimensions.svg" alt="Illustration of Length, width, height: How long, how wide, and how tall a box is." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Length, width, height</h3>
-                  <p class="vocab-es">Largo, ancho, altura</p>
-                  <div class="vocab-visual-hint">💡 Example: V = l × w × h: for a box 5 × 3 × 2, volume = 30 cubic units</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Largo, ancho, altura</p>
+                  <div class="vocab-visual-hint">💡 V = l × w × h: for a box 5 × 3 × 2, volume = 30 cubic units</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">How long, how wide, and how tall a box is.</p>
-                  <p class="vocab-def-es">Qué tan largo, ancho y alto es una caja.</p>
+                  <p class="vocab-def-es" lang="es">Qué tan largo, ancho y alto es una caja.</p>
                   <p class="vocab-back-visual">📌 V = l × w × h: for a box 5 × 3 × 2, volume = 30 cubic units</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1455,18 +1736,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/net.svg" alt="Illustration of Net: A flat shape that folds up into a solid." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Net</h3>
-                  <p class="vocab-es">Plantilla (desarrollo plano)</p>
-                  <div class="vocab-visual-hint">💡 Example: A cross-shaped pattern of 6 rectangles folds into a rectangular box</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Plantilla (desarrollo plano)</p>
+                  <div class="vocab-visual-hint">💡 A cross-shaped pattern of 6 rectangles folds into a rectangular box</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A flat shape that folds up into a solid.</p>
-                  <p class="vocab-def-es">Una figura plana que se dobla y forma un sólido.</p>
+                  <p class="vocab-def-es" lang="es">Una figura plana que se dobla y forma un sólido.</p>
                   <p class="vocab-back-visual">📌 A cross-shaped pattern of 6 rectangles folds into a rectangular box</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1474,33 +1754,63 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/rectangular-prism.svg" alt="Illustration of Edge: The line where two flat sides of a solid meet." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Edge</h3>
-                  <p class="vocab-es">Arista</p>
-                  <div class="vocab-visual-hint">💡 Example: A cube has 12 edges — 4 along the top, 4 along the bottom, 4 vertical</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Arista</p>
+                  <div class="vocab-visual-hint">💡 A cube has 12 edges — 4 along the top, 4 along the bottom, 4 vertical</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">The line where two flat sides of a solid meet.</p>
-                  <p class="vocab-def-es">La línea donde se unen dos lados planos de un sólido.</p>
+                  <p class="vocab-def-es" lang="es">La línea donde se unen dos lados planos de un sólido.</p>
                   <p class="vocab-back-visual">📌 A cube has 12 edges — 4 along the top, 4 along the bottom, 4 vertical</p>
                 </div>
               </div>
             </div>
-          
       </div>
     </section>
+
   
+    <section class="guided-section card section-stuck" aria-label="If your student gets stuck">
+      <h2 class="section-title">💬 If your student gets stuck / Si se atora</h2>
+      <div class="stuck-grid">
+        <div class="stuck-panel stuck-say">
+          <h3 class="stuck-heading">✅ What to say / Qué decir</h3>
+          <ul>
+            <li><p class="lang-en">What do you already know that could help?</p><p class="lang-es" lang="es">¿Qué ya sabes que podría ayudarte?</p></li><li><p class="lang-en">Can you draw a picture or table for this?</p><p class="lang-es" lang="es">¿Puedes dibujar un dibujo o una tabla para esto?</p></li><li><p class="lang-en">Let&#039;s check one step at a time — no rush.</p><p class="lang-es" lang="es">Revisemos un paso a la vez — sin prisa.</p></li>
+          </ul>
+        </div>
+        <div class="stuck-panel stuck-dont">
+          <h3 class="stuck-heading">🚫 What NOT to say / Qué evitar</h3>
+          <ul>
+            <li><p class="lang-en">That&#039;s wrong — let me just tell you.</p><p class="lang-es" lang="es">Está mal — déjame decírtelo yo.</p></li><li><p class="lang-en">I was never good at math either.</p><p class="lang-es" lang="es">Yo tampoco era bueno en matemáticas.</p></li><li><p class="lang-en">This should be easy.</p><p class="lang-es" lang="es">Esto debería ser fácil.</p></li>
+          </ul>
+        </div>
+      </div>
+      <p class="stuck-footer bilingual-block">
+        <span class="lang-en">Struggle is part of learning. Short breaks and snacks are allowed!</span>
+        <span class="lang-es" lang="es">La dificultad es parte del aprendizaje. ¡Descansos y meriendas están permitidos!</span>
+      </p>
+    </section>
+
   
+    <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
+      <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
+      <p class="bilingual-block">
+        <span class="lang-en">One or two problems to try on the screen. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
+        <span class="lang-es" lang="es">Una o dos preguntas en pantalla. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+      </p>
+    </section>
+
   <main class="problems-container">
     
     <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 1</div>
+        <div class="problem-number-badge">Quick Check 1</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">What is the volume of a rectangular prism with l = 7 in, w = 3 in, h = 4 in?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="V = l × w × h = 7 × 3 × 4 = 84 cubic inches.">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1532,7 +1842,7 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
@@ -1541,13 +1851,13 @@ header.homework-header h1 {
 
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 2</div>
+        <div class="problem-number-badge">Quick Check 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">A time capsule box has a volume of 120 cm³. Its length is 10 cm and width is 4 cm. What is its height?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="V = l × w × h → 120 = 10 × 4 × h → 120 = 40h → h = 3 cm.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1579,581 +1889,25 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
   
-
-    <section class="problem-section card" id="problem_2" data-problem-type="fill-table">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 3</div>
-        <div class="problem-type-badge">FILL TABLE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Complete the table. Find the missing dimension or volume for each time capsule.</p>
-        <p class="family-problem-tip">👪 Family tip: Encourage your student to show their work on paper if a box feels tricky.</p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Capsule</th><th>Length</th><th>Width</th><th>Height</th><th>Volume</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>Capsule X</td><td>9 in</td><td>5 in</td><td>2 in</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_0_4"
-                                   data-correct="90 in³" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Capsule Y</td><td>6 ft</td><td>4 ft</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_1_3"
-                                   data-correct="7 ft" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      <td>168 ft³</td>
-                </tr>
-              
-                <tr>
-                  <td>Capsule Z</td><td>12 cm</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_2_2"
-                                   data-correct="6 cm" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      <td>5 cm</td><td>360 cm³</td>
-                </tr>
-              
-            </tbody>
-          </table>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_3" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Two storage bins: Bin A is 8 × 6 × 5 inches. Bin B is 9 × 4 × 7 inches. Which holds more and by how much?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Bin A: 8 × 6 × 5 = 240 in³. Bin B: 9 × 4 × 7 = 252 in³. Bin B holds 12 in³ more.">
-          
-            <label class="mc-option-label" id="label_q_3_0">
-              <input type="radio" name="q_3" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Bin B by 12 in³</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_1">
-              <input type="radio" name="q_3" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Bin A by 12 in³</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_2">
-              <input type="radio" name="q_3" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Bin B by 24 in³</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_3">
-              <input type="radio" name="q_3" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">They hold the same</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_4" data-problem-type="drag-sort" data-problem-subtype="drag-order">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 5</div>
-        <div class="problem-type-badge">DRAG ORDER</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Sort these rectangular prisms from LEAST volume to GREATEST volume.</p>
-        <p class="family-problem-tip">👪 Family tip: Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</p>
-        <div class="drag-order-workspace" id="dragorder_4" data-correct-order='[&quot;3 × 3 × 3 = 27&quot;,&quot;10 × 2 × 2 = 40&quot;,&quot;5 × 4 × 3 = 60&quot;,&quot;6 × 6 × 2 = 72&quot;,&quot;8 × 5 × 4 = 160&quot;]' data-initial-order='[&quot;5 × 4 × 3 = 60&quot;,&quot;10 × 2 × 2 = 40&quot;,&quot;8 × 5 × 4 = 160&quot;,&quot;3 × 3 × 3 = 27&quot;,&quot;6 × 6 × 2 = 72&quot;]'>
-          <div class="drag-order-list" id="orderlist_4">
-            
-              <div class="drag-order-row" draggable="true" id="order_4_0" data-step-text="5 × 4 × 3 = 60" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">1</span>
-                <span class="drag-order-text">5 × 4 × 3 = 60</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_4_1" data-step-text="10 × 2 × 2 = 40" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">2</span>
-                <span class="drag-order-text">10 × 2 × 2 = 40</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_4_2" data-step-text="8 × 5 × 4 = 160" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">3</span>
-                <span class="drag-order-text">8 × 5 × 4 = 160</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_4_3" data-step-text="3 × 3 × 3 = 27" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">4</span>
-                <span class="drag-order-text">3 × 3 × 3 = 27</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_4_4" data-step-text="6 × 6 × 2 = 72" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">5</span>
-                <span class="drag-order-text">6 × 6 × 2 = 72</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragOrder(4); saveState(); updateProgress();">Reset Order</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A time capsule box is 5 units long, 3 units wide, and 2 units tall. How many unit cubes fill it?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="V = length × width × height = 5 × 3 × 2 = 30 cubic units.">
-          
-            <label class="mc-option-label" id="label_q_5_0">
-              <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">30 cubic units</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_1">
-              <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">10 cubic units</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_2">
-              <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">15 cubic units</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_3">
-              <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">25 cubic units</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">You stack unit cubes in a capsule: each layer has 6 cubes, and there are 4 layers. What is the volume?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Each layer has 6 cubes and there are 4 layers, so 6 × 4 = 24 cubic units. This is the same as length × width × height with one factor being the number of layers.">
-          
-            <label class="mc-option-label" id="label_q_6_0">
-              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">24 cubic units</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_1">
-              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">10 cubic units</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_2">
-              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">12 cubic units</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_3">
-              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">18 cubic units</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_7" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 8</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Match each capsule&#039;s dimensions to its volume. Use V = length × width × height.</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="7 × 2 × 3" data-correct="42 cubic units">
-              <div class="matching-term">7 × 2 × 3</div>
-              <div class="matching-select-container">
-                <select name="q_7_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="30 cubic units">30 cubic units</option><option value="42 cubic units">42 cubic units</option><option value="60 cubic units">60 cubic units</option><option value="72 cubic units">72 cubic units</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="6 × 5 × 2" data-correct="60 cubic units">
-              <div class="matching-term">6 × 5 × 2</div>
-              <div class="matching-select-container">
-                <select name="q_7_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="30 cubic units">30 cubic units</option><option value="42 cubic units">42 cubic units</option><option value="60 cubic units">60 cubic units</option><option value="72 cubic units">72 cubic units</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="9 × 4 × 2" data-correct="72 cubic units">
-              <div class="matching-term">9 × 4 × 2</div>
-              <div class="matching-select-container">
-                <select name="q_7_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="30 cubic units">30 cubic units</option><option value="42 cubic units">42 cubic units</option><option value="60 cubic units">60 cubic units</option><option value="72 cubic units">72 cubic units</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="5 × 3 × 2" data-correct="30 cubic units">
-              <div class="matching-term">5 × 3 × 2</div>
-              <div class="matching-select-container">
-                <select name="q_7_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="30 cubic units">30 cubic units</option><option value="42 cubic units">42 cubic units</option><option value="60 cubic units">60 cubic units</option><option value="72 cubic units">72 cubic units</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_8" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 9</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A capsule is filled with unit cubes. Sort each statement by whether it describes COUNTING cubes by layers or finding volume with the FORMULA.</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        
-        <div class="drag-sort-workspace" id="dragsort_8">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="layers" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'layers')">
-                <div class="drag-column-header">Counting Cubes by Layers</div>
-                <div class="drag-column-slots" id="slots_8_layers" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'layers')"></div>
-              </div>
-              <div class="drag-column" data-category-id="formula" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'formula')">
-                <div class="drag-column-header">Using the Volume Formula</div>
-                <div class="drag-column-slots" id="slots_8_formula" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'formula')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_8" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_0"
-                     data-item-index="0"
-                     data-correct-category="layers"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Count 4 layers of 6 cubes each</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_0', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="layers">Counting Cubes by Layers</option><option value="formula">Using the Volume Formula</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_1"
-                     data-item-index="1"
-                     data-correct-category="layers"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Add up the cubes in every layer</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_1', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="layers">Counting Cubes by Layers</option><option value="formula">Using the Volume Formula</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_2"
-                     data-item-index="2"
-                     data-correct-category="layers"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Stack layers until the box is full, then count</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_2', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="layers">Counting Cubes by Layers</option><option value="formula">Using the Volume Formula</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_3"
-                     data-item-index="3"
-                     data-correct-category="formula"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Use V = length × width × height</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_3', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="layers">Counting Cubes by Layers</option><option value="formula">Using the Volume Formula</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_4"
-                     data-item-index="4"
-                     data-correct-category="formula"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Multiply the three edge lengths together</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_4', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="layers">Counting Cubes by Layers</option><option value="formula">Using the Volume Formula</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_5"
-                     data-item-index="5"
-                     data-correct-category="formula"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Compute 6 × 5 × 2 = 60 cubic units</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_5', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="layers">Counting Cubes by Layers</option><option value="formula">Using the Volume Formula</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(8); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_9" data-problem-type="error-analysis">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
-      </div>
-      
-      <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ Level 2 Extension — Cube Stack Mistake</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        <p class="family-problem-tip">👪 Family tip: Read each step aloud and ask: does this step follow the math rules we learned?</p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_9_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Dimensions:</span>
-                <span class="step-work">A capsule is 5 long, 3 wide, and 4 tall</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Formula:</span>
-                <span class="step-work">V = length × width × height</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Calculate:</span>
-                <span class="step-work">V = 5 + 3 + 4 = 12 cubic units</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_4">
-                <span class="step-badge">Step 4</span>
-                <span class="step-label">Answer:</span>
-                <span class="step-work">Volume = 12 cubic units</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_9">Which step has the error?</label>
-            <select id="error_step_select_9" class="custom-select error-step-select" data-correct="3" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option><option value="4">Step 4</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
-          
-          <div class="error-explain-row">
-            <label for="error_explain_input_9">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_9" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
-          
-          <div class="reveal-box" id="error_correct_work_9" style="display:none;">
-            <strong>Correct Work Reference:</strong> The student added the edges instead of multiplying. Volume = 5 × 3 × 4 = 60 cubic units. Adding the edges (5 + 3 + 4 = 12) does not count the cubes that fill the box.
-          </div>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
   </main>
+
   
+    <section class="guided-section card section-celebrate" aria-label="Celebration">
+      <h2 class="section-title">🎉 You did it together! / ¡Lo lograron juntos!</h2>
+      <p class="celebrate-text lang-en">High five! Whether every answer was perfect or not, you showed up for your student tonight. That matters.</p>
+      <p class="celebrate-text lang-es" lang="es">¡Chócalas! No importa si cada respuesta fue perfecta — estuviste con tu estudiante esta noche. Eso importa.</p>
+      <p class="celebrate-sub bilingual-block">
+        <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
+        <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
+      </p>
+    </section>
+
 </div>
 
 <!-- Sticky bottom actions bar -->
@@ -2163,7 +1917,7 @@ header.homework-header h1 {
     
     <div class="score-progress-container">
       <div class="score-text">
-        Homework Progress: <span id="progress_text">0 / 10 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 2 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -2171,8 +1925,8 @@ header.homework-header h1 {
     </div>
     
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset</button>
-      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All Problems</button>
+      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset / Reiniciar</button>
+      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All / Revisar todo</button>
     </div>
   </div>
 </div>

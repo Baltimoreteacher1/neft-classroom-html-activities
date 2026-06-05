@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interactive Homework — Lesson 7-7: Equations and Inequalities Problem Solving</title>
+<title>Help Your Student — Lesson 7-7: Equations and Inequalities Problem Solving</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -266,6 +266,13 @@ header.homework-header h1 {
   border-radius: var(--radius-sm);
   font-size: 13.5px;
   color: var(--hint);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.family-problem-tip .lang-es {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .family-hint-box {
@@ -1306,70 +1313,337 @@ header.homework-header h1 {
     justify-content: center;
   }
 }
+
+/* Family guided notes layout */
+.family-welcome {
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  color: var(--white);
+  border: none;
+  padding: 28px 24px;
+}
+.welcome-hero {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.welcome-emoji { font-size: 48px; line-height: 1; }
+.welcome-tag {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal-light);
+  font-weight: 800;
+}
+.welcome-title-en, .welcome-title-es {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 5vw, 34px);
+  font-weight: 800;
+  line-height: 1.15;
+}
+.welcome-title-es { color: var(--amber); font-size: clamp(22px, 4.5vw, 30px); margin-top: 2px; }
+.welcome-lesson { margin: 8px 0 0; font-size: 16px; color: var(--teal-light); font-weight: 600; }
+.welcome-lead { margin: 0 0 12px; font-size: 15px; line-height: 1.5; }
+.family-welcome .back-link { color: var(--amber); margin: 0; }
+.family-welcome .back-link:hover { color: var(--white); }
+
+.bilingual-block, .bilingual-grid { display: flex; flex-direction: column; gap: 10px; }
+.bilingual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 640px) {
+  .bilingual-grid { grid-template-columns: 1fr; }
+}
+.bilingual-col {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.lang-label {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal);
+  margin-bottom: 6px;
+}
+.lang-en { margin: 0 0 6px; }
+.lang-es { margin: 0; color: var(--muted); font-style: normal; }
+.learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
+.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+
+.guided-section { scroll-margin-top: 16px; }
+.section-learn { border-left: 4px solid var(--teal); }
+.section-visual { border-left: 4px solid var(--amber); }
+.section-together { border-left: 4px solid #5b8def; }
+.section-vocab { border-left: 4px solid var(--coral); }
+.section-stuck { border-left: 4px solid #9b59b6; }
+.section-quick-intro { border-left: 4px solid var(--success); }
+.section-celebrate {
+  border-left: 4px solid var(--amber);
+  background: linear-gradient(180deg, var(--amber-light), var(--white));
+  text-align: center;
+}
+
+.concept-visual-wrap { margin: 12px 0 16px; overflow-x: auto; }
+.concept-svg { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.concept-fallback-visual { display: flex; flex-direction: column; gap: 8px; }
+.concept-fallback-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  font-weight: 600; font-size: 14px;
+}
+.step-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; color: var(--white);
+  flex-shrink: 0;
+}
+.step-color-1 .step-dot, .step-color-1.step-badge { background: #5b8def; }
+.step-color-2 .step-dot, .step-color-2.step-badge { background: var(--success); }
+.step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
+.step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
+
+.key-idea-banner {
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid #b8ddd8;
+}
+.key-idea-banner p { margin: 0 0 6px; font-size: 14.5px; }
+.key-idea-banner p:last-child { margin-bottom: 0; }
+
+.guided-steps, .together-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.guided-step, .together-step {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  background: var(--white);
+}
+.step-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  padding: 3px 8px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+}
+.guided-step p, .together-step p { margin: 0 0 6px; font-size: 14.5px; line-height: 1.45; }
+.step-hint {
+  margin: 8px 0 0 !important;
+  padding: 8px 10px;
+  background: var(--hint-bg);
+  border-radius: var(--radius-sm);
+  font-size: 13px !important;
+  color: var(--hint);
+}
+
+.watch-for-list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.watch-for-list li {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
+}
+.watch-icon { font-size: 20px; flex-shrink: 0; }
+
+.try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
+.try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
+
+.stuck-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+@media (max-width: 640px) { .stuck-grid { grid-template-columns: 1fr; } }
+.stuck-panel {
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+}
+.stuck-say { background: var(--success-bg); border-color: var(--success); }
+.stuck-dont { background: var(--error-bg); border-color: var(--error); }
+.stuck-heading { margin: 0 0 10px; font-family: var(--font-display); font-size: 14px; color: var(--navy); }
+.stuck-panel ul { margin: 0; padding-left: 16px; }
+.stuck-panel li { margin-bottom: 10px; font-size: 14px; }
+.stuck-panel li p { margin: 0 0 4px; }
+.stuck-footer { font-size: 14px; color: var(--muted); margin: 0; }
+
+.celebrate-text { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; }
+.celebrate-sub { font-size: 14px; margin: 0; }
+
+.problems-container .problem-section { border-left: 4px solid var(--teal); }
+.problems-container .problem-number-badge::after {
+  content: " / Repaso";
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
 </style>
 </head>
 <body>
 
 <div class="container">
-  
-  <header class="homework-header">
-    <a href="/curriculum/" class="back-link">⬅ Curriculum Hub</a>
-    <div class="header-meta">Unit 7 · Standard 6.EE.7 · Homework</div>
-    <h1>Equations and Inequalities Problem Solving</h1>
-    <div class="objectives-card">
-      <div class="objective-row"><span class="objective-badge">Target</span> <strong>I can model and solve real-world problems using equations and inequalities.</strong></div>
-      <div class="objective-row"><span class="objective-badge">Discuss</span> <strong>I can explain my reasoning using the words model, equation, inequality, and reasonableness.</strong></div>
-    </div>
-  </header>
 
   
-    <section class="family-guide card" aria-label="Family guide">
-      <div class="family-guide-header">
-        <span class="family-guide-emoji">🔍</span>
-        <div>
-          <h2 class="section-title family-guide-title">Family Guide</h2>
-          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+    <header class="family-welcome card" aria-label="Family Math Night welcome">
+      <div class="welcome-hero">
+        <span class="welcome-emoji" aria-hidden="true">🔍</span>
+        <div class="welcome-titles">
+          <p class="welcome-tag">Unit 7 · 6.EE.7</p>
+          <h1 class="welcome-title-en">Family Math Night</h1>
+          <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
+          <p class="welcome-lesson">Equations and Inequalities Problem Solving · Lesson 7-7</p>
         </div>
       </div>
+      <p class="welcome-lead bilingual-block">
+        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+      </p>
+      <a href="/curriculum/" class="back-link">⬅ Curriculum Hub / Centro curricular</a>
+    </header>
 
-      <div class="family-guide-grid">
-        <div class="family-panel family-panel-tips">
-          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
-          <ul class="family-tip-list">
-            <li>Let your student try each problem first. Tap <strong>Check This Problem</strong> on any question for instant feedback — no need to finish the whole page.</li>
-            <li>Tap vocabulary cards to flip between term and definition.</li>
-            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
-          </ul>
+  
+    <section class="guided-section card section-learn" aria-label="What we are learning tonight">
+      <h2 class="section-title">📖 What we're learning tonight / Qué aprendemos hoy</h2>
+      <div class="bilingual-grid">
+        <div class="bilingual-col lang-en">
+          <span class="lang-label">English</span>
+          <p class="learning-big">Model and solve real-world problems using equations and inequalities.</p>
+          <p class="learning-sub">Also practice saying: <em>explain my reasoning using the words model, equation, inequality, and reasonableness</em></p>
         </div>
-
-        <div class="family-panel family-panel-home">
-          <h3 class="family-panel-heading">🏡 Try this at home</h3>
-          <p class="family-try-text">Before solving a word problem, how do you decide whether to model it with an equation or an inequality?</p>
+        <div class="bilingual-col lang-es" lang="es">
+          <span class="lang-label">Español</span>
+          <p class="learning-big">Puedo modelar and solve real-world problems using equations and desigualdades.</p>
+          <p class="learning-sub">También practiquen: <em>explicar mi razonamiento usando las palabras Modelar, Ecuación, Desigualdad, y Razonabilidad</em></p>
         </div>
       </div>
-
-      
-        <div class="family-panel family-panel-legend">
-          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
-          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>fill table:</strong> Encourage your student to show their work on paper if a box feels tricky.</li><li><strong>drag sort:</strong> On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</li><li><strong>matching game:</strong> Say each term out loud, then talk through which match makes sense before choosing.</li><li><strong>error analysis:</strong> Read each step aloud and ask: does this step follow the math rules we learned?</li></ul>
-        </div>
-
-      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
     </section>
-  
 
   
-    <section class="try-at-home card" aria-label="Try this at home">
-      <h2 class="section-title">🔍 Real-World Connection</h2>
-      <p class="try-narrative">Detective Santos is closing a complex case. She has collected equations and inequalities from different parts of the investigation. One clue says: &#039;The total value of stolen items divided equally among 4 accomplices gave each person $85.&#039; Another says: &#039;The lookout earned less than $50.&#039; She must model both clues mathematically and check if the answers are reasonable. Can you help?</p>
-      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    <section class="guided-section card section-visual" aria-label="Visual concept explainer">
+      <h2 class="section-title">🎯 The big idea / La idea principal</h2>
+      <div class="concept-visual-wrap">
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Exponent example">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
+        <text x="60" y="70" font-size="42" font-weight="800" fill="#12355b">2</text>
+        <text x="78" y="55" font-size="22" font-weight="800" fill="#d9795d">3</text>
+        <text x="120" y="70" font-size="28" fill="#12355b">= 2 × 2 × 2 = 8</text>
+        <text x="40" y="110" font-size="13" fill="#21313f">Base = 2 · Exponent = 3 · Multiply 2 three times</text>
+        <text x="40" y="135" font-size="13" fill="#21313f" lang="es">Base = 2 · Exponente = 3 · Multiplica 2 tres veces</text>
+        <text x="40" y="165" font-size="12" fill="#5f6f80">🔍 NOT 2 + 2 + 2 — that's addition!</text>
+      </svg></div>
+      <div class="key-idea-banner">
+        <p class="lang-en"><strong>Watch for this:</strong> &#039;Equals&#039; or &#039;exactly&#039; points to an equation (=); &#039;at least, at most, more than, fewer than&#039; points to an inequality.</p>
+        <p class="lang-es" lang="es"><strong>Observa esto:</strong> Esta noche practican: modelar and solve real-world problems using equations and desigualdades. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+      </div>
+      <ol class="guided-steps">
+        
+          <li class="guided-step step-color-1">
+            <span class="step-badge">Step 1 / Paso 1</span>
+            <p class="lang-en">To model means to write a real situation as math. I use an equation when there is one exact total, and an inequality when there is a limit or a range of allowed values.</p>
+            <p class="lang-es" lang="es">Esta noche practican: modelar and solve real-world problems using equations and desigualdades. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-2">
+            <span class="step-badge">Step 2 / Paso 2</span>
+            <p class="lang-en">Clue: &#039;A total divided equally among 4 people gave each $85.&#039;</p>
+            <p class="lang-es" lang="es">Esta noche practican: modelar and solve real-world problems using equations and desigualdades. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-3">
+            <span class="step-badge">Step 3 / Paso 3</span>
+            <p class="lang-en">This has an exact total, so I use an equation. Let t be the total.</p>
+            <p class="lang-es" lang="es">Esta noche practican: modelar and solve real-world problems using equations and desigualdades. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-4">
+            <span class="step-badge">Step 4 / Paso 4</span>
+            <p class="lang-en">Divided among 4 to get 85 means t ÷ 4 = 85, so t = 85 × 4 = 340.</p>
+            <p class="lang-es" lang="es">Esta noche practican: modelar and solve real-world problems using equations and desigualdades. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+      </ol>
+      <ul class="watch-for-list">
+        
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Model&quot; — it means: To show a real-life situation with an equation or inequality.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Modelar&quot; — significa: Mostrar una situación real con una ecuación o desigualdad.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Equation&quot; — it means: A math sentence with an equal sign showing both sides are the same.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Ecuación&quot; — significa: Una oración matemática con un signo igual que muestra que ambos lados son iguales.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Inequality&quot; — it means: A math sentence that compares two sides with &lt;, &gt;, ≤, or ≥.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Desigualdad&quot; — significa: Una oración matemática que compara dos lados con &lt;, &gt;, ≤ o ≥.</p>
+            </div>
+          </li>
+      </ul>
     </section>
-  
 
   
-    <section class="vocab-section card">
-      <h2 class="section-title">🔑 Key Vocabulary</h2>
-      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
+    <section class="guided-section card section-together" aria-label="Try this together">
+      <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
+      <p class="try-scenario lang-en">Detective Santos is closing a complex case.</p>
+             <p class="try-scenario lang-es" lang="es">Detective Santos is closing a complex case.</p>
+      <p class="try-together-note bilingual-block">
+        <span class="lang-en">Work side by side. You ask questions; your student does the thinking.</span>
+        <span class="lang-es" lang="es">Trabajen juntos. Tú haces preguntas; tu estudiante piensa.</span>
+      </p>
+      <ol class="together-steps">
+        
+          <li class="together-step step-color-1">
+            <div class="together-step-head">
+              <span class="step-badge">Step 1 / Paso 1</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Clue: &#039;The lookout earned less than $50.&#039; Equation or inequality?</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Clue: &#039;The lookout earned menor que $50.&#039; Ecuación or Desigualdad?.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-2">
+            <div class="together-step-head">
+              <span class="step-badge">Step 2 / Paso 2</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> &#039;Less than&#039; is a limit, so it is an inequality. Let e be the earnings.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> &#039;menor que&#039; is a limit, so it is an Desigualdad. Let e be the earnings.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-3">
+            <div class="together-step-head">
+              <span class="step-badge">Step 3 / Paso 3</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> &#039;Less than 50&#039; means e &lt; 50. Is $30 a reasonable value? Yes.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> &#039;menor que 50&#039; means e &lt; 50. Is $30 a reasonable value? Yes.</p>
+            <p class="step-hint">💡 Both numbers must change the same way. · Ambos números deben cambiar de la misma manera.</p>
+          </li>
+      </ol>
+    </section>
+
+  
+    <section class="guided-section card section-vocab vocab-section" aria-label="Words to know">
+      <h2 class="section-title">📚 Words to know / Palabras clave</h2>
+      <p class="vocab-family-note bilingual-block">
+        <span class="lang-en">Tap a card to flip. Use these words when you talk about the math together.</span>
+        <span class="lang-es" lang="es">Toquen una tarjeta para voltearla. Usen estas palabras cuando hablen de la matemática juntos.</span>
+      </p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
@@ -1379,18 +1653,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/bar-model.svg" alt="Illustration of Model: To show a real-life situation with an equation or inequality." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Model</h3>
-                  <p class="vocab-es">Modelar</p>
-                  <div class="vocab-visual-hint">💡 Example: &#039;Twice a number is 18&#039; → 2n = 18 — the equation models the words</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Modelar</p>
+                  <div class="vocab-visual-hint">💡 &#039;Twice a number is 18&#039; → 2n = 18 — the equation models the words</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">To show a real-life situation with an equation or inequality.</p>
-                  <p class="vocab-def-es">Mostrar una situación real con una ecuación o desigualdad.</p>
+                  <p class="vocab-def-es" lang="es">Mostrar una situación real con una ecuación o desigualdad.</p>
                   <p class="vocab-back-visual">📌 &#039;Twice a number is 18&#039; → 2n = 18 — the equation models the words</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1398,18 +1671,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/equation.svg" alt="Illustration of Equation: A math sentence with an equal sign showing both sides are the same." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Equation</h3>
-                  <p class="vocab-es">Ecuación</p>
-                  <div class="vocab-visual-hint">💡 Example: x + 5 = 12 — exactly one answer: x = 7</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Ecuación</p>
+                  <div class="vocab-visual-hint">💡 x + 5 = 12 — exactly one answer: x = 7</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A math sentence with an equal sign showing both sides are the same.</p>
-                  <p class="vocab-def-es">Una oración matemática con un signo igual que muestra que ambos lados son iguales.</p>
+                  <p class="vocab-def-es" lang="es">Una oración matemática con un signo igual que muestra que ambos lados son iguales.</p>
                   <p class="vocab-back-visual">📌 x + 5 = 12 — exactly one answer: x = 7</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1417,18 +1689,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/inequality.svg" alt="Illustration of Inequality: A math sentence that compares two sides with &lt;, &gt;, ≤, or ≥." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Inequality</h3>
-                  <p class="vocab-es">Desigualdad</p>
-                  <div class="vocab-visual-hint">💡 Example: x + 5 &gt; 12 — many answers: x = 8, 9, 10, ...</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Desigualdad</p>
+                  <div class="vocab-visual-hint">💡 x + 5 &gt; 12 — many answers: x = 8, 9, 10, ...</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A math sentence that compares two sides with &lt;, &gt;, ≤, or ≥.</p>
-                  <p class="vocab-def-es">Una oración matemática que compara dos lados con &lt;, &gt;, ≤ o ≥.</p>
+                  <p class="vocab-def-es" lang="es">Una oración matemática que compara dos lados con &lt;, &gt;, ≤ o ≥.</p>
                   <p class="vocab-back-visual">📌 x + 5 &gt; 12 — many answers: x = 8, 9, 10, ...</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1436,18 +1707,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/number.svg" alt="Illustration of Reasonableness: Checking if your answer makes sense." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Reasonableness</h3>
-                  <p class="vocab-es">Razonabilidad</p>
-                  <div class="vocab-visual-hint">💡 Example: If the problem asks for a number of people and you get x = −3, that is NOT reasonable</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Razonabilidad</p>
+                  <div class="vocab-visual-hint">💡 If the problem asks for a number of people and you get x = −3, that is NOT reasonable</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">Checking if your answer makes sense.</p>
-                  <p class="vocab-def-es">Revisar si tu respuesta tiene sentido.</p>
+                  <p class="vocab-def-es" lang="es">Revisar si tu respuesta tiene sentido.</p>
                   <p class="vocab-back-visual">📌 If the problem asks for a number of people and you get x = −3, that is NOT reasonable</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1455,18 +1725,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/variable.svg" alt="Illustration of Variable: A letter that stands for the unknown amount in a word problem." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Variable</h3>
-                  <p class="vocab-es">Variable</p>
-                  <div class="vocab-visual-hint">💡 Example: &quot;5 less than a number is 12&quot; becomes x − 5 = 12, where x is the variable.</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Variable</p>
+                  <div class="vocab-visual-hint">💡 &quot;5 less than a number is 12&quot; becomes x − 5 = 12, where x is the variable.</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A letter that stands for the unknown amount in a word problem.</p>
-                  <p class="vocab-def-es">Una letra que representa la cantidad desconocida en un problema verbal.</p>
+                  <p class="vocab-def-es" lang="es">Una letra que representa la cantidad desconocida en un problema verbal.</p>
                   <p class="vocab-back-visual">📌 &quot;5 less than a number is 12&quot; becomes x − 5 = 12, where x is the variable.</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1474,33 +1743,63 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/cat-number.svg" alt="Illustration of Constraint: A limit in a problem that tells what values are allowed." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Constraint</h3>
-                  <p class="vocab-es">Restricción</p>
-                  <div class="vocab-visual-hint">💡 Example: &quot;You can spend at most $20&quot; is a constraint: cost ≤ 20.</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Restricción</p>
+                  <div class="vocab-visual-hint">💡 &quot;You can spend at most $20&quot; is a constraint: cost ≤ 20.</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A limit in a problem that tells what values are allowed.</p>
-                  <p class="vocab-def-es">Un límite en un problema que indica qué valores se permiten.</p>
+                  <p class="vocab-def-es" lang="es">Un límite en un problema que indica qué valores se permiten.</p>
                   <p class="vocab-back-visual">📌 &quot;You can spend at most $20&quot; is a constraint: cost ≤ 20.</p>
                 </div>
               </div>
             </div>
-          
       </div>
     </section>
+
   
+    <section class="guided-section card section-stuck" aria-label="If your student gets stuck">
+      <h2 class="section-title">💬 If your student gets stuck / Si se atora</h2>
+      <div class="stuck-grid">
+        <div class="stuck-panel stuck-say">
+          <h3 class="stuck-heading">✅ What to say / Qué decir</h3>
+          <ul>
+            <li><p class="lang-en">What do you already know that could help?</p><p class="lang-es" lang="es">¿Qué ya sabes que podría ayudarte?</p></li><li><p class="lang-en">Can you draw a picture or table for this?</p><p class="lang-es" lang="es">¿Puedes dibujar un dibujo o una tabla para esto?</p></li><li><p class="lang-en">Let&#039;s check one step at a time — no rush.</p><p class="lang-es" lang="es">Revisemos un paso a la vez — sin prisa.</p></li>
+          </ul>
+        </div>
+        <div class="stuck-panel stuck-dont">
+          <h3 class="stuck-heading">🚫 What NOT to say / Qué evitar</h3>
+          <ul>
+            <li><p class="lang-en">That&#039;s wrong — let me just tell you.</p><p class="lang-es" lang="es">Está mal — déjame decírtelo yo.</p></li><li><p class="lang-en">I was never good at math either.</p><p class="lang-es" lang="es">Yo tampoco era bueno en matemáticas.</p></li><li><p class="lang-en">This should be easy.</p><p class="lang-es" lang="es">Esto debería ser fácil.</p></li>
+          </ul>
+        </div>
+      </div>
+      <p class="stuck-footer bilingual-block">
+        <span class="lang-en">Struggle is part of learning. Short breaks and snacks are allowed!</span>
+        <span class="lang-es" lang="es">La dificultad es parte del aprendizaje. ¡Descansos y meriendas están permitidos!</span>
+      </p>
+    </section>
+
   
+    <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
+      <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
+      <p class="bilingual-block">
+        <span class="lang-en">One or two problems to try on the screen. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
+        <span class="lang-es" lang="es">Una o dos preguntas en pantalla. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+      </p>
+    </section>
+
   <main class="problems-container">
     
     <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 1</div>
+        <div class="problem-number-badge">Quick Check 1</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">A museum has some paintings. After adding 12, they have 45. Which equation models this?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="&#039;Adding 12&#039; to the original number gives 45: p + 12 = 45. Solve: p = 33.">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1532,7 +1831,7 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
@@ -1541,13 +1840,13 @@ header.homework-header h1 {
 
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 2</div>
+        <div class="problem-number-badge">Quick Check 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">A detective needs more than 8 hours to finish the investigation. She has already worked 3 hours. Which inequality represents the additional hours h she needs?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="3 hours plus additional hours h must be more than 8: 3 + h &gt; 8. Solve: h &gt; 5.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1579,525 +1878,25 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
   
-
-    <section class="problem-section card" id="problem_2" data-problem-type="fill-table">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 3</div>
-        <div class="problem-type-badge">FILL TABLE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Write a model, solve, and check reasonableness for each problem.</p>
-        <p class="family-problem-tip">👪 Family tip: Encourage your student to show their work on paper if a box feels tricky.</p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Word Problem</th><th>Model</th><th>Solution</th><th>Reasonable?</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>Five identical boxes weigh a total of 60 pounds. How much does each box weigh?</td><td>5w = 60</td><td>w = 12 pounds</td><td>Yes — 12 pounds per box is reasonable.</td>
-                </tr>
-              
-                <tr>
-                  <td>A shelf can hold at most 30 books. There are already 17 books. How many more can be added?</td><td>17 + b ≤ 30</td><td>b ≤ 13 books</td><td>Yes — up to 13 more books fits.</td>
-                </tr>
-              
-                <tr>
-                  <td>A baker split 84 cookies equally into bags of 12. How many bags did she use?</td><td>12b = 84</td><td>b = 7 bags</td><td>Yes — 7 bags of 12 = 84 cookies.</td>
-                </tr>
-              
-            </tbody>
-          </table>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_3" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A student solved 4n = 52 and got n = 13. Is the answer reasonable if n represents the number of notebooks in a box?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="4 × 13 = 52 ✓. 13 notebooks per box is a reasonable whole number answer.">
-          
-            <label class="mc-option-label" id="label_q_3_0">
-              <input type="radio" name="q_3" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Yes — 13 notebooks per box is reasonable</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_1">
-              <input type="radio" name="q_3" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">No — 13 is too many notebooks</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_2">
-              <input type="radio" name="q_3" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">No — the answer should be 48</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_3">
-              <input type="radio" name="q_3" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Yes — but only if n is a fraction</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_4" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 5</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Room 1: The case board is a mess. Sort each clue into whether it needs an EQUATION (one exact total) or an INEQUALITY (a limit or range).</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        
-        <div class="drag-sort-workspace" id="dragsort_4">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="eq" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'eq')">
-                <div class="drag-column-header">Needs an Equation (=)</div>
-                <div class="drag-column-slots" id="slots_4_eq" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'eq')"></div>
-              </div>
-              <div class="drag-column" data-category-id="ineq" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'ineq')">
-                <div class="drag-column-header">Needs an Inequality (&lt;, &gt;, ≤, ≥)</div>
-                <div class="drag-column-slots" id="slots_4_ineq" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'ineq')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_4" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_0"
-                     data-item-index="0"
-                     data-correct-category="eq"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">The ransom was split equally among 5 suspects, giving each $40.</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_0', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="eq">Needs an Equation (=)</option><option value="ineq">Needs an Inequality (&lt;, &gt;, ≤, ≥)</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_1"
-                     data-item-index="1"
-                     data-correct-category="eq"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">A number of fingerprints plus 9 equals 21.</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_1', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="eq">Needs an Equation (=)</option><option value="ineq">Needs an Inequality (&lt;, &gt;, ≤, ≥)</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_2"
-                     data-item-index="2"
-                     data-correct-category="ineq"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">The getaway car held no more than 6 bags of loot.</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_2', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="eq">Needs an Equation (=)</option><option value="ineq">Needs an Inequality (&lt;, &gt;, ≤, ≥)</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_3"
-                     data-item-index="3"
-                     data-correct-category="ineq"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">The alarm must stay on for at least 30 minutes.</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_3', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="eq">Needs an Equation (=)</option><option value="ineq">Needs an Inequality (&lt;, &gt;, ≤, ≥)</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_4"
-                     data-item-index="4"
-                     data-correct-category="ineq"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">The witness saw fewer than 4 accomplices.</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_4', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="eq">Needs an Equation (=)</option><option value="ineq">Needs an Inequality (&lt;, &gt;, ≤, ≥)</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_5"
-                     data-item-index="5"
-                     data-correct-category="eq"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Three identical safes hold exactly 75 coins in all.</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_5', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="eq">Needs an Equation (=)</option><option value="ineq">Needs an Inequality (&lt;, &gt;, ≤, ≥)</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(4); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Room 2: The vault keypad clue reads, &#039;A number of stolen coins plus 6 equals 14.&#039; Solve x + 6 = 14 to find the code x.</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Subtract 6 from both sides: x = 14 − 6 = 8. Check: 8 + 6 = 14 ✓">
-          
-            <label class="mc-option-label" id="label_q_5_0">
-              <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">x = 8</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_1">
-              <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">x = 20</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_2">
-              <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">x = 6</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_3">
-              <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">x = 2</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Room 3: A sign warns, &#039;The safe holds at most 20 gold bars.&#039; Which inequality models the number of bars x?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="&#039;At most 20&#039; means 20 or fewer, so x ≤ 20.">
-          
-            <label class="mc-option-label" id="label_q_6_0">
-              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">x ≤ 20</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_1">
-              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">x ≥ 20</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_2">
-              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">x &gt; 20</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_3">
-              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">x = 20</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 8</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Room 4: A locked drawer clue reads, &#039;Five identical evidence boxes weigh 60 pounds in all.&#039; Solve 5w = 60 for each box&#039;s weight w.</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Divide both sides by 5: w = 60 ÷ 5 = 12 pounds. Check: 5 × 12 = 60 ✓">
-          
-            <label class="mc-option-label" id="label_q_7_0">
-              <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">w = 12</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_1">
-              <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">w = 55</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_2">
-              <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">w = 300</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_3">
-              <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">w = 65</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_8" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 9</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Room 5: Match each crime-scene clue to the model the detective should write.</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="The reward divided among 4 detectives gave each $50." data-correct="4d = 200, so d = 50">
-              <div class="matching-term">The reward divided among 4 detectives gave each $50.</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="4d = 200, so d = 50">4d = 200, so d = 50</option><option value="c − 7 = 9, so c = 16">c − 7 = 9, so c = 16</option><option value="f ≥ 25">f ≥ 25</option><option value="h &gt; 8">h &gt; 8</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="A number of clues take away 7 leaves exactly 9." data-correct="c − 7 = 9, so c = 16">
-              <div class="matching-term">A number of clues take away 7 leaves exactly 9.</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="4d = 200, so d = 50">4d = 200, so d = 50</option><option value="c − 7 = 9, so c = 16">c − 7 = 9, so c = 16</option><option value="f ≥ 25">f ≥ 25</option><option value="h &gt; 8">h &gt; 8</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="The patrol must last more than 8 hours." data-correct="h &gt; 8">
-              <div class="matching-term">The patrol must last more than 8 hours.</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="4d = 200, so d = 50">4d = 200, so d = 50</option><option value="c − 7 = 9, so c = 16">c − 7 = 9, so c = 16</option><option value="f ≥ 25">f ≥ 25</option><option value="h &gt; 8">h &gt; 8</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="The locker holds at least 25 files." data-correct="f ≥ 25">
-              <div class="matching-term">The locker holds at least 25 files.</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="4d = 200, so d = 50">4d = 200, so d = 50</option><option value="c − 7 = 9, so c = 16">c − 7 = 9, so c = 16</option><option value="f ≥ 25">f ≥ 25</option><option value="h &gt; 8">h &gt; 8</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_9" data-problem-type="error-analysis">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
-      </div>
-      
-      <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ Level 2 Extension — The Final Door: Catch the Detective&#039;s Mistake</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        <p class="family-problem-tip">👪 Family tip: Read each step aloud and ask: does this step follow the math rules we learned?</p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_9_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Clue:</span>
-                <span class="step-work">Solve the keypad inequality 3x ≤ 18 to find how many bars x fit.</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Step 1:</span>
-                <span class="step-work">3x ≤ 18</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Step 2:</span>
-                <span class="step-work">3x × 3 ≤ 18 × 3</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_4">
-                <span class="step-badge">Step 4</span>
-                <span class="step-label">Step 3:</span>
-                <span class="step-work">9x ≤ 54, so x ≤ 54</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_5">
-                <span class="step-badge">Step 5</span>
-                <span class="step-label">Answer:</span>
-                <span class="step-work">At most 54 bars fit.</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_9">Which step has the error?</label>
-            <select id="error_step_select_9" class="custom-select error-step-select" data-correct="3" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option><option value="4">Step 4</option><option value="5">Step 5</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
-          
-          <div class="error-explain-row">
-            <label for="error_explain_input_9">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_9" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
-          
-          <div class="reveal-box" id="error_correct_work_9" style="display:none;">
-            <strong>Correct Work Reference:</strong> To undo multiplying x by 3, you divide both sides by 3 (the inverse operation), not multiply. 3x ≤ 18 becomes 3x ÷ 3 ≤ 18 ÷ 3, which gives x ≤ 6. So at most 6 bars fit, not 54.
-          </div>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
   </main>
+
   
+    <section class="guided-section card section-celebrate" aria-label="Celebration">
+      <h2 class="section-title">🎉 You did it together! / ¡Lo lograron juntos!</h2>
+      <p class="celebrate-text lang-en">High five! Whether every answer was perfect or not, you showed up for your student tonight. That matters.</p>
+      <p class="celebrate-text lang-es" lang="es">¡Chócalas! No importa si cada respuesta fue perfecta — estuviste con tu estudiante esta noche. Eso importa.</p>
+      <p class="celebrate-sub bilingual-block">
+        <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
+        <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
+      </p>
+    </section>
+
 </div>
 
 <!-- Sticky bottom actions bar -->
@@ -2107,7 +1906,7 @@ header.homework-header h1 {
     
     <div class="score-progress-container">
       <div class="score-text">
-        Homework Progress: <span id="progress_text">0 / 10 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 2 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -2115,8 +1914,8 @@ header.homework-header h1 {
     </div>
     
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset</button>
-      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All Problems</button>
+      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset / Reiniciar</button>
+      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All / Revisar todo</button>
     </div>
   </div>
 </div>

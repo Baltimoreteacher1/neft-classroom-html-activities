@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interactive Homework — Lesson 5-5: Area of Composite Figures</title>
+<title>Help Your Student — Lesson 5-5: Area of Composite Figures</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -266,6 +266,13 @@ header.homework-header h1 {
   border-radius: var(--radius-sm);
   font-size: 13.5px;
   color: var(--hint);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.family-problem-tip .lang-es {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .family-hint-box {
@@ -1306,70 +1313,348 @@ header.homework-header h1 {
     justify-content: center;
   }
 }
+
+/* Family guided notes layout */
+.family-welcome {
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  color: var(--white);
+  border: none;
+  padding: 28px 24px;
+}
+.welcome-hero {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.welcome-emoji { font-size: 48px; line-height: 1; }
+.welcome-tag {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal-light);
+  font-weight: 800;
+}
+.welcome-title-en, .welcome-title-es {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 5vw, 34px);
+  font-weight: 800;
+  line-height: 1.15;
+}
+.welcome-title-es { color: var(--amber); font-size: clamp(22px, 4.5vw, 30px); margin-top: 2px; }
+.welcome-lesson { margin: 8px 0 0; font-size: 16px; color: var(--teal-light); font-weight: 600; }
+.welcome-lead { margin: 0 0 12px; font-size: 15px; line-height: 1.5; }
+.family-welcome .back-link { color: var(--amber); margin: 0; }
+.family-welcome .back-link:hover { color: var(--white); }
+
+.bilingual-block, .bilingual-grid { display: flex; flex-direction: column; gap: 10px; }
+.bilingual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 640px) {
+  .bilingual-grid { grid-template-columns: 1fr; }
+}
+.bilingual-col {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.lang-label {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal);
+  margin-bottom: 6px;
+}
+.lang-en { margin: 0 0 6px; }
+.lang-es { margin: 0; color: var(--muted); font-style: normal; }
+.learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
+.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+
+.guided-section { scroll-margin-top: 16px; }
+.section-learn { border-left: 4px solid var(--teal); }
+.section-visual { border-left: 4px solid var(--amber); }
+.section-together { border-left: 4px solid #5b8def; }
+.section-vocab { border-left: 4px solid var(--coral); }
+.section-stuck { border-left: 4px solid #9b59b6; }
+.section-quick-intro { border-left: 4px solid var(--success); }
+.section-celebrate {
+  border-left: 4px solid var(--amber);
+  background: linear-gradient(180deg, var(--amber-light), var(--white));
+  text-align: center;
+}
+
+.concept-visual-wrap { margin: 12px 0 16px; overflow-x: auto; }
+.concept-svg { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.concept-fallback-visual { display: flex; flex-direction: column; gap: 8px; }
+.concept-fallback-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  font-weight: 600; font-size: 14px;
+}
+.step-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; color: var(--white);
+  flex-shrink: 0;
+}
+.step-color-1 .step-dot, .step-color-1.step-badge { background: #5b8def; }
+.step-color-2 .step-dot, .step-color-2.step-badge { background: var(--success); }
+.step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
+.step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
+
+.key-idea-banner {
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid #b8ddd8;
+}
+.key-idea-banner p { margin: 0 0 6px; font-size: 14.5px; }
+.key-idea-banner p:last-child { margin-bottom: 0; }
+
+.guided-steps, .together-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.guided-step, .together-step {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  background: var(--white);
+}
+.step-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  padding: 3px 8px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+}
+.guided-step p, .together-step p { margin: 0 0 6px; font-size: 14.5px; line-height: 1.45; }
+.step-hint {
+  margin: 8px 0 0 !important;
+  padding: 8px 10px;
+  background: var(--hint-bg);
+  border-radius: var(--radius-sm);
+  font-size: 13px !important;
+  color: var(--hint);
+}
+
+.watch-for-list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.watch-for-list li {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
+}
+.watch-icon { font-size: 20px; flex-shrink: 0; }
+
+.try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
+.try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
+
+.stuck-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+@media (max-width: 640px) { .stuck-grid { grid-template-columns: 1fr; } }
+.stuck-panel {
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+}
+.stuck-say { background: var(--success-bg); border-color: var(--success); }
+.stuck-dont { background: var(--error-bg); border-color: var(--error); }
+.stuck-heading { margin: 0 0 10px; font-family: var(--font-display); font-size: 14px; color: var(--navy); }
+.stuck-panel ul { margin: 0; padding-left: 16px; }
+.stuck-panel li { margin-bottom: 10px; font-size: 14px; }
+.stuck-panel li p { margin: 0 0 4px; }
+.stuck-footer { font-size: 14px; color: var(--muted); margin: 0; }
+
+.celebrate-text { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; }
+.celebrate-sub { font-size: 14px; margin: 0; }
+
+.problems-container .problem-section { border-left: 4px solid var(--teal); }
+.problems-container .problem-number-badge::after {
+  content: " / Repaso";
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
 </style>
 </head>
 <body>
 
 <div class="container">
-  
-  <header class="homework-header">
-    <a href="/curriculum/" class="back-link">⬅ Curriculum Hub</a>
-    <div class="header-meta">Unit 5 · Standard 6.G.1 · Homework</div>
-    <h1>Area of Composite Figures</h1>
-    <div class="objectives-card">
-      <div class="objective-row"><span class="objective-badge">Target</span> <strong>I can find the area of a composite figure by adding or subtracting the areas of basic shapes.</strong></div>
-      <div class="objective-row"><span class="objective-badge">Discuss</span> <strong>I can explain my steps using the words composite figure, decompose, add, and subtract.</strong></div>
-    </div>
-  </header>
 
   
-    <section class="family-guide card" aria-label="Family guide">
-      <div class="family-guide-header">
-        <span class="family-guide-emoji">📐</span>
-        <div>
-          <h2 class="section-title family-guide-title">Family Guide</h2>
-          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+    <header class="family-welcome card" aria-label="Family Math Night welcome">
+      <div class="welcome-hero">
+        <span class="welcome-emoji" aria-hidden="true">📐</span>
+        <div class="welcome-titles">
+          <p class="welcome-tag">Unit 5 · 6.G.1</p>
+          <h1 class="welcome-title-en">Family Math Night</h1>
+          <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
+          <p class="welcome-lesson">Area of Composite Figures · Lesson 5-5</p>
         </div>
       </div>
+      <p class="welcome-lead bilingual-block">
+        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+      </p>
+      <a href="/curriculum/" class="back-link">⬅ Curriculum Hub / Centro curricular</a>
+    </header>
 
-      <div class="family-guide-grid">
-        <div class="family-panel family-panel-tips">
-          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
-          <ul class="family-tip-list">
-            <li>Let your student try each problem first. Tap <strong>Check This Problem</strong> on any question for instant feedback — no need to finish the whole page.</li>
-            <li>Tap vocabulary cards to flip between term and definition.</li>
-            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
-          </ul>
+  
+    <section class="guided-section card section-learn" aria-label="What we are learning tonight">
+      <h2 class="section-title">📖 What we're learning tonight / Qué aprendemos hoy</h2>
+      <div class="bilingual-grid">
+        <div class="bilingual-col lang-en">
+          <span class="lang-label">English</span>
+          <p class="learning-big">Find the area of a composite figure by adding or subtracting the areas of basic shapes.</p>
+          <p class="learning-sub">Also practice saying: <em>explain my steps using the words composite figure, decompose, add, and subtract</em></p>
         </div>
-
-        <div class="family-panel family-panel-home">
-          <h3 class="family-panel-heading">🏡 Try this at home</h3>
-          <p class="family-try-text">The L-shaped room splits into a 12 ft by 8 ft rectangle and a 6 ft by 5 ft rectangle. Why is it easier to find the area after you decompose the L into two rectangles?</p>
+        <div class="bilingual-col lang-es" lang="es">
+          <span class="lang-label">Español</span>
+          <p class="learning-big">Puedo encontrar el área of a Figura compuesta by adding or subtracting the areas of basic shapes.</p>
+          <p class="learning-sub">También practiquen: <em>explicar my steps usando las palabras Figura compuesta, Descomponer, Sumar, y Restar</em></p>
         </div>
       </div>
-
-      
-        <div class="family-panel family-panel-legend">
-          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
-          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>fill table:</strong> Encourage your student to show their work on paper if a box feels tricky.</li><li><strong>matching game:</strong> Say each term out loud, then talk through which match makes sense before choosing.</li><li><strong>drag sort:</strong> On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</li></ul>
-        </div>
-
-      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
     </section>
-  
 
   
-    <section class="try-at-home card" aria-label="Try this at home">
-      <h2 class="section-title">📐 Real-World Connection</h2>
-      <p class="try-narrative">Your architecture firm is calculating the floor area of an L-shaped room for a client&#039;s new home. The contractor needs the total area to order the correct amount of flooring. The room can be split into two rectangles: one is 12 feet by 8 feet and the other is 6 feet by 5 feet.</p>
-      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    <section class="guided-section card section-visual" aria-label="Visual concept explainer">
+      <h2 class="section-title">🎯 The big idea / La idea principal</h2>
+      <div class="concept-visual-wrap">
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Volume prism">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fce6de" stroke="#d9795d" stroke-width="2"/>
+        <polygon points="80,140 180,140 210,110 110,110" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
+        <polygon points="180,140 210,110 210,60 180,90" fill="#b8ddd8" stroke="#1fa6a2" stroke-width="2"/>
+        <polygon points="80,140 110,110 110,60 80,90" fill="#1fa6a2" opacity="0.35" stroke="#1fa6a2" stroke-width="2"/>
+        <text x="95" y="155" font-size="11" fill="#12355b">L</text>
+        <text x="195" y="155" font-size="11" fill="#12355b">W</text>
+        <text x="218" y="88" font-size="11" fill="#12355b">H</text>
+        <text x="240" y="80" font-size="16" font-weight="700" fill="#12355b">V = L × W × H</text>
+        <text x="240" y="105" font-size="13" fill="#21313f">Volume = cubic units (in³)</text>
+        <text x="240" y="125" font-size="13" fill="#21313f" lang="es">Volumen = unidades cúbicas (in³)</text>
+      </svg></div>
+      <div class="key-idea-banner">
+        <p class="lang-en"><strong>Watch for this:</strong> Break the figure into simple shapes. ADD the areas when shapes are joined; SUBTRACT when a piece is cut out.</p>
+        <p class="lang-es" lang="es"><strong>Observa esto:</strong> Esta noche practican: encontrar el área of a Figura compuesta by adding or subtracting the areas of basic shapes. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+      </div>
+      <ol class="guided-steps">
+        
+          <li class="guided-step step-color-1">
+            <span class="step-badge">Step 1 / Paso 1</span>
+            <p class="lang-en">A composite figure is a shape made of two or more simple shapes joined together. We decompose it into basic shapes, find each area, then add or subtract.</p>
+            <p class="lang-es" lang="es">Esta noche practican: encontrar el área of a Figura compuesta by adding or subtracting the areas of basic shapes. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-2">
+            <span class="step-badge">Step 2 / Paso 2</span>
+            <p class="lang-en">My L-shaped room splits into two rectangles: one is 12 ft by 8 ft, the other is 6 ft by 5 ft.</p>
+            <p class="lang-es" lang="es">Esta noche practican: encontrar el área of a Figura compuesta by adding or subtracting the areas of basic shapes. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-3">
+            <span class="step-badge">Step 3 / Paso 3</span>
+            <p class="lang-en">First rectangle: A = length × width = 12 × 8 = 96 square feet.</p>
+            <p class="lang-es" lang="es">Esta noche practican: encontrar el área of a Figura compuesta by adding or subtracting the areas of basic shapes. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-4">
+            <span class="step-badge">Step 4 / Paso 4</span>
+            <p class="lang-en">Second rectangle: A = 6 × 5 = 30 square feet.</p>
+            <p class="lang-es" lang="es">Esta noche practican: encontrar el área of a Figura compuesta by adding or subtracting the areas of basic shapes. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+      </ol>
+      <ul class="watch-for-list">
+        
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Composite Figure&quot; — it means: A shape made by putting two or more simple shapes together.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Figura compuesta&quot; — significa: Una figura formada al juntar dos o más figuras simples.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Decompose&quot; — it means: To break a shape into smaller, simpler shapes.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Descomponer&quot; — significa: Separar una figura en figuras más pequeñas y simples.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Add&quot; — it means: Add up the areas of the smaller shapes to get the total.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Sumar&quot; — significa: Sumar las áreas de las figuras pequeñas para obtener el total.</p>
+            </div>
+          </li>
+      </ul>
     </section>
-  
 
   
-    <section class="vocab-section card">
-      <h2 class="section-title">🔑 Key Vocabulary</h2>
-      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
+    <section class="guided-section card section-together" aria-label="Try this together">
+      <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
+      <p class="try-scenario lang-en">Your architecture firm is calculating the floor area of an L-shaped room for a client&#039;s new home.</p>
+             <p class="try-scenario lang-es" lang="es">Your architecture firm is calculating the floor área of an L-shaped room for a client&#039;s new home.</p>
+      <p class="try-together-note bilingual-block">
+        <span class="lang-en">Work side by side. You ask questions; your student does the thinking.</span>
+        <span class="lang-es" lang="es">Trabajen juntos. Tú haces preguntas; tu estudiante piensa.</span>
+      </p>
+      <ol class="together-steps">
+        
+          <li class="together-step step-color-1">
+            <div class="together-step-head">
+              <span class="step-badge">Step 1 / Paso 1</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Now an L-shape made of a 5 ft by 4 ft rectangle and a 3 ft by 2 ft rectangle.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Now an L-shape made of a 5 ft by 4 ft rectangle and a 3 ft by 2 ft rectangle.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-2">
+            <div class="together-step-head">
+              <span class="step-badge">Step 2 / Paso 2</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> First rectangle: 5 × 4 = 20 square feet.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> First rectangle: 5 × 4 = 20 square feet.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-3">
+            <div class="together-step-head">
+              <span class="step-badge">Step 3 / Paso 3</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Second rectangle: 3 × 2 = 6 square feet.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Second rectangle: 3 × 2 = 6 square feet.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-4">
+            <div class="together-step-head">
+              <span class="step-badge">Step 4 / Paso 4</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Are they joined or cut out? Joined, so we add: 20 + 6 = 26 square feet.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Are they joined or cut out? Joined, so we Sumar: 20 + 6 = 26 square feet.</p>
+            <p class="step-hint">💡 Both numbers must change the same way. · Ambos números deben cambiar de la misma manera.</p>
+          </li>
+      </ol>
+    </section>
+
+  
+    <section class="guided-section card section-vocab vocab-section" aria-label="Words to know">
+      <h2 class="section-title">📚 Words to know / Palabras clave</h2>
+      <p class="vocab-family-note bilingual-block">
+        <span class="lang-en">Tap a card to flip. Use these words when you talk about the math together.</span>
+        <span class="lang-es" lang="es">Toquen una tarjeta para voltearla. Usen estas palabras cuando hablen de la matemática juntos.</span>
+      </p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
@@ -1379,18 +1664,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/composite-figure.svg" alt="Illustration of Composite Figure: A shape made by putting two or more simple shapes together." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Composite Figure</h3>
-                  <p class="vocab-es">Figura compuesta</p>
-                  <div class="vocab-visual-hint">💡 Example: An L-shaped room = a 12×8 rectangle joined to a 6×5 rectangle; total area = 96 + 30 = 126 sq ft</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Figura compuesta</p>
+                  <div class="vocab-visual-hint">💡 An L-shaped room = a 12×8 rectangle joined to a 6×5 rectangle; total area = 96 + 30 = 126 sq ft</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A shape made by putting two or more simple shapes together.</p>
-                  <p class="vocab-def-es">Una figura formada al juntar dos o más figuras simples.</p>
+                  <p class="vocab-def-es" lang="es">Una figura formada al juntar dos o más figuras simples.</p>
                   <p class="vocab-back-visual">📌 An L-shaped room = a 12×8 rectangle joined to a 6×5 rectangle; total area = 96 + 30 = 126 sq ft</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1398,18 +1682,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/subtract.svg" alt="Illustration of Decompose: To break a shape into smaller, simpler shapes." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Decompose</h3>
-                  <p class="vocab-es">Descomponer</p>
-                  <div class="vocab-visual-hint">💡 Example: Draw a dashed line across the L-shape to split it into two rectangles — now you can find each area separately</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Descomponer</p>
+                  <div class="vocab-visual-hint">💡 Draw a dashed line across the L-shape to split it into two rectangles — now you can find each area separately</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">To break a shape into smaller, simpler shapes.</p>
-                  <p class="vocab-def-es">Separar una figura en figuras más pequeñas y simples.</p>
+                  <p class="vocab-def-es" lang="es">Separar una figura en figuras más pequeñas y simples.</p>
                   <p class="vocab-back-visual">📌 Draw a dashed line across the L-shape to split it into two rectangles — now you can find each area separately</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1417,18 +1700,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/add.svg" alt="Illustration of Add: Add up the areas of the smaller shapes to get the total." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Add</h3>
-                  <p class="vocab-es">Sumar</p>
-                  <div class="vocab-visual-hint">💡 Example: T-shaped hallway: top rectangle = 30 sq ft, bottom rectangle = 28 sq ft → total = 30 + 28 = 58 sq ft</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Sumar</p>
+                  <div class="vocab-visual-hint">💡 T-shaped hallway: top rectangle = 30 sq ft, bottom rectangle = 28 sq ft → total = 30 + 28 = 58 sq ft</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">Add up the areas of the smaller shapes to get the total.</p>
-                  <p class="vocab-def-es">Sumar las áreas de las figuras pequeñas para obtener el total.</p>
+                  <p class="vocab-def-es" lang="es">Sumar las áreas de las figuras pequeñas para obtener el total.</p>
                   <p class="vocab-back-visual">📌 T-shaped hallway: top rectangle = 30 sq ft, bottom rectangle = 28 sq ft → total = 30 + 28 = 58 sq ft</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1436,18 +1718,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/subtract.svg" alt="Illustration of Subtract: Take away the area of a missing piece from a bigger shape." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Subtract</h3>
-                  <p class="vocab-es">Restar</p>
-                  <div class="vocab-visual-hint">💡 Example: A 14×10 pool with a 6×4 cutout: 140 − 24 = 116 sq ft of water surface</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Restar</p>
+                  <div class="vocab-visual-hint">💡 A 14×10 pool with a 6×4 cutout: 140 − 24 = 116 sq ft of water surface</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">Take away the area of a missing piece from a bigger shape.</p>
-                  <p class="vocab-def-es">Quitar el área de una parte que falta de una figura más grande.</p>
+                  <p class="vocab-def-es" lang="es">Quitar el área de una parte que falta de una figura más grande.</p>
                   <p class="vocab-back-visual">📌 A 14×10 pool with a 6×4 cutout: 140 − 24 = 116 sq ft of water surface</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1455,33 +1736,63 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/expression.svg" alt="Illustration of Formula: A math rule written with symbols." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Formula</h3>
-                  <p class="vocab-es">Fórmula</p>
-                  <div class="vocab-visual-hint">💡 Example: Rectangle: A = l × w; Triangle: A = ½ × b × h; use the right formula for each piece of a composite figure</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Fórmula</p>
+                  <div class="vocab-visual-hint">💡 Rectangle: A = l × w; Triangle: A = ½ × b × h; use the right formula for each piece of a composite figure</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A math rule written with symbols.</p>
-                  <p class="vocab-def-es">Una regla matemática escrita con símbolos.</p>
+                  <p class="vocab-def-es" lang="es">Una regla matemática escrita con símbolos.</p>
                   <p class="vocab-back-visual">📌 Rectangle: A = l × w; Triangle: A = ½ × b × h; use the right formula for each piece of a composite figure</p>
                 </div>
               </div>
             </div>
-          
       </div>
     </section>
+
   
+    <section class="guided-section card section-stuck" aria-label="If your student gets stuck">
+      <h2 class="section-title">💬 If your student gets stuck / Si se atora</h2>
+      <div class="stuck-grid">
+        <div class="stuck-panel stuck-say">
+          <h3 class="stuck-heading">✅ What to say / Qué decir</h3>
+          <ul>
+            <li><p class="lang-en">What do you already know that could help?</p><p class="lang-es" lang="es">¿Qué ya sabes que podría ayudarte?</p></li><li><p class="lang-en">Can you draw a picture or table for this?</p><p class="lang-es" lang="es">¿Puedes dibujar un dibujo o una tabla para esto?</p></li><li><p class="lang-en">Let&#039;s check one step at a time — no rush.</p><p class="lang-es" lang="es">Revisemos un paso a la vez — sin prisa.</p></li>
+          </ul>
+        </div>
+        <div class="stuck-panel stuck-dont">
+          <h3 class="stuck-heading">🚫 What NOT to say / Qué evitar</h3>
+          <ul>
+            <li><p class="lang-en">That&#039;s wrong — let me just tell you.</p><p class="lang-es" lang="es">Está mal — déjame decírtelo yo.</p></li><li><p class="lang-en">I was never good at math either.</p><p class="lang-es" lang="es">Yo tampoco era bueno en matemáticas.</p></li><li><p class="lang-en">This should be easy.</p><p class="lang-es" lang="es">Esto debería ser fácil.</p></li>
+          </ul>
+        </div>
+      </div>
+      <p class="stuck-footer bilingual-block">
+        <span class="lang-en">Struggle is part of learning. Short breaks and snacks are allowed!</span>
+        <span class="lang-es" lang="es">La dificultad es parte del aprendizaje. ¡Descansos y meriendas están permitidos!</span>
+      </p>
+    </section>
+
   
+    <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
+      <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
+      <p class="bilingual-block">
+        <span class="lang-en">One or two problems to try on the screen. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
+        <span class="lang-es" lang="es">Una o dos preguntas en pantalla. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+      </p>
+    </section>
+
   <main class="problems-container">
     
     <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 1</div>
+        <div class="problem-number-badge">Quick Check 1</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">An L-shaped room is made of two rectangles: 10 ft × 6 ft and 4 ft × 3 ft. What is the total area?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="Area 1 = 10 × 6 = 60 sq ft. Area 2 = 4 × 3 = 12 sq ft. Total = 60 + 12 = 72 sq ft.">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1513,7 +1824,7 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
@@ -1522,13 +1833,13 @@ header.homework-header h1 {
 
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 2</div>
+        <div class="problem-number-badge">Quick Check 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">A rectangular patio is 15 ft × 10 ft with a 5 ft × 4 ft rectangular flower bed cut out. What is the remaining area?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="Patio = 15 × 10 = 150 sq ft. Cutout = 5 × 4 = 20 sq ft. Remaining = 150 − 20 = 130 sq ft.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1560,673 +1871,25 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
   
-
-    <section class="problem-section card" id="problem_2" data-problem-type="fill-table">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 3</div>
-        <div class="problem-type-badge">FILL TABLE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Complete the table.</p>
-        <p class="family-problem-tip">👪 Family tip: Encourage your student to show their work on paper if a box feels tricky.</p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Figure</th><th>Shape 1 Area</th><th>Shape 2 Area</th><th>Operation</th><th>Total Area</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>L-shaped deck</td><td>48 sq ft</td><td>20 sq ft</td><td>Add</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_0_4"
-                                   data-correct="68 sq ft" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Floor with alcove</td><td>90 sq ft</td><td>15 sq ft</td><td>Add</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_1_4"
-                                   data-correct="105 sq ft" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Wall with window cutout</td><td>120 sq ft</td><td>18 sq ft</td><td>Subtract</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_2_4"
-                                   data-correct="102 sq ft" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Courtyard with fountain cutout</td><td>200 sq ft</td><td>36 sq ft</td><td>Subtract</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_3_4"
-                                   data-correct="164 sq ft" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-            </tbody>
-          </table>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_3" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 4</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Match each composite figure to its total area.</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="L-shape: 10×6 + 4×3" data-correct="72 sq ft">
-              <div class="matching-term">L-shape: 10×6 + 4×3</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="116 sq ft">116 sq ft</option><option value="130 sq ft">130 sq ft</option><option value="58 sq ft">58 sq ft</option><option value="72 sq ft">72 sq ft</option><option value="90 sq ft">90 sq ft</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="T-shape: 14×4 + 6×10" data-correct="116 sq ft">
-              <div class="matching-term">T-shape: 14×4 + 6×10</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="116 sq ft">116 sq ft</option><option value="130 sq ft">130 sq ft</option><option value="58 sq ft">58 sq ft</option><option value="72 sq ft">72 sq ft</option><option value="90 sq ft">90 sq ft</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Wall 15×10 minus window 5×4" data-correct="130 sq ft">
-              <div class="matching-term">Wall 15×10 minus window 5×4</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="116 sq ft">116 sq ft</option><option value="130 sq ft">130 sq ft</option><option value="58 sq ft">58 sq ft</option><option value="72 sq ft">72 sq ft</option><option value="90 sq ft">90 sq ft</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Pool 14×10 minus cutout 6×4" data-correct="116 sq ft">
-              <div class="matching-term">Pool 14×10 minus cutout 6×4</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="116 sq ft">116 sq ft</option><option value="130 sq ft">130 sq ft</option><option value="58 sq ft">58 sq ft</option><option value="72 sq ft">72 sq ft</option><option value="90 sq ft">90 sq ft</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="L-shape: 8×5 + 3×6" data-correct="58 sq ft">
-              <div class="matching-term">L-shape: 8×5 + 3×6</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_4" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="116 sq ft">116 sq ft</option><option value="130 sq ft">130 sq ft</option><option value="58 sq ft">58 sq ft</option><option value="72 sq ft">72 sq ft</option><option value="90 sq ft">90 sq ft</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Floor 12×8 minus vent 2×3" data-correct="90 sq ft">
-              <div class="matching-term">Floor 12×8 minus vent 2×3</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_5" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="116 sq ft">116 sq ft</option><option value="130 sq ft">130 sq ft</option><option value="58 sq ft">58 sq ft</option><option value="72 sq ft">72 sq ft</option><option value="90 sq ft">90 sq ft</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_4" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 5</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Calculate each composite figure&#039;s area. Sort by whether the area is more than 100 sq ft or not.</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        
-        <div class="drag-sort-workspace" id="dragsort_4">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="more" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'more')">
-                <div class="drag-column-header">Area &gt; 100 sq ft</div>
-                <div class="drag-column-slots" id="slots_4_more" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'more')"></div>
-              </div>
-              <div class="drag-column" data-category-id="notmore" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'notmore')">
-                <div class="drag-column-header">Area ≤ 100 sq ft</div>
-                <div class="drag-column-slots" id="slots_4_notmore" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'notmore')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_4" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_0"
-                     data-item-index="0"
-                     data-correct-category="more"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">L-shape: 12×8 + 6×5 = 126 sq ft</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_0', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="more">Area &gt; 100 sq ft</option><option value="notmore">Area ≤ 100 sq ft</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_1"
-                     data-item-index="1"
-                     data-correct-category="notmore"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">T-shape: 10×3 + 4×7 = 58 sq ft</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_1', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="more">Area &gt; 100 sq ft</option><option value="notmore">Area ≤ 100 sq ft</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_2"
-                     data-item-index="2"
-                     data-correct-category="more"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Wall 15×10 − window 5×4 = 130 sq ft</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_2', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="more">Area &gt; 100 sq ft</option><option value="notmore">Area ≤ 100 sq ft</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_3"
-                     data-item-index="3"
-                     data-correct-category="notmore"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">L-shape: 9×7 + 3×4 = 75 sq ft</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_3', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="more">Area &gt; 100 sq ft</option><option value="notmore">Area ≤ 100 sq ft</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_4"
-                     data-item-index="4"
-                     data-correct-category="more"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Floor 20×8 − vent 6×3 = 142 sq ft</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_4', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="more">Area &gt; 100 sq ft</option><option value="notmore">Area ≤ 100 sq ft</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_4_5"
-                     data-item-index="5"
-                     data-correct-category="notmore"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">U-shape: 10×8 − 4×3 = 68 sq ft</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_5', 4); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="more">Area &gt; 100 sq ft</option><option value="notmore">Area ≤ 100 sq ft</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(4); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Plan 1 — Office wing: the floor plan is a 7 ft by 5 ft rectangle with a triangular reading nook (base 7 ft, height 4 ft) joined on top. Decompose it and ADD the areas. What is the total floor area?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Rectangle = 7 x 5 = 35 sq ft. Triangle = 1/2 x 7 x 4 = 14 sq ft. The pieces are joined, so add: 35 + 14 = 49 sq ft.">
-          
-            <label class="mc-option-label" id="label_q_5_0">
-              <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">49 sq ft</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_1">
-              <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">35 sq ft</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_2">
-              <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">14 sq ft</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_3">
-              <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">63 sq ft</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Plan 2 — L-shaped lobby: decompose the L into two rectangles, one 9 ft by 6 ft and one 7 ft by 3 ft, then ADD. What is the total floor area?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="First rectangle = 9 x 6 = 54 sq ft. Second rectangle = 7 x 3 = 21 sq ft. Joined L-shape, so add: 54 + 21 = 75 sq ft.">
-          
-            <label class="mc-option-label" id="label_q_6_0">
-              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">75 sq ft</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_1">
-              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">63 sq ft</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_2">
-              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">54 sq ft</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_3">
-              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">21 sq ft</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_7" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 8</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Plan 3 — Survey the site. Drag each part of a floor plan into the correct group: do you ADD it to the total or SUBTRACT it from a larger shape?</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        
-        <div class="drag-sort-workspace" id="dragsort_7">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="add" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'add')">
-                <div class="drag-column-header">ADD to the total</div>
-                <div class="drag-column-slots" id="slots_7_add" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'add')"></div>
-              </div>
-              <div class="drag-column" data-category-id="subtract" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'subtract')">
-                <div class="drag-column-header">SUBTRACT from a larger shape</div>
-                <div class="drag-column-slots" id="slots_7_subtract" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'subtract')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_7" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_0"
-                     data-item-index="0"
-                     data-correct-category="add"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Triangular entrance canopy joined to the front wall</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_0', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="add">ADD to the total</option><option value="subtract">SUBTRACT from a larger shape</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_1"
-                     data-item-index="1"
-                     data-correct-category="subtract"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Square skylight opening cut out of the roof</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_1', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="add">ADD to the total</option><option value="subtract">SUBTRACT from a larger shape</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_2"
-                     data-item-index="2"
-                     data-correct-category="add"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Rectangular wing attached to the main hall</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_2', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="add">ADD to the total</option><option value="subtract">SUBTRACT from a larger shape</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_3"
-                     data-item-index="3"
-                     data-correct-category="subtract"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Elevator shaft removed from the office floor</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_3', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="add">ADD to the total</option><option value="subtract">SUBTRACT from a larger shape</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_4"
-                     data-item-index="4"
-                     data-correct-category="add"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Triangular gable joined on top of the rectangular wall</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_4', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="add">ADD to the total</option><option value="subtract">SUBTRACT from a larger shape</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_5"
-                     data-item-index="5"
-                     data-correct-category="subtract"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Circular fountain basin carved out of the courtyard</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_5', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="add">ADD to the total</option><option value="subtract">SUBTRACT from a larger shape</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(7); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 9</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Plan 4 — Design studio: the floor is a 16 ft by 12 ft rectangle, but a 5 ft by 4 ft storage closet is cut out of one corner. Find the usable floor area.</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="Large rectangle = 16 x 12 = 192 sq ft. Cutout closet = 5 x 4 = 20 sq ft. A piece is removed, so subtract: 192 - 20 = 172 sq ft.">
-          
-            <label class="mc-option-label" id="label_q_8_0">
-              <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">172 sq ft</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_8_1">
-              <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">192 sq ft</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_8_2">
-              <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">212 sq ft</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_8_3">
-              <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">20 sq ft</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_9" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Plan 5 — Match each floor plan to its correct total area.</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="House-front wall: 11x6 rectangle + triangle base 11, height 4" data-correct="88 sq ft">
-              <div class="matching-term">House-front wall: 11x6 rectangle + triangle base 11, height 4</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="150 sq ft">150 sq ft</option><option value="73 sq ft">73 sq ft</option><option value="88 sq ft">88 sq ft</option><option value="97 sq ft">97 sq ft</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="T-shaped studio: 13x4 top + 5x9 stem" data-correct="97 sq ft">
-              <div class="matching-term">T-shaped studio: 13x4 top + 5x9 stem</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="150 sq ft">150 sq ft</option><option value="73 sq ft">73 sq ft</option><option value="88 sq ft">88 sq ft</option><option value="97 sq ft">97 sq ft</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Warehouse 20x9 minus loading bay 6x5" data-correct="150 sq ft">
-              <div class="matching-term">Warehouse 20x9 minus loading bay 6x5</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="150 sq ft">150 sq ft</option><option value="73 sq ft">73 sq ft</option><option value="88 sq ft">88 sq ft</option><option value="97 sq ft">97 sq ft</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="L-shaped gallery: 7x7 + 4x6" data-correct="73 sq ft">
-              <div class="matching-term">L-shaped gallery: 7x7 + 4x6</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="150 sq ft">150 sq ft</option><option value="73 sq ft">73 sq ft</option><option value="88 sq ft">88 sq ft</option><option value="97 sq ft">97 sq ft</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
   </main>
+
   
+    <section class="guided-section card section-celebrate" aria-label="Celebration">
+      <h2 class="section-title">🎉 You did it together! / ¡Lo lograron juntos!</h2>
+      <p class="celebrate-text lang-en">High five! Whether every answer was perfect or not, you showed up for your student tonight. That matters.</p>
+      <p class="celebrate-text lang-es" lang="es">¡Chócalas! No importa si cada respuesta fue perfecta — estuviste con tu estudiante esta noche. Eso importa.</p>
+      <p class="celebrate-sub bilingual-block">
+        <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
+        <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
+      </p>
+    </section>
+
 </div>
 
 <!-- Sticky bottom actions bar -->
@@ -2236,7 +1899,7 @@ header.homework-header h1 {
     
     <div class="score-progress-container">
       <div class="score-text">
-        Homework Progress: <span id="progress_text">0 / 10 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 2 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -2244,8 +1907,8 @@ header.homework-header h1 {
     </div>
     
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset</button>
-      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All Problems</button>
+      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset / Reiniciar</button>
+      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All / Revisar todo</button>
     </div>
   </div>
 </div>

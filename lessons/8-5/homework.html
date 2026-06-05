@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interactive Homework — Lesson 8-5: Display Data: Box Plots</title>
+<title>Help Your Student — Lesson 8-5: Display Data: Box Plots</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -266,6 +266,13 @@ header.homework-header h1 {
   border-radius: var(--radius-sm);
   font-size: 13.5px;
   color: var(--hint);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.family-problem-tip .lang-es {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .family-hint-box {
@@ -1306,70 +1313,331 @@ header.homework-header h1 {
     justify-content: center;
   }
 }
+
+/* Family guided notes layout */
+.family-welcome {
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  color: var(--white);
+  border: none;
+  padding: 28px 24px;
+}
+.welcome-hero {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.welcome-emoji { font-size: 48px; line-height: 1; }
+.welcome-tag {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal-light);
+  font-weight: 800;
+}
+.welcome-title-en, .welcome-title-es {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 5vw, 34px);
+  font-weight: 800;
+  line-height: 1.15;
+}
+.welcome-title-es { color: var(--amber); font-size: clamp(22px, 4.5vw, 30px); margin-top: 2px; }
+.welcome-lesson { margin: 8px 0 0; font-size: 16px; color: var(--teal-light); font-weight: 600; }
+.welcome-lead { margin: 0 0 12px; font-size: 15px; line-height: 1.5; }
+.family-welcome .back-link { color: var(--amber); margin: 0; }
+.family-welcome .back-link:hover { color: var(--white); }
+
+.bilingual-block, .bilingual-grid { display: flex; flex-direction: column; gap: 10px; }
+.bilingual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 640px) {
+  .bilingual-grid { grid-template-columns: 1fr; }
+}
+.bilingual-col {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.lang-label {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal);
+  margin-bottom: 6px;
+}
+.lang-en { margin: 0 0 6px; }
+.lang-es { margin: 0; color: var(--muted); font-style: normal; }
+.learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
+.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+
+.guided-section { scroll-margin-top: 16px; }
+.section-learn { border-left: 4px solid var(--teal); }
+.section-visual { border-left: 4px solid var(--amber); }
+.section-together { border-left: 4px solid #5b8def; }
+.section-vocab { border-left: 4px solid var(--coral); }
+.section-stuck { border-left: 4px solid #9b59b6; }
+.section-quick-intro { border-left: 4px solid var(--success); }
+.section-celebrate {
+  border-left: 4px solid var(--amber);
+  background: linear-gradient(180deg, var(--amber-light), var(--white));
+  text-align: center;
+}
+
+.concept-visual-wrap { margin: 12px 0 16px; overflow-x: auto; }
+.concept-svg { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.concept-fallback-visual { display: flex; flex-direction: column; gap: 8px; }
+.concept-fallback-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  font-weight: 600; font-size: 14px;
+}
+.step-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; color: var(--white);
+  flex-shrink: 0;
+}
+.step-color-1 .step-dot, .step-color-1.step-badge { background: #5b8def; }
+.step-color-2 .step-dot, .step-color-2.step-badge { background: var(--success); }
+.step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
+.step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
+
+.key-idea-banner {
+  background: var(--teal-light);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid #b8ddd8;
+}
+.key-idea-banner p { margin: 0 0 6px; font-size: 14.5px; }
+.key-idea-banner p:last-child { margin-bottom: 0; }
+
+.guided-steps, .together-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.guided-step, .together-step {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  background: var(--white);
+}
+.step-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  padding: 3px 8px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+}
+.guided-step p, .together-step p { margin: 0 0 6px; font-size: 14.5px; line-height: 1.45; }
+.step-hint {
+  margin: 8px 0 0 !important;
+  padding: 8px 10px;
+  background: var(--hint-bg);
+  border-radius: var(--radius-sm);
+  font-size: 13px !important;
+  color: var(--hint);
+}
+
+.watch-for-list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.watch-for-list li {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
+}
+.watch-icon { font-size: 20px; flex-shrink: 0; }
+
+.try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
+.try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
+
+.stuck-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+@media (max-width: 640px) { .stuck-grid { grid-template-columns: 1fr; } }
+.stuck-panel {
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+}
+.stuck-say { background: var(--success-bg); border-color: var(--success); }
+.stuck-dont { background: var(--error-bg); border-color: var(--error); }
+.stuck-heading { margin: 0 0 10px; font-family: var(--font-display); font-size: 14px; color: var(--navy); }
+.stuck-panel ul { margin: 0; padding-left: 16px; }
+.stuck-panel li { margin-bottom: 10px; font-size: 14px; }
+.stuck-panel li p { margin: 0 0 4px; }
+.stuck-footer { font-size: 14px; color: var(--muted); margin: 0; }
+
+.celebrate-text { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; }
+.celebrate-sub { font-size: 14px; margin: 0; }
+
+.problems-container .problem-section { border-left: 4px solid var(--teal); }
+.problems-container .problem-number-badge::after {
+  content: " / Repaso";
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
 </style>
 </head>
 <body>
 
 <div class="container">
-  
-  <header class="homework-header">
-    <a href="/curriculum/" class="back-link">⬅ Curriculum Hub</a>
-    <div class="header-meta">Unit 8 · Standard 6.SP.4 · Homework</div>
-    <h1>Display Data: Box Plots</h1>
-    <div class="objectives-card">
-      <div class="objective-row"><span class="objective-badge">Target</span> <strong>I can make and read a box plot to summarize a data set.</strong></div>
-      <div class="objective-row"><span class="objective-badge">Discuss</span> <strong>I can explain my box plot using the words box plot, median, quartile, and interquartile range.</strong></div>
-    </div>
-  </header>
 
   
-    <section class="family-guide card" aria-label="Family guide">
-      <div class="family-guide-header">
-        <span class="family-guide-emoji">🏀</span>
-        <div>
-          <h2 class="section-title family-guide-title">Family Guide</h2>
-          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
+    <header class="family-welcome card" aria-label="Family Math Night welcome">
+      <div class="welcome-hero">
+        <span class="welcome-emoji" aria-hidden="true">🏀</span>
+        <div class="welcome-titles">
+          <p class="welcome-tag">Unit 8 · 6.SP.4</p>
+          <h1 class="welcome-title-en">Family Math Night</h1>
+          <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
+          <p class="welcome-lesson">Display Data: Box Plots · Lesson 8-5</p>
         </div>
       </div>
+      <p class="welcome-lead bilingual-block">
+        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+      </p>
+      <a href="/curriculum/" class="back-link">⬅ Curriculum Hub / Centro curricular</a>
+    </header>
 
-      <div class="family-guide-grid">
-        <div class="family-panel family-panel-tips">
-          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
-          <ul class="family-tip-list">
-            <li>Let your student try each problem first. Tap <strong>Check This Problem</strong> on any question for instant feedback — no need to finish the whole page.</li>
-            <li>Tap vocabulary cards to flip between term and definition.</li>
-            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
-          </ul>
+  
+    <section class="guided-section card section-learn" aria-label="What we are learning tonight">
+      <h2 class="section-title">📖 What we're learning tonight / Qué aprendemos hoy</h2>
+      <div class="bilingual-grid">
+        <div class="bilingual-col lang-en">
+          <span class="lang-label">English</span>
+          <p class="learning-big">Make and read a box plot to summarize a data set.</p>
+          <p class="learning-sub">Also practice saying: <em>explain my box plot using the words box plot, median, quartile, and interquartile range</em></p>
         </div>
-
-        <div class="family-panel family-panel-home">
-          <h3 class="family-panel-heading">🏡 Try this at home</h3>
-          <p class="family-try-text">The Wildcats&#039; scores are 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. To build a box plot you need a five-number summary. What five numbers will you need?</p>
+        <div class="bilingual-col lang-es" lang="es">
+          <span class="lang-label">Español</span>
+          <p class="learning-big">Puedo make and read a diagrama de caja to summarize a datos set.</p>
+          <p class="learning-sub">También practiquen: <em>explicar mi diagrama de caja usando las palabras Diagrama de caja, Mediana, Cuartil, y Rango intercuartílico</em></p>
         </div>
       </div>
-
-      
-        <div class="family-panel family-panel-legend">
-          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
-          <ul class="family-tip-list family-type-legend"><li><strong>multiple choice:</strong> Read the question together, then let your student pick an answer before you discuss why.</li><li><strong>fill table:</strong> Encourage your student to show their work on paper if a box feels tricky.</li><li><strong>matching game:</strong> Say each term out loud, then talk through which match makes sense before choosing.</li><li><strong>drag sort:</strong> On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</li></ul>
-        </div>
-
-      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
     </section>
-  
 
   
-    <section class="try-at-home card" aria-label="Try this at home">
-      <h2 class="section-title">🏀 Real-World Connection</h2>
-      <p class="try-narrative">The basketball league wants to compare scoring across teams. Here are the points scored by each player on the Wildcats in their last game: 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. The league needs a quick visual that shows the spread, the middle 50%, and any high or low scorers. Time to build a box plot!</p>
-      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
+    <section class="guided-section card section-visual" aria-label="Visual concept explainer">
+      <h2 class="section-title">🎯 The big idea / La idea principal</h2>
+      <div class="concept-visual-wrap">
+    <div class="concept-fallback-visual" aria-hidden="true">
+      <div class="concept-fallback-step step-color-1"><span class="step-dot">1</span><span>A box plot is a simple picture that shows how a set of data is spread out, using just five key numbers: the lowest value, the first quartile (Q1), the median (middle), the third quartile (Q3), and the highest value</span></div><div class="concept-fallback-step step-color-2"><span class="step-dot">2</span><span>My data, in order: 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28</span></div><div class="concept-fallback-step step-color-3"><span class="step-dot">3</span><span>The middle number is the 6th one, 14, so the median = 14</span></div>
+    </div></div>
+      <div class="key-idea-banner">
+        <p class="lang-en"><strong>Watch for this:</strong> The box always holds the middle 50% of the data, and the line inside the box is the median.</p>
+        <p class="lang-es" lang="es"><strong>Observa esto:</strong> Esta noche practican: make and read a diagrama de caja to summarize a datos set. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+      </div>
+      <ol class="guided-steps">
+        
+          <li class="guided-step step-color-1">
+            <span class="step-badge">Step 1 / Paso 1</span>
+            <p class="lang-en">A box plot is a simple picture that shows how a set of data is spread out, using just five key numbers: the lowest value, the first quartile (Q1), the median (middle), the third quartile (Q3), and the highest value.</p>
+            <p class="lang-es" lang="es">Esta noche practican: make and read a diagrama de caja to summarize a datos set. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-2">
+            <span class="step-badge">Step 2 / Paso 2</span>
+            <p class="lang-en">My data, in order: 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. There are 11 numbers.</p>
+            <p class="lang-es" lang="es">Esta noche practican: make and read a diagrama de caja to summarize a datos set. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-3">
+            <span class="step-badge">Step 3 / Paso 3</span>
+            <p class="lang-en">The middle number is the 6th one, 14, so the median = 14.</p>
+            <p class="lang-es" lang="es">Esta noche practican: make and read a diagrama de caja to summarize a datos set. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+          <li class="guided-step step-color-4">
+            <span class="step-badge">Step 4 / Paso 4</span>
+            <p class="lang-en">The lower half is 4, 6, 8, 10, 12. Its middle is 8, so Q1 = 8.</p>
+            <p class="lang-es" lang="es">Esta noche practican: make and read a diagrama de caja to summarize a datos set. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
+          </li>
+      </ol>
+      <ul class="watch-for-list">
+        
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Box Plot&quot; — it means: A graph that shows how data is spread using five key numbers.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Diagrama de caja&quot; — significa: Una gráfica que muestra cómo se reparten los datos con cinco números clave.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Median&quot; — it means: The middle number that splits the data in half.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Mediana&quot; — significa: El número del medio que divide los datos en dos mitades.</p>
+            </div>
+          </li>
+          <li>
+            <span class="watch-icon">👀</span>
+            <div>
+              <p class="lang-en">Listen for the word &quot;Quartile&quot; — it means: Numbers that split the data into four equal parts.</p>
+              <p class="lang-es" lang="es">Escucha la palabra &quot;Cuartil&quot; — significa: Números que dividen los datos en cuatro partes iguales.</p>
+            </div>
+          </li>
+      </ul>
     </section>
-  
 
   
-    <section class="vocab-section card">
-      <h2 class="section-title">🔑 Key Vocabulary</h2>
-      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
+    <section class="guided-section card section-together" aria-label="Try this together">
+      <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
+      <p class="try-scenario lang-en">The basketball league wants to compare scoring across teams.</p>
+             <p class="try-scenario lang-es" lang="es">The basketball league wants to comparar scoring across teams.</p>
+      <p class="try-together-note bilingual-block">
+        <span class="lang-en">Work side by side. You ask questions; your student does the thinking.</span>
+        <span class="lang-es" lang="es">Trabajen juntos. Tú haces preguntas; tu estudiante piensa.</span>
+      </p>
+      <ol class="together-steps">
+        
+          <li class="together-step step-color-1">
+            <div class="together-step-head">
+              <span class="step-badge">Step 1 / Paso 1</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> New, smaller data set: 2, 5, 5, 8, 11. First, what is the median (the middle value)?</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> New, smaller datos set: 2, 5, 5, 8, 11. First, what is the mediana (the middle value)?.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-2">
+            <div class="together-step-head">
+              <span class="step-badge">Step 2 / Paso 2</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> The lower half is 2, 5 and the upper half is 8, 11. What is Q1? What is Q3?</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> The lower half is 2, 5 and the upper half is 8, 11. What is Q1? What is Q3?.</p>
+            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-3">
+            <div class="together-step-head">
+              <span class="step-badge">Step 3 / Paso 3</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> What are the lowest and highest values? Now picture the box stretching from Q1 to Q3 with the median line inside.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> What are the lowest and highest values? Now picture the box stretching from Q1 to Q3 with the mediana line inside.</p>
+            <p class="step-hint">💡 Both numbers must change the same way. · Ambos números deben cambiar de la misma manera.</p>
+          </li>
+      </ol>
+    </section>
+
+  
+    <section class="guided-section card section-vocab vocab-section" aria-label="Words to know">
+      <h2 class="section-title">📚 Words to know / Palabras clave</h2>
+      <p class="vocab-family-note bilingual-block">
+        <span class="lang-en">Tap a card to flip. Use these words when you talk about the math together.</span>
+        <span class="lang-es" lang="es">Toquen una tarjeta para voltearla. Usen estas palabras cuando hablen de la matemática juntos.</span>
+      </p>
       <div class="vocab-container">
         
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
@@ -1379,18 +1647,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/box-plot.svg" alt="Illustration of Box Plot: A graph that shows how data is spread using five key numbers." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Box Plot</h3>
-                  <p class="vocab-es">Diagrama de caja</p>
-                  <div class="vocab-visual-hint">💡 Example: A box from Q1 to Q3 with a line at the median, and whiskers from min to max</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Diagrama de caja</p>
+                  <div class="vocab-visual-hint">💡 A box from Q1 to Q3 with a line at the median, and whiskers from min to max</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">A graph that shows how data is spread using five key numbers.</p>
-                  <p class="vocab-def-es">Una gráfica que muestra cómo se reparten los datos con cinco números clave.</p>
+                  <p class="vocab-def-es" lang="es">Una gráfica que muestra cómo se reparten los datos con cinco números clave.</p>
                   <p class="vocab-back-visual">📌 A box from Q1 to Q3 with a line at the median, and whiskers from min to max</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1398,18 +1665,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/median.svg" alt="Illustration of Median: The middle number that splits the data in half." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Median</h3>
-                  <p class="vocab-es">Mediana</p>
-                  <div class="vocab-visual-hint">💡 Example: Data: 10, 15, 20, 25, 30 → median is 20 (the 3rd value)</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Mediana</p>
+                  <div class="vocab-visual-hint">💡 Data: 10, 15, 20, 25, 30 → median is 20 (the 3rd value)</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">The middle number that splits the data in half.</p>
-                  <p class="vocab-def-es">El número del medio que divide los datos en dos mitades.</p>
+                  <p class="vocab-def-es" lang="es">El número del medio que divide los datos en dos mitades.</p>
                   <p class="vocab-back-visual">📌 Data: 10, 15, 20, 25, 30 → median is 20 (the 3rd value)</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1417,18 +1683,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/quartile.svg" alt="Illustration of Quartile: Numbers that split the data into four equal parts." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Quartile</h3>
-                  <p class="vocab-es">Cuartil</p>
-                  <div class="vocab-visual-hint">💡 Example: Data: 2, 4, 6, 8, 10, 12, 14 → Q1 = 4 (median of lower half), Q3 = 12 (median of upper half)</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Cuartil</p>
+                  <div class="vocab-visual-hint">💡 Data: 2, 4, 6, 8, 10, 12, 14 → Q1 = 4 (median of lower half), Q3 = 12 (median of upper half)</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">Numbers that split the data into four equal parts.</p>
-                  <p class="vocab-def-es">Números que dividen los datos en cuatro partes iguales.</p>
+                  <p class="vocab-def-es" lang="es">Números que dividen los datos en cuatro partes iguales.</p>
                   <p class="vocab-back-visual">📌 Data: 2, 4, 6, 8, 10, 12, 14 → Q1 = 4 (median of lower half), Q3 = 12 (median of upper half)</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1436,18 +1701,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/interquartile-range.svg" alt="Illustration of Interquartile Range: The spread of the middle half of the data (Q3 − Q1)." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Interquartile Range</h3>
-                  <p class="vocab-es">Rango intercuartílico</p>
-                  <div class="vocab-visual-hint">💡 Example: If Q1 = 12 and Q3 = 20, then IQR = 20 − 12 = 8 — the middle 50% spans 8 units</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Rango intercuartílico</p>
+                  <div class="vocab-visual-hint">💡 If Q1 = 12 and Q3 = 20, then IQR = 20 − 12 = 8 — the middle 50% spans 8 units</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">The spread of the middle half of the data (Q3 − Q1).</p>
-                  <p class="vocab-def-es">La extensión de la mitad central de los datos (Q3 − Q1).</p>
+                  <p class="vocab-def-es" lang="es">La extensión de la mitad central de los datos (Q3 − Q1).</p>
                   <p class="vocab-back-visual">📌 If Q1 = 12 and Q3 = 20, then IQR = 20 − 12 = 8 — the middle 50% spans 8 units</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1455,18 +1719,17 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/distribution.svg" alt="Illustration of Data distribution: How the data looks: where it sits and how spread out it is." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Data distribution</h3>
-                  <p class="vocab-es">Distribución de datos</p>
-                  <div class="vocab-visual-hint">💡 Example: A box plot where the median is centered in the box shows symmetric distribution</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Distribución de datos</p>
+                  <div class="vocab-visual-hint">💡 A box plot where the median is centered in the box shows symmetric distribution</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">How the data looks: where it sits and how spread out it is.</p>
-                  <p class="vocab-def-es">Cómo se ven los datos: dónde están y qué tan separados están.</p>
+                  <p class="vocab-def-es" lang="es">Cómo se ven los datos: dónde están y qué tan separados están.</p>
                   <p class="vocab-back-visual">📌 A box plot where the median is centered in the box shows symmetric distribution</p>
                 </div>
               </div>
             </div>
-          
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -1474,33 +1737,63 @@ header.homework-header h1 {
                     <img class="vocab-thumb" src="/assets/vocab-images/spread.svg" alt="Illustration of Variability: How spread out the numbers are." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Variability</h3>
-                  <p class="vocab-es">Variabilidad</p>
-                  <div class="vocab-visual-hint">💡 Example: Small IQR = low variability in the middle 50%. Large IQR = high variability</div>
-                  <div class="flip-prompt">Tap to show definition ➔</div>
+                  <p class="vocab-es" lang="es">Variabilidad</p>
+                  <div class="vocab-visual-hint">💡 Small IQR = low variability in the middle 50%. Large IQR = high variability</div>
+                  <div class="flip-prompt">Tap / Toca ➔</div>
                 </div>
                 <div class="vocab-card-back">
                   <p class="vocab-def">How spread out the numbers are.</p>
-                  <p class="vocab-def-es">Qué tan separados están los números.</p>
+                  <p class="vocab-def-es" lang="es">Qué tan separados están los números.</p>
                   <p class="vocab-back-visual">📌 Small IQR = low variability in the middle 50%. Large IQR = high variability</p>
                 </div>
               </div>
             </div>
-          
       </div>
     </section>
+
   
+    <section class="guided-section card section-stuck" aria-label="If your student gets stuck">
+      <h2 class="section-title">💬 If your student gets stuck / Si se atora</h2>
+      <div class="stuck-grid">
+        <div class="stuck-panel stuck-say">
+          <h3 class="stuck-heading">✅ What to say / Qué decir</h3>
+          <ul>
+            <li><p class="lang-en">What do you already know that could help?</p><p class="lang-es" lang="es">¿Qué ya sabes que podría ayudarte?</p></li><li><p class="lang-en">Can you draw a picture or table for this?</p><p class="lang-es" lang="es">¿Puedes dibujar un dibujo o una tabla para esto?</p></li><li><p class="lang-en">Let&#039;s check one step at a time — no rush.</p><p class="lang-es" lang="es">Revisemos un paso a la vez — sin prisa.</p></li>
+          </ul>
+        </div>
+        <div class="stuck-panel stuck-dont">
+          <h3 class="stuck-heading">🚫 What NOT to say / Qué evitar</h3>
+          <ul>
+            <li><p class="lang-en">That&#039;s wrong — let me just tell you.</p><p class="lang-es" lang="es">Está mal — déjame decírtelo yo.</p></li><li><p class="lang-en">I was never good at math either.</p><p class="lang-es" lang="es">Yo tampoco era bueno en matemáticas.</p></li><li><p class="lang-en">This should be easy.</p><p class="lang-es" lang="es">Esto debería ser fácil.</p></li>
+          </ul>
+        </div>
+      </div>
+      <p class="stuck-footer bilingual-block">
+        <span class="lang-en">Struggle is part of learning. Short breaks and snacks are allowed!</span>
+        <span class="lang-es" lang="es">La dificultad es parte del aprendizaje. ¡Descansos y meriendas están permitidos!</span>
+      </p>
+    </section>
+
   
+    <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
+      <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
+      <p class="bilingual-block">
+        <span class="lang-en">One or two problems to try on the screen. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
+        <span class="lang-es" lang="es">Una o dos preguntas en pantalla. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+      </p>
+    </section>
+
   <main class="problems-container">
     
     <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 1</div>
+        <div class="problem-number-badge">Quick Check 1</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">A box plot shows: Min = 10, Q1 = 15, Median = 20, Q3 = 28, Max = 35. What is the interquartile range (IQR)?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="IQR = Q3 − Q1 = 28 − 15 = 13.">
           
             <label class="mc-option-label" id="label_q_0_0">
@@ -1532,7 +1825,7 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
@@ -1541,13 +1834,13 @@ header.homework-header h1 {
 
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 2</div>
+        <div class="problem-number-badge">Quick Check 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       
       <div class="problem-body">
         <p class="problem-stem">On a box plot, what does the line inside the box represent?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="The line inside the box of a box plot always represents the median.">
           
             <label class="mc-option-label" id="label_q_1_0">
@@ -1579,638 +1872,25 @@ header.homework-header h1 {
     
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
   
-
-    <section class="problem-section card" id="problem_2" data-problem-type="fill-table">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 3</div>
-        <div class="problem-type-badge">FILL TABLE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Complete the table.</p>
-        <p class="family-problem-tip">👪 Family tip: Encourage your student to show their work on paper if a box feels tricky.</p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Measure</th><th>Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>Data: 5, 8, 12, 15, 18, 20, 25, 30, 35</td><td></td>
-                </tr>
-              
-                <tr>
-                  <td>Minimum</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_1_1"
-                                   data-correct="5" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Q1 (median of lower half: 5, 8, 12, 15)</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_2_1"
-                                   data-correct="10" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Median</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_3_1"
-                                   data-correct="18" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Q3 (median of upper half: 20, 25, 30, 35)</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_4_1"
-                                   data-correct="27.5" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Maximum</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_5_1"
-                                   data-correct="35" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>IQR (Q3 − Q1)</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_2_table_6_1"
-                                   data-correct="17.5" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-            </tbody>
-          </table>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_3" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 4</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Match each box plot term to its meaning.</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="Minimum" data-correct="Smallest value in the data set">
-              <div class="matching-term">Minimum</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Largest value in the data set">Largest value in the data set</option><option value="Median of the lower half">Median of the lower half</option><option value="Median of the upper half">Median of the upper half</option><option value="Middle value of the entire data set">Middle value of the entire data set</option><option value="Q3 − Q1 (spread of middle 50%)">Q3 − Q1 (spread of middle 50%)</option><option value="Smallest value in the data set">Smallest value in the data set</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Q1" data-correct="Median of the lower half">
-              <div class="matching-term">Q1</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Largest value in the data set">Largest value in the data set</option><option value="Median of the lower half">Median of the lower half</option><option value="Median of the upper half">Median of the upper half</option><option value="Middle value of the entire data set">Middle value of the entire data set</option><option value="Q3 − Q1 (spread of middle 50%)">Q3 − Q1 (spread of middle 50%)</option><option value="Smallest value in the data set">Smallest value in the data set</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Median" data-correct="Middle value of the entire data set">
-              <div class="matching-term">Median</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Largest value in the data set">Largest value in the data set</option><option value="Median of the lower half">Median of the lower half</option><option value="Median of the upper half">Median of the upper half</option><option value="Middle value of the entire data set">Middle value of the entire data set</option><option value="Q3 − Q1 (spread of middle 50%)">Q3 − Q1 (spread of middle 50%)</option><option value="Smallest value in the data set">Smallest value in the data set</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Q3" data-correct="Median of the upper half">
-              <div class="matching-term">Q3</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Largest value in the data set">Largest value in the data set</option><option value="Median of the lower half">Median of the lower half</option><option value="Median of the upper half">Median of the upper half</option><option value="Middle value of the entire data set">Middle value of the entire data set</option><option value="Q3 − Q1 (spread of middle 50%)">Q3 − Q1 (spread of middle 50%)</option><option value="Smallest value in the data set">Smallest value in the data set</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="IQR" data-correct="Q3 − Q1 (spread of middle 50%)">
-              <div class="matching-term">IQR</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_4" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Largest value in the data set">Largest value in the data set</option><option value="Median of the lower half">Median of the lower half</option><option value="Median of the upper half">Median of the upper half</option><option value="Middle value of the entire data set">Middle value of the entire data set</option><option value="Q3 − Q1 (spread of middle 50%)">Q3 − Q1 (spread of middle 50%)</option><option value="Smallest value in the data set">Smallest value in the data set</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Maximum" data-correct="Largest value in the data set">
-              <div class="matching-term">Maximum</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_5" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Largest value in the data set">Largest value in the data set</option><option value="Median of the lower half">Median of the lower half</option><option value="Median of the upper half">Median of the upper half</option><option value="Middle value of the entire data set">Middle value of the entire data set</option><option value="Q3 − Q1 (spread of middle 50%)">Q3 − Q1 (spread of middle 50%)</option><option value="Smallest value in the data set">Smallest value in the data set</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_4" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 5</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Two box plots show: Team A has IQR = 8, Team B has IQR = 22. What does this tell you?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="A smaller IQR means the middle 50% of data is more tightly clustered. Team A&#039;s scoring is more consistent in the middle range.">
-          
-            <label class="mc-option-label" id="label_q_4_0">
-              <input type="radio" name="q_4" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Team A&#039;s middle 50% is more consistent; Team B&#039;s is more spread out</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_4_1">
-              <input type="radio" name="q_4" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Team B is a better team</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_4_2">
-              <input type="radio" name="q_4" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Team A has a higher median</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_4_3">
-              <input type="radio" name="q_4" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">The IQRs don&#039;t tell you about consistency</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">The Hawks&#039; points per quarter are 2, 4, 5, 7, 8, 10, 12. Resting on the scoreboard, what are the minimum, median, and maximum?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="The data is already in order. The smallest value is 2 and the largest is 12. There are 7 values, so the median is the 4th value, which is 7.">
-          
-            <label class="mc-option-label" id="label_q_5_0">
-              <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Minimum 2, median 7, maximum 12</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_1">
-              <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Minimum 2, median 5, maximum 12</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_2">
-              <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Minimum 0, median 7, maximum 12</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_3">
-              <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Minimum 2, median 8, maximum 10</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">The Comets scored 6, 10, 14, 18, 22, 26, 30, 34 across 8 games. After ordering, what are Q1 and Q3?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="With 8 values the median splits the data into a lower half (6, 10, 14, 18) and an upper half (22, 26, 30, 34). Q1 is the median of the lower half: (10 + 14) ÷ 2 = 12. Q3 is the median of the upper half: (26 + 30) ÷ 2 = 28.">
-          
-            <label class="mc-option-label" id="label_q_6_0">
-              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Q1 = 12, Q3 = 28</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_1">
-              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Q1 = 10, Q3 = 30</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_2">
-              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Q1 = 14, Q3 = 26</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_6_3">
-              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Q1 = 20, Q3 = 34</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_7" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 8</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Match each team&#039;s ordered scores to its five-number summary (min, Q1, median, Q3, max).</p>
-        <p class="family-problem-tip">👪 Family tip: Say each term out loud, then talk through which match makes sense before choosing.</p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="Hawks: 5, 8, 11, 15, 18, 21, 27" data-correct="Min 5, Q1 8, Median 15, Q3 21, Max 27">
-              <div class="matching-term">Hawks: 5, 8, 11, 15, 18, 21, 27</div>
-              <div class="matching-select-container">
-                <select name="q_7_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Min 10, Q1 13, Median 20, Q3 28, Max 33">Min 10, Q1 13, Median 20, Q3 28, Max 33</option><option value="Min 2, Q1 6, Median 14, Q3 23, Max 30">Min 2, Q1 6, Median 14, Q3 23, Max 30</option><option value="Min 4, Q1 7, Median 16, Q3 25, Max 31">Min 4, Q1 7, Median 16, Q3 25, Max 31</option><option value="Min 5, Q1 8, Median 15, Q3 21, Max 27">Min 5, Q1 8, Median 15, Q3 21, Max 27</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Comets: 10, 13, 16, 20, 24, 28, 33" data-correct="Min 10, Q1 13, Median 20, Q3 28, Max 33">
-              <div class="matching-term">Comets: 10, 13, 16, 20, 24, 28, 33</div>
-              <div class="matching-select-container">
-                <select name="q_7_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Min 10, Q1 13, Median 20, Q3 28, Max 33">Min 10, Q1 13, Median 20, Q3 28, Max 33</option><option value="Min 2, Q1 6, Median 14, Q3 23, Max 30">Min 2, Q1 6, Median 14, Q3 23, Max 30</option><option value="Min 4, Q1 7, Median 16, Q3 25, Max 31">Min 4, Q1 7, Median 16, Q3 25, Max 31</option><option value="Min 5, Q1 8, Median 15, Q3 21, Max 27">Min 5, Q1 8, Median 15, Q3 21, Max 27</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Jets: 2, 6, 9, 14, 19, 23, 30" data-correct="Min 2, Q1 6, Median 14, Q3 23, Max 30">
-              <div class="matching-term">Jets: 2, 6, 9, 14, 19, 23, 30</div>
-              <div class="matching-select-container">
-                <select name="q_7_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Min 10, Q1 13, Median 20, Q3 28, Max 33">Min 10, Q1 13, Median 20, Q3 28, Max 33</option><option value="Min 2, Q1 6, Median 14, Q3 23, Max 30">Min 2, Q1 6, Median 14, Q3 23, Max 30</option><option value="Min 4, Q1 7, Median 16, Q3 25, Max 31">Min 4, Q1 7, Median 16, Q3 25, Max 31</option><option value="Min 5, Q1 8, Median 15, Q3 21, Max 27">Min 5, Q1 8, Median 15, Q3 21, Max 27</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="Suns: 4, 7, 10, 16, 22, 25, 31" data-correct="Min 4, Q1 7, Median 16, Q3 25, Max 31">
-              <div class="matching-term">Suns: 4, 7, 10, 16, 22, 25, 31</div>
-              <div class="matching-select-container">
-                <select name="q_7_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="Min 10, Q1 13, Median 20, Q3 28, Max 33">Min 10, Q1 13, Median 20, Q3 28, Max 33</option><option value="Min 2, Q1 6, Median 14, Q3 23, Max 30">Min 2, Q1 6, Median 14, Q3 23, Max 30</option><option value="Min 4, Q1 7, Median 16, Q3 25, Max 31">Min 4, Q1 7, Median 16, Q3 25, Max 31</option><option value="Min 5, Q1 8, Median 15, Q3 21, Max 27">Min 5, Q1 8, Median 15, Q3 21, Max 27</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_8" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 9</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Each card describes a part of the stadium box plot. Sort each card under the matching box plot part.</p>
-        <p class="family-problem-tip">👪 Family tip: On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.</p>
-        
-        <div class="drag-sort-workspace" id="dragsort_8">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="fivenum" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'fivenum')">
-                <div class="drag-column-header">Part of the five-number summary</div>
-                <div class="drag-column-slots" id="slots_8_fivenum" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'fivenum')"></div>
-              </div>
-              <div class="drag-column" data-category-id="spread" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'spread')">
-                <div class="drag-column-header">Measure of spread</div>
-                <div class="drag-column-slots" id="slots_8_spread" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'spread')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_8" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_0"
-                     data-item-index="0"
-                     data-correct-category="fivenum"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">The minimum — the lowest score</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_0', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="fivenum">Part of the five-number summary</option><option value="spread">Measure of spread</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_1"
-                     data-item-index="1"
-                     data-correct-category="fivenum"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Q1 — the median of the lower half</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_1', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="fivenum">Part of the five-number summary</option><option value="spread">Measure of spread</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_2"
-                     data-item-index="2"
-                     data-correct-category="fivenum"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">The median — the middle score</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_2', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="fivenum">Part of the five-number summary</option><option value="spread">Measure of spread</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_3"
-                     data-item-index="3"
-                     data-correct-category="fivenum"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Q3 — the median of the upper half</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_3', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="fivenum">Part of the five-number summary</option><option value="spread">Measure of spread</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_4"
-                     data-item-index="4"
-                     data-correct-category="fivenum"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">The maximum — the highest score</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_4', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="fivenum">Part of the five-number summary</option><option value="spread">Measure of spread</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_5"
-                     data-item-index="5"
-                     data-correct-category="spread"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">IQR — Q3 minus Q1</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_5', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="fivenum">Part of the five-number summary</option><option value="spread">Measure of spread</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_8_6"
-                     data-item-index="6"
-                     data-correct-category="spread"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Range — maximum minus minimum</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_6', 8); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="fivenum">Part of the five-number summary</option><option value="spread">Measure of spread</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(8); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Problem 10</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A box plot for the Rockets shows Min = 8, Q1 = 15, Median = 22, Q3 = 30, Max = 38. The middle 50% of their scores falls between which two values?</p>
-        <p class="family-problem-tip">👪 Family tip: Read the question together, then let your student pick an answer before you discuss why.</p>
-        <div class="mc-options" data-correct="0" data-explanation="The box of a box plot stretches from Q1 to Q3, and that box always holds the middle 50% of the data. Here the box goes from Q1 = 15 to Q3 = 30.">
-          
-            <label class="mc-option-label" id="label_q_9_0">
-              <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Between 15 and 30</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_1">
-              <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Between 8 and 38</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_2">
-              <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Between 8 and 22</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_3">
-              <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Between 22 and 38</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
-          ✓ Check This Problem
-        </button>
-        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
   </main>
+
   
+    <section class="guided-section card section-celebrate" aria-label="Celebration">
+      <h2 class="section-title">🎉 You did it together! / ¡Lo lograron juntos!</h2>
+      <p class="celebrate-text lang-en">High five! Whether every answer was perfect or not, you showed up for your student tonight. That matters.</p>
+      <p class="celebrate-text lang-es" lang="es">¡Chócalas! No importa si cada respuesta fue perfecta — estuviste con tu estudiante esta noche. Eso importa.</p>
+      <p class="celebrate-sub bilingual-block">
+        <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
+        <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
+      </p>
+    </section>
+
 </div>
 
 <!-- Sticky bottom actions bar -->
@@ -2220,7 +1900,7 @@ header.homework-header h1 {
     
     <div class="score-progress-container">
       <div class="score-text">
-        Homework Progress: <span id="progress_text">0 / 10 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 2 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -2228,8 +1908,8 @@ header.homework-header h1 {
     </div>
     
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset</button>
-      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All Problems</button>
+      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset / Reiniciar</button>
+      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All / Revisar todo</button>
     </div>
   </div>
 </div>

@@ -2,6 +2,18 @@ import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { resolveVocabImage, vocabImageAlt } from "../engine/core/vocab-images.js";
+import {
+  selectQuickCheckProblems,
+  renderWelcomeBanner,
+  renderLearningTonight,
+  renderConceptExplainer,
+  renderTryTogether,
+  renderStuckSection,
+  renderCelebration,
+  renderQuickCheckIntro,
+  renderWordsToKnow,
+  GUIDED_NOTES_CSS,
+} from "./homework-guided-notes.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -114,36 +126,39 @@ function normalizeDragSort(it) {
 }
 
 const FAMILY_TIPS_BY_TYPE = {
-  "multiple-choice": "Read the question together, then let your student pick an answer before you discuss why.",
-  "matching-game": "Say each term out loud, then talk through which match makes sense before choosing.",
-  "drag-sort": "On a phone, use the Move to dropdown. On a computer, drag cards or tap a card then tap a column.",
-  "drag-order": "Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.",
-  "fill-table": "Encourage your student to show their work on paper if a box feels tricky.",
-  "error-analysis": "Read each step aloud and ask: does this step follow the math rules we learned?",
-  "open-response": "A complete sentence with math vocabulary is the goal — not a perfect paragraph.",
+  "multiple-choice": {
+    en: "Read the question together, then let your student pick an answer before you discuss why.",
+    es: "Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.",
+  },
+  "matching-game": {
+    en: "Say each term out loud, then talk through which match makes sense before choosing.",
+    es: "Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.",
+  },
+  "drag-sort": {
+    en: "On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.",
+    es: "En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.",
+  },
+  "drag-order": {
+    en: "Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.",
+    es: "Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.",
+  },
+  "fill-table": {
+    en: "Encourage your student to show work on paper if a box feels tricky.",
+    es: "Animen a mostrar el trabajo en papel si una casilla se siente difícil.",
+  },
+  "error-analysis": {
+    en: "Read each step aloud and ask: does this step follow the math rules we learned?",
+    es: "Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?",
+  },
+  "open-response": {
+    en: "A complete sentence with math vocabulary is the goal — not a perfect paragraph.",
+    es: "Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.",
+  },
 };
 
-function familyTryAtHome(config) {
-  const talk = Array.isArray(config.turnAndTalk) ? config.turnAndTalk[0] : null;
-  if (talk?.question) return talk.question;
-  const youDo = config.launch?.conceptIntro?.youDo?.lines;
-  if (Array.isArray(youDo) && youDo.length) return youDo[0];
-  const intro = config.launch?.conceptIntro?.intro;
-  if (intro) return intro;
-  return "Ask your student to explain one problem out loud using the vocabulary words from this lesson.";
-}
-
-function renderTryAtHome(config) {
-  const narrative = config.launch?.narrative || config.explore?.narrative || "";
-  if (!narrative) return "";
-  const emoji = config.themeEmoji || "🏠";
-  return `
-    <section class="try-at-home card" aria-label="Try this at home">
-      <h2 class="section-title">${emoji} Real-World Connection</h2>
-      <p class="try-narrative">${esc(narrative)}</p>
-      <p class="try-challenge"><strong>Family challenge:</strong> Find something at home that connects to this lesson. Sketch it or describe the math together in 2–3 sentences.</p>
-    </section>
-  `;
+function renderFamilyTip(typeKey) {
+  const tip = FAMILY_TIPS_BY_TYPE[typeKey] || FAMILY_TIPS_BY_TYPE["multiple-choice"];
+  return `<p class="family-problem-tip"><span class="lang-en">👪 ${esc(tip.en)}</span><span class="lang-es" lang="es">👪 ${esc(tip.es)}</span></p>`;
 }
 
 function shuffleSteps(steps, correctOrder) {
@@ -161,74 +176,6 @@ function shuffleSteps(steps, correctOrder) {
   return out;
 }
 
-function renderFamilyGuide(config, selected) {
-  const themeEmoji = config.themeEmoji || "📚";
-  const tryAtHome = familyTryAtHome(config);
-  const legendEntries = [];
-  const typesPresent = [...new Set(selected.map((p) => p.type))];
-  for (const type of typesPresent) {
-    if (type === "drag-sort") {
-      const hasOrder = selected.some(
-        (p) => p.type === "drag-sort" && normalizeDragSort(p).kind === "order",
-      );
-      const hasSort = selected.some(
-        (p) => p.type === "drag-sort" && normalizeDragSort(p).kind === "sort",
-      );
-      if (hasOrder) legendEntries.push(["drag-order", "drag order"]);
-      if (hasSort) legendEntries.push(["drag-sort", "drag sort"]);
-      continue;
-    }
-    legendEntries.push([type, type.replace(/-/g, " ")]);
-  }
-
-  const typeLegend = legendEntries
-    .map(([key, label]) => {
-      const tip = FAMILY_TIPS_BY_TYPE[key] || "Work through one problem at a time together.";
-      return `<li><strong>${esc(label)}:</strong> ${esc(tip)}</li>`;
-    })
-    .join("");
-
-  return `
-    <section class="family-guide card" aria-label="Family guide">
-      <div class="family-guide-header">
-        <span class="family-guide-emoji">${esc(themeEmoji)}</span>
-        <div>
-          <h2 class="section-title family-guide-title">Family Guide</h2>
-          <p class="family-guide-sub">Interactive practice your student can do at home — answers save automatically in this browser.</p>
-        </div>
-      </div>
-
-      <div class="family-guide-grid">
-        <div class="family-panel family-panel-tips">
-          <h3 class="family-panel-heading">👨‍👩‍👧 How to help</h3>
-          <ul class="family-tip-list">
-            <li>Let your student try each problem first. Tap <strong>Check This Problem</strong> on any question for instant feedback — no need to finish the whole page.</li>
-            <li>Tap vocabulary cards to flip between term and definition.</li>
-            <li>Use <strong>Reset</strong> only if you want to clear saved work on this device.</li>
-          </ul>
-        </div>
-
-        <div class="family-panel family-panel-home">
-          <h3 class="family-panel-heading">🏡 Try this at home</h3>
-          <p class="family-try-text">${esc(tryAtHome)}</p>
-        </div>
-      </div>
-
-      ${
-        typesPresent.length
-          ? `
-        <div class="family-panel family-panel-legend">
-          <h3 class="family-panel-heading">📋 Activity tips by problem type</h3>
-          <ul class="family-tip-list family-type-legend">${typeLegend}</ul>
-        </div>`
-          : ""
-      }
-
-      <p class="family-print-note">💡 Prefer paper? Download the printable Homework packet from the Curriculum Hub.</p>
-    </section>
-  `;
-}
-
 function isPrintable(it) {
   if (!it || typeof it !== "object") return false;
   return [
@@ -242,25 +189,7 @@ function isPrintable(it) {
 }
 
 function selectProblems(practice = {}) {
-  const onLevel = Array.isArray(practice.onLevel) ? practice.onLevel : [];
-  const optional = Array.isArray(practice.optional) ? practice.optional : [];
-  const approaching = Array.isArray(practice.approaching) ? practice.approaching : [];
-  const extending = Array.isArray(practice.extending) ? practice.extending : [];
-
-  const picked = [];
-  // A couple of approaching (warm-up) problems first.
-  picked.push(...approaching.slice(0, 2));
-  // Core on-level work.
-  picked.push(...onLevel);
-  // Then optional extras.
-  picked.push(...optional);
-  // Extending problems.
-  picked.push(...extending);
-
-  // Keep only printable problem types we know how to render.
-  const printable = picked.filter((it) => isPrintable(it));
-  // Cap at 10, but ensure we keep what we have if fewer.
-  return printable.slice(0, 10);
+  return selectQuickCheckProblems(practice);
 }
 
 // Map column labels (Shape A) to row-object keys.
@@ -307,47 +236,7 @@ function lessonConfigs() {
 }
 
 function renderVocabulary(vocabList) {
-  if (!Array.isArray(vocabList) || vocabList.length === 0) return "";
-
-  return `
-    <section class="vocab-section card">
-      <h2 class="section-title">🔑 Key Vocabulary</h2>
-      <p class="vocab-family-note">Tap a card to flip between the math term and kid-friendly definition. Pictures help families talk about the idea together.</p>
-      <div class="vocab-container">
-        ${vocabList
-          .map((v) => {
-            const term = v.term || "";
-            const termEs = v.termEs || "";
-            const definition = v.definition || "";
-            const definitionEs = v.definitionEs || "";
-            const visual = v.visual || "";
-            const imgSrc = resolveVocabImage(term, v.image);
-            const imgAlt = vocabImageAlt(term, definition);
-            return `
-            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
-              <div class="vocab-card-inner">
-                <div class="vocab-card-front">
-                  <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="${esc(imgSrc)}" alt="${esc(imgAlt)}" loading="lazy" width="72" height="72" />
-                  </div>
-                  <h3>${esc(term)}</h3>
-                  ${termEs ? `<p class="vocab-es">${esc(termEs)}</p>` : ""}
-                  ${visual ? `<div class="vocab-visual-hint">💡 Example: ${esc(visual)}</div>` : ""}
-                  <div class="flip-prompt">Tap to show definition ➔</div>
-                </div>
-                <div class="vocab-card-back">
-                  <p class="vocab-def">${esc(definition)}</p>
-                  ${definitionEs ? `<p class="vocab-def-es">${esc(definitionEs)}</p>` : ""}
-                  ${visual ? `<p class="vocab-back-visual">📌 ${esc(visual)}</p>` : ""}
-                </div>
-              </div>
-            </div>
-          `;
-          })
-          .join("")}
-      </div>
-    </section>
-  `;
+  return renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt);
 }
 
 function renderProblem(it, pIdx) {
@@ -365,7 +254,7 @@ function renderProblem(it, pIdx) {
     content = `
       <div class="problem-body">
         <p class="problem-stem">${esc(stem)}</p>
-        <p class="family-problem-tip">👪 Family tip: ${esc(FAMILY_TIPS_BY_TYPE["multiple-choice"])}</p>
+        ${renderFamilyTip("multiple-choice")}
         <div class="mc-options" data-correct="${correctIdx}" data-explanation="${esc(explanation)}">
           ${choices.map((choice, cIdx) => `
             <label class="mc-option-label" id="label_q_${pIdx}_${cIdx}">
@@ -388,7 +277,7 @@ function renderProblem(it, pIdx) {
     content = `
       <div class="problem-body">
         <p class="problem-stem">${esc(label)}</p>
-        <p class="family-problem-tip">👪 Family tip: ${esc(FAMILY_TIPS_BY_TYPE["matching-game"])}</p>
+        ${renderFamilyTip("matching-game")}
         <div class="matching-pairs">
           ${pairs.map((p, pairIdx) => `
             <div class="matching-row" data-term="${esc(p.term)}" data-correct="${esc(p.match)}">
@@ -407,7 +296,7 @@ function renderProblem(it, pIdx) {
     `;
   } else if (type === "drag-sort") {
     const norm = normalizeDragSort(it);
-    const familyTip = FAMILY_TIPS_BY_TYPE[norm.kind === "order" ? "drag-order" : "drag-sort"];
+    const familyTipKey = norm.kind === "order" ? "drag-order" : "drag-sort";
 
     if (norm.kind === "order") {
       problemSubtype = "drag-order";
@@ -415,7 +304,7 @@ function renderProblem(it, pIdx) {
       content = `
       <div class="problem-body">
         <p class="problem-stem">${esc(norm.label)}</p>
-        <p class="family-problem-tip">👪 Family tip: ${esc(familyTip)}</p>
+        ${renderFamilyTip(familyTipKey)}
         <div class="drag-order-workspace" id="dragorder_${pIdx}" data-correct-order='${esc(JSON.stringify(norm.correctOrder))}' data-initial-order='${esc(JSON.stringify(shuffledSteps))}'>
           <div class="drag-order-list" id="orderlist_${pIdx}">
             ${shuffledSteps
@@ -446,7 +335,7 @@ function renderProblem(it, pIdx) {
       content = `
       <div class="problem-body">
         <p class="problem-stem">${esc(norm.label)}</p>
-        <p class="family-problem-tip">👪 Family tip: ${esc(familyTip)}</p>
+        ${renderFamilyTip(familyTipKey)}
         ${
           norm.hints?.length
             ? `<div class="family-hint-box">${norm.hints.map((h) => `<p>💡 ${esc(h)}</p>`).join("")}</div>`
@@ -537,7 +426,7 @@ function renderProblem(it, pIdx) {
     content = `
       <div class="problem-body">
         <p class="problem-stem">${esc(label)}</p>
-        <p class="family-problem-tip">👪 Family tip: ${esc(FAMILY_TIPS_BY_TYPE["fill-table"])}</p>
+        ${renderFamilyTip("fill-table")}
         <div class="table-responsive">
           <table class="fill-table">
             <thead>
@@ -584,7 +473,7 @@ function renderProblem(it, pIdx) {
       <div class="problem-body">
         <h3 class="error-analysis-title">⚠️ ${esc(title)}</h3>
         <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        <p class="family-problem-tip">👪 Family tip: ${esc(FAMILY_TIPS_BY_TYPE["error-analysis"])}</p>
+        ${renderFamilyTip("error-analysis")}
         
         <div class="clipboard-box">
           <div class="clipboard-top"></div>
@@ -630,7 +519,7 @@ function renderProblem(it, pIdx) {
     content = `
       <div class="problem-body">
         <p class="problem-stem">${esc(prompt)}</p>
-        <p class="family-problem-tip">👪 Family tip: ${esc(FAMILY_TIPS_BY_TYPE["open-response"])}</p>
+        ${renderFamilyTip("open-response")}
         
         ${sentenceFrame ? `
           <div class="sentence-frame-card">
@@ -666,13 +555,13 @@ function renderProblem(it, pIdx) {
   return `
     <section class="problem-section card" id="problem_${pIdx}" data-problem-type="${type}"${problemSubtype ? ` data-problem-subtype="${problemSubtype}"` : ""}>
       <div class="problem-header-row">
-        <div class="problem-number-badge">Problem ${pIdx + 1}</div>
+        <div class="problem-number-badge">Quick Check ${pIdx + 1}</div>
         <div class="problem-type-badge">${esc(displayType.replace(/-/g, " ").toUpperCase())}</div>
       </div>
       ${content}
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(${pIdx})" aria-label="Check answer for problem ${pIdx + 1}">
-          ✓ Check This Problem
+          ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_${pIdx}" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
@@ -682,25 +571,26 @@ function renderProblem(it, pIdx) {
 
 function generateHtml(lessonId, config) {
   const title = config.title || "Lesson Practice";
-  const standard = config.standard || "";
-  const unit = config.unit || 1;
-  const contentObj = config.contentObjective || "";
-  const languageObj = config.languageObjective || "";
   const vocab = config.vocabulary || [];
-  
+
   const selected = selectProblems(config.practice || {});
-  
+
+  const welcomeHtml = renderWelcomeBanner(config, lessonId);
+  const learningHtml = renderLearningTonight(config);
+  const conceptHtml = renderConceptExplainer(config);
+  const tryTogetherHtml = renderTryTogether(config);
   const vocabHtml = renderVocabulary(vocab);
-  const familyGuideHtml = renderFamilyGuide(config, selected);
-  const tryAtHomeHtml = renderTryAtHome(config);
+  const stuckHtml = renderStuckSection(config);
+  const quickCheckIntroHtml = renderQuickCheckIntro();
   const problemsHtml = selected.map((p, idx) => renderProblem(p, idx)).join("\n");
-  
+  const celebrationHtml = renderCelebration();
+
   return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interactive Homework — Lesson ${lessonId}: ${esc(title)}</title>
+<title>Help Your Student — Lesson ${lessonId}: ${esc(title)}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -963,6 +853,13 @@ header.homework-header h1 {
   border-radius: var(--radius-sm);
   font-size: 13.5px;
   color: var(--hint);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.family-problem-tip .lang-es {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .family-hint-box {
@@ -2003,32 +1900,33 @@ header.homework-header h1 {
     justify-content: center;
   }
 }
+${GUIDED_NOTES_CSS}
 </style>
 </head>
 <body>
 
 <div class="container">
-  
-  <header class="homework-header">
-    <a href="/curriculum/" class="back-link">⬅ Curriculum Hub</a>
-    <div class="header-meta">Unit ${unit} · Standard ${esc(standard)} · Homework</div>
-    <h1>${esc(title)}</h1>
-    <div class="objectives-card">
-      ${contentObj ? `<div class="objective-row"><span class="objective-badge">Target</span> <strong>${esc(contentObj)}</strong></div>` : ""}
-      ${languageObj ? `<div class="objective-row"><span class="objective-badge">Discuss</span> <strong>${esc(languageObj)}</strong></div>` : ""}
-    </div>
-  </header>
 
-  ${familyGuideHtml}
+  ${welcomeHtml}
 
-  ${tryAtHomeHtml}
+  ${learningHtml}
+
+  ${conceptHtml}
+
+  ${tryTogetherHtml}
 
   ${vocabHtml}
-  
+
+  ${stuckHtml}
+
+  ${quickCheckIntroHtml}
+
   <main class="problems-container">
     ${problemsHtml}
   </main>
-  
+
+  ${celebrationHtml}
+
 </div>
 
 <!-- Sticky bottom actions bar -->
@@ -2038,7 +1936,7 @@ header.homework-header h1 {
     
     <div class="score-progress-container">
       <div class="score-text">
-        Homework Progress: <span id="progress_text">0 / ${selected.length} Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / ${selected.length} Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -2046,8 +1944,8 @@ header.homework-header h1 {
     </div>
     
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset</button>
-      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All Problems</button>
+      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset / Reiniciar</button>
+      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All / Revisar todo</button>
     </div>
   </div>
 </div>
