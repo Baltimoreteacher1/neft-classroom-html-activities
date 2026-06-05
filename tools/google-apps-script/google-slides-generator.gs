@@ -620,6 +620,8 @@ function doGet(e) {
   var state = "INITIAL";
   if (p.selftest === "1") {
     state = "SELF_TEST";
+  } else if (p.debug === "1") {
+    state = "DEBUG_SELF_TEST";
   } else if (p.geturls === "1") {
     state = "GET_URLS";
   } else if (p.generateall === "1") {
@@ -635,6 +637,10 @@ function doGet(e) {
       case "SELF_TEST":
         var result = selfTest();
         return renderHtmlOutput_("🧪 Self Test Results", "<h3>Self-Test Executed Successfully</h3><pre>" + result + "</pre>");
+        
+      case "DEBUG_SELF_TEST":
+        var result = debugSelfTest();
+        return ContentService.createTextOutput(result).setMimeType(ContentService.MimeType.TEXT);
         
       case "GET_URLS":
         var files = DriveApp.getFilesByName("google-slides-urls.json");
@@ -819,4 +825,33 @@ function generateAllSlides() {
   }
   
   Logger.log("Bulk generation complete! Result stored in Drive.");
+}
+
+/** Debug routine to read presentation structure and return as text. */
+function debugSelfTest() {
+  var id = "1mSTqPzSc8RQFmthoKzNAKiPX51Azk1AcwCE3f9v7Hw4";
+  try {
+    var pres = SlidesApp.openById(id);
+    var slides = pres.getSlides();
+    var log = "Presentation Name: " + pres.getName() + "\n";
+    log += "Slide Count: " + slides.length + "\n";
+    for (var i = 0; i < slides.length; i++) {
+      var slide = slides[i];
+      var elements = slide.getPageElements();
+      log += "Slide " + (i + 1) + " Elements Count: " + elements.length + "\n";
+      for (var j = 0; j < elements.length; j++) {
+        var el = elements[j];
+        var type = el.getPageElementType();
+        var txt = "";
+        if (type == SlidesApp.PageElementType.SHAPE) {
+          var shape = el.asShape();
+          txt = shape.getText().asString();
+        }
+        log += "  - Element " + (j + 1) + ": Type=" + type + ", TextLength=" + txt.length + " (" + txt.substring(0, 40).replace(/\n/g, "\\n") + ")\n";
+      }
+    }
+    return log;
+  } catch (err) {
+    return "Error: " + err.message;
+  }
 }
