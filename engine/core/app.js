@@ -590,6 +590,15 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   mountExportToolbar(state, config);
 
   app.start();
+
+  // Deep-link from curriculum hub: /lessons/3-1/?extra=activity
+  var pendingExtra = new URLSearchParams(window.location.search).get("extra");
+  if (pendingExtra) {
+    setTimeout(function () {
+      app.openExtra(pendingExtra);
+    }, 0);
+  }
+
   return app;
 }
 

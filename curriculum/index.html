@@ -3896,10 +3896,12 @@
       </div>
     </div>
 
+    <script src="./lesson-bonus-activities.js"></script>
     <script>
       (function () {
         var box = document.getElementById("curr-search");
         var noResults = document.getElementById("no-results");
+        var LESSON_BONUS_ACTIVITIES = window.LESSON_BONUS_ACTIVITIES || {};
 
         // Culminating projects directory per unit
         var UNIT_CULMINATING_PROJECT = {
@@ -4135,6 +4137,14 @@
             var lessonId = lessonIdMatch ? lessonIdMatch[1] : "";
             var baseLessonId = lessonId.replace("-flagship", "");
 
+            // TPT bonus activity — appears in the curriculum activity dropdown.
+            var bonus =
+              LESSON_BONUS_ACTIVITIES[lessonId] ||
+              LESSON_BONUS_ACTIVITIES[baseLessonId];
+            if (bonus) {
+              activities.push(bonus);
+            }
+
             // Resolve projects
             var projects =
               LESSON_PROJECTS[lessonId] || LESSON_PROJECTS[baseLessonId];
@@ -4154,6 +4164,9 @@
             }
 
             var dataSearchLower = dataSearch.toLowerCase();
+            if (bonus) {
+              dataSearchLower += " " + bonus.text.toLowerCase();
+            }
             projects.forEach(function (proj) {
               dataSearchLower += " " + proj.text.toLowerCase();
             });
@@ -4351,7 +4364,9 @@
                   lesson.projects && lesson.projects.indexOf(act) > -1;
                 var icon = "🔗";
                 var name = act.text.toLowerCase();
-                if (isProject) {
+                if (act.isBonus) {
+                  icon = "🎯";
+                } else if (isProject) {
                   icon = "🛠️";
                 } else if (
                   name.indexOf("lesson") > -1 ||
@@ -4372,6 +4387,8 @@
                 a.target = "_blank";
                 if (isProject) {
                   a.className = "res-project";
+                } else if (act.isBonus) {
+                  a.className = "res-bonus";
                 }
                 a.innerHTML = icon + " " + act.text;
                 li.appendChild(a);
@@ -4466,7 +4483,9 @@
                   var isProject = l.projects && l.projects.indexOf(act) > -1;
                   var icon = "🔗";
                   var name = act.text.toLowerCase();
-                  if (isProject) {
+                  if (act.isBonus) {
+                    icon = "🎯";
+                  } else if (isProject) {
                     icon = "🛠️";
                   } else if (
                     name.indexOf("lesson") > -1 ||
@@ -4487,6 +4506,8 @@
                   a.target = "_blank";
                   if (isProject) {
                     a.className = "res-project";
+                  } else if (act.isBonus) {
+                    a.className = "res-bonus";
                   }
                   a.innerHTML = icon + " " + act.text;
                   li.appendChild(a);
