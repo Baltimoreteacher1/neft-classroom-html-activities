@@ -25,10 +25,10 @@ export async function onRequest(context) {
   // No password configured -> leave the site open (no behavior change).
   if (!password) return next();
 
-  // Never gate the API endpoints — they have their own auth and some are
-  // called by Google / scheduled jobs that cannot supply a browser password.
+  // Never gate the API endpoints or lesson config JSON files — they have their own auth
+  // or are fetched by external automation (like Google Apps Script slide generator).
   const url = new URL(request.url);
-  if (url.pathname.startsWith('/api/')) return next();
+  if (url.pathname.startsWith('/api/') || url.pathname.endsWith('/config.json')) return next();
 
   const header = request.headers.get('Authorization') || '';
   const [scheme, encoded] = header.split(' ');

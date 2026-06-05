@@ -446,7 +446,7 @@ function generateInteractiveWidgetHtml(lessonId, standard) {
 }
 
 // Generate the self-contained slides HTML
-function generateSlidesHtml(lessonId, data) {
+function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
   const title = `Lesson ${lessonId}: ${data.title || 'Math Lesson'}`;
   const standard = data.standard || '6th Grade Common Core';
   const unit = data.unit || 1;
@@ -747,11 +747,13 @@ function generateSlidesHtml(lessonId, data) {
 
   const svgVisual = generateMathVisualSvg(lessonId, data);
   const interactiveWidget = generateInteractiveWidgetHtml(lessonId, standard);
+  const redirectHtml = googleSlidesUrl ? `  <script>window.location.replace(${JSON.stringify(googleSlidesUrl)});</script>\n` : '';
   
   return `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+${redirectHtml}
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${esc(title)} — Google Slides</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -3402,13 +3404,25 @@ function main() {
   const lessons = fs.readdirSync(lessonsDir)
     .filter(d => /^(\d+)-(\d+)(-flagship)?$/.test(d))
     .filter(d => fs.existsSync(path.join(lessonsDir, d, 'config.json')));
+
+  let urlMap = {};
+  const urlsPath = path.join(root, 'data', 'google-slides-urls.json');
+  if (fs.existsSync(urlsPath)) {
+    try {
+      urlMap = JSON.parse(fs.readFileSync(urlsPath, 'utf8'));
+      console.log(`Loaded ${Object.keys(urlMap).length} mapped Google Slides URLs.`);
+    } catch (e) {
+      console.error('Failed to parse google-slides-urls.json:', e);
+    }
+  }
     
   let count = 0;
   lessons.forEach(id => {
     try {
       const configPath = path.join(lessonsDir, id, 'config.json');
       const data = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      const html = generateSlidesHtml(id, data);
+      const googleSlidesUrl = urlMap[id] || null;
+      const html = generateSlidesHtml(id, data, googleSlidesUrl);
       
       const outputPath = path.join(lessonsDir, id, 'slides.html');
       fs.writeFileSync(outputPath, html, 'utf8');

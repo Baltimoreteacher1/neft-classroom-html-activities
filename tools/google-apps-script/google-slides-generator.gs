@@ -106,11 +106,11 @@ var Service = {
 
   /** Apply background color and headers/footers to slides. */
   applySlideTheme: function(slide, headerTitle, footerText) {
-    slide.getBackground().setSolidColor(CONFIG.COLOR_BG);
+    slide.getBackground().setSolidFill(CONFIG.COLOR_BG);
     
     // Header Bar
     var header = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 0, 0, 720, 50);
-    header.getFill().setSolidColor(CONFIG.COLOR_NAVY);
+    header.getFill().setSolidFill(CONFIG.COLOR_NAVY);
     header.getBorder().setTransparent();
     
     var headerText = header.getText();
@@ -123,7 +123,7 @@ var Service = {
     
     // Footer Bar
     var footer = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 0, 375, 720, 30);
-    footer.getFill().setSolidColor(CONFIG.COLOR_NAVY);
+    footer.getFill().setSolidFill(CONFIG.COLOR_NAVY);
     footer.getBorder().setTransparent();
     
     var footerTextObj = footer.getText();
@@ -140,9 +140,9 @@ var Service = {
     this.applySlideTheme(slide, "LESSON " + lessonId + " · OBJECTIVES", "Grade 6 Math · Unit " + (data.unit || ""));
     
     // Objective Card
-    var card = slide.insertShape(SlidesApp.ShapeType.ROUNDED_RECTANGLE, 40, 80, 640, 200);
-    card.getFill().setSolidColor(CONFIG.COLOR_WHITE);
-    card.getBorder().setSolidColor(CONFIG.COLOR_TEAL);
+    var card = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 40, 80, 640, 200);
+    card.getFill().setSolidFill(CONFIG.COLOR_WHITE);
+    card.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_TEAL);
     card.getBorder().setWeight(2);
     
     var textRange = card.getText();
@@ -157,16 +157,16 @@ var Service = {
     // Format headers in bold
     var contentIdx = textRange.asString().indexOf("🎯 Content Objective:");
     if (contentIdx !== -1) {
-      textRange.asRenderedString().substring(contentIdx, contentIdx + 20).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY);
+      textRange.getRange(contentIdx, contentIdx + 20).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY);
     }
     var langIdx = textRange.asString().indexOf("🗣️ Language Objective:");
     if (langIdx !== -1) {
-      textRange.asRenderedString().substring(langIdx, langIdx + 21).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY);
+      textRange.getRange(langIdx, langIdx + 21).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY);
     }
     
     // Learning Path Map
     var pathBox = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 40, 300, 640, 50);
-    pathBox.getFill().setSolidColor(CONFIG.COLOR_TEAL_LIGHT);
+    pathBox.getFill().setSolidFill(CONFIG.COLOR_TEAL_LIGHT);
     pathBox.getBorder().setTransparent();
     var pathText = pathBox.getText();
     pathText.setText("🗺️ Learning Path: 1. Launch ➔ 2. Explore ➔ 3. Vocabulary ➔ 4. Guided ➔ 5. Practice ➔ 6. Reflect");
@@ -183,9 +183,9 @@ var Service = {
     this.applySlideTheme(slide, "BE CURIOUS · LAUNCH", "Observe the scenario. What do you Notice and Wonder?");
     
     // Left: Scenario Card
-    var leftCard = slide.insertShape(SlidesApp.ShapeType.ROUNDED_RECTANGLE, 40, 80, 310, 270);
-    leftCard.getFill().setSolidColor(CONFIG.COLOR_WHITE);
-    leftCard.getBorder().setSolidColor(CONFIG.COLOR_TEAL);
+    var leftCard = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 40, 80, 310, 270);
+    leftCard.getFill().setSolidFill(CONFIG.COLOR_WHITE);
+    leftCard.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_TEAL);
     leftCard.getBorder().setWeight(1.5);
     
     var scenarioText = "";
@@ -200,11 +200,11 @@ var Service = {
     leftText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
     leftText.getTextStyle().setFontSize(14);
     leftText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    leftText.asRenderedString().substring(0, 18).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(16);
+    leftText.getRange(0, 18).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(16);
     
     // Right Top: Notice Panel
-    var rightTop = slide.insertShape(SlidesApp.ShapeType.ROUNDED_RECTANGLE, 370, 80, 310, 125);
-    rightTop.getFill().setSolidColor(CONFIG.COLOR_TEAL_LIGHT);
+    var rightTop = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 370, 80, 310, 125);
+    rightTop.getFill().setSolidFill(CONFIG.COLOR_TEAL_LIGHT);
     rightTop.getBorder().setTransparent();
     
     var noticeStems = "";
@@ -220,11 +220,11 @@ var Service = {
     rightTopText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
     rightTopText.getTextStyle().setFontSize(12);
     rightTopText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    rightTopText.asRenderedString().substring(0, 18).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(13);
+    rightTopText.getRange(0, 18).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(13);
     
     // Right Bottom: Wonder Panel
-    var rightBottom = slide.insertShape(SlidesApp.ShapeType.ROUNDED_RECTANGLE, 370, 225, 310, 125);
-    rightBottom.getFill().setSolidColor(CONFIG.COLOR_CORAL);
+    var rightBottom = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 370, 225, 310, 125);
+    rightBottom.getFill().setSolidFill(CONFIG.COLOR_CORAL);
     rightBottom.getBorder().setTransparent();
     
     var wonderStems = "";
@@ -242,7 +242,7 @@ var Service = {
     rightBottomText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
     rightBottomText.getTextStyle().setFontSize(12);
     rightBottomText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    rightBottomText.asRenderedString().substring(0, 19).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(13);
+    rightBottomText.getRange(0, 19).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(13);
   },
 
   /** SLIDE 3: Vocabulary & Reference */
@@ -268,9 +268,9 @@ var Service = {
       var term = vocabTerms[i] || "Math Term";
       var pos = positions[i];
       
-      var vocabBox = slide.insertShape(SlidesApp.ShapeType.ROUNDED_RECTANGLE, pos.x, pos.y, 310, 100);
-      vocabBox.getFill().setSolidColor(CONFIG.COLOR_WHITE);
-      vocabBox.getBorder().setSolidColor(CONFIG.COLOR_GRAY);
+      var vocabBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, pos.x, pos.y, 310, 100);
+      vocabBox.getFill().setSolidFill(CONFIG.COLOR_WHITE);
+      vocabBox.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_GRAY);
       vocabBox.getBorder().setWeight(1);
       
       var vocabText = vocabBox.getText();
@@ -287,12 +287,12 @@ var Service = {
       vocabText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
       
       var termLength = term.length + 3;
-      vocabText.asRenderedString().substring(0, termLength).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_TEAL).setFontSize(13);
+      vocabText.getRange(0, termLength).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_TEAL).setFontSize(13);
     }
     
     // Reference Flow Diagram
-    var flowBox = slide.insertShape(SlidesApp.ShapeType.ROUNDED_RECTANGLE, 40, 315, 640, 45);
-    flowBox.getFill().setSolidColor(CONFIG.COLOR_TEAL_LIGHT);
+    var flowBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 40, 315, 640, 45);
+    flowBox.getFill().setSolidFill(CONFIG.COLOR_TEAL_LIGHT);
     flowBox.getBorder().setTransparent();
     var flowText = flowBox.getText();
     flowText.setText("💡 Core Flow: INPUT (Independent Variable) ➔ PROCESS (Equation/Rule) ➔ OUTPUT (Dependent Variable)");
@@ -310,8 +310,8 @@ var Service = {
     
     // Workspace Board
     var board = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 40, 80, 640, 270);
-    board.getFill().setSolidColor(CONFIG.COLOR_WHITE);
-    board.getBorder().setSolidColor(CONFIG.COLOR_TEAL);
+    board.getFill().setSolidFill(CONFIG.COLOR_WHITE);
+    board.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_TEAL);
     board.getBorder().setWeight(2);
     
     var boardText = board.getText();
@@ -337,9 +337,9 @@ var Service = {
     } catch (err) {
       Logger.log("Failed to insert programmatic SVG: " + err.message + ". Fallback to text diagram.");
       // Fallback label
-      var fallbackLabel = slide.insertShape(SlidesApp.ShapeType.ROUNDED_RECTANGLE, 210, 110, 300, 200);
-      fallbackLabel.getFill().setSolidColor(CONFIG.COLOR_TEAL_LIGHT);
-      fallbackLabel.getBorder().setSolidColor(CONFIG.COLOR_TEAL);
+      var fallbackLabel = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 210, 110, 300, 200);
+      fallbackLabel.getFill().setSolidFill(CONFIG.COLOR_TEAL_LIGHT);
+      fallbackLabel.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_TEAL);
       var fallbackText = fallbackLabel.getText();
       fallbackText.setText("[Visual Math Model Grid]\n\n" + (data.contentObjective || "Math Diagram Workspace"));
       fallbackText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
@@ -354,9 +354,9 @@ var Service = {
     this.applySlideTheme(slide, "GUIDED PRACTICE", "Work together to solve this problem and justify your answer.");
     
     // Left: Guided Problem
-    var leftBox = slide.insertShape(SlidesApp.ShapeType.ROUNDED_RECTANGLE, 40, 80, 310, 270);
-    leftBox.getFill().setSolidColor(CONFIG.COLOR_WHITE);
-    leftBox.getBorder().setSolidColor(CONFIG.COLOR_NAVY);
+    var leftBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 40, 80, 310, 270);
+    leftBox.getFill().setSolidFill(CONFIG.COLOR_WHITE);
+    leftBox.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_NAVY);
     leftBox.getBorder().setWeight(1.5);
     
     var leftText = leftBox.getText();
@@ -369,11 +369,11 @@ var Service = {
     leftText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
     leftText.getTextStyle().setFontSize(13);
     leftText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    leftText.asRenderedString().substring(0, 20).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(15);
+    leftText.getRange(0, 20).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(15);
     
     // Right: Write About It (TWR Frames)
-    var rightBox = slide.insertShape(SlidesApp.ShapeType.ROUNDED_RECTANGLE, 370, 80, 310, 270);
-    rightBox.getFill().setSolidColor(CONFIG.COLOR_TEAL_LIGHT);
+    var rightBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 370, 80, 310, 270);
+    rightBox.getFill().setSolidFill(CONFIG.COLOR_TEAL_LIGHT);
     rightBox.getBorder().setTransparent();
     
     var rightText = rightBox.getText();
@@ -390,7 +390,7 @@ var Service = {
     rightText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
     rightText.getTextStyle().setFontSize(12);
     rightText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    rightText.asRenderedString().substring(0, 26).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(14);
+    rightText.getRange(0, 26).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(14);
   },
 
   /** SLIDE 6: Interactive Activity A (e.g. Partner Dialogue) */
@@ -399,28 +399,28 @@ var Service = {
     this.applySlideTheme(slide, "INTERACTIVE WORKSHOP A", "Collaborate and communicate to solve the partner challenge.");
     
     // Partner A Panel
-    var aBox = slide.insertShape(SlidesApp.ShapeType.ROUNDED_RECTANGLE, 40, 80, 310, 270);
-    aBox.getFill().setSolidColor(CONFIG.COLOR_WHITE);
-    aBox.getBorder().setSolidColor(CONFIG.COLOR_TEAL);
+    var aBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 40, 80, 310, 270);
+    aBox.getFill().setSolidFill(CONFIG.COLOR_WHITE);
+    aBox.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_TEAL);
     aBox.getBorder().setWeight(1.5);
     var aText = aBox.getText();
     aText.setText("👥 Partner A:\n\nExplain how you can approach solving this problem. What steps will you perform first, and what tools will you use?");
     aText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
     aText.getTextStyle().setFontSize(14);
     aText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    aText.asRenderedString().substring(0, 13).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_TEAL).setFontSize(16);
+    aText.getRange(0, 13).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_TEAL).setFontSize(16);
     
     // Partner B Panel
-    var bBox = slide.insertShape(SlidesApp.ShapeType.ROUNDED_RECTANGLE, 370, 80, 310, 270);
-    bBox.getFill().setSolidColor(CONFIG.COLOR_WHITE);
-    bBox.getBorder().setSolidColor(CONFIG.COLOR_NAVY);
+    var bBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 370, 80, 310, 270);
+    bBox.getFill().setSolidFill(CONFIG.COLOR_WHITE);
+    bBox.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_NAVY);
     bBox.getBorder().setWeight(1.5);
     var bText = bBox.getText();
     bText.setText("👥 Partner B:\n\nRespond to your partner's explanation. Do you agree with their approach? How would you verify their final calculations?");
     bText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
     bText.getTextStyle().setFontSize(14);
     bText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    bText.asRenderedString().substring(0, 13).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(16);
+    bText.getRange(0, 13).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(16);
   },
 
   /** SLIDE 7: Interactive Activity B (e.g. Error Analysis) */
@@ -429,9 +429,9 @@ var Service = {
     this.applySlideTheme(slide, "INTERACTIVE WORKSHOP B · ERROR ANALYSIS", "Analyze the math mistake. Find it, explain it, and fix it.");
     
     // Left: The Misconception
-    var leftBox = slide.insertShape(SlidesApp.ShapeType.ROUNDED_RECTANGLE, 40, 80, 310, 270);
-    leftBox.getFill().setSolidColor(CONFIG.COLOR_WHITE);
-    leftBox.getBorder().setSolidColor(CONFIG.COLOR_AMBER);
+    var leftBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 40, 80, 310, 270);
+    leftBox.getFill().setSolidFill(CONFIG.COLOR_WHITE);
+    leftBox.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_AMBER);
     leftBox.getBorder().setWeight(1.5);
     
     var leftText = leftBox.getText();
@@ -439,11 +439,11 @@ var Service = {
     leftText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
     leftText.getTextStyle().setFontSize(13);
     leftText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    leftText.asRenderedString().substring(0, 31).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_AMBER).setFontSize(15);
+    leftText.getRange(0, 31).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_AMBER).setFontSize(15);
     
     // Right: Explaining and Fixing
-    var rightBox = slide.insertShape(SlidesApp.ShapeType.ROUNDED_RECTANGLE, 370, 80, 310, 270);
-    rightBox.getFill().setSolidColor(CONFIG.COLOR_CORAL);
+    var rightBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 370, 80, 310, 270);
+    rightBox.getFill().setSolidFill(CONFIG.COLOR_CORAL);
     rightBox.getBorder().setTransparent();
     var rightText = rightBox.getText();
     rightText.setText("🛠️ Fix & Justify:\n\n" +
@@ -454,7 +454,7 @@ var Service = {
     rightText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
     rightText.getTextStyle().setFontSize(13);
     rightText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    rightText.asRenderedString().substring(0, 17).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(15);
+    rightText.getRange(0, 17).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(15);
   },
 
   /** SLIDE 8: Real-World Connection */
@@ -470,20 +470,20 @@ var Service = {
     }
     
     // Big Connection Box
-    var connectionBox = slide.insertShape(SlidesApp.ShapeType.ROUNDED_RECTANGLE, 40, 80, 640, 130);
-    connectionBox.getFill().setSolidColor(CONFIG.COLOR_WHITE);
-    connectionBox.getBorder().setSolidColor(CONFIG.COLOR_NAVY);
+    var connectionBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 40, 80, 640, 130);
+    connectionBox.getFill().setSolidFill(CONFIG.COLOR_WHITE);
+    connectionBox.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_NAVY);
     connectionBox.getBorder().setWeight(1.5);
     var boxText = connectionBox.getText();
     boxText.setText("🌍 Context Scenario:\n\n" + connText);
     boxText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
     boxText.getTextStyle().setFontSize(14);
     boxText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    boxText.asRenderedString().substring(0, 21).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(16);
+    boxText.getRange(0, 21).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(16);
     
     // Application prompt
-    var writeBox = slide.insertShape(SlidesApp.ShapeType.ROUNDED_RECTANGLE, 40, 230, 640, 120);
-    writeBox.getFill().setSolidColor(CONFIG.COLOR_TEAL_LIGHT);
+    var writeBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 40, 230, 640, 120);
+    writeBox.getFill().setSolidFill(CONFIG.COLOR_TEAL_LIGHT);
     writeBox.getBorder().setTransparent();
     var writeText = writeBox.getText();
     writeText.setText("✍️ Connection Reasoning:\n\n" +
@@ -492,7 +492,7 @@ var Service = {
     writeText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
     writeText.getTextStyle().setFontSize(14);
     writeText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    writeText.asRenderedString().substring(0, 25).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(15);
+    writeText.getRange(0, 25).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(15);
   },
 
   /** SLIDE 9: Reflection + Exit Ticket */
@@ -501,9 +501,9 @@ var Service = {
     this.applySlideTheme(slide, "REFLECTION & EXIT TICKET", "Summarize what you learned and complete the exit problem.");
     
     // Left: Reflection Checklist
-    var leftBox = slide.insertShape(SlidesApp.ShapeType.ROUNDED_RECTANGLE, 40, 80, 310, 270);
-    leftBox.getFill().setSolidColor(CONFIG.COLOR_WHITE);
-    leftBox.getBorder().setSolidColor(CONFIG.COLOR_TEAL);
+    var leftBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 40, 80, 310, 270);
+    leftBox.getFill().setSolidFill(CONFIG.COLOR_WHITE);
+    leftBox.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_TEAL);
     leftBox.getBorder().setWeight(1.5);
     
     var leftText = leftBox.getText();
@@ -517,12 +517,12 @@ var Service = {
     leftText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
     leftText.getTextStyle().setFontSize(11);
     leftText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    leftText.asRenderedString().substring(0, 20).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(15);
+    leftText.getRange(0, 20).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(15);
     
     // Right: Exit Ticket
-    var rightBox = slide.insertShape(SlidesApp.ShapeType.ROUNDED_RECTANGLE, 370, 80, 310, 270);
-    rightBox.getFill().setSolidColor(CONFIG.COLOR_TEAL_LIGHT);
-    rightBox.getBorder().setSolidColor(CONFIG.COLOR_TEAL);
+    var rightBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 370, 80, 310, 270);
+    rightBox.getFill().setSolidFill(CONFIG.COLOR_TEAL_LIGHT);
+    rightBox.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_TEAL);
     rightBox.getBorder().setWeight(1);
     
     var rightText = rightBox.getText();
@@ -531,7 +531,7 @@ var Service = {
     rightText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
     rightText.getTextStyle().setFontSize(13);
     rightText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    rightText.asRenderedString().substring(0, 15).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(15);
+    rightText.getRange(0, 15).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(15);
   },
 
   /** Programmatic Visual Math SVG Generator.
@@ -620,6 +620,10 @@ function doGet(e) {
   var state = "INITIAL";
   if (p.selftest === "1") {
     state = "SELF_TEST";
+  } else if (p.geturls === "1") {
+    state = "GET_URLS";
+  } else if (p.generateall === "1") {
+    state = "GENERATE_ALL";
   } else if (p.lesson) {
     state = "GENERATE_SLIDES";
   }
@@ -631,6 +635,18 @@ function doGet(e) {
       case "SELF_TEST":
         var result = selfTest();
         return renderHtmlOutput_("🧪 Self Test Results", "<h3>Self-Test Executed Successfully</h3><pre>" + result + "</pre>");
+        
+      case "GET_URLS":
+        var files = DriveApp.getFilesByName("google-slides-urls.json");
+        if (files.hasNext()) {
+          var content = files.next().getBlob().getDataAsString();
+          return ContentService.createTextOutput(content).setMimeType(ContentService.MimeType.JSON);
+        }
+        return ContentService.createTextOutput("{}").setMimeType(ContentService.MimeType.JSON);
+        
+      case "GENERATE_ALL":
+        generateAllSlides();
+        return renderHtmlOutput_("🚀 Bulk Generation Complete", "<h3>Bulk Slide Generation Completed Natively</h3><p>The script finished running. Please query the URL list to retrieve the data.</p>");
         
       case "GENERATE_SLIDES":
         var lessonId = String(p.lesson).trim();
@@ -755,4 +771,52 @@ function selfTest() {
   Logger.log("Mock slides created: " + mockUrl);
   
   return "Self-Test passed successfully!\nMock Slides Url: " + mockUrl;
+}
+
+/** Bulk generation routine to create Google Slides for all 74 lessons natively on the server. */
+function generateAllSlides() {
+  var lessonIds = ["1-1","1-1-flagship","1-2","1-3","1-4","1-5","1-6","1-7","2-1","2-1-flagship","2-2","2-3","2-4","2-5","3-1","3-1-flagship","3-2","3-3","3-4","3-5","3-6","3-7","4-1","4-1-flagship","4-2","4-3","4-4","4-5","4-6","4-7","5-1","5-2","5-3","5-3-flagship","5-4","5-5","6-1","6-1-flagship","6-2","6-3","6-4","6-5","6-6","6-7","7-1","7-1-flagship","7-2","7-3","7-4","7-5","7-6","7-7","8-1","8-1-flagship","8-2","8-3","8-4","8-5","8-6","8-7","9-1","9-1-flagship","9-2","9-3","9-4","9-5","9-6","9-7","10-1","10-1-flagship","10-2","10-3","10-4","10-5"];
+  
+  var files = DriveApp.getFilesByName("google-slides-urls.json");
+  var file;
+  var urlMap = {};
+  if (files.hasNext()) {
+    file = files.next();
+    try {
+      urlMap = JSON.parse(file.getBlob().getDataAsString());
+      Logger.log("Loaded existing mapped URLs: " + Object.keys(urlMap).length);
+    } catch(e) {
+      Logger.log("Failed to parse existing file, starting fresh.");
+    }
+  }
+  
+  for (var i = 0; i < lessonIds.length; i++) {
+    var id = lessonIds[i];
+    if (urlMap[id]) {
+      Logger.log("[" + id + "] Already generated: " + urlMap[id]);
+      continue;
+    }
+    
+    Logger.log("[" + id + "] Generating slides (" + (i+1) + "/" + lessonIds.length + ")...");
+    try {
+      var data = Repository.fetchLessonConfig(id);
+      var url = Service.createLessonSlides(id, data);
+      urlMap[id] = url;
+      Logger.log("[" + id + "] SUCCESS: " + url);
+      
+      // Update the progress file incrementally
+      if (file) {
+        file.setContent(JSON.stringify(urlMap, null, 2));
+      } else {
+        file = DriveApp.createFile("google-slides-urls.json", JSON.stringify(urlMap, null, 2), "application/json");
+      }
+    } catch(err) {
+      Logger.log("[" + id + "] FAILED: " + err.message);
+    }
+    
+    // Tiny pacing delay
+    Utilities.sleep(500);
+  }
+  
+  Logger.log("Bulk generation complete! Result stored in Drive.");
 }
