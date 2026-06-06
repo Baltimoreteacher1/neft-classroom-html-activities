@@ -16,6 +16,7 @@
 import { bootLesson } from "../../core/lesson-renderer.js";
 import "../../../assets/design-tokens.css";
 import "./flagship.css";
+import { stackHtml, t } from "../../core/i18n.js";
 
 const PHASE_KEYS = [
   "launch",
@@ -91,7 +92,7 @@ function showMissionIntro(fl, config, onStart) {
           ? `<div class="flagship-mission-objective"><span>🎯 Objective</span><p>${esc(mission.objective)}</p></div>`
           : ""
       }
-      <button class="btn btn-primary btn-lg flagship-mission-start">${esc(mission.cta || "Begin Mission →")}</button>
+      <button class="btn btn-primary btn-lg flagship-mission-start">${esc(mission.cta || t("startActivity"))}</button>
     </div>
   `;
   document.body.append(overlay);

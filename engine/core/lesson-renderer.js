@@ -45,6 +45,8 @@ import {
 import { deriveCommonMistake } from "./content-enrichment.js";
 import { mountHintLadder } from "./hint-ladder.js";
 import { renderMathText } from "./math-typography.js";
+import { t, stackHtml, phaseName, badgeName } from "./i18n.js";
+import { mountCertificateDownload } from "./certificate-export.js";
 
 export function bootLesson(config) {
   createApp({
@@ -1435,7 +1437,7 @@ function renderCommonMistakeCallout(host, config) {
   box.innerHTML = `
     <span class="common-mistake-icon" aria-hidden="true">⚠️</span>
     <div>
-      <strong>Watch out!</strong>
+      <strong>${stackHtml(t("commonMistake", "en"), t("commonMistake", "es"))}</strong>
       <p>${esc(text)}</p>
     </div>`;
   host.append(box);
@@ -1788,18 +1790,18 @@ function renderReflectPhase(el, state, ctx, config) {
     el,
     "💡",
     "section-icon-coral",
-    "Reflect",
-    "Look back at what you learned and show what you know.",
+    phaseName(5),
+    t("reflectDesc"),
   );
 
   // 3-2-1
   const rCard = document.createElement("div");
   rCard.className = "card";
-  rCard.innerHTML = '<div class="badge badge-teal mb-4">3-2-1 Reflection</div>';
+  rCard.innerHTML = `<div class="badge badge-teal mb-4">${stackHtml(t("reflection321", "en"), t("reflection321", "es"))}</div>`;
   [
-    { n: 3, color: "teal", label: "things I learned", icon: "📝" },
-    { n: 2, color: "amber", label: "connections I made", icon: "🔗" },
-    { n: 1, color: "coral", label: "question I still have", icon: "❓" },
+    { n: 3, color: "teal", label: t("thingsLearned"), icon: "📝" },
+    { n: 2, color: "amber", label: t("connectionsMade"), icon: "🔗" },
+    { n: 1, color: "coral", label: t("questionStillHave"), icon: "❓" },
   ].forEach((r) => {
     const row = document.createElement("div");
     row.style.cssText =
@@ -1821,11 +1823,11 @@ function renderReflectPhase(el, state, ctx, config) {
   // One thing I learned (exit ticket prep)
   const learnedCard = document.createElement("div");
   learnedCard.className = "card card-amber";
-  learnedCard.innerHTML = `<h4 style="color:var(--amber); margin-bottom:var(--sp-3);">✨ One thing I learned today</h4>`;
+  learnedCard.innerHTML = `<h4 style="color:var(--amber); margin-bottom:var(--sp-3);">✨ ${stackHtml(t("oneThingToday", "en"), t("oneThingToday", "es"))}</h4>`;
   const learnedTA = document.createElement("textarea");
   learnedTA.className = "text-input";
   learnedTA.rows = 2;
-  learnedTA.placeholder = "The most important thing I learned is...";
+  learnedTA.placeholder = t("oneThingPlaceholder");
   learnedTA.value = state.getResponse(5, "one_thing_learned") || "";
   learnedTA.addEventListener("input", () =>
     state.saveResponse(5, "one_thing_learned", learnedTA.value),
@@ -1838,16 +1840,16 @@ function renderReflectPhase(el, state, ctx, config) {
   confCard.className = "card card-teal confidence-card";
   const savedConf = Number(state.getResponse(5, "confidence")) || 3;
   confCard.innerHTML = `
-    <h4 style="color:var(--teal); margin-bottom:var(--sp-3);">How confident do you feel about ${esc(config.title)}?</h4>
+    <h4 style="color:var(--teal); margin-bottom:var(--sp-3);">${t("howConfident")} ${esc(config.title)}?</h4>
     <div class="confidence-slider-wrap">
       <input type="range" class="confidence-slider" min="1" max="5" step="1" value="${savedConf}" aria-label="Confidence level 1 to 5" />
       <div class="confidence-labels">
-        <span>😅 Not yet</span><span>🤔 Getting there</span><span>😊 Got it!</span>
+        <span>😅 ${stackHtml(t("notYet", "en"), t("notYet", "es"))}</span><span>🤔 ${stackHtml(t("gettingThere", "en"), t("gettingThere", "es"))}</span><span>😊 ${stackHtml(t("gotIt", "en"), t("gotIt", "es"))}</span>
       </div>
       <output class="confidence-output" aria-live="polite">${savedConf}/5</output>
     </div>
     <div class="self-assess-quick" style="display:flex; gap:var(--sp-2); margin-top:var(--sp-3); justify-content:center;">
-      ${["😊 Got it!|5", "🤔 Almost|3", "😅 Need help|1"]
+      ${[`😊 ${t("gotIt")}|5`, `🤔 ${t("almost")}|3`, `😅 ${t("needHelp")}|1`]
         .map((s) => {
           const [txt, lv] = s.split("|");
           return `<button type="button" class="btn btn-secondary self-assess" data-level="${lv}" style="flex:1; max-width:140px;">${txt}</button>`;
@@ -1911,19 +1913,19 @@ function renderObjectiveReview(state, config) {
   const items = [
     {
       key: "review_content",
-      label: "Content Objective",
+      label: t("contentObjective"),
       // resolveContentObjective returns HTML-escaped text; show as text node.
       html: resolveContentObjective(config),
     },
     {
       key: "review_language",
-      label: "Language Objective",
+      label: t("languageObjective"),
       html: resolveLanguageObjective(config),
     },
   ];
 
   card.innerHTML = `
-    <h4 id="obj-review-title" style="color:var(--teal); margin-bottom:var(--sp-2);">✅ Did I get it?</h4>
+    <h4 id="obj-review-title" style="color:var(--teal); margin-bottom:var(--sp-2);">✅ ${stackHtml(t("didIGetIt", "en"), t("didIGetIt", "es"))}</h4>
     <p style="color:var(--muted); margin:0 0 var(--sp-4); font-size:0.92rem;">Check off each goal you can do. Be honest — it helps you know what to practice!</p>
   `;
 
@@ -1970,12 +1972,12 @@ function showFinalSummary(el, state, config) {
   const pct = totalStars / 18;
   const grade =
     pct >= 0.9
-      ? "🏆 Outstanding!"
+      ? `🏆 ${t("gradeOutstanding")}`
       : pct >= 0.7
-        ? "⭐ Great Job!"
+        ? `⭐ ${t("gradeGreat")}`
         : pct >= 0.5
-          ? "👍 Good Effort!"
-          : "💪 Keep Practicing!";
+          ? `👍 ${t("gradeGood")}`
+          : `💪 ${t("gradeKeep")}`;
   const streakText =
     s.bestStreak >= 3
       ? `🔥 Best streak: ${s.bestStreak} in a row`
@@ -1997,7 +1999,7 @@ function showFinalSummary(el, state, config) {
         : "";
 
   const badgeRow = earnedBadges.length
-    ? `<div class="certificate-badges">${earnedBadges.map((b) => `<span class="cert-badge-pill">${b.emoji} ${esc(b.name)}</span>`).join("")}</div>`
+    ? `<div class="certificate-badges">${earnedBadges.map((b) => `<span class="cert-badge-pill">${b.emoji} ${esc(badgeName(b.id))}</span>`).join("")}</div>`
     : "";
 
   const summary = document.createElement("div");
@@ -2006,20 +2008,20 @@ function showFinalSummary(el, state, config) {
   summary.innerHTML = `
     <div class="certificate-ribbon" aria-hidden="true">🏆</div>
     <div class="certificate-header">
-      <div class="certificate-badge">Lesson Complete</div>
+      <div class="certificate-badge">${stackHtml(t("lessonComplete", "en"), t("lessonComplete", "es"))}</div>
       <h2 class="certificate-title">${esc(config.title)}</h2>
       <p class="certificate-subtitle">${grade}</p>
     </div>
     <div class="certificate-student">
-      <span class="certificate-label">Awarded to</span>
-      <span class="certificate-name">${esc(s.studentName || "Mathematician")}</span>
+      <span class="certificate-label">${stackHtml(t("awardedTo", "en"), t("awardedTo", "es"))}</span>
+      <span class="certificate-name">${esc(s.studentName || t("mathematician"))}</span>
       ${s.studentPeriod ? `<span class="certificate-period">Period ${esc(s.studentPeriod)}</span>` : ""}
     </div>
     <div class="certificate-stats">
-      <div class="cert-stat"><div class="cert-stat-value xp-counter">0</div><div class="cert-stat-label">XP Earned</div></div>
-      <div class="cert-stat"><div class="cert-stat-value cert-stars">${totalStars}<span class="cert-stat-denom">/18</span></div><div class="cert-stat-label">Stars</div></div>
-      <div class="cert-stat"><div class="cert-stat-value">${s.coins || 0}</div><div class="cert-stat-label">Coins</div></div>
-      <div class="cert-stat"><div class="cert-stat-value">${accuracy}%</div><div class="cert-stat-label">Accuracy</div></div>
+      <div class="cert-stat"><div class="cert-stat-value xp-counter">0</div><div class="cert-stat-label">${stackHtml(t("xpEarned", "en"), t("xpEarned", "es"))}</div></div>
+      <div class="cert-stat"><div class="cert-stat-value cert-stars">${totalStars}<span class="cert-stat-denom">/18</span></div><div class="cert-stat-label">${stackHtml(t("stars", "en"), t("stars", "es"))}</div></div>
+      <div class="cert-stat"><div class="cert-stat-value">${s.coins || 0}</div><div class="cert-stat-label">${stackHtml(t("coins", "en"), t("coins", "es"))}</div></div>
+      <div class="cert-stat"><div class="cert-stat-value">${accuracy}%</div><div class="cert-stat-label">${stackHtml(t("accuracy", "en"), t("accuracy", "es"))}</div></div>
     </div>
     ${badgeRow}
     ${streakText ? `<div class="certificate-streak">${esc(streakText)}</div>` : ""}
@@ -2032,8 +2034,9 @@ function showFinalSummary(el, state, config) {
       <span class="certificate-date">${new Date().toLocaleDateString()}</span>
       <span class="certificate-brand">Neft Teacher</span>
     </div>
-    <button type="button" class="btn btn-secondary certificate-print-btn" onclick="window.print()">🖨️ Print Certificate</button>`;
+    <button type="button" class="btn btn-secondary certificate-print-btn" onclick="window.print()">🖨️ ${stackHtml(t("printCertificate", "en"), t("printCertificate", "es"))}</button>`;
   el.append(summary);
+  mountCertificateDownload(summary, config, state);
 
   if (window.fireConfetti) window.fireConfetti();
 

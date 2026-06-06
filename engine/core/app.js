@@ -13,7 +13,8 @@ import {
   mountCoverArt,
   applyPhaseAccent,
 } from "./premium.js";
-import { mountTeacherPanel } from "./teacher-mode.js";
+import { mountTeacherPanel, buildWelcomeTeacherNotes, isTeacherMode } from "./teacher-mode.js";
+import { t, stackHtml, phaseName } from "./i18n.js";
 import "@engine/styles/design-system.css";
 import "@engine/styles/themes.css";
 
@@ -137,6 +138,30 @@ export function createApp(config) {
   });
 }
 
+/** Lazy-load EduPulse bridge for score reporting (fire-and-forget). */
+function ensureEduPulse() {
+  if (typeof window === "undefined") return Promise.resolve();
+  if (window.EduPulse?.record) return Promise.resolve();
+  return new Promise((resolve) => {
+    const done = () => resolve();
+    if (!document.querySelector('script[src*="edupulse-config"]')) {
+      const cfg = document.createElement("script");
+      cfg.src = "/assets/edupulse-config.js";
+      cfg.onload = () => {
+        const bridge = document.createElement("script");
+        bridge.src = "/assets/edupulse-bridge.js";
+        bridge.onload = done;
+        bridge.onerror = done;
+        document.body.append(bridge);
+      };
+      cfg.onerror = done;
+      document.body.append(cfg);
+    } else {
+      done();
+    }
+  });
+}
+
 function injectSeoMeta(config) {
   if (typeof document === "undefined" || !document.head) return;
 
@@ -185,11 +210,11 @@ function formsCardHtml(config) {
       : "";
   return `
       <div class="identity-forms" style="background:var(--cream,#fdf3e0); border:1px solid var(--gold,#d4952a); border-radius:12px; padding:12px 16px; margin:0 0 16px; text-align:left;">
-        <div style="font-weight:800; margin-bottom:8px;">📋 Lesson Forms</div>
+        <div style="font-weight:800; margin-bottom:8px;">📋 ${t("lessonForms")}</div>
         <div style="display:flex; gap:8px;">
-          ${link(s.notes, "Notes", "📝")}
-          ${link(s.practice, "Practice", "✏️")}
-          ${link(s.quiz, "Quiz", "✅")}
+          ${link(s.notes, t("notes"), "📝")}
+          ${link(s.practice, t("practice"), "✏️")}
+          ${link(s.quiz, t("quiz"), "✅")}
         </div>
       </div>`;
 }
@@ -204,11 +229,11 @@ function objectivesBlockHtml(config) {
   return `
     <div class="identity-objectives">
       <div class="identity-objective-row">
-        <span class="identity-objective-badge">Target</span>
+        <span class="identity-objective-badge">${t("target")}</span>
         <span>${resolveContentObjective(config)}</span>
       </div>
       <div class="identity-objective-row">
-        <span class="identity-objective-badge">Discuss</span>
+        <span class="identity-objective-badge">${t("discuss")}</span>
         <span>${resolveLanguageObjective(config)}</span>
       </div>
     </div>`;
@@ -218,6 +243,7 @@ function showIdentityScreen(root, config) {
   const themeEmoji = config.themeEmoji || "📐";
   const saved = findSavedStudents(config.lessonId);
   const homeworkHtmlHref = `/lessons/${encodeURIComponent(config.lessonId)}/homework.html`;
+  const handoutHref = `/lessons/${encodeURIComponent(config.lessonId)}/handout.html`;
 
   const screen = document.createElement("div");
   screen.className = "identity-screen";
@@ -238,31 +264,38 @@ function showIdentityScreen(root, config) {
           config.readiness
             ? `<a class="identity-readiness" href="/lessons/${encodeURIComponent(config.lessonId)}/readiness/" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; background:var(--cream,#fdf3e0); border:1px solid var(--gold,#d4952a); border-radius:12px; padding:12px 16px; margin:0 0 16px; text-align:left;">
                 <span style="font-size:1.5rem;" aria-hidden="true">📚</span>
-                <span><strong>New to this topic?</strong> Take the quick Get Ready check first — it finds what you're missing. <span style="white-space:nowrap; font-weight:700; color:var(--blue,#1a6fb5);">Start &rarr;</span></span>
+                <span><strong>${t("newToTopic")}</strong> ${t("getReadyDesc")} <span style="white-space:nowrap; font-weight:700; color:var(--blue,#1a6fb5);">${t("startArrow")}</span></span>
               </a>`
             : ""
         }
         <p class="instruction-callout" style="margin-bottom:var(--sp-4); font-size:0.88rem;">
           <span class="instruction-callout-icon" aria-hidden="true">👋</span>
-          <span>Enter your name to start. Your progress saves on <strong>this device</strong>. Ask your teacher before switching Chromebooks.</span>
+          <span>${t("enterNamePrompt")}</span>
         </p>
         ${formsCardHtml(config)}
+        <div id="welcome-teacher-slot"></div>
         <div class="identity-form">
-          <label for="id-name">Your Name</label>
-          <input id="id-name" type="text" placeholder="First name Last initial" autocomplete="off" />
-          <label for="id-period">Period</label>
-          <input id="id-period" type="text" placeholder="e.g. 3" autocomplete="off" />
-          <button id="id-start" class="identity-btn" disabled>Start Activity →</button>
+          <label for="id-name">${stackHtml(t("yourName", "en"), t("yourName", "es"))}</label>
+          <input id="id-name" type="text" placeholder="${t("namePlaceholder")}" autocomplete="off" />
+          <label for="id-period">${stackHtml(t("period", "en"), t("period", "es"))}</label>
+          <input id="id-period" type="text" placeholder="${t("periodPlaceholder")}" autocomplete="off" />
+          <button id="id-start" class="identity-btn" disabled>${stackHtml(t("startActivity", "en"), t("startActivity", "es"))}</button>
         </div>
         <p style="margin:var(--sp-4) 0 0; font-size:0.82rem; text-align:center;">
-          <a href="${homeworkHtmlHref}" style="color:var(--teal); font-weight:700;">🏠 Family homework</a>
-          · <a href="/lessons/${encodeURIComponent(config.lessonId)}/notes.html" style="color:var(--navy); font-weight:700;">📝 Guided notes</a>
+          <a href="${homeworkHtmlHref}" style="color:var(--teal); font-weight:700;">🏠 ${stackHtml(t("familyHomework", "en"), t("familyHomework", "es"))}</a>
+          · <a href="/lessons/${encodeURIComponent(config.lessonId)}/notes.html" style="color:var(--navy); font-weight:700;">📝 ${stackHtml(t("guidedNotes", "en"), t("guidedNotes", "es"))}</a>
+          · <a href="${handoutHref}" target="_blank" rel="noopener" style="color:var(--amber,#c85a3a); font-weight:700;">📄 ${stackHtml(t("studentHandout", "en"), t("studentHandout", "es"))}</a>
         </p>
         ${saved.length ? `<div class="identity-saved" id="id-saved-list"></div>` : ""}
       </div>
     </div>
   `;
   root.append(screen);
+
+  const teacherSlot = screen.querySelector("#welcome-teacher-slot");
+  if (teacherSlot && !isTeacherMode()) {
+    teacherSlot.append(buildWelcomeTeacherNotes(config));
+  }
 
   const coverExtras = screen.querySelector("#cover-extras");
   if (coverExtras) {
@@ -313,7 +346,7 @@ function showIdentityScreen(root, config) {
     const list = screen.querySelector("#id-saved-list");
     const label = document.createElement("div");
     label.className = "identity-saved-label";
-    label.textContent = "Saved progress on this device:";
+    label.textContent = t("savedProgress");
     list.append(label);
 
     saved.forEach((s) => {
@@ -361,12 +394,12 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   }
 
   const phaseConfigs = [
-    { name: "Launch", icon: "🚀" },
-    { name: "Vocab Builder", icon: "📖" },
-    { name: "Explore", icon: "🔍" },
-    { name: "Practice", icon: "✏️" },
-    { name: "Connect", icon: "🌎" },
-    { name: "Reflect", icon: "💡" },
+    { name: phaseName(0), icon: "🚀" },
+    { name: phaseName(1), icon: "📖" },
+    { name: phaseName(2), icon: "🔍" },
+    { name: phaseName(3), icon: "✏️" },
+    { name: phaseName(4), icon: "🌎" },
+    { name: phaseName(5), icon: "💡" },
   ];
 
   state.initPhases(phaseConfigs);
@@ -425,7 +458,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       scoreReported = true;
       if (window.AudioSynth) window.AudioSynth.tada();
       if (window.fireConfetti) window.fireConfetti();
-      reportScore(state, config);
+      ensureEduPulse().finally(() => reportScore(state, config));
     }
   });
 

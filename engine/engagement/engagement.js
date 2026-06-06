@@ -27,6 +27,8 @@ const ENCOURAGE_STREAK = [
   "Legendary! 6 in a row!",
 ];
 
+import { t, stackHtml, phaseName as getPhaseName, badgeName } from "../core/i18n.js";
+
 const ENCOURAGE_TRY_AGAIN = [
   "Not quite — try again!",
   "Almost! Give it another shot.",
@@ -196,7 +198,7 @@ export function createEngagement(state) {
 
       const streakBadge =
         (stats.bestStreak ?? s.bestStreak) >= 3
-          ? `<div class="streak-badge">🔥 Best streak: ${stats.bestStreak ?? s.bestStreak} in a row</div>`
+          ? `<div class="streak-badge">🔥 ${t("bestStreak")}: ${stats.bestStreak ?? s.bestStreak} ${t("inARow")}</div>`
           : "";
 
       const starHtml = Array.from(
@@ -208,7 +210,7 @@ export function createEngagement(state) {
       const statChips = [
         stats.coins != null ? `🪙 ${stats.coins} coins` : null,
         stats.streak >= 2 ? `🔥 ${stats.streak} streak` : null,
-        stats.accuracy != null ? `${stats.accuracy}% accuracy` : null,
+        stats.accuracy != null ? `${stats.accuracy}% ${t("accuracy")}` : null,
       ]
         .filter(Boolean)
         .map((t) => `<span class="phase-stat-chip">${t}</span>`)
@@ -216,9 +218,9 @@ export function createEngagement(state) {
 
       const nextPreview = next
         ? `<div class="phase-next-preview">
-            <span class="phase-next-label">Up next</span>
+            <span class="phase-next-label">${t("upNext")}</span>
             <span class="phase-next-icon" aria-hidden="true">${next.icon}</span>
-            <strong>${next.name}</strong>
+            <strong>${getPhaseName(next.index)}</strong>
           </div>`
         : "";
 
@@ -226,7 +228,7 @@ export function createEngagement(state) {
         ? `<div class="badge-unlock-row">${newBadges
             .map(
               (b) =>
-                `<span class="badge-unlock" title="${b.name}">${b.emoji} ${b.name}</span>`,
+                `<span class="badge-unlock" title="${badgeName(b.id)}">${b.emoji} ${badgeName(b.id)}</span>`,
             )
             .join("")}</div>`
         : "";
@@ -236,9 +238,9 @@ export function createEngagement(state) {
         : "";
 
       banner.innerHTML = `
-        <div class="badge badge-success" style="margin-bottom:var(--sp-4)">Phase Complete</div>
+        <div class="badge badge-success" style="margin-bottom:var(--sp-4)">${stackHtml(t("phaseComplete", "en"), t("phaseComplete", "es"))}</div>
         ${phaseBadge}
-        <h3>${phaseName} — Done!</h3>
+        <h3>${phaseName} — ${t("phaseDone")}</h3>
         <div class="star-display">${starHtml}</div>
         <div class="phase-complete-xp">+${xpEarned} XP</div>
         ${statChips ? `<div class="phase-stat-chips">${statChips}</div>` : ""}
@@ -246,7 +248,7 @@ export function createEngagement(state) {
         ${badgeUnlock}
         ${nextPreview}
         <button class="btn btn-primary btn-lg mt-6" data-action="next-phase">
-          ${next ? `Continue to ${next.name} →` : "Continue →"}
+          ${next ? `${t("continueTo")} ${getPhaseName(next.index)} →` : t("continue")}
         </button>
       `;
 

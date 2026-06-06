@@ -1,4 +1,5 @@
 import { deriveHintLadder } from "./content-enrichment.js";
+import { t, stackHtml, hintLabel } from "./i18n.js";
 
 function esc(s) {
   const d = document.createElement("div");
@@ -22,8 +23,8 @@ export function mountHintLadder(host, { problem, state, onHintUsed } = {}) {
   const header = document.createElement("div");
   header.className = "hint-ladder-header";
   header.innerHTML = `
-    <span class="hint-ladder-title">Need a nudge?</span>
-    <span class="hint-ladder-count" aria-live="polite">0 / 3 hints</span>`;
+    <span class="hint-ladder-title">${stackHtml(t("needNudge", "en"), t("needNudge", "es"))}</span>
+    <span class="hint-ladder-count" aria-live="polite">0 / 3 ${t("hintsCount")}</span>`;
   ladder.append(header);
 
   const steps = document.createElement("div");
@@ -38,7 +39,7 @@ export function mountHintLadder(host, { problem, state, onHintUsed } = {}) {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "hint-ladder-btn";
-    btn.textContent = hint.label;
+    btn.innerHTML = hintLabel(idx);
     btn.setAttribute("aria-expanded", "false");
     btn.setAttribute("aria-controls", `hint-body-${idx}`);
 
@@ -68,7 +69,7 @@ export function mountHintLadder(host, { problem, state, onHintUsed } = {}) {
 
   function updateUI() {
     const countEl = header.querySelector(".hint-ladder-count");
-    if (countEl) countEl.textContent = `${revealed} / ${hints.length} hints`;
+    if (countEl) countEl.textContent = `${revealed} / ${hints.length} ${t("hintsCount")}`;
 
     steps.querySelectorAll(".hint-ladder-step").forEach((step, i) => {
       const btn = step.querySelector(".hint-ladder-btn");
@@ -86,7 +87,7 @@ export function mountHintLadder(host, { problem, state, onHintUsed } = {}) {
       `.hint-ladder-step[data-level="${revealed + 1}"] .hint-ladder-btn`,
     );
     if (nextBtn && revealed < hints.length) {
-      nextBtn.textContent = hints[revealed].label;
+      nextBtn.innerHTML = hintLabel(revealed);
     }
   }
 

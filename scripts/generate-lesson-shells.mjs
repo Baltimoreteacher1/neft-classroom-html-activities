@@ -55,6 +55,8 @@ ${SAVE_RESUME_HEAD}
     <script>window.NT_ACTIVITY = false;</script>
     <script type="module" src="./lesson.js"></script>
     <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js" defer></script>
+    <script src="/assets/edupulse-bridge.js" defer></script>
 ${SAVE_RESUME_BODY}
 </body>
 </html>

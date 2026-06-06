@@ -5,6 +5,7 @@ import {
   deriveLaunchBeats,
 } from "./content-enrichment.js";
 import { renderMathText } from "./math-typography.js";
+import { t, stackHtml, phaseName, badgeName } from "./i18n.js";
 
 function esc(s) {
   const d = document.createElement("div");
@@ -38,6 +39,10 @@ const BADGE_DEFS = [
   { id: "sharpshooter", emoji: "🎯", name: "Sharpshooter", test: (s) => s.totalAttempts > 0 && s.totalCorrect / s.totalAttempts >= 0.9 },
   { id: "deep_thinker", emoji: "🧠", name: "Deep Thinker", test: (s) => s.totalAttempts >= 8 },
 ];
+
+export function badgeDisplayName(id) {
+  return badgeName(id);
+}
 
 /** Apply phase-specific accent to main content area. */
 export function applyPhaseAccent(mainEl, phaseIndex) {
@@ -77,20 +82,20 @@ export function buildLessonCoverExtras(config, savedProgress) {
     : 0;
 
   const phaseChips = PHASE_TIME_ESTIMATES.map(
-    (p) =>
-      `<span class="cover-phase-chip" title="~${p.minutes} min"><span aria-hidden="true">${p.icon}</span> ${p.name}</span>`,
+    (p, i) =>
+      `<span class="cover-phase-chip" title="~${p.minutes} min"><span aria-hidden="true">${p.icon}</span> ${stackHtml(phaseName(i, "en"), phaseName(i, "es"))}</span>`,
   ).join("");
 
   return `
     <div class="lesson-cover-art" aria-hidden="true"></div>
     <div class="cover-learning-goal card-compact">
-      <span class="cover-goal-label">Today's Goal</span>
+      <span class="cover-goal-label">${stackHtml(t("todaysGoal", "en"), t("todaysGoal", "es"))}</span>
       <p class="cover-goal-text">${renderMathText(config.contentObjective || `Master ${config.title}`)}</p>
     </div>
     <div class="cover-stats-row">
-      <span class="cover-stat"><strong>${vocabCount}</strong> vocab words</span>
-      <span class="cover-stat"><strong>${problemCount}</strong> practice items</span>
-      <span class="cover-stat"><strong>6</strong> phases</span>
+      <span class="cover-stat"><strong>${vocabCount}</strong> ${stackHtml(t("vocabWords", "en"), t("vocabWords", "es"))}</span>
+      <span class="cover-stat"><strong>${problemCount}</strong> ${stackHtml(t("practiceItems", "en"), t("practiceItems", "es"))}</span>
+      <span class="cover-stat"><strong>6</strong> ${stackHtml(t("phases", "en"), t("phases", "es"))}</span>
     </div>
     ${
       pct > 0
@@ -130,7 +135,7 @@ export function renderLaunchStoryBeats(host, config) {
     card.innerHTML = `
       <span class="story-beat-num">${i + 1}</span>
       <span class="story-beat-label">${esc(beat.label)}</span>
-      <span class="story-beat-teaser">Tap to reveal →</span>`;
+      <span class="story-beat-teaser">${stackHtml(t("tapToReveal", "en"), t("tapToReveal", "es"))}</span>`;
 
     const reveal = document.createElement("div");
     reveal.className = "story-beat-reveal";
@@ -182,7 +187,7 @@ export function buildPhaseTransitionMeta(state, phaseIdx, phaseName, xp, stars) 
       hintsUsed: s.hintsUsed,
     },
     newBadges,
-    phaseBadge: stars >= 3 ? "⭐ Perfect Phase!" : stars >= 2 ? "✨ Strong Work!" : "",
+    phaseBadge: stars >= 3 ? `⭐ ${t("perfectPhase")}` : stars >= 2 ? `✨ ${t("strongWork")}` : "",
   };
 }
 
@@ -195,13 +200,13 @@ export function buildPrintableSummary(state, config) {
   const wrap = document.createElement("section");
   wrap.className = "printable-summary card";
   wrap.innerHTML = `
-    <h4>📄 My Lesson Summary</h4>
-    <p><strong>Lesson:</strong> ${esc(config.title)} · ${esc(config.standard)}</p>
-    <p><strong>Student:</strong> ${esc(s.studentName)} ${s.studentPeriod ? `· Period ${esc(s.studentPeriod)}` : ""}</p>
-    <p><strong>One thing I learned:</strong> ${esc(learned) || "(not filled in yet)"}</p>
-    <p><strong>Confidence:</strong> ${confidence ? `${confidence}/5` : "—"}</p>
-    <p><strong>XP:</strong> ${s.xp} · <strong>Stars:</strong> ${s.phases.reduce((sum, p) => sum + p.stars, 0)}/18 · <strong>Coins:</strong> ${s.coins}</p>
-    <button type="button" class="btn btn-secondary btn-sm printable-summary-btn">🖨️ Print my summary</button>`;
+    <h4>📄 ${stackHtml(t("myLessonSummary", "en"), t("myLessonSummary", "es"))}</h4>
+    <p><strong>${t("lesson")}:</strong> ${esc(config.title)} · ${esc(config.standard)}</p>
+    <p><strong>${t("student")}:</strong> ${esc(s.studentName)} ${s.studentPeriod ? `· ${t("period")} ${esc(s.studentPeriod)}` : ""}</p>
+    <p><strong>${t("oneThingLearned")}:</strong> ${esc(learned) || "(not filled in yet)"}</p>
+    <p><strong>${t("confidence")}:</strong> ${confidence ? `${confidence}/5` : "—"}</p>
+    <p><strong>XP:</strong> ${s.xp} · <strong>${t("stars")}:</strong> ${s.phases.reduce((sum, p) => sum + p.stars, 0)}/18 · <strong>${t("coins")}:</strong> ${s.coins}</p>
+    <button type="button" class="btn btn-secondary btn-sm printable-summary-btn">🖨️ ${stackHtml(t("printSummary", "en"), t("printSummary", "es"))}</button>`;
 
   wrap.querySelector(".printable-summary-btn")?.addEventListener("click", () => {
     wrap.classList.add("print-target");
