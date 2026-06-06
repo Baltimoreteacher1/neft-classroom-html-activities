@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { buildTptSlideDeck } from './lib/tpt-slide-deck.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
@@ -747,13 +748,106 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
 
   const svgVisual = generateMathVisualSvg(lessonId, data);
   const interactiveWidget = generateInteractiveWidgetHtml(lessonId, standard);
-  const redirectHtml = googleSlidesUrl ? `  <script>window.location.replace(${JSON.stringify(googleSlidesUrl)});</script>\n` : '';
+
+  const drawingToolbarHtml = `
+              <div>
+                <p class="card-desc" style="font-size:12px; line-height:1.4; margin:0;">Use the drawing tray below to annotate the visual model. Teacher: say &quot;Click to reveal&quot; on key steps.</p>
+              </div>
+              <div class="drawing-toolbar">
+                <div style="display:flex; gap:5px; align-items:center; flex-wrap:wrap;">
+                  <button class="assess-btn px-btn" id="btn-interact" onclick="setDrawingTool('interact')" title="Interact Mode" style="width:26px; height:26px; font-size:11px;">👆</button>
+                  <button class="assess-btn px-btn active" id="btn-draw" onclick="setDrawingTool('draw')" title="Pen" style="width:26px; height:26px; font-size:11px;">✏️</button>
+                  <button class="assess-btn px-btn" id="btn-highlight" onclick="setDrawingTool('highlight')" title="Highlighter" style="width:26px; height:26px; font-size:11px;">🖍️</button>
+                  <button class="assess-btn px-btn" id="btn-erase" onclick="setDrawingTool('erase')" title="Eraser" style="width:26px; height:26px; font-size:11px;">🧽</button>
+                </div>
+                <div style="display:flex; gap:5px; align-items:center; margin-top:4px;">
+                  <div class="color-picker-dot active" style="background:#17324D;" onclick="setDrawingColor('#17324D', this)"></div>
+                  <div class="color-picker-dot" style="background:#1FA6A2;" onclick="setDrawingColor('#1FA6A2', this)"></div>
+                  <div class="color-picker-dot" style="background:#F2C15B;" onclick="setDrawingColor('#F2C15B', this)"></div>
+                  <button class="tool-btn-clear" onclick="clearDrawingCanvas()" style="height:26px; margin-left:auto;">Clear</button>
+                </div>
+              </div>`;
+
+  const exploreHtml = `
+    ${''}
+    <div class="slide-badge-row">
+      <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">${themeEmoji} ${esc(themeName)}</span>
+    </div>
+    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px;">Explore Activity</h3>
+    <div class="slide-grid-2">
+      <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
+        <div>
+          <div class="sorting-progress-container"><div id="sorting-progress-bar" class="sorting-progress-bar"></div></div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <p class="card-desc" style="font-size:12px; margin:0;" id="explore-instructions">${esc(exploreInstructions)}</p>
+            <button class="assess-btn" onclick="resetSortingGame()" style="font-size:9.5px; padding:2px 6px;">🔄 Reset</button>
+          </div>
+          <div id="sorting-game-container" style="background:var(--google-gray); padding:8px; border-radius:8px; border:1px solid #dadce0; min-height:100px;">
+            <div id="confetti-container" class="confetti-overlay" style="display:none;"></div>
+            <div id="sorting-card" class="index-card" style="width:95%; min-height:55px; margin:0 auto 6px;"></div>
+            <div id="sorting-buttons" style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap;"></div>
+            <div id="sorting-feedback" style="font-size:10px; font-weight:700; min-height:12px;"></div>
+          </div>
+          <div id="sorting-pockets-log" style="display:flex; gap:8px; margin-top:8px; height:105px;"></div>
+        </div>
+        <div style="margin-top:4px;">${exploreVocabBankHtml}</div>
+      </div>
+      <div class="slide-card" style="background:var(--teal-light);">
+        <h2 class="card-title">✍️ Explore Discourse</h2>
+        <p style="font-size:11px; font-weight:600;">${esc(discoursePrompt)}</p>
+        ${discourseFrame ? `<div style="font-size:9.5px; font-style:italic; margin-bottom:6px;">${esc(discourseFrame)}</div>` : ''}
+        <textarea id="explore-discourse-work" class="slide-input-placeholder" rows="3" placeholder="Type your discourse explanation here..."></textarea>
+      </div>
+    </div>`;
+
+  const deck = buildTptSlideDeck({
+    lessonId,
+    data,
+    themeEmoji,
+    themeName,
+    standard,
+    unit,
+    title,
+    contentObj,
+    langObj,
+    launchNarrative,
+    launchBadge,
+    noticeStemsHtml,
+    wonderStemsHtml,
+    launchVocabBankHtml,
+    conceptHeading,
+    conceptText,
+    conceptKeyIdea,
+    iDoTitle,
+    iDoLines,
+    weDoTitle,
+    weDoLines,
+    youDoTitle,
+    youDoLines,
+    vocabList,
+    exploreInstructions,
+    exploreHtml,
+    practiceHtml,
+    connectScenario,
+    connectPrompt,
+    connectFrame,
+    connectVocabBankHtml,
+    exitTicketHtml,
+    svgVisual,
+    interactiveWidget,
+    drawingToolbarHtml,
+    googleSlidesUrl,
+    timeEstimate: data.timeEstimate,
+  });
+
+  const googleSlidesLinkHtml = googleSlidesUrl
+    ? `<a href="${esc(googleSlidesUrl)}" target="_blank" rel="noopener" class="btn-present" style="background:var(--white); color:var(--navy); border:1px solid #dadce0; text-decoration:none; font-size:12px; padding:6px 12px;">↗ Google Slides</a>`
+    : '';
   
   return `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-${redirectHtml}
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${esc(title)} — Google Slides</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -1769,6 +1863,7 @@ ${redirectHtml}
       </div>
     </div>
     <div class="g-right">
+      ${googleSlidesLinkHtml}
       <button class="btn-present" onclick="enterFullscreen()">
         ▶ Present
       </button>
@@ -1783,51 +1878,7 @@ ${redirectHtml}
   
     <!-- Sidebar Thumbnails -->
     <nav class="sidebar-slides">
-      <!-- Slide 1 -->
-      <div class="thumb-card active" data-slide="1" onclick="goToSlide(1)">
-        <span class="thumb-label">Slide 1</span>
-        <div class="thumb-preview">🎯 Objectives</div>
-      </div>
-      <!-- Slide 2 -->
-      <div class="thumb-card" data-slide="2" onclick="goToSlide(2)">
-        <span class="thumb-label">Slide 2</span>
-        <div class="thumb-preview">👀 Launch</div>
-      </div>
-      <!-- Slide 3 -->
-      <div class="thumb-card" data-slide="3" onclick="goToSlide(3)">
-        <span class="thumb-label">Slide 3</span>
-        <div class="thumb-preview">💡 Concept</div>
-      </div>
-      <!-- Slide 4 -->
-      <div class="thumb-card" data-slide="4" onclick="goToSlide(4)">
-        <span class="thumb-label">Slide 4</span>
-        <div class="thumb-preview">📝 Vocabulary</div>
-      </div>
-      <!-- Slide 5 -->
-      <div class="thumb-card" data-slide="5" onclick="goToSlide(5)">
-        <span class="thumb-label">Slide 5</span>
-        <div class="thumb-preview">📐 Model</div>
-      </div>
-      <!-- Slide 6 -->
-      <div class="thumb-card" data-slide="6" onclick="goToSlide(6)">
-        <span class="thumb-label">Slide 6</span>
-        <div class="thumb-preview">👥 Explore</div>
-      </div>
-      <!-- Slide 7 -->
-      <div class="thumb-card" data-slide="7" onclick="goToSlide(7)">
-        <span class="thumb-label">Slide 7</span>
-        <div class="thumb-preview">⚠️ Practice</div>
-      </div>
-      <!-- Slide 8 -->
-      <div class="thumb-card" data-slide="8" onclick="goToSlide(8)">
-        <span class="thumb-label">Slide 8</span>
-        <div class="thumb-preview">🌍 Connection</div>
-      </div>
-      <!-- Slide 9 -->
-      <div class="thumb-card" data-slide="9" onclick="goToSlide(9)">
-        <span class="thumb-label">Slide 9</span>
-        <div class="thumb-preview">🤔 Reflection</div>
-      </div>
+${deck.thumbnailsHtml}
     </nav>
 
     <!-- Presentation Area -->
@@ -1850,338 +1901,7 @@ ${redirectHtml}
           <div class="spiral-ring"></div>
         </div>
       
-        <!-- SLIDE 1: OBJECTIVES -->
-        <div class="slide-body active" id="slide-1">
-          <div class="slide-badge-row">
-            <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">${themeEmoji} ${esc(themeName)}</span>
-            <span style="font-size:10px; color:var(--gray); font-weight:700; margin-left:auto; font-family:'Outfit';">STANDARD: ${esc(standard)}</span>
-          </div>
-          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Objectives &amp; Targets</h3>
-          
-          <div class="slide-card">
-            <div style="font-size: 16px; line-height: 1.6; display: flex; flex-direction: column; gap: 16px; justify-content: center; height: 100%;">
-              <div>
-                <strong style="color:var(--navy); font-size:16px; font-family:'Outfit';">Content Objective:</strong>
-                <p style="margin: 4px 0 0; color:var(--body-text); font-size:14.5px; font-weight:600;">${esc(contentObj)}</p>
-              </div>
-              <div style="margin-top:4px;">
-                <strong style="color:var(--navy); font-size:16px; font-family:'Outfit';">Language Objective:</strong>
-                <p style="margin: 4px 0 0; color:var(--body-text); font-size:14.5px; font-weight:600;">${esc(langObj)}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- SLIDE 2: SCENARIO LAUNCH -->
-        <div class="slide-body" id="slide-2">
-          <div class="slide-badge-row">
-            <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">${themeEmoji} ${esc(themeName)}</span>
-          </div>
-          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Scenario Launch</h3>
-          
-          <div class="slide-grid-2">
-            <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
-              <div>
-                <h2 class="card-title" style="font-size:15px; margin-bottom:8px; font-weight:800; color:var(--teal);">📋 ${esc(launchBadge)}</h2>
-                <p class="card-desc" style="font-size:12.5px; line-height:1.5; margin-bottom:8px; color:var(--body-text);">${esc(launchNarrative)}</p>
-              </div>
-              <div style="margin-top:auto;">
-                <strong style="font-size:10px; color:var(--gray); text-transform:uppercase;">Vocabulary Bank:</strong>
-                <div style="margin-top:4px; max-height: 60px; overflow-y: auto;">${launchVocabBankHtml}</div>
-              </div>
-            </div>
-            <div class="slide-card nw-container" style="border:none; background:transparent; box-shadow:none; padding:0;">
-              <div class="nw-box nw-box-notice" style="display:flex; flex-direction:column; justify-content:space-between; transform: rotate(-1deg);">
-                <div class="washi-tape" style="background: repeating-linear-gradient(45deg, rgba(31,166,162,0.3), rgba(31,166,162,0.3) 4px, rgba(255,255,255,0.2) 4px, rgba(255,255,255,0.2) 8px);"></div>
-                <div>
-                  <h4>👀 Notice Prompts:</h4>
-                  <div class="nw-box-stems" style="margin-bottom:4px;">${noticeStemsHtml}</div>
-                </div>
-                <textarea id="student-notice" class="slide-input-placeholder" rows="2" placeholder="Type what you notice here..."></textarea>
-              </div>
-              <div class="nw-box nw-box-wonder" style="display:flex; flex-direction:column; justify-content:space-between; transform: rotate(1deg);">
-                <div class="washi-tape" style="background: repeating-linear-gradient(45deg, rgba(217,121,93,0.3), rgba(217,121,93,0.3) 4px, rgba(255,255,255,0.2) 4px, rgba(255,255,255,0.2) 8px);"></div>
-                <div>
-                  <h4>💭 Wonder Prompts:</h4>
-                  <div class="nw-box-stems" style="margin-bottom:4px;">${wonderStemsHtml}</div>
-                </div>
-                <textarea id="student-wonder" class="slide-input-placeholder" rows="2" placeholder="Type what you wonder here..."></textarea>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- SLIDE 3: CONCEPT INTRO & FLOW -->
-        <div class="slide-body" id="slide-3">
-          <div class="slide-badge-row">
-            <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">${themeEmoji} ${esc(themeName)}</span>
-          </div>
-          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Concept Introduction</h3>
-          
-          <div class="slide-grid-2">
-            <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
-              <div>
-                <h2 class="card-title" style="font-size:15px; margin-bottom:8px; font-weight:800; color:var(--teal);">💡 ${esc(conceptHeading)}</h2>
-                <p class="card-desc" style="font-size:12.5px; line-height:1.5; margin-bottom:8px;">${esc(conceptText)}</p>
-              </div>
-              ${conceptKeyIdea ? `
-              <div style="background:var(--teal-light); border:1.5px solid var(--teal); border-radius:8px; padding:10px; margin-top:auto;">
-                <strong style="font-size:9.5px; color:var(--navy); text-transform:uppercase; letter-spacing:0.02em;">Key Idea:</strong>
-                <p style="margin:2px 0 0; font-size:12px; font-weight:700; color:var(--navy); line-height:1.3;">${esc(conceptKeyIdea)}</p>
-              </div>` : ''}
-            </div>
-            
-            <div style="display:flex; flex-direction:column; height: 100%;">
-              <div class="tabs-container">
-                <button class="tab-btn active" onclick="switchConceptTab('ido')">Watch Me</button>
-                <button class="tab-btn" onclick="switchConceptTab('wedo')">Try Together</button>
-                <button class="tab-btn" onclick="switchConceptTab('youdo')">Your Turn</button>
-              </div>
-              <div id="concept-tab-content" class="tab-content">
-                <!-- Tab contents populated dynamically by Javascript -->
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- SLIDE 4: VOCABULARY CARD GRID -->
-        <div class="slide-body" id="slide-4">
-          <div class="slide-badge-row">
-            <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">${themeEmoji} ${esc(themeName)}</span>
-          </div>
-          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Visual Vocabulary</h3>
-          
-          <div class="slide-grid-2">
-            <div style="display: flex; flex-direction: column; gap: 10px; justify-content: center; height: 100%;">
-              <p class="card-desc" style="font-size:12.5px; line-height:1.5; margin:0;">Click each flashcard on the right to flip and reveal its definition, Spanish translation, and visual examples.</p>
-              <div style="background:var(--teal-light); border-radius:8px; padding:10px; font-size:11px; color:var(--navy); font-weight:700; line-height:1.4;">
-                💡 Differentiated multi-language support. Use these keywords in your team discourse!
-              </div>
-            </div>
-            <div class="vocab-grid">
-              ${vocabCardsHtml}
-            </div>
-          </div>
-        </div>
-        
-        <!-- SLIDE 5: VISUAL MODEL WITH CANVAS OVERLAY -->
-        <div class="slide-body" id="slide-5">
-          <div class="slide-badge-row">
-            <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">${themeEmoji} ${esc(themeName)}</span>
-          </div>
-          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Visual Modeling Workspace</h3>
-          
-          <div class="slide-grid-2">
-            <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
-              <div>
-                <p class="card-desc" style="font-size:12px; line-height:1.4; margin:0;">Use the drawing tray below to select pen colors, size, or erase. Draw directly on the visual math card to annotate findings.</p>
-              </div>
-              
-              <!-- Upgraded Drawing Wooden Pencil Tray Toolbar with shapes, highlighter, stamps, and interact toggle -->
-              <div class="drawing-toolbar">
-                <!-- Row 1: Mode Toggles & Stamps -->
-                <div style="display:flex; gap:5px; align-items:center; flex-wrap:wrap;">
-                  <button class="assess-btn px-btn" id="btn-interact" onclick="setDrawingTool('interact')" title="Interact Mode" style="width:26px; height:26px; font-size:11px;">👆</button>
-                  <button class="assess-btn px-btn active" id="btn-draw" onclick="setDrawingTool('draw')" title="Pen" style="width:26px; height:26px; font-size:11px;">✏️</button>
-                  <button class="assess-btn px-btn" id="btn-highlight" onclick="setDrawingTool('highlight')" title="Highlighter" style="width:26px; height:26px; font-size:11px;">🖍️</button>
-                  <button class="assess-btn px-btn" id="btn-line" onclick="setDrawingTool('line')" title="Straight Line" style="width:26px; height:26px; font-size:11px;">📏</button>
-                  <button class="assess-btn px-btn" id="btn-rect" onclick="setDrawingTool('rect')" title="Rectangle" style="width:26px; height:26px; font-size:11px;">⬜</button>
-                  <button class="assess-btn px-btn" id="btn-circle" onclick="setDrawingTool('circle')" title="Circle" style="width:26px; height:26px; font-size:11px;">⭕</button>
-                  <button class="assess-btn px-btn" id="btn-erase" onclick="setDrawingTool('erase')" title="Eraser" style="width:26px; height:26px; font-size:11px;">🧽</button>
-                  
-                  <!-- Stamp Picker Group -->
-                  <div style="display:flex; gap:4px; align-items:center; border-left:1px solid #d3cbb5; padding-left:8px;">
-                    <span style="font-size:9px; font-weight:700; color:var(--navy); margin-right:2px;">STAMPS:</span>
-                    <button class="assess-btn px-btn stamp-btn" id="btn-stamp-check" onclick="selectStamp('✓', this)" title="Stamp ✓" style="width:24px; height:24px; font-size:11px; padding:0;">✓</button>
-                    <button class="assess-btn px-btn stamp-btn" id="btn-stamp-star" onclick="selectStamp('⭐', this)" title="Stamp ⭐" style="width:24px; height:24px; font-size:11px; padding:0;">⭐</button>
-                    <button class="assess-btn px-btn stamp-btn" id="btn-stamp-cross" onclick="selectStamp('✕', this)" title="Stamp ✕" style="width:24px; height:24px; font-size:11px; padding:0;">✕</button>
-                    <button class="assess-btn px-btn stamp-btn" id="btn-stamp-smiley" onclick="selectStamp('😊', this)" title="Stamp 😊" style="width:24px; height:24px; font-size:11px; padding:0;">😊</button>
-                  </div>
-                </div>
-                
-                <!-- Row 2: Colors, Sizes, Actions -->
-                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:4px; padding-top:4px; border-top:1px dashed #d3cbb5;">
-                  <!-- Color Picker Dots -->
-                  <div style="display:flex; gap:5px; align-items:center;">
-                    <div class="color-picker-dot active" style="background:#17324D;" onclick="setDrawingColor('#17324D', this)" title="Navy"></div>
-                    <div class="color-picker-dot" style="background:#1FA6A2;" onclick="setDrawingColor('#1FA6A2', this)" title="Teal"></div>
-                    <div class="color-picker-dot" style="background:#F2C15B;" onclick="setDrawingColor('#F2C15B', this)" title="Amber"></div>
-                    <div class="color-picker-dot" style="background:#D9795D;" onclick="setDrawingColor('#D9795D', this)" title="Terracotta"></div>
-                    <div class="color-picker-dot" style="background:#000000;" onclick="setDrawingColor('#000000', this)" title="Black"></div>
-                  </div>
-                  
-                  <!-- Size Dots -->
-                  <div style="display:flex; gap:8px; align-items:center; border-left:1px solid #d3cbb5; padding-left:10px;">
-                    <div class="size-picker-dot active" style="width:6px; height:6px;" onclick="setDrawingSize(2, this)" title="Thin"></div>
-                    <div class="size-picker-dot" style="width:10px; height:10px;" onclick="setDrawingSize(5, this)" title="Medium"></div>
-                    <div class="size-picker-dot" style="width:14px; height:14px;" onclick="setDrawingSize(10, this)" title="Thick"></div>
-                  </div>
-                  
-                  <div style="display:flex; gap:5px; margin-left:auto; align-items:center;">
-                    <button class="assess-btn px-btn" id="btn-undo" onclick="undoLast()" title="Undo Last Stroke" style="width:26px; height:26px; font-size:11px; padding:0;">↩️</button>
-                    <button class="tool-btn-clear" onclick="clearDrawingCanvas()" style="height:26px; line-height:24px; padding:0 8px; margin:0;">Clear</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="math-visual-container tool-draw" id="math-visual-container-element">
-              <div style="position: absolute; inset: 0; z-index: 1;">
-                ${interactiveWidget || svgVisual}
-              </div>
-              <canvas id="math-canvas" width="440" height="240" class="canvas-overlay cursor-draw"></canvas>
-            </div>
-          </div>
-        </div>
-        
-        <!-- SLIDE 6: INTERACTIVE EXPLORE ACTIVITY -->
-        <div class="slide-body" id="slide-6">
-          <div class="slide-badge-row">
-            <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">${themeEmoji} ${esc(themeName)}</span>
-          </div>
-          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Explore Activity</h3>
-          
-          <div class="slide-grid-2">
-            <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
-              <div>
-                <!-- Progress Container -->
-                <div class="sorting-progress-container">
-                  <div id="sorting-progress-bar" class="sorting-progress-bar"></div>
-                </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                  <p class="card-desc" style="font-size:12px; margin:0; line-height:1.4;" id="explore-instructions">${esc(exploreInstructions)}</p>
-                  <button class="assess-btn" onclick="resetSortingGame()" style="flex:none; width:auto; padding:2px 6px; font-size:9.5px; height:20px; border-radius:4px; font-weight:800; background:transparent; border-color:var(--gray); color:var(--gray); cursor:pointer;">🔄 Reset</button>
-                </div>
-                
-                <!-- Ruled Lined Index Card Sorting Game -->
-                <div id="sorting-game-container" style="background:var(--google-gray); padding:8px; border-radius:8px; border:1px solid #dadce0; text-align:center; min-height:100px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:6px; position:relative; overflow:hidden;">
-                  
-                  <!-- Confetti Container -->
-                  <div id="confetti-container" class="confetti-overlay" style="display:none;"></div>
-
-                  <div id="sorting-card" class="index-card" style="width:95%; min-height:55px; padding: 10px 10px 10px 45px !important; font-size:12.5px; line-height:18px !important; background-size: 100% 18px, 100% 100%; background-position: 0 5px, 35px 0;">
-                    <!-- Active Index Card Text -->
-                  </div>
-                  <div id="sorting-buttons" style="display:flex; gap:6px; justify-content:center; width:100%; flex-wrap:wrap;">
-                    <!-- Category bins loaded dynamically -->
-                  </div>
-                  <div id="sorting-feedback" style="font-size:10px; font-weight:700; min-height:12px;"></div>
-                </div>
-                
-                <!-- Persistent Open Pocket Folders Audit List -->
-                <div id="sorting-pockets-log" style="display:flex; gap:8px; margin-top:8px; height:105px; overflow:hidden;">
-                  <!-- Bins populated dynamically with scrollable list -->
-                </div>
-              </div>
-              
-              <div style="margin-top:4px;">
-                <strong style="font-size:9.5px; color:var(--gray); text-transform:uppercase;">Keyword Bank:</strong>
-                <div style="margin-top:2px; max-height: 45px; overflow-y: auto;">${exploreVocabBankHtml}</div>
-              </div>
-            </div>
-            
-            <div class="slide-card" style="background:var(--teal-light); display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
-              <div>
-                <h2 class="card-title" style="font-size:14px; margin-bottom:6px; color:var(--navy);">✍️ Explore Discourse</h2>
-                <p style="font-size:11px; margin-top:0; color:var(--navy); font-weight:600; line-height:1.3;">${esc(discoursePrompt)}</p>
-                ${discourseFrame ? `<div style="font-size:9.5px; font-style:italic; color:var(--body-text); background:var(--white); padding:4px 6px; border-radius:4px; border:1px solid #e1eaeef8; margin-bottom:6px; line-height:1.3;"><strong>Sentence Starter:</strong><br/>${esc(discourseFrame)}</div>` : ''}
-              </div>
-              <textarea id="explore-discourse-work" class="slide-input-placeholder" rows="3" placeholder="Type your discourse explanation here..."></textarea>
-            </div>
-          </div>
-        </div>
-        
-        <!-- SLIDE 7: PRACTICE PROBLEM -->
-        <div class="slide-body" id="slide-7">
-          <div class="slide-badge-row">
-            <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">${themeEmoji} ${esc(themeName)}</span>
-          </div>
-          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Practice Challenge</h3>
-          ${practiceHtml}
-        </div>
-        
-        <!-- SLIDE 8: REAL-WORLD CONNECTION -->
-        <div class="slide-body" id="slide-8">
-          <div class="slide-badge-row">
-            <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">${themeEmoji} ${esc(themeName)}</span>
-          </div>
-          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Real-World Connection</h3>
-          
-          <div class="slide-grid-2">
-            <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height:100%;">
-              <div>
-                <h2 class="card-title" style="font-size:15px; margin-bottom:8px; font-weight:800; color:var(--teal);">🌍 Math in the Wild</h2>
-                <p class="card-desc" style="font-size:12.5px; line-height:1.5; margin-bottom:8px; color:var(--body-text);">${esc(connectScenario)}</p>
-              </div>
-              <div style="margin-top:auto;">
-                <strong style="font-size:9.5px; color:var(--gray); text-transform:uppercase;">Keyword Bank:</strong>
-                <div style="margin-top:2px; max-height: 45px; overflow-y: auto;">${connectVocabBankHtml}</div>
-              </div>
-            </div>
-            <div class="slide-card" style="background:var(--teal-light); display:flex; flex-direction:column; justify-content:space-between; height:100%;">
-              <div>
-                <h2 class="card-title" style="font-size:14px; margin-bottom:6px; color:var(--navy);">✍️ Connection Reasoning</h2>
-                <p style="font-size:11px; margin-top:0; color:var(--navy); font-weight:600; line-height:1.3;">${esc(connectPrompt)}</p>
-                ${connectFrame ? `<div style="font-size:9.5px; font-style:italic; color:var(--body-text); background:var(--white); padding:4px 6px; border-radius:4px; border:1px solid #e1eaeef8; margin-bottom:6px; line-height:1.3;"><strong>Sentence Starter:</strong><br/>${esc(connectFrame)}</div>` : ''}
-              </div>
-              <textarea id="rw-connect-work" class="slide-input-placeholder" rows="4" placeholder="Write your connection explanation here..."></textarea>
-            </div>
-          </div>
-        </div>
-        
-        <!-- SLIDE 9: REFLECTION & EXIT TICKET -->
-        <div class="slide-body" id="slide-9">
-          <div class="slide-badge-row">
-            <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">${themeEmoji} ${esc(themeName)}</span>
-          </div>
-          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Reflection &amp; Exit Ticket</h3>
-          
-          <div class="slide-grid-2">
-            <div class="slide-card" style="justify-content:space-between; height: 100%; border:none; background:transparent; box-shadow:none; padding:0;">
-              <!-- TpT Cozy Overlapping Sticky Notes -->
-              <div class="post-it-grid">
-                <div class="sticky-note post-it-3" style="transform: rotate(-1.5deg);">
-                  <div class="washi-tape" style="background: repeating-linear-gradient(45deg, rgba(242,193,91,0.4), rgba(242,193,91,0.4) 4px, rgba(255,255,255,0.3) 4px, rgba(255,255,255,0.3) 8px);"></div>
-                  <div class="post-it-title">3 Things I learned:</div>
-                  <div style="display:flex; flex-direction:column; gap:4px;">
-                    <input type="text" id="ref-3-1" placeholder="1. ..." />
-                    <input type="text" id="ref-3-2" placeholder="2. ..." />
-                    <input type="text" id="ref-3-3" placeholder="3. ..." />
-                  </div>
-                </div>
-                <div class="sticky-note post-it-2" style="transform: rotate(2deg); margin-top: -5px;">
-                  <div class="washi-tape" style="background: repeating-linear-gradient(45deg, rgba(31,166,162,0.4), rgba(31,166,162,0.4) 4px, rgba(255,255,255,0.3) 4px, rgba(255,255,255,0.3) 8px);"></div>
-                  <div class="post-it-title">2 Connections I made:</div>
-                  <div style="display:flex; flex-direction:column; gap:4px;">
-                    <input type="text" id="ref-2-1" placeholder="1. ..." />
-                    <input type="text" id="ref-2-2" placeholder="2. ..." />
-                  </div>
-                </div>
-                <div class="sticky-note post-it-1" style="transform: rotate(-1deg); margin-top: -5px;">
-                  <div class="washi-tape" style="background: repeating-linear-gradient(45deg, rgba(217,121,93,0.4), rgba(217,121,93,0.4) 4px, rgba(255,255,255,0.3) 4px, rgba(255,255,255,0.3) 8px);"></div>
-                  <div class="post-it-title">1 Question I still have:</div>
-                  <input type="text" id="ref-1-1" placeholder="1. ..." />
-                </div>
-              </div>
-            </div>
-            
-            <div class="slide-card" style="background:var(--teal-light); justify-content:space-between; height: 100%;">
-              <div>
-                <h2 class="card-title" style="font-size:15px; margin-bottom:4px; font-weight:800; color:var(--navy);">📝 Exit Ticket</h2>
-                ${exitTicketHtml}
-              </div>
-              
-              <div style="margin-top:4px; border-top: 1px dashed var(--teal); padding-top:4px;">
-                <strong style="font-size:9.5px; color:var(--navy); text-transform:uppercase;">Self-Assessment:</strong>
-                <div class="assess-row">
-                  <button class="assess-btn" id="btn-gotit" onclick="setSelfAssessment('gotit')">Got it! 👍</button>
-                  <button class="assess-btn" id="btn-getting" onclick="setSelfAssessment('getting')">Almost 🧭</button>
-                  <button class="assess-btn" id="btn-help" onclick="setSelfAssessment('help')">Help 🆘</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        ${deck.slidesHtml}
         
         <!-- Subtle Slide Watermark -->
         <div class="slide-watermark">
@@ -2198,7 +1918,7 @@ ${redirectHtml}
   <!-- Presenter Controls HUD (Visible only when in fullscreen Present Mode) -->
   <div class="presenter-hud">
     <button class="hud-btn" onclick="prevSlide()">◀</button>
-    <span id="hud-page-indicator">1 / 9</span>
+    <span id="hud-page-indicator">1 / ${deck.totalSlides}</span>
     <button class="hud-btn" onclick="nextSlide()">▶</button>
     <div class="hud-timer" id="hud-timer-display">Pacing: 00:00</div>
     <button class="hud-btn" onclick="exitFullscreen()" title="Exit Presentation" style="margin-left: 8px;">✕</button>
@@ -2206,19 +1926,9 @@ ${redirectHtml}
 
   <script>
     let currentSlide = 1;
-    const totalSlides = 9;
+    const totalSlides = ${deck.totalSlides};
     
-    const slideTitles = [
-      "LESSON ${esc(lessonId)} · OBJECTIVES & TOPIC",
-      "BE CURIOUS · SCENARIO LAUNCH",
-      "CONCEPT INTRODUCTION · Watch / Try / Apply",
-      "KEY VOCABULARY · Flashcards",
-      "VISUAL MODELING WORKSPACE",
-      "EXPLORE ACTIVITY · Card Sorting & Discourse",
-      "TIERED PRACTICE CHALLENGE",
-      "REAL-WORLD CONNECTION · Math in the Wild",
-      "REFLECTION & EXIT TICKET"
-    ];
+    const slideTitles = ${JSON.stringify(deck.slideTitles)};
     
     // Concept Intro Tab Data
     const conceptData = {
@@ -2563,16 +2273,65 @@ ${redirectHtml}
       
       const btn = document.getElementById('btn-choice-' + selected);
       if (selected === correct) {
-        btn.classList.add('correct');
+        if (btn) btn.classList.add('correct');
         feedback.textContent = 'Correct! Great job. ✓';
         feedback.style.color = 'var(--teal)';
       } else {
-        btn.classList.add('incorrect');
+        if (btn) btn.classList.add('incorrect');
         feedback.textContent = 'Incorrect. Review your calculation and try again. ✕';
         feedback.style.color = '#D9795D';
         const correctBtn = document.getElementById('btn-choice-' + correct);
         if (correctBtn) correctBtn.classList.add('correct');
       }
+      saveWork();
+    }
+
+    function checkMCQuestionByPrefix(prefix, selected, correct) {
+      studentPracticeMCIndex = selected;
+      const feedback = document.getElementById(prefix + '-feedback') || document.getElementById('mc-question-feedback');
+      if (!feedback) return;
+      
+      document.querySelectorAll('[id^="btn-' + prefix + '-"]').forEach(btn => {
+        btn.classList.remove('correct', 'incorrect');
+        btn.style.borderColor = '';
+      });
+      
+      const btn = document.getElementById('btn-' + prefix + '-' + selected);
+      if (selected === correct) {
+        if (btn) btn.classList.add('correct');
+        feedback.textContent = 'Correct! Great job. ✓';
+        feedback.style.color = 'var(--teal)';
+      } else {
+        if (btn) btn.classList.add('incorrect');
+        feedback.textContent = 'Incorrect. Review your calculation and try again. ✕';
+        feedback.style.color = '#D9795D';
+        const correctBtn = document.getElementById('btn-' + prefix + '-' + correct);
+        if (correctBtn) correctBtn.classList.add('correct');
+      }
+      saveWork();
+    }
+
+    function checkVocabMatch(idx, isCorrect) {
+      const feedback = document.getElementById('vocab-match-feedback');
+      const btn = document.getElementById('vocab-match-' + idx);
+      if (!feedback || !btn) return;
+      if (isCorrect) {
+        btn.classList.add('correct');
+        feedback.textContent = 'Correct usage! ✓';
+        feedback.style.color = 'var(--teal)';
+      } else {
+        btn.classList.add('incorrect');
+        feedback.textContent = 'That statement is incorrect. Try again. ✕';
+        feedback.style.color = '#D9795D';
+      }
+      saveWork();
+    }
+
+    function checkVocabCloze(idx, correctIdx) {
+      const feedback = document.getElementById('vocab-cloze-feedback');
+      if (!feedback) return;
+      feedback.textContent = idx === correctIdx ? 'Correct word! ✓' : 'Try another word. ✕';
+      feedback.style.color = idx === correctIdx ? 'var(--teal)' : '#D9795D';
       saveWork();
     }
     
