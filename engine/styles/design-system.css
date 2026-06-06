@@ -2692,7 +2692,639 @@ body:has(.identity-screen) .export-toolbar {
   }
   .certificate-print-btn,
   .practice-score-bar,
-  .streak-display {
+  .streak-display,
+  .teacher-panel,
+  .hint-ladder {
     display: none !important;
+  }
+  .printable-summary.print-target,
+  .printable-summary.print-target * {
+    display: block !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PREMIUM TPT UPGRADES — lesson cover, phase accents, hints, teacher mode
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Lesson Cover (identity screen) ── */
+.lesson-cover-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.identity-unit-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  background: linear-gradient(135deg, var(--amber), var(--gold));
+  color: var(--navy);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: var(--radius-full);
+  margin-bottom: var(--sp-3);
+}
+
+.lesson-cover-art {
+  margin: var(--sp-4) auto;
+  max-width: 320px;
+}
+
+.lesson-cover-art .theme-hero-svg.cover-svg-animate {
+  animation: coverFloat 4s ease-in-out infinite;
+}
+
+@keyframes coverFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.cover-learning-goal {
+  text-align: left;
+  margin: var(--sp-4) 0;
+  padding: var(--sp-4);
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(56, 127, 132, 0.25);
+  border-radius: var(--radius-md);
+}
+
+.cover-goal-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal);
+  margin-bottom: var(--sp-2);
+}
+
+.cover-goal-text {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.cover-stats-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  justify-content: center;
+  margin: var(--sp-3) 0;
+  font-size: 0.88rem;
+}
+
+.cover-stat strong {
+  color: var(--navy);
+  font-family: var(--font-display);
+}
+
+.cover-progress-ring {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  margin: var(--sp-3) auto;
+}
+
+.cover-progress-ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.cover-progress-ring .ring-bg {
+  fill: none;
+  stroke: rgba(0, 0, 0, 0.08);
+  stroke-width: 4;
+}
+
+.cover-progress-ring .ring-fill {
+  fill: none;
+  stroke: var(--teal);
+  stroke-width: 4;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.6s var(--ease-out);
+}
+
+.cover-progress-ring .ring-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 0.82rem;
+  color: var(--navy);
+}
+
+.cover-phase-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin: var(--sp-4) 0 var(--sp-2);
+}
+
+.cover-phase-chip {
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.cover-standards-btn {
+  display: block;
+  width: 100%;
+  margin-top: var(--sp-3);
+  padding: var(--sp-3);
+  background: var(--teal-light);
+  border: 1px solid var(--teal);
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--navy);
+  cursor: pointer;
+  text-align: left;
+}
+
+.cover-standards-btn:hover {
+  background: rgba(42, 157, 143, 0.18);
+}
+
+.standards-explainer-panel {
+  margin-top: var(--sp-2);
+  padding: var(--sp-3);
+  background: white;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  text-align: left;
+}
+
+/* ── Phase accent moods ── */
+.main.phase-accent-launch .lesson-hero {
+  background: linear-gradient(135deg, #d9795d 0%, #f2a93b 50%, #387f84 100%);
+}
+
+.main.phase-accent-vocab .lesson-hero {
+  background: linear-gradient(135deg, #e9c46a, #2a9d8f);
+}
+
+.main.phase-accent-explore .lesson-hero {
+  background: linear-gradient(135deg, #2a9d8f, #264653);
+}
+
+.main.phase-accent-practice .lesson-hero {
+  background: linear-gradient(135deg, #264653, #12355b);
+}
+
+.main.phase-accent-connect .lesson-hero {
+  background: linear-gradient(135deg, #387f84, #4a7c6f);
+}
+
+.main.phase-accent-reflect .lesson-hero {
+  background: linear-gradient(135deg, #f2a93b, #d9795d, #387f84);
+}
+
+.phase-enter {
+  animation: phaseSlideIn 0.45s var(--ease-out);
+}
+
+@keyframes phaseSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Launch story beats ── */
+.launch-story-beats {
+  margin-bottom: var(--sp-4);
+}
+
+.story-beat-row {
+  margin-bottom: var(--sp-2);
+}
+
+.story-beat-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--sp-3);
+  align-items: center;
+  width: 100%;
+  padding: var(--sp-3) var(--sp-4);
+  background: white;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.25s var(--ease-out);
+}
+
+.story-beat-card:hover,
+.story-beat-card.is-revealed {
+  border-color: var(--amber);
+  box-shadow: var(--shadow-md);
+}
+
+.story-beat-num {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--amber);
+  color: white;
+  font-weight: 900;
+  border-radius: 50%;
+  font-family: var(--font-display);
+}
+
+.story-beat-label {
+  font-weight: 800;
+  color: var(--navy);
+}
+
+.story-beat-teaser {
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.story-beat-reveal {
+  padding: var(--sp-3) var(--sp-4) var(--sp-3) 52px;
+  font-size: 1.02rem;
+  line-height: 1.6;
+  color: var(--navy);
+  animation: stepReveal 0.35s var(--ease-out);
+}
+
+/* ── Hint ladder (3-tier) ── */
+.hint-ladder {
+  margin-bottom: var(--sp-4);
+  padding: var(--sp-3);
+  background: var(--cream);
+  border: 1px dashed var(--amber);
+  border-radius: var(--radius-md);
+}
+
+.hint-ladder-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--sp-2);
+}
+
+.hint-ladder-title {
+  font-weight: 800;
+  font-size: 0.88rem;
+  color: var(--navy);
+}
+
+.hint-ladder-count {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.hint-ladder-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.hint-ladder-step {
+  opacity: 0.45;
+  transition: opacity 0.2s;
+}
+
+.hint-ladder-step.is-available {
+  opacity: 1;
+}
+
+.hint-ladder-step.is-used .hint-ladder-btn {
+  background: var(--teal-light);
+  border-color: var(--teal);
+}
+
+.hint-ladder-btn {
+  width: 100%;
+  text-align: left;
+  padding: var(--sp-2) var(--sp-3);
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hint-ladder-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.hint-ladder-body {
+  padding: var(--sp-2) var(--sp-3);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--navy);
+}
+
+.hint-ladder-body p {
+  margin: 0;
+}
+
+/* ── Phase transition card ── */
+.phase-transition-card .phase-stat-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  justify-content: center;
+  margin: var(--sp-3) 0;
+}
+
+.phase-stat-chip {
+  padding: 4px 12px;
+  background: var(--cream);
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.phase-next-preview {
+  margin: var(--sp-4) auto;
+  padding: var(--sp-4);
+  max-width: 280px;
+  background: linear-gradient(135deg, var(--teal-light), white);
+  border: 2px solid var(--teal);
+  border-radius: var(--radius-md);
+  animation: bannerIn 0.4s var(--ease-spring);
+}
+
+.phase-next-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: var(--sp-1);
+}
+
+.phase-next-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: var(--sp-1);
+}
+
+.phase-complete-badge {
+  font-weight: 800;
+  color: var(--amber);
+  margin-bottom: var(--sp-2);
+}
+
+.badge-unlock-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  justify-content: center;
+  margin: var(--sp-3) 0;
+}
+
+.badge-unlock {
+  padding: 6px 14px;
+  background: linear-gradient(135deg, var(--amber), var(--gold));
+  color: var(--navy);
+  font-weight: 800;
+  font-size: 0.82rem;
+  border-radius: var(--radius-full);
+  animation: starPop 0.5s var(--ease-spring);
+}
+
+/* ── Connect scenario cards ── */
+.connect-scenario-card {
+  border-left: 4px solid var(--teal);
+  background: linear-gradient(135deg, rgba(42, 157, 143, 0.06), white);
+}
+
+.connect-scenario-header {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: flex-start;
+  margin-bottom: var(--sp-3);
+}
+
+.connect-scenario-icon {
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.connect-scenario-theme {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  color: var(--muted);
+}
+
+.connect-scenario-text {
+  font-size: 1.08rem;
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ── Confidence slider (Reflect) ── */
+.confidence-card .confidence-slider {
+  width: 100%;
+  accent-color: var(--teal);
+  margin: var(--sp-2) 0;
+}
+
+.confidence-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.confidence-output {
+  display: block;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.4rem;
+  color: var(--teal);
+  margin-top: var(--sp-2);
+}
+
+.self-assess.is-selected {
+  border-color: var(--teal) !important;
+  background: var(--teal-light) !important;
+}
+
+.printable-summary {
+  margin-top: var(--sp-4);
+  text-align: left;
+}
+
+/* ── Certificate badges ── */
+.certificate-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  justify-content: center;
+  margin: var(--sp-4) 0;
+}
+
+.cert-badge-pill {
+  padding: 6px 14px;
+  background: var(--navy);
+  color: white;
+  font-weight: 700;
+  font-size: 0.82rem;
+  border-radius: var(--radius-full);
+}
+
+/* ── Sidebar coins ── */
+.coins-container {
+  padding: var(--sp-2) var(--sp-3);
+  margin-bottom: var(--sp-2);
+}
+
+.coins-label {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--amber);
+}
+
+.lesson-hero-standard {
+  font-size: 0.72rem !important;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Teacher mode panel ── */
+.teacher-mode .teacher-panel {
+  position: fixed;
+  top: 60px;
+  left: 16px;
+  z-index: 9500;
+  max-width: 300px;
+  background: white;
+  border: 2px solid var(--navy);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+.teacher-panel-toggle {
+  width: 100%;
+  padding: var(--sp-3);
+  background: var(--navy);
+  color: white;
+  font-weight: 800;
+  border: none;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.teacher-panel.is-collapsed .teacher-panel-toggle {
+  border-radius: var(--radius-md);
+}
+
+.teacher-panel-body {
+  padding: var(--sp-3);
+  max-height: 70vh;
+  overflow-y: auto;
+  font-size: 0.82rem;
+}
+
+.teacher-panel-section {
+  margin-bottom: var(--sp-3);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--line);
+}
+
+.teacher-panel-section h4 {
+  margin: 0 0 var(--sp-2);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--teal);
+}
+
+.teacher-pacing-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.teacher-pacing-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.teacher-meta {
+  color: var(--muted);
+  margin: var(--sp-2) 0 0;
+}
+
+.teacher-obj {
+  margin: var(--sp-1) 0;
+  line-height: 1.4;
+}
+
+.teacher-tips,
+.teacher-listen,
+.teacher-answer-key {
+  margin: 0;
+  padding-left: 1.2rem;
+  line-height: 1.5;
+}
+
+.teacher-answer-key {
+  font-size: 0.78rem;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.82rem;
+}
+
+/* ── Math subscript ── */
+.math-sub {
+  font-size: 0.75em;
+  vertical-align: sub;
+  font-weight: 700;
+}
+
+.math-eq {
+  font-weight: 800;
+  color: var(--teal);
+  padding: 0 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lesson-cover-art .theme-hero-svg.cover-svg-animate,
+  .phase-enter,
+  .story-beat-reveal {
+    animation: none !important;
   }
 }

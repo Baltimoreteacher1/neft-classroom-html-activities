@@ -185,14 +185,18 @@ export function createEngagement(state) {
       }
     },
 
-    showPhaseComplete(container, phaseName, xpEarned, stars) {
+    showPhaseComplete(container, phaseName, xpEarned, stars, transitionMeta = {}) {
       const banner = document.createElement("div");
-      banner.className = "phase-complete-banner visible";
+      banner.className = "phase-complete-banner visible phase-transition-card";
 
       const s = state.get();
+      const stats = transitionMeta.stats || {};
+      const next = transitionMeta.nextPhase;
+      const newBadges = transitionMeta.newBadges || [];
+
       const streakBadge =
-        s.bestStreak >= 3
-          ? `<div class="streak-badge">🔥 Best streak: ${s.bestStreak} in a row</div>`
+        (stats.bestStreak ?? s.bestStreak) >= 3
+          ? `<div class="streak-badge">🔥 Best streak: ${stats.bestStreak ?? s.bestStreak} in a row</div>`
           : "";
 
       const starHtml = Array.from(
@@ -201,19 +205,57 @@ export function createEngagement(state) {
           `<span class="star-icon ${i < stars ? "earned" : ""}" style="animation-delay:${0.2 + i * 0.15}s">★</span>`,
       ).join("");
 
+      const statChips = [
+        stats.coins != null ? `🪙 ${stats.coins} coins` : null,
+        stats.streak >= 2 ? `🔥 ${stats.streak} streak` : null,
+        stats.accuracy != null ? `${stats.accuracy}% accuracy` : null,
+      ]
+        .filter(Boolean)
+        .map((t) => `<span class="phase-stat-chip">${t}</span>`)
+        .join("");
+
+      const nextPreview = next
+        ? `<div class="phase-next-preview">
+            <span class="phase-next-label">Up next</span>
+            <span class="phase-next-icon" aria-hidden="true">${next.icon}</span>
+            <strong>${next.name}</strong>
+          </div>`
+        : "";
+
+      const badgeUnlock = newBadges.length
+        ? `<div class="badge-unlock-row">${newBadges
+            .map(
+              (b) =>
+                `<span class="badge-unlock" title="${b.name}">${b.emoji} ${b.name}</span>`,
+            )
+            .join("")}</div>`
+        : "";
+
+      const phaseBadge = transitionMeta.phaseBadge
+        ? `<div class="phase-complete-badge">${transitionMeta.phaseBadge}</div>`
+        : "";
+
       banner.innerHTML = `
         <div class="badge badge-success" style="margin-bottom:var(--sp-4)">Phase Complete</div>
+        ${phaseBadge}
         <h3>${phaseName} — Done!</h3>
         <div class="star-display">${starHtml}</div>
         <div class="phase-complete-xp">+${xpEarned} XP</div>
+        ${statChips ? `<div class="phase-stat-chips">${statChips}</div>` : ""}
         ${streakBadge}
+        ${badgeUnlock}
+        ${nextPreview}
         <button class="btn btn-primary btn-lg mt-6" data-action="next-phase">
-          Continue →
+          ${next ? `Continue to ${next.name} →` : "Continue →"}
         </button>
       `;
 
       container.innerHTML = "";
       container.append(banner);
+
+      if (window.AudioSynth && next) {
+        setTimeout(() => window.AudioSynth.success(), 200);
+      }
 
       if (stars === 3) {
         this.showBurstConfetti();

@@ -67,6 +67,9 @@ export function createState(lessonId, studentId) {
     bestStreak: 0,
     totalCorrect: 0,
     totalAttempts: 0,
+    coins: 0,
+    hintsUsed: 0,
+    badges: [],
     phases: [],
     responses: {},
     startedAt: null,
@@ -214,6 +217,26 @@ export function createState(lessonId, studentId) {
       } else {
         state.streak = 0;
       }
+      save();
+      notify();
+    },
+
+    awardCoin(count = 1) {
+      state.coins = (state.coins || 0) + count;
+      save();
+      notify();
+    },
+
+    recordHintUsed() {
+      state.hintsUsed = (state.hintsUsed || 0) + 1;
+      save();
+      notify();
+    },
+
+    awardPhaseParticipation(phaseIndex, amount = 2) {
+      state.coins = (state.coins || 0) + amount;
+      const phase = state.phases[phaseIndex];
+      if (phase) phase.participationCoins = (phase.participationCoins || 0) + amount;
       save();
       notify();
     },

@@ -35,6 +35,16 @@ import {
 } from "./problem-shell.js";
 import { renderThemeIllustration } from "./theme-illustrations.js";
 import { deriveWorkedSteps } from "./worked-steps.js";
+import {
+  buildPhaseTransitionMeta,
+  renderLaunchStoryBeats,
+  buildPrintableSummary,
+  checkBadges,
+  getBadgeDefs,
+} from "./premium.js";
+import { deriveCommonMistake } from "./content-enrichment.js";
+import { mountHintLadder } from "./hint-ladder.js";
+import { renderMathText } from "./math-typography.js";
 
 export function bootLesson(config) {
   createApp({
@@ -779,9 +789,26 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone) {
 }
 
 async function completePhase(el, ctx, state, phaseIdx, name, correct, total) {
+  // Participation coins for non-practice phases
+  if (phaseIdx !== 3) {
+    state.awardPhaseParticipation(phaseIdx, 2);
+  }
   const xp = ctx.engagement.awardXP(phaseIdx, { correct, total });
   const stars = state.get().phases[phaseIdx]?.stars ?? 0;
-  await ctx.engagement.showPhaseComplete(el, name, xp, stars);
+  const transitionMeta = buildPhaseTransitionMeta(
+    state,
+    phaseIdx,
+    name,
+    xp,
+    stars,
+  );
+  await ctx.engagement.showPhaseComplete(
+    el,
+    name,
+    xp,
+    stars,
+    transitionMeta,
+  );
   ctx.navigateTo(phaseIdx + 1);
 }
 
@@ -801,6 +828,13 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
     container.append(shell.card);
     body = shell.body;
     setResult = shell.setResult;
+
+    if (shellOpts.state && !shellOpts.skipHints) {
+      mountHintLadder(shell.card, {
+        problem: problemDef,
+        state: shellOpts.state,
+      });
+    }
     // Hide duplicate stem inside child components when shell shows it
     if (problemDef.stem || problemDef.prompt) {
       problemDef = { ...problemDef, hideStem: true };
@@ -1076,11 +1110,14 @@ function renderLaunchPhase(el, state, ctx, config) {
     "<strong>Your job:</strong> Read the story below. Write one thing you <strong>notice</strong> (a fact or pattern) and one thing you <strong>wonder</strong> (a question). Short answers are fine!",
   );
 
+  // Tap-to-reveal story beats for multi-sentence narratives
+  renderLaunchStoryBeats(el, config);
+
   const scenario = document.createElement("div");
   scenario.className = "card launch-scenario-card";
   scenario.innerHTML = `
     <div class="badge badge-amber mb-4">${esc(cfg.badge || config.title)}</div>
-    <p class="launch-narrative">${esc(cfg.narrative)}</p>`;
+    <p class="launch-narrative">${renderMathText(cfg.narrative)}</p>`;
   if (cfg.contextImage || config.theme) {
     renderThemeIllustration(
       scenario,
@@ -1324,7 +1361,14 @@ function renderExplorePhase(el, state, ctx, config) {
     el.append(cont);
   };
 
-  renderComponent(el, cfg, () => {
+  const exploreShell = document.createElement("div");
+  exploreShell.className = "explore-problem-wrap";
+  el.append(exploreShell);
+
+  renderComponent(
+    exploreShell,
+    { ...cfg, stem: cfg.instructions || cfg.stem },
+    () => {
     if (cfg.discourse) {
       const disc = document.createElement("div");
       disc.className = "card card-teal mt-6";
@@ -1342,7 +1386,9 @@ function renderExplorePhase(el, state, ctx, config) {
     } else {
       showTurnTalkThenComplete();
     }
-  });
+  },
+    { number: 1, total: 1, skipHints: true },
+  );
 }
 
 // ── Phase 4: Practice (adaptive) ──
@@ -1381,15 +1427,7 @@ function renderWorkedExamplePanel(host, config) {
 }
 
 function renderCommonMistakeCallout(host, config) {
-  const mistake =
-    config.practice?.commonMistake ||
-    config.commonMistake ||
-    null;
-  if (!mistake) return;
-  const text =
-    typeof mistake === "string"
-      ? mistake
-      : mistake.text || mistake.message || "";
+  const text = deriveCommonMistake(config);
   if (!text) return;
 
   const box = document.createElement("div");
@@ -1546,6 +1584,7 @@ function renderPracticePhase(el, state, ctx, config) {
       if (isCorrect) {
         totalCorrect++;
         coins++;
+        state.awardCoin(1);
         const result = ctx.engagement.recordCorrect(null);
         if (result.streakMessage) {
           const toast = document.createElement("div");
@@ -1575,7 +1614,7 @@ function renderPracticePhase(el, state, ctx, config) {
         });
       }
     },
-      { number: shown, total: seq.total, tier: prob.tier },
+      { number: shown, total: seq.total, tier: prob.tier, state },
     );
   }
   next();
@@ -1599,8 +1638,16 @@ function renderConnectPhase(el, state, ctx, config) {
   );
 
   const card = document.createElement("div");
-  card.className = "card";
-  card.innerHTML = `<div class="badge badge-amber mb-4">Math in the Wild</div><p style="font-size:1.05rem; line-height:1.6; margin:0;">${esc(cfg.scenario)}</p>`;
+  card.className = "card connect-scenario-card";
+  card.innerHTML = `
+    <div class="connect-scenario-header">
+      <span class="connect-scenario-icon" aria-hidden="true">${config.themeEmoji || "🌎"}</span>
+      <div>
+        <div class="badge badge-amber mb-2">Math in the Wild</div>
+        <div class="connect-scenario-theme">${esc(config.theme?.replace(/-/g, " ") || "Real World")}</div>
+      </div>
+    </div>
+    <p class="connect-scenario-text">${renderMathText(cfg.scenario)}</p>`;
   if (cfg.diagram) card.innerHTML += buildVisual(cfg.diagram);
   else if (cfg.histogram) card.innerHTML += histogramSVG(cfg.histogram);
   el.append(card);
@@ -1771,31 +1818,63 @@ function renderReflectPhase(el, state, ctx, config) {
   });
   el.append(rCard);
 
-  // Self-assess
-  const selfCard = document.createElement("div");
-  selfCard.className = "card card-teal";
-  selfCard.innerHTML = `
-    <h4 style="color:var(--teal); margin-bottom:var(--sp-3);">How do you feel about ${esc(config.title)}?</h4>
-    <div style="display:flex; gap:var(--sp-3); justify-content:center;">
-      ${["😊 Got it!|3", "🤔 Almost|2", "😅 Need help|1"]
+  // One thing I learned (exit ticket prep)
+  const learnedCard = document.createElement("div");
+  learnedCard.className = "card card-amber";
+  learnedCard.innerHTML = `<h4 style="color:var(--amber); margin-bottom:var(--sp-3);">✨ One thing I learned today</h4>`;
+  const learnedTA = document.createElement("textarea");
+  learnedTA.className = "text-input";
+  learnedTA.rows = 2;
+  learnedTA.placeholder = "The most important thing I learned is...";
+  learnedTA.value = state.getResponse(5, "one_thing_learned") || "";
+  learnedTA.addEventListener("input", () =>
+    state.saveResponse(5, "one_thing_learned", learnedTA.value),
+  );
+  learnedCard.append(learnedTA);
+  el.append(learnedCard);
+
+  // Confidence slider (1–5)
+  const confCard = document.createElement("div");
+  confCard.className = "card card-teal confidence-card";
+  const savedConf = Number(state.getResponse(5, "confidence")) || 3;
+  confCard.innerHTML = `
+    <h4 style="color:var(--teal); margin-bottom:var(--sp-3);">How confident do you feel about ${esc(config.title)}?</h4>
+    <div class="confidence-slider-wrap">
+      <input type="range" class="confidence-slider" min="1" max="5" step="1" value="${savedConf}" aria-label="Confidence level 1 to 5" />
+      <div class="confidence-labels">
+        <span>😅 Not yet</span><span>🤔 Getting there</span><span>😊 Got it!</span>
+      </div>
+      <output class="confidence-output" aria-live="polite">${savedConf}/5</output>
+    </div>
+    <div class="self-assess-quick" style="display:flex; gap:var(--sp-2); margin-top:var(--sp-3); justify-content:center;">
+      ${["😊 Got it!|5", "🤔 Almost|3", "😅 Need help|1"]
         .map((s) => {
           const [txt, lv] = s.split("|");
-          return `<button class="btn btn-secondary self-assess" data-level="${lv}" style="flex:1; max-width:160px;">${txt}</button>`;
+          return `<button type="button" class="btn btn-secondary self-assess" data-level="${lv}" style="flex:1; max-width:140px;">${txt}</button>`;
         })
         .join("")}
     </div>`;
-  selfCard.querySelectorAll(".self-assess").forEach((btn) => {
+  const slider = confCard.querySelector(".confidence-slider");
+  const output = confCard.querySelector(".confidence-output");
+  slider.addEventListener("input", () => {
+    output.textContent = `${slider.value}/5`;
+    state.saveResponse(5, "confidence", slider.value);
+    state.saveResponse(5, "self-assess", slider.value);
+  });
+  confCard.querySelectorAll(".self-assess").forEach((btn) => {
     btn.addEventListener("click", () => {
-      selfCard.querySelectorAll(".self-assess").forEach((b) => {
-        b.style.borderColor = "var(--line)";
-        b.style.background = "white";
-      });
-      btn.style.borderColor = "var(--teal)";
-      btn.style.background = "var(--teal-light)";
+      slider.value = btn.dataset.level;
+      output.textContent = `${btn.dataset.level}/5`;
+      state.saveResponse(5, "confidence", btn.dataset.level);
       state.saveResponse(5, "self-assess", btn.dataset.level);
+      confCard.querySelectorAll(".self-assess").forEach((b) => {
+        b.classList.toggle("is-selected", b === btn);
+      });
     });
   });
-  el.append(selfCard);
+  el.append(confCard);
+
+  el.append(buildPrintableSummary(state, config));
 
   // Exit ticket
   phaseHeader(
@@ -1905,12 +1984,21 @@ function showFinalSummary(el, state, config) {
     s.totalAttempts > 0
       ? Math.round((s.totalCorrect / s.totalAttempts) * 100)
       : 100;
+  checkBadges(state);
+  const earnedBadges = (s.badges || [])
+    .map((id) => getBadgeDefs().find((b) => b.id === id))
+    .filter(Boolean);
+
   const paceBadge =
     s.totalAttempts > 0 && s.totalCorrect / s.totalAttempts >= 0.85
       ? "🎯 Sharpshooter"
       : s.totalAttempts >= 8
         ? "🧠 Deep Thinker"
         : "";
+
+  const badgeRow = earnedBadges.length
+    ? `<div class="certificate-badges">${earnedBadges.map((b) => `<span class="cert-badge-pill">${b.emoji} ${esc(b.name)}</span>`).join("")}</div>`
+    : "";
 
   const summary = document.createElement("div");
   summary.className = "completion-certificate";
@@ -1930,9 +2018,10 @@ function showFinalSummary(el, state, config) {
     <div class="certificate-stats">
       <div class="cert-stat"><div class="cert-stat-value xp-counter">0</div><div class="cert-stat-label">XP Earned</div></div>
       <div class="cert-stat"><div class="cert-stat-value cert-stars">${totalStars}<span class="cert-stat-denom">/18</span></div><div class="cert-stat-label">Stars</div></div>
+      <div class="cert-stat"><div class="cert-stat-value">${s.coins || 0}</div><div class="cert-stat-label">Coins</div></div>
       <div class="cert-stat"><div class="cert-stat-value">${accuracy}%</div><div class="cert-stat-label">Accuracy</div></div>
-      <div class="cert-stat"><div class="cert-stat-value">6/6</div><div class="cert-stat-label">Phases</div></div>
     </div>
+    ${badgeRow}
     ${streakText ? `<div class="certificate-streak">${esc(streakText)}</div>` : ""}
     ${paceBadge ? `<div class="certificate-pace">${paceBadge}</div>` : ""}
     <div class="certificate-phases">

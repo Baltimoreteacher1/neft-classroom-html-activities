@@ -1,6 +1,8 @@
 // Premium problem card shell — numbered badge, type pill, coin slot.
 // Wraps any interactive component so practice feels like TPT homework.
 
+import { renderMathText } from "./math-typography.js";
+
 const TYPE_LABELS = {
   "multiple-choice": "Multiple Choice",
   "drag-sort": "Drag & Sort",
@@ -80,7 +82,7 @@ export function createProblemCard({
   if (stem) {
     const stemEl = document.createElement("p");
     stemEl.className = "problem-stem";
-    stemEl.textContent = stem;
+    stemEl.innerHTML = renderMathText(stem);
     card.append(stemEl);
   }
 

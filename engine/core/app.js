@@ -8,6 +8,12 @@ import {
   resolveContentObjective,
   resolveLanguageObjective,
 } from "./lesson-renderer.js";
+import {
+  buildLessonCoverExtras,
+  mountCoverArt,
+  applyPhaseAccent,
+} from "./premium.js";
+import { mountTeacherPanel } from "./teacher-mode.js";
 import "@engine/styles/design-system.css";
 import "@engine/styles/themes.css";
 
@@ -217,12 +223,14 @@ function showIdentityScreen(root, config) {
   screen.className = "identity-screen";
   screen.innerHTML = `
     <div class="identity-card">
-      <div class="identity-hero">
+      <div class="identity-hero lesson-cover-hero">
         <p class="identity-meta">Grade 6 Reveal Math · Unit ${config.unit} · Lesson ${config.lesson ?? ""}</p>
+        <div class="identity-unit-badge">Unit ${config.unit}</div>
         <div class="identity-emoji" aria-hidden="true">${themeEmoji}</div>
         <h1 class="identity-title">${escHtml(config.title)}</h1>
         <p class="identity-sub">${escHtml(config.standard)}</p>
         <div class="identity-time" aria-label="Estimated time">⏱️ ${escHtml(lessonTimeEstimate(config))}</div>
+        <div class="lesson-cover-extras" id="cover-extras"></div>
         ${objectivesBlockHtml(config)}
       </div>
       <div class="identity-body">
@@ -255,6 +263,33 @@ function showIdentityScreen(root, config) {
     </div>
   `;
   root.append(screen);
+
+  const coverExtras = screen.querySelector("#cover-extras");
+  if (coverExtras) {
+    const savedMatch = saved[0];
+    coverExtras.innerHTML = buildLessonCoverExtras(config, savedMatch);
+    const artSlot = coverExtras.querySelector(".lesson-cover-art");
+    if (artSlot) mountCoverArt(artSlot, config);
+    const stdBtn = coverExtras.querySelector('[data-action="standards-explainer"]');
+    if (stdBtn) {
+      stdBtn.addEventListener("click", () => {
+        const open = stdBtn.getAttribute("aria-expanded") === "true";
+        stdBtn.setAttribute("aria-expanded", String(!open));
+        let panel = coverExtras.querySelector(".standards-explainer-panel");
+        if (!open && !panel) {
+          panel = document.createElement("div");
+          panel.className = "standards-explainer-panel";
+          panel.innerHTML = `
+            <p><strong>${escHtml(config.standard)}</strong> — This lesson aligns to Grade 6 Reveal Math standards.</p>
+            <p>${escHtml(resolveContentObjective(config))}</p>
+            <p style="color:var(--muted); font-size:0.88rem;">Use <code>?teacher=1</code> in the URL for pacing guide, answer keys, and listen-fors.</p>`;
+          stdBtn.after(panel);
+        } else if (panel) {
+          panel.hidden = open;
+        }
+      });
+    }
+  }
 
   const nameInput = screen.querySelector("#id-name");
   const periodInput = screen.querySelector("#id-period");
@@ -343,6 +378,8 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
   root.append(sidebar, main);
 
+  mountTeacherPanel(root, config, state);
+
   const lessonHero = buildLessonHero(config, state, phaseConfigs);
   main.append(lessonHero);
 
@@ -404,9 +441,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     celebrationOverlay,
 
     renderPhase(index, renderFn) {
+      applyPhaseAccent(main, index);
       phaseContainer.innerHTML = "";
       const el = document.createElement("div");
-      el.className = "phase active";
+      el.className = "phase active phase-enter";
       el.setAttribute("role", "region");
       el.setAttribute(
         "aria-label",
@@ -414,6 +452,11 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       );
       phaseContainer.append(el);
       renderFn(el, state, this);
+      el.addEventListener(
+        "animationend",
+        () => el.classList.remove("phase-enter"),
+        { once: true },
+      );
     },
 
     navigateTo(index) {
@@ -680,6 +723,10 @@ function buildSidebar(config, state, phaseConfigs) {
       </div>
     </div>
 
+    <div class="coins-container" data-bind="coins-row">
+      <span class="coins-label">🪙 <span data-bind="coins">${s.coins || 0}</span> coins</span>
+    </div>
+
     <div class="sidebar-progress" data-bind="sidebar-progress">
       <div class="sidebar-progress-label">
         <span>Progress</span>
@@ -799,7 +846,9 @@ function buildLessonHero(config, state, phaseConfigs) {
         <div class="lesson-hero-meta">${escHtml(config.standard)} · Unit ${config.unit} · ${escHtml(lessonTimeEstimate(config))}</div>
       </div>
       <div class="lesson-hero-badges">
+        <span class="lesson-hero-badge lesson-hero-standard" data-bind="hero-standard" title="${escHtml(config.standard)}">${escHtml(config.standard)}</span>
         <span class="lesson-hero-badge" data-bind="hero-phase">Phase 1</span>
+        <span class="lesson-hero-badge">🪙 <span data-bind="hero-coins">0</span></span>
         <span class="lesson-hero-badge">⭐ <span data-bind="hero-stars">0</span>/18</span>
       </div>
     </div>
@@ -829,6 +878,9 @@ function updateLessonHero(hero, state, phaseConfigs) {
   if (stars)
     stars.textContent = String(s.phases.reduce((sum, p) => sum + (p.stars || 0), 0));
 
+  const coins = hero.querySelector('[data-bind="hero-coins"]');
+  if (coins) coins.textContent = String(s.coins || 0);
+
   const fill = hero.querySelector('[data-bind="hero-progress"]');
   if (fill) fill.style.width = `${pct}%`;
 
@@ -854,6 +906,9 @@ function updateSidebar(sidebar, state, phaseConfigs) {
 
   const xpBar = sidebar.querySelector('[data-bind="xp-bar"]');
   if (xpBar) xpBar.style.width = `${Math.min(100, (s.xp / s.maxXp) * 100)}%`;
+
+  const coinsEl = sidebar.querySelector('[data-bind="coins"]');
+  if (coinsEl) coinsEl.textContent = String(s.coins || 0);
 
   const completed = s.phases.filter((p) => p.status === "completed").length;
   const total = s.phases.length || 6;
