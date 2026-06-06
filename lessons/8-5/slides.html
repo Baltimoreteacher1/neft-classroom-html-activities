@@ -9,6 +9,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
+      --ref-navy: #17324D;
+      --ref-teal: #1FA6A2;
+      --ref-sand: #F0F4EC;
+      --ref-sage: #EDF2E8;
+      --ref-sage-panel: #DFF2EE;
+      --ref-mist: #EAF2F7;
+      --ref-warm-cream: #FCF5E0;
+      --ref-coral: #FCE6DE;
+      --ref-amber: #E4C050;
+      --ref-red: #D9534F;
+      --ref-red-light: #FFF5F5;
+      --ref-slate: #5C656E;
+      --ref-card-bank: #E8EDF3;
       --navy: #17324D;
       --teal: #1FA6A2;
       --teal-light: #DFF2EE;
@@ -18,7 +31,7 @@
       --coral: #FCE6DE;
       --accent: #5C8A5A;
       --body-text: #24323F;
-      --gray: #8A96A3;
+      --gray: #A8B2BC;
       --white: #FFFFFF;
       --shadow: 0 4px 20px rgba(28, 46, 66, 0.08);
       --google-gray: #f1f3f4;
@@ -197,28 +210,21 @@
       overflow: hidden;
     }
     
-    /* Slide Canvas: warm student-friendly backgrounds per section */
+    /* Slide Canvas: reference sand background */
     .slide-canvas {
       width: 960px;
       height: 540px;
-      background-color: var(--bg-warm);
-      background-image:
-        radial-gradient(ellipse at 10% 20%, color-mix(in srgb, var(--teal) 8%, transparent) 0%, transparent 50%),
-        radial-gradient(ellipse at 90% 80%, color-mix(in srgb, var(--amber) 10%, transparent) 0%, transparent 50%),
-        linear-gradient(rgba(56, 127, 132, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(56, 127, 132, 0.05) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 24px 24px, 24px 24px;
-      transition: background-color 0.4s ease;
+      background-color: var(--ref-sand, #E8E4D8);
       border: 1px solid #dadce0;
-      box-shadow: 0 10px 30px rgba(23, 50, 77, 0.15);
-      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(28, 46, 66, 0.15);
+      border-radius: 4px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       position: relative;
       transform-origin: center center;
       flex-shrink: 0;
-      padding: 24px 24px 24px 60px;
+      padding: 0;
     }
     
     /* Notebook Spiral Binder Gutter */
@@ -1204,12 +1210,517 @@
     .power-card.matched { background:var(--teal-light); border-color:var(--teal); }
     .power-card.selected-pair { background:var(--amber); border-color:var(--navy); }
     .workspace-card { background:linear-gradient(135deg, var(--white) 0%, var(--teal-light) 100%); }
-    .slide-canvas:has(.slide-body[data-section="launch"].active) { background-color:var(--bg-warm); }
-    .slide-canvas:has(.slide-body[data-section="vocabulary"].active) { background-color:var(--teal-light); }
-    .slide-canvas:has(.slide-body[data-section="explore"].active) { background-color:var(--bg); }
-    .slide-canvas:has(.slide-body[data-section="practice"].active) { background-color:var(--bg-warm); }
-    .slide-canvas:has(.slide-body[data-section="connect"].active) { background-color:var(--coral); }
-    .slide-canvas:has(.slide-body[data-section="closure"].active) { background-color:var(--teal-light); }
+    
+    /* ── Reference PPTX Visual System ── */
+    .slide-canvas {
+      background-color: var(--ref-sand, #E8E4D8) !important;
+      background-image: none !important;
+      padding: 0 !important;
+      border-radius: 4px;
+    }
+    .notebook-spiral { left: 8px; top: 58px; bottom: 28px; }
+    .slide-body {
+      flex: 1;
+      display: none;
+      height: 100%;
+      overflow: hidden;
+      margin: 0;
+    }
+    .slide-body.active { display: flex; flex-direction: column; }
+    .slide-watermark { display: none; }
+    .lesson-progress-bar { display: none; }
+
+    .ref-slide-frame {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: var(--ref-sand);
+    }
+    .ref-header-bar {
+      display: flex;
+      align-items: center;
+      height: 40px;
+      min-height: 40px;
+      background: var(--ref-navy);
+      color: var(--ref-white);
+      padding: 0 12px 0 48px;
+      font-family: 'Outfit', sans-serif;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .ref-brand {
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      opacity: 0.85;
+      white-space: nowrap;
+    }
+    .ref-header-title {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .ref-standard-pill {
+      background: var(--ref-teal);
+      color: white;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .ref-slide-content {
+      flex: 1;
+      overflow: hidden;
+      padding: 8px 12px 4px 48px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ref-two-col {
+      display: grid;
+      grid-template-columns: 1.9fr 1fr;
+      gap: 10px;
+      height: 100%;
+      flex: 1;
+    }
+    .ref-main-panel {
+      background: var(--ref-white);
+      border-radius: 4px;
+      padding: 10px 12px;
+      overflow-y: auto;
+      box-shadow: 0 2px 8px rgba(28, 46, 66, 0.06);
+    }
+    .ref-side-panel {
+      background: var(--ref-sage-panel);
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .ref-side-header {
+      background: var(--ref-teal);
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 6px 10px;
+      font-family: 'Outfit', sans-serif;
+    }
+    .ref-side-body {
+      padding: 10px;
+      font-size: 10.5px;
+      line-height: 1.45;
+      flex: 1;
+      overflow-y: auto;
+    }
+    .ref-side-prompt { margin: 0; color: var(--body-text); font-weight: 600; }
+    .ref-instruction {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ref-navy);
+      margin: 0 0 8px;
+      line-height: 1.4;
+    }
+
+    /* Title opener */
+    .ref-title-opener { display: flex; flex-direction: column; height: 100%; background: var(--ref-sand); }
+    .ref-title-body {
+      display: grid;
+      grid-template-columns: 1.1fr 1.9fr;
+      flex: 1;
+      gap: 0;
+      padding: 0 12px 8px 48px;
+      overflow: hidden;
+    }
+    .ref-title-spine {
+      background: var(--ref-navy);
+      color: white;
+      padding: 16px 14px;
+      border-radius: 0 0 8px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .ref-spine-standard { font-size: 11px; font-weight: 800; color: var(--ref-teal); }
+    .ref-spine-unit { font-size: 10px; opacity: 0.8; }
+    .ref-spine-subject { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.7; }
+    .ref-spine-title { font-family: 'Outfit'; font-size: 18px; font-weight: 800; margin: 8px 0; line-height: 1.2; flex: 1; }
+    .ref-spine-emoji { font-size: 32px; }
+    .ref-title-main { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+    .ref-notebook-heading { font-family: 'Outfit'; font-size: 20px; color: var(--ref-navy); margin: 0; font-weight: 800; }
+    .ref-notebook-fields { display: flex; flex-direction: column; gap: 8px; }
+    .ref-field-row { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--ref-navy); }
+    .ref-field-row label { min-width: 42px; }
+    .ref-field-line { flex: 1; border-bottom: 1.5px solid var(--ref-navy); height: 14px; opacity: 0.35; }
+    .ref-learning-target-box {
+      background: var(--ref-white);
+      border: 2px solid var(--ref-teal);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 11px;
+    }
+    .ref-learning-target-box p { margin: 4px 0 0; font-weight: 600; line-height: 1.4; }
+    .ref-title-meta { font-size: 10px; color: var(--gray); font-weight: 700; margin: 0; }
+    .ref-gs-link { font-size: 10px; color: var(--ref-teal); font-weight: 700; }
+
+    /* Section opener — full bleed navy */
+    .ref-section-opener {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      background: var(--ref-navy);
+      color: white;
+      text-align: center;
+      padding: 0 48px;
+    }
+    .ref-section-emoji { font-size: 36px; margin-bottom: 8px; }
+    .ref-section-title {
+      font-family: 'Outfit';
+      font-size: 32px;
+      font-weight: 800;
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+    .ref-section-time { font-size: 13px; opacity: 0.75; margin: 10px 0; font-weight: 700; }
+    .ref-section-line { width: 100px; height: 3px; background: var(--ref-teal); border-radius: 99px; }
+
+    /* Choice board */
+    .ref-choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .ref-choice-card {
+      position: relative;
+      text-align: left;
+      border: none;
+      border-radius: 6px;
+      padding: 0;
+      cursor: pointer;
+      overflow: hidden;
+      font-size: 10px;
+      line-height: 1.35;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .ref-choice-card:hover, .ref-choice-card.selected { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(28,46,66,0.12); }
+    .ref-choice-card-header {
+      background: var(--ref-navy);
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 5px 8px;
+      font-family: 'Outfit', sans-serif;
+    }
+    .ref-choice-card p { margin: 0; padding: 8px; color: var(--body-text); }
+    .ref-choice-icon { display: block; font-size: 18px; padding: 4px 8px 0; }
+    .ref-choice-mist { background: var(--ref-mist); }
+    .ref-choice-sage { background: var(--ref-sage); }
+    .ref-choice-cream { background: var(--ref-warm-cream); }
+    .ref-choice-panel { background: var(--ref-sage-panel); }
+
+    /* Think-Write-Respond */
+    .ref-twr-stack { display: flex; flex-direction: column; gap: 6px; flex: 1; overflow-y: auto; }
+    .ref-twr-frame {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      background: var(--ref-sage);
+      border-radius: 4px;
+      overflow: hidden;
+      min-height: 72px;
+    }
+    .ref-twr-label {
+      background: var(--ref-teal);
+      color: white;
+      padding: 8px;
+      font-size: 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .ref-twr-num { font-weight: 800; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.04em; }
+    .ref-twr-body { padding: 8px 10px; background: var(--ref-sage); }
+    .ref-twr-prompt { margin: 0 0 4px; font-size: 10px; font-style: italic; color: var(--ref-slate); }
+
+    /* Sort It Out */
+    .ref-card-bank-label { font-size: 9px; font-weight: 800; color: var(--ref-slate); text-transform: uppercase; margin-bottom: 4px; }
+    .ref-card-bank {
+      background: var(--ref-card-bank);
+      border-radius: 4px;
+      padding: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 8px;
+      min-height: 36px;
+    }
+    .ref-sort-buckets { display: flex; gap: 6px; flex-wrap: wrap; }
+    .ref-sort-bucket { flex: 1; min-width: 80px; border-radius: 4px; overflow: hidden; }
+    .ref-bucket-header {
+      font-size: 9px;
+      font-weight: 800;
+      color: white;
+      padding: 5px 8px;
+      text-align: center;
+      font-family: 'Outfit', sans-serif;
+    }
+    .ref-bucket-teal .ref-bucket-header { background: var(--ref-teal); }
+    .ref-bucket-navy .ref-bucket-header { background: var(--ref-navy); }
+    .ref-bucket-slate .ref-bucket-header { background: var(--ref-slate); }
+    .ref-bucket-items {
+      background: var(--ref-white);
+      min-height: 48px;
+      padding: 6px;
+      border: 1px solid var(--ref-gray-mid, #D6DBDF);
+      border-top: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    /* Error Analysis */
+    .ref-error-badge {
+      display: inline-block;
+      background: var(--ref-red);
+      color: white;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 3px;
+      margin-bottom: 8px;
+    }
+    .ref-error-scenario { font-size: 10.5px; margin-bottom: 8px; line-height: 1.4; }
+    .ref-student-work-box {
+      background: var(--ref-card-bank);
+      border-radius: 4px;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      font-family: monospace;
+      font-size: 11px;
+    }
+    .ref-work-label { font-size: 9px; font-weight: 800; color: var(--ref-slate); margin-bottom: 4px; font-family: 'Hanken Grotesk', sans-serif; }
+    .ref-error-zone {
+      background: var(--ref-red-light);
+      border: 1px solid rgba(217, 83, 79, 0.25);
+      border-radius: 4px;
+      padding: 8px;
+      font-size: 10px;
+    }
+
+    /* Goal Tracker */
+    .ref-goal-banner {
+      background: var(--ref-mist);
+      border-radius: 4px;
+      padding: 8px 12px;
+      font-size: 11px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    .ref-goal-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .ref-goal-card {
+      border: none;
+      border-radius: 4px;
+      padding: 10px 8px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 9px;
+      line-height: 1.35;
+      transition: transform 0.15s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .ref-goal-card:hover, .ref-goal-card.selected { transform: scale(1.03); box-shadow: 0 4px 10px rgba(28,46,66,0.1); }
+    .ref-goal-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 12px; color: white;
+    }
+    .ref-goal-coral { background: var(--ref-coral); }
+    .ref-goal-coral .ref-goal-num { background: var(--ref-accent-coral, #C07070); }
+    .ref-goal-cream { background: var(--ref-warm-cream); }
+    .ref-goal-cream .ref-goal-num { background: var(--ref-amber-dark, #C8A050); }
+    .ref-goal-sage { background: var(--ref-sage); }
+    .ref-goal-sage .ref-goal-num { background: var(--ref-accent-green, #5C8A5A); }
+    .ref-goal-panel { background: var(--ref-sage-panel); }
+    .ref-goal-panel .ref-goal-num { background: var(--ref-teal); }
+
+    /* Exit ticket split */
+    .ref-exit-split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; height: 100%; }
+    .ref-exit-reflection, .ref-exit-quick { border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; }
+    .ref-exit-reflection { background: var(--ref-sage-panel); }
+    .ref-exit-quick { background: var(--ref-coral); }
+    .ref-panel-header {
+      font-size: 10px;
+      font-weight: 800;
+      color: white;
+      padding: 6px 10px;
+      font-family: 'Outfit', sans-serif;
+    }
+    .ref-header-teal { background: var(--ref-teal); }
+    .ref-header-navy { background: var(--ref-navy); }
+    .ref-header-amber { background: var(--ref-amber); }
+    .ref-exit-body { padding: 10px; flex: 1; font-size: 10.5px; }
+
+    /* Vocabulary table */
+    .ref-vocab-table { width: 100%; border-collapse: collapse; font-size: 10px; }
+    .ref-vocab-table thead tr { background: var(--ref-navy); color: white; }
+    .ref-vocab-table th { padding: 6px 8px; text-align: left; font-weight: 800; font-family: 'Outfit', sans-serif; }
+    .ref-vocab-table td { padding: 6px 8px; border-bottom: 1px solid var(--ref-gray-mid, #D6DBDF); vertical-align: top; }
+    .ref-vocab-table tbody tr { background: white; }
+    .ref-vocab-table tbody tr:nth-child(even) { background: var(--ref-mist); }
+    .ref-vocab-term { font-weight: 800; color: var(--ref-navy); }
+
+    /* Be Curious / Notice-Wonder */
+    .ref-curious-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; height: 100%; }
+    .ref-visual-prompt {
+      background: var(--ref-mist);
+      border-radius: 4px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .ref-prompt-badge {
+      background: var(--ref-amber);
+      color: var(--ref-navy);
+      font-size: 9px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 3px;
+      align-self: flex-start;
+    }
+    .ref-nw-stack { display: flex; flex-direction: column; gap: 8px; }
+    .ref-nw-panel { border-radius: 4px; overflow: hidden; flex: 1; display: flex; flex-direction: column; }
+    .ref-nw-notice { background: var(--ref-sage-panel); }
+    .ref-nw-wonder { background: var(--ref-coral); }
+    .ref-nw-stems { padding: 6px 10px; font-size: 10px; line-height: 1.4; }
+    .ref-nw-stems div { margin-bottom: 2px; }
+
+    /* Lined inputs — notebook feel */
+    .ref-lined-input, .ref-main-panel .slide-input-placeholder {
+      width: 100%;
+      border: none;
+      border-bottom: 1px solid rgba(28, 46, 66, 0.2);
+      background: repeating-linear-gradient(transparent, transparent 21px, var(--ref-ruled-line, rgba(56,127,132,0.08)) 21px, var(--ref-ruled-line, rgba(56,127,132,0.08)) 22px);
+      background-color: transparent;
+      font-size: 10.5px;
+      font-family: inherit;
+      padding: 4px 2px;
+      resize: none;
+      outline: none;
+      line-height: 22px;
+    }
+    .ref-lined-input:focus, .ref-main-panel .slide-input-placeholder:focus {
+      border-bottom-color: var(--ref-teal);
+      box-shadow: none;
+      background-color: rgba(255,255,255,0.5);
+    }
+
+    /* Teacher notes — subtle, not blue boxes */
+    .ref-teacher-note {
+      font-size: 9px;
+      color: var(--ref-slate);
+      margin: 4px 0;
+      line-height: 1.35;
+      font-weight: 600;
+      padding-left: 2px;
+      border-left: 2px solid var(--ref-teal);
+    }
+    .learning-target-bar { display: none; }
+    .slide-badge-row, .slide-main-title, .slide-badge { display: none; }
+    .ref-slide-content > .slide-card,
+    .ref-slide-content > .slide-grid-2,
+    .ref-slide-content > .reveal-card,
+    .ref-slide-content > .warmup-card,
+    .ref-slide-content > .how-to-card,
+    .ref-slide-content > .goal-tracker-card,
+    .ref-slide-content > .cfu-card {
+      background: var(--ref-white);
+      border-radius: 4px;
+      padding: 10px 12px;
+      box-shadow: 0 2px 8px rgba(28, 46, 66, 0.06);
+      flex: 1;
+      overflow-y: auto;
+    }
+    .ref-slide-content > .slide-grid-2 {
+      display: grid;
+      grid-template-columns: 1.9fr 1fr;
+      gap: 10px;
+    }
+    .ref-slide-content .slide-card {
+      background: var(--ref-white);
+      border: none;
+      box-shadow: none;
+      padding: 8px;
+      height: auto;
+    }
+    .ref-slide-content .card-teal-light,
+    .ref-slide-content .card-coral {
+      background: var(--ref-sage-panel);
+      border-radius: 4px;
+    }
+    .teacher-cue {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      background: transparent;
+      border: none;
+      border-left: 2px solid var(--ref-teal);
+      border-radius: 0;
+      padding: 3px 0 3px 8px;
+      margin-bottom: 4px;
+      font-size: 9px;
+      line-height: 1.35;
+      color: var(--ref-slate);
+    }
+    .teacher-cue-label { font-weight: 800; color: var(--ref-navy); }
+    .teacher-cue-text { color: var(--ref-slate); font-weight: 600; }
+
+    /* Footer dots */
+    .ref-slide-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 12px 6px 48px;
+      font-size: 7px;
+      font-weight: 800;
+      color: var(--ref-slate);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+    .ref-progress-dots { display: flex; gap: 4px; }
+    .ref-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--ref-gray-mid, #D6DBDF);
+    }
+    .ref-dot-active { background: var(--ref-teal); transform: scale(1.3); }
+    .ref-dot-done { background: var(--ref-navy); opacity: 0.5; }
+
+    /* Drag items in reference style */
+    .ref-card-bank .drag-item, .drag-pool .drag-item {
+      background: white;
+      border: 1.5px solid var(--ref-teal);
+      font-size: 9.5px;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+    /* MC buttons in main panel */
+    .ref-main-panel .mc-btn, .ref-main-panel .assess-btn {
+      font-size: 10px;
+      border-radius: 4px;
+      border: 1px solid var(--ref-gray-mid, #D6DBDF);
+    }
+    .ref-main-panel .mc-btn:hover { border-color: var(--ref-teal); background: var(--ref-sage-panel); }
+
+    @media (max-width: 768px) {
+      .ref-two-col, .ref-curious-layout, .ref-exit-split, .ref-choice-grid, .ref-goal-grid { grid-template-columns: 1fr; }
+      .ref-title-body { grid-template-columns: 1fr; }
+    }
+
 
     @media (max-width: 768px) {
       .sidebar-slides { width: 120px; }
@@ -1337,171 +1848,151 @@
 
       <div class="thumb-card" data-slide="17" onclick="goToSlide(17)">
         <span class="thumb-label">Slide 17</span>
-        <div class="thumb-preview">📝 Vocab</div>
+        <div class="thumb-preview">❓ Vocab</div>
       </div>
 
       <div class="thumb-card" data-slide="18" onclick="goToSlide(18)">
         <span class="thumb-label">Slide 18</span>
-        <div class="thumb-preview">📝 Vocab</div>
+        <div class="thumb-preview">✋ CFU</div>
       </div>
 
       <div class="thumb-card" data-slide="19" onclick="goToSlide(19)">
         <span class="thumb-label">Slide 19</span>
-        <div class="thumb-preview">📝 Vocab</div>
+        <div class="thumb-preview">🗣️ Discuss</div>
       </div>
 
       <div class="thumb-card" data-slide="20" onclick="goToSlide(20)">
         <span class="thumb-label">Slide 20</span>
-        <div class="thumb-preview">❓ Vocab</div>
+        <div class="thumb-preview">🔍 Explore</div>
       </div>
 
       <div class="thumb-card" data-slide="21" onclick="goToSlide(21)">
         <span class="thumb-label">Slide 21</span>
-        <div class="thumb-preview">✋ CFU</div>
+        <div class="thumb-preview">📐 Model</div>
       </div>
 
       <div class="thumb-card" data-slide="22" onclick="goToSlide(22)">
         <span class="thumb-label">Slide 22</span>
-        <div class="thumb-preview">🗣️ Discuss</div>
+        <div class="thumb-preview">🔍 Explore</div>
       </div>
 
       <div class="thumb-card" data-slide="23" onclick="goToSlide(23)">
         <span class="thumb-label">Slide 23</span>
-        <div class="thumb-preview">🔍 Explore</div>
+        <div class="thumb-preview">🖊️ CFU</div>
       </div>
 
       <div class="thumb-card" data-slide="24" onclick="goToSlide(24)">
         <span class="thumb-label">Slide 24</span>
-        <div class="thumb-preview">📐 Model</div>
+        <div class="thumb-preview">🗣️ Explore</div>
       </div>
 
       <div class="thumb-card" data-slide="25" onclick="goToSlide(25)">
         <span class="thumb-label">Slide 25</span>
-        <div class="thumb-preview">🔍 Explore</div>
+        <div class="thumb-preview">📝 Practice</div>
       </div>
 
       <div class="thumb-card" data-slide="26" onclick="goToSlide(26)">
         <span class="thumb-label">Slide 26</span>
-        <div class="thumb-preview">🖊️ CFU</div>
+        <div class="thumb-preview">📝 Practice</div>
       </div>
 
       <div class="thumb-card" data-slide="27" onclick="goToSlide(27)">
         <span class="thumb-label">Slide 27</span>
-        <div class="thumb-preview">🗣️ Explore</div>
+        <div class="thumb-preview">📈</div>
       </div>
 
       <div class="thumb-card" data-slide="28" onclick="goToSlide(28)">
         <span class="thumb-label">Slide 28</span>
-        <div class="thumb-preview">📝 Practice</div>
+        <div class="thumb-preview">↕️ Sort</div>
       </div>
 
       <div class="thumb-card" data-slide="29" onclick="goToSlide(29)">
         <span class="thumb-label">Slide 29</span>
-        <div class="thumb-preview">📝 Practice</div>
+        <div class="thumb-preview">⚠️ Error</div>
       </div>
 
       <div class="thumb-card" data-slide="30" onclick="goToSlide(30)">
         <span class="thumb-label">Slide 30</span>
-        <div class="thumb-preview">📈</div>
+        <div class="thumb-preview">🎯 Choice</div>
       </div>
 
       <div class="thumb-card" data-slide="31" onclick="goToSlide(31)">
         <span class="thumb-label">Slide 31</span>
-        <div class="thumb-preview">↕️ Sort</div>
+        <div class="thumb-preview">✍️ TWR</div>
       </div>
 
       <div class="thumb-card" data-slide="32" onclick="goToSlide(32)">
         <span class="thumb-label">Slide 32</span>
-        <div class="thumb-preview">⚠️ Error</div>
+        <div class="thumb-preview">📊 Workspace</div>
       </div>
 
       <div class="thumb-card" data-slide="33" onclick="goToSlide(33)">
         <span class="thumb-label">Slide 33</span>
-        <div class="thumb-preview">🎯 Choice</div>
+        <div class="thumb-preview">🎯 Diff</div>
       </div>
 
       <div class="thumb-card" data-slide="34" onclick="goToSlide(34)">
         <span class="thumb-label">Slide 34</span>
-        <div class="thumb-preview">✍️ TWR</div>
+        <div class="thumb-preview">🤝 Partner</div>
       </div>
 
       <div class="thumb-card" data-slide="35" onclick="goToSlide(35)">
         <span class="thumb-label">Slide 35</span>
-        <div class="thumb-preview">📊 Workspace</div>
+        <div class="thumb-preview">✋ CFU</div>
       </div>
 
       <div class="thumb-card" data-slide="36" onclick="goToSlide(36)">
         <span class="thumb-label">Slide 36</span>
-        <div class="thumb-preview">🎯 Diff</div>
+        <div class="thumb-preview">🌍 Connect</div>
       </div>
 
       <div class="thumb-card" data-slide="37" onclick="goToSlide(37)">
         <span class="thumb-label">Slide 37</span>
-        <div class="thumb-preview">🤝 Partner</div>
+        <div class="thumb-preview">🗣️ Connect</div>
       </div>
 
       <div class="thumb-card" data-slide="38" onclick="goToSlide(38)">
         <span class="thumb-label">Slide 38</span>
-        <div class="thumb-preview">✋ CFU</div>
+        <div class="thumb-preview">✅ Close</div>
       </div>
 
       <div class="thumb-card" data-slide="39" onclick="goToSlide(39)">
         <span class="thumb-label">Slide 39</span>
-        <div class="thumb-preview">🌍 Connect</div>
+        <div class="thumb-preview">📝 Exit</div>
       </div>
 
       <div class="thumb-card" data-slide="40" onclick="goToSlide(40)">
         <span class="thumb-label">Slide 40</span>
-        <div class="thumb-preview">🗣️ Connect</div>
+        <div class="thumb-preview">🏆 Goal</div>
       </div>
 
       <div class="thumb-card" data-slide="41" onclick="goToSlide(41)">
         <span class="thumb-label">Slide 41</span>
-        <div class="thumb-preview">✅ Close</div>
+        <div class="thumb-preview">📝 Bonus</div>
       </div>
 
       <div class="thumb-card" data-slide="42" onclick="goToSlide(42)">
         <span class="thumb-label">Slide 42</span>
-        <div class="thumb-preview">📝 Exit</div>
+        <div class="thumb-preview">🤔 Reflect</div>
       </div>
 
       <div class="thumb-card" data-slide="43" onclick="goToSlide(43)">
         <span class="thumb-label">Slide 43</span>
-        <div class="thumb-preview">📝 Exit 2</div>
+        <div class="thumb-preview">🎮 Activity</div>
       </div>
 
       <div class="thumb-card" data-slide="44" onclick="goToSlide(44)">
         <span class="thumb-label">Slide 44</span>
-        <div class="thumb-preview">🏆 Goal</div>
+        <div class="thumb-preview">🏠 Home</div>
       </div>
 
       <div class="thumb-card" data-slide="45" onclick="goToSlide(45)">
         <span class="thumb-label">Slide 45</span>
-        <div class="thumb-preview">📝 Bonus</div>
+        <div class="thumb-preview">👩‍🏫 Notes</div>
       </div>
 
       <div class="thumb-card" data-slide="46" onclick="goToSlide(46)">
         <span class="thumb-label">Slide 46</span>
-        <div class="thumb-preview">🤔 Reflect</div>
-      </div>
-
-      <div class="thumb-card" data-slide="47" onclick="goToSlide(47)">
-        <span class="thumb-label">Slide 47</span>
-        <div class="thumb-preview">🎮 Activity</div>
-      </div>
-
-      <div class="thumb-card" data-slide="48" onclick="goToSlide(48)">
-        <span class="thumb-label">Slide 48</span>
-        <div class="thumb-preview">🏠 Home</div>
-      </div>
-
-      <div class="thumb-card" data-slide="49" onclick="goToSlide(49)">
-        <span class="thumb-label">Slide 49</span>
-        <div class="thumb-preview">👩‍🏫 Notes</div>
-      </div>
-
-      <div class="thumb-card" data-slide="50" onclick="goToSlide(50)">
-        <span class="thumb-label">Slide 50</span>
         <div class="thumb-preview">🔑 Key</div>
       </div>
     </nav>
@@ -1528,22 +2019,46 @@
         </div>
       
         <div class="slide-body active" id="slide-1" data-section="launch" data-slide-type="title" data-teacher-notes="Display while students enter. Start presenter mode with ▶ Present.">
-    <div class="title-slide title-slide-v3">
-      <div class="title-session-badge">Reveal Math Grade 6 · Unit 8</div>
-      <div class="title-emoji">🏀</div>
-      <h1 class="title-heading">Display Data: Box Plots</h1>
-      <p class="title-standard">6.SP.4</p>
-      <p class="title-meta">Unit 8 · Lesson 8-5</p>
-      <div class="title-objectives-preview">
-        <strong>🎯 Learning Target</strong>
-        <p>I can make and read a box plot to summarize a data set.</p>
+    <div class="ref-title-opener">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Session 5 Notebook</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-title-body">
+        <div class="ref-title-spine">
+          <div class="ref-spine-standard">6.SP.4</div>
+          <div class="ref-spine-unit">Unit 8</div>
+          <div class="ref-spine-subject">SPORTS ANALYTICS</div>
+          <h1 class="ref-spine-title">Display Data: Box Plots</h1>
+          <div class="ref-spine-emoji">🏀</div>
+        </div>
+        <div class="ref-title-main">
+          <h2 class="ref-notebook-heading">My Math Notebook</h2>
+          <div class="ref-notebook-fields">
+            <div class="ref-field-row"><label>Name:</label><span class="ref-field-line"></span></div>
+            <div class="ref-field-row"><label>Date:</label><span class="ref-field-line"></span></div>
+          </div>
+          <div class="ref-learning-target-box">
+            <strong>🎯 Learning Target</strong>
+            <p>I can make and read a box plot to summarize a data set.</p>
+          </div>
+          <p class="ref-title-meta">Unit 8 · Lesson 8-5 · ⏱️ ~45 min</p>
+          <a href="https://docs.google.com/presentation/d/1DxE7MWC5wnkxtFK2bgTDSbXMpUeV4lXaOYCMaRpQXg0/edit" target="_blank" rel="noopener" class="ref-gs-link">↗ Open editable Google Slides copy</a>
+        </div>
       </div>
-      <span class="slide-badge title-theme-badge">SPORTS ANALYTICS</span>
-      <p class="title-time">⏱️ ~45 min</p>
-      <a href="https://docs.google.com/presentation/d/1DxE7MWC5wnkxtFK2bgTDSbXMpUeV4lXaOYCMaRpQXg0/edit" target="_blank" rel="noopener" class="title-gs-link">↗ Open editable Google Slides copy</a>
     </div></div>
 
         <div class="slide-body" id="slide-2" data-slide-type="how-to" data-teacher-notes="First day with deck? Spend 30 sec here. Skip on repeat lessons.">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">How to Use</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
     <h3 class="slide-main-title">How to Use This Deck</h3>
@@ -1562,34 +2077,50 @@
     <span class="teacher-cue-text">30 sec — read aloud, then advance</span>
   </div>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="2">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="2"></span>
+    </footer></div>
 
         <div class="slide-body" id="slide-3" data-slide-type="learning-targets" data-teacher-notes="Post objectives on board. Return to these at closure.">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Learning Targets</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
+    <div class="ref-two-col">
+      <div class="ref-main-panel">
+    <h2 class="card-title">🎯 Content Objective <span class="bilingual-tag">/ Objetivo de contenido</span></h2>
+    <p class="objective-text">I can make and read a box plot to summarize a data set.</p>
+  </div>
+      <aside class="ref-side-panel">
+        <div class="ref-side-header">Today&#039;s Objectives</div>
+        <div class="ref-side-body">
+    <h2 class="card-title">🗣️ Language Objective <span class="bilingual-tag">/ Objetivo de lenguaje</span></h2>
+    <p class="objective-text">I can explain my box plot using the words box plot, median, quartile, and interquartile range.</p>
     
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
-    <h3 class="slide-main-title">Learning Targets</h3>
-    <div class="slide-grid-2">
-      <div class="slide-card">
-        <h2 class="card-title">🎯 Content Objective <span class="bilingual-tag">/ Objetivo de contenido</span></h2>
-        <p class="objective-text">I can make and read a box plot to summarize a data set.</p>
-        <div class="teacher-cue teacher-cue-say">
-    <span class="teacher-cue-icon">👩‍🏫</span>
-    <span class="teacher-cue-label">Say:</span>
-    <span class="teacher-cue-text">Read the content objective aloud. Ask: "What will you be able to do by the end of class?"</span>
+    <p class="ref-teacher-note ref-note-say"><span>👩‍🏫</span> Read objectives aloud. Ask: What will you be able to do by the end of class?</p>
+    <p class="ref-teacher-note ref-note-ask"><span>❓</span> Which vocabulary words do you already know? Which are new?</p>
   </div>
-      </div>
-      <div class="slide-card">
-        <h2 class="card-title">🗣️ Language Objective <span class="bilingual-tag">/ Objetivo de lenguaje</span></h2>
-        <p class="objective-text">I can explain my box plot using the words box plot, median, quartile, and interquartile range.</p>
-        
-        <div class="teacher-cue teacher-cue-ask">
-    <span class="teacher-cue-icon">❓</span>
-    <span class="teacher-cue-label">Ask:</span>
-    <span class="teacher-cue-text">Which vocabulary words do you already know? Which are new?</span>
-  </div>
-      </div>
+      </aside>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="3">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="3"></span>
+    </footer></div>
 
         <div class="slide-body" id="slide-4" data-slide-type="agenda" data-teacher-notes="Adjust minutes based on your block schedule.">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Agenda</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
     <h3 class="slide-main-title">Today&apos;s Flow</h3>
@@ -1631,46 +2162,56 @@
       </div>
       <p class="agenda-total">Total pacing: ~45 min · Progress bar at top tracks your place</p>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="4">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="4"></span>
+    </footer></div>
 
         <div class="slide-body" id="slide-5" data-section="launch" data-slide-type="section">
-    <div class="section-divider">
-      <div class="section-divider-emoji">🏀</div>
-      <h2 class="section-divider-title">LAUNCH</h2>
-      <p class="section-divider-time">⏱️ ~10 min</p>
-      <div class="section-divider-bar"></div>
+    <div class="ref-section-opener">
+      <div class="ref-section-emoji">🏀</div>
+      <h2 class="ref-section-title">LAUNCH</h2>
+      <p class="ref-section-time">⏱️ ~10 min</p>
+      <div class="ref-section-line"></div>
     </div></div>
 
         <div class="slide-body" id="slide-6" data-section="launch" data-slide-type="hook" data-teacher-notes="Students name the five-number summary (min, Q1, median, Q3, max) and find the median (14) for the 11 ordered scores.">
-    <div class="learning-target-bar">
-    <span class="lt-icon">🎯</span>
-    <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Warm-Up Hook</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
+    <div class="ref-two-col">
+      <div class="ref-main-panel">
+    <p class="ref-instruction">⏱️ 3 MIN · THINK-PAIR-SHARE</p>
+    <p class="warmup-question">The Wildcats&#039; scores are 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. To build a box plot you need a five-number summary. What five numbers will you need?</p>
+    <div class="warmup-vocab"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">box plot</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">median</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">quartile</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">interquartile range</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">minimum</span></div>
+    <textarea class="ref-lined-input" rows="2" placeholder="Jot one idea from your partner..."></textarea>
   </div>
-    
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
-    <h3 class="slide-main-title">Warm-Up Hook</h3>
-    <div class="slide-card warmup-card">
-      <span class="slide-badge badge-amber">⏱️ 3 MIN · THINK-PAIR-SHARE</span>
-      <div class="teacher-cue teacher-cue-say">
-    <span class="teacher-cue-icon">👩‍🏫</span>
-    <span class="teacher-cue-label">Say:</span>
-    <span class="teacher-cue-text">Think silently for 30 seconds, then share with your partner.</span>
-  </div>
-      <div class="teacher-cue teacher-cue-ask">
-    <span class="teacher-cue-icon">❓</span>
-    <span class="teacher-cue-label">Ask:</span>
-    <span class="teacher-cue-text">The Wildcats&#039; scores are 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. To build a box plot you need a five-number summary. What five numbers will you need?</span>
-  </div>
-      <div class="teacher-cue teacher-cue-time">
-    <span class="teacher-cue-icon">⏱️</span>
-    <span class="teacher-cue-label">Time:</span>
-    <span class="teacher-cue-text">3 min</span>
-  </div>
-      <p class="warmup-question">The Wildcats&#039; scores are 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. To build a box plot you need a five-number summary. What five numbers will you need?</p>
-      <div class="warmup-vocab"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">box plot</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">median</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">quartile</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">interquartile range</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">minimum</span></div>
-      <textarea class="slide-input-placeholder" rows="2" placeholder="Jot one idea from your partner..."></textarea>
+      <aside class="ref-side-panel">
+        <div class="ref-side-header">💬 Talk It Over</div>
+        <div class="ref-side-body"><p class="ref-teacher-note ref-note-say"><span>👩‍🏫</span> Think silently for 30 seconds, then share with your partner.</p>
+    <p class="ref-teacher-note ref-note-ask"><span>❓</span> The Wildcats&#039; scores are 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. To build a box plot you need a five-number summary. What five numbers will you need?</p>
+    <p class="ref-teacher-note ref-note-time"><span>⏱️</span> 3 min</p></div>
+      </aside>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="6">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="6"></span>
+    </footer></div>
 
         <div class="slide-body" id="slide-7" data-section="check" data-slide-type="cfu">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">CFU 1</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
     <h3 class="slide-main-title">Check for Understanding #1</h3>
@@ -1694,38 +2235,52 @@
       <div id="cfu-feedback-1" class="cfu-feedback"></div>
       <p class="cfu-teacher-tip"><strong>Teacher:</strong> If &gt;30% thumbs down, re-teach with a fresh example before moving on.</p>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="7">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="7"></span>
+    </footer></div>
 
         <div class="slide-body" id="slide-8" data-section="launch" data-slide-type="notice-wonder">
-    <div class="learning-target-bar">
-    <span class="lt-icon">🎯</span>
-    <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
-  </div>
-    
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
-    <h3 class="slide-main-title">Scenario Launch</h3>
-    <div class="slide-grid-2">
-      <div class="slide-card">
-        <h2 class="card-title">📋 Team Scoring Breakdown</h2>
-        <div class="teacher-cue teacher-cue-say">
-    <span class="teacher-cue-icon">👩‍🏫</span>
-    <span class="teacher-cue-label">Say:</span>
-    <span class="teacher-cue-text">Read the scenario aloud slowly. Give students 10 seconds of think time.</span>
-  </div>
-        <p class="card-desc">The basketball league wants to compare scoring across teams. Here are the points scored by each player on the Wildcats in their last game: 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. The league needs a quick visual that shows the spread, the middle 50%, and any high or low scorers. Time to build a box plot!</p>
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Be Curious</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
+    <div class="ref-curious-layout">
+      <div class="ref-visual-prompt">
+        <span class="ref-prompt-badge">Visual Prompt</span>
+        <p class="ref-instruction">Team Scoring Breakdown</p><p class="card-desc">The basketball league wants to compare scoring across teams. Here are the points scored by each player on the Wildcats in their last game: 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. The league needs a quick visual that shows the spread, the middle 50%, and any high or low scorers. Time to build a box plot!</p><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><text x="20" y="32" font-family="Outfit, sans-serif" font-size="12" fill="#17324D" font-weight="bold">Wildcats — points scored (box plot)</text><line x1="50" y1="160" x2="390" y2="160" stroke="#17324D" stroke-width="1.5"/><line x1="50" y1="160" x2="50" y2="165" stroke="#17324D" stroke-width="1"/><text x="50" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">0</text><line x1="106.66666666666667" y1="160" x2="106.66666666666667" y2="165" stroke="#17324D" stroke-width="1"/><text x="106.66666666666667" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">5</text><line x1="163.33333333333334" y1="160" x2="163.33333333333334" y2="165" stroke="#17324D" stroke-width="1"/><text x="163.33333333333334" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">10</text><line x1="220" y1="160" x2="220" y2="165" stroke="#17324D" stroke-width="1"/><text x="220" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">15</text><line x1="276.6666666666667" y1="160" x2="276.6666666666667" y2="165" stroke="#17324D" stroke-width="1"/><text x="276.6666666666667" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">20</text><line x1="333.33333333333337" y1="160" x2="333.33333333333337" y2="165" stroke="#17324D" stroke-width="1"/><text x="333.33333333333337" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">25</text><line x1="390" y1="160" x2="390" y2="165" stroke="#17324D" stroke-width="1"/><text x="390" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">30</text><line x1="95.33333333333334" y1="90" x2="140.66666666666669" y2="90" stroke="#17324D" stroke-width="1.5"/><line x1="299.33333333333337" y1="90" x2="367.33333333333337" y2="90" stroke="#17324D" stroke-width="1.5"/><line x1="95.33333333333334" y1="80" x2="95.33333333333334" y2="100" stroke="#17324D" stroke-width="1.5"/><line x1="367.33333333333337" y1="80" x2="367.33333333333337" y2="100" stroke="#17324D" stroke-width="1.5"/><rect x="140.66666666666669" y="70" width="158.66666666666669" height="40" fill="#DFF2EE" stroke="#17324D" stroke-width="1.5"/><line x1="208.66666666666669" y1="70" x2="208.66666666666669" y2="110" stroke="#17324D" stroke-width="2.5"/><text x="95.33333333333334" y="76" font-family="Outfit, sans-serif" font-size="7" fill="#17324D" text-anchor="middle">Min (4)</text><text x="140.66666666666669" y="66" font-family="Outfit, sans-serif" font-size="7" fill="#17324D" text-anchor="middle">Q1 (8)</text><text x="208.66666666666669" y="121" font-family="Outfit, sans-serif" font-size="7" fill="#17324D" text-anchor="middle">Med (14)</text><text x="299.33333333333337" y="66" font-family="Outfit, sans-serif" font-size="7" fill="#17324D" text-anchor="middle">Q3 (22)</text><text x="367.33333333333337" y="76" font-family="Outfit, sans-serif" font-size="7" fill="#17324D" text-anchor="middle">Max (28)</text><text x="20" y="210" font-family="Hanken Grotesk, sans-serif" font-size="9" fill="#24323F" font-style="italic">The box shows the middle 50% (Q1–Q3). The line inside is the median. Whiskers reach the lowest and highest scores.</text></svg>
       </div>
-      <div class="slide-card nw-container">
-        <div class="nw-box nw-box-notice">
-          <h4>👀 Notice:</h4><div class="nw-box-stems"><div>🔹 What are the lowest and highest scores?</div><div>🔹 What score is in the middle of the data?</div><div>🔹 Are the scores bunched together or spread out?</div></div>
-          <textarea id="student-notice" class="slide-input-placeholder" rows="2" placeholder="Type what you notice..."></textarea>
+      <div class="ref-nw-stack">
+        <div class="ref-nw-panel ref-nw-notice">
+          <div class="ref-panel-header ref-header-teal">👁 I Notice...</div>
+          <div class="ref-nw-stems"><div>🔹 What are the lowest and highest scores?</div><div>🔹 What score is in the middle of the data?</div><div>🔹 Are the scores bunched together or spread out?</div></div>
+          <textarea class="ref-lined-input" rows="2" placeholder="I notice..."></textarea>
         </div>
-        <div class="nw-box nw-box-wonder">
-          <h4>💭 Wonder:</h4><div class="nw-box-stems"><div>🔹 How can you show the spread of all this data in one picture?</div><div>🔹 What does the &#039;middle half&#039; of the data look like?</div></div>
-          <textarea id="student-wonder" class="slide-input-placeholder" rows="2" placeholder="Type what you wonder..."></textarea>
+        <div class="ref-nw-panel ref-nw-wonder">
+          <div class="ref-panel-header ref-header-amber">💭 I Wonder...</div>
+          <div class="ref-nw-stems"><div>🔹 How can you show the spread of all this data in one picture?</div><div>🔹 What does the &#039;middle half&#039; of the data look like?</div></div>
+          <textarea class="ref-lined-input" rows="2" placeholder="I wonder..."></textarea>
         </div>
       </div>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="8">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="8"></span>
+    </footer></div>
 
         <div class="slide-body" id="slide-9" data-section="launch" data-slide-type="concept" data-teacher-notes="The box always holds the middle 50% of the data, and the line inside the box is the median.">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Concept Launch</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     <div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
@@ -1743,27 +2298,23 @@
       <p class="card-desc">A box plot is a simple picture that shows how a set of data is spread out, using just five key numbers: the lowest value, the first quartile (Q1), the median (middle), the third quartile (Q3), and the highest value.</p>
       <div class="key-idea-box"><strong>Key Idea:</strong><p>The box always holds the middle 50% of the data, and the line inside the box is the median.</p></div>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="9">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="9"></span>
+    </footer></div>
 
         <div class="slide-body" id="slide-10" data-section="instruction" data-slide-type="worked-example" data-teacher-notes="Reveal one step at a time. Do NOT show all steps at once.">
-    <div class="learning-target-bar">
-    <span class="lt-icon">🎯</span>
-    <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
-  </div>
-    
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
-    <h3 class="slide-main-title">Watch me build one</h3>
-    <div class="slide-card reveal-card">
-      <div class="teacher-cue teacher-cue-say">
-    <span class="teacher-cue-icon">👩‍🏫</span>
-    <span class="teacher-cue-label">Say:</span>
-    <span class="teacher-cue-text">Reveal one step at a time. Pause after each step for students to process.</span>
-  </div>
-      <div class="teacher-cue teacher-cue-time">
-    <span class="teacher-cue-icon">⏱️</span>
-    <span class="teacher-cue-label">Time:</span>
-    <span class="teacher-cue-text">3–4 min</span>
-  </div>
-      <div class="reveal-steps-container"><div class="reveal-step" id="ido-step-1">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">I Do — Watch Me</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
+    <div class="ref-two-col">
+      <div class="ref-main-panel">
+    <div class="reveal-steps-container"><div class="reveal-step" id="ido-step-1">
       <button class="reveal-btn" onclick="revealStep('ido', 1)">
         <span class="reveal-num">1</span> Click to reveal step 1
       </button>
@@ -1799,29 +2350,31 @@
         <div class="reveal-line">The lowest is 4 and the highest is 28. I draw a box from 8 to 22, a line at 14, and whiskers out to 4 and 28.</div>
       </div>
     </div></div>
-      <button class="assess-btn reveal-all-btn" onclick="revealAllSteps('ido', 5)" style="margin-top:10px; font-size:10px;">Reveal All Steps</button>
+    <button class="assess-btn reveal-all-btn" onclick="revealAllSteps('ido', 5)" style="margin-top:10px; font-size:10px;">Reveal All Steps</button></div>
+      <aside class="ref-side-panel">
+        <div class="ref-side-header">💬 Talk It Over</div>
+        <div class="ref-side-body"><p class="ref-teacher-note ref-note-say"><span>👩‍🏫</span> Reveal one step at a time. Pause after each step.</p>
+    <p class="ref-teacher-note ref-note-time"><span>⏱️</span> 3–4 min</p>
+    <p class="ref-side-prompt"><strong>Target:</strong> I can make and read a box plot to summarize a data set.</p></div>
+      </aside>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="10">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="10"></span>
+    </footer></div>
 
         <div class="slide-body" id="slide-11" data-section="instruction" data-slide-type="worked-example" data-teacher-notes="Second reveal sequence — focus on the most critical step.">
-    <div class="learning-target-bar">
-    <span class="lt-icon">🎯</span>
-    <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
-  </div>
-    
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
-    <h3 class="slide-main-title">I Do — Focus Step</h3>
-    <div class="slide-card reveal-card">
-      <div class="teacher-cue teacher-cue-say">
-    <span class="teacher-cue-icon">👩‍🏫</span>
-    <span class="teacher-cue-label">Say:</span>
-    <span class="teacher-cue-text">Reveal one step at a time. Pause after each step for students to process.</span>
-  </div>
-      <div class="teacher-cue teacher-cue-time">
-    <span class="teacher-cue-icon">⏱️</span>
-    <span class="teacher-cue-label">Time:</span>
-    <span class="teacher-cue-text">3–4 min</span>
-  </div>
-      <div class="reveal-steps-container"><div class="reveal-step" id="ido2-step-1">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">I Do — Key Step</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
+    <div class="ref-two-col">
+      <div class="ref-main-panel">
+    <div class="reveal-steps-container"><div class="reveal-step" id="ido2-step-1">
       <button class="reveal-btn" onclick="revealStep('ido2', 1)">
         <span class="reveal-num">1</span> Click to reveal step 1
       </button>
@@ -1836,29 +2389,31 @@
         <div class="reveal-line">The lowest is 4 and the highest is 28. I draw a box from 8 to 22, a line at 14, and whiskers out to 4 and 28.</div>
       </div>
     </div></div>
-      <button class="assess-btn reveal-all-btn" onclick="revealAllSteps('ido2', 2)" style="margin-top:10px; font-size:10px;">Reveal All Steps</button>
+    <button class="assess-btn reveal-all-btn" onclick="revealAllSteps('ido2', 2)" style="margin-top:10px; font-size:10px;">Reveal All Steps</button></div>
+      <aside class="ref-side-panel">
+        <div class="ref-side-header">💬 Talk It Over</div>
+        <div class="ref-side-body"><p class="ref-teacher-note ref-note-say"><span>👩‍🏫</span> Reveal one step at a time. Pause after each step.</p>
+    <p class="ref-teacher-note ref-note-time"><span>⏱️</span> 3–4 min</p>
+    <p class="ref-side-prompt"><strong>Target:</strong> I can make and read a box plot to summarize a data set.</p></div>
+      </aside>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="11">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="11"></span>
+    </footer></div>
 
         <div class="slide-body" id="slide-12" data-section="instruction" data-slide-type="worked-example" data-teacher-notes="Call on students to predict each step before revealing.">
-    <div class="learning-target-bar">
-    <span class="lt-icon">🎯</span>
-    <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
-  </div>
-    
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
-    <h3 class="slide-main-title">Let&#039;s try one together</h3>
-    <div class="slide-card reveal-card">
-      <div class="teacher-cue teacher-cue-say">
-    <span class="teacher-cue-icon">👩‍🏫</span>
-    <span class="teacher-cue-label">Say:</span>
-    <span class="teacher-cue-text">Reveal one step at a time. Pause after each step for students to process.</span>
-  </div>
-      <div class="teacher-cue teacher-cue-time">
-    <span class="teacher-cue-icon">⏱️</span>
-    <span class="teacher-cue-label">Time:</span>
-    <span class="teacher-cue-text">3–4 min</span>
-  </div>
-      <div class="reveal-steps-container"><div class="reveal-step" id="wedo-step-1">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">We Do — Together</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
+    <div class="ref-two-col">
+      <div class="ref-main-panel">
+    <div class="reveal-steps-container"><div class="reveal-step" id="wedo-step-1">
       <button class="reveal-btn" onclick="revealStep('wedo', 1)">
         <span class="reveal-num">1</span> Click to reveal step 1
       </button>
@@ -1880,10 +2435,28 @@
         <div class="reveal-line">What are the lowest and highest values? Now picture the box stretching from Q1 to Q3 with the median line inside.</div>
       </div>
     </div></div>
-      <button class="assess-btn reveal-all-btn" onclick="revealAllSteps('wedo', 3)" style="margin-top:10px; font-size:10px;">Reveal All Steps</button>
+    <button class="assess-btn reveal-all-btn" onclick="revealAllSteps('wedo', 3)" style="margin-top:10px; font-size:10px;">Reveal All Steps</button></div>
+      <aside class="ref-side-panel">
+        <div class="ref-side-header">💬 Talk It Over</div>
+        <div class="ref-side-body"><p class="ref-teacher-note ref-note-say"><span>👩‍🏫</span> Reveal one step at a time. Pause after each step.</p>
+    <p class="ref-teacher-note ref-note-time"><span>⏱️</span> 3–4 min</p>
+    <p class="ref-side-prompt"><strong>Target:</strong> I can make and read a box plot to summarize a data set.</p></div>
+      </aside>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="12">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="12"></span>
+    </footer></div>
 
         <div class="slide-body" id="slide-13" data-section="check" data-slide-type="cfu">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">CFU 2</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
     <h3 class="slide-main-title">Check for Understanding #2</h3>
@@ -1907,8 +2480,20 @@
       <div id="cfu-feedback-2" class="cfu-feedback"></div>
       <p class="cfu-teacher-tip"><strong>Teacher:</strong> If &gt;30% thumbs down, re-teach with a fresh example before moving on.</p>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="13">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="13"></span>
+    </footer></div>
 
         <div class="slide-body" id="slide-14" data-section="instruction" data-slide-type="you-do">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">You Do — Your Turn</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     <div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
@@ -1936,168 +2521,97 @@
         <a href="/lessons/8-5/index.html" target="_blank" class="btn-present activity-cta-btn">Launch Activity ↗</a>
       </div>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="14">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="14"></span>
+    </footer></div>
 
         <div class="slide-body" id="slide-15" data-section="vocabulary" data-slide-type="section">
-    <div class="section-divider">
-      <div class="section-divider-emoji">📚</div>
-      <h2 class="section-divider-title">VOCABULARY</h2>
-      <p class="section-divider-time">⏱️ ~8 min</p>
-      <div class="section-divider-bar"></div>
+    <div class="ref-section-opener">
+      <div class="ref-section-emoji">📚</div>
+      <h2 class="ref-section-title">VOCABULARY</h2>
+      <p class="ref-section-time">⏱️ ~8 min</p>
+      <div class="ref-section-line"></div>
     </div></div>
 
-        <div class="slide-body" id="slide-16" data-section="vocabulary" data-slide-type="vocab-card" data-teacher-notes="A graph that shows how data is spread using five key numbers.">
-      <div class="learning-target-bar">
-    <span class="lt-icon">🎯</span>
-    <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
-  </div>
+        <div class="slide-body" id="slide-16" data-section="vocabulary" data-slide-type="vocab-card" data-teacher-notes="Post vocabulary on board for reference.">
+    <div class="ref-slide-frame ref-variant-content">
       
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
-    <h3 class="slide-main-title">Visual Vocabulary</h3>
-      
-    <div class="vocab-rich-card">
-      <div class="vocab-rich-visual"><svg class="vocab-illustration" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-    <rect width="200" height="120" rx="10" fill="var(--teal-light)" stroke="var(--teal)" stroke-width="2"/>
-    <text x="100" y="35" text-anchor="middle" font-size="28">🏀</text>
-    <text x="100" y="72" text-anchor="middle" font-family="Outfit,sans-serif" font-size="11" font-weight="700" fill="var(--navy)">A box from Q1 to Q3 with a line at the median, and whiskers from min to max</text>
-    <line x1="30" y1="88" x2="170" y2="88" stroke="var(--teal)" stroke-width="1" stroke-dasharray="4,3"/>
-    <text x="100" y="105" text-anchor="middle" font-family="Hanken Grotesk,sans-serif" font-size="9" fill="var(--gray)">Use in context ↓</text>
-  </svg></div>
-      <div class="vocab-rich-content">
-        <h2 class="vocab-term">Box Plot</h2>
-        <p class="vocab-term-es">Diagrama de caja</p>
-        <p class="vocab-definition">A graph that shows how data is spread using five key numbers.</p>
-        <p class="vocab-definition-es">Una gráfica que muestra cómo se reparten los datos con cinco números clave.</p>
-        <div class="vocab-example-box">
-          <strong>Example:</strong> A box from Q1 to Q3 with a line at the median, and whiskers from min to max
-        </div>
-        <div class="vocab-use-context">
-          <strong>Use in context:</strong> A graph that shows data with a box and whiskers based on the five-number summary is a ___.
-          <textarea class="slide-input-placeholder vocab-context-input" rows="2" placeholder="Write your own sentence using Box Plot..."></textarea>
-        </div>
-      </div>
-    </div>
-      <div class="teacher-cue teacher-cue-say">
-    <span class="teacher-cue-icon">👩‍🏫</span>
-    <span class="teacher-cue-label">Say:</span>
-    <span class="teacher-cue-text">Say the term, definition, and example. Students repeat.</span>
-  </div>
-    </div>
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Vocabulary</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
+    <div class="ref-two-col">
+      <div class="ref-main-panel">
+    <table class="ref-vocab-table">
+      <thead>
+        <tr>
+          <th>Term / Término</th>
+          <th>Meaning / Significado</th>
+          <th>Example / Ejemplo</th>
+          <th>Visual</th>
+        </tr>
+      </thead>
+      <tbody>
+    <tr>
+      <td class="ref-vocab-term">Box Plot<br/><em>Diagrama de caja</em></td>
+      <td>A graph that shows how data is spread using five key numbers.<br/><em>Una gráfica que muestra cómo se reparten los datos con cinco números clave.</em></td>
+      <td></td>
+      <td class="ref-vocab-visual">A box from Q1 to Q3 with a line at the median, and whiskers from min to max</td>
+    </tr>
+    <tr>
+      <td class="ref-vocab-term">Median<br/><em>Mediana</em></td>
+      <td>The middle number that splits the data in half.<br/><em>El número del medio que divide los datos en dos mitades.</em></td>
+      <td></td>
+      <td class="ref-vocab-visual">Data: 10, 15, 20, 25, 30 → median is 20 (the 3rd value)</td>
+    </tr>
+    <tr>
+      <td class="ref-vocab-term">Quartile<br/><em>Cuartil</em></td>
+      <td>Numbers that split the data into four equal parts.<br/><em>Números que dividen los datos en cuatro partes iguales.</em></td>
+      <td></td>
+      <td class="ref-vocab-visual">Data: 2, 4, 6, 8, 10, 12, 14 → Q1 = 4 (median of lower half), Q3 = 12 (median of upper half)</td>
+    </tr>
+    <tr>
+      <td class="ref-vocab-term">Interquartile Range<br/><em>Rango intercuartílico</em></td>
+      <td>The spread of the middle half of the data (Q3 − Q1).<br/><em>La extensión de la mitad central de los datos (Q3 − Q1).</em></td>
+      <td></td>
+      <td class="ref-vocab-visual">If Q1 = 12 and Q3 = 20, then IQR = 20 − 12 = 8 — the middle 50% spans 8 units</td>
+    </tr>
+    <tr>
+      <td class="ref-vocab-term">Data distribution<br/><em>Distribución de datos</em></td>
+      <td>How the data looks: where it sits and how spread out it is.<br/><em>Cómo se ven los datos: dónde están y qué tan separados están.</em></td>
+      <td></td>
+      <td class="ref-vocab-visual">A box plot where the median is centered in the box shows symmetric distribution</td>
+    </tr>
+    <tr>
+      <td class="ref-vocab-term">Variability<br/><em>Variabilidad</em></td>
+      <td>How spread out the numbers are.<br/><em>Qué tan separados están los números.</em></td>
+      <td></td>
+      <td class="ref-vocab-visual">Small IQR = low variability in the middle 50%. Large IQR = high variability</td>
+    </tr></tbody>
+    </table></div>
+      <aside class="ref-side-panel">
+        <div class="ref-side-header">💬 Talk It Over</div>
+        <div class="ref-side-body"><p class="ref-teacher-note ref-note-say"><span>👩‍🏫</span> Say each term, definition, and example. Students repeat.</p>
+       <p class="ref-teacher-note ref-note-time"><span>⏱️</span> 5 min</p></div>
+      </aside>
+    </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="16">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="16"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-17" data-section="vocabulary" data-slide-type="vocab-card" data-teacher-notes="The middle number that splits the data in half.">
-      <div class="learning-target-bar">
-    <span class="lt-icon">🎯</span>
-    <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
-  </div>
+        <div class="slide-body" id="slide-17" data-section="vocabulary" data-slide-type="interactive-mc">
+    <div class="ref-slide-frame ref-variant-content">
       
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
-    <h3 class="slide-main-title">Visual Vocabulary</h3>
-      
-    <div class="vocab-rich-card">
-      <div class="vocab-rich-visual"><svg class="vocab-illustration" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-    <rect width="200" height="120" rx="10" fill="var(--teal-light)" stroke="var(--teal)" stroke-width="2"/>
-    <text x="100" y="35" text-anchor="middle" font-size="28">🏀</text>
-    <text x="100" y="72" text-anchor="middle" font-family="Outfit,sans-serif" font-size="11" font-weight="700" fill="var(--navy)">Data: 10, 15, 20, 25, 30 → median is 20 (the 3rd value)</text>
-    <line x1="30" y1="88" x2="170" y2="88" stroke="var(--teal)" stroke-width="1" stroke-dasharray="4,3"/>
-    <text x="100" y="105" text-anchor="middle" font-family="Hanken Grotesk,sans-serif" font-size="9" fill="var(--gray)">Use in context ↓</text>
-  </svg></div>
-      <div class="vocab-rich-content">
-        <h2 class="vocab-term">Median</h2>
-        <p class="vocab-term-es">Mediana</p>
-        <p class="vocab-definition">The middle number that splits the data in half.</p>
-        <p class="vocab-definition-es">El número del medio que divide los datos en dos mitades.</p>
-        <div class="vocab-example-box">
-          <strong>Example:</strong> Data: 10, 15, 20, 25, 30 → median is 20 (the 3rd value)
-        </div>
-        <div class="vocab-use-context">
-          <strong>Use in context:</strong> The middle value of the data, shown as a line inside the box, is the ___.
-          <textarea class="slide-input-placeholder vocab-context-input" rows="2" placeholder="Write your own sentence using Median..."></textarea>
-        </div>
-      </div>
-    </div>
-      <div class="teacher-cue teacher-cue-say">
-    <span class="teacher-cue-icon">👩‍🏫</span>
-    <span class="teacher-cue-label">Say:</span>
-    <span class="teacher-cue-text">Say the term, definition, and example. Students repeat.</span>
-  </div>
-    </div>
-
-        <div class="slide-body" id="slide-18" data-section="vocabulary" data-slide-type="vocab-card" data-teacher-notes="Numbers that split the data into four equal parts.">
-      <div class="learning-target-bar">
-    <span class="lt-icon">🎯</span>
-    <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
-  </div>
-      
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
-    <h3 class="slide-main-title">Visual Vocabulary</h3>
-      
-    <div class="vocab-rich-card">
-      <div class="vocab-rich-visual"><svg class="vocab-illustration" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-    <rect width="200" height="120" rx="10" fill="var(--teal-light)" stroke="var(--teal)" stroke-width="2"/>
-    <text x="100" y="35" text-anchor="middle" font-size="28">🏀</text>
-    <text x="100" y="72" text-anchor="middle" font-family="Outfit,sans-serif" font-size="11" font-weight="700" fill="var(--navy)">Data: 2, 4, 6, 8, 10, 12, 14 → Q1 = 4 (median of lower half), Q3 = 12 (median of upper half)</text>
-    <line x1="30" y1="88" x2="170" y2="88" stroke="var(--teal)" stroke-width="1" stroke-dasharray="4,3"/>
-    <text x="100" y="105" text-anchor="middle" font-family="Hanken Grotesk,sans-serif" font-size="9" fill="var(--gray)">Use in context ↓</text>
-  </svg></div>
-      <div class="vocab-rich-content">
-        <h2 class="vocab-term">Quartile</h2>
-        <p class="vocab-term-es">Cuartil</p>
-        <p class="vocab-definition">Numbers that split the data into four equal parts.</p>
-        <p class="vocab-definition-es">Números que dividen los datos en cuatro partes iguales.</p>
-        <div class="vocab-example-box">
-          <strong>Example:</strong> Data: 2, 4, 6, 8, 10, 12, 14 → Q1 = 4 (median of lower half), Q3 = 12 (median of upper half)
-        </div>
-        <div class="vocab-use-context">
-          <strong>Use in context:</strong> A value that divides the data into four equal parts is a ___.
-          <textarea class="slide-input-placeholder vocab-context-input" rows="2" placeholder="Write your own sentence using Quartile..."></textarea>
-        </div>
-      </div>
-    </div>
-      <div class="teacher-cue teacher-cue-say">
-    <span class="teacher-cue-icon">👩‍🏫</span>
-    <span class="teacher-cue-label">Say:</span>
-    <span class="teacher-cue-text">Say the term, definition, and example. Students repeat.</span>
-  </div>
-    </div>
-
-        <div class="slide-body" id="slide-19" data-section="vocabulary" data-slide-type="vocab-card" data-teacher-notes="The spread of the middle half of the data (Q3 − Q1).">
-      <div class="learning-target-bar">
-    <span class="lt-icon">🎯</span>
-    <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
-  </div>
-      
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
-    <h3 class="slide-main-title">Visual Vocabulary</h3>
-      
-    <div class="vocab-rich-card">
-      <div class="vocab-rich-visual"><svg class="vocab-illustration" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-    <rect width="200" height="120" rx="10" fill="var(--teal-light)" stroke="var(--teal)" stroke-width="2"/>
-    <text x="100" y="35" text-anchor="middle" font-size="28">🏀</text>
-    <text x="100" y="72" text-anchor="middle" font-family="Outfit,sans-serif" font-size="11" font-weight="700" fill="var(--navy)">If Q1 = 12 and Q3 = 20, then IQR = 20 − 12 = 8 — the middle 50% spans 8 units</text>
-    <line x1="30" y1="88" x2="170" y2="88" stroke="var(--teal)" stroke-width="1" stroke-dasharray="4,3"/>
-    <text x="100" y="105" text-anchor="middle" font-family="Hanken Grotesk,sans-serif" font-size="9" fill="var(--gray)">Use in context ↓</text>
-  </svg></div>
-      <div class="vocab-rich-content">
-        <h2 class="vocab-term">Interquartile Range</h2>
-        <p class="vocab-term-es">Rango intercuartílico</p>
-        <p class="vocab-definition">The spread of the middle half of the data (Q3 − Q1).</p>
-        <p class="vocab-definition-es">La extensión de la mitad central de los datos (Q3 − Q1).</p>
-        <div class="vocab-example-box">
-          <strong>Example:</strong> If Q1 = 12 and Q3 = 20, then IQR = 20 − 12 = 8 — the middle 50% spans 8 units
-        </div>
-        <div class="vocab-use-context">
-          <strong>Use in context:</strong> The distance between the first and third quartiles, showing the middle 50% of data, is the ___.
-          <textarea class="slide-input-placeholder vocab-context-input" rows="2" placeholder="Write your own sentence using Interquartile Range..."></textarea>
-        </div>
-      </div>
-    </div>
-      <div class="teacher-cue teacher-cue-say">
-    <span class="teacher-cue-icon">👩‍🏫</span>
-    <span class="teacher-cue-label">Say:</span>
-    <span class="teacher-cue-text">Say the term, definition, and example. Students repeat.</span>
-  </div>
-    </div>
-
-        <div class="slide-body" id="slide-20" data-section="vocabulary" data-slide-type="interactive-mc">
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Which Word?</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     <div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
@@ -2122,8 +2636,20 @@
         <textarea class="slide-input-placeholder" rows="5" placeholder="Write your own sentence using Box Plot..."></textarea>
       </div>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="17">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="17"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-21" data-section="check" data-slide-type="cfu">
+        <div class="slide-body" id="slide-18" data-section="check" data-slide-type="cfu">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">CFU 3</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
     <h3 class="slide-main-title">Check for Understanding #3</h3>
@@ -2147,8 +2673,20 @@
       <div id="cfu-feedback-3" class="cfu-feedback"></div>
       <p class="cfu-teacher-tip"><strong>Teacher:</strong> If &gt;30% thumbs down, re-teach with a fresh example before moving on.</p>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="18">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="18"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-22" data-section="discuss" data-slide-type="turn-talk-timer" data-teacher-notes="Students name the five-number summary (min, Q1, median, Q3, max) and find the median (14) for the 11 ordered scores.">
+        <div class="slide-body" id="slide-19" data-section="discuss" data-slide-type="turn-talk-timer" data-teacher-notes="Students name the five-number summary (min, Q1, median, Q3, max) and find the median (14) for the 11 ordered scores.">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Turn &amp; Talk</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     <div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
@@ -2192,16 +2730,28 @@
         <p class="tt-extend"><strong>Extend:</strong> Justify: explain how to find Q1 and Q3 for this data set and what they represent.</p>
       </div>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="19">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="19"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-23" data-section="explore" data-slide-type="section">
-    <div class="section-divider">
-      <div class="section-divider-emoji">🔍</div>
-      <h2 class="section-divider-title">EXPLORE &amp; PRACTICE</h2>
-      <p class="section-divider-time">⏱️ ~18 min</p>
-      <div class="section-divider-bar"></div>
+        <div class="slide-body" id="slide-20" data-section="explore" data-slide-type="section">
+    <div class="ref-section-opener">
+      <div class="ref-section-emoji">🔍</div>
+      <h2 class="ref-section-title">EXPLORE &amp; PRACTICE</h2>
+      <p class="ref-section-time">⏱️ ~18 min</p>
+      <div class="ref-section-line"></div>
     </div></div>
 
-        <div class="slide-body" id="slide-24" data-section="explore" data-slide-type="worked-example">
+        <div class="slide-body" id="slide-21" data-section="explore" data-slide-type="worked-example">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Visual Model</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     <div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
@@ -2233,8 +2783,20 @@
         <canvas id="math-canvas" width="440" height="240" class="canvas-overlay cursor-draw"></canvas>
       </div>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="21">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="21"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-25" data-section="explore" data-slide-type="explore" data-teacher-notes="Find the five-number summary for the Wildcats&#039; scoring data: 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. Place each value on the number line.">
+        <div class="slide-body" id="slide-22" data-section="explore" data-slide-type="explore" data-teacher-notes="Find the five-number summary for the Wildcats&#039; scoring data: 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. Place each value on the number line.">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Explore</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     
     <div class="slide-badge-row">
       <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span>
@@ -2265,8 +2827,20 @@
         <textarea id="explore-discourse-work" class="slide-input-placeholder" rows="3" placeholder="Type your discourse explanation here..."></textarea>
       </div>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="22">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="22"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-26" data-section="check" data-slide-type="cfu">
+        <div class="slide-body" id="slide-23" data-section="check" data-slide-type="cfu">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Whiteboard CFU</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     <div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
@@ -2291,8 +2865,20 @@
       </div>
       <textarea class="slide-input-placeholder" rows="4" placeholder="Teacher: jot a sample student response or note common errors here..."></textarea>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="23">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="23"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-27" data-section="discuss" data-slide-type="turn-talk-timer">
+        <div class="slide-body" id="slide-24" data-section="discuss" data-slide-type="turn-talk-timer">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Discuss Explore</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     <div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
@@ -2336,8 +2922,20 @@
         <p class="tt-extend"><strong>Extend:</strong> Compare: how would the box plot change if the highest score were 50 instead of 28? Which part changes, the box or the whisker?</p>
       </div>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="24">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="24"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-28" data-section="practice" data-slide-type="interactive-mc">
+        <div class="slide-body" id="slide-25" data-section="practice" data-slide-type="interactive-mc">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Practice A</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     <div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
@@ -2381,8 +2979,20 @@
         <div class="teacher-reveal-box"><strong>Teacher reveal:</strong> A smaller IQR means the middle 50% of data is more tightly clustered. Team A&#039;s scoring is more consistent in the middle range.</div>
       </div>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="25">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="25"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-29" data-section="practice" data-slide-type="interactive-mc">
+        <div class="slide-body" id="slide-26" data-section="practice" data-slide-type="interactive-mc">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Practice B</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     <div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
@@ -2426,8 +3036,20 @@
         <div class="teacher-reveal-box"><strong>Teacher reveal:</strong> IQR = Q3 − Q1 = 28 − 15 = 13.</div>
       </div>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="26">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="26"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-30" data-section="practice" data-slide-type="stat-sort">
+        <div class="slide-body" id="slide-27" data-section="practice" data-slide-type="stat-sort">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Statistical vs Not Sort</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     <div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
@@ -2471,66 +3093,61 @@
         <textarea class="slide-input-placeholder" rows="6" placeholder="Explain your strategy and reasoning..."></textarea>
       </div>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="27">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="27"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-31" data-section="practice" data-slide-type="drag-sort">
-    <div class="learning-target-bar">
-    <span class="lt-icon">🎯</span>
-    <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
-  </div>
-    
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
-    <h3 class="slide-main-title">Sort &amp; Categorize</h3>
-    <div class="slide-grid-2">
-      <div class="slide-card">
-        <span class="slide-badge badge-teal">↕️ DRAG-SORT</span>
-        <div class="teacher-cue teacher-cue-students">
-    <span class="teacher-cue-icon">👨‍🎓</span>
-    <span class="teacher-cue-label">Students:</span>
-    <span class="teacher-cue-text">Drag each card into the correct category. Touch or mouse both work.</span>
-  </div>
-        <div class="teacher-cue teacher-cue-time">
-    <span class="teacher-cue-icon">⏱️</span>
-    <span class="teacher-cue-label">Time:</span>
-    <span class="teacher-cue-text">4 min</span>
-  </div>
-        <p class="card-desc">Each card describes a part of the stadium box plot. Sort each card under the matching box plot part.</p>
-        <div class="drag-pool" id="drag-pool-85" ondragover="dragOverZone(event)" ondrop="dropOnZone(event, '85')"><div class="drag-item" draggable="true" data-item-idx="0" data-correct-cat="fivenum" id="drag-item-85-0">
-          <span class="drag-grip">⠿</span>The minimum — the lowest score
-        </div><div class="drag-item" draggable="true" data-item-idx="1" data-correct-cat="fivenum" id="drag-item-85-1">
-          <span class="drag-grip">⠿</span>Q1 — the median of the lower half
-        </div><div class="drag-item" draggable="true" data-item-idx="2" data-correct-cat="fivenum" id="drag-item-85-2">
-          <span class="drag-grip">⠿</span>The median — the middle score
-        </div><div class="drag-item" draggable="true" data-item-idx="3" data-correct-cat="fivenum" id="drag-item-85-3">
-          <span class="drag-grip">⠿</span>Q3 — the median of the upper half
-        </div><div class="drag-item" draggable="true" data-item-idx="4" data-correct-cat="fivenum" id="drag-item-85-4">
-          <span class="drag-grip">⠿</span>The maximum — the highest score
-        </div><div class="drag-item" draggable="true" data-item-idx="5" data-correct-cat="spread" id="drag-item-85-5">
-          <span class="drag-grip">⠿</span>IQR — Q3 minus Q1
-        </div><div class="drag-item" draggable="true" data-item-idx="6" data-correct-cat="spread" id="drag-item-85-6">
-          <span class="drag-grip">⠿</span>Range — maximum minus minimum
-        </div></div>
-        <div class="drag-zones"><div class="drag-drop-zone" data-cat-id="fivenum" ondragover="dragOverZone(event)" ondrop="dropOnZone(event, '85')">
-          <div class="drag-zone-label">Part of the five-number summary</div>
-          <div class="drag-zone-items" id="zone-85-fivenum"></div>
-        </div><div class="drag-drop-zone" data-cat-id="spread" ondragover="dragOverZone(event)" ondrop="dropOnZone(event, '85')">
-          <div class="drag-zone-label">Measure of spread</div>
-          <div class="drag-zone-items" id="zone-85-spread"></div>
-        </div></div>
-        <div id="drag-feedback-85" class="drag-feedback"></div>
-        <button class="assess-btn" onclick="checkDragSort('85')" style="margin-top:8px; font-size:10px;">Check My Sort ✓</button>
-      </div>
-      <div class="slide-card card-teal-light">
-        <h2 class="card-title">Justify Your Sort</h2>
-        <textarea class="slide-input-placeholder" rows="6" placeholder="Explain how you decided which category each item belongs in..."></textarea>
-      </div>
+        <div class="slide-body" id="slide-28" data-section="practice" data-slide-type="drag-sort">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Sort It Out</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
+    <div class="ref-two-col">
+      <div class="ref-main-panel">
+    <p class="ref-instruction">Each card describes a part of the stadium box plot. Sort each card under the matching box plot part.</p>
+    <div class="ref-card-bank-label">Card Bank — cut or drag these cards:</div>
+    <div class="ref-card-bank"><div class="drag-item" draggable="true" data-item-idx="0" data-correct-cat="fivenum" id="drag-item-85-0"><span class="drag-grip">⠿</span>The minimum — the lowest score</div><div class="drag-item" draggable="true" data-item-idx="1" data-correct-cat="fivenum" id="drag-item-85-1"><span class="drag-grip">⠿</span>Q1 — the median of the lower half</div><div class="drag-item" draggable="true" data-item-idx="2" data-correct-cat="fivenum" id="drag-item-85-2"><span class="drag-grip">⠿</span>The median — the middle score</div><div class="drag-item" draggable="true" data-item-idx="3" data-correct-cat="fivenum" id="drag-item-85-3"><span class="drag-grip">⠿</span>Q3 — the median of the upper half</div><div class="drag-item" draggable="true" data-item-idx="4" data-correct-cat="fivenum" id="drag-item-85-4"><span class="drag-grip">⠿</span>The maximum — the highest score</div><div class="drag-item" draggable="true" data-item-idx="5" data-correct-cat="spread" id="drag-item-85-5"><span class="drag-grip">⠿</span>IQR — Q3 minus Q1</div><div class="drag-item" draggable="true" data-item-idx="6" data-correct-cat="spread" id="drag-item-85-6"><span class="drag-grip">⠿</span>Range — maximum minus minimum</div></div>
+    <div class="ref-sort-buckets">
+    <div class="ref-sort-bucket ref-bucket-teal" data-cat-id="fivenum">
+      <div class="ref-bucket-header">Part of the five-number summary</div>
+      <div class="ref-bucket-items" id="zone-fivenum"></div>
+    </div>
+    <div class="ref-sort-bucket ref-bucket-navy" data-cat-id="spread">
+      <div class="ref-bucket-header">Measure of spread</div>
+      <div class="ref-bucket-items" id="zone-spread"></div>
     </div></div>
-
-        <div class="slide-body" id="slide-32" data-section="practice" data-slide-type="error-analysis" data-teacher-notes="A common mistake in Display Data: Box Plots is skipping the key idea: &quot;The box always holds the middle 50% of the data, and the line inside the box is the median.&quot; — always check your work against this rule before you submit."><div class="learning-target-bar">
-    <span class="lt-icon">🎯</span>
-    <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
   </div>
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
-    <h3 class="slide-main-title">Find the Mistake</h3>
+      <aside class="ref-side-panel">
+        <div class="ref-side-header">💬 Talk It Over</div>
+        <div class="ref-side-body"><p class="ref-side-prompt">Which cards did you put in both boxes? Explain your reasoning.</p></div>
+      </aside>
+    </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="28">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="28"></span>
+    </footer></div>
+
+        <div class="slide-body" id="slide-29" data-section="practice" data-slide-type="error-analysis" data-teacher-notes="A common mistake in Display Data: Box Plots is skipping the key idea: &quot;The box always holds the middle 50% of the data, and the line inside the box is the median.&quot; — always check your work against this rule before you submit.">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Error Analysis</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
+    <div class="ref-two-col">
+      <div class="ref-main-panel">
+    <span class="ref-error-badge">⚠ Find the Error</span>
+    <div class="ref-error-scenario"><p>A common mistake in Display Data: Box Plots is skipping the key idea: &quot;The box always holds the middle 50% of the data, and the line inside the box is the median.&quot; — always check your work against this rule before you submit.</p></div>
+    <div class="ref-student-work-box">
+      <div class="ref-work-label">Student&apos;s Work (labeled — contains an error):</div>
+      
       <div class="slide-grid-2">
         <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%; position:relative;">
           <div>
@@ -2584,114 +3201,147 @@
           </div>
         </div>
       </div>
-    </div>
-
-        <div class="slide-body" id="slide-33" data-section="practice" data-slide-type="choice-board">
-    <div class="learning-target-bar">
-    <span class="lt-icon">🎯</span>
-    <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
-  </div>
     
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
-    <h3 class="slide-main-title">Choice Board — Show What You Know</h3>
-    <div class="slide-card">
-      <span class="slide-badge badge-amber">🎯 CHOICE BOARD</span>
-      <div class="teacher-cue teacher-cue-students">
-    <span class="teacher-cue-icon">👨‍🎓</span>
-    <span class="teacher-cue-label">Students:</span>
-    <span class="teacher-cue-text">Choose ONE option to demonstrate understanding. Complete it on paper or whiteboard.</span>
+    </div>
+    <div class="ref-error-zone">
+      <strong>What went wrong?</strong>
+      <textarea class="ref-lined-input" rows="3" placeholder="Explain the mistake and how to fix it..."></textarea>
+    </div>
   </div>
-      <div class="teacher-cue teacher-cue-time">
-    <span class="teacher-cue-icon">⏱️</span>
-    <span class="teacher-cue-label">Time:</span>
-    <span class="teacher-cue-text">6 min</span>
-  </div>
-      <div class="choice-board-grid">
-    <button class="choice-board-card" onclick="selectChoiceBoard(0)" id="choice-card-0">
-      <span class="choice-icon">✏️</span>
-      <strong>Draw &amp; Label</strong>
+      <aside class="ref-side-panel">
+        <div class="ref-side-header">💬 Talk It Over</div>
+        <div class="ref-side-body"><p class="ref-side-prompt">What mistake did the student make? How would you help them fix it?</p></div>
+      </aside>
+    </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="29">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="29"></span>
+    </footer></div>
+
+        <div class="slide-body" id="slide-30" data-section="practice" data-slide-type="choice-board">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Choice Board</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
+    <div class="ref-two-col">
+      <div class="ref-main-panel">
+    <p class="ref-instruction">Choose ONE to show what you know:</p>
+    <div class="ref-choice-grid">
+    <button type="button" class="ref-choice-card ref-choice-mist" onclick="selectChoiceBoard(0)" id="choice-card-0">
+      <div class="ref-choice-card-header">✏️ Draw &amp; Label</div>
+      <span class="ref-choice-icon">✏️</span>
       <p>Sketch a visual model. Label key parts using today&#039;s vocabulary.</p>
       <span class="choice-check" id="choice-check-0">✓</span>
     </button>
-    <button class="choice-board-card" onclick="selectChoiceBoard(1)" id="choice-card-1">
-      <span class="choice-icon">💬</span>
-      <strong>Explain It</strong>
+    <button type="button" class="ref-choice-card ref-choice-sage" onclick="selectChoiceBoard(1)" id="choice-card-1">
+      <div class="ref-choice-card-header">💬 Explain It</div>
+      <span class="ref-choice-icon">💬</span>
       <p>Write 2–3 sentences explaining the key idea in your own words.</p>
       <span class="choice-check" id="choice-check-1">✓</span>
     </button>
-    <button class="choice-board-card" onclick="selectChoiceBoard(2)" id="choice-card-2">
-      <span class="choice-icon">🧮</span>
-      <strong>Solve It</strong>
+    <button type="button" class="ref-choice-card ref-choice-cream" onclick="selectChoiceBoard(2)" id="choice-card-2">
+      <div class="ref-choice-card-header">🧮 Solve It</div>
+      <span class="ref-choice-icon">🧮</span>
       <p>Work one practice problem showing each step clearly.</p>
       <span class="choice-check" id="choice-check-2">✓</span>
     </button>
-    <button class="choice-board-card" onclick="selectChoiceBoard(3)" id="choice-card-3">
-      <span class="choice-icon">↔️</span>
-      <strong>Compare</strong>
+    <button type="button" class="ref-choice-card ref-choice-panel" onclick="selectChoiceBoard(3)" id="choice-card-3">
+      <div class="ref-choice-card-header">↔️ Compare</div>
+      <span class="ref-choice-icon">↔️</span>
       <p>How is today&#039;s method different from a related idea you already know?</p>
       <span class="choice-check" id="choice-check-3">✓</span>
     </button></div>
-      <textarea class="slide-input-placeholder" rows="2" placeholder="Record which choice you made and your response..."></textarea>
-      <p class="card-desc-sm"><strong>Use vocabulary:</strong> Box Plot, Median, Quartile</p>
+    <textarea class="ref-lined-input" rows="2" placeholder="Record which choice you made and your response..."></textarea></div>
+      <aside class="ref-side-panel">
+        <div class="ref-side-header">💬 Talk It Over</div>
+        <div class="ref-side-body"><p class="ref-teacher-note ref-note-students"><span>👨‍🎓</span> Choose ONE option. Complete on paper or whiteboard.</p>
+    <p class="ref-teacher-note ref-note-time"><span>⏱️</span> 6 min</p>
+    <p class="ref-side-prompt"><strong>Vocabulary:</strong> Box Plot, Median, Quartile</p></div>
+      </aside>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="30">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="30"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-34" data-section="practice" data-slide-type="think-write">
-    <div class="learning-target-bar">
-    <span class="lt-icon">🎯</span>
-    <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
-  </div>
-    
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
-    <h3 class="slide-main-title">Think–Write–Respond</h3>
-    <div class="slide-card">
-      <span class="slide-badge badge-teal">✍️ THINK–WRITE–RESPOND</span>
-      <div class="teacher-cue teacher-cue-students">
-    <span class="teacher-cue-icon">👨‍🎓</span>
-    <span class="teacher-cue-label">Students:</span>
-    <span class="teacher-cue-text">Use evidence from today's lesson. Complete all four frames.</span>
-  </div>
-      <div class="teacher-cue teacher-cue-time">
-    <span class="teacher-cue-icon">⏱️</span>
-    <span class="teacher-cue-label">Time:</span>
-    <span class="teacher-cue-text">8 min</span>
-  </div>
-      <div class="key-idea-box"><strong>Key Idea:</strong><p>The box always holds the middle 50% of the data, and the line inside the box is the median.</p></div>
-      <div class="twr-frames">
-    <div class="twr-frame">
-      <div class="twr-frame-num">1</div>
-      <div class="twr-frame-body">
+        <div class="slide-body" id="slide-31" data-section="practice" data-slide-type="think-write">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Think Write</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
+    <div class="ref-two-col">
+      <div class="ref-main-panel">
+    <p class="ref-instruction">Use evidence from today&#039;s lesson to complete each frame.</p>
+    <div class="ref-twr-stack">
+    <div class="ref-twr-frame">
+      <div class="ref-twr-label">
+        <span class="ref-twr-num">Frame 1</span>
         <strong>Explain the Formula</strong>
-        <p class="twr-prompt">The key formula works because ___</p>
-        <textarea class="slide-input-placeholder twr-input" rows="2" placeholder="Write your response..."></textarea>
+      </div>
+      <div class="ref-twr-body">
+        <p class="ref-twr-prompt">The key formula works because ___</p>
+        <textarea class="ref-lined-input twr-input" rows="2" placeholder="Write your response..."></textarea>
       </div>
     </div>
-    <div class="twr-frame">
-      <div class="twr-frame-num">2</div>
-      <div class="twr-frame-body">
+    <div class="ref-twr-frame">
+      <div class="ref-twr-label">
+        <span class="ref-twr-num">Frame 2</span>
         <strong>Connect to Prior Learning</strong>
-        <p class="twr-prompt">This connects to what I already know about ___ because ___</p>
-        <textarea class="slide-input-placeholder twr-input" rows="2" placeholder="Write your response..."></textarea>
+      </div>
+      <div class="ref-twr-body">
+        <p class="ref-twr-prompt">This connects to what I already know about ___ because ___</p>
+        <textarea class="ref-lined-input twr-input" rows="2" placeholder="Write your response..."></textarea>
       </div>
     </div>
-    <div class="twr-frame">
-      <div class="twr-frame-num">3</div>
-      <div class="twr-frame-body">
+    <div class="ref-twr-frame">
+      <div class="ref-twr-label">
+        <span class="ref-twr-num">Frame 3</span>
         <strong>Justify a Method</strong>
-        <p class="twr-prompt">I can justify this method by showing ___</p>
-        <textarea class="slide-input-placeholder twr-input" rows="2" placeholder="Write your response..."></textarea>
+      </div>
+      <div class="ref-twr-body">
+        <p class="ref-twr-prompt">I can justify this method by showing ___</p>
+        <textarea class="ref-lined-input twr-input" rows="2" placeholder="Write your response..."></textarea>
       </div>
     </div>
-    <div class="twr-frame">
-      <div class="twr-frame-num">4</div>
-      <div class="twr-frame-body">
+    <div class="ref-twr-frame">
+      <div class="ref-twr-label">
+        <span class="ref-twr-num">Frame 4</span>
         <strong>Apply to a New Problem</strong>
-        <p class="twr-prompt">If I apply today&#039;s strategy to a new problem, I would ___</p>
-        <textarea class="slide-input-placeholder twr-input" rows="2" placeholder="Write your response..."></textarea>
       </div>
+      <div class="ref-twr-body">
+        <p class="ref-twr-prompt">If I apply today&#039;s strategy to a new problem, I would ___</p>
+        <textarea class="ref-lined-input twr-input" rows="2" placeholder="Write your response..."></textarea>
+      </div>
+    </div></div></div>
+      <aside class="ref-side-panel">
+        <div class="ref-side-header">💬 Talk It Over</div>
+        <div class="ref-side-body"><p class="ref-side-prompt"><strong>Key Idea:</strong> The box always holds the middle 50% of the data, and the line inside the box is the median.</p>
+    <p class="ref-teacher-note ref-note-students"><span>👨‍🎓</span> Complete all four frames using evidence from today&#039;s lesson.</p>
+    <p class="ref-teacher-note ref-note-time"><span>⏱️</span> 8 min</p></div>
+      </aside>
     </div></div>
-    </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="31">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="31"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-35" data-section="practice" data-slide-type="student-workspace">
+        <div class="slide-body" id="slide-32" data-section="practice" data-slide-type="student-workspace">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Student Workspace</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     <div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
@@ -2723,8 +3373,20 @@
         <button class="assess-btn" onclick="clearSketchCanvas()" style="margin-top:6px; font-size:10px;">Clear Sketch</button>
       </div>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="32">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="32"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-36" data-section="practice" data-slide-type="differentiation">
+        <div class="slide-body" id="slide-33" data-section="practice" data-slide-type="differentiation">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Differentiation</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
     <h3 class="slide-main-title">Differentiation Paths</h3>
@@ -2755,8 +3417,20 @@
     </div>
       </div>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="33">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="33"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-37" data-section="practice" data-slide-type="partner-activity">
+        <div class="slide-body" id="slide-34" data-section="practice" data-slide-type="partner-activity">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Partner Activity</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     <div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
@@ -2784,8 +3458,20 @@
       <p class="card-desc">Work with your partner on the practice problems at your differentiation path level. Explain each step using math vocabulary.</p>
       <textarea class="slide-input-placeholder" rows="4" placeholder="Partners: write one thing you learned from each other..."></textarea>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="34">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="34"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-38" data-section="check" data-slide-type="cfu">
+        <div class="slide-body" id="slide-35" data-section="check" data-slide-type="cfu">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">CFU 4</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
     <h3 class="slide-main-title">Check for Understanding #4</h3>
@@ -2809,8 +3495,20 @@
       <div id="cfu-feedback-4" class="cfu-feedback"></div>
       <p class="cfu-teacher-tip"><strong>Teacher:</strong> If &gt;30% thumbs down, re-teach with a fresh example before moving on.</p>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="35">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="35"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-39" data-section="connect" data-slide-type="real-world">
+        <div class="slide-body" id="slide-36" data-section="connect" data-slide-type="real-world">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Math in the Wild</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     <div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
@@ -2836,8 +3534,20 @@
         <textarea id="rw-connect-work" class="slide-input-placeholder" rows="4" placeholder="Write your connection..."></textarea>
       </div>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="36">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="36"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-40" data-section="connect" data-slide-type="turn-talk-timer">
+        <div class="slide-body" id="slide-37" data-section="connect" data-slide-type="turn-talk-timer">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Discuss Connect</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     <div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
@@ -2881,21 +3591,40 @@
         <p class="tt-extend"><strong>Extend:</strong> Critique: the fan focuses only on the maximum. What two box-plot features give a fairer comparison? Defend your choice.</p>
       </div>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="37">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="37"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-41" data-section="closure" data-slide-type="section">
-    <div class="section-divider">
-      <div class="section-divider-emoji">✅</div>
-      <h2 class="section-divider-title">CLOSURE &amp; REFLECT</h2>
-      <p class="section-divider-time">⏱️ ~8 min</p>
-      <div class="section-divider-bar"></div>
+        <div class="slide-body" id="slide-38" data-section="closure" data-slide-type="section">
+    <div class="ref-section-opener">
+      <div class="ref-section-emoji">✅</div>
+      <h2 class="ref-section-title">CLOSURE &amp; REFLECT</h2>
+      <p class="ref-section-time">⏱️ ~8 min</p>
+      <div class="ref-section-line"></div>
     </div></div>
 
-        <div class="slide-body" id="slide-42" data-section="closure" data-slide-type="exit-ticket"><div class="learning-target-bar">
-    <span class="lt-icon">🎯</span>
-    <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
-  </div>
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
-    <h3 class="slide-main-title">Exit Ticket</h3><div class="slide-card">
+        <div class="slide-body" id="slide-39" data-section="closure" data-slide-type="exit-ticket">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Exit Ticket</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
+    <div class="ref-exit-split">
+      <div class="ref-exit-reflection">
+        <div class="ref-panel-header ref-header-teal">Reflection</div>
+        <div class="ref-exit-body">
+    <p>Today I learned that ___ because ___.</p>
+    <textarea class="ref-lined-input" rows="3" placeholder="Write your reflection..."></textarea>
+    <p>One thing I am still not sure about is ___.</p>
+    <textarea class="ref-lined-input" rows="2" placeholder="Write your question..."></textarea></div>
+      </div>
+      <div class="ref-exit-quick">
+        <div class="ref-panel-header ref-header-navy">Quick Exit Ticket</div>
+        <div class="ref-exit-body">
       <div style="margin-top:2px;">
         <p style="font-size:11.5px; font-weight:700; margin:0 0 6px; color:var(--navy); line-height:1.3;">A box plot has Q1 = 20 and Q3 = 36. What is the IQR and what does it represent?</p>
         <div style="margin-top:4px;">
@@ -2915,81 +3644,63 @@
         </div>
         <div id="exit-ticket-feedback" style="font-size:10px; font-weight:700; min-height:14px; margin-top:2px;"></div>
       </div>
-    </div></div>
-
-        <div class="slide-body" id="slide-43" data-section="closure" data-slide-type="exit-ticket">
-    <div class="learning-target-bar">
-    <span class="lt-icon">🎯</span>
-    <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
-  </div>
-    
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
-    <h3 class="slide-main-title">Exit Ticket — Explain</h3>
-    <div class="slide-card">
-      <span class="slide-badge badge-teal">📝 EXIT #2</span>
-      <div class="teacher-cue teacher-cue-students">
-    <span class="teacher-cue-icon">👨‍🎓</span>
-    <span class="teacher-cue-label">Students:</span>
-    <span class="teacher-cue-text">Answer in 2–3 sentences. Use at least one vocabulary word.</span>
-  </div>
-      <div class="teacher-cue teacher-cue-time">
-    <span class="teacher-cue-icon">⏱️</span>
-    <span class="teacher-cue-label">Time:</span>
-    <span class="teacher-cue-text">3 min</span>
-  </div>
-      <p class="card-desc mc-stem">Explain the key idea from today&#039;s lesson in your own words. Use at least one vocabulary word from: Box Plot, Median, Quartile.</p>
-      <textarea id="exit-open-response" class="slide-input-placeholder" rows="5" placeholder="Type your explanation here..."></textarea>
-    </div></div>
-
-        <div class="slide-body" id="slide-44" data-section="closure" data-slide-type="goal-tracker">
-    <div class="learning-target-bar">
-    <span class="lt-icon">🎯</span>
-    <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
-  </div>
-    
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
-    <h3 class="slide-main-title">Goal Tracker</h3>
-    <div class="slide-card goal-tracker-card">
-      <span class="slide-badge badge-teal">🏆 GOAL TRACKER</span>
-      <div class="teacher-cue teacher-cue-students">
-    <span class="teacher-cue-icon">👨‍🎓</span>
-    <span class="teacher-cue-label">Students:</span>
-    <span class="teacher-cue-text">Circle the level that best describes where you are RIGHT NOW.</span>
-  </div>
-      <div class="teacher-cue teacher-cue-time">
-    <span class="teacher-cue-icon">⏱️</span>
-    <span class="teacher-cue-label">Time:</span>
-    <span class="teacher-cue-text">2 min</span>
-  </div>
-      <div class="goal-objective"><strong>My Goal:</strong> I can make and read a box plot to summarize a data set.</div>
-      <div class="goal-levels">
-    <button class="goal-level" onclick="selectGoalLevel(1)" id="goal-level-1">
-      <span class="goal-num">1</span>
-      <div class="goal-text">
-        <strong>Not Yet</strong>
-        <p>I need more help. The idea does not make sense to me yet.</p>
+    </div>
       </div>
+    </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="39">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="39"></span>
+    </footer></div>
+
+        <div class="slide-body" id="slide-40" data-section="closure" data-slide-type="goal-tracker">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Goal Tracker</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
+    <div class="ref-goal-banner"><strong>My Goal:</strong> I can make and read a box plot to summarize a data set.</div>
+    <div class="ref-goal-grid">
+    <button type="button" class="ref-goal-card ref-goal-coral" onclick="selectGoalLevel(1)" id="goal-level-1">
+      <span class="ref-goal-num">1</span>
+      <strong>Not Yet</strong>
+      <p>I need more help. The idea does not make sense to me yet.</p>
       <span class="goal-circle" id="goal-circle-1">○</span>
     </button>
-    <button class="goal-level" onclick="selectGoalLevel(2)" id="goal-level-2">
-      <span class="goal-num">2</span>
-      <div class="goal-text">
-        <strong>Getting There</strong>
-        <p>I understand the idea but I make mistakes when I work.</p>
-      </div>
+    <button type="button" class="ref-goal-card ref-goal-cream" onclick="selectGoalLevel(2)" id="goal-level-2">
+      <span class="ref-goal-num">2</span>
+      <strong>Getting There</strong>
+      <p>I understand the idea but I make mistakes when I work.</p>
       <span class="goal-circle" id="goal-circle-2">○</span>
     </button>
-    <button class="goal-level" onclick="selectGoalLevel(3)" id="goal-level-3">
-      <span class="goal-num">3</span>
-      <div class="goal-text">
-        <strong>Got It!</strong>
-        <p>I can solve problems independently and explain my thinking.</p>
-      </div>
+    <button type="button" class="ref-goal-card ref-goal-sage" onclick="selectGoalLevel(3)" id="goal-level-3">
+      <span class="ref-goal-num">3</span>
+      <strong>Got It!</strong>
+      <p>I can solve problems independently and explain my thinking.</p>
       <span class="goal-circle" id="goal-circle-3">○</span>
-    </button></div>
-    </div></div>
+    </button>
+    <button type="button" class="ref-goal-card ref-goal-panel" onclick="selectGoalLevel(4)" id="goal-level-4">
+      <span class="ref-goal-num">4</span>
+      <strong>Teaching Others</strong>
+      <p>I can explain the strategy to a classmate clearly.</p>
+      <span class="goal-circle" id="goal-circle-4">○</span>
+    </button></div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="40">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="40"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-45" data-section="closure" data-slide-type="interactive-mc">
+        <div class="slide-body" id="slide-41" data-section="closure" data-slide-type="interactive-mc">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Bonus Check</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     <div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can make and read a box plot to summarize a data set.</span>
@@ -3033,8 +3744,20 @@
         <div class="teacher-reveal-box"><strong>Teacher reveal:</strong> The line inside the box of a box plot always represents the median.</div>
       </div>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="41">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="41"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-46" data-section="closure" data-slide-type="exit-ticket">
+        <div class="slide-body" id="slide-42" data-section="closure" data-slide-type="exit-ticket">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Reflection</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
     <h3 class="slide-main-title">Reflection &amp; Self-Assessment</h3>
@@ -3058,8 +3781,20 @@
         </div>
       </div>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="42">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="42"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-47" data-section="closure" data-slide-type="activity-link">
+        <div class="slide-body" id="slide-43" data-section="closure" data-slide-type="activity-link">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Digital Activity</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
     <h3 class="slide-main-title">Continue Learning</h3>
@@ -3077,8 +3812,20 @@
     <span class="teacher-cue-text">Early finishers: open the activity. Everyone else: start homework tonight.</span>
   </div>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="43">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="43"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-48" data-section="closure" data-slide-type="activity-link">
+        <div class="slide-body" id="slide-44" data-section="closure" data-slide-type="activity-link">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Family Connection</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
     <h3 class="slide-main-title">Family Connection</h3>
@@ -3091,8 +3838,20 @@
     <span class="teacher-cue-text">Tell families: "Ask your student to teach you one thing from today's lesson."</span>
   </div>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="44">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="44"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-49" data-slide-type="teacher-notes" data-teacher-notes="Hide during presentation — use Notes panel (N key).">
+        <div class="slide-body" id="slide-45" data-slide-type="teacher-notes" data-teacher-notes="Hide during presentation — use Notes panel (N key).">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Teacher Notes</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
     <h3 class="slide-main-title">Teacher Notes</h3>
@@ -3113,8 +3872,20 @@
         <p class="notes-mistake"><strong>Common mistake:</strong> A common mistake in Display Data: Box Plots is skipping the key idea: &quot;The box always holds the middle 50% of the data, and the line inside the box is the median.&quot; — always check your work against this rule before you submit.</p>
       </div>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="45">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="45"></span>
+    </footer></div>
 
-        <div class="slide-body" id="slide-50" data-slide-type="teacher-notes" data-teacher-notes="CONFIDENTIAL — do not display to students.">
+        <div class="slide-body" id="slide-46" data-slide-type="teacher-notes" data-teacher-notes="CONFIDENTIAL — do not display to students.">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Answer Key</span>
+      <span class="ref-standard-pill">6.SP.4</span>
+    </header>
+      <div class="ref-slide-content">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
     <h3 class="slide-main-title">Answer Key (Teacher Appendix)</h3>
@@ -3122,6 +3893,10 @@
       <p class="answer-key-note">Hide this slide during presentation or move to the end of your copy.</p>
       <p class="answer-key-item">✓ Practice 1: Team A&#039;s middle 50% is more consistent; Team B&#039;s is more spread out — A smaller IQR means the middle 50% of data is more tightly clustered. Team A&#039;s scoring is more consistent in the middle range.</p><p class="answer-key-item">✓ Practice 2: 13 — IQR = Q3 − Q1 = 28 − 15 = 13.</p><p class="answer-key-item">✓ Practice 3: The median — The line inside the box of a box plot always represents the median.</p><p class="answer-key-item">✓ Practice 4: 50% — The box in a box plot contains the middle 50% of the data (from Q1 to Q3).</p><p class="answer-key-item">✓ Exit ticket: IQR = 16; it is the spread of the middle 50% of the data — IQR = Q3 − Q1 = 36 − 20 = 16. The IQR tells you the range of the middle 50% of the data.</p>
     </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="46">
+      <span>Reveal Math Grade 6 · Unit 8 · 8-5</span>
+      <span class="ref-footer-dots" data-for-slide="46"></span>
+    </footer></div>
         
         <!-- Subtle Slide Watermark -->
         <div class="slide-watermark">
@@ -3147,7 +3922,7 @@
   <!-- Presenter Controls HUD (Visible in fullscreen Present Mode) -->
   <div class="presenter-hud" id="presenter-hud">
     <button class="hud-btn" onclick="prevSlide()" title="Previous (←)">◀</button>
-    <span id="hud-page-indicator">1 / 50</span>
+    <span id="hud-page-indicator">1 / 46</span>
     <button class="hud-btn" onclick="nextSlide()" title="Next (→)">▶</button>
     <button class="notes-toolbar-btn" onclick="toggleNotesPanel()" title="Notes (N)">📝 Notes</button>
     <button class="notes-toolbar-btn" onclick="window.print()" title="Print">🖨️</button>
@@ -3157,10 +3932,10 @@
 
   <script>
     let currentSlide = 1;
-    const totalSlides = 50;
+    const totalSlides = 46;
     
-    const slideTitles = ["TITLE","HOW TO USE","LEARNING TARGETS","AGENDA","LAUNCH SECTION","WARM-UP HOOK","CFU 1","NOTICE &AMP; WONDER","CONCEPT LAUNCH","I DO — WATCH ME","I DO — KEY STEP","WE DO — TOGETHER","CFU 2","YOU DO — YOUR TURN","VOCABULARY SECTION","VOCABULARY — BOX PLOT","VOCABULARY — MEDIAN","VOCABULARY — QUARTILE","VOCABULARY — INTERQUARTILE RANGE","WHICH WORD?","CFU 3","TURN & TALK","EXPLORE SECTION","VISUAL MODEL","EXPLORE","WHITEBOARD CFU","DISCUSS EXPLORE","PRACTICE A","PRACTICE B","STATISTICAL VS NOT SORT","DRAG SORT","ERROR ANALYSIS","CHOICE BOARD","THINK WRITE","STUDENT WORKSPACE","DIFFERENTIATION","PARTNER ACTIVITY","CFU 4","MATH IN THE WILD","DISCUSS CONNECT","CLOSURE SECTION","EXIT TICKET","EXIT TICKET EXPLAIN","GOAL TRACKER","BONUS CHECK","REFLECTION","DIGITAL ACTIVITY","FAMILY CONNECTION","TEACHER NOTES","ANSWER KEY"];
-    const teacherNotesMap = {"1":"Display while students enter. Start presenter mode with ▶ Present.","2":"First day with deck? Spend 30 sec here. Skip on repeat lessons.","3":"Post objectives on board. Return to these at closure.","4":"Adjust minutes based on your block schedule.","6":"Students name the five-number summary (min, Q1, median, Q3, max) and find the median (14) for the 11 ordered scores.","9":"The box always holds the middle 50% of the data, and the line inside the box is the median.","10":"Reveal one step at a time. Do NOT show all steps at once.","11":"Second reveal sequence — focus on the most critical step.","12":"Call on students to predict each step before revealing.","16":"A graph that shows how data is spread using five key numbers.","17":"The middle number that splits the data in half.","18":"Numbers that split the data into four equal parts.","19":"The spread of the middle half of the data (Q3 − Q1).","22":"Students name the five-number summary (min, Q1, median, Q3, max) and find the median (14) for the 11 ordered scores.","25":"Find the five-number summary for the Wildcats' scoring data: 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. Place each value on the number line.","32":"A common mistake in Display Data: Box Plots is skipping the key idea: \"The box always holds the middle 50% of the data, and the line inside the box is the median.\" — always check your work against this rule before you submit.","49":"Hide during presentation — use Notes panel (N key).","50":"CONFIDENTIAL — do not display to students."};
+    const slideTitles = ["TITLE","HOW TO USE","LEARNING TARGETS","AGENDA","LAUNCH SECTION","WARM-UP HOOK","CFU 1","BE CURIOUS","CONCEPT LAUNCH","I DO — WATCH ME","I DO — KEY STEP","WE DO — TOGETHER","CFU 2","YOU DO — YOUR TURN","VOCABULARY SECTION","VOCABULARY","WHICH WORD?","CFU 3","TURN & TALK","EXPLORE SECTION","VISUAL MODEL","EXPLORE","WHITEBOARD CFU","DISCUSS EXPLORE","PRACTICE A","PRACTICE B","STATISTICAL VS NOT SORT","SORT IT OUT","ERROR ANALYSIS","CHOICE BOARD","THINK WRITE","STUDENT WORKSPACE","DIFFERENTIATION","PARTNER ACTIVITY","CFU 4","MATH IN THE WILD","DISCUSS CONNECT","CLOSURE SECTION","EXIT TICKET","GOAL TRACKER","BONUS CHECK","REFLECTION","DIGITAL ACTIVITY","FAMILY CONNECTION","TEACHER NOTES","ANSWER KEY"];
+    const teacherNotesMap = {"1":"Display while students enter. Start presenter mode with ▶ Present.","2":"First day with deck? Spend 30 sec here. Skip on repeat lessons.","3":"Post objectives on board. Return to these at closure.","4":"Adjust minutes based on your block schedule.","6":"Students name the five-number summary (min, Q1, median, Q3, max) and find the median (14) for the 11 ordered scores.","9":"The box always holds the middle 50% of the data, and the line inside the box is the median.","10":"Reveal one step at a time. Do NOT show all steps at once.","11":"Second reveal sequence — focus on the most critical step.","12":"Call on students to predict each step before revealing.","16":"Post vocabulary on board for reference.","19":"Students name the five-number summary (min, Q1, median, Q3, max) and find the median (14) for the 11 ordered scores.","22":"Find the five-number summary for the Wildcats' scoring data: 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. Place each value on the number line.","29":"A common mistake in Display Data: Box Plots is skipping the key idea: \"The box always holds the middle 50% of the data, and the line inside the box is the median.\" — always check your work against this rule before you submit.","45":"Hide during presentation — use Notes panel (N key).","46":"CONFIDENTIAL — do not display to students."};
     
     // Concept Intro Tab Data
     const conceptData = {
@@ -3250,7 +4025,19 @@
       }
       
       updateNotesPanel(num);
+      updateRefFooterDots(num);
       setTimeout(resizeSlides, 50);
+    }
+
+    function updateRefFooterDots(num) {
+      const maxDots = Math.min(totalSlides, 12);
+      document.querySelectorAll('.ref-footer-dots').forEach((el) => {
+        el.innerHTML = Array.from({ length: maxDots }, (_, i) => {
+          const n = i + 1;
+          const cls = n === num ? 'ref-dot ref-dot-active' : n < num ? 'ref-dot ref-dot-done' : 'ref-dot';
+          return '<span class="' + cls + '"></span>';
+        }).join('');
+      });
     }
 
     function updateNotesPanel(num) {

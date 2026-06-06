@@ -1,9 +1,25 @@
 /**
- * TPT slide deck builder v3 — reference PPTX quality+.
- * Warm student backgrounds, varied unit-specific interactives, Reveal Math branding.
+ * TPT slide deck builder v3 — reference PPTX pixel-match.
+ * Navy header bars, sand backgrounds, sage side panels, Reveal Math Grade 6.
  */
 
 import { getActivityPlan, ACTIVITY_VARIANTS } from './slide-activity-map.mjs';
+import {
+  refTitleOpener,
+  refSectionOpener,
+  refSlideFrame,
+  refTwoColumn,
+  refChoiceBoardGrid,
+  refThinkWriteFrames,
+  refGoalTrackerLayout,
+  refExitSplit,
+  refVocabTable,
+  refNoticeWonder,
+  refErrorLayout,
+  refSortLayout,
+  refSortBucket,
+  refTeacherNote,
+} from './slide-reference-theme.mjs';
 
 function esc(str) {
   return String(str || '')
@@ -39,7 +55,18 @@ function wrapSlide(id, active, inner, meta = {}) {
   const section = meta.section ? ` data-section="${esc(meta.section)}"` : '';
   const type = meta.type ? ` data-slide-type="${esc(meta.type)}"` : '';
   const notes = meta.notes ? ` data-teacher-notes="${esc(meta.notes)}"` : '';
-  return `<div class="slide-body${active ? ' active' : ''}" id="slide-${id}"${section}${type}${notes}>${inner}</div>`;
+  let body = inner;
+  if (meta.type === 'title' || meta.type === 'section') {
+    body = inner;
+  } else if (!meta.raw) {
+    const slideTitle = meta.slideTitle || 'Slide';
+    body = refSlideFrame(slideTitle, meta.standard || '', inner, { variant: 'content' });
+    body += `<footer class="ref-slide-footer" data-slide-num="${id}">
+      <span>Reveal Math Grade 6 · Unit ${esc(meta.unit || '')} · ${esc(meta.lessonId || '')}</span>
+      <span class="ref-footer-dots" data-for-slide="${id}"></span>
+    </footer>`;
+  }
+  return `<div class="slide-body${active ? ' active' : ''}" id="slide-${id}"${section}${type}${notes}>${body}</div>`;
 }
 
 function thumb(id, label, preview, active = false) {
@@ -89,15 +116,13 @@ function buildRevealSteps(lines, prefix, title, themeEmoji, themeName, contentOb
     </div>`;
   }).join('');
 
-  return `
-    ${learningHeader(contentObj)}
-    ${slideHeader(themeEmoji, themeName, title)}
-    <div class="slide-card reveal-card">
-      ${teacherCue('say', 'Reveal one step at a time. Pause after each step for students to process.')}
-      ${teacherCue('time', '3–4 min')}
-      <div class="reveal-steps-container">${steps || '<p class="card-desc">No steps defined.</p>'}</div>
-      <button class="assess-btn reveal-all-btn" onclick="revealAllSteps('${prefix}', ${(lines || []).length})" style="margin-top:10px; font-size:10px;">Reveal All Steps</button>
-    </div>`;
+  const main = `
+    <div class="reveal-steps-container">${steps || '<p class="card-desc">No steps defined.</p>'}</div>
+    <button class="assess-btn reveal-all-btn" onclick="revealAllSteps('${prefix}', ${(lines || []).length})" style="margin-top:10px; font-size:10px;">Reveal All Steps</button>`;
+  const side = `${refTeacherNote('say', 'Reveal one step at a time. Pause after each step.')}
+    ${refTeacherNote('time', '3–4 min')}
+    <p class="ref-side-prompt"><strong>Target:</strong> ${esc(contentObj)}</p>`;
+  return refTwoColumn(main, side);
 }
 
 function slideHeader(themeEmoji, themeName, title) {
@@ -419,71 +444,35 @@ function buildVocabClozeSlide(vocabList, themeEmoji, themeName, contentObj) {
 }
 
 function buildSectionDivider(section, minutes, themeEmoji) {
-  return `
-    <div class="section-divider">
-      <div class="section-divider-emoji">${themeEmoji}</div>
-      <h2 class="section-divider-title">${section}</h2>
-      <p class="section-divider-time">⏱️ ~${minutes} min</p>
-      <div class="section-divider-bar"></div>
-    </div>`;
+  return refSectionOpener(section, minutes, themeEmoji);
 }
 
 function buildChoiceBoardSlide(contentObj, themeEmoji, themeName, vocabList) {
   const terms = (vocabList || []).slice(0, 3).map((v) => v.term).filter(Boolean);
   const choices = [
-    { icon: '✏️', title: 'Draw & Label', desc: 'Sketch a visual model. Label key parts using today\'s vocabulary.' },
-    { icon: '💬', title: 'Explain It', desc: 'Write 2–3 sentences explaining the key idea in your own words.' },
-    { icon: '🧮', title: 'Solve It', desc: 'Work one practice problem showing each step clearly.' },
-    { icon: '↔️', title: 'Compare', desc: 'How is today\'s method different from a related idea you already know?' },
+    { icon: '✏️', title: '✏️ Draw & Label', desc: 'Sketch a visual model. Label key parts using today\'s vocabulary.' },
+    { icon: '💬', title: '💬 Explain It', desc: 'Write 2–3 sentences explaining the key idea in your own words.' },
+    { icon: '🧮', title: '🧮 Solve It', desc: 'Work one practice problem showing each step clearly.' },
+    { icon: '↔️', title: '↔️ Compare', desc: 'How is today\'s method different from a related idea you already know?' },
   ];
-  const cards = choices.map((c, i) => `
-    <button class="choice-board-card" onclick="selectChoiceBoard(${i})" id="choice-card-${i}">
-      <span class="choice-icon">${c.icon}</span>
-      <strong>${esc(c.title)}</strong>
-      <p>${esc(c.desc)}</p>
-      <span class="choice-check" id="choice-check-${i}">✓</span>
-    </button>`).join('');
-
-  return `
-    ${learningHeader(contentObj)}
-    ${slideHeader(themeEmoji, themeName, 'Choice Board — Show What You Know')}
-    <div class="slide-card">
-      <span class="slide-badge badge-amber">🎯 CHOICE BOARD</span>
-      ${teacherCue('students', 'Choose ONE option to demonstrate understanding. Complete it on paper or whiteboard.')}
-      ${teacherCue('time', '6 min')}
-      <div class="choice-board-grid">${cards}</div>
-      <textarea class="slide-input-placeholder" rows="2" placeholder="Record which choice you made and your response..."></textarea>
-      ${terms.length ? `<p class="card-desc-sm"><strong>Use vocabulary:</strong> ${terms.map((t) => esc(t)).join(', ')}</p>` : ''}
-    </div>`;
+  const side = `${refTeacherNote('students', 'Choose ONE option. Complete on paper or whiteboard.')}
+    ${refTeacherNote('time', '6 min')}
+    ${terms.length ? `<p class="ref-side-prompt"><strong>Vocabulary:</strong> ${terms.map((t) => esc(t)).join(', ')}</p>` : ''}`;
+  return refTwoColumn(refChoiceBoardGrid(choices), side);
 }
 
 function buildThinkWriteSlide(contentObj, themeEmoji, themeName, keyIdea) {
   const frames = [
-    { title: 'Explain the Formula', prompt: `The key formula works because ___`, },
-    { title: 'Connect to Prior Learning', prompt: `This connects to what I already know about ___ because ___`, },
-    { title: 'Justify a Method', prompt: `I can justify this method by showing ___`, },
-    { title: 'Apply to a New Problem', prompt: `If I apply today's strategy to a new problem, I would ___`, },
+    { title: 'Explain the Formula', prompt: `The key formula works because ___` },
+    { title: 'Connect to Prior Learning', prompt: `This connects to what I already know about ___ because ___` },
+    { title: 'Justify a Method', prompt: `I can justify this method by showing ___` },
+    { title: 'Apply to a New Problem', prompt: `If I apply today's strategy to a new problem, I would ___` },
   ];
-  const frameHtml = frames.map((f, i) => `
-    <div class="twr-frame">
-      <div class="twr-frame-num">${i + 1}</div>
-      <div class="twr-frame-body">
-        <strong>${esc(f.title)}</strong>
-        <p class="twr-prompt">${esc(f.prompt)}</p>
-        <textarea class="slide-input-placeholder twr-input" rows="2" placeholder="Write your response..."></textarea>
-      </div>
-    </div>`).join('');
-
-  return `
-    ${learningHeader(contentObj)}
-    ${slideHeader(themeEmoji, themeName, 'Think–Write–Respond')}
-    <div class="slide-card">
-      <span class="slide-badge badge-teal">✍️ THINK–WRITE–RESPOND</span>
-      ${teacherCue('students', 'Use evidence from today\'s lesson. Complete all four frames.')}
-      ${teacherCue('time', '8 min')}
-      ${keyIdea ? `<div class="key-idea-box"><strong>Key Idea:</strong><p>${esc(keyIdea)}</p></div>` : ''}
-      <div class="twr-frames">${frameHtml}</div>
-    </div>`;
+  const main = refThinkWriteFrames(frames);
+  const side = `${keyIdea ? `<p class="ref-side-prompt"><strong>Key Idea:</strong> ${esc(keyIdea)}</p>` : ''}
+    ${refTeacherNote('students', 'Complete all four frames using evidence from today\'s lesson.')}
+    ${refTeacherNote('time', '8 min')}`;
+  return refTwoColumn(main, side);
 }
 
 function buildGoalTrackerSlide(contentObj, themeEmoji, themeName) {
@@ -491,27 +480,9 @@ function buildGoalTrackerSlide(contentObj, themeEmoji, themeName) {
     { num: 1, label: 'Not Yet', desc: 'I need more help. The idea does not make sense to me yet.' },
     { num: 2, label: 'Getting There', desc: 'I understand the idea but I make mistakes when I work.' },
     { num: 3, label: 'Got It!', desc: 'I can solve problems independently and explain my thinking.' },
+    { num: 4, label: 'Teaching Others', desc: 'I can explain the strategy to a classmate clearly.' },
   ];
-  const levelHtml = levels.map((l) => `
-    <button class="goal-level" onclick="selectGoalLevel(${l.num})" id="goal-level-${l.num}">
-      <span class="goal-num">${l.num}</span>
-      <div class="goal-text">
-        <strong>${esc(l.label)}</strong>
-        <p>${esc(l.desc)}</p>
-      </div>
-      <span class="goal-circle" id="goal-circle-${l.num}">○</span>
-    </button>`).join('');
-
-  return `
-    ${learningHeader(contentObj)}
-    ${slideHeader(themeEmoji, themeName, 'Goal Tracker')}
-    <div class="slide-card goal-tracker-card">
-      <span class="slide-badge badge-teal">🏆 GOAL TRACKER</span>
-      ${teacherCue('students', 'Circle the level that best describes where you are RIGHT NOW.')}
-      ${teacherCue('time', '2 min')}
-      <div class="goal-objective"><strong>My Goal:</strong> ${esc(contentObj)}</div>
-      <div class="goal-levels">${levelHtml}</div>
-    </div>`;
+  return refGoalTrackerLayout(contentObj, levels);
 }
 
 function buildAreaGridWidget() {
@@ -708,7 +679,13 @@ export function buildTptSlideDeckV3(ctx) {
 
   const add = (preview, titleText, bodyHtml, meta = {}) => {
     n += 1;
-    slides.push(wrapSlide(n, n === 1, bodyHtml, meta));
+    slides.push(wrapSlide(n, n === 1, bodyHtml, {
+      ...meta,
+      slideTitle: meta.slideTitle || titleText,
+      standard,
+      unit,
+      lessonId,
+    }));
     thumbs.push(thumb(n, `Slide ${n}`, preview, n === 1));
     slideTitles.push(titleText.toUpperCase());
     if (meta.notes) teacherNotesMap[n] = meta.notes;
@@ -734,22 +711,20 @@ export function buildTptSlideDeckV3(ctx) {
   const langObjEs = data.languageObjectiveEs || '';
   const activityPlan = getActivityPlan(unit, standard, lessonId);
 
-  // 1 Title — Reveal Math Grade 6 session opener (reference PPTX style)
-  add('🏷️ Title', 'Title', `
-    <div class="title-slide title-slide-v3">
-      <div class="title-session-badge">Reveal Math Grade 6 · Unit ${unit}</div>
-      <div class="title-emoji">${esc(themeEmoji)}</div>
-      <h1 class="title-heading">${esc(data.title || title)}</h1>
-      <p class="title-standard">${esc(standard)}</p>
-      <p class="title-meta">Unit ${unit} · Lesson ${esc(lessonId)}</p>
-      <div class="title-objectives-preview">
-        <strong>🎯 Learning Target</strong>
-        <p>${esc(contentObj)}</p>
-      </div>
-      <span class="slide-badge title-theme-badge">${esc(themeName)}</span>
-      <p class="title-time">⏱️ ${esc(timeEstimate || '~45 min')}</p>
-      ${googleSlidesUrl ? `<a href="${esc(googleSlidesUrl)}" target="_blank" rel="noopener" class="title-gs-link">↗ Open editable Google Slides copy</a>` : ''}
-    </div>`, { type: 'title', section: 'launch', notes: 'Display while students enter. Start presenter mode with ▶ Present.' });
+  // 1 Title — reference PPTX session opener (navy spine + notebook fields)
+  const sessionNum = parseInt(String(lessonId).split('-')[1], 10) || 1;
+  add('🏷️ Title', 'Title', refTitleOpener({
+    sessionNum,
+    standard,
+    unit,
+    lessonId,
+    title: data.title || title,
+    subject: themeName || 'Mathematics',
+    contentObj,
+    themeEmoji,
+    timeEstimate: timeEstimate || '~45 min',
+    googleSlidesUrl,
+  }), { type: 'title', section: 'launch', notes: 'Display while students enter. Start presenter mode with ▶ Present.' });
 
   // 2 How to use
   add('📖 Guide', 'How to Use', `
@@ -767,21 +742,16 @@ export function buildTptSlideDeckV3(ctx) {
     </div>`, { type: 'how-to', notes: 'First day with deck? Spend 30 sec here. Skip on repeat lessons.' });
 
   // 3 Learning targets
-  add('🎯 Targets', 'Learning Targets', `
-    ${slideHeader(themeEmoji, themeName, 'Learning Targets')}
-    <div class="slide-grid-2">
-      <div class="slide-card">
-        <h2 class="card-title">🎯 Content Objective <span class="bilingual-tag">/ Objetivo de contenido</span></h2>
-        <p class="objective-text">${esc(contentObj)}</p>
-        ${teacherCue('say', 'Read the content objective aloud. Ask: "What will you be able to do by the end of class?"')}
-      </div>
-      <div class="slide-card">
-        <h2 class="card-title">🗣️ Language Objective <span class="bilingual-tag">/ Objetivo de lenguaje</span></h2>
-        <p class="objective-text">${esc(langObj)}</p>
-        ${langObjEs ? `<p class="objective-text-es">${esc(langObjEs)}</p>` : ''}
-        ${teacherCue('ask', 'Which vocabulary words do you already know? Which are new?')}
-      </div>
-    </div>`, { type: 'learning-targets', notes: 'Post objectives on board. Return to these at closure.' });
+  add('🎯 Targets', 'Learning Targets', refTwoColumn(`
+    <h2 class="card-title">🎯 Content Objective <span class="bilingual-tag">/ Objetivo de contenido</span></h2>
+    <p class="objective-text">${esc(contentObj)}</p>
+  `, `
+    <h2 class="card-title">🗣️ Language Objective <span class="bilingual-tag">/ Objetivo de lenguaje</span></h2>
+    <p class="objective-text">${esc(langObj)}</p>
+    ${langObjEs ? `<p class="objective-text-es">${esc(langObjEs)}</p>` : ''}
+    ${refTeacherNote('say', 'Read objectives aloud. Ask: What will you be able to do by the end of class?')}
+    ${refTeacherNote('ask', 'Which vocabulary words do you already know? Which are new?')}
+  `, 'Today\'s Objectives'), { type: 'learning-targets', slideTitle: 'Learning Targets', notes: 'Post objectives on board. Return to these at closure.' });
 
   // 4 Agenda
   const agendaSteps = [
@@ -814,42 +784,23 @@ export function buildTptSlideDeckV3(ctx) {
 
   // 6 Warm-up
   const warmupQ = talks[0]?.question || launchNarrative;
-  add('🔥 Warm-Up', 'Warm-Up Hook', `
-    ${learningHeader(contentObj)}
-    ${slideHeader(themeEmoji, themeName, 'Warm-Up Hook')}
-    <div class="slide-card warmup-card">
-      <span class="slide-badge badge-amber">⏱️ 3 MIN · THINK-PAIR-SHARE</span>
-      ${teacherCue('say', 'Think silently for 30 seconds, then share with your partner.')}
-      ${teacherCue('ask', esc(warmupQ))}
-      ${teacherCue('time', '3 min')}
-      <p class="warmup-question">${esc(warmupQ)}</p>
-      <div class="warmup-vocab">${launchVocabBankHtml}</div>
-      <textarea class="slide-input-placeholder" rows="2" placeholder="Jot one idea from your partner..."></textarea>
-    </div>`, { type: 'hook', section: 'launch', notes: talks[0]?.listenFor || 'Listen for prior knowledge connections.' });
+  add('🔥 Warm-Up', 'Warm-Up Hook', refTwoColumn(`
+    <p class="ref-instruction">⏱️ 3 MIN · THINK-PAIR-SHARE</p>
+    <p class="warmup-question">${esc(warmupQ)}</p>
+    <div class="warmup-vocab">${launchVocabBankHtml}</div>
+    <textarea class="ref-lined-input" rows="2" placeholder="Jot one idea from your partner..."></textarea>
+  `, `${refTeacherNote('say', 'Think silently for 30 seconds, then share with your partner.')}
+    ${refTeacherNote('ask', warmupQ)}
+    ${refTeacherNote('time', '3 min')}`), { type: 'hook', section: 'launch', slideTitle: 'Warm-Up Hook', notes: talks[0]?.listenFor || 'Listen for prior knowledge connections.' });
 
   maybeCfu('Can you restate the warm-up question in your own words?');
 
-  // 7 Notice & Wonder
-  add('👀 Launch', 'Notice &amp; Wonder', `
-    ${learningHeader(contentObj)}
-    ${slideHeader(themeEmoji, themeName, 'Scenario Launch')}
-    <div class="slide-grid-2">
-      <div class="slide-card">
-        <h2 class="card-title">📋 ${esc(launchBadge)}</h2>
-        ${teacherCue('say', 'Read the scenario aloud slowly. Give students 10 seconds of think time.')}
-        <p class="card-desc">${esc(launchNarrative)}</p>
-      </div>
-      <div class="slide-card nw-container">
-        <div class="nw-box nw-box-notice">
-          <h4>👀 Notice:</h4><div class="nw-box-stems">${noticeStemsHtml}</div>
-          <textarea id="student-notice" class="slide-input-placeholder" rows="2" placeholder="Type what you notice..."></textarea>
-        </div>
-        <div class="nw-box nw-box-wonder">
-          <h4>💭 Wonder:</h4><div class="nw-box-stems">${wonderStemsHtml}</div>
-          <textarea id="student-wonder" class="slide-input-placeholder" rows="2" placeholder="Type what you wonder..."></textarea>
-        </div>
-      </div>
-    </div>`, { type: 'notice-wonder', section: 'launch' });
+  // 7 Notice & Wonder — reference Be Curious layout
+  add('👀 Launch', 'Be Curious', refNoticeWonder(
+    `<p class="ref-instruction">${esc(launchBadge)}</p><p class="card-desc">${esc(launchNarrative)}</p>${svgVisual || ''}`,
+    noticeStemsHtml,
+    wonderStemsHtml
+  ), { type: 'notice-wonder', section: 'launch', slideTitle: 'Be Curious' });
 
   // 8 Concept
   add('💡 Concept', 'Concept Launch', `
@@ -892,15 +843,13 @@ export function buildTptSlideDeckV3(ctx) {
   // Section: Vocabulary
   add('📚 Vocab', 'Vocabulary Section', buildSectionDivider('VOCABULARY', 8, '📚'), { type: 'section', section: 'vocabulary' });
 
-  // Rich vocab — 1 term per slide (up to 4)
-  for (let v = 0; v < Math.min(vocabList.length, 4); v++) {
-    const term = vocabList[v];
-    add('📝 Vocab', `Vocabulary — ${term.term || v + 1}`, `
-      ${learningHeader(contentObj)}
-      ${slideHeader(themeEmoji, themeName, 'Visual Vocabulary')}
-      ${buildVocabRichCard(term, themeEmoji)}
-      ${teacherCue('say', `Say the term, definition, and example. Students repeat.`)}
-    `, { type: 'vocab-card', section: 'vocabulary', notes: term.definition || '' });
+  // Vocabulary table — reference navy header row (all terms on one slide)
+  if (vocabList.length) {
+    add('📝 Vocab', 'Vocabulary', refTwoColumn(
+      refVocabTable(vocabList.slice(0, 6)),
+      `${refTeacherNote('say', 'Say each term, definition, and example. Students repeat.')}
+       ${refTeacherNote('time', '5 min')}`
+    ), { type: 'vocab-card', section: 'vocabulary', slideTitle: 'Vocabulary', notes: 'Post vocabulary on board for reference.' });
   }
 
   const vocabMatch = buildVocabMatchSlide(vocabList, themeEmoji, themeName, contentObj);
@@ -958,15 +907,33 @@ export function buildTptSlideDeckV3(ctx) {
     add(pMeta.icon || '🎯', pMeta.label || 'Activity', primaryActivity, { type: activityPlan.primary, section: 'practice' });
   }
 
-  // Real drag sort (secondary for applicable units)
+  // Sort It Out — reference card bank + colored buckets
   if (activityPlan.secondary === 'drag-sort-ratios' || dragSort) {
-    const dragHtml = buildRealDragSortSlide(dragSort, themeEmoji, themeName, contentObj, lessonId.replace(/[^a-z0-9]/gi, ''));
-    if (dragHtml) add('↕️ Sort', 'Drag Sort', dragHtml, { type: 'drag-sort', section: 'practice' });
+    const sortId = lessonId.replace(/[^a-z0-9]/gi, '');
+    const items = (dragSort?.items || []).slice(0, 8);
+    const categories = dragSort?.categories || [{ id: 'a', label: 'Category A' }, { id: 'b', label: 'Category B' }];
+    const colorClasses = ['ref-bucket-teal', 'ref-bucket-navy', 'ref-bucket-slate'];
+    const itemButtons = items.map((item, idx) =>
+      `<div class="drag-item" draggable="true" data-item-idx="${idx}" data-correct-cat="${esc(item.category || '')}" id="drag-item-${sortId}-${idx}"><span class="drag-grip">⠿</span>${esc(item.text || item)}</div>`
+    ).join('');
+    const buckets = categories.map((c, i) => refSortBucket(c.label || c, colorClasses[i % 3], c.id || c.label || c)).join('');
+    const sortMain = refSortLayout(
+      dragSort?.instructions || 'Sort each label into the correct box.',
+      buckets,
+      itemButtons,
+      'Which cards did you put in both boxes? Explain your reasoning.'
+    );
+    add('↕️ Sort', 'Sort It Out', sortMain, { type: 'drag-sort', section: 'practice', slideTitle: 'Sort It Out' });
   }
 
-  // Error analysis (when not used as primary)
+  // Error analysis — reference red badge + sage side panel
   if (activityPlan.primary !== 'error-analysis') {
-    add('⚠️ Error', 'Error Analysis', `${learningHeader(contentObj)}${slideHeader(themeEmoji, themeName, 'Find the Mistake')}${buildErrorAnalysisSlide(practiceHtml)}`, { type: 'error-analysis', section: 'practice', notes: data.practice?.commonMistake || '' });
+    const errMain = refErrorLayout(
+      `<p>${esc(data.practice?.commonMistake || 'A student made an error using today\'s strategy.')}</p>`,
+      practiceHtml || '<p>A = b × h = 70</p>',
+      'What mistake did the student make? How would you help them fix it?'
+    );
+    add('⚠️ Error', 'Error Analysis', errMain, { type: 'error-analysis', section: 'practice', slideTitle: 'Error Analysis', notes: data.practice?.commonMistake || '' });
   }
 
   // Choice board (reference PPTX slide 8)
@@ -1021,10 +988,16 @@ export function buildTptSlideDeckV3(ctx) {
   // Section: Closure
   add('✅ Close', 'Closure Section', buildSectionDivider('CLOSURE &amp; REFLECT', 8, '✅'), { type: 'section', section: 'closure' });
 
-  // Exit tickets
-  add('📝 Exit', 'Exit Ticket', `${learningHeader(contentObj)}${slideHeader(themeEmoji, themeName, 'Exit Ticket')}<div class="slide-card">${exitTicketHtml}</div>`, { type: 'exit-ticket', section: 'closure' });
-
-  add('📝 Exit 2', 'Exit Ticket Explain', buildExitTicketOpen(exitOpenStem || `Explain the key idea from today's lesson in your own words. Use at least one vocabulary word.`, themeEmoji, themeName, contentObj), { type: 'exit-ticket', section: 'closure' });
+  // Exit tickets — reference teal/coral split
+  const exitReflection = `
+    <p>Today I learned that ___ because ___.</p>
+    <textarea class="ref-lined-input" rows="3" placeholder="Write your reflection..."></textarea>
+    <p>One thing I am still not sure about is ___.</p>
+    <textarea class="ref-lined-input" rows="2" placeholder="Write your question..."></textarea>`;
+  const exitQuick = exitTicketHtml || `
+    <p class="ref-instruction">${esc(exitOpenStem || 'Explain the key idea in your own words.')}</p>
+    <textarea class="ref-lined-input" rows="4" placeholder="Type your answer..."></textarea>`;
+  add('📝 Exit', 'Exit Ticket', refExitSplit(exitReflection, exitQuick), { type: 'exit-ticket', section: 'closure', slideTitle: 'Exit Ticket' });
 
   // Goal tracker (reference PPTX slide 13)
   add('🏆 Goal', 'Goal Tracker', buildGoalTrackerSlide(contentObj, themeEmoji, themeName), { type: 'goal-tracker', section: 'closure' });

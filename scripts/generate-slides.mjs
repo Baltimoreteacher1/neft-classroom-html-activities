@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { buildTptSlideDeckV3 } from './lib/tpt-slide-deck-v3.mjs';
 import { getUnitPalette, paletteToCssVars } from './lib/slide-theme-palettes.mjs';
+import { REFERENCE_CSS, tokensToCssVars } from './lib/slide-reference-theme.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
@@ -861,7 +862,7 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
-    :root {${paletteToCssVars(unitPalette, getThemeColor(data.theme))}
+    :root {${tokensToCssVars(unitPalette, getThemeColor(data.theme))}
     }
     * { box-sizing: border-box; }
     body {
@@ -1035,28 +1036,21 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
       overflow: hidden;
     }
     
-    /* Slide Canvas: warm student-friendly backgrounds per section */
+    /* Slide Canvas: reference sand background */
     .slide-canvas {
       width: 960px;
       height: 540px;
-      background-color: var(--bg-warm);
-      background-image:
-        radial-gradient(ellipse at 10% 20%, color-mix(in srgb, var(--teal) 8%, transparent) 0%, transparent 50%),
-        radial-gradient(ellipse at 90% 80%, color-mix(in srgb, var(--amber) 10%, transparent) 0%, transparent 50%),
-        linear-gradient(rgba(56, 127, 132, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(56, 127, 132, 0.05) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 24px 24px, 24px 24px;
-      transition: background-color 0.4s ease;
+      background-color: var(--ref-sand, #E8E4D8);
       border: 1px solid #dadce0;
-      box-shadow: 0 10px 30px rgba(23, 50, 77, 0.15);
-      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(28, 46, 66, 0.15);
+      border-radius: 4px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       position: relative;
       transform-origin: center center;
       flex-shrink: 0;
-      padding: 24px 24px 24px 60px;
+      padding: 0;
     }
     
     /* Notebook Spiral Binder Gutter */
@@ -2042,12 +2036,7 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
     .power-card.matched { background:var(--teal-light); border-color:var(--teal); }
     .power-card.selected-pair { background:var(--amber); border-color:var(--navy); }
     .workspace-card { background:linear-gradient(135deg, var(--white) 0%, var(--teal-light) 100%); }
-    .slide-canvas:has(.slide-body[data-section="launch"].active) { background-color:var(--bg-warm); }
-    .slide-canvas:has(.slide-body[data-section="vocabulary"].active) { background-color:var(--teal-light); }
-    .slide-canvas:has(.slide-body[data-section="explore"].active) { background-color:var(--bg); }
-    .slide-canvas:has(.slide-body[data-section="practice"].active) { background-color:var(--bg-warm); }
-    .slide-canvas:has(.slide-body[data-section="connect"].active) { background-color:var(--coral); }
-    .slide-canvas:has(.slide-body[data-section="closure"].active) { background-color:var(--teal-light); }
+    ${REFERENCE_CSS}
 
     @media (max-width: 768px) {
       .sidebar-slides { width: 120px; }
@@ -2245,7 +2234,19 @@ ${deck.thumbnailsHtml}
       }
       
       updateNotesPanel(num);
+      updateRefFooterDots(num);
       setTimeout(resizeSlides, 50);
+    }
+
+    function updateRefFooterDots(num) {
+      const maxDots = Math.min(totalSlides, 12);
+      document.querySelectorAll('.ref-footer-dots').forEach((el) => {
+        el.innerHTML = Array.from({ length: maxDots }, (_, i) => {
+          const n = i + 1;
+          const cls = n === num ? 'ref-dot ref-dot-active' : n < num ? 'ref-dot ref-dot-done' : 'ref-dot';
+          return '<span class="' + cls + '"></span>';
+        }).join('');
+      });
     }
 
     function updateNotesPanel(num) {
