@@ -3,6 +3,9 @@
  * Derives bilingual EN/ES content from lesson config.json fields.
  */
 
+import { readFileSync, existsSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   plainObjective,
   translateFamilyText,
@@ -12,6 +15,15 @@ import {
   spanishKeyIdea,
   polishSpanish,
 } from "./homework-spanish.mjs";
+import {
+  detectVisualTopic,
+  selectAlignedQuickCheckProblems,
+} from "./homework-alignment.mjs";
+import { getExternalResources } from "./homework-external-resources.mjs";
+import { renderPlayTab } from "./homework-games.mjs";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const root = join(__dirname, "..");
 
 export function esc(s) {
   return String(s ?? "")
@@ -128,6 +140,37 @@ function watchForCues(config) {
   return cues.slice(0, 3);
 }
 
+function togetherStepHints(config, isLast) {
+  const topic = detectVisualTopic(config);
+  const byTopic = {
+    exponents: {
+      en: isLast ? "Count how many times the base is multiplied — that is the exponent." : "Write the repeated multiplication first, then the power.",
+      es: isLast ? "Cuenten cuántas veces se multiplica la base — eso es el exponente." : "Escriban primero la multiplicación repetida, luego la potencia.",
+    },
+    equations: {
+      en: isLast ? "Check: does your equation match every word in the clue?" : "Name the unknown with a letter before you write symbols.",
+      es: isLast ? "Verifiquen: ¿su ecuación coincide con cada palabra de la pista?" : "Nombren la incógnita con una letra antes de escribir símbolos.",
+    },
+    inequalities: {
+      en: isLast ? "Test one value from your shaded region to verify it works." : "Open circle for < or >; closed circle for ≤ or ≥.",
+      es: isLast ? "Prueben un valor de la región sombreada para verificar." : "Círculo abierto para < o >; cerrado para ≤ o ≥.",
+    },
+    ratios: {
+      en: isLast ? "Both columns must change by the same multiplier." : "Point to each row as you compare the two quantities.",
+      es: isLast ? "Ambas columnas deben cambiar con el mismo multiplicador." : "Señalen cada fila mientras comparan las dos cantidades.",
+    },
+    fractions: {
+      en: isLast ? "Draw a picture or use a number line to justify your answer." : "Say the units out loud — what does each number represent?",
+      es: isLast ? "Dibujen o usen una recta numérica para justificar." : "Digan las unidades en voz alta — ¿qué representa cada número?",
+    },
+  };
+  const pick = byTopic[topic] || {
+    en: isLast ? "Ask your student to explain why each step makes sense." : "Point to each number or symbol as you talk.",
+    es: isLast ? "Pídele que explique por qué tiene sentido cada paso." : "Señalen cada número o símbolo mientras hablan.",
+  };
+  return pick;
+}
+
 function tryTogetherActivity(config) {
   const custom = config.familyNotes?.tryTogether;
   if (custom) return custom;
@@ -141,17 +184,14 @@ function tryTogetherActivity(config) {
   const vocab = config.vocabulary || [];
   if (weDo?.lines?.length) {
     weDo.lines.forEach((line, i) => {
+      const hints = togetherStepHints(config, i === weDo.lines.length - 1);
       steps.push({
         en: line,
         es: weDo.linesEs?.[i] || translateConceptLine(line, vocab),
-        hint:
-          i === weDo.lines.length - 1
-            ? "Both numbers must change the same way."
-            : "Point to each number as you talk.",
-        hintEs:
-          i === weDo.lines.length - 1
-            ? "Ambos números deben cambiar de la misma manera."
-            : "Señalen cada número mientras hablan.",
+        hint: hints.en,
+        hintEs: hints.es,
+        helpEn: `Simpler: ${line.split(".")[0]}. Take it one phrase at a time.`,
+        helpEs: `Más simple: ${translateConceptLine(line.split(".")[0], vocab)}. Vayan frase por frase.`,
       });
     });
   } else if (explore?.instructions) {
@@ -233,11 +273,10 @@ function stuckTips(config) {
 }
 
 function conceptVisualSvg(config) {
-  const unit = Number(config.unit) || 0;
-  const standard = String(config.standard || "");
+  const topic = detectVisualTopic(config);
   const themeEmoji = config.themeEmoji || "📚";
 
-  if (unit === 3 || standard.startsWith("6.RP")) {
+  if (topic === "ratios") {
     return `
       <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Ratio table example">
         <rect x="8" y="20" width="404" height="160" rx="12" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
@@ -264,7 +303,7 @@ function conceptVisualSvg(config) {
       </svg>`;
   }
 
-  if (unit === 6 || standard.startsWith("6.EE")) {
+  if (topic === "exponents") {
     return `
       <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Exponent example">
         <rect x="8" y="20" width="404" height="160" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
@@ -277,19 +316,149 @@ function conceptVisualSvg(config) {
       </svg>`;
   }
 
-  if (unit >= 10 || standard.startsWith("6.G")) {
+  if (topic === "equations") {
+    return `
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Equation example">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
+        <text x="210" y="52" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Equation / Ecuación</text>
+        <text x="50" y="95" font-size="28" font-weight="800" fill="#12355b">n + 8 = 20</text>
+        <text x="50" y="125" font-size="13" fill="#21313f">n = unknown · + means add · = means both sides equal</text>
+        <text x="50" y="148" font-size="13" fill="#21313f" lang="es">n = incógnita · + suma · = ambos lados iguales</text>
+        <rect x="240" y="72" width="150" height="70" rx="8" fill="#fff" stroke="#d7e2ed"/>
+        <text x="315" y="98" text-anchor="middle" font-size="12" fill="#5f6f80">Words → symbols</text>
+        <text x="315" y="118" text-anchor="middle" font-size="11" fill="#21313f">"plus 8" → + 8</text>
+        <text x="315" y="134" text-anchor="middle" font-size="11" fill="#21313f">"equals 20" → = 20</text>
+      </svg>`;
+  }
+
+  if (topic === "inequalities") {
+    return `
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Inequality number line">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fce6de" stroke="#d9795d" stroke-width="2"/>
+        <text x="210" y="48" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Inequality / Desigualdad</text>
+        <text x="40" y="78" font-size="22" font-weight="800" fill="#12355b">x + 3 &gt; 10  →  x &gt; 7</text>
+        <line x1="40" y1="120" x2="380" y2="120" stroke="#12355b" stroke-width="2"/>
+        <circle cx="160" cy="120" r="8" fill="#fff" stroke="#d9795d" stroke-width="3"/>
+        <rect x="168" y="112" width="212" height="16" fill="#1fa6a2" opacity="0.35"/>
+        <text x="40" y="155" font-size="12" fill="#21313f">Open circle · shade the solution side</text>
+        <text x="40" y="172" font-size="12" fill="#21313f" lang="es">Círculo abierto · sombrea el lado de la solución</text>
+      </svg>`;
+  }
+
+  if (topic === "expressions") {
+    return `
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Algebraic expression">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
+        <text x="210" y="48" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Expression / Expresión</text>
+        <text x="50" y="95" font-size="32" font-weight="800" fill="#12355b">3x + 5</text>
+        <text x="50" y="125" font-size="13" fill="#21313f">3 = coefficient · x = variable · no equal sign</text>
+        <text x="50" y="148" font-size="13" fill="#21313f" lang="es">3 = coeficiente · x = variable · sin signo igual</text>
+      </svg>`;
+  }
+
+  if (topic === "area") {
+    return `
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Area formula">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
+        <polygon points="60,140 200,140 240,80 100,80" fill="#fff" stroke="#1fa6a2" stroke-width="2"/>
+        <text x="130" y="158" font-size="11" fill="#12355b">base</text>
+        <text x="248" y="108" font-size="11" fill="#12355b">height</text>
+        <text x="260" y="85" font-size="16" font-weight="700" fill="#12355b">Area = base × height</text>
+        <text x="260" y="110" font-size="13" fill="#21313f">Square units (in², cm²)</text>
+        <text x="260" y="130" font-size="13" fill="#21313f" lang="es">Unidades cuadradas</text>
+      </svg>`;
+  }
+
+  if (topic === "volume") {
     return `
       <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Volume prism">
         <rect x="8" y="20" width="404" height="160" rx="12" fill="#fce6de" stroke="#d9795d" stroke-width="2"/>
         <polygon points="80,140 180,140 210,110 110,110" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
         <polygon points="180,140 210,110 210,60 180,90" fill="#b8ddd8" stroke="#1fa6a2" stroke-width="2"/>
         <polygon points="80,140 110,110 110,60 80,90" fill="#1fa6a2" opacity="0.35" stroke="#1fa6a2" stroke-width="2"/>
-        <text x="95" y="155" font-size="11" fill="#12355b">L</text>
-        <text x="195" y="155" font-size="11" fill="#12355b">W</text>
-        <text x="218" y="88" font-size="11" fill="#12355b">H</text>
         <text x="240" y="80" font-size="16" font-weight="700" fill="#12355b">V = L × W × H</text>
         <text x="240" y="105" font-size="13" fill="#21313f">Volume = cubic units (in³)</text>
         <text x="240" y="125" font-size="13" fill="#21313f" lang="es">Volumen = unidades cúbicas (in³)</text>
+      </svg>`;
+  }
+
+  if (topic === "surface-area") {
+    return `
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Surface area net">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
+        <text x="210" y="48" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Net → Surface Area / Red → Área de superficie</text>
+        <rect x="120" y="70" width="50" height="40" fill="#fff" stroke="#1fa6a2"/>
+        <rect x="170" y="70" width="50" height="40" fill="#dff2ee" stroke="#1fa6a2"/>
+        <rect x="220" y="70" width="50" height="40" fill="#fff" stroke="#1fa6a2"/>
+        <text x="40" y="140" font-size="13" fill="#21313f">Add the area of every face from the net.</text>
+        <text x="40" y="160" font-size="13" fill="#21313f" lang="es">Suma el área de cada cara de la red.</text>
+      </svg>`;
+  }
+
+  if (topic === "statistics") {
+    return `
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Data display">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
+        <text x="210" y="48" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Data / Datos</text>
+        <rect x="60" y="110" width="30" height="40" fill="#1fa6a2"/>
+        <rect x="100" y="90" width="30" height="60" fill="#1fa6a2"/>
+        <rect x="140" y="70" width="30" height="80" fill="#1fa6a2"/>
+        <rect x="180" y="100" width="30" height="50" fill="#1fa6a2"/>
+        <text x="260" y="90" font-size="13" fill="#21313f">Mean · Median · Mode</text>
+        <text x="260" y="115" font-size="13" fill="#21313f" lang="es">Media · Mediana · Moda</text>
+      </svg>`;
+  }
+
+  if (topic === "coordinate-plane") {
+    return `
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Coordinate plane">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
+        <line x1="120" y1="130" x2="300" y2="130" stroke="#12355b" stroke-width="2"/>
+        <line x1="210" y1="60" x2="210" y2="150" stroke="#12355b" stroke-width="2"/>
+        <circle cx="250" cy="95" r="6" fill="#d9795d"/>
+        <text x="258" y="88" font-size="12" fill="#12355b">(3, 4)</text>
+        <text x="260" y="165" font-size="12" fill="#21313f">(x, y) · quadrants · axes</text>
+      </svg>`;
+  }
+
+  if (topic === "number-line") {
+    return `
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Number line">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
+        <line x1="40" y1="100" x2="380" y2="100" stroke="#12355b" stroke-width="2"/>
+        <text x="80" y="115" font-size="12">-3</text><text x="160" y="115" font-size="12">0</text><text x="280" y="115" font-size="12">5</text>
+        <text x="40" y="140" font-size="13" fill="#21313f">Compare · order · absolute value</text>
+        <text x="40" y="160" font-size="13" fill="#21313f" lang="es">Comparar · ordenar · valor absoluto</text>
+      </svg>`;
+  }
+
+  if (topic === "fractions") {
+    return `
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Fraction division">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fce6de" stroke="#d9795d" stroke-width="2"/>
+        <text x="50" y="90" font-size="28" font-weight="800" fill="#12355b">3 ÷ ½ = 6</text>
+        <text x="50" y="120" font-size="13" fill="#21313f">How many halves fit in 3? Draw groups to check.</text>
+        <text x="50" y="145" font-size="13" fill="#21313f" lang="es">¿Cuántos medios caben en 3? Dibujen grupos.</text>
+      </svg>`;
+  }
+
+  if (topic === "decimals") {
+    return `
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Decimal operations">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
+        <text x="50" y="90" font-size="28" font-weight="800" fill="#12355b">12.5 + 3.75</text>
+        <text x="50" y="120" font-size="13" fill="#21313f">Line up decimal points before you add or subtract.</text>
+        <text x="50" y="145" font-size="13" fill="#21313f" lang="es">Alineen los puntos decimales antes de sumar o restar.</text>
+      </svg>`;
+  }
+
+  if (topic === "factors") {
+    return `
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Prime factorization">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
+        <text x="50" y="85" font-size="22" font-weight="800" fill="#12355b">24 = 2 × 2 × 2 × 3</text>
+        <text x="50" y="115" font-size="13" fill="#21313f">Break apart with a factor tree until all factors are prime.</text>
+        <text x="50" y="140" font-size="13" fill="#21313f" lang="es">Descompongan con un árbol hasta que todos sean primos.</text>
       </svg>`;
   }
 
@@ -306,28 +475,15 @@ function conceptVisualSvg(config) {
     </div>`;
 }
 
-export function selectQuickCheckProblems(practice = {}) {
-  const onLevel = Array.isArray(practice.onLevel) ? practice.onLevel : [];
-  const approaching = Array.isArray(practice.approaching) ? practice.approaching : [];
-  const optional = Array.isArray(practice.optional) ? practice.optional : [];
-  const pool = [...approaching, ...onLevel, ...optional].filter(isPrintable);
-  const preferred = pool.filter((p) =>
-    ["multiple-choice", "drag-sort", "matching-game", "fill-table"].includes(p.type),
-  );
-  const picked = (preferred.length ? preferred : pool).slice(0, 2);
-  return picked;
+function helpButton(label, payload) {
+  const data = String(JSON.stringify(payload))
+    .replace(/&/g, "&amp;")
+    .replace(/'/g, "&#39;");
+  return `<button type="button" class="help-pop-btn" data-help='${data}' onclick="openHelpModalFromBtn(this)" aria-label="${esc(label)}">${label}</button>`;
 }
 
-function isPrintable(it) {
-  if (!it || typeof it !== "object") return false;
-  return [
-    "multiple-choice",
-    "fill-table",
-    "matching-game",
-    "drag-sort",
-    "error-analysis",
-    "open-response",
-  ].includes(it.type);
+export function selectQuickCheckProblems(practice = {}, config = {}) {
+  return selectAlignedQuickCheckProblems(practice, config);
 }
 
 export function renderWelcomeBanner(config, lessonId) {
@@ -351,7 +507,6 @@ export function renderWelcomeBanner(config, lessonId) {
         <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
         <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
       </p>
-      <a href="/curriculum/" class="back-link">⬅ Curriculum Hub / Centro curricular</a>
     </header>`;
 }
 
@@ -565,6 +720,229 @@ export function renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt) {
     </section>`;
 }
 
+export function renderLearnTab(config) {
+  const learning = renderLearningTonight(config).replace(/<section[^>]*>|<\/section>/g, "");
+  const concept = renderConceptExplainer(config).replace(/<section[^>]*>|<\/section>/g, "");
+  const keyEn = keyIdea(config);
+  const keyEs = keyIdeaEs(config);
+  return `
+    <div class="tab-panel-inner" data-tab-panel="learn">
+      ${learning}
+      ${concept}
+      <p class="tab-help-row">${helpButton("💡 Need more help? / ¿Más ayuda?", { titleEn: "The big idea", titleEs: "La idea principal", en: keyEn, es: keyEs })}</p>
+    </div>`;
+}
+
+export function renderWordsTab(vocabList, resolveVocabImage, vocabImageAlt) {
+  const inner = renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt);
+  if (!inner) {
+    return `<div class="tab-panel-inner" data-tab-panel="words"><p class="lang-en">No vocabulary listed for this lesson.</p><p class="lang-es" lang="es">No hay vocabulario listado para esta lección.</p></div>`;
+  }
+  return `<div class="tab-panel-inner" data-tab-panel="words">${inner.replace(/<section[^>]*>|<\/section>/g, "")}</div>`;
+}
+
+export function renderTogetherTab(config) {
+  const inner = renderTryTogether(config).replace(/<section[^>]*>|<\/section>/g, "");
+  return `<div class="tab-panel-inner" data-tab-panel="together">${inner}</div>`;
+}
+
+export function renderCheckTab(quickCheckIntro, problemsHtml) {
+  const intro = quickCheckIntro.replace(/<section[^>]*>|<\/section>/g, "");
+  return `
+    <div class="tab-panel-inner" data-tab-panel="check">
+      ${intro}
+      <main class="problems-container">${problemsHtml}</main>
+    </div>`;
+}
+
+export function renderHelpTab(config) {
+  const stuck = renderStuckSection(config).replace(/<section[^>]*>|<\/section>/g, "");
+  const tips = stuckTips(config);
+  return `
+    <div class="tab-panel-inner" data-tab-panel="help">
+      ${stuck}
+      <div class="help-hub card-ish">
+        <h3 class="section-title">💡 Quick help topics / Temas de ayuda</h3>
+        <ul class="help-topic-list">
+          ${tips.say
+            .map(
+              (t, i) =>
+                `<li>${helpButton(`Tip ${i + 1} / Pista ${i + 1}`, { titleEn: "Try saying…", titleEs: "Intenta decir…", en: t.en, es: t.es })}</li>`,
+            )
+            .join("")}
+        </ul>
+      </div>
+    </div>`;
+}
+
+export function renderMoreTab(config, lessonId) {
+  const links = getExternalResources(config, lessonId);
+  return `
+    <div class="tab-panel-inner" data-tab-panel="more">
+      <section class="guided-section card section-more" aria-label="Learn more online">
+        <h2 class="section-title">🌐 Learn more online / Aprende más en línea</h2>
+        <p class="bilingual-block">
+          <span class="lang-en">These links go to <strong>specific</strong> videos and lessons about tonight's topic — not general math pages.</span>
+          <span class="lang-es" lang="es">Estos enlaces van a videos y lecciones <strong>específicas</strong> sobre el tema de hoy — no páginas generales.</span>
+        </p>
+        <ul class="external-resource-list">
+          ${links
+            .map(
+              (l) => `
+            <li>
+              <a href="${esc(l.url)}" target="_blank" rel="noopener noreferrer" class="external-resource-link">
+                <span class="ext-source">${esc(l.source)}</span>
+                <span class="ext-title-en">${esc(l.titleEn)}</span>
+                <span class="ext-title-es" lang="es">${esc(l.titleEs)}</span>
+              </a>
+            </li>`,
+            )
+            .join("")}
+        </ul>
+      </section>
+    </div>`;
+}
+
+export function renderPlayTabPanel(config) {
+  const inner = renderPlayTab(config).replace(/<section[^>]*>|<\/section>/g, "");
+  return `<div class="tab-panel-inner" data-tab-panel="play">${inner}</div>`;
+}
+
+export function renderProblemHintButton(problem) {
+  const hintEn =
+    problem.hints?.[0] ||
+    problem.explanation ||
+    "Read the question aloud. What do you notice? What operation or idea fits?";
+  const hintEs = "Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?";
+  return helpButton("💡 Stuck? Get a hint / ¿Atorado? Pista", {
+    titleEn: "Hint before you check",
+    titleEs: "Pista antes de revisar",
+    en: hintEn,
+    es: hintEs,
+  });
+}
+
+export function renderDoneTab() {
+  const inner = renderCelebration().replace(/<section[^>]*>|<\/section>/g, "");
+  return `<div class="tab-panel-inner" data-tab-panel="done">${inner}</div>`;
+}
+
+const HOMEWORK_TABS = [
+  { id: "learn", icon: "📖", en: "Learn", es: "Aprender" },
+  { id: "words", icon: "📚", en: "Words", es: "Palabras" },
+  { id: "together", icon: "🤝", en: "Together", es: "Juntos" },
+  { id: "check", icon: "✅", en: "Check", es: "Repaso" },
+  { id: "help", icon: "💬", en: "Help", es: "Ayuda" },
+  { id: "more", icon: "🌐", en: "More", es: "Más" },
+  { id: "play", icon: "🎮", en: "Play", es: "Jugar" },
+  { id: "done", icon: "🎉", en: "Done", es: "Listo" },
+];
+
+export function renderHomeworkTabs(panelsHtml) {
+  const tabCount = HOMEWORK_TABS.length;
+  return `
+    <div class="homework-tabs-shell" data-tab-count="${tabCount}">
+      <div class="homework-tab-progress" aria-live="polite">
+        <span id="hw_tab_progress">1 of ${tabCount}</span>
+        <button type="button" class="btn btn-sm btn-secondary print-all-btn" onclick="window.print()">🖨️ Print all / Imprimir todo</button>
+      </div>
+      <div class="homework-tab-panels" id="hw_tab_panels">
+        ${panelsHtml}
+      </div>
+      <nav class="homework-tab-bar" role="tablist" aria-label="Family homework sections">
+        ${HOMEWORK_TABS.map(
+          (t, i) => `
+          <button type="button" role="tab" id="hw_tab_${t.id}" class="homework-tab-btn${i === 0 ? " is-active" : ""}"
+            aria-selected="${i === 0 ? "true" : "false"}" aria-controls="hw_panel_${t.id}"
+            data-tab="${t.id}" onclick="switchHomeworkTab('${t.id}')">
+            <span class="tab-icon" aria-hidden="true">${t.icon}</span>
+            <span class="tab-label"><span class="tab-en">${t.en}</span><span class="tab-es" lang="es">${t.es}</span></span>
+          </button>`,
+        ).join("")}
+      </nav>
+    </div>`;
+}
+
+export function renderHelpModal() {
+  return `
+    <div class="help-modal-overlay" id="help_modal_overlay" hidden onclick="closeHelpModal(event)">
+      <div class="help-modal" role="dialog" aria-modal="true" aria-labelledby="help_modal_title" onclick="event.stopPropagation()">
+        <button type="button" class="help-modal-close" onclick="closeHelpModal()" aria-label="Close help">✕</button>
+        <h3 id="help_modal_title" class="help-modal-title"></h3>
+        <p class="help-modal-body lang-en" id="help_modal_en"></p>
+        <p class="help-modal-body lang-es" lang="es" id="help_modal_es"></p>
+      </div>
+    </div>`;
+}
+
+export const HOMEWORK_TABS_JS = `
+function switchHomeworkTab(tabId) {
+  const tabs = document.querySelectorAll('.homework-tab-btn');
+  const panels = document.querySelectorAll('[data-tab-panel]');
+  let idx = 0;
+  tabs.forEach(function(btn, i) {
+    const active = btn.dataset.tab === tabId;
+    btn.classList.toggle('is-active', active);
+    btn.setAttribute('aria-selected', active ? 'true' : 'false');
+    if (active) idx = i + 1;
+  });
+  panels.forEach(function(p) {
+    p.hidden = p.dataset.tabPanel !== tabId;
+  });
+  const prog = document.getElementById('hw_tab_progress');
+  const total = document.querySelector('.homework-tabs-shell')?.dataset.tabCount || '8';
+  if (prog) prog.textContent = idx + ' of ' + total + ' / ' + idx + ' de ' + total;
+  if (tabId === 'play' && typeof initHomeworkGame === 'function') initHomeworkGame();
+  const activeBtn = document.getElementById('hw_tab_' + tabId);
+  if (activeBtn) activeBtn.focus();
+  try { localStorage.setItem('hw_last_tab', tabId); } catch(e) {}
+}
+
+function openHelpModalFromBtn(btn) {
+  try {
+    const data = JSON.parse(btn.getAttribute('data-help') || '{}');
+    openHelpModal(data);
+  } catch(e) {}
+}
+
+function openHelpModal(data) {
+  const overlay = document.getElementById('help_modal_overlay');
+  if (!overlay) return;
+  document.getElementById('help_modal_title').textContent =
+    (data.titleEn || 'Help') + ' / ' + (data.titleEs || 'Ayuda');
+  document.getElementById('help_modal_en').textContent = data.en || '';
+  document.getElementById('help_modal_es').textContent = data.es || '';
+  overlay.hidden = false;
+  document.body.classList.add('help-modal-open');
+  overlay.querySelector('.help-modal-close')?.focus();
+}
+
+function closeHelpModal(ev) {
+  if (ev && ev.target !== ev.currentTarget) return;
+  const overlay = document.getElementById('help_modal_overlay');
+  if (overlay) overlay.hidden = true;
+  document.body.classList.remove('help-modal-open');
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeHelpModal();
+});
+
+function triggerCelebration() {
+  document.querySelector('.section-celebrate')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('[data-tab-panel]').forEach(function(p, i) {
+    p.hidden = i > 0;
+  });
+  try {
+    const last = localStorage.getItem('hw_last_tab');
+    if (last && document.getElementById('hw_tab_' + last)) switchHomeworkTab(last);
+  } catch(e) {}
+});
+`;
+
 export const GUIDED_NOTES_CSS = `
 /* Family guided notes layout */
 .family-welcome {
@@ -742,5 +1120,165 @@ export const GUIDED_NOTES_CSS = `
   font-size: 12px;
   font-weight: 600;
   color: var(--muted);
+}
+
+/* Tabbed homework layout */
+.homework-tabs-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 100px;
+}
+.homework-tab-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.homework-tab-panels { min-height: 200px; }
+.tab-panel-inner[hidden] { display: none !important; }
+.tab-panel-inner:not([hidden]) { display: block; }
+.homework-tab-bar {
+  position: fixed;
+  bottom: 72px;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 8px 10px;
+  background: rgba(255,255,255,0.97);
+  border-top: 1px solid var(--line);
+  box-shadow: 0 -4px 20px rgba(18,53,91,0.08);
+  -webkit-overflow-scrolling: touch;
+}
+.homework-tab-btn {
+  flex: 0 0 auto;
+  min-width: 64px;
+  min-height: 48px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.homework-tab-btn.is-active {
+  background: var(--teal-light);
+  border-color: var(--teal);
+  color: var(--navy);
+}
+.tab-icon { font-size: 18px; line-height: 1; }
+.tab-label { display: flex; flex-direction: column; align-items: center; line-height: 1.1; }
+.tab-es { font-size: 9px; color: var(--muted); font-weight: 600; }
+.homework-tab-btn.is-active .tab-es { color: var(--navy); }
+
+.help-pop-btn {
+  margin: 8px 0;
+  padding: 10px 14px;
+  min-height: 44px;
+  border: 1px dashed var(--teal);
+  border-radius: var(--radius-sm);
+  background: var(--teal-light);
+  color: var(--navy);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+.help-pop-btn:hover { background: #c8ebe8; }
+.tab-help-row { margin-top: 12px; }
+.help-topic-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.card-ish { margin-top: 16px; padding: 16px; background: var(--cream); border-radius: var(--radius-sm); border: 1px solid var(--line); }
+
+.help-modal-overlay {
+  position: fixed; inset: 0; z-index: 10000;
+  background: rgba(18,53,91,0.55);
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+}
+.help-modal-overlay[hidden] { display: none !important; }
+.help-modal {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  max-width: 420px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+.help-modal-close {
+  position: absolute; top: 12px; right: 12px;
+  width: 36px; height: 36px; border: none; border-radius: 50%;
+  background: var(--cream); cursor: pointer; font-size: 18px;
+}
+.help-modal-title { margin: 0 32px 12px 0; font-family: var(--font-display); color: var(--navy); font-size: 18px; }
+.help-modal-body { margin: 0 0 10px; font-size: 15px; line-height: 1.5; }
+body.help-modal-open { overflow: hidden; }
+
+.external-resource-list { list-style: none; padding: 0; margin: 16px 0 0; display: flex; flex-direction: column; gap: 10px; }
+.external-resource-link {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background: var(--cream); text-decoration: none; color: inherit;
+}
+.external-resource-link:hover { border-color: var(--teal); background: var(--teal-light); text-decoration: none; }
+.ext-source { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--teal); }
+.ext-title-en { font-weight: 700; color: var(--navy); }
+.ext-title-es { font-size: 13px; color: var(--muted); }
+.section-more { border-left: 4px solid #5b8def; }
+.section-play { border-left: 4px solid #e67e22; }
+
+.hw-game { padding: 8px 0; }
+.hw-game-title { margin: 0 0 8px; font-family: var(--font-display); color: var(--navy); }
+.hw-game-coach { font-size: 14px; margin-bottom: 12px; }
+.hw-game-score { font-weight: 700; color: var(--teal); margin-bottom: 8px; }
+.hw-game-question { font-size: 17px; font-weight: 700; color: var(--navy); margin: 12px 0; }
+.hw-game-choices { display: flex; flex-direction: column; gap: 8px; }
+.hw-game-choice-btn {
+  min-height: 48px; padding: 12px 16px; border: 2px solid var(--line);
+  border-radius: var(--radius-sm); background: var(--white);
+  font-size: 15px; font-weight: 600; cursor: pointer; text-align: left;
+}
+.hw-game-choice-btn.correct { border-color: var(--success); background: var(--success-bg); }
+.hw-game-choice-btn.incorrect { border-color: var(--error); background: var(--error-bg); }
+.hw-game-feedback { margin-top: 12px; font-weight: 700; min-height: 1.5em; }
+.hw-game-feedback.success { color: var(--success); }
+.hw-game-feedback.error { color: var(--error); }
+.hw-game-buckets { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+@media (max-width: 640px) { .hw-game-buckets { grid-template-columns: 1fr; } }
+.hw-game-bucket { border: 2px dashed var(--line); border-radius: var(--radius-sm); padding: 10px; min-height: 80px; }
+.hw-game-bucket-label { font-size: 12px; font-weight: 700; margin-bottom: 8px; color: var(--navy); }
+.hw-game-pile { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; background: var(--cream); border-radius: var(--radius-sm); margin-bottom: 12px; }
+.hw-game-card {
+  padding: 10px 14px; background: var(--white); border: 1px solid var(--line);
+  border-radius: var(--radius-sm); cursor: grab; font-size: 13px; font-weight: 600;
+  min-height: 44px; display: flex; align-items: center;
+}
+.problem-hint-row { margin: 8px 0 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .homework-tab-btn, .hw-game-choice-btn, .help-pop-btn { transition: none; }
+}
+@media print {
+  .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn { display: none !important; }
+  .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
+  body { padding-bottom: 0; }
 }
 `;

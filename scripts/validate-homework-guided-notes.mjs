@@ -29,6 +29,14 @@ const REQUIRED_MARKERS = [
   "Lo lograron juntos",
   "Check This Problem",
   "normalizeMath",
+  'class="homework-tab-bar"',
+  'data-tab-panel="play"',
+  "external-resource-list",
+  "help_modal_overlay",
+  "switchHomeworkTab",
+  "initHomeworkGame",
+  "Learn more online",
+  "Play together",
 ];
 
 const BAD_SPANISH = [
@@ -66,6 +74,15 @@ for (const id of lessonIds) {
   }
   if (quickChecks === 0) {
     issues.push({ id, level: "HIGH", msg: "No quick check problems" });
+  }
+
+  if (/\/curriculum\//i.test(html) || /Curriculum Hub/i.test(html) || /Back to curriculum/i.test(html)) {
+    issues.push({ id, level: "CRITICAL", msg: "Contains curriculum/hub navigation link" });
+  }
+
+  const extLinks = (html.match(/class="external-resource-link"/g) || []).length;
+  if (extLinks === 0) {
+    issues.push({ id, level: "HIGH", msg: "No external resource links" });
   }
 
   for (const bad of BAD_SPANISH) {

@@ -50,7 +50,7 @@ body {
   color: var(--ink);
   font-family: var(--font-body);
   line-height: 1.5;
-  padding-bottom: 120px; /* Space for the sticky bottom bar */
+  padding-bottom: 160px; /* Space for tab bar + sticky bottom bar */
 }
 
 a { color: var(--navy); text-decoration: none; font-weight: 700; }
@@ -1492,6 +1492,166 @@ header.homework-header h1 {
   color: var(--muted);
 }
 
+/* Tabbed homework layout */
+.homework-tabs-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 100px;
+}
+.homework-tab-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.homework-tab-panels { min-height: 200px; }
+.tab-panel-inner[hidden] { display: none !important; }
+.tab-panel-inner:not([hidden]) { display: block; }
+.homework-tab-bar {
+  position: fixed;
+  bottom: 72px;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 8px 10px;
+  background: rgba(255,255,255,0.97);
+  border-top: 1px solid var(--line);
+  box-shadow: 0 -4px 20px rgba(18,53,91,0.08);
+  -webkit-overflow-scrolling: touch;
+}
+.homework-tab-btn {
+  flex: 0 0 auto;
+  min-width: 64px;
+  min-height: 48px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.homework-tab-btn.is-active {
+  background: var(--teal-light);
+  border-color: var(--teal);
+  color: var(--navy);
+}
+.tab-icon { font-size: 18px; line-height: 1; }
+.tab-label { display: flex; flex-direction: column; align-items: center; line-height: 1.1; }
+.tab-es { font-size: 9px; color: var(--muted); font-weight: 600; }
+.homework-tab-btn.is-active .tab-es { color: var(--navy); }
+
+.help-pop-btn {
+  margin: 8px 0;
+  padding: 10px 14px;
+  min-height: 44px;
+  border: 1px dashed var(--teal);
+  border-radius: var(--radius-sm);
+  background: var(--teal-light);
+  color: var(--navy);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+.help-pop-btn:hover { background: #c8ebe8; }
+.tab-help-row { margin-top: 12px; }
+.help-topic-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.card-ish { margin-top: 16px; padding: 16px; background: var(--cream); border-radius: var(--radius-sm); border: 1px solid var(--line); }
+
+.help-modal-overlay {
+  position: fixed; inset: 0; z-index: 10000;
+  background: rgba(18,53,91,0.55);
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+}
+.help-modal-overlay[hidden] { display: none !important; }
+.help-modal {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  max-width: 420px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+.help-modal-close {
+  position: absolute; top: 12px; right: 12px;
+  width: 36px; height: 36px; border: none; border-radius: 50%;
+  background: var(--cream); cursor: pointer; font-size: 18px;
+}
+.help-modal-title { margin: 0 32px 12px 0; font-family: var(--font-display); color: var(--navy); font-size: 18px; }
+.help-modal-body { margin: 0 0 10px; font-size: 15px; line-height: 1.5; }
+body.help-modal-open { overflow: hidden; }
+
+.external-resource-list { list-style: none; padding: 0; margin: 16px 0 0; display: flex; flex-direction: column; gap: 10px; }
+.external-resource-link {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background: var(--cream); text-decoration: none; color: inherit;
+}
+.external-resource-link:hover { border-color: var(--teal); background: var(--teal-light); text-decoration: none; }
+.ext-source { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--teal); }
+.ext-title-en { font-weight: 700; color: var(--navy); }
+.ext-title-es { font-size: 13px; color: var(--muted); }
+.section-more { border-left: 4px solid #5b8def; }
+.section-play { border-left: 4px solid #e67e22; }
+
+.hw-game { padding: 8px 0; }
+.hw-game-title { margin: 0 0 8px; font-family: var(--font-display); color: var(--navy); }
+.hw-game-coach { font-size: 14px; margin-bottom: 12px; }
+.hw-game-score { font-weight: 700; color: var(--teal); margin-bottom: 8px; }
+.hw-game-question { font-size: 17px; font-weight: 700; color: var(--navy); margin: 12px 0; }
+.hw-game-choices { display: flex; flex-direction: column; gap: 8px; }
+.hw-game-choice-btn {
+  min-height: 48px; padding: 12px 16px; border: 2px solid var(--line);
+  border-radius: var(--radius-sm); background: var(--white);
+  font-size: 15px; font-weight: 600; cursor: pointer; text-align: left;
+}
+.hw-game-choice-btn.correct { border-color: var(--success); background: var(--success-bg); }
+.hw-game-choice-btn.incorrect { border-color: var(--error); background: var(--error-bg); }
+.hw-game-feedback { margin-top: 12px; font-weight: 700; min-height: 1.5em; }
+.hw-game-feedback.success { color: var(--success); }
+.hw-game-feedback.error { color: var(--error); }
+.hw-game-buckets { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+@media (max-width: 640px) { .hw-game-buckets { grid-template-columns: 1fr; } }
+.hw-game-bucket { border: 2px dashed var(--line); border-radius: var(--radius-sm); padding: 10px; min-height: 80px; }
+.hw-game-bucket-label { font-size: 12px; font-weight: 700; margin-bottom: 8px; color: var(--navy); }
+.hw-game-pile { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; background: var(--cream); border-radius: var(--radius-sm); margin-bottom: 12px; }
+.hw-game-card {
+  padding: 10px 14px; background: var(--white); border: 1px solid var(--line);
+  border-radius: var(--radius-sm); cursor: grab; font-size: 13px; font-weight: 600;
+  min-height: 44px; display: flex; align-items: center;
+}
+.problem-hint-row { margin: 8px 0 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .homework-tab-btn, .hw-game-choice-btn, .help-pop-btn { transition: none; }
+}
+@media print {
+  .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn { display: none !important; }
+  .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
+  body { padding-bottom: 0; }
+}
+
 </style>
 </head>
 <body>
@@ -1513,11 +1673,19 @@ header.homework-header h1 {
         <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
         <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
       </p>
-      <a href="/curriculum/" class="back-link">⬅ Curriculum Hub / Centro curricular</a>
     </header>
 
   
-    <section class="guided-section card section-learn" aria-label="What we are learning tonight">
+    <div class="homework-tabs-shell" data-tab-count="8">
+      <div class="homework-tab-progress" aria-live="polite">
+        <span id="hw_tab_progress">1 of 8</span>
+        <button type="button" class="btn btn-sm btn-secondary print-all-btn" onclick="window.print()">🖨️ Print all / Imprimir todo</button>
+      </div>
+      <div class="homework-tab-panels" id="hw_tab_panels">
+        
+    <div class="tab-panel-inner" data-tab-panel="learn">
+      
+    
       <h2 class="section-title">📖 What we're learning tonight / Qué aprendemos hoy</h2>
       <div class="bilingual-grid">
         <div class="bilingual-col lang-en">
@@ -1531,15 +1699,18 @@ header.homework-header h1 {
           <p class="learning-sub">También practiquen: <em>explicar mi razonamiento usando las palabras Número entero, Positivo, Negativo, Valor absoluto, y Opuesto</em></p>
         </div>
       </div>
-    </section>
-
-  
-    <section class="guided-section card section-visual" aria-label="Visual concept explainer">
+    
+      
+    
       <h2 class="section-title">🎯 The big idea / La idea principal</h2>
       <div class="concept-visual-wrap">
-    <div class="concept-fallback-visual" aria-hidden="true">
-      <div class="concept-fallback-step step-color-1"><span class="step-dot">1</span><span>An integer is a whole number that can be positive, negative, or zero</span></div><div class="concept-fallback-step step-color-2"><span class="step-dot">2</span><span>I want to find the absolute value of -6, written |-6|</span></div><div class="concept-fallback-step step-color-3"><span class="step-dot">3</span><span>I find -6 on the number line</span></div>
-    </div></div>
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Number line">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
+        <line x1="40" y1="100" x2="380" y2="100" stroke="#12355b" stroke-width="2"/>
+        <text x="80" y="115" font-size="12">-3</text><text x="160" y="115" font-size="12">0</text><text x="280" y="115" font-size="12">5</text>
+        <text x="40" y="140" font-size="13" fill="#21313f">Compare · order · absolute value</text>
+        <text x="40" y="160" font-size="13" fill="#21313f" lang="es">Comparar · ordenar · valor absoluto</text>
+      </svg></div>
       <div class="key-idea-banner">
         <p class="lang-en"><strong>Watch for this:</strong> Absolute value tells you the distance from zero, so it is always positive or zero.</p>
         <p class="lang-es" lang="es"><strong>Observa esto:</strong> Esta noche practican: identificar integers and find their valor absoluto. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
@@ -1591,48 +1762,11 @@ header.homework-header h1 {
             </div>
           </li>
       </ul>
-    </section>
-
-  
-    <section class="guided-section card section-together" aria-label="Try this together">
-      <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
-      <p class="try-scenario lang-en">Captain Vega&#039;s treasure map has clues hidden at different elevations! Some treasures are buried underground (below sea level) and some are on mountaintops (above sea level).</p>
-             <p class="try-scenario lang-es" lang="es">Captain Vega&#039;s treasure map has clues hidden at different elevations! Some treasures are buried underground (below sea level) and some are on mountaintops (above sea level).</p>
-      <p class="try-together-note bilingual-block">
-        <span class="lang-en">Work side by side. You ask questions; your student does the thinking.</span>
-        <span class="lang-es" lang="es">Trabajen juntos. Tú haces preguntas; tu estudiante piensa.</span>
-      </p>
-      <ol class="together-steps">
-        
-          <li class="together-step step-color-1">
-            <div class="together-step-head">
-              <span class="step-badge">Step 1 / Paso 1</span>
-            </div>
-            <p class="lang-en"><strong>First…</strong> Now let&#039;s find |3|. Where is 3 on the number line? It is 3 steps to the right of zero.</p>
-            <p class="lang-es" lang="es"><strong>Primero…</strong> Now let&#039;s find |3|. Where is 3 on the recta numérica? It is 3 steps to the right of zero.</p>
-            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
-          </li>
-          <li class="together-step step-color-2">
-            <div class="together-step-head">
-              <span class="step-badge">Step 2 / Paso 2</span>
-            </div>
-            <p class="lang-en"><strong>First…</strong> How far is it from zero? It is 3 units away.</p>
-            <p class="lang-es" lang="es"><strong>Primero…</strong> How far is it from zero? It is 3 units away.</p>
-            <p class="step-hint">💡 Point to each number as you talk. · Señalen cada número mientras hablan.</p>
-          </li>
-          <li class="together-step step-color-3">
-            <div class="together-step-head">
-              <span class="step-badge">Step 3 / Paso 3</span>
-            </div>
-            <p class="lang-en"><strong>First…</strong> So |3| equals what? It equals 3.</p>
-            <p class="lang-es" lang="es"><strong>Primero…</strong> So |3| equals what? It equals 3.</p>
-            <p class="step-hint">💡 Both numbers must change the same way. · Ambos números deben cambiar de la misma manera.</p>
-          </li>
-      </ol>
-    </section>
-
-  
-    <section class="guided-section card section-vocab vocab-section" aria-label="Words to know">
+    
+      <p class="tab-help-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"The big idea","titleEs":"La idea principal","en":"Absolute value tells you the distance from zero, so it is always positive or zero.","es":"Esta noche practican: identificar integers and find their valor absoluto. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Need more help? / ¿Más ayuda?">💡 Need more help? / ¿Más ayuda?</button></p>
+    </div>
+<div class="tab-panel-inner" data-tab-panel="words">
+    
       <h2 class="section-title">📚 Words to know / Palabras clave</h2>
       <p class="vocab-family-note bilingual-block">
         <span class="lang-en">Tap a card to flip. Use these words when you talk about the math together.</span>
@@ -1731,10 +1865,195 @@ header.homework-header h1 {
               </div>
             </div>
       </div>
-    </section>
+    </div>
+<div class="tab-panel-inner" data-tab-panel="together">
+    
+      <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
+      <p class="try-scenario lang-en">Captain Vega&#039;s treasure map has clues hidden at different elevations! Some treasures are buried underground (below sea level) and some are on mountaintops (above sea level).</p>
+             <p class="try-scenario lang-es" lang="es">Captain Vega&#039;s treasure map has clues hidden at different elevations! Some treasures are buried underground (below sea level) and some are on mountaintops (above sea level).</p>
+      <p class="try-together-note bilingual-block">
+        <span class="lang-en">Work side by side. You ask questions; your student does the thinking.</span>
+        <span class="lang-es" lang="es">Trabajen juntos. Tú haces preguntas; tu estudiante piensa.</span>
+      </p>
+      <ol class="together-steps">
+        
+          <li class="together-step step-color-1">
+            <div class="together-step-head">
+              <span class="step-badge">Step 1 / Paso 1</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> Now let&#039;s find |3|. Where is 3 on the number line? It is 3 steps to the right of zero.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> Now let&#039;s find |3|. Where is 3 on the recta numérica? It is 3 steps to the right of zero.</p>
+            <p class="step-hint">💡 Point to each number or symbol as you talk. · Señalen cada número o símbolo mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-2">
+            <div class="together-step-head">
+              <span class="step-badge">Step 2 / Paso 2</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> How far is it from zero? It is 3 units away.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> How far is it from zero? It is 3 units away.</p>
+            <p class="step-hint">💡 Point to each number or symbol as you talk. · Señalen cada número o símbolo mientras hablan.</p>
+          </li>
+          <li class="together-step step-color-3">
+            <div class="together-step-head">
+              <span class="step-badge">Step 3 / Paso 3</span>
+            </div>
+            <p class="lang-en"><strong>First…</strong> So |3| equals what? It equals 3.</p>
+            <p class="lang-es" lang="es"><strong>Primero…</strong> So |3| equals what? It equals 3.</p>
+            <p class="step-hint">💡 Ask your student to explain why each step makes sense. · Pídele que explique por qué tiene sentido cada paso.</p>
+          </li>
+      </ol>
+    </div>
 
+    <div class="tab-panel-inner" data-tab-panel="check">
+      
+    
+      <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
+      <p class="bilingual-block">
+        <span class="lang-en">One or two problems to try on the screen. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
+        <span class="lang-es" lang="es">Una o dos preguntas en pantalla. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+      </p>
+    
+      <main class="problems-container">
+    <section class="problem-section card" id="problem_0" data-problem-type="error-analysis">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Quick Check 1</div>
+        <div class="problem-type-badge">ERROR ANALYSIS</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Which step breaks the rule you learned today?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <h3 class="error-analysis-title">⚠️ onLevel — Spot the Common Mistake</h3>
+        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
+        
+        <div class="clipboard-box">
+          <div class="clipboard-top"></div>
+          <div class="clipboard-paper">
+            
+              <div class="worked-step" id="step_q_0_1">
+                <span class="step-badge">Step 1</span>
+                <span class="step-label">Read:</span>
+                <span class="step-work">A student is working on Integers and Absolute Value.</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_0_2">
+                <span class="step-badge">Step 2</span>
+                <span class="step-label">Attempt:</span>
+                <span class="step-work">They ignored the rule: Absolute value tells you the distance from zero, so it is always positive or zero.</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_0_3">
+                <span class="step-badge">Step 3</span>
+                <span class="step-label">Check:</span>
+                <span class="step-work">The answer does not match the math rule from class.</span>
+              </div>
+            
+          </div>
+        </div>
+        
+        <div class="error-controls">
+          <div class="error-select-row">
+            <label for="error_step_select_0">Which step has the error?</label>
+            <select id="error_step_select_0" class="custom-select error-step-select" data-correct="2" onchange="saveState(); updateProgress();">
+              <option value="">-- Choose Step --</option>
+              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option>
+            </select>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="error-explain-row">
+            <label for="error_explain_input_0">Explain the error and write the correct calculation:</label>
+            <textarea id="error_explain_input_0" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="reveal-box" id="error_correct_work_0" style="display:none;">
+            <strong>Correct Work Reference:</strong> Follow the key idea: Absolute value tells you the distance from zero, so it is always positive or zero.
+          </div>
+        </div>
+      </div>
+    
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
   
-    <section class="guided-section card section-stuck" aria-label="If your student gets stuck">
+
+    <section class="problem-section card" id="problem_1" data-problem-type="error-analysis">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Quick Check 2</div>
+        <div class="problem-type-badge">ERROR ANALYSIS</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Which step breaks the rule you learned today?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <h3 class="error-analysis-title">⚠️ approaching — Spot the Common Mistake</h3>
+        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
+        
+        <div class="clipboard-box">
+          <div class="clipboard-top"></div>
+          <div class="clipboard-paper">
+            
+              <div class="worked-step" id="step_q_1_1">
+                <span class="step-badge">Step 1</span>
+                <span class="step-label">Read:</span>
+                <span class="step-work">A student is working on Integers and Absolute Value.</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_1_2">
+                <span class="step-badge">Step 2</span>
+                <span class="step-label">Attempt:</span>
+                <span class="step-work">They ignored the rule: Absolute value tells you the distance from zero, so it is always positive or zero.</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_1_3">
+                <span class="step-badge">Step 3</span>
+                <span class="step-label">Check:</span>
+                <span class="step-work">The answer does not match the math rule from class.</span>
+              </div>
+            
+          </div>
+        </div>
+        
+        <div class="error-controls">
+          <div class="error-select-row">
+            <label for="error_step_select_1">Which step has the error?</label>
+            <select id="error_step_select_1" class="custom-select error-step-select" data-correct="2" onchange="saveState(); updateProgress();">
+              <option value="">-- Choose Step --</option>
+              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option>
+            </select>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="error-explain-row">
+            <label for="error_explain_input_1">Explain the error and write the correct calculation:</label>
+            <textarea id="error_explain_input_1" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="reveal-box" id="error_correct_work_1" style="display:none;">
+            <strong>Correct Work Reference:</strong> Follow the key idea: Absolute value tells you the distance from zero, so it is always positive or zero.
+          </div>
+        </div>
+      </div>
+    
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  </main>
+    </div>
+
+    <div class="tab-panel-inner" data-tab-panel="help">
+      
+    
       <h2 class="section-title">💬 If your student gets stuck / Si se atora</h2>
       <div class="stuck-grid">
         <div class="stuck-panel stuck-say">
@@ -1754,116 +2073,66 @@ header.homework-header h1 {
         <span class="lang-en">Struggle is part of learning. Short breaks and snacks are allowed!</span>
         <span class="lang-es" lang="es">La dificultad es parte del aprendizaje. ¡Descansos y meriendas están permitidos!</span>
       </p>
-    </section>
+    
+      <div class="help-hub card-ish">
+        <h3 class="section-title">💡 Quick help topics / Temas de ayuda</h3>
+        <ul class="help-topic-list">
+          <li><button type="button" class="help-pop-btn" data-help='{"titleEn":"Try saying…","titleEs":"Intenta decir…","en":"What do you already know that could help?","es":"¿Qué ya sabes que podría ayudarte?"}' onclick="openHelpModalFromBtn(this)" aria-label="Tip 1 / Pista 1">Tip 1 / Pista 1</button></li><li><button type="button" class="help-pop-btn" data-help='{"titleEn":"Try saying…","titleEs":"Intenta decir…","en":"Can you draw a picture or table for this?","es":"¿Puedes dibujar un dibujo o una tabla para esto?"}' onclick="openHelpModalFromBtn(this)" aria-label="Tip 2 / Pista 2">Tip 2 / Pista 2</button></li><li><button type="button" class="help-pop-btn" data-help='{"titleEn":"Try saying…","titleEs":"Intenta decir…","en":"Let&#39;s check one step at a time — no rush.","es":"Revisemos un paso a la vez — sin prisa."}' onclick="openHelpModalFromBtn(this)" aria-label="Tip 3 / Pista 3">Tip 3 / Pista 3</button></li>
+        </ul>
+      </div>
+    </div>
 
-  
-    <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
-      <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
-      <p class="bilingual-block">
-        <span class="lang-en">One or two problems to try on the screen. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
-        <span class="lang-es" lang="es">Una o dos preguntas en pantalla. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+    <div class="tab-panel-inner" data-tab-panel="more">
+      <section class="guided-section card section-more" aria-label="Learn more online">
+        <h2 class="section-title">🌐 Learn more online / Aprende más en línea</h2>
+        <p class="bilingual-block">
+          <span class="lang-en">These links go to <strong>specific</strong> videos and lessons about tonight's topic — not general math pages.</span>
+          <span class="lang-es" lang="es">Estos enlaces van a videos y lecciones <strong>específicas</strong> sobre el tema de hoy — no páginas generales.</span>
+        </p>
+        <ul class="external-resource-list">
+          
+            <li>
+              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-negative-number/cc-6th-absolute-value/v/absolute-value-of-integers" target="_blank" rel="noopener noreferrer" class="external-resource-link">
+                <span class="ext-source">Khan Academy</span>
+                <span class="ext-title-en">Absolute value</span>
+                <span class="ext-title-es" lang="es">Valor absoluto</span>
+              </a>
+            </li>
+            <li>
+              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-negative-number/cc-6th-comparing-negative/v/comparing-absolute-values" target="_blank" rel="noopener noreferrer" class="external-resource-link">
+                <span class="ext-source">Khan Academy</span>
+                <span class="ext-title-en">Comparing integers</span>
+                <span class="ext-title-es" lang="es">Comparar enteros</span>
+              </a>
+            </li>
+        </ul>
+      </section>
+    </div>
+<div class="tab-panel-inner" data-tab-panel="play">
+    
+      <h2 class="section-title">🎮 Play together / Juguemos juntos</h2>
+      <p class="bilingual-block play-intro">
+        <span class="lang-en">Reinforce tonight's topic with a quick family game. You ask; your student decides!</span>
+        <span class="lang-es" lang="es">Refuercen el tema de hoy con un juego rápido en familia. ¡Ustedes preguntan; su estudiante decide!</span>
       </p>
-    </section>
-
-  <main class="problems-container">
-    
-    <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Quick Check 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
       
-      <div class="problem-body">
-        <p class="problem-stem">What is the absolute value of -9?</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Absolute value is the distance from zero. -9 is 9 units from zero, so |-9| = 9.">
-          
-            <label class="mc-option-label" id="label_q_0_0">
-              <input type="radio" name="q_0" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">9</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_0_1">
-              <input type="radio" name="q_0" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">-9</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_0_2">
-              <input type="radio" name="q_0" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">0</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_0_3">
-              <input type="radio" name="q_0" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">1</span>
-            </label>
-          
+      <div class="hw-game hw-game-mc" id="hw_game_numberline" data-game-type="mc-speed" data-rounds='[{"q":"Which is greater: −2 or −5?","choices":[{"text":"−2","isCorrect":true},{"text":"−5","isCorrect":false},{"text":"Equal","isCorrect":false}],"hint":""},{"q":"|−7| = ?","choices":[{"text":"7","isCorrect":true},{"text":"−7","isCorrect":false},{"text":"0","isCorrect":false},{"text":"14","isCorrect":false}],"hint":""},{"q":"Order: −1, 0, 2","choices":[{"text":"−1, 0, 2","isCorrect":true},{"text":"2, 0, −1","isCorrect":false},{"text":"0, −1, 2","isCorrect":false},{"text":"2, −1, 0","isCorrect":false}],"hint":""},{"q":"Opposite of −4?","choices":[{"text":"4","isCorrect":true},{"text":"−4","isCorrect":false},{"text":"0","isCorrect":false},{"text":"8","isCorrect":false}],"hint":""}]'>
+        <div class="hw-game-header">
+          <h3 class="hw-game-title">Number Line Dash! <span lang="es">¡Recta numérica!</span></h3>
+          <p class="hw-game-coach bilingual-block">
+            <span class="lang-en">🎮 Play together! Right is greater on a horizontal number line.</span>
+            <span class="lang-es" lang="es">🎮 ¡Jueguen juntos! A la derecha es mayor en una recta horizontal.</span>
+          </p>
         </div>
+        <div class="hw-game-score" id="hw_game_score">Round 1 / Ronda 1</div>
+        <p class="hw-game-question" id="hw_game_question"></p>
+        <div class="hw-game-choices" id="hw_game_choices" role="group"></div>
+        <p class="hw-game-feedback" id="hw_game_feedback" role="status" aria-live="polite"></p>
+        <button type="button" class="btn btn-primary hw-game-restart" id="hw_game_restart" hidden>Play again / Jugar otra vez</button>
       </div>
+    </div>
+<div class="tab-panel-inner" data-tab-panel="done">
     
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">
-          ✓ Check This Problem / Revisar
-        </button>
-        <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Quick Check 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
-      </div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Which integer has the GREATEST absolute value: -3, 7, -5, 2?</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="|-3| = 3, |7| = 7, |-5| = 5, |2| = 2. The greatest absolute value is 7.">
-          
-            <label class="mc-option-label" id="label_q_1_0">
-              <input type="radio" name="q_1" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">7</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_1_1">
-              <input type="radio" name="q_1" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">-5</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_1_2">
-              <input type="radio" name="q_1" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">-3</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_1_3">
-              <input type="radio" name="q_1" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">2</span>
-            </label>
-          
-        </div>
-      </div>
-    
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
-          ✓ Check This Problem / Revisar
-        </button>
-        <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-  </main>
-
-  
-    <section class="guided-section card section-celebrate" aria-label="Celebration">
       <h2 class="section-title">🎉 You did it together! / ¡Lo lograron juntos!</h2>
       <p class="celebrate-text lang-en">High five! Whether every answer was perfect or not, you showed up for your student tonight. That matters.</p>
       <p class="celebrate-text lang-es" lang="es">¡Chócalas! No importa si cada respuesta fue perfecta — estuviste con tu estudiante esta noche. Eso importa.</p>
@@ -1871,9 +2140,72 @@ header.homework-header h1 {
         <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
         <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
       </p>
-    </section>
+    </div>
+      </div>
+      <nav class="homework-tab-bar" role="tablist" aria-label="Family homework sections">
+        
+          <button type="button" role="tab" id="hw_tab_learn" class="homework-tab-btn is-active"
+            aria-selected="true" aria-controls="hw_panel_learn"
+            data-tab="learn" onclick="switchHomeworkTab('learn')">
+            <span class="tab-icon" aria-hidden="true">📖</span>
+            <span class="tab-label"><span class="tab-en">Learn</span><span class="tab-es" lang="es">Aprender</span></span>
+          </button>
+          <button type="button" role="tab" id="hw_tab_words" class="homework-tab-btn"
+            aria-selected="false" aria-controls="hw_panel_words"
+            data-tab="words" onclick="switchHomeworkTab('words')">
+            <span class="tab-icon" aria-hidden="true">📚</span>
+            <span class="tab-label"><span class="tab-en">Words</span><span class="tab-es" lang="es">Palabras</span></span>
+          </button>
+          <button type="button" role="tab" id="hw_tab_together" class="homework-tab-btn"
+            aria-selected="false" aria-controls="hw_panel_together"
+            data-tab="together" onclick="switchHomeworkTab('together')">
+            <span class="tab-icon" aria-hidden="true">🤝</span>
+            <span class="tab-label"><span class="tab-en">Together</span><span class="tab-es" lang="es">Juntos</span></span>
+          </button>
+          <button type="button" role="tab" id="hw_tab_check" class="homework-tab-btn"
+            aria-selected="false" aria-controls="hw_panel_check"
+            data-tab="check" onclick="switchHomeworkTab('check')">
+            <span class="tab-icon" aria-hidden="true">✅</span>
+            <span class="tab-label"><span class="tab-en">Check</span><span class="tab-es" lang="es">Repaso</span></span>
+          </button>
+          <button type="button" role="tab" id="hw_tab_help" class="homework-tab-btn"
+            aria-selected="false" aria-controls="hw_panel_help"
+            data-tab="help" onclick="switchHomeworkTab('help')">
+            <span class="tab-icon" aria-hidden="true">💬</span>
+            <span class="tab-label"><span class="tab-en">Help</span><span class="tab-es" lang="es">Ayuda</span></span>
+          </button>
+          <button type="button" role="tab" id="hw_tab_more" class="homework-tab-btn"
+            aria-selected="false" aria-controls="hw_panel_more"
+            data-tab="more" onclick="switchHomeworkTab('more')">
+            <span class="tab-icon" aria-hidden="true">🌐</span>
+            <span class="tab-label"><span class="tab-en">More</span><span class="tab-es" lang="es">Más</span></span>
+          </button>
+          <button type="button" role="tab" id="hw_tab_play" class="homework-tab-btn"
+            aria-selected="false" aria-controls="hw_panel_play"
+            data-tab="play" onclick="switchHomeworkTab('play')">
+            <span class="tab-icon" aria-hidden="true">🎮</span>
+            <span class="tab-label"><span class="tab-en">Play</span><span class="tab-es" lang="es">Jugar</span></span>
+          </button>
+          <button type="button" role="tab" id="hw_tab_done" class="homework-tab-btn"
+            aria-selected="false" aria-controls="hw_panel_done"
+            data-tab="done" onclick="switchHomeworkTab('done')">
+            <span class="tab-icon" aria-hidden="true">🎉</span>
+            <span class="tab-label"><span class="tab-en">Done</span><span class="tab-es" lang="es">Listo</span></span>
+          </button>
+      </nav>
+    </div>
 
 </div>
+
+
+    <div class="help-modal-overlay" id="help_modal_overlay" hidden onclick="closeHelpModal(event)">
+      <div class="help-modal" role="dialog" aria-modal="true" aria-labelledby="help_modal_title" onclick="event.stopPropagation()">
+        <button type="button" class="help-modal-close" onclick="closeHelpModal()" aria-label="Close help">✕</button>
+        <h3 id="help_modal_title" class="help-modal-title"></h3>
+        <p class="help-modal-body lang-en" id="help_modal_en"></p>
+        <p class="help-modal-body lang-es" lang="es" id="help_modal_es"></p>
+      </div>
+    </div>
 
 <!-- Sticky bottom actions bar -->
 <div class="bottom-status-bar">
@@ -1897,6 +2229,191 @@ header.homework-header h1 {
 </div>
 
 <script>
+
+function switchHomeworkTab(tabId) {
+  const tabs = document.querySelectorAll('.homework-tab-btn');
+  const panels = document.querySelectorAll('[data-tab-panel]');
+  let idx = 0;
+  tabs.forEach(function(btn, i) {
+    const active = btn.dataset.tab === tabId;
+    btn.classList.toggle('is-active', active);
+    btn.setAttribute('aria-selected', active ? 'true' : 'false');
+    if (active) idx = i + 1;
+  });
+  panels.forEach(function(p) {
+    p.hidden = p.dataset.tabPanel !== tabId;
+  });
+  const prog = document.getElementById('hw_tab_progress');
+  const total = document.querySelector('.homework-tabs-shell')?.dataset.tabCount || '8';
+  if (prog) prog.textContent = idx + ' of ' + total + ' / ' + idx + ' de ' + total;
+  if (tabId === 'play' && typeof initHomeworkGame === 'function') initHomeworkGame();
+  const activeBtn = document.getElementById('hw_tab_' + tabId);
+  if (activeBtn) activeBtn.focus();
+  try { localStorage.setItem('hw_last_tab', tabId); } catch(e) {}
+}
+
+function openHelpModalFromBtn(btn) {
+  try {
+    const data = JSON.parse(btn.getAttribute('data-help') || '{}');
+    openHelpModal(data);
+  } catch(e) {}
+}
+
+function openHelpModal(data) {
+  const overlay = document.getElementById('help_modal_overlay');
+  if (!overlay) return;
+  document.getElementById('help_modal_title').textContent =
+    (data.titleEn || 'Help') + ' / ' + (data.titleEs || 'Ayuda');
+  document.getElementById('help_modal_en').textContent = data.en || '';
+  document.getElementById('help_modal_es').textContent = data.es || '';
+  overlay.hidden = false;
+  document.body.classList.add('help-modal-open');
+  overlay.querySelector('.help-modal-close')?.focus();
+}
+
+function closeHelpModal(ev) {
+  if (ev && ev.target !== ev.currentTarget) return;
+  const overlay = document.getElementById('help_modal_overlay');
+  if (overlay) overlay.hidden = true;
+  document.body.classList.remove('help-modal-open');
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeHelpModal();
+});
+
+function triggerCelebration() {
+  document.querySelector('.section-celebrate')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('[data-tab-panel]').forEach(function(p, i) {
+    p.hidden = i > 0;
+  });
+  try {
+    const last = localStorage.getItem('hw_last_tab');
+    if (last && document.getElementById('hw_tab_' + last)) switchHomeworkTab(last);
+  } catch(e) {}
+});
+
+
+let hwGameRound = 0;
+let hwGameScore = 0;
+let hwGameRounds = [];
+let hwGameSelectedCard = null;
+
+function initHomeworkGame() {
+  const mc = document.querySelector('.hw-game-mc[data-rounds]');
+  if (mc && !mc.dataset.initialized) {
+    mc.dataset.initialized = '1';
+    try { hwGameRounds = JSON.parse(mc.dataset.rounds || '[]'); } catch(e) { hwGameRounds = []; }
+    hwGameRound = 0; hwGameScore = 0;
+    hwGameShowRound();
+  }
+}
+
+function hwGameShowRound() {
+  const qEl = document.getElementById('hw_game_question');
+  const cEl = document.getElementById('hw_game_choices');
+  const sEl = document.getElementById('hw_game_score');
+  const fEl = document.getElementById('hw_game_feedback');
+  const rBtn = document.getElementById('hw_game_restart');
+  if (!qEl || !cEl || !hwGameRounds.length) return;
+  if (hwGameRound >= hwGameRounds.length) {
+    qEl.textContent = '';
+    cEl.innerHTML = '';
+    if (sEl) sEl.textContent = 'Score: ' + hwGameScore + '/' + hwGameRounds.length;
+    if (fEl) {
+      fEl.textContent = hwGameScore === hwGameRounds.length
+        ? '🎉 Perfect! / ¡Perfecto!' : 'Nice work! / ¡Buen trabajo!';
+      fEl.className = 'hw-game-feedback success';
+    }
+    if (rBtn) rBtn.hidden = false;
+    if (typeof triggerCelebration === 'function') triggerCelebration();
+    return;
+  }
+  const round = hwGameRounds[hwGameRound];
+  if (sEl) sEl.textContent = 'Round ' + (hwGameRound + 1) + ' / Ronda ' + (hwGameRound + 1);
+  qEl.textContent = round.q || '';
+  cEl.innerHTML = '';
+  if (fEl) { fEl.textContent = round.hint ? '💡 ' + round.hint : ''; fEl.className = 'hw-game-feedback'; }
+  (round.choices || []).forEach((ch, idx) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'hw-game-choice-btn';
+    btn.textContent = ch.text || ch;
+    btn.onclick = function() {
+      const ok = ch.isCorrect || (round.correct === idx);
+      if (ok) { hwGameScore++; btn.classList.add('correct'); }
+      else btn.classList.add('incorrect');
+      setTimeout(function() { hwGameRound++; hwGameShowRound(); }, 600);
+    };
+    cEl.appendChild(btn);
+  });
+}
+
+document.getElementById('hw_game_restart')?.addEventListener('click', function() {
+  hwGameRound = 0; hwGameScore = 0;
+  const mc = document.querySelector('.hw-game-mc[data-rounds]');
+  if (mc) mc.dataset.initialized = '';
+  this.hidden = true;
+  initHomeworkGame();
+});
+
+function hwGameDragStart(ev) {
+  ev.dataTransfer.setData('text/plain', ev.target.id);
+  hwGameSelectedCard = ev.target;
+}
+function hwGameAllowDrop(ev) { ev.preventDefault(); }
+function hwGameDrop(ev, bucket) {
+  ev.preventDefault();
+  const id = ev.dataTransfer.getData('text/plain');
+  let card = document.getElementById(id);
+  if (!card && hwGameSelectedCard) card = hwGameSelectedCard;
+  if (!card) return;
+  let target = ev.currentTarget;
+  if (target.classList.contains('hw-game-bucket-slots') || target.id === 'hw_game_pile') {
+    target.appendChild(card);
+  } else if (bucket) {
+    const slots = document.getElementById('bucket_' + bucket);
+    if (slots) slots.appendChild(card);
+  } else {
+    document.getElementById('hw_game_pile')?.appendChild(card);
+  }
+  hwGameSelectedCard = null;
+}
+function hwGameTapCard(card) {
+  if (hwGameSelectedCard === card) { card.style.outline = ''; hwGameSelectedCard = null; return; }
+  if (hwGameSelectedCard) hwGameSelectedCard.style.outline = '';
+  hwGameSelectedCard = card;
+  card.style.outline = '3px solid var(--teal)';
+}
+document.querySelectorAll('.hw-game-bucket, #hw_game_pile').forEach(function(zone) {
+  zone.addEventListener('click', function() {
+    if (!hwGameSelectedCard) return;
+    if (zone.classList.contains('hw-game-bucket')) {
+      const slots = zone.querySelector('.hw-game-bucket-slots');
+      if (slots) slots.appendChild(hwGameSelectedCard);
+    } else zone.appendChild(hwGameSelectedCard);
+    hwGameSelectedCard.style.outline = '';
+    hwGameSelectedCard = null;
+  });
+});
+function hwGameCheckSort() {
+  const fEl = document.getElementById('hw_game_feedback');
+  let ok = true;
+  document.querySelectorAll('.hw-game-card').forEach(function(card) {
+    const parent = card.closest('.hw-game-bucket-slots');
+    const bucket = parent ? parent.id.replace('bucket_', '') : '';
+    if (bucket !== card.dataset.bucket) ok = false;
+  });
+  if (fEl) {
+    fEl.textContent = ok ? '🎉 All sorted! / ¡Todo clasificado!' : 'Try again — some cards are in the wrong bucket. / Intenten otra vez.';
+    fEl.className = 'hw-game-feedback ' + (ok ? 'success' : 'error');
+  }
+  if (ok && typeof triggerCelebration === 'function') triggerCelebration();
+}
+
 // Sound engine
 let soundEnabled = true;
 let audioCtx = null;

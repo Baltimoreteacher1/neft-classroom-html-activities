@@ -5,15 +5,22 @@ import { resolveVocabImage, vocabImageAlt } from "../engine/core/vocab-images.js
 import {
   selectQuickCheckProblems,
   renderWelcomeBanner,
-  renderLearningTonight,
-  renderConceptExplainer,
-  renderTryTogether,
-  renderStuckSection,
-  renderCelebration,
   renderQuickCheckIntro,
-  renderWordsToKnow,
+  renderHomeworkTabs,
+  renderLearnTab,
+  renderWordsTab,
+  renderTogetherTab,
+  renderCheckTab,
+  renderHelpTab,
+  renderMoreTab,
+  renderPlayTabPanel,
+  renderDoneTab,
+  renderHelpModal,
+  renderProblemHintButton,
   GUIDED_NOTES_CSS,
+  HOMEWORK_TABS_JS,
 } from "./homework-guided-notes.mjs";
+import { HOMEWORK_GAME_JS } from "./homework-games.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -188,8 +195,8 @@ function isPrintable(it) {
   ].includes(it.type);
 }
 
-function selectProblems(practice = {}) {
-  return selectQuickCheckProblems(practice);
+function selectProblems(practice = {}, config = {}) {
+  return selectQuickCheckProblems(practice, config);
 }
 
 // Map column labels (Shape A) to row-object keys.
@@ -235,9 +242,6 @@ function lessonConfigs() {
   return out;
 }
 
-function renderVocabulary(vocabList) {
-  return renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt);
-}
 
 function renderProblem(it, pIdx) {
   const type = it.type;
@@ -558,6 +562,7 @@ function renderProblem(it, pIdx) {
         <div class="problem-number-badge">Quick Check ${pIdx + 1}</div>
         <div class="problem-type-badge">${esc(displayType.replace(/-/g, " ").toUpperCase())}</div>
       </div>
+      <div class="problem-hint-row">${renderProblemHintButton(it)}</div>
       ${content}
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(${pIdx})" aria-label="Check answer for problem ${pIdx + 1}">
@@ -573,17 +578,25 @@ function generateHtml(lessonId, config) {
   const title = config.title || "Lesson Practice";
   const vocab = config.vocabulary || [];
 
-  const selected = selectProblems(config.practice || {});
+  const selected = selectProblems(config.practice || {}, config);
 
   const welcomeHtml = renderWelcomeBanner(config, lessonId);
-  const learningHtml = renderLearningTonight(config);
-  const conceptHtml = renderConceptExplainer(config);
-  const tryTogetherHtml = renderTryTogether(config);
-  const vocabHtml = renderVocabulary(vocab);
-  const stuckHtml = renderStuckSection(config);
   const quickCheckIntroHtml = renderQuickCheckIntro();
   const problemsHtml = selected.map((p, idx) => renderProblem(p, idx)).join("\n");
-  const celebrationHtml = renderCelebration();
+
+  const tabPanels = [
+    renderLearnTab(config),
+    renderWordsTab(vocab, resolveVocabImage, vocabImageAlt),
+    renderTogetherTab(config),
+    renderCheckTab(quickCheckIntroHtml, problemsHtml),
+    renderHelpTab(config),
+    renderMoreTab(config, lessonId),
+    renderPlayTabPanel(config),
+    renderDoneTab(),
+  ].join("\n");
+
+  const tabsHtml = renderHomeworkTabs(tabPanels);
+  const helpModalHtml = renderHelpModal();
 
   return `<!doctype html>
 <html lang="en">
@@ -637,7 +650,7 @@ body {
   color: var(--ink);
   font-family: var(--font-body);
   line-height: 1.5;
-  padding-bottom: 120px; /* Space for the sticky bottom bar */
+  padding-bottom: 160px; /* Space for tab bar + sticky bottom bar */
 }
 
 a { color: var(--navy); text-decoration: none; font-weight: 700; }
@@ -1909,25 +1922,11 @@ ${GUIDED_NOTES_CSS}
 
   ${welcomeHtml}
 
-  ${learningHtml}
-
-  ${conceptHtml}
-
-  ${tryTogetherHtml}
-
-  ${vocabHtml}
-
-  ${stuckHtml}
-
-  ${quickCheckIntroHtml}
-
-  <main class="problems-container">
-    ${problemsHtml}
-  </main>
-
-  ${celebrationHtml}
+  ${tabsHtml}
 
 </div>
+
+${helpModalHtml}
 
 <!-- Sticky bottom actions bar -->
 <div class="bottom-status-bar">
@@ -1951,6 +1950,8 @@ ${GUIDED_NOTES_CSS}
 </div>
 
 <script>
+${HOMEWORK_TABS_JS}
+${HOMEWORK_GAME_JS}
 // Sound engine
 let soundEnabled = true;
 let audioCtx = null;
