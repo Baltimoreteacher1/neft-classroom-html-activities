@@ -27,7 +27,7 @@
   ];
 
   var FILTER_RULES = {
-    lessons: /interactive lesson|slides\.html|\/lessons\/[^/]+\/?$/i,
+    lessons: /interactive lesson|slides\.html|handout\.html|\/lessons\/[^/]+\/?$/i,
     homework: /homework|family homework/i,
     games: /game|graphic novel|3d|project|bonus|arcade|lab|odyssey|netfold/i,
     notes: /guided notes|notes\.html|notes pdf|notes docx/i,
@@ -75,11 +75,15 @@
 
   function loadTeacherMode() {
     try {
+      var params = new URLSearchParams(location.search);
+      if (params.get("student") === "1") return false;
+      if (params.get("teacher") === "1") return true;
       var saved = localStorage.getItem(STORAGE_MODE);
+      if (saved === "0" || saved === "false") return false;
       if (saved === "1" || saved === "true") return true;
-      if (new URLSearchParams(location.search).get("teacher") === "1") return true;
     } catch (e) {}
-    return false;
+    // Default ON so teachers see Slides, Forms, and printable packets without toggling.
+    return true;
   }
 
   function saveTeacherMode(on) {
@@ -150,6 +154,12 @@
     return Math.round((done / total) * 100);
   }
 
+  function updateStudentHint() {
+    var hint = document.getElementById("hub-student-hint");
+    if (!hint) return;
+    hint.hidden = teacherMode;
+  }
+
   function applyTeacherMode() {
     document.body.classList.toggle("teacher-mode", teacherMode);
     var btn = document.getElementById("hub-mode-toggle");
@@ -157,6 +167,7 @@
       btn.setAttribute("aria-pressed", teacherMode ? "true" : "false");
       btn.textContent = teacherMode ? "👩‍🏫 Teacher Mode" : "🎒 Student Mode";
     }
+    updateStudentHint();
     refreshHub();
   }
 
@@ -235,6 +246,22 @@
       updateProgressSummary();
     });
     bar.appendChild(modeBtn);
+
+    var hint = document.createElement("p");
+    hint.id = "hub-student-hint";
+    hint.className = "hub-student-hint";
+    hint.hidden = true;
+    hint.innerHTML =
+      'Student view hides teacher-only links (Google Slides, Forms, printable packets). ' +
+      '<button type="button" class="hub-hint-link" id="hub-hint-teacher">Switch to Teacher Mode</button> ' +
+      'to restore them.';
+    hint.querySelector("#hub-hint-teacher").addEventListener("click", function () {
+      teacherMode = true;
+      saveTeacherMode(true);
+      applyTeacherMode();
+      updateProgressSummary();
+    });
+    controls.parentNode.insertBefore(hint, controls);
 
     controls.parentNode.insertBefore(bar, controls.nextSibling);
 
@@ -664,10 +691,50 @@
     }, 50);
   }
 
+  function injectSupplementalActivities() {
+    if (!hubApi || !hubApi.unitsData) return;
+    hubApi.unitsData.forEach(function (u) {
+      (u.lessons || []).forEach(function (lesson) {
+        var lessonId = lessonIdFromTitle(lesson.title);
+        if (!lessonId) return;
+
+        var supplements = [
+          {
+            text: "📊 Lesson Slides",
+            href: "/lessons/" + lessonId + "/slides.html",
+          },
+          {
+            text: "📄 Student Handout",
+            href: "/lessons/" + lessonId + "/handout.html",
+          },
+        ];
+
+        supplements.forEach(function (sup) {
+          var exists = (lesson.activities || []).some(function (a) {
+            return a.href === sup.href;
+          });
+          if (exists) return;
+
+          var activities = lesson.activities || (lesson.activities = []);
+          var insertAt = activities.findIndex(function (a) {
+            return /interactive lesson/i.test(a.text || "");
+          });
+          if (insertAt >= 0) {
+            activities.splice(insertAt + 1, 0, sup);
+          } else {
+            activities.push(sup);
+          }
+          lesson.dataSearch += " " + sup.text.toLowerCase();
+        });
+      });
+    });
+  }
+
   function initEnhancements() {
     teacherMode = loadTeacherMode();
     loadProgress();
     buildControls();
+    injectSupplementalActivities();
     markTeacherLinksInSource();
     enhancePrintFallbackAria();
     wrapRenderSearchResults();
