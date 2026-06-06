@@ -164,14 +164,16 @@ function lessonResources(id) {
 
   if (has("lessons", id, "index.html")) {
     pills.push(resLink("Interactive Lesson", `/lessons/${id}/`, true));
-    const slidesUrl = googleSlidesUrls[id] || `/lessons/${id}/slides.html`;
-    pills.push(
-      resLink(
-        "Google Slides",
-        slidesUrl,
-        true
-      )
-    );
+    if (has("lessons", id, "slides.html")) {
+      pills.push(resLink("Google Slides", `/lessons/${id}/slides.html`, true));
+      if (googleSlidesUrls[id]) {
+        pills.push(
+          resLink("↗ Google Drive copy (legacy)", googleSlidesUrls[id], true)
+        );
+      }
+    } else if (googleSlidesUrls[id]) {
+      pills.push(resLink("Google Slides", googleSlidesUrls[id], true));
+    }
   }
   if (has("lessons", id, "notes.html")) {
     pills.push(resLink("Guided Notes", `/lessons/${id}/notes.html`, true));

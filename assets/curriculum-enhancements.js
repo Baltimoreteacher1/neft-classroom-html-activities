@@ -691,6 +691,89 @@
     }, 50);
   }
 
+  /**
+   * Point curriculum "Google Slides" at reference-matched HTML decks.
+   * Legacy Drive URLs (from google-slides-urls.json / static HTML) stay as
+   * a secondary teacher-only link when an external deck exists.
+   */
+  function upgradeGoogleSlidesLinks() {
+    if (!hubApi || !hubApi.unitsData) return;
+    hubApi.unitsData.forEach(function (u) {
+      (u.lessons || []).forEach(function (lesson) {
+        var lessonId = lessonIdFromTitle(lesson.title);
+        if (!lessonId) return;
+
+        var slidesHref = "/lessons/" + lessonId + "/slides.html";
+        var activities = lesson.activities || (lesson.activities = []);
+        var legacyInserts = [];
+
+        for (var i = 0; i < activities.length; i++) {
+          var act = activities[i];
+          if (!/^google slides$/i.test((act.text || "").trim())) continue;
+
+          var legacyUrl = act.href || "";
+          var isExternal = /docs\.google\.com/i.test(legacyUrl);
+          act.href = slidesHref;
+
+          if (isExternal) {
+            legacyInserts.push({
+              index: i + 1,
+              href: legacyUrl,
+            });
+          }
+        }
+
+        legacyInserts.reverse().forEach(function (entry) {
+          var dup = activities.some(function (a) {
+            return a.href === entry.href && /legacy/i.test(a.text || "");
+          });
+          if (dup) return;
+          activities.splice(entry.index, 0, {
+            text: "↗ Google Drive copy (legacy)",
+            href: entry.href,
+          });
+          lesson.dataSearch += " google drive legacy";
+        });
+      });
+    });
+  }
+
+  function patchStaticGoogleSlidesLinks() {
+    document.querySelectorAll("details.lesson").forEach(function (lessonEl) {
+      var headEl = lessonEl.querySelector(".lesson-head");
+      var lessonIdMatch = headEl
+        ? headEl.textContent.match(/Lesson\s+([0-9]+-[0-9]+(?:-flagship)?)/i)
+        : null;
+      if (!lessonIdMatch) return;
+
+      var lessonId = lessonIdMatch[1];
+      var slidesHref = "/lessons/" + lessonId + "/slides.html";
+
+      lessonEl.querySelectorAll(".lesson-body .res").forEach(function (a) {
+        if (!/^google slides$/i.test(a.textContent.replace(/\s+/g, " ").trim())) return;
+
+        var legacyUrl = a.getAttribute("href") || "";
+        a.setAttribute("href", slidesHref);
+
+        if (!/docs\.google\.com/i.test(legacyUrl)) return;
+        var row = a.parentNode;
+        if (!row) return;
+        var already = Array.prototype.some.call(row.querySelectorAll(".res"), function (link) {
+          return link !== a && link.getAttribute("href") === legacyUrl;
+        });
+        if (already) return;
+
+        var legacy = document.createElement("a");
+        legacy.className = "res teacher-only";
+        legacy.href = legacyUrl;
+        legacy.target = "_blank";
+        legacy.rel = "noopener";
+        legacy.textContent = "↗ Google Drive copy (legacy)";
+        a.insertAdjacentElement("afterend", legacy);
+      });
+    });
+  }
+
   function injectSupplementalActivities() {
     if (!hubApi || !hubApi.unitsData) return;
     hubApi.unitsData.forEach(function (u) {
@@ -698,16 +781,22 @@
         var lessonId = lessonIdFromTitle(lesson.title);
         if (!lessonId) return;
 
-        var supplements = [
-          {
+        var slidesHref = "/lessons/" + lessonId + "/slides.html";
+        var hasSlidesLink = (lesson.activities || []).some(function (a) {
+          return a.href === slidesHref;
+        });
+
+        var supplements = [];
+        if (!hasSlidesLink) {
+          supplements.push({
             text: "📊 Lesson Slides",
-            href: "/lessons/" + lessonId + "/slides.html",
-          },
-          {
-            text: "📄 Student Handout",
-            href: "/lessons/" + lessonId + "/handout.html",
-          },
-        ];
+            href: slidesHref,
+          });
+        }
+        supplements.push({
+          text: "📄 Student Handout",
+          href: "/lessons/" + lessonId + "/handout.html",
+        });
 
         supplements.forEach(function (sup) {
           var exists = (lesson.activities || []).some(function (a) {
@@ -734,7 +823,9 @@
     teacherMode = loadTeacherMode();
     loadProgress();
     buildControls();
+    upgradeGoogleSlidesLinks();
     injectSupplementalActivities();
+    patchStaticGoogleSlidesLinks();
     markTeacherLinksInSource();
     enhancePrintFallbackAria();
     wrapRenderSearchResults();
