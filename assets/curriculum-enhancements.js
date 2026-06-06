@@ -34,6 +34,7 @@
   };
 
   var realWorldMap = {};
+  var googleSlidesLegacyUrls = {};
   var activeFilter = FILTER_ALL;
   var teacherMode = false;
   var progress = {};
@@ -691,10 +692,18 @@
     }, 50);
   }
 
+  function isGoogleSlidesActivity(act) {
+    return /^google slides$/i.test((act.text || "").replace(/\s+/g, " ").trim());
+  }
+
+  function legacyDriveUrlForLesson(lessonId) {
+    return googleSlidesLegacyUrls[lessonId] || "";
+  }
+
   /**
    * Point curriculum "Google Slides" at reference-matched HTML decks.
-   * Legacy Drive URLs (from google-slides-urls.json / static HTML) stay as
-   * a secondary teacher-only link when an external deck exists.
+   * Legacy Drive URLs stay as a secondary teacher-only link when available.
+   * Idempotent — safe to run before every hub render.
    */
   function upgradeGoogleSlidesLinks() {
     if (!hubApi || !hubApi.unitsData) return;
@@ -706,26 +715,27 @@
         var slidesHref = "/lessons/" + lessonId + "/slides.html";
         var activities = lesson.activities || (lesson.activities = []);
         var legacyInserts = [];
+        var legacyUrl = legacyDriveUrlForLesson(lessonId);
 
         for (var i = 0; i < activities.length; i++) {
           var act = activities[i];
-          if (!/^google slides$/i.test((act.text || "").trim())) continue;
+          if (!isGoogleSlidesActivity(act)) continue;
 
-          var legacyUrl = act.href || "";
-          var isExternal = /docs\.google\.com/i.test(legacyUrl);
+          var currentHref = act.href || "";
+          var isExternal = /docs\.google\.com/i.test(currentHref);
+          if (isExternal) {
+            legacyUrl = legacyUrl || currentHref;
+          }
           act.href = slidesHref;
 
-          if (isExternal) {
-            legacyInserts.push({
-              index: i + 1,
-              href: legacyUrl,
-            });
+          if (legacyUrl && legacyUrl !== slidesHref) {
+            legacyInserts.push({ index: i + 1, href: legacyUrl });
           }
         }
 
         legacyInserts.reverse().forEach(function (entry) {
           var dup = activities.some(function (a) {
-            return a.href === entry.href && /legacy/i.test(a.text || "");
+            return a.href === entry.href && /legacy|drive copy/i.test(a.text || "");
           });
           if (dup) return;
           activities.splice(entry.index, 0, {
@@ -750,12 +760,15 @@
       var slidesHref = "/lessons/" + lessonId + "/slides.html";
 
       lessonEl.querySelectorAll(".lesson-body .res").forEach(function (a) {
-        if (!/^google slides$/i.test(a.textContent.replace(/\s+/g, " ").trim())) return;
+        if (!isGoogleSlidesActivity({ text: a.textContent })) return;
 
         var legacyUrl = a.getAttribute("href") || "";
+        if (!/docs\.google\.com/i.test(legacyUrl)) {
+          legacyUrl = legacyDriveUrlForLesson(lessonId) || legacyUrl;
+        }
         a.setAttribute("href", slidesHref);
 
-        if (!/docs\.google\.com/i.test(legacyUrl)) return;
+        if (!/docs\.google\.com/i.test(legacyUrl) || legacyUrl === slidesHref) return;
         var row = a.parentNode;
         if (!row) return;
         var already = Array.prototype.some.call(row.querySelectorAll(".res"), function (link) {
@@ -819,10 +832,29 @@
     });
   }
 
+  function wrapHubRenderers() {
+    if (!hubApi || hubApi._slidesUpgradeWrapped) return;
+
+    var originalRenderHub = hubApi.renderHub;
+    hubApi.renderHub = function () {
+      upgradeGoogleSlidesLinks();
+      return originalRenderHub.apply(this, arguments);
+    };
+
+    var originalRenderSearch = hubApi.renderSearchResults;
+    hubApi.renderSearchResults = function () {
+      upgradeGoogleSlidesLinks();
+      return originalRenderSearch.apply(this, arguments);
+    };
+
+    hubApi._slidesUpgradeWrapped = true;
+  }
+
   function initEnhancements() {
     teacherMode = loadTeacherMode();
     loadProgress();
     buildControls();
+    wrapHubRenderers();
     upgradeGoogleSlidesLinks();
     injectSupplementalActivities();
     patchStaticGoogleSlidesLinks();
@@ -839,6 +871,7 @@
     }
 
     var observer = new MutationObserver(function () {
+      patchStaticGoogleSlidesLinks();
       scheduleEnhance();
     });
     if (hubApi.hubEl) {
@@ -849,9 +882,23 @@
   }
 
   ready(function () {
+    waitForHubApi(0);
     loadJson("/assets/curriculum-real-world.json").then(function (data) {
       realWorldMap = data || {};
-      waitForHubApi(0);
+      if (hubApi) {
+        refreshHub();
+      }
+    });
+    loadJson("/data/google-slides-urls.json").then(function (data) {
+      if (data && typeof data === "object") {
+        googleSlidesLegacyUrls = data;
+        delete googleSlidesLegacyUrls._note;
+      }
+      if (hubApi) {
+        upgradeGoogleSlidesLinks();
+        patchStaticGoogleSlidesLinks();
+        refreshHub();
+      }
     });
   });
 })();
