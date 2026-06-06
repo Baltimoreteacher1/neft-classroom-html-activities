@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { buildTptSlideDeck } from './lib/tpt-slide-deck.mjs';
+import { buildTptSlideDeckV2 } from './lib/tpt-slide-deck-v2.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
@@ -800,7 +800,11 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
       </div>
     </div>`;
 
-  const deck = buildTptSlideDeck({
+  const exitOpenStem = data.reflect?.exitTicketOpen
+    || data.reflect?.openPrompt
+    || `Explain the key idea from today's lesson in your own words. Use at least one vocabulary word from: ${(vocabList.slice(0, 3).map((v) => v.term).filter(Boolean)).join(', ') || 'today\'s lesson'}.`;
+
+  const deck = buildTptSlideDeckV2({
     lessonId,
     data,
     themeEmoji,
@@ -833,6 +837,7 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
     connectFrame,
     connectVocabBankHtml,
     exitTicketHtml,
+    exitOpenStem,
     svgVisual,
     interactiveWidget,
     drawingToolbarHtml,
@@ -1679,6 +1684,7 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
       color: var(--white);
       z-index: 10000;
     }
+    .presenter-hud.visible { display: flex; }
     :fullscreen ~ .presenter-hud { display: flex; }
     :-webkit-full-screen ~ .presenter-hud { display: flex; }
     
@@ -1841,6 +1847,151 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
       0% { transform: translateY(0) rotate(0deg); }
       100% { transform: translateY(220px) rotate(360deg); }
     }
+
+    /* ── V2 Premium Slide Engine ── */
+    .lesson-progress-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: rgba(23,50,77,0.08);
+      z-index: 20;
+    }
+    .lesson-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), var(--theme-color));
+      transition: width 0.35s ease;
+      border-radius: 0 2px 2px 0;
+    }
+    .learning-target-bar {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--teal-light);
+      border-left: 4px solid var(--teal);
+      padding: 6px 12px;
+      margin-bottom: 8px;
+      border-radius: 0 6px 6px 0;
+      font-size: 10.5px; font-weight: 700; color: var(--navy);
+    }
+    .lt-icon { font-size: 14px; flex-shrink: 0; }
+    .teacher-cue {
+      display: flex; align-items: flex-start; gap: 6px;
+      background: #eef6ff; border: 1px solid #c2d9f2;
+      border-radius: 6px; padding: 6px 10px;
+      margin-bottom: 6px; font-size: 10.5px; line-height: 1.4;
+    }
+    .teacher-cue-icon { flex-shrink: 0; }
+    .teacher-cue-label { font-weight: 800; color: var(--navy); white-space: nowrap; }
+    .teacher-cue-text { color: var(--body-text); }
+    .slide-main-title {
+      font-family: 'Outfit', sans-serif; font-size: 26px;
+      color: var(--navy); font-weight: 800; margin: 8px 0 12px;
+      letter-spacing: -0.02em; line-height: 1.2;
+    }
+    .title-slide { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; text-align:center; padding:20px; }
+    .title-emoji { font-size:52px; margin-bottom:12px; }
+    .title-heading { font-family:'Outfit'; font-size:34px; color:var(--navy); margin:0 0 8px; font-weight:800; }
+    .title-meta { font-size:14px; color:var(--gray); font-weight:700; margin:0 0 16px; }
+    .title-theme-badge { font-size:12px; padding:6px 14px; }
+    .title-time { font-size:12px; color:var(--gray); margin-top:12px; }
+    .how-to-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .how-to-item { background:var(--teal-light); border-radius:8px; padding:10px; font-size:10.5px; }
+    .how-to-item span { font-size:18px; display:block; margin-bottom:4px; }
+    .how-to-item strong { display:block; margin-bottom:2px; color:var(--navy); }
+    .how-to-item p { margin:0; color:var(--body-text); line-height:1.3; }
+    .agenda-timeline { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:8px; }
+    .agenda-step { background:var(--teal-light); padding:8px 12px; border-radius:8px; text-align:center; min-width:80px; }
+    .agenda-step-active { background:var(--teal); color:white; }
+    .agenda-num { display:block; font-size:9px; font-weight:800; opacity:0.7; }
+    .agenda-name { display:block; font-size:11px; font-weight:800; }
+    .agenda-min { display:block; font-size:9px; opacity:0.7; }
+    .section-divider { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; text-align:center; }
+    .section-divider-emoji { font-size:40px; margin-bottom:8px; }
+    .section-divider-title { font-family:'Outfit'; font-size:28px; color:var(--navy); font-weight:800; margin:0; }
+    .section-divider-time { font-size:13px; color:var(--gray); font-weight:700; margin:8px 0; }
+    .section-divider-bar { width:120px; height:4px; background:linear-gradient(90deg,var(--teal),var(--theme-color)); border-radius:99px; }
+    .reveal-step { margin-bottom:8px; }
+    .reveal-btn {
+      display:flex; align-items:center; gap:8px; width:100%;
+      padding:10px 14px; border:2px dashed var(--teal); border-radius:8px;
+      background:var(--white); cursor:pointer; font-size:11px; font-weight:700;
+      color:var(--navy); transition:all 0.2s;
+    }
+    .reveal-btn:hover { background:var(--teal-light); }
+    .reveal-num { background:var(--teal); color:white; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; }
+    .reveal-content { margin-top:6px; padding:10px 14px; background:var(--teal-light); border-radius:8px; border-left:4px solid var(--teal); }
+    .reveal-content.hidden { display:none; }
+    .reveal-line { font-size:12px; line-height:1.5; font-weight:600; }
+    .vocab-rich-card { display:grid; grid-template-columns:200px 1fr; gap:16px; align-items:start; }
+    .vocab-rich-visual { border-radius:10px; overflow:hidden; }
+    .vocab-term { font-family:'Outfit'; font-size:22px; color:var(--navy); margin:0 0 4px; font-weight:800; }
+    .vocab-definition { font-size:13px; font-weight:600; line-height:1.4; margin:0 0 8px; }
+    .vocab-example-box { background:var(--amber); background:color-mix(in srgb, var(--amber) 30%, white); padding:8px 10px; border-radius:6px; font-size:11px; margin-bottom:8px; }
+    .vocab-use-context { font-size:11px; }
+    .vocab-context-input { margin-top:6px; }
+    .turn-talk-timer { display:flex; align-items:center; gap:10px; margin-top:10px; }
+    .tt-countdown { font-family:monospace; font-size:18px; font-weight:800; color:var(--navy); }
+    .tt-countdown.running { color:var(--teal); animation:pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+    .drag-pool { display:flex; flex-wrap:wrap; gap:6px; padding:10px; background:var(--google-gray); border-radius:8px; min-height:50px; margin-bottom:10px; }
+    .drag-item {
+      display:inline-flex; align-items:center; gap:4px;
+      padding:6px 10px; background:white; border:1.5px solid var(--teal);
+      border-radius:6px; font-size:10.5px; font-weight:700; cursor:grab;
+      user-select:none; touch-action:none;
+    }
+    .drag-item.dragging { opacity:0.5; cursor:grabbing; }
+    .drag-zones { display:flex; gap:8px; flex-wrap:wrap; }
+    .drag-drop-zone {
+      flex:1; min-width:120px; min-height:80px;
+      border:2px dashed var(--gray); border-radius:8px; padding:6px;
+      background:rgba(255,255,255,0.6);
+    }
+    .drag-drop-zone.drag-over { border-color:var(--teal); background:var(--teal-light); }
+    .drag-zone-label { font-size:9px; font-weight:800; text-transform:uppercase; color:var(--navy); margin-bottom:4px; text-align:center; }
+    .drag-zone-items { display:flex; flex-wrap:wrap; gap:4px; min-height:40px; }
+    .cfu-card { text-align:center; }
+    .cfu-poll { display:flex; gap:8px; justify-content:center; margin:12px 0; }
+    .cfu-btn { flex:none; min-width:100px; }
+    .diff-paths-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+    .diff-path { border:2px solid var(--path-color, var(--teal)); border-radius:8px; padding:10px; }
+    .diff-path-label { font-size:11px; font-weight:800; color:var(--navy); margin-bottom:6px; }
+    .diff-path-stem { font-size:10px; line-height:1.4; margin:0; }
+    .workspace-table { width:100%; border-collapse:collapse; font-size:11px; }
+    .workspace-table th, .workspace-table td { border:1px solid #dadce0; padding:6px 8px; text-align:center; }
+    .workspace-table th { background:var(--teal-light); font-weight:800; }
+    .workspace-cell { width:60px; text-align:center; border:1px solid var(--teal); border-radius:4px; padding:4px; font-weight:700; }
+    .workspace-cell.correct { background:var(--teal-light); border-color:var(--teal); }
+    .workspace-cell.incorrect { background:var(--coral); border-color:#D9795D; }
+    .sketch-canvas { width:100%; border:1.5px solid var(--gray); border-radius:8px; background:white; cursor:crosshair; }
+    .mc-letter { background:var(--google-gray); color:var(--navy); width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; flex-shrink:0; }
+    .mc-btn { text-align:left; padding:8px 12px; font-size:12px; margin-bottom:6px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.4; gap:10px; }
+    .mc-btn.correct { animation:mcCorrect 0.4s ease; }
+    @keyframes mcCorrect { 0%{transform:scale(1)} 50%{transform:scale(1.03)} 100%{transform:scale(1)} }
+    .key-idea-box { background:var(--teal-light); border:2px solid var(--teal); border-radius:8px; padding:12px; margin-top:12px; }
+    .key-idea-box p { margin:4px 0 0; font-weight:700; font-size:13px; }
+    .badge-teal { background:var(--teal); color:white; font-size:10px; padding:3px 8px; border-radius:99px; font-weight:800; }
+    .badge-amber { background:var(--amber); color:var(--navy); font-size:10px; padding:3px 8px; border-radius:99px; font-weight:800; }
+    .card-teal-light { background:var(--teal-light); }
+    .card-coral { background:var(--coral); }
+    .activity-cta-slide { text-align:center; padding:24px; }
+    .activity-cta-icon { font-size:42px; margin-bottom:10px; }
+    .activity-cta-heading { font-family:'Outfit'; font-size:20px; color:var(--navy); margin:0 0 10px; }
+    .activity-cta-buttons { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:14px; }
+    .activity-cta-btn-secondary { background:var(--white)!important; color:var(--navy)!important; border:2px solid var(--teal)!important; text-decoration:none; }
+    .presenter-notes-panel {
+      display:none; position:fixed; right:0; top:64px; bottom:0; width:320px;
+      background:rgba(255,255,255,0.97); border-left:1px solid #dadce0;
+      padding:16px; overflow-y:auto; z-index:9999; box-shadow:-4px 0 20px rgba(0,0,0,0.1);
+      font-size:11.5px; line-height:1.5;
+    }
+    .presenter-notes-panel.open { display:block; }
+    .presenter-notes-panel h3 { font-family:'Outfit'; font-size:14px; color:var(--navy); margin:0 0 10px; }
+    .notes-toolbar-btn {
+      background:rgba(255,255,255,0.2); border:1px solid rgba(255,255,255,0.3);
+      color:white; padding:4px 10px; border-radius:99px; font-size:11px;
+      cursor:pointer; font-weight:700;
+    }
+    .slide-body { animation: slideFadeIn 0.25s ease; }
+    @keyframes slideFadeIn { from{opacity:0.7} to{opacity:1} }
     
   </style>
 </head>
@@ -1886,6 +2037,7 @@ ${deck.thumbnailsHtml}
     
       <!-- The Presentation Slide -->
       <article class="slide-canvas" id="slide-canvas-element">
+        <div class="lesson-progress-bar"><div class="lesson-progress-fill" id="lesson-progress-fill" style="width:0%"></div></div>
       
         <!-- Notebook Spiral Gutter -->
         <div class="notebook-spiral">
@@ -1915,13 +2067,24 @@ ${deck.thumbnailsHtml}
     
   </main>
 
-  <!-- Presenter Controls HUD (Visible only when in fullscreen Present Mode) -->
-  <div class="presenter-hud">
-    <button class="hud-btn" onclick="prevSlide()">◀</button>
+  <!-- Presenter Notes Panel -->
+  <aside class="presenter-notes-panel" id="presenter-notes-panel">
+    <h3>📝 Teacher Notes — Slide <span id="notes-slide-num">1</span></h3>
+    <div id="notes-slide-content">Loading notes...</div>
+    <hr style="margin:12px 0; border:none; border-top:1px solid #e1eaef;" />
+    <p style="font-size:10px; color:var(--gray);"><strong>Pacing:</strong> ${esc(data.timeEstimate || '~45 min')}</p>
+    ${data.practice?.commonMistake ? `<p style="font-size:10px;"><strong>Common mistake:</strong> ${esc(data.practice.commonMistake)}</p>` : ''}
+  </aside>
+
+  <!-- Presenter Controls HUD (Visible in fullscreen Present Mode) -->
+  <div class="presenter-hud" id="presenter-hud">
+    <button class="hud-btn" onclick="prevSlide()" title="Previous (←)">◀</button>
     <span id="hud-page-indicator">1 / ${deck.totalSlides}</span>
-    <button class="hud-btn" onclick="nextSlide()">▶</button>
-    <div class="hud-timer" id="hud-timer-display">Pacing: 00:00</div>
-    <button class="hud-btn" onclick="exitFullscreen()" title="Exit Presentation" style="margin-left: 8px;">✕</button>
+    <button class="hud-btn" onclick="nextSlide()" title="Next (→)">▶</button>
+    <button class="notes-toolbar-btn" onclick="toggleNotesPanel()" title="Notes (N)">📝 Notes</button>
+    <button class="notes-toolbar-btn" onclick="window.print()" title="Print">🖨️</button>
+    <div class="hud-timer" id="hud-timer-display">00:00</div>
+    <button class="hud-btn" onclick="exitFullscreen()" title="Exit (Esc)">✕</button>
   </div>
 
   <script>
@@ -1929,6 +2092,7 @@ ${deck.thumbnailsHtml}
     const totalSlides = ${deck.totalSlides};
     
     const slideTitles = ${JSON.stringify(deck.slideTitles)};
+    const teacherNotesMap = ${JSON.stringify(deck.teacherNotesMap || {})};
     
     // Concept Intro Tab Data
     const conceptData = {
@@ -2012,9 +2176,174 @@ ${deck.thumbnailsHtml}
       
       document.getElementById('hud-page-indicator').textContent = num + ' / ' + totalSlides;
       
-      if (num === 5) {
-        setTimeout(resizeSlides, 50);
+      const progressFill = document.getElementById('lesson-progress-fill');
+      if (progressFill) {
+        progressFill.style.width = Math.round((num / totalSlides) * 100) + '%';
       }
+      
+      updateNotesPanel(num);
+      setTimeout(resizeSlides, 50);
+    }
+
+    function updateNotesPanel(num) {
+      const notesNum = document.getElementById('notes-slide-num');
+      const notesContent = document.getElementById('notes-slide-content');
+      if (notesNum) notesNum.textContent = num;
+      if (notesContent) {
+        const activeSlide = document.getElementById('slide-' + num);
+        const dataNotes = activeSlide ? activeSlide.getAttribute('data-teacher-notes') : '';
+        const mapNotes = teacherNotesMap[num] || '';
+        const title = slideTitles[num - 1] || 'Slide ' + num;
+        notesContent.innerHTML = '<strong>' + title + '</strong><p style="margin:6px 0 0;">' + (dataNotes || mapNotes || 'No specific notes for this slide. Follow teacher cues on the slide.') + '</p>';
+      }
+    }
+
+    function toggleNotesPanel() {
+      const panel = document.getElementById('presenter-notes-panel');
+      if (panel) panel.classList.toggle('open');
+    }
+
+    // Click-to-reveal worked example steps
+    function revealStep(prefix, stepNum) {
+      const step = document.getElementById(prefix + '-step-' + stepNum);
+      if (!step) return;
+      const content = step.querySelector('.reveal-content');
+      const btn = step.querySelector('.reveal-btn');
+      if (content) content.classList.remove('hidden');
+      if (btn) btn.style.display = 'none';
+      saveWork();
+    }
+
+    function revealAllSteps(prefix, total) {
+      for (let i = 1; i <= total; i++) revealStep(prefix, i);
+    }
+
+    // Turn & Talk 90-second timer
+    const ttTimers = {};
+    function startTurnTalkTimer(id, seconds) {
+      if (ttTimers[id]) clearInterval(ttTimers[id]);
+      let remaining = seconds;
+      const display = document.getElementById('tt-countdown-' + id);
+      if (display) {
+        display.textContent = remaining + 's';
+        display.classList.add('running');
+      }
+      ttTimers[id] = setInterval(() => {
+        remaining--;
+        if (display) display.textContent = remaining + 's';
+        if (remaining <= 0) {
+          clearInterval(ttTimers[id]);
+          if (display) {
+            display.textContent = "Time's up! 🔔";
+            display.classList.remove('running');
+          }
+        }
+      }, 1000);
+    }
+
+    // CFU thumb responses
+    const cfuResponses = {};
+    function setCfuResponse(num, level) {
+      cfuResponses[num] = level;
+      const feedback = document.getElementById('cfu-feedback-' + num);
+      if (feedback) {
+        const labels = { up: '👍 Got it', side: '🤚 Almost', down: '👎 Need help' };
+        feedback.textContent = 'Recorded: ' + (labels[level] || level);
+        feedback.style.color = 'var(--teal)';
+      }
+      saveWork();
+    }
+
+    // Real drag-sort (mouse + touch)
+    let draggedItem = null;
+    document.addEventListener('dragstart', (e) => {
+      if (e.target.classList.contains('drag-item')) {
+        draggedItem = e.target;
+        e.target.classList.add('dragging');
+        e.dataTransfer.setData('text/plain', e.target.id);
+      }
+    });
+    document.addEventListener('dragend', (e) => {
+      if (e.target.classList.contains('drag-item')) {
+        e.target.classList.remove('dragging');
+      }
+    });
+    function dragOverZone(e) {
+      e.preventDefault();
+      const zone = e.target.closest('.drag-drop-zone, .drag-pool');
+      if (zone) zone.classList.add('drag-over');
+    }
+    function dropOnZone(e, sortId) {
+      e.preventDefault();
+      document.querySelectorAll('.drag-over').forEach(z => z.classList.remove('drag-over'));
+      const itemId = e.dataTransfer.getData('text/plain');
+      const item = document.getElementById(itemId);
+      const zone = e.target.closest('.drag-drop-zone, .drag-pool');
+      if (item && zone) {
+        const itemsContainer = zone.querySelector('.drag-zone-items') || zone;
+        itemsContainer.appendChild(item);
+      }
+      saveWork();
+    }
+
+    function checkDragSort(sortId) {
+      const feedback = document.getElementById('drag-feedback-' + sortId);
+      if (!feedback) return;
+      let correct = 0, total = 0;
+      document.querySelectorAll('[id^="drag-item-' + sortId + '"]').forEach(item => {
+        total++;
+        const parent = item.closest('.drag-drop-zone');
+        if (parent) {
+          const catId = parent.getAttribute('data-cat-id');
+          const correctCat = item.getAttribute('data-correct-cat');
+          if (catId === correctCat) {
+            correct++;
+            item.style.borderColor = 'var(--teal)';
+          } else {
+            item.style.borderColor = '#D9795D';
+          }
+        }
+      });
+      feedback.textContent = correct + '/' + total + ' correctly sorted.';
+      feedback.style.color = correct === total ? 'var(--teal)' : '#D9795D';
+    }
+
+    // Workspace table check
+    function checkWorkspaceCells() {
+      const feedback = document.getElementById('workspace-feedback');
+      let correct = 0, total = 0;
+      document.querySelectorAll('.workspace-cell').forEach(cell => {
+        total++;
+        const ans = (cell.getAttribute('data-answer') || '').trim();
+        const val = cell.value.trim();
+        if (val === ans) {
+          correct++;
+          cell.classList.add('correct');
+          cell.classList.remove('incorrect');
+        } else if (val) {
+          cell.classList.add('incorrect');
+          cell.classList.remove('correct');
+        }
+      });
+      if (feedback) {
+        feedback.textContent = correct + '/' + total + ' cells correct.';
+        feedback.style.color = correct === total ? 'var(--teal)' : '#D9795D';
+      }
+      saveWork();
+    }
+
+    // Sketch canvas
+    const sketchCanvas = document.getElementById('sketch-canvas');
+    const sketchCtx = sketchCanvas ? sketchCanvas.getContext('2d') : null;
+    let sketchDrawing = false;
+    if (sketchCanvas && sketchCtx) {
+      sketchCanvas.addEventListener('mousedown', (e) => { sketchDrawing = true; sketchCtx.beginPath(); sketchCtx.moveTo(e.offsetX, e.offsetY); });
+      sketchCanvas.addEventListener('mousemove', (e) => { if (!sketchDrawing) return; sketchCtx.lineTo(e.offsetX, e.offsetY); sketchCtx.strokeStyle = '#17324D'; sketchCtx.lineWidth = 2; sketchCtx.stroke(); });
+      sketchCanvas.addEventListener('mouseup', () => { sketchDrawing = false; });
+      sketchCanvas.addEventListener('mouseleave', () => { sketchDrawing = false; });
+    }
+    function clearSketchCanvas() {
+      if (sketchCtx && sketchCanvas) sketchCtx.clearRect(0, 0, sketchCanvas.width, sketchCanvas.height);
     }
     
     function prevSlide() {
@@ -2034,6 +2363,12 @@ ${deck.thumbnailsHtml}
         e.preventDefault();
       } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
         prevSlide();
+        e.preventDefault();
+      } else if (e.key === 'n' || e.key === 'N') {
+        toggleNotesPanel();
+        e.preventDefault();
+      } else if (e.key === 'f' || e.key === 'F') {
+        enterFullscreen();
         e.preventDefault();
       }
     });
@@ -3148,6 +3483,8 @@ ${deck.thumbnailsHtml}
     window.addEventListener('load', () => {
       loadWork();
       resizeSlides();
+      goToSlide(1);
+      document.getElementById('presenter-hud')?.classList.add('visible');
     });
     
   </script>

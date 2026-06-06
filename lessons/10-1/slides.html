@@ -833,6 +833,7 @@
       color: var(--white);
       z-index: 10000;
     }
+    .presenter-hud.visible { display: flex; }
     :fullscreen ~ .presenter-hud { display: flex; }
     :-webkit-full-screen ~ .presenter-hud { display: flex; }
     
@@ -995,6 +996,151 @@
       0% { transform: translateY(0) rotate(0deg); }
       100% { transform: translateY(220px) rotate(360deg); }
     }
+
+    /* ── V2 Premium Slide Engine ── */
+    .lesson-progress-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: rgba(23,50,77,0.08);
+      z-index: 20;
+    }
+    .lesson-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), var(--theme-color));
+      transition: width 0.35s ease;
+      border-radius: 0 2px 2px 0;
+    }
+    .learning-target-bar {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--teal-light);
+      border-left: 4px solid var(--teal);
+      padding: 6px 12px;
+      margin-bottom: 8px;
+      border-radius: 0 6px 6px 0;
+      font-size: 10.5px; font-weight: 700; color: var(--navy);
+    }
+    .lt-icon { font-size: 14px; flex-shrink: 0; }
+    .teacher-cue {
+      display: flex; align-items: flex-start; gap: 6px;
+      background: #eef6ff; border: 1px solid #c2d9f2;
+      border-radius: 6px; padding: 6px 10px;
+      margin-bottom: 6px; font-size: 10.5px; line-height: 1.4;
+    }
+    .teacher-cue-icon { flex-shrink: 0; }
+    .teacher-cue-label { font-weight: 800; color: var(--navy); white-space: nowrap; }
+    .teacher-cue-text { color: var(--body-text); }
+    .slide-main-title {
+      font-family: 'Outfit', sans-serif; font-size: 26px;
+      color: var(--navy); font-weight: 800; margin: 8px 0 12px;
+      letter-spacing: -0.02em; line-height: 1.2;
+    }
+    .title-slide { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; text-align:center; padding:20px; }
+    .title-emoji { font-size:52px; margin-bottom:12px; }
+    .title-heading { font-family:'Outfit'; font-size:34px; color:var(--navy); margin:0 0 8px; font-weight:800; }
+    .title-meta { font-size:14px; color:var(--gray); font-weight:700; margin:0 0 16px; }
+    .title-theme-badge { font-size:12px; padding:6px 14px; }
+    .title-time { font-size:12px; color:var(--gray); margin-top:12px; }
+    .how-to-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .how-to-item { background:var(--teal-light); border-radius:8px; padding:10px; font-size:10.5px; }
+    .how-to-item span { font-size:18px; display:block; margin-bottom:4px; }
+    .how-to-item strong { display:block; margin-bottom:2px; color:var(--navy); }
+    .how-to-item p { margin:0; color:var(--body-text); line-height:1.3; }
+    .agenda-timeline { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:8px; }
+    .agenda-step { background:var(--teal-light); padding:8px 12px; border-radius:8px; text-align:center; min-width:80px; }
+    .agenda-step-active { background:var(--teal); color:white; }
+    .agenda-num { display:block; font-size:9px; font-weight:800; opacity:0.7; }
+    .agenda-name { display:block; font-size:11px; font-weight:800; }
+    .agenda-min { display:block; font-size:9px; opacity:0.7; }
+    .section-divider { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; text-align:center; }
+    .section-divider-emoji { font-size:40px; margin-bottom:8px; }
+    .section-divider-title { font-family:'Outfit'; font-size:28px; color:var(--navy); font-weight:800; margin:0; }
+    .section-divider-time { font-size:13px; color:var(--gray); font-weight:700; margin:8px 0; }
+    .section-divider-bar { width:120px; height:4px; background:linear-gradient(90deg,var(--teal),var(--theme-color)); border-radius:99px; }
+    .reveal-step { margin-bottom:8px; }
+    .reveal-btn {
+      display:flex; align-items:center; gap:8px; width:100%;
+      padding:10px 14px; border:2px dashed var(--teal); border-radius:8px;
+      background:var(--white); cursor:pointer; font-size:11px; font-weight:700;
+      color:var(--navy); transition:all 0.2s;
+    }
+    .reveal-btn:hover { background:var(--teal-light); }
+    .reveal-num { background:var(--teal); color:white; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; }
+    .reveal-content { margin-top:6px; padding:10px 14px; background:var(--teal-light); border-radius:8px; border-left:4px solid var(--teal); }
+    .reveal-content.hidden { display:none; }
+    .reveal-line { font-size:12px; line-height:1.5; font-weight:600; }
+    .vocab-rich-card { display:grid; grid-template-columns:200px 1fr; gap:16px; align-items:start; }
+    .vocab-rich-visual { border-radius:10px; overflow:hidden; }
+    .vocab-term { font-family:'Outfit'; font-size:22px; color:var(--navy); margin:0 0 4px; font-weight:800; }
+    .vocab-definition { font-size:13px; font-weight:600; line-height:1.4; margin:0 0 8px; }
+    .vocab-example-box { background:var(--amber); background:color-mix(in srgb, var(--amber) 30%, white); padding:8px 10px; border-radius:6px; font-size:11px; margin-bottom:8px; }
+    .vocab-use-context { font-size:11px; }
+    .vocab-context-input { margin-top:6px; }
+    .turn-talk-timer { display:flex; align-items:center; gap:10px; margin-top:10px; }
+    .tt-countdown { font-family:monospace; font-size:18px; font-weight:800; color:var(--navy); }
+    .tt-countdown.running { color:var(--teal); animation:pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+    .drag-pool { display:flex; flex-wrap:wrap; gap:6px; padding:10px; background:var(--google-gray); border-radius:8px; min-height:50px; margin-bottom:10px; }
+    .drag-item {
+      display:inline-flex; align-items:center; gap:4px;
+      padding:6px 10px; background:white; border:1.5px solid var(--teal);
+      border-radius:6px; font-size:10.5px; font-weight:700; cursor:grab;
+      user-select:none; touch-action:none;
+    }
+    .drag-item.dragging { opacity:0.5; cursor:grabbing; }
+    .drag-zones { display:flex; gap:8px; flex-wrap:wrap; }
+    .drag-drop-zone {
+      flex:1; min-width:120px; min-height:80px;
+      border:2px dashed var(--gray); border-radius:8px; padding:6px;
+      background:rgba(255,255,255,0.6);
+    }
+    .drag-drop-zone.drag-over { border-color:var(--teal); background:var(--teal-light); }
+    .drag-zone-label { font-size:9px; font-weight:800; text-transform:uppercase; color:var(--navy); margin-bottom:4px; text-align:center; }
+    .drag-zone-items { display:flex; flex-wrap:wrap; gap:4px; min-height:40px; }
+    .cfu-card { text-align:center; }
+    .cfu-poll { display:flex; gap:8px; justify-content:center; margin:12px 0; }
+    .cfu-btn { flex:none; min-width:100px; }
+    .diff-paths-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+    .diff-path { border:2px solid var(--path-color, var(--teal)); border-radius:8px; padding:10px; }
+    .diff-path-label { font-size:11px; font-weight:800; color:var(--navy); margin-bottom:6px; }
+    .diff-path-stem { font-size:10px; line-height:1.4; margin:0; }
+    .workspace-table { width:100%; border-collapse:collapse; font-size:11px; }
+    .workspace-table th, .workspace-table td { border:1px solid #dadce0; padding:6px 8px; text-align:center; }
+    .workspace-table th { background:var(--teal-light); font-weight:800; }
+    .workspace-cell { width:60px; text-align:center; border:1px solid var(--teal); border-radius:4px; padding:4px; font-weight:700; }
+    .workspace-cell.correct { background:var(--teal-light); border-color:var(--teal); }
+    .workspace-cell.incorrect { background:var(--coral); border-color:#D9795D; }
+    .sketch-canvas { width:100%; border:1.5px solid var(--gray); border-radius:8px; background:white; cursor:crosshair; }
+    .mc-letter { background:var(--google-gray); color:var(--navy); width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; flex-shrink:0; }
+    .mc-btn { text-align:left; padding:8px 12px; font-size:12px; margin-bottom:6px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.4; gap:10px; }
+    .mc-btn.correct { animation:mcCorrect 0.4s ease; }
+    @keyframes mcCorrect { 0%{transform:scale(1)} 50%{transform:scale(1.03)} 100%{transform:scale(1)} }
+    .key-idea-box { background:var(--teal-light); border:2px solid var(--teal); border-radius:8px; padding:12px; margin-top:12px; }
+    .key-idea-box p { margin:4px 0 0; font-weight:700; font-size:13px; }
+    .badge-teal { background:var(--teal); color:white; font-size:10px; padding:3px 8px; border-radius:99px; font-weight:800; }
+    .badge-amber { background:var(--amber); color:var(--navy); font-size:10px; padding:3px 8px; border-radius:99px; font-weight:800; }
+    .card-teal-light { background:var(--teal-light); }
+    .card-coral { background:var(--coral); }
+    .activity-cta-slide { text-align:center; padding:24px; }
+    .activity-cta-icon { font-size:42px; margin-bottom:10px; }
+    .activity-cta-heading { font-family:'Outfit'; font-size:20px; color:var(--navy); margin:0 0 10px; }
+    .activity-cta-buttons { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:14px; }
+    .activity-cta-btn-secondary { background:var(--white)!important; color:var(--navy)!important; border:2px solid var(--teal)!important; text-decoration:none; }
+    .presenter-notes-panel {
+      display:none; position:fixed; right:0; top:64px; bottom:0; width:320px;
+      background:rgba(255,255,255,0.97); border-left:1px solid #dadce0;
+      padding:16px; overflow-y:auto; z-index:9999; box-shadow:-4px 0 20px rgba(0,0,0,0.1);
+      font-size:11.5px; line-height:1.5;
+    }
+    .presenter-notes-panel.open { display:block; }
+    .presenter-notes-panel h3 { font-family:'Outfit'; font-size:14px; color:var(--navy); margin:0 0 10px; }
+    .notes-toolbar-btn {
+      background:rgba(255,255,255,0.2); border:1px solid rgba(255,255,255,0.3);
+      color:white; padding:4px 10px; border-radius:99px; font-size:11px;
+      cursor:pointer; font-weight:700;
+    }
+    .slide-body { animation: slideFadeIn 0.25s ease; }
+    @keyframes slideFadeIn { from{opacity:0.7} to{opacity:1} }
     
   </style>
 </head>
@@ -1040,141 +1186,226 @@
 
       <div class="thumb-card" data-slide="2" onclick="goToSlide(2)">
         <span class="thumb-label">Slide 2</span>
-        <div class="thumb-preview">🎯 Targets</div>
+        <div class="thumb-preview">📖 Guide</div>
       </div>
 
       <div class="thumb-card" data-slide="3" onclick="goToSlide(3)">
         <span class="thumb-label">Slide 3</span>
-        <div class="thumb-preview">🗺️ Agenda</div>
+        <div class="thumb-preview">🎯 Targets</div>
       </div>
 
       <div class="thumb-card" data-slide="4" onclick="goToSlide(4)">
         <span class="thumb-label">Slide 4</span>
-        <div class="thumb-preview">🔥 Warm-Up</div>
+        <div class="thumb-preview">🗺️ Agenda</div>
       </div>
 
       <div class="thumb-card" data-slide="5" onclick="goToSlide(5)">
         <span class="thumb-label">Slide 5</span>
-        <div class="thumb-preview">👀 Launch</div>
+        <div class="thumb-preview">🚀 Launch</div>
       </div>
 
       <div class="thumb-card" data-slide="6" onclick="goToSlide(6)">
         <span class="thumb-label">Slide 6</span>
-        <div class="thumb-preview">💡 Concept</div>
+        <div class="thumb-preview">🔥 Warm-Up</div>
       </div>
 
       <div class="thumb-card" data-slide="7" onclick="goToSlide(7)">
         <span class="thumb-label">Slide 7</span>
-        <div class="thumb-preview">👁️ I Do</div>
+        <div class="thumb-preview">✋ CFU</div>
       </div>
 
       <div class="thumb-card" data-slide="8" onclick="goToSlide(8)">
         <span class="thumb-label">Slide 8</span>
-        <div class="thumb-preview">🤝 We Do</div>
+        <div class="thumb-preview">👀 Launch</div>
       </div>
 
       <div class="thumb-card" data-slide="9" onclick="goToSlide(9)">
         <span class="thumb-label">Slide 9</span>
-        <div class="thumb-preview">✋ You Do</div>
+        <div class="thumb-preview">💡 Concept</div>
       </div>
 
       <div class="thumb-card" data-slide="10" onclick="goToSlide(10)">
         <span class="thumb-label">Slide 10</span>
-        <div class="thumb-preview">📝 Vocab</div>
+        <div class="thumb-preview">👁️ I Do</div>
       </div>
 
       <div class="thumb-card" data-slide="11" onclick="goToSlide(11)">
         <span class="thumb-label">Slide 11</span>
-        <div class="thumb-preview">📝 Vocab</div>
+        <div class="thumb-preview">👁️ I Do 2</div>
       </div>
 
       <div class="thumb-card" data-slide="12" onclick="goToSlide(12)">
         <span class="thumb-label">Slide 12</span>
-        <div class="thumb-preview">📝 Vocab</div>
+        <div class="thumb-preview">🤝 We Do</div>
       </div>
 
       <div class="thumb-card" data-slide="13" onclick="goToSlide(13)">
         <span class="thumb-label">Slide 13</span>
-        <div class="thumb-preview">❓ Vocab</div>
+        <div class="thumb-preview">✋ CFU</div>
       </div>
 
       <div class="thumb-card" data-slide="14" onclick="goToSlide(14)">
         <span class="thumb-label">Slide 14</span>
-        <div class="thumb-preview">🗣️ Discuss</div>
+        <div class="thumb-preview">✋ You Do</div>
       </div>
 
       <div class="thumb-card" data-slide="15" onclick="goToSlide(15)">
         <span class="thumb-label">Slide 15</span>
-        <div class="thumb-preview">📐 Model</div>
+        <div class="thumb-preview">📚 Vocab</div>
       </div>
 
       <div class="thumb-card" data-slide="16" onclick="goToSlide(16)">
         <span class="thumb-label">Slide 16</span>
-        <div class="thumb-preview">🔍 Explore</div>
+        <div class="thumb-preview">📝 Vocab</div>
       </div>
 
       <div class="thumb-card" data-slide="17" onclick="goToSlide(17)">
         <span class="thumb-label">Slide 17</span>
-        <div class="thumb-preview">🗣️ Explore</div>
+        <div class="thumb-preview">📝 Vocab</div>
       </div>
 
       <div class="thumb-card" data-slide="18" onclick="goToSlide(18)">
         <span class="thumb-label">Slide 18</span>
-        <div class="thumb-preview">📝 Practice</div>
+        <div class="thumb-preview">📝 Vocab</div>
       </div>
 
       <div class="thumb-card" data-slide="19" onclick="goToSlide(19)">
         <span class="thumb-label">Slide 19</span>
-        <div class="thumb-preview">📝 Practice</div>
+        <div class="thumb-preview">📝 Vocab</div>
       </div>
 
       <div class="thumb-card" data-slide="20" onclick="goToSlide(20)">
         <span class="thumb-label">Slide 20</span>
-        <div class="thumb-preview">↕️ Sort</div>
+        <div class="thumb-preview">❓ Vocab</div>
       </div>
 
       <div class="thumb-card" data-slide="21" onclick="goToSlide(21)">
         <span class="thumb-label">Slide 21</span>
-        <div class="thumb-preview">⚠️ Error</div>
+        <div class="thumb-preview">✋ CFU</div>
       </div>
 
       <div class="thumb-card" data-slide="22" onclick="goToSlide(22)">
         <span class="thumb-label">Slide 22</span>
-        <div class="thumb-preview">🌍 Connect</div>
+        <div class="thumb-preview">🗣️ Discuss</div>
       </div>
 
       <div class="thumb-card" data-slide="23" onclick="goToSlide(23)">
         <span class="thumb-label">Slide 23</span>
-        <div class="thumb-preview">🗣️ Connect</div>
+        <div class="thumb-preview">🔍 Explore</div>
       </div>
 
       <div class="thumb-card" data-slide="24" onclick="goToSlide(24)">
         <span class="thumb-label">Slide 24</span>
-        <div class="thumb-preview">📝 Exit</div>
+        <div class="thumb-preview">📐 Model</div>
       </div>
 
       <div class="thumb-card" data-slide="25" onclick="goToSlide(25)">
         <span class="thumb-label">Slide 25</span>
-        <div class="thumb-preview">📝 Exit 2</div>
+        <div class="thumb-preview">🔍 Explore</div>
       </div>
 
       <div class="thumb-card" data-slide="26" onclick="goToSlide(26)">
         <span class="thumb-label">Slide 26</span>
-        <div class="thumb-preview">🤔 Reflect</div>
+        <div class="thumb-preview">🖊️ CFU</div>
       </div>
 
       <div class="thumb-card" data-slide="27" onclick="goToSlide(27)">
         <span class="thumb-label">Slide 27</span>
-        <div class="thumb-preview">🏠 Home</div>
+        <div class="thumb-preview">🗣️ Explore</div>
       </div>
 
       <div class="thumb-card" data-slide="28" onclick="goToSlide(28)">
         <span class="thumb-label">Slide 28</span>
-        <div class="thumb-preview">👩‍🏫 Notes</div>
+        <div class="thumb-preview">📝 Practice</div>
       </div>
 
       <div class="thumb-card" data-slide="29" onclick="goToSlide(29)">
         <span class="thumb-label">Slide 29</span>
+        <div class="thumb-preview">📝 Practice</div>
+      </div>
+
+      <div class="thumb-card" data-slide="30" onclick="goToSlide(30)">
+        <span class="thumb-label">Slide 30</span>
+        <div class="thumb-preview">↕️ Sort</div>
+      </div>
+
+      <div class="thumb-card" data-slide="31" onclick="goToSlide(31)">
+        <span class="thumb-label">Slide 31</span>
+        <div class="thumb-preview">⚠️ Error</div>
+      </div>
+
+      <div class="thumb-card" data-slide="32" onclick="goToSlide(32)">
+        <span class="thumb-label">Slide 32</span>
+        <div class="thumb-preview">📊 Workspace</div>
+      </div>
+
+      <div class="thumb-card" data-slide="33" onclick="goToSlide(33)">
+        <span class="thumb-label">Slide 33</span>
+        <div class="thumb-preview">🎯 Diff</div>
+      </div>
+
+      <div class="thumb-card" data-slide="34" onclick="goToSlide(34)">
+        <span class="thumb-label">Slide 34</span>
+        <div class="thumb-preview">🤝 Partner</div>
+      </div>
+
+      <div class="thumb-card" data-slide="35" onclick="goToSlide(35)">
+        <span class="thumb-label">Slide 35</span>
+        <div class="thumb-preview">✋ CFU</div>
+      </div>
+
+      <div class="thumb-card" data-slide="36" onclick="goToSlide(36)">
+        <span class="thumb-label">Slide 36</span>
+        <div class="thumb-preview">🌍 Connect</div>
+      </div>
+
+      <div class="thumb-card" data-slide="37" onclick="goToSlide(37)">
+        <span class="thumb-label">Slide 37</span>
+        <div class="thumb-preview">🗣️ Connect</div>
+      </div>
+
+      <div class="thumb-card" data-slide="38" onclick="goToSlide(38)">
+        <span class="thumb-label">Slide 38</span>
+        <div class="thumb-preview">✅ Close</div>
+      </div>
+
+      <div class="thumb-card" data-slide="39" onclick="goToSlide(39)">
+        <span class="thumb-label">Slide 39</span>
+        <div class="thumb-preview">📝 Exit</div>
+      </div>
+
+      <div class="thumb-card" data-slide="40" onclick="goToSlide(40)">
+        <span class="thumb-label">Slide 40</span>
+        <div class="thumb-preview">📝 Exit 2</div>
+      </div>
+
+      <div class="thumb-card" data-slide="41" onclick="goToSlide(41)">
+        <span class="thumb-label">Slide 41</span>
+        <div class="thumb-preview">📝 Bonus</div>
+      </div>
+
+      <div class="thumb-card" data-slide="42" onclick="goToSlide(42)">
+        <span class="thumb-label">Slide 42</span>
+        <div class="thumb-preview">🤔 Reflect</div>
+      </div>
+
+      <div class="thumb-card" data-slide="43" onclick="goToSlide(43)">
+        <span class="thumb-label">Slide 43</span>
+        <div class="thumb-preview">🎮 Activity</div>
+      </div>
+
+      <div class="thumb-card" data-slide="44" onclick="goToSlide(44)">
+        <span class="thumb-label">Slide 44</span>
+        <div class="thumb-preview">🏠 Home</div>
+      </div>
+
+      <div class="thumb-card" data-slide="45" onclick="goToSlide(45)">
+        <span class="thumb-label">Slide 45</span>
+        <div class="thumb-preview">👩‍🏫 Notes</div>
+      </div>
+
+      <div class="thumb-card" data-slide="46" onclick="goToSlide(46)">
+        <span class="thumb-label">Slide 46</span>
         <div class="thumb-preview">🔑 Key</div>
       </div>
     </nav>
@@ -1184,6 +1415,7 @@
     
       <!-- The Presentation Slide -->
       <article class="slide-canvas" id="slide-canvas-element">
+        <div class="lesson-progress-bar"><div class="lesson-progress-fill" id="lesson-progress-fill" style="width:0%"></div></div>
       
         <!-- Notebook Spiral Gutter -->
         <div class="notebook-spiral">
@@ -1199,248 +1431,689 @@
           <div class="spiral-ring"></div>
         </div>
       
-        <div class="slide-body active" id="slide-1">
-    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; text-align:center; padding:20px;">
-      <div style="font-size:48px; margin-bottom:12px;">📦</div>
-      <h1 style="font-family:'Outfit'; font-size:32px; color:var(--navy); margin:0 0 8px; font-weight:800;">Volume with Whole Number Edges</h1>
-      <p style="font-size:14px; color:var(--gray); font-weight:700; margin:0 0 16px;">Unit 10 · Lesson 10-1 · 6.G.2</p>
-      <span class="slide-badge" style="background:var(--theme-color); color:var(--white); font-size:12px; padding:6px 14px;">TIME CAPSULE THEME</span>
+        <div class="slide-body active" id="slide-1" data-slide-type="title" data-teacher-notes="Display while students enter. Start presenter mode with ▶ Present.">
+    <div class="title-slide">
+      <div class="title-emoji">📦</div>
+      <h1 class="title-heading">Volume with Whole Number Edges</h1>
+      <p class="title-meta">Unit 10 · Lesson 10-1 · 6.G.2</p>
+      <span class="slide-badge title-theme-badge">TIME CAPSULE THEME</span>
+      <p class="title-time">⏱️ ~45 min</p>
       
     </div></div>
 
-        <div class="slide-body" id="slide-2">
+        <div class="slide-body" id="slide-2" data-slide-type="how-to" data-teacher-notes="First day with deck? Spend 30 sec here. Skip on repeat lessons.">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Learning Targets</h3>
+    <h3 class="slide-main-title">How to Use This Deck</h3>
+    <div class="slide-card how-to-card">
+      <div class="how-to-grid">
+        <div class="how-to-item"><span>▶</span><strong>Present</strong><p>Click Present or press F11 for fullscreen. Use arrow keys to advance.</p></div>
+        <div class="how-to-item"><span>👩‍🏫</span><strong>Teacher cues</strong><p>Blue boxes show exactly what to say, ask, and how long to spend.</p></div>
+        <div class="how-to-item"><span>👨‍🎓</span><strong>Student work</strong><p>Text boxes, polls, and drag-sort save automatically in the browser.</p></div>
+        <div class="how-to-item"><span>📝</span><strong>Notes</strong><p>Press N or click 📝 in the toolbar for pacing tips and answers.</p></div>
+        <div class="how-to-item"><span>🎮</span><strong>Activity link</strong><p>Launch the full HTML activity for independent practice.</p></div>
+        <div class="how-to-item"><span>🖨️</span><strong>Print</strong><p>File → Print or the print button for handout copies.</p></div>
+      </div>
+      <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">30 sec — read aloud, then advance</span>
+  </div>
+    </div></div>
+
+        <div class="slide-body" id="slide-3" data-slide-type="learning-targets" data-teacher-notes="Post objectives on board. Return to these at closure.">
+    
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
+    <h3 class="slide-main-title">Learning Targets</h3>
     <div class="slide-grid-2">
       <div class="slide-card">
-        <h2 class="card-title">🎯 Content Objective <span style="font-size:10px; color:var(--gray);">/ Objetivo de contenido</span></h2>
-        <p style="font-size:14px; font-weight:600; line-height:1.5; margin:0;">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</p>
+        <h2 class="card-title">🎯 Content Objective <span class="bilingual-tag">/ Objetivo de contenido</span></h2>
+        <p class="objective-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</p>
+        <div class="teacher-cue teacher-cue-say">
+    <span class="teacher-cue-icon">👩‍🏫</span>
+    <span class="teacher-cue-label">Say:</span>
+    <span class="teacher-cue-text">Read the content objective aloud. Ask: "What will you be able to do by the end of class?"</span>
+  </div>
       </div>
       <div class="slide-card">
-        <h2 class="card-title">🗣️ Language Objective <span style="font-size:10px; color:var(--gray);">/ Objetivo de lenguaje</span></h2>
-        <p style="font-size:14px; font-weight:600; line-height:1.5; margin:0;">I can explain my work using the words volume, rectangular prism, cubic units, and edge.</p>
+        <h2 class="card-title">🗣️ Language Objective <span class="bilingual-tag">/ Objetivo de lenguaje</span></h2>
+        <p class="objective-text">I can explain my work using the words volume, rectangular prism, cubic units, and edge.</p>
+        
+        <div class="teacher-cue teacher-cue-ask">
+    <span class="teacher-cue-icon">❓</span>
+    <span class="teacher-cue-label">Ask:</span>
+    <span class="teacher-cue-text">Which vocabulary words do you already know? Which are new?</span>
+  </div>
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-3">
+        <div class="slide-body" id="slide-4" data-slide-type="agenda" data-teacher-notes="Adjust minutes based on your block schedule.">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Today&apos;s Flow</h3>
+    <h3 class="slide-main-title">Today&apos;s Flow</h3>
     <div class="slide-card">
-      <div style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:10px;">
-        <div style="background:var(--teal); color:white; padding:10px 14px; border-radius:8px; font-size:11px; font-weight:800; min-width:90px; text-align:center;">1. Warm-Up</div><div style="background:var(--teal-light); color:var(--navy); padding:10px 14px; border-radius:8px; font-size:11px; font-weight:800; min-width:90px; text-align:center;">2. Vocabulary</div><div style="background:var(--teal-light); color:var(--navy); padding:10px 14px; border-radius:8px; font-size:11px; font-weight:800; min-width:90px; text-align:center;">3. I Do</div><div style="background:var(--teal-light); color:var(--navy); padding:10px 14px; border-radius:8px; font-size:11px; font-weight:800; min-width:90px; text-align:center;">4. We Do</div><div style="background:var(--teal-light); color:var(--navy); padding:10px 14px; border-radius:8px; font-size:11px; font-weight:800; min-width:90px; text-align:center;">5. Explore</div><div style="background:var(--teal-light); color:var(--navy); padding:10px 14px; border-radius:8px; font-size:11px; font-weight:800; min-width:90px; text-align:center;">6. Practice</div><div style="background:var(--teal-light); color:var(--navy); padding:10px 14px; border-radius:8px; font-size:11px; font-weight:800; min-width:90px; text-align:center;">7. Connect</div><div style="background:var(--teal-light); color:var(--navy); padding:10px 14px; border-radius:8px; font-size:11px; font-weight:800; min-width:90px; text-align:center;">8. Exit Ticket</div><div style="background:var(--teal-light); color:var(--navy); padding:10px 14px; border-radius:8px; font-size:11px; font-weight:800; min-width:90px; text-align:center;">9. Reflect</div>
+      <div class="agenda-timeline">
+        <div class="agenda-step agenda-step-active">
+            <span class="agenda-num">1</span>
+            <span class="agenda-name">Warm-Up</span>
+            <span class="agenda-min">5m</span>
+          </div><div class="agenda-step">
+            <span class="agenda-num">2</span>
+            <span class="agenda-name">Vocabulary</span>
+            <span class="agenda-min">8m</span>
+          </div><div class="agenda-step">
+            <span class="agenda-num">3</span>
+            <span class="agenda-name">I Do</span>
+            <span class="agenda-min">5m</span>
+          </div><div class="agenda-step">
+            <span class="agenda-num">4</span>
+            <span class="agenda-name">We Do</span>
+            <span class="agenda-min">5m</span>
+          </div><div class="agenda-step">
+            <span class="agenda-num">5</span>
+            <span class="agenda-name">Explore</span>
+            <span class="agenda-min">8m</span>
+          </div><div class="agenda-step">
+            <span class="agenda-num">6</span>
+            <span class="agenda-name">Practice</span>
+            <span class="agenda-min">10m</span>
+          </div><div class="agenda-step">
+            <span class="agenda-num">7</span>
+            <span class="agenda-name">Connect</span>
+            <span class="agenda-min">5m</span>
+          </div><div class="agenda-step">
+            <span class="agenda-num">8</span>
+            <span class="agenda-name">Exit Ticket</span>
+            <span class="agenda-min">5m</span>
+          </div>
       </div>
-      <p style="text-align:center; font-size:11px; color:var(--gray); margin-top:14px;">Pacing: ~45 min · Click Present to start the timer</p>
+      <p class="agenda-total">Total pacing: ~45 min · Progress bar at top tracks your place</p>
     </div></div>
 
-        <div class="slide-body" id="slide-4">
-    
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Warm-Up Hook</h3>
-    <div class="slide-card" style="text-align:center; padding:24px;">
-      <span class="slide-badge" style="background:var(--amber); color:var(--navy);">⏱️ 3 MIN · THINK-PAIR-SHARE</span>
-      <p style="font-size:16px; font-weight:700; line-height:1.5; margin:16px 0; color:var(--navy);">Your time capsule container is a rectangular prism. To find how much it can hold, why do you need three measurements (length, width, and height) instead of just one or two?</p>
-      <div style="max-width:520px; margin:0 auto;"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">volume</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">length</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">width</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">height</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">rectangular prism</span></div>
+        <div class="slide-body" id="slide-5" data-section="launch" data-slide-type="section">
+    <div class="section-divider">
+      <div class="section-divider-emoji">📦</div>
+      <h2 class="section-divider-title">LAUNCH</h2>
+      <p class="section-divider-time">⏱️ ~10 min</p>
+      <div class="section-divider-bar"></div>
     </div></div>
 
-        <div class="slide-body" id="slide-5">
+        <div class="slide-body" id="slide-6" data-section="launch" data-slide-type="hook" data-teacher-notes="Students explain that volume is three-dimensional, so all three edges (length, width, height) are needed; two measurements only give area of one face.">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Scenario Launch</h3>
+    <h3 class="slide-main-title">Warm-Up Hook</h3>
+    <div class="slide-card warmup-card">
+      <span class="slide-badge badge-amber">⏱️ 3 MIN · THINK-PAIR-SHARE</span>
+      <div class="teacher-cue teacher-cue-say">
+    <span class="teacher-cue-icon">👩‍🏫</span>
+    <span class="teacher-cue-label">Say:</span>
+    <span class="teacher-cue-text">Think silently for 30 seconds, then share with your partner.</span>
+  </div>
+      <div class="teacher-cue teacher-cue-ask">
+    <span class="teacher-cue-icon">❓</span>
+    <span class="teacher-cue-label">Ask:</span>
+    <span class="teacher-cue-text">Your time capsule container is a rectangular prism. To find how much it can hold, why do you need three measurements (length, width, and height) instead of just one or two?</span>
+  </div>
+      <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">3 min</span>
+  </div>
+      <p class="warmup-question">Your time capsule container is a rectangular prism. To find how much it can hold, why do you need three measurements (length, width, and height) instead of just one or two?</p>
+      <div class="warmup-vocab"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">volume</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">length</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">width</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">height</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">rectangular prism</span></div>
+      <textarea class="slide-input-placeholder" rows="2" placeholder="Jot one idea from your partner..."></textarea>
+    </div></div>
+
+        <div class="slide-body" id="slide-7" data-section="check" data-slide-type="cfu">
+    
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
+    <h3 class="slide-main-title">Check for Understanding #1</h3>
+    <div class="slide-card cfu-card">
+      <span class="slide-badge badge-amber">✋ CFU · THUMBS</span>
+      <div class="teacher-cue teacher-cue-ask">
+    <span class="teacher-cue-icon">❓</span>
+    <span class="teacher-cue-label">Ask:</span>
+    <span class="teacher-cue-text">Can you restate the warm-up question in your own words?</span>
+  </div>
+      <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">30 sec</span>
+  </div>
+      <div class="cfu-poll">
+        <button class="assess-btn cfu-btn" onclick="setCfuResponse(1, 'up')">👍 Got it</button>
+        <button class="assess-btn cfu-btn" onclick="setCfuResponse(1, 'side')">🤚 Almost</button>
+        <button class="assess-btn cfu-btn" onclick="setCfuResponse(1, 'down')">👎 Need help</button>
+      </div>
+      <div id="cfu-feedback-1" class="cfu-feedback"></div>
+      <p class="cfu-teacher-tip"><strong>Teacher:</strong> If &gt;30% thumbs down, re-teach with a fresh example before moving on.</p>
+    </div></div>
+
+        <div class="slide-body" id="slide-8" data-section="launch" data-slide-type="notice-wonder">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
+    
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
+    <h3 class="slide-main-title">Scenario Launch</h3>
     <div class="slide-grid-2">
       <div class="slide-card">
         <h2 class="card-title">📋 Time Capsule Project</h2>
-        <p class="card-desc" style="font-size:12.5px; line-height:1.5;">Your team is building time capsule containers to store class memories. Each container is a rectangular prism, and you need to figure out how much each one can hold. That means calculating the volume using whole number dimensions!</p>
+        <div class="teacher-cue teacher-cue-say">
+    <span class="teacher-cue-icon">👩‍🏫</span>
+    <span class="teacher-cue-label">Say:</span>
+    <span class="teacher-cue-text">Read the scenario aloud slowly. Give students 10 seconds of think time.</span>
+  </div>
+        <p class="card-desc">Your team is building time capsule containers to store class memories. Each container is a rectangular prism, and you need to figure out how much each one can hold. That means calculating the volume using whole number dimensions!</p>
       </div>
-      <div class="slide-card nw-container" style="border:none; background:transparent; box-shadow:none; padding:0;">
-        <div class="nw-box nw-box-notice" style="transform:rotate(-1deg);">
+      <div class="slide-card nw-container">
+        <div class="nw-box nw-box-notice">
           <h4>👀 Notice:</h4><div class="nw-box-stems"><div>🔹 What three measurements do you need to find the volume of a box?</div><div>🔹 What does volume tell us about a container?</div><div>🔹 How is volume different from the area of one face?</div></div>
           <textarea id="student-notice" class="slide-input-placeholder" rows="2" placeholder="Type what you notice..."></textarea>
         </div>
-        <div class="nw-box nw-box-wonder" style="transform:rotate(1deg); margin-top:8px;">
+        <div class="nw-box nw-box-wonder">
           <h4>💭 Wonder:</h4><div class="nw-box-stems"><div>🔹 If two containers have the same volume, must they have the same shape?</div><div>🔹 What happens to the volume if you double just one dimension?</div></div>
           <textarea id="student-wonder" class="slide-input-placeholder" rows="2" placeholder="Type what you wonder..."></textarea>
         </div>
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-6">
+        <div class="slide-body" id="slide-9" data-section="launch" data-slide-type="concept" data-teacher-notes="To find the volume of a box, multiply all three edges: V = length × width × height.">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Concept Launch</h3>
+    <h3 class="slide-main-title">Concept Launch</h3>
     <div class="slide-card">
       <h2 class="card-title">💡 How do we find the volume of a box?</h2>
-      <p class="card-desc" style="font-size:13px; line-height:1.5;">Volume is how much space is inside a 3D shape. For a rectangular prism (a box), volume = length × width × height, measured in cubic units.</p>
-      <div style="background:var(--teal-light); border:1.5px solid var(--teal); border-radius:8px; padding:10px; margin-top:12px;"><strong style="font-size:10px; text-transform:uppercase;">Key Idea:</strong><p style="margin:4px 0 0; font-weight:700;">To find the volume of a box, multiply all three edges: V = length × width × height.</p></div>
+      <div class="teacher-cue teacher-cue-say">
+    <span class="teacher-cue-icon">👩‍🏫</span>
+    <span class="teacher-cue-label">Say:</span>
+    <span class="teacher-cue-text">This is the big idea for today. Students should be able to repeat it by the end.</span>
+  </div>
+      <p class="card-desc">Volume is how much space is inside a 3D shape. For a rectangular prism (a box), volume = length × width × height, measured in cubic units.</p>
+      <div class="key-idea-box"><strong>Key Idea:</strong><p>To find the volume of a box, multiply all three edges: V = length × width × height.</p></div>
     </div></div>
 
-        <div class="slide-body" id="slide-7">
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Watch me</h3><div class="slide-card"><div style="display:flex; gap:10px; margin-bottom:8px; align-items:flex-start;"><span style="background:var(--teal); color:white; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; flex-shrink:0;">1</span><span style="font-size:12px; line-height:1.4;">My time capsule box is 6 long, 4 wide, and 3 tall. I write the formula: V = length × width × height.</span></div><div style="display:flex; gap:10px; margin-bottom:8px; align-items:flex-start;"><span style="background:var(--teal); color:white; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; flex-shrink:0;">2</span><span style="font-size:12px; line-height:1.4;">I put in the numbers: V = 6 × 4 × 3.</span></div><div style="display:flex; gap:10px; margin-bottom:8px; align-items:flex-start;"><span style="background:var(--teal); color:white; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; flex-shrink:0;">3</span><span style="font-size:12px; line-height:1.4;">First I multiply two of them: 6 × 4 = 24.</span></div><div style="display:flex; gap:10px; margin-bottom:8px; align-items:flex-start;"><span style="background:var(--teal); color:white; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; flex-shrink:0;">4</span><span style="font-size:12px; line-height:1.4;">Then I multiply by the last one: 24 × 3 = 72.</span></div><div style="display:flex; gap:10px; margin-bottom:8px; align-items:flex-start;"><span style="background:var(--teal); color:white; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; flex-shrink:0;">5</span><span style="font-size:12px; line-height:1.4;">So the volume is 72 cubic units. I use cubic units because volume fills space in 3 directions.</span></div></div></div>
-
-        <div class="slide-body" id="slide-8">
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Let&#039;s try together</h3><div class="slide-card"><div style="display:flex; gap:10px; margin-bottom:8px; align-items:flex-start;"><span style="background:var(--teal); color:white; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; flex-shrink:0;">1</span><span style="font-size:12px; line-height:1.4;">Now a smaller box: 5 long, 2 wide, 2 tall. What formula do we use?</span></div><div style="display:flex; gap:10px; margin-bottom:8px; align-items:flex-start;"><span style="background:var(--teal); color:white; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; flex-shrink:0;">2</span><span style="font-size:12px; line-height:1.4;">Let&#039;s put in the numbers: V = 5 × 2 × 2. What is 5 × 2?</span></div><div style="display:flex; gap:10px; margin-bottom:8px; align-items:flex-start;"><span style="background:var(--teal); color:white; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; flex-shrink:0;">3</span><span style="font-size:12px; line-height:1.4;">We got 10. Now multiply 10 × 2. What is the volume?</span></div><div style="display:flex; gap:10px; margin-bottom:8px; align-items:flex-start;"><span style="background:var(--teal); color:white; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; flex-shrink:0;">4</span><span style="font-size:12px; line-height:1.4;">Yes, V = 20 cubic units. Don&#039;t forget the cubic units!</span></div></div></div>
-
-        <div class="slide-body" id="slide-9">
+        <div class="slide-body" id="slide-10" data-section="instruction" data-slide-type="worked-example" data-teacher-notes="Reveal one step at a time. Do NOT show all steps at once.">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Now it&#039;s your turn</h3>
-    <div class="slide-grid-2">
-      <div class="slide-card"><div style="display:flex; gap:10px; margin-bottom:8px; align-items:flex-start;"><span style="background:var(--teal); color:white; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; flex-shrink:0;">1</span><span style="font-size:12px; line-height:1.4;">In the table below, find the volume of each container using V = length × width × height.</span></div><div style="display:flex; gap:10px; margin-bottom:8px; align-items:flex-start;"><span style="background:var(--teal); color:white; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; flex-shrink:0;">2</span><span style="font-size:12px; line-height:1.4;">Write your answer in cubic inches (in³).</span></div></div>
-      <div class="slide-card" style="background:var(--teal-light); display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
-        <div style="font-size:36px; margin-bottom:8px;">🎮</div>
-        <p style="font-size:13px; font-weight:700; margin:0 0 12px;">Open the interactive HTML activity to practice.</p>
-        <a href="/lessons/10-1/index.html" target="_blank" class="btn-present" style="text-decoration:none;">Launch Activity ↗</a>
+    <h3 class="slide-main-title">Watch me</h3>
+    <div class="slide-card reveal-card">
+      <div class="teacher-cue teacher-cue-say">
+    <span class="teacher-cue-icon">👩‍🏫</span>
+    <span class="teacher-cue-label">Say:</span>
+    <span class="teacher-cue-text">Reveal one step at a time. Pause after each step for students to process.</span>
+  </div>
+      <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">3–4 min</span>
+  </div>
+      <div class="reveal-steps-container"><div class="reveal-step" id="ido-step-1">
+      <button class="reveal-btn" onclick="revealStep('ido', 1)">
+        <span class="reveal-num">1</span> Click to reveal step 1
+      </button>
+      <div class="reveal-content hidden">
+        <div class="reveal-line">My time capsule box is 6 long, 4 wide, and 3 tall. I write the formula: V = length × width × height.</div>
+      </div>
+    </div><div class="reveal-step" id="ido-step-2">
+      <button class="reveal-btn" onclick="revealStep('ido', 2)">
+        <span class="reveal-num">2</span> Click to reveal step 2
+      </button>
+      <div class="reveal-content hidden">
+        <div class="reveal-line">I put in the numbers: V = 6 × 4 × 3.</div>
+      </div>
+    </div><div class="reveal-step" id="ido-step-3">
+      <button class="reveal-btn" onclick="revealStep('ido', 3)">
+        <span class="reveal-num">3</span> Click to reveal step 3
+      </button>
+      <div class="reveal-content hidden">
+        <div class="reveal-line">First I multiply two of them: 6 × 4 = 24.</div>
+      </div>
+    </div><div class="reveal-step" id="ido-step-4">
+      <button class="reveal-btn" onclick="revealStep('ido', 4)">
+        <span class="reveal-num">4</span> Click to reveal step 4
+      </button>
+      <div class="reveal-content hidden">
+        <div class="reveal-line">Then I multiply by the last one: 24 × 3 = 72.</div>
+      </div>
+    </div><div class="reveal-step" id="ido-step-5">
+      <button class="reveal-btn" onclick="revealStep('ido', 5)">
+        <span class="reveal-num">5</span> Click to reveal step 5
+      </button>
+      <div class="reveal-content hidden">
+        <div class="reveal-line">So the volume is 72 cubic units. I use cubic units because volume fills space in 3 directions.</div>
       </div>
     </div></div>
+      <button class="assess-btn reveal-all-btn" onclick="revealAllSteps('ido', 5)" style="margin-top:10px; font-size:10px;">Reveal All Steps</button>
+    </div></div>
 
-        <div class="slide-body" id="slide-10">
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Visual Vocabulary</h3><div class="vocab-grid" style="grid-template-columns:1fr 1fr;">
-      <div class="vocab-card" onclick="this.classList.toggle('flipped')">
-        <div class="vocab-card-inner">
-          <div class="vocab-card-front">
-            <h3>VOLUME</h3>
-            <p style="font-size:10px; color:var(--gray); font-style:italic; margin: 4px 0 0;">Volumen</p>
-            <p class="click-hint">Click to flip ➔</p>
-          </div>
-          <div class="vocab-card-back">
-            <p style="font-weight:700; margin:0 0 6px; color:var(--navy); font-size:10.5px; line-height:1.3;">How much space is inside a solid shape.</p>
-            <p style="font-size:9.5px; color:var(--gray); margin:0 0 8px; font-style:italic;">Cuánto espacio hay dentro de una figura sólida.</p>
-            <div style="border-top:1px dashed var(--teal); padding-top:4px; font-size:9px; font-style:italic;"><strong>Ex:</strong> A box 3 × 2 × 4 holds 24 unit cubes, so V = 24 cubic units</div>
-            <div style="margin-top:4px; font-size:9px; background:var(--white); padding:3px; border-radius:3px; border:1px solid #e1eaef;">📝 The amount of space inside a three-dimensional solid is its ___.</div>
-          </div>
-        </div>
-      </div>
-      <div class="vocab-card" onclick="this.classList.toggle('flipped')">
-        <div class="vocab-card-inner">
-          <div class="vocab-card-front">
-            <h3>RECTANGULAR PRISM</h3>
-            <p style="font-size:10px; color:var(--gray); font-style:italic; margin: 4px 0 0;">Prisma rectangular</p>
-            <p class="click-hint">Click to flip ➔</p>
-          </div>
-          <div class="vocab-card-back">
-            <p style="font-weight:700; margin:0 0 6px; color:var(--navy); font-size:10.5px; line-height:1.3;">A solid box shape with six flat rectangle sides.</p>
-            <p style="font-size:9.5px; color:var(--gray); margin:0 0 8px; font-style:italic;">Una figura sólida en forma de caja con seis lados rectangulares.</p>
-            <div style="border-top:1px dashed var(--teal); padding-top:4px; font-size:9px; font-style:italic;"><strong>Ex:</strong> A cereal box or shoe box — it has length, width, and height</div>
-            <div style="margin-top:4px; font-size:9px; background:var(--white); padding:3px; border-radius:3px; border:1px solid #e1eaef;">📝 A solid with six rectangular faces, like a box, is a ___.</div>
-          </div>
-        </div>
-      </div></div></div>
-
-        <div class="slide-body" id="slide-11">
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Visual Vocabulary</h3><div class="vocab-grid" style="grid-template-columns:1fr 1fr;">
-      <div class="vocab-card" onclick="this.classList.toggle('flipped')">
-        <div class="vocab-card-inner">
-          <div class="vocab-card-front">
-            <h3>CUBIC UNITS</h3>
-            <p style="font-size:10px; color:var(--gray); font-style:italic; margin: 4px 0 0;">Unidades cúbicas</p>
-            <p class="click-hint">Click to flip ➔</p>
-          </div>
-          <div class="vocab-card-back">
-            <p style="font-weight:700; margin:0 0 6px; color:var(--navy); font-size:10.5px; line-height:1.3;">The units used to measure space inside, like cubic inches.</p>
-            <p style="font-size:9.5px; color:var(--gray); margin:0 0 8px; font-style:italic;">Las unidades para medir el espacio interior, como pulgadas cúbicas.</p>
-            <div style="border-top:1px dashed var(--teal); padding-top:4px; font-size:9px; font-style:italic;"><strong>Ex:</strong> A tiny cube that is 1 in × 1 in × 1 in = 1 in³ (one cubic inch)</div>
-            <div style="margin-top:4px; font-size:9px; background:var(--white); padding:3px; border-radius:3px; border:1px solid #e1eaef;">📝 The unit used to measure volume, like cubic centimeters, is ___.</div>
-          </div>
-        </div>
-      </div>
-      <div class="vocab-card" onclick="this.classList.toggle('flipped')">
-        <div class="vocab-card-inner">
-          <div class="vocab-card-front">
-            <h3>LENGTH, WIDTH, HEIGHT</h3>
-            <p style="font-size:10px; color:var(--gray); font-style:italic; margin: 4px 0 0;">Largo, ancho, altura</p>
-            <p class="click-hint">Click to flip ➔</p>
-          </div>
-          <div class="vocab-card-back">
-            <p style="font-weight:700; margin:0 0 6px; color:var(--navy); font-size:10.5px; line-height:1.3;">How long, how wide, and how tall a box is.</p>
-            <p style="font-size:9.5px; color:var(--gray); margin:0 0 8px; font-style:italic;">Qué tan largo, ancho y alto es una caja.</p>
-            <div style="border-top:1px dashed var(--teal); padding-top:4px; font-size:9px; font-style:italic;"><strong>Ex:</strong> V = l × w × h: for a box 5 × 3 × 2, volume = 30 cubic units</div>
-            <div style="margin-top:4px; font-size:9px; background:var(--white); padding:3px; border-radius:3px; border:1px solid #e1eaef;">📝 The three edge measurements of a rectangular prism are its ___.</div>
-          </div>
-        </div>
-      </div></div></div>
-
-        <div class="slide-body" id="slide-12">
-    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Visual Vocabulary</h3><div class="vocab-grid" style="grid-template-columns:1fr 1fr;">
-      <div class="vocab-card" onclick="this.classList.toggle('flipped')">
-        <div class="vocab-card-inner">
-          <div class="vocab-card-front">
-            <h3>NET</h3>
-            <p style="font-size:10px; color:var(--gray); font-style:italic; margin: 4px 0 0;">Plantilla (desarrollo plano)</p>
-            <p class="click-hint">Click to flip ➔</p>
-          </div>
-          <div class="vocab-card-back">
-            <p style="font-weight:700; margin:0 0 6px; color:var(--navy); font-size:10.5px; line-height:1.3;">A flat shape that folds up into a solid.</p>
-            <p style="font-size:9.5px; color:var(--gray); margin:0 0 8px; font-style:italic;">Una figura plana que se dobla y forma un sólido.</p>
-            <div style="border-top:1px dashed var(--teal); padding-top:4px; font-size:9px; font-style:italic;"><strong>Ex:</strong> A cross-shaped pattern of 6 rectangles folds into a rectangular box</div>
-            <div style="margin-top:4px; font-size:9px; background:var(--white); padding:3px; border-radius:3px; border:1px solid #e1eaef;">📝 A flat pattern that folds up into a solid is a ___.</div>
-          </div>
-        </div>
-      </div>
-      <div class="vocab-card" onclick="this.classList.toggle('flipped')">
-        <div class="vocab-card-inner">
-          <div class="vocab-card-front">
-            <h3>EDGE</h3>
-            <p style="font-size:10px; color:var(--gray); font-style:italic; margin: 4px 0 0;">Arista</p>
-            <p class="click-hint">Click to flip ➔</p>
-          </div>
-          <div class="vocab-card-back">
-            <p style="font-weight:700; margin:0 0 6px; color:var(--navy); font-size:10.5px; line-height:1.3;">The line where two flat sides of a solid meet.</p>
-            <p style="font-size:9.5px; color:var(--gray); margin:0 0 8px; font-style:italic;">La línea donde se unen dos lados planos de un sólido.</p>
-            <div style="border-top:1px dashed var(--teal); padding-top:4px; font-size:9px; font-style:italic;"><strong>Ex:</strong> A cube has 12 edges — 4 along the top, 4 along the bottom, 4 vertical</div>
-            <div style="margin-top:4px; font-size:9px; background:var(--white); padding:3px; border-radius:3px; border:1px solid #e1eaef;">📝 A line segment where two faces of a solid meet is an ___.</div>
-          </div>
-        </div>
-      </div></div></div>
-
-        <div class="slide-body" id="slide-13">
+        <div class="slide-body" id="slide-11" data-section="instruction" data-slide-type="worked-example" data-teacher-notes="Second reveal sequence — focus on the most critical step.">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Which Word Fits?</h3>
+    <h3 class="slide-main-title">I Do — Focus Step</h3>
+    <div class="slide-card reveal-card">
+      <div class="teacher-cue teacher-cue-say">
+    <span class="teacher-cue-icon">👩‍🏫</span>
+    <span class="teacher-cue-label">Say:</span>
+    <span class="teacher-cue-text">Reveal one step at a time. Pause after each step for students to process.</span>
+  </div>
+      <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">3–4 min</span>
+  </div>
+      <div class="reveal-steps-container"><div class="reveal-step" id="ido2-step-1">
+      <button class="reveal-btn" onclick="revealStep('ido2', 1)">
+        <span class="reveal-num">1</span> Click to reveal step 1
+      </button>
+      <div class="reveal-content hidden">
+        <div class="reveal-line">Then I multiply by the last one: 24 × 3 = 72.</div>
+      </div>
+    </div><div class="reveal-step" id="ido2-step-2">
+      <button class="reveal-btn" onclick="revealStep('ido2', 2)">
+        <span class="reveal-num">2</span> Click to reveal step 2
+      </button>
+      <div class="reveal-content hidden">
+        <div class="reveal-line">So the volume is 72 cubic units. I use cubic units because volume fills space in 3 directions.</div>
+      </div>
+    </div></div>
+      <button class="assess-btn reveal-all-btn" onclick="revealAllSteps('ido2', 2)" style="margin-top:10px; font-size:10px;">Reveal All Steps</button>
+    </div></div>
+
+        <div class="slide-body" id="slide-12" data-section="instruction" data-slide-type="worked-example" data-teacher-notes="Call on students to predict each step before revealing.">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
+    
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
+    <h3 class="slide-main-title">Let&#039;s try together</h3>
+    <div class="slide-card reveal-card">
+      <div class="teacher-cue teacher-cue-say">
+    <span class="teacher-cue-icon">👩‍🏫</span>
+    <span class="teacher-cue-label">Say:</span>
+    <span class="teacher-cue-text">Reveal one step at a time. Pause after each step for students to process.</span>
+  </div>
+      <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">3–4 min</span>
+  </div>
+      <div class="reveal-steps-container"><div class="reveal-step" id="wedo-step-1">
+      <button class="reveal-btn" onclick="revealStep('wedo', 1)">
+        <span class="reveal-num">1</span> Click to reveal step 1
+      </button>
+      <div class="reveal-content hidden">
+        <div class="reveal-line">Now a smaller box: 5 long, 2 wide, 2 tall. What formula do we use?</div>
+      </div>
+    </div><div class="reveal-step" id="wedo-step-2">
+      <button class="reveal-btn" onclick="revealStep('wedo', 2)">
+        <span class="reveal-num">2</span> Click to reveal step 2
+      </button>
+      <div class="reveal-content hidden">
+        <div class="reveal-line">Let&#039;s put in the numbers: V = 5 × 2 × 2. What is 5 × 2?</div>
+      </div>
+    </div><div class="reveal-step" id="wedo-step-3">
+      <button class="reveal-btn" onclick="revealStep('wedo', 3)">
+        <span class="reveal-num">3</span> Click to reveal step 3
+      </button>
+      <div class="reveal-content hidden">
+        <div class="reveal-line">We got 10. Now multiply 10 × 2. What is the volume?</div>
+      </div>
+    </div><div class="reveal-step" id="wedo-step-4">
+      <button class="reveal-btn" onclick="revealStep('wedo', 4)">
+        <span class="reveal-num">4</span> Click to reveal step 4
+      </button>
+      <div class="reveal-content hidden">
+        <div class="reveal-line">Yes, V = 20 cubic units. Don&#039;t forget the cubic units!</div>
+      </div>
+    </div></div>
+      <button class="assess-btn reveal-all-btn" onclick="revealAllSteps('wedo', 4)" style="margin-top:10px; font-size:10px;">Reveal All Steps</button>
+    </div></div>
+
+        <div class="slide-body" id="slide-13" data-section="check" data-slide-type="cfu">
+    
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
+    <h3 class="slide-main-title">Check for Understanding #2</h3>
+    <div class="slide-card cfu-card">
+      <span class="slide-badge badge-amber">✋ CFU · THUMBS</span>
+      <div class="teacher-cue teacher-cue-ask">
+    <span class="teacher-cue-icon">❓</span>
+    <span class="teacher-cue-label">Ask:</span>
+    <span class="teacher-cue-text">Can you explain what we did in the We Do example?</span>
+  </div>
+      <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">30 sec</span>
+  </div>
+      <div class="cfu-poll">
+        <button class="assess-btn cfu-btn" onclick="setCfuResponse(2, 'up')">👍 Got it</button>
+        <button class="assess-btn cfu-btn" onclick="setCfuResponse(2, 'side')">🤚 Almost</button>
+        <button class="assess-btn cfu-btn" onclick="setCfuResponse(2, 'down')">👎 Need help</button>
+      </div>
+      <div id="cfu-feedback-2" class="cfu-feedback"></div>
+      <p class="cfu-teacher-tip"><strong>Teacher:</strong> If &gt;30% thumbs down, re-teach with a fresh example before moving on.</p>
+    </div></div>
+
+        <div class="slide-body" id="slide-14" data-section="instruction" data-slide-type="you-do">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
+    
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
+    <h3 class="slide-main-title">Now it&#039;s your turn</h3>
     <div class="slide-grid-2">
       <div class="slide-card">
-        <span class="slide-badge" style="background:var(--teal); color:var(--white); font-size:10px; padding:3px 8px; border-radius:99px; font-weight:800;">❓ CLOZE POLL</span>
-        <p class="card-desc" style="font-size:13px; font-weight:700; margin:10px 0;">The amount of space inside a three-dimensional solid is its ___.</p>
-        <button class="assess-btn" onclick="checkVocabCloze(0, 0)" style="display:block; width:100%; text-align:left; margin-bottom:6px; font-size:11px; padding:8px 10px;">Volume</button><button class="assess-btn" onclick="checkVocabCloze(1, 0)" style="display:block; width:100%; text-align:left; margin-bottom:6px; font-size:11px; padding:8px 10px;">Rectangular prism</button><button class="assess-btn" onclick="checkVocabCloze(2, 0)" style="display:block; width:100%; text-align:left; margin-bottom:6px; font-size:11px; padding:8px 10px;">Cubic units</button><button class="assess-btn" onclick="checkVocabCloze(3, 0)" style="display:block; width:100%; text-align:left; margin-bottom:6px; font-size:11px; padding:8px 10px;">Length, width, height</button>
-        <div id="vocab-cloze-feedback" style="font-size:10px; font-weight:700; min-height:14px;"></div>
+        <div class="teacher-cue teacher-cue-students">
+    <span class="teacher-cue-icon">👨‍🎓</span>
+    <span class="teacher-cue-label">Students:</span>
+    <span class="teacher-cue-text">Work independently first, then check with a partner.</span>
+  </div>
+        <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">5 min</span>
+  </div>
+        <div class="you-do-line"><span class="you-do-num">1</span>In the table below, find the volume of each container using V = length × width × height.</div><div class="you-do-line"><span class="you-do-num">2</span>Write your answer in cubic inches (in³).</div>
       </div>
-      <div class="slide-card" style="background:var(--coral);">
+      <div class="slide-card card-activity-cta">
+        <div class="activity-cta-icon">🎮</div>
+        <p class="activity-cta-text">Open the interactive HTML activity for full practice.</p>
+        <a href="/lessons/10-1/index.html" target="_blank" class="btn-present activity-cta-btn">Launch Activity ↗</a>
+      </div>
+    </div></div>
+
+        <div class="slide-body" id="slide-15" data-section="vocabulary" data-slide-type="section">
+    <div class="section-divider">
+      <div class="section-divider-emoji">📚</div>
+      <h2 class="section-divider-title">VOCABULARY</h2>
+      <p class="section-divider-time">⏱️ ~8 min</p>
+      <div class="section-divider-bar"></div>
+    </div></div>
+
+        <div class="slide-body" id="slide-16" data-section="vocabulary" data-slide-type="vocab-card" data-teacher-notes="How much space is inside a solid shape.">
+      <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
+      
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
+    <h3 class="slide-main-title">Visual Vocabulary</h3>
+      
+    <div class="vocab-rich-card">
+      <div class="vocab-rich-visual"><svg class="vocab-illustration" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+    <rect width="200" height="120" rx="10" fill="var(--teal-light)" stroke="var(--teal)" stroke-width="2"/>
+    <text x="100" y="35" text-anchor="middle" font-size="28">📦</text>
+    <text x="100" y="72" text-anchor="middle" font-family="Outfit,sans-serif" font-size="11" font-weight="700" fill="var(--navy)">A box 3 × 2 × 4 holds 24 unit cubes, so V = 24 cubic units</text>
+    <line x1="30" y1="88" x2="170" y2="88" stroke="var(--teal)" stroke-width="1" stroke-dasharray="4,3"/>
+    <text x="100" y="105" text-anchor="middle" font-family="Hanken Grotesk,sans-serif" font-size="9" fill="var(--gray)">Use in context ↓</text>
+  </svg></div>
+      <div class="vocab-rich-content">
+        <h2 class="vocab-term">Volume</h2>
+        <p class="vocab-term-es">Volumen</p>
+        <p class="vocab-definition">How much space is inside a solid shape.</p>
+        <p class="vocab-definition-es">Cuánto espacio hay dentro de una figura sólida.</p>
+        <div class="vocab-example-box">
+          <strong>Example:</strong> A box 3 × 2 × 4 holds 24 unit cubes, so V = 24 cubic units
+        </div>
+        <div class="vocab-use-context">
+          <strong>Use in context:</strong> The amount of space inside a three-dimensional solid is its ___.
+          <textarea class="slide-input-placeholder vocab-context-input" rows="2" placeholder="Write your own sentence using Volume..."></textarea>
+        </div>
+      </div>
+    </div>
+      <div class="teacher-cue teacher-cue-say">
+    <span class="teacher-cue-icon">👩‍🏫</span>
+    <span class="teacher-cue-label">Say:</span>
+    <span class="teacher-cue-text">Say the term, definition, and example. Students repeat.</span>
+  </div>
+    </div>
+
+        <div class="slide-body" id="slide-17" data-section="vocabulary" data-slide-type="vocab-card" data-teacher-notes="A solid box shape with six flat rectangle sides.">
+      <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
+      
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
+    <h3 class="slide-main-title">Visual Vocabulary</h3>
+      
+    <div class="vocab-rich-card">
+      <div class="vocab-rich-visual"><svg class="vocab-illustration" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+    <rect width="200" height="120" rx="10" fill="var(--teal-light)" stroke="var(--teal)" stroke-width="2"/>
+    <text x="100" y="35" text-anchor="middle" font-size="28">📦</text>
+    <text x="100" y="72" text-anchor="middle" font-family="Outfit,sans-serif" font-size="11" font-weight="700" fill="var(--navy)">A cereal box or shoe box — it has length, width, and height</text>
+    <line x1="30" y1="88" x2="170" y2="88" stroke="var(--teal)" stroke-width="1" stroke-dasharray="4,3"/>
+    <text x="100" y="105" text-anchor="middle" font-family="Hanken Grotesk,sans-serif" font-size="9" fill="var(--gray)">Use in context ↓</text>
+  </svg></div>
+      <div class="vocab-rich-content">
+        <h2 class="vocab-term">Rectangular prism</h2>
+        <p class="vocab-term-es">Prisma rectangular</p>
+        <p class="vocab-definition">A solid box shape with six flat rectangle sides.</p>
+        <p class="vocab-definition-es">Una figura sólida en forma de caja con seis lados rectangulares.</p>
+        <div class="vocab-example-box">
+          <strong>Example:</strong> A cereal box or shoe box — it has length, width, and height
+        </div>
+        <div class="vocab-use-context">
+          <strong>Use in context:</strong> A solid with six rectangular faces, like a box, is a ___.
+          <textarea class="slide-input-placeholder vocab-context-input" rows="2" placeholder="Write your own sentence using Rectangular prism..."></textarea>
+        </div>
+      </div>
+    </div>
+      <div class="teacher-cue teacher-cue-say">
+    <span class="teacher-cue-icon">👩‍🏫</span>
+    <span class="teacher-cue-label">Say:</span>
+    <span class="teacher-cue-text">Say the term, definition, and example. Students repeat.</span>
+  </div>
+    </div>
+
+        <div class="slide-body" id="slide-18" data-section="vocabulary" data-slide-type="vocab-card" data-teacher-notes="The units used to measure space inside, like cubic inches.">
+      <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
+      
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
+    <h3 class="slide-main-title">Visual Vocabulary</h3>
+      
+    <div class="vocab-rich-card">
+      <div class="vocab-rich-visual"><svg class="vocab-illustration" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+    <rect width="200" height="120" rx="10" fill="var(--teal-light)" stroke="var(--teal)" stroke-width="2"/>
+    <text x="100" y="35" text-anchor="middle" font-size="28">📦</text>
+    <text x="100" y="72" text-anchor="middle" font-family="Outfit,sans-serif" font-size="11" font-weight="700" fill="var(--navy)">A tiny cube that is 1 in × 1 in × 1 in = 1 in³ (one cubic inch)</text>
+    <line x1="30" y1="88" x2="170" y2="88" stroke="var(--teal)" stroke-width="1" stroke-dasharray="4,3"/>
+    <text x="100" y="105" text-anchor="middle" font-family="Hanken Grotesk,sans-serif" font-size="9" fill="var(--gray)">Use in context ↓</text>
+  </svg></div>
+      <div class="vocab-rich-content">
+        <h2 class="vocab-term">Cubic units</h2>
+        <p class="vocab-term-es">Unidades cúbicas</p>
+        <p class="vocab-definition">The units used to measure space inside, like cubic inches.</p>
+        <p class="vocab-definition-es">Las unidades para medir el espacio interior, como pulgadas cúbicas.</p>
+        <div class="vocab-example-box">
+          <strong>Example:</strong> A tiny cube that is 1 in × 1 in × 1 in = 1 in³ (one cubic inch)
+        </div>
+        <div class="vocab-use-context">
+          <strong>Use in context:</strong> The unit used to measure volume, like cubic centimeters, is ___.
+          <textarea class="slide-input-placeholder vocab-context-input" rows="2" placeholder="Write your own sentence using Cubic units..."></textarea>
+        </div>
+      </div>
+    </div>
+      <div class="teacher-cue teacher-cue-say">
+    <span class="teacher-cue-icon">👩‍🏫</span>
+    <span class="teacher-cue-label">Say:</span>
+    <span class="teacher-cue-text">Say the term, definition, and example. Students repeat.</span>
+  </div>
+    </div>
+
+        <div class="slide-body" id="slide-19" data-section="vocabulary" data-slide-type="vocab-card" data-teacher-notes="How long, how wide, and how tall a box is.">
+      <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
+      
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
+    <h3 class="slide-main-title">Visual Vocabulary</h3>
+      
+    <div class="vocab-rich-card">
+      <div class="vocab-rich-visual"><svg class="vocab-illustration" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+    <rect width="200" height="120" rx="10" fill="var(--teal-light)" stroke="var(--teal)" stroke-width="2"/>
+    <text x="100" y="35" text-anchor="middle" font-size="28">📦</text>
+    <text x="100" y="72" text-anchor="middle" font-family="Outfit,sans-serif" font-size="11" font-weight="700" fill="var(--navy)">V = l × w × h: for a box 5 × 3 × 2, volume = 30 cubic units</text>
+    <line x1="30" y1="88" x2="170" y2="88" stroke="var(--teal)" stroke-width="1" stroke-dasharray="4,3"/>
+    <text x="100" y="105" text-anchor="middle" font-family="Hanken Grotesk,sans-serif" font-size="9" fill="var(--gray)">Use in context ↓</text>
+  </svg></div>
+      <div class="vocab-rich-content">
+        <h2 class="vocab-term">Length, width, height</h2>
+        <p class="vocab-term-es">Largo, ancho, altura</p>
+        <p class="vocab-definition">How long, how wide, and how tall a box is.</p>
+        <p class="vocab-definition-es">Qué tan largo, ancho y alto es una caja.</p>
+        <div class="vocab-example-box">
+          <strong>Example:</strong> V = l × w × h: for a box 5 × 3 × 2, volume = 30 cubic units
+        </div>
+        <div class="vocab-use-context">
+          <strong>Use in context:</strong> The three edge measurements of a rectangular prism are its ___.
+          <textarea class="slide-input-placeholder vocab-context-input" rows="2" placeholder="Write your own sentence using Length, width, height..."></textarea>
+        </div>
+      </div>
+    </div>
+      <div class="teacher-cue teacher-cue-say">
+    <span class="teacher-cue-icon">👩‍🏫</span>
+    <span class="teacher-cue-label">Say:</span>
+    <span class="teacher-cue-text">Say the term, definition, and example. Students repeat.</span>
+  </div>
+    </div>
+
+        <div class="slide-body" id="slide-20" data-section="vocabulary" data-slide-type="interactive-mc">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
+    
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
+    <h3 class="slide-main-title">Which Word Fits?</h3>
+    <div class="slide-grid-2">
+      <div class="slide-card">
+        <span class="slide-badge badge-teal">❓ CLOZE POLL</span>
+        <div class="teacher-cue teacher-cue-ask">
+    <span class="teacher-cue-icon">❓</span>
+    <span class="teacher-cue-label">Ask:</span>
+    <span class="teacher-cue-text">Vote A B C D — then defend your choice.</span>
+  </div>
+        <p class="card-desc mc-stem">The amount of space inside a three-dimensional solid is its ___.</p>
+        <button class="assess-btn" onclick="checkVocabCloze(0, 0)" style="display:block; width:100%; text-align:left; margin-bottom:6px; font-size:11px; padding:8px 10px;">Volume</button><button class="assess-btn" onclick="checkVocabCloze(1, 0)" style="display:block; width:100%; text-align:left; margin-bottom:6px; font-size:11px; padding:8px 10px;">Rectangular prism</button><button class="assess-btn" onclick="checkVocabCloze(2, 0)" style="display:block; width:100%; text-align:left; margin-bottom:6px; font-size:11px; padding:8px 10px;">Cubic units</button><button class="assess-btn" onclick="checkVocabCloze(3, 0)" style="display:block; width:100%; text-align:left; margin-bottom:6px; font-size:11px; padding:8px 10px;">Length, width, height</button>
+        <div id="vocab-cloze-feedback" class="mc-feedback"></div>
+      </div>
+      <div class="slide-card card-coral">
         <h2 class="card-title">Use It In a Sentence</h2>
         <textarea class="slide-input-placeholder" rows="5" placeholder="Write your own sentence using Volume..."></textarea>
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-14">
+        <div class="slide-body" id="slide-21" data-section="check" data-slide-type="cfu">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Turn &amp; Talk — Launch</h3>
+    <h3 class="slide-main-title">Check for Understanding #3</h3>
+    <div class="slide-card cfu-card">
+      <span class="slide-badge badge-amber">✋ CFU · THUMBS</span>
+      <div class="teacher-cue teacher-cue-ask">
+    <span class="teacher-cue-icon">❓</span>
+    <span class="teacher-cue-label">Ask:</span>
+    <span class="teacher-cue-text">Use one vocabulary word in a sentence about today's topic.</span>
+  </div>
+      <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">30 sec</span>
+  </div>
+      <div class="cfu-poll">
+        <button class="assess-btn cfu-btn" onclick="setCfuResponse(3, 'up')">👍 Got it</button>
+        <button class="assess-btn cfu-btn" onclick="setCfuResponse(3, 'side')">🤚 Almost</button>
+        <button class="assess-btn cfu-btn" onclick="setCfuResponse(3, 'down')">👎 Need help</button>
+      </div>
+      <div id="cfu-feedback-3" class="cfu-feedback"></div>
+      <p class="cfu-teacher-tip"><strong>Teacher:</strong> If &gt;30% thumbs down, re-teach with a fresh example before moving on.</p>
+    </div></div>
+
+        <div class="slide-body" id="slide-22" data-section="discuss" data-slide-type="turn-talk-timer" data-teacher-notes="Students explain that volume is three-dimensional, so all three edges (length, width, height) are needed; two measurements only give area of one face.">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
+    
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
+    <h3 class="slide-main-title">Turn &amp; Talk — Launch</h3>
     <div class="slide-grid-2">
       <div class="slide-card">
-        <span class="slide-badge" style="background:var(--amber); color:var(--navy); font-size:10px; padding:3px 8px; border-radius:99px; font-weight:800;">🗣️ TURN &amp; TALK · 2 MIN</span>
-        <p class="card-desc" style="font-size:13px; font-weight:700; line-height:1.5; margin:10px 0;">Your time capsule container is a rectangular prism. To find how much it can hold, why do you need three measurements (length, width, and height) instead of just one or two?</p>
-        <div style="background:var(--teal-light); border-radius:8px; padding:8px; margin-top:8px;">
-          <strong style="font-size:10px; color:var(--navy);">Sentence stems:</strong>
-          <div style="font-size:11px; margin-bottom:4px;">✍️ I need three measurements because volume fills space in ___ directions.</div><div style="font-size:11px; margin-bottom:4px;">✍️ Length and width alone only give the ___, not the volume.</div>
+        <span class="slide-badge badge-amber">🗣️ TURN &amp; TALK</span>
+        <div class="teacher-cue teacher-cue-say">
+    <span class="teacher-cue-icon">👩‍🏫</span>
+    <span class="teacher-cue-label">Say:</span>
+    <span class="teacher-cue-text">Partner A shares first for 45 seconds, then Partner B.</span>
+  </div>
+        <div class="teacher-cue teacher-cue-students">
+    <span class="teacher-cue-icon">👨‍🎓</span>
+    <span class="teacher-cue-label">Students:</span>
+    <span class="teacher-cue-text">Turn to your elbow partner. Use the sentence stems.</span>
+  </div>
+        <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">90 sec</span>
+  </div>
+        <p class="card-desc tt-question">Your time capsule container is a rectangular prism. To find how much it can hold, why do you need three measurements (length, width, and height) instead of just one or two?</p>
+        <div class="tt-stems-box">
+          <strong>Sentence stems:</strong>
+          <div class="tt-stem">✍️ I need three measurements because volume fills space in ___ directions.</div><div class="tt-stem">✍️ Length and width alone only give the ___, not the volume.</div>
         </div>
-        <div style="margin-top:8px;"><strong style="font-size:9px; color:var(--gray);">WORD BANK:</strong><div style="margin-top:4px;"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">volume</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">length</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">width</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">height</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">rectangular prism</span></div></div>
+        <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">volume</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">length</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">width</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">height</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">rectangular prism</span></div></div>
+        <div class="turn-talk-timer" id="tt-timer-launch">
+          <button class="assess-btn tt-start" onclick="startTurnTalkTimer('launch', 90)">▶ Start 90s Timer</button>
+          <span class="tt-countdown" id="tt-countdown-launch">90s</span>
+        </div>
       </div>
-      <div class="slide-card" style="background:var(--coral);">
+      <div class="slide-card card-coral">
         <h2 class="card-title">👂 Listen For</h2>
-        <p style="font-size:11.5px; line-height:1.5; margin:0 0 10px;">Students explain that volume is three-dimensional, so all three edges (length, width, height) are needed; two measurements only give area of one face.</p>
+        <p class="card-desc-sm">Students explain that volume is three-dimensional, so all three edges (length, width, height) are needed; two measurements only give area of one face.</p>
         <textarea class="slide-input-placeholder" rows="5" placeholder="Record one strong idea you heard from your partner..."></textarea>
-        <p style="font-size:10px; margin-top:8px; font-style:italic;"><strong>Extend:</strong> Could two time capsules have the same volume but different shapes? Justify with an example.</p>
+        <p class="tt-extend"><strong>Extend:</strong> Could two time capsules have the same volume but different shapes? Justify with an example.</p>
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-15">
+        <div class="slide-body" id="slide-23" data-section="explore" data-slide-type="section">
+    <div class="section-divider">
+      <div class="section-divider-emoji">🔍</div>
+      <h2 class="section-divider-title">EXPLORE &amp; PRACTICE</h2>
+      <p class="section-divider-time">⏱️ ~18 min</p>
+      <div class="section-divider-bar"></div>
+    </div></div>
+
+        <div class="slide-body" id="slide-24" data-section="explore" data-slide-type="worked-example">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Visual Modeling Workspace</h3>
+    <h3 class="slide-main-title">Visual Modeling Workspace</h3>
     <div class="slide-grid-2">
       <div class="slide-card">
               <div>
@@ -1461,12 +2134,12 @@
                 </div>
               </div></div>
       <div class="math-visual-container tool-draw" id="math-visual-container-element">
-        <div style="position:absolute; inset:0; z-index:1;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><polygon points="80,180 220,50 360,180" fill="#DFF2EE" stroke="#17324D" stroke-width="2"/><line x1="80" y1="195" x2="360" y2="195" stroke="#17324D" stroke-width="1.5" stroke-dasharray="3,3"/><text x="200" y="212" font-family="Outfit, sans-serif" font-size="11" fill="#17324D" font-weight="bold">Base (b)</text><line x1="220" y1="50" x2="220" y2="180" stroke="#F2C15B" stroke-width="1.5" stroke-dasharray="4,4"/><text x="230" y="115" font-family="Outfit, sans-serif" font-size="11" fill="#17324D" font-weight="bold">Height (h)</text></svg></div>
+        <div class="math-visual-inner"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><polygon points="80,180 220,50 360,180" fill="#DFF2EE" stroke="#17324D" stroke-width="2"/><line x1="80" y1="195" x2="360" y2="195" stroke="#17324D" stroke-width="1.5" stroke-dasharray="3,3"/><text x="200" y="212" font-family="Outfit, sans-serif" font-size="11" fill="#17324D" font-weight="bold">Base (b)</text><line x1="220" y1="50" x2="220" y2="180" stroke="#F2C15B" stroke-width="1.5" stroke-dasharray="4,4"/><text x="230" y="115" font-family="Outfit, sans-serif" font-size="11" fill="#17324D" font-weight="bold">Height (h)</text></svg></div>
         <canvas id="math-canvas" width="440" height="240" class="canvas-overlay cursor-draw"></canvas>
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-16">
+        <div class="slide-body" id="slide-25" data-section="explore" data-slide-type="explore" data-teacher-notes="Calculate the volume of each time capsule container. Use V = l × w × h.">
     
     <div class="slide-badge-row">
       <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span>
@@ -1498,111 +2171,216 @@
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-17">
+        <div class="slide-body" id="slide-26" data-section="check" data-slide-type="cfu">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Turn &amp; Talk — Explore</h3>
+    <h3 class="slide-main-title">Whiteboard Moment</h3>
+    <div class="slide-card cfu-card">
+      <span class="slide-badge badge-teal">🖊️ WHITEBOARD CFU</span>
+      <div class="teacher-cue teacher-cue-students">
+    <span class="teacher-cue-icon">👨‍🎓</span>
+    <span class="teacher-cue-label">Students:</span>
+    <span class="teacher-cue-text">On your whiteboard or paper, solve ONE quick problem using today's strategy. Hold it up when done.</span>
+  </div>
+      <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">2 min</span>
+  </div>
+      <div class="whiteboard-prompt">
+        <p>Show your work clearly. Be ready to explain your thinking to a partner.</p>
+      </div>
+      <textarea class="slide-input-placeholder" rows="4" placeholder="Teacher: jot a sample student response or note common errors here..."></textarea>
+    </div></div>
+
+        <div class="slide-body" id="slide-27" data-section="discuss" data-slide-type="turn-talk-timer">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
+    
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
+    <h3 class="slide-main-title">Turn &amp; Talk — Explore</h3>
     <div class="slide-grid-2">
       <div class="slide-card">
-        <span class="slide-badge" style="background:var(--amber); color:var(--navy); font-size:10px; padding:3px 8px; border-radius:99px; font-weight:800;">🗣️ TURN &amp; TALK · 2 MIN</span>
-        <p class="card-desc" style="font-size:13px; font-weight:700; line-height:1.5; margin:10px 0;">Container C is 8 × 3 × 4 and Container B is 5 × 5 × 2. How did you count or multiply the unit cubes to find each volume, and which holds more?</p>
-        <div style="background:var(--teal-light); border-radius:8px; padding:8px; margin-top:8px;">
-          <strong style="font-size:10px; color:var(--navy);">Sentence stems:</strong>
-          <div style="font-size:11px; margin-bottom:4px;">✍️ I found the volume by multiplying ___ × ___ × ___, which equals ___ cubic units.</div><div style="font-size:11px; margin-bottom:4px;">✍️ Container ___ holds more because its volume is ___.</div>
+        <span class="slide-badge badge-amber">🗣️ TURN &amp; TALK</span>
+        <div class="teacher-cue teacher-cue-say">
+    <span class="teacher-cue-icon">👩‍🏫</span>
+    <span class="teacher-cue-label">Say:</span>
+    <span class="teacher-cue-text">Partner A shares first for 45 seconds, then Partner B.</span>
+  </div>
+        <div class="teacher-cue teacher-cue-students">
+    <span class="teacher-cue-icon">👨‍🎓</span>
+    <span class="teacher-cue-label">Students:</span>
+    <span class="teacher-cue-text">Turn to your elbow partner. Use the sentence stems.</span>
+  </div>
+        <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">90 sec</span>
+  </div>
+        <p class="card-desc tt-question">Container C is 8 × 3 × 4 and Container B is 5 × 5 × 2. How did you count or multiply the unit cubes to find each volume, and which holds more?</p>
+        <div class="tt-stems-box">
+          <strong>Sentence stems:</strong>
+          <div class="tt-stem">✍️ I found the volume by multiplying ___ × ___ × ___, which equals ___ cubic units.</div><div class="tt-stem">✍️ Container ___ holds more because its volume is ___.</div>
         </div>
-        <div style="margin-top:8px;"><strong style="font-size:9px; color:var(--gray);">WORD BANK:</strong><div style="margin-top:4px;"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">volume</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">cubic units</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">length</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">width</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">height</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">rectangular prism</span></div></div>
+        <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">volume</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">cubic units</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">length</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">width</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">height</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">rectangular prism</span></div></div>
+        <div class="turn-talk-timer" id="tt-timer-explore">
+          <button class="assess-btn tt-start" onclick="startTurnTalkTimer('explore', 90)">▶ Start 90s Timer</button>
+          <span class="tt-countdown" id="tt-countdown-explore">90s</span>
+        </div>
       </div>
-      <div class="slide-card" style="background:var(--coral);">
+      <div class="slide-card card-coral">
         <h2 class="card-title">👂 Listen For</h2>
-        <p style="font-size:11.5px; line-height:1.5; margin:0 0 10px;">Students compute Container C = 8 × 3 × 4 = 96 in³ and Container B = 5 × 5 × 2 = 50 in³, and conclude C holds more by connecting volume to multiplying all three edges.</p>
+        <p class="card-desc-sm">Students compute Container C = 8 × 3 × 4 = 96 in³ and Container B = 5 × 5 × 2 = 50 in³, and conclude C holds more by connecting volume to multiplying all three edges.</p>
         <textarea class="slide-input-placeholder" rows="5" placeholder="Record one strong idea you heard from your partner..."></textarea>
-        <p style="font-size:10px; margin-top:8px; font-style:italic;"><strong>Extend:</strong> Container B (50 in³) has a larger length and width than Container D (10 × 2 × 3 = 60 in³), yet D holds more. Explain how that is possible.</p>
+        <p class="tt-extend"><strong>Extend:</strong> Container B (50 in³) has a larger length and width than Container D (10 × 2 × 3 = 60 in³), yet D holds more. Explain how that is possible.</p>
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-18">
+        <div class="slide-body" id="slide-28" data-section="practice" data-slide-type="interactive-mc">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Practice Check A</h3>
+    <h3 class="slide-main-title">Practice Check A</h3>
     <div class="slide-grid-2">
       <div class="slide-card">
-        <span class="slide-badge" style="background:var(--teal); color:var(--white); font-size:10px; padding:3px 8px; border-radius:99px; font-weight:800;">📝 QUICK CHECK</span>
-        <p class="card-desc" style="font-size:13px; font-weight:700; line-height:1.4; margin:10px 0 12px; color:var(--navy);">Two storage bins: Bin A is 8 × 6 × 5 inches. Bin B is 9 × 4 × 7 inches. Which holds more and by how much?</p>
-        <button class="assess-btn mc-btn" id="btn-mc1-0" onclick="checkMCQuestionByPrefix('mc1', 0, 0)" style="text-align:left; padding:8px 12px; font-size:12px; margin-bottom:6px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.4; gap:10px;">
-        <span style="background:var(--google-gray); color:var(--navy); width:20px; height:20px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">A</span>
-        <span style="flex:1;">Bin B by 12 in³</span>
-      </button><button class="assess-btn mc-btn" id="btn-mc1-1" onclick="checkMCQuestionByPrefix('mc1', 1, 0)" style="text-align:left; padding:8px 12px; font-size:12px; margin-bottom:6px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.4; gap:10px;">
-        <span style="background:var(--google-gray); color:var(--navy); width:20px; height:20px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">B</span>
-        <span style="flex:1;">Bin A by 12 in³</span>
-      </button><button class="assess-btn mc-btn" id="btn-mc1-2" onclick="checkMCQuestionByPrefix('mc1', 2, 0)" style="text-align:left; padding:8px 12px; font-size:12px; margin-bottom:6px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.4; gap:10px;">
-        <span style="background:var(--google-gray); color:var(--navy); width:20px; height:20px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">C</span>
-        <span style="flex:1;">Bin B by 24 in³</span>
-      </button><button class="assess-btn mc-btn" id="btn-mc1-3" onclick="checkMCQuestionByPrefix('mc1', 3, 0)" style="text-align:left; padding:8px 12px; font-size:12px; margin-bottom:6px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.4; gap:10px;">
-        <span style="background:var(--google-gray); color:var(--navy); width:20px; height:20px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">D</span>
-        <span style="flex:1;">They hold the same</span>
-      </button>
-        <div id="mc1-feedback" style="font-size:11px; font-weight:700; min-height:16px; margin-top:6px;"></div>
+        <span class="slide-badge badge-teal">📝 QUICK CHECK</span>
+        <div class="teacher-cue teacher-cue-ask">
+    <span class="teacher-cue-icon">❓</span>
+    <span class="teacher-cue-label">Ask:</span>
+    <span class="teacher-cue-text">Give students 1 minute. Cold-call one student to defend their answer.</span>
+  </div>
+        <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">2 min</span>
+  </div>
+        <p class="card-desc mc-stem">Two storage bins: Bin A is 8 × 6 × 5 inches. Bin B is 9 × 4 × 7 inches. Which holds more and by how much?</p>
+        <div class="mc-choices"><button class="assess-btn mc-btn mc-animate" id="btn-mc1-0" onclick="checkMCQuestionByPrefix('mc1', 0, 0)">
+        <span class="mc-letter">A</span>
+        <span class="mc-choice-text">Bin B by 12 in³</span>
+      </button><button class="assess-btn mc-btn mc-animate" id="btn-mc1-1" onclick="checkMCQuestionByPrefix('mc1', 1, 0)">
+        <span class="mc-letter">B</span>
+        <span class="mc-choice-text">Bin A by 12 in³</span>
+      </button><button class="assess-btn mc-btn mc-animate" id="btn-mc1-2" onclick="checkMCQuestionByPrefix('mc1', 2, 0)">
+        <span class="mc-letter">C</span>
+        <span class="mc-choice-text">Bin B by 24 in³</span>
+      </button><button class="assess-btn mc-btn mc-animate" id="btn-mc1-3" onclick="checkMCQuestionByPrefix('mc1', 3, 0)">
+        <span class="mc-letter">D</span>
+        <span class="mc-choice-text">They hold the same</span>
+      </button></div>
+        <div id="mc1-feedback" class="mc-feedback"></div>
       </div>
-      <div class="slide-card" style="background:var(--teal-light);">
+      <div class="slide-card card-teal-light">
         <h2 class="card-title">✍️ Show Your Work</h2>
-        <p style="font-size:11px; color:var(--navy); margin:0 0 8px;">Explain why your answer is correct using today's vocabulary.</p>
-        <textarea id="mc1-work" class="slide-input-placeholder" rows="7" placeholder="Type your reasoning here..."></textarea>
-        <div style="margin-top:8px; font-size:10px; background:var(--white); padding:6px 8px; border-radius:6px; border:1px dashed var(--teal);"><strong>Teacher reveal:</strong> Bin A: 8 × 6 × 5 = 240 in³. Bin B: 9 × 4 × 7 = 252 in³. Bin B holds 12 in³ more.</div>
+        <p class="card-desc-sm">Explain why your answer is correct using today's vocabulary.</p>
+        <textarea id="mc1-work" class="slide-input-placeholder" rows="6" placeholder="Type your reasoning here..."></textarea>
+        <div class="teacher-reveal-box"><strong>Teacher reveal:</strong> Bin A: 8 × 6 × 5 = 240 in³. Bin B: 9 × 4 × 7 = 252 in³. Bin B holds 12 in³ more.</div>
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-19">
+        <div class="slide-body" id="slide-29" data-section="practice" data-slide-type="interactive-mc">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Practice Check B</h3>
+    <h3 class="slide-main-title">Practice Check B</h3>
     <div class="slide-grid-2">
       <div class="slide-card">
-        <span class="slide-badge" style="background:var(--teal); color:var(--white); font-size:10px; padding:3px 8px; border-radius:99px; font-weight:800;">📝 QUICK CHECK</span>
-        <p class="card-desc" style="font-size:13px; font-weight:700; line-height:1.4; margin:10px 0 12px; color:var(--navy);">What is the volume of a rectangular prism with l = 7 in, w = 3 in, h = 4 in?</p>
-        <button class="assess-btn mc-btn" id="btn-mc2-0" onclick="checkMCQuestionByPrefix('mc2', 0, 0)" style="text-align:left; padding:8px 12px; font-size:12px; margin-bottom:6px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.4; gap:10px;">
-        <span style="background:var(--google-gray); color:var(--navy); width:20px; height:20px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">A</span>
-        <span style="flex:1;">84 in³</span>
-      </button><button class="assess-btn mc-btn" id="btn-mc2-1" onclick="checkMCQuestionByPrefix('mc2', 1, 0)" style="text-align:left; padding:8px 12px; font-size:12px; margin-bottom:6px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.4; gap:10px;">
-        <span style="background:var(--google-gray); color:var(--navy); width:20px; height:20px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">B</span>
-        <span style="flex:1;">14 in³</span>
-      </button><button class="assess-btn mc-btn" id="btn-mc2-2" onclick="checkMCQuestionByPrefix('mc2', 2, 0)" style="text-align:left; padding:8px 12px; font-size:12px; margin-bottom:6px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.4; gap:10px;">
-        <span style="background:var(--google-gray); color:var(--navy); width:20px; height:20px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">C</span>
-        <span style="flex:1;">84 in²</span>
-      </button><button class="assess-btn mc-btn" id="btn-mc2-3" onclick="checkMCQuestionByPrefix('mc2', 3, 0)" style="text-align:left; padding:8px 12px; font-size:12px; margin-bottom:6px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.4; gap:10px;">
-        <span style="background:var(--google-gray); color:var(--navy); width:20px; height:20px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">D</span>
-        <span style="flex:1;">42 in³</span>
-      </button>
-        <div id="mc2-feedback" style="font-size:11px; font-weight:700; min-height:16px; margin-top:6px;"></div>
+        <span class="slide-badge badge-teal">📝 QUICK CHECK</span>
+        <div class="teacher-cue teacher-cue-ask">
+    <span class="teacher-cue-icon">❓</span>
+    <span class="teacher-cue-label">Ask:</span>
+    <span class="teacher-cue-text">Partner discussion first, then vote.</span>
+  </div>
+        <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">2 min</span>
+  </div>
+        <p class="card-desc mc-stem">What is the volume of a rectangular prism with l = 7 in, w = 3 in, h = 4 in?</p>
+        <div class="mc-choices"><button class="assess-btn mc-btn mc-animate" id="btn-mc2-0" onclick="checkMCQuestionByPrefix('mc2', 0, 0)">
+        <span class="mc-letter">A</span>
+        <span class="mc-choice-text">84 in³</span>
+      </button><button class="assess-btn mc-btn mc-animate" id="btn-mc2-1" onclick="checkMCQuestionByPrefix('mc2', 1, 0)">
+        <span class="mc-letter">B</span>
+        <span class="mc-choice-text">14 in³</span>
+      </button><button class="assess-btn mc-btn mc-animate" id="btn-mc2-2" onclick="checkMCQuestionByPrefix('mc2', 2, 0)">
+        <span class="mc-letter">C</span>
+        <span class="mc-choice-text">84 in²</span>
+      </button><button class="assess-btn mc-btn mc-animate" id="btn-mc2-3" onclick="checkMCQuestionByPrefix('mc2', 3, 0)">
+        <span class="mc-letter">D</span>
+        <span class="mc-choice-text">42 in³</span>
+      </button></div>
+        <div id="mc2-feedback" class="mc-feedback"></div>
       </div>
-      <div class="slide-card" style="background:var(--teal-light);">
+      <div class="slide-card card-teal-light">
         <h2 class="card-title">✍️ Show Your Work</h2>
-        <p style="font-size:11px; color:var(--navy); margin:0 0 8px;">Explain why your answer is correct using today's vocabulary.</p>
-        <textarea id="mc2-work" class="slide-input-placeholder" rows="7" placeholder="Type your reasoning here..."></textarea>
-        <div style="margin-top:8px; font-size:10px; background:var(--white); padding:6px 8px; border-radius:6px; border:1px dashed var(--teal);"><strong>Teacher reveal:</strong> V = l × w × h = 7 × 3 × 4 = 84 cubic inches.</div>
+        <p class="card-desc-sm">Explain why your answer is correct using today's vocabulary.</p>
+        <textarea id="mc2-work" class="slide-input-placeholder" rows="6" placeholder="Type your reasoning here..."></textarea>
+        <div class="teacher-reveal-box"><strong>Teacher reveal:</strong> V = l × w × h = 7 × 3 × 4 = 84 cubic inches.</div>
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-20">
+        <div class="slide-body" id="slide-30" data-section="practice" data-slide-type="drag-sort">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Sort &amp; Categorize</h3>
+    <h3 class="slide-main-title">Sort &amp; Categorize</h3>
     <div class="slide-grid-2">
       <div class="slide-card">
-        <span class="slide-badge" style="background:var(--teal); color:var(--white); font-size:10px; padding:3px 8px; border-radius:99px; font-weight:800;">↕️ DRAG-SORT</span>
-        <p class="card-desc" style="font-size:12px; line-height:1.4; margin:8px 0;">Sort each item into the correct category.</p>
-        <div style="margin:10px 0;"></div>
-        <div style="display:flex; flex-wrap:wrap; gap:4px;"><button class="assess-btn" style="font-size:10px; padding:6px 8px; margin:3px;" onclick="this.classList.toggle('correct')">3 × 3 × 3 = 27</button><button class="assess-btn" style="font-size:10px; padding:6px 8px; margin:3px;" onclick="this.classList.toggle('correct')">10 × 2 × 2 = 40</button><button class="assess-btn" style="font-size:10px; padding:6px 8px; margin:3px;" onclick="this.classList.toggle('correct')">5 × 4 × 3 = 60</button><button class="assess-btn" style="font-size:10px; padding:6px 8px; margin:3px;" onclick="this.classList.toggle('correct')">6 × 6 × 2 = 72</button><button class="assess-btn" style="font-size:10px; padding:6px 8px; margin:3px;" onclick="this.classList.toggle('correct')">8 × 5 × 4 = 160</button></div>
-        <p style="font-size:10px; color:var(--gray); margin-top:10px;">Teacher: click items to mark correct placement, or use the HTML activity for full drag-sort.</p>
+        <span class="slide-badge badge-teal">↕️ DRAG-SORT</span>
+        <div class="teacher-cue teacher-cue-students">
+    <span class="teacher-cue-icon">👨‍🎓</span>
+    <span class="teacher-cue-label">Students:</span>
+    <span class="teacher-cue-text">Drag each card into the correct category. Touch or mouse both work.</span>
+  </div>
+        <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">4 min</span>
+  </div>
+        <p class="card-desc">Sort each item into the correct category.</p>
+        <div class="drag-pool" id="drag-pool-101" ondragover="dragOverZone(event)" ondrop="dropOnZone(event, '101')"><div class="drag-item" draggable="true" data-item-idx="0" data-correct-cat="" id="drag-item-101-0">
+          <span class="drag-grip">⠿</span>3 × 3 × 3 = 27
+        </div><div class="drag-item" draggable="true" data-item-idx="1" data-correct-cat="" id="drag-item-101-1">
+          <span class="drag-grip">⠿</span>10 × 2 × 2 = 40
+        </div><div class="drag-item" draggable="true" data-item-idx="2" data-correct-cat="" id="drag-item-101-2">
+          <span class="drag-grip">⠿</span>5 × 4 × 3 = 60
+        </div><div class="drag-item" draggable="true" data-item-idx="3" data-correct-cat="" id="drag-item-101-3">
+          <span class="drag-grip">⠿</span>6 × 6 × 2 = 72
+        </div><div class="drag-item" draggable="true" data-item-idx="4" data-correct-cat="" id="drag-item-101-4">
+          <span class="drag-grip">⠿</span>8 × 5 × 4 = 160
+        </div></div>
+        <div class="drag-zones"></div>
+        <div id="drag-feedback-101" class="drag-feedback"></div>
+        <button class="assess-btn" onclick="checkDragSort('101')" style="margin-top:8px; font-size:10px;">Check My Sort ✓</button>
       </div>
-      <div class="slide-card" style="background:var(--teal-light);">
+      <div class="slide-card card-teal-light">
         <h2 class="card-title">Justify Your Sort</h2>
         <textarea class="slide-input-placeholder" rows="6" placeholder="Explain how you decided which category each item belongs in..."></textarea>
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-21">
+        <div class="slide-body" id="slide-31" data-section="practice" data-slide-type="error-analysis" data-teacher-notes="A common mistake in Volume with Whole Number Edges is skipping the key idea: &quot;To find the volume of a box, multiply all three edges: V = length × width × height.&quot; — always check your work against this rule before you submit."><div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Practice Challenge</h3>
+    <h3 class="slide-main-title">Find the Mistake</h3>
       <div class="slide-grid-2">
         <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%; position:relative;">
           <div>
@@ -1658,49 +2436,211 @@
       </div>
     </div>
 
-        <div class="slide-body" id="slide-22">
+        <div class="slide-body" id="slide-32" data-section="practice" data-slide-type="student-workspace">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Real-World Connection</h3>
+    <h3 class="slide-main-title">Student Workspace</h3>
+    <div class="slide-grid-2">
+      <div class="slide-card">
+        <span class="slide-badge badge-teal">📊 FILL THE TABLE</span>
+        <div class="teacher-cue teacher-cue-students">
+    <span class="teacher-cue-icon">👨‍🎓</span>
+    <span class="teacher-cue-label">Students:</span>
+    <span class="teacher-cue-text">Complete the missing cells. Check with a partner before we discuss.</span>
+  </div>
+        <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">5 min</span>
+  </div>
+        <p class="card-desc-sm">Calculate the volume of each time capsule container. Use V = l × w × h.</p>
+        <table class="workspace-table"><thead><tr><th>Container</th><th>Length (in)</th><th>Width (in)</th><th>Height (in)</th><th>Volume (in³)</th></tr></thead><tbody><tr><td class="workspace-fixed">Container A</td><td class="workspace-fixed">6</td><td class="workspace-fixed">4</td><td class="workspace-fixed">3</td><td><input type="text" class="workspace-cell" data-answer="72" placeholder="?" /></td></tr><tr><td class="workspace-fixed">Container B</td><td class="workspace-fixed">5</td><td class="workspace-fixed">5</td><td class="workspace-fixed">2</td><td><input type="text" class="workspace-cell" data-answer="50" placeholder="?" /></td></tr><tr><td class="workspace-fixed">Container C</td><td class="workspace-fixed">8</td><td class="workspace-fixed">3</td><td class="workspace-fixed">4</td><td><input type="text" class="workspace-cell" data-answer="96" placeholder="?" /></td></tr><tr><td class="workspace-fixed">Container D</td><td class="workspace-fixed">10</td><td class="workspace-fixed">2</td><td class="workspace-fixed">3</td><td><input type="text" class="workspace-cell" data-answer="60" placeholder="?" /></td></tr></tbody></table>
+        <button class="assess-btn" onclick="checkWorkspaceCells()" style="margin-top:8px; font-size:10px;">Check Answers ✓</button>
+        <div id="workspace-feedback" class="workspace-feedback"></div>
+      </div>
+      <div class="slide-card card-sketch">
+        <h2 class="card-title">✏️ Sketch Your Strategy</h2>
+        <canvas id="sketch-canvas" class="sketch-canvas" width="400" height="200"></canvas>
+        <button class="assess-btn" onclick="clearSketchCanvas()" style="margin-top:6px; font-size:10px;">Clear Sketch</button>
+      </div>
+    </div></div>
+
+        <div class="slide-body" id="slide-33" data-section="practice" data-slide-type="differentiation">
+    
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
+    <h3 class="slide-main-title">Differentiation Paths</h3>
+    <div class="slide-card">
+      <span class="slide-badge badge-teal">🎯 THREE PATHS</span>
+      <div class="teacher-cue teacher-cue-say">
+    <span class="teacher-cue-icon">👩‍🏫</span>
+    <span class="teacher-cue-label">Say:</span>
+    <span class="teacher-cue-text">All students work on math — choose the path that matches readiness.</span>
+  </div>
+      <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">8–10 min independent or partner</span>
+  </div>
+      <div class="diff-paths-grid">
+        <div class="diff-path" style="--path-color:var(--amber)">
+      <div class="diff-path-label">🌱 Approaching</div>
+      <p class="diff-path-stem">What is the volume of a rectangular prism with l = 7 in, w = 3 in, h = 4 in?</p>
+    </div>
+        <div class="diff-path" style="--path-color:var(--teal)">
+      <div class="diff-path-label">🎯 On-Level</div>
+      <p class="diff-path-stem">Core practice aligned to the standard.</p>
+    </div>
+        <div class="diff-path" style="--path-color:var(--navy)">
+      <div class="diff-path-label">🚀 Challenge</div>
+      <p class="diff-path-stem">Extension with error analysis or multi-step reasoning.</p>
+    </div>
+      </div>
+    </div></div>
+
+        <div class="slide-body" id="slide-34" data-section="practice" data-slide-type="partner-activity">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
+    
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
+    <h3 class="slide-main-title">Partner Activity</h3>
+    <div class="slide-card">
+      <span class="slide-badge badge-amber">🤝 PARTNER WORK</span>
+      <div class="teacher-cue teacher-cue-materials">
+    <span class="teacher-cue-icon">📦</span>
+    <span class="teacher-cue-label">Materials:</span>
+    <span class="teacher-cue-text">Whiteboards or paper, pencils, vocabulary reference cards</span>
+  </div>
+      <div class="teacher-cue teacher-cue-students">
+    <span class="teacher-cue-icon">👨‍🎓</span>
+    <span class="teacher-cue-label">Students:</span>
+    <span class="teacher-cue-text">Partner A solves, Partner B coaches. Switch roles on the next problem.</span>
+  </div>
+      <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">6 min</span>
+  </div>
+      <p class="card-desc">Work with your partner on the practice problems at your differentiation path level. Explain each step using math vocabulary.</p>
+      <textarea class="slide-input-placeholder" rows="4" placeholder="Partners: write one thing you learned from each other..."></textarea>
+    </div></div>
+
+        <div class="slide-body" id="slide-35" data-section="check" data-slide-type="cfu">
+    
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
+    <h3 class="slide-main-title">Check for Understanding #4</h3>
+    <div class="slide-card cfu-card">
+      <span class="slide-badge badge-amber">✋ CFU · THUMBS</span>
+      <div class="teacher-cue teacher-cue-ask">
+    <span class="teacher-cue-icon">❓</span>
+    <span class="teacher-cue-label">Ask:</span>
+    <span class="teacher-cue-text">Thumbs up if you and your partner agree on your answer.</span>
+  </div>
+      <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">30 sec</span>
+  </div>
+      <div class="cfu-poll">
+        <button class="assess-btn cfu-btn" onclick="setCfuResponse(4, 'up')">👍 Got it</button>
+        <button class="assess-btn cfu-btn" onclick="setCfuResponse(4, 'side')">🤚 Almost</button>
+        <button class="assess-btn cfu-btn" onclick="setCfuResponse(4, 'down')">👎 Need help</button>
+      </div>
+      <div id="cfu-feedback-4" class="cfu-feedback"></div>
+      <p class="cfu-teacher-tip"><strong>Teacher:</strong> If &gt;30% thumbs down, re-teach with a fresh example before moving on.</p>
+    </div></div>
+
+        <div class="slide-body" id="slide-36" data-section="connect" data-slide-type="real-world">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
+    
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
+    <h3 class="slide-main-title">Real-World Connection</h3>
     <div class="slide-grid-2">
       <div class="slide-card">
         <h2 class="card-title">🌍 Math in the Wild</h2>
-        <p class="card-desc" style="font-size:12.5px; line-height:1.5;">A moving company uses rectangular boxes. A large box is 24 inches long, 18 inches wide, and 18 inches tall. A medium box is 18 inches long, 14 inches wide, and 12 inches tall.</p>
-        <div style="margin-top:8px;"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">7776</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">24</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">18</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">3024</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">14</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">12</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">4752</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">volume</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">cubic</span></div>
+        <div class="teacher-cue teacher-cue-say">
+    <span class="teacher-cue-icon">👩‍🏫</span>
+    <span class="teacher-cue-label">Say:</span>
+    <span class="teacher-cue-text">Read the scenario. Ask: where else have you seen this kind of math?</span>
+  </div>
+        <p class="card-desc">A moving company uses rectangular boxes. A large box is 24 inches long, 18 inches wide, and 18 inches tall. A medium box is 18 inches long, 14 inches wide, and 12 inches tall.</p>
+        <div class="connect-vocab"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">7776</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">24</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">18</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">3024</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">14</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">12</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">4752</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">volume</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">cubic</span></div>
       </div>
-      <div class="slide-card" style="background:var(--teal-light);">
+      <div class="slide-card card-teal-light">
         <h2 class="card-title">✍️ Connection Reasoning</h2>
-        <p style="font-size:11px; font-weight:600;">How many more cubic inches does the large box hold than the medium box?</p>
-        <p style="font-size:10px; font-style:italic;">The large box volume is ___ in³ because V = ___ × ___ × ___. The medium box volume is ___ in³. The large box holds ___ more cubic inches.</p>
+        <p class="card-desc-sm">How many more cubic inches does the large box hold than the medium box?</p>
+        <p class="connect-frame">The large box volume is ___ in³ because V = ___ × ___ × ___. The medium box volume is ___ in³. The large box holds ___ more cubic inches.</p>
         <textarea id="rw-connect-work" class="slide-input-placeholder" rows="4" placeholder="Write your connection..."></textarea>
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-23">
+        <div class="slide-body" id="slide-37" data-section="connect" data-slide-type="turn-talk-timer">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Turn &amp; Talk — Connect</h3>
+    <h3 class="slide-main-title">Turn &amp; Talk — Connect</h3>
     <div class="slide-grid-2">
       <div class="slide-card">
-        <span class="slide-badge" style="background:var(--amber); color:var(--navy); font-size:10px; padding:3px 8px; border-radius:99px; font-weight:800;">🗣️ TURN &amp; TALK · 2 MIN</span>
-        <p class="card-desc" style="font-size:13px; font-weight:700; line-height:1.5; margin:10px 0;">A moving company&#039;s large box is 24 × 18 × 18 in and its medium box is 18 × 14 × 12 in. Talk through how you would find how many more cubic inches the large box holds.</p>
-        <div style="background:var(--teal-light); border-radius:8px; padding:8px; margin-top:8px;">
-          <strong style="font-size:10px; color:var(--navy);">Sentence stems:</strong>
-          <div style="font-size:11px; margin-bottom:4px;">✍️ The large box volume is ___ in³ because 24 × 18 × 18 = ___.</div><div style="font-size:11px; margin-bottom:4px;">✍️ The large box holds ___ more cubic inches because ___ − ___ = ___.</div>
+        <span class="slide-badge badge-amber">🗣️ TURN &amp; TALK</span>
+        <div class="teacher-cue teacher-cue-say">
+    <span class="teacher-cue-icon">👩‍🏫</span>
+    <span class="teacher-cue-label">Say:</span>
+    <span class="teacher-cue-text">Partner A shares first for 45 seconds, then Partner B.</span>
+  </div>
+        <div class="teacher-cue teacher-cue-students">
+    <span class="teacher-cue-icon">👨‍🎓</span>
+    <span class="teacher-cue-label">Students:</span>
+    <span class="teacher-cue-text">Turn to your elbow partner. Use the sentence stems.</span>
+  </div>
+        <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">90 sec</span>
+  </div>
+        <p class="card-desc tt-question">A moving company&#039;s large box is 24 × 18 × 18 in and its medium box is 18 × 14 × 12 in. Talk through how you would find how many more cubic inches the large box holds.</p>
+        <div class="tt-stems-box">
+          <strong>Sentence stems:</strong>
+          <div class="tt-stem">✍️ The large box volume is ___ in³ because 24 × 18 × 18 = ___.</div><div class="tt-stem">✍️ The large box holds ___ more cubic inches because ___ − ___ = ___.</div>
         </div>
-        <div style="margin-top:8px;"><strong style="font-size:9px; color:var(--gray);">WORD BANK:</strong><div style="margin-top:4px;"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">volume</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">cubic units</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">rectangular prism</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">length</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">width</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">height</span></div></div>
+        <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">volume</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">cubic units</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">rectangular prism</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">length</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">width</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">height</span></div></div>
+        <div class="turn-talk-timer" id="tt-timer-connect">
+          <button class="assess-btn tt-start" onclick="startTurnTalkTimer('connect', 90)">▶ Start 90s Timer</button>
+          <span class="tt-countdown" id="tt-countdown-connect">90s</span>
+        </div>
       </div>
-      <div class="slide-card" style="background:var(--coral);">
+      <div class="slide-card card-coral">
         <h2 class="card-title">👂 Listen For</h2>
-        <p style="font-size:11.5px; line-height:1.5; margin:0 0 10px;">Students compute large = 7776 in³, medium = 3024 in³, then subtract to get 4752 in³ more, and reason that you must find each volume before comparing.</p>
+        <p class="card-desc-sm">Students compute large = 7776 in³, medium = 3024 in³, then subtract to get 4752 in³ more, and reason that you must find each volume before comparing.</p>
         <textarea class="slide-input-placeholder" rows="5" placeholder="Record one strong idea you heard from your partner..."></textarea>
-        <p style="font-size:10px; margin-top:8px; font-style:italic;"><strong>Extend:</strong> Why can&#039;t you just compare one dimension (like length) to decide which box holds more? Use the two boxes to justify.</p>
+        <p class="tt-extend"><strong>Extend:</strong> Why can&#039;t you just compare one dimension (like length) to decide which box holds more? Use the two boxes to justify.</p>
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-24">
+        <div class="slide-body" id="slide-38" data-section="closure" data-slide-type="section">
+    <div class="section-divider">
+      <div class="section-divider-emoji">✅</div>
+      <h2 class="section-divider-title">CLOSURE &amp; REFLECT</h2>
+      <p class="section-divider-time">⏱️ ~8 min</p>
+      <div class="section-divider-bar"></div>
+    </div></div>
+
+        <div class="slide-body" id="slide-39" data-section="closure" data-slide-type="exit-ticket"><div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Exit Ticket</h3><div class="slide-card">
+    <h3 class="slide-main-title">Exit Ticket</h3><div class="slide-card">
       <div style="margin-top:2px;">
         <p style="font-size:11.5px; font-weight:700; margin:0 0 6px; color:var(--navy); line-height:1.3;">A rectangular prism has l = 11 in, w = 5 in, h = 4 in. What is the volume?</p>
         <div style="margin-top:4px;">
@@ -1722,43 +2662,81 @@
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-25">
+        <div class="slide-body" id="slide-40" data-section="closure" data-slide-type="exit-ticket">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Bonus Exit Check</h3>
+    <h3 class="slide-main-title">Exit Ticket — Explain</h3>
+    <div class="slide-card">
+      <span class="slide-badge badge-teal">📝 EXIT #2</span>
+      <div class="teacher-cue teacher-cue-students">
+    <span class="teacher-cue-icon">👨‍🎓</span>
+    <span class="teacher-cue-label">Students:</span>
+    <span class="teacher-cue-text">Answer in 2–3 sentences. Use at least one vocabulary word.</span>
+  </div>
+      <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">3 min</span>
+  </div>
+      <p class="card-desc mc-stem">Explain the key idea from today&#039;s lesson in your own words. Use at least one vocabulary word from: Volume, Rectangular prism, Cubic units.</p>
+      <textarea id="exit-open-response" class="slide-input-placeholder" rows="5" placeholder="Type your explanation here..."></textarea>
+    </div></div>
+
+        <div class="slide-body" id="slide-41" data-section="closure" data-slide-type="interactive-mc">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</span>
+  </div>
+    
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
+    <h3 class="slide-main-title">Bonus Exit Check</h3>
     <div class="slide-grid-2">
       <div class="slide-card">
-        <span class="slide-badge" style="background:var(--teal); color:var(--white); font-size:10px; padding:3px 8px; border-radius:99px; font-weight:800;">📝 QUICK CHECK</span>
-        <p class="card-desc" style="font-size:13px; font-weight:700; line-height:1.4; margin:10px 0 12px; color:var(--navy);">A time capsule box has a volume of 120 cm³. Its length is 10 cm and width is 4 cm. What is its height?</p>
-        <button class="assess-btn mc-btn" id="btn-exit2-0" onclick="checkMCQuestionByPrefix('exit2', 0, 0)" style="text-align:left; padding:8px 12px; font-size:12px; margin-bottom:6px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.4; gap:10px;">
-        <span style="background:var(--google-gray); color:var(--navy); width:20px; height:20px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">A</span>
-        <span style="flex:1;">3 cm</span>
-      </button><button class="assess-btn mc-btn" id="btn-exit2-1" onclick="checkMCQuestionByPrefix('exit2', 1, 0)" style="text-align:left; padding:8px 12px; font-size:12px; margin-bottom:6px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.4; gap:10px;">
-        <span style="background:var(--google-gray); color:var(--navy); width:20px; height:20px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">B</span>
-        <span style="flex:1;">6 cm</span>
-      </button><button class="assess-btn mc-btn" id="btn-exit2-2" onclick="checkMCQuestionByPrefix('exit2', 2, 0)" style="text-align:left; padding:8px 12px; font-size:12px; margin-bottom:6px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.4; gap:10px;">
-        <span style="background:var(--google-gray); color:var(--navy); width:20px; height:20px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">C</span>
-        <span style="flex:1;">4 cm</span>
-      </button><button class="assess-btn mc-btn" id="btn-exit2-3" onclick="checkMCQuestionByPrefix('exit2', 3, 0)" style="text-align:left; padding:8px 12px; font-size:12px; margin-bottom:6px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.4; gap:10px;">
-        <span style="background:var(--google-gray); color:var(--navy); width:20px; height:20px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">D</span>
-        <span style="flex:1;">12 cm</span>
-      </button>
-        <div id="exit2-feedback" style="font-size:11px; font-weight:700; min-height:16px; margin-top:6px;"></div>
+        <span class="slide-badge badge-teal">📝 QUICK CHECK</span>
+        <div class="teacher-cue teacher-cue-ask">
+    <span class="teacher-cue-icon">❓</span>
+    <span class="teacher-cue-label">Ask:</span>
+    <span class="teacher-cue-text">Optional for early finishers.</span>
+  </div>
+        <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">2 min</span>
+  </div>
+        <p class="card-desc mc-stem">A time capsule box has a volume of 120 cm³. Its length is 10 cm and width is 4 cm. What is its height?</p>
+        <div class="mc-choices"><button class="assess-btn mc-btn mc-animate" id="btn-exit3-0" onclick="checkMCQuestionByPrefix('exit3', 0, 0)">
+        <span class="mc-letter">A</span>
+        <span class="mc-choice-text">3 cm</span>
+      </button><button class="assess-btn mc-btn mc-animate" id="btn-exit3-1" onclick="checkMCQuestionByPrefix('exit3', 1, 0)">
+        <span class="mc-letter">B</span>
+        <span class="mc-choice-text">6 cm</span>
+      </button><button class="assess-btn mc-btn mc-animate" id="btn-exit3-2" onclick="checkMCQuestionByPrefix('exit3', 2, 0)">
+        <span class="mc-letter">C</span>
+        <span class="mc-choice-text">4 cm</span>
+      </button><button class="assess-btn mc-btn mc-animate" id="btn-exit3-3" onclick="checkMCQuestionByPrefix('exit3', 3, 0)">
+        <span class="mc-letter">D</span>
+        <span class="mc-choice-text">12 cm</span>
+      </button></div>
+        <div id="exit3-feedback" class="mc-feedback"></div>
       </div>
-      <div class="slide-card" style="background:var(--teal-light);">
+      <div class="slide-card card-teal-light">
         <h2 class="card-title">✍️ Show Your Work</h2>
-        <p style="font-size:11px; color:var(--navy); margin:0 0 8px;">Explain why your answer is correct using today's vocabulary.</p>
-        <textarea id="exit2-work" class="slide-input-placeholder" rows="7" placeholder="Type your reasoning here..."></textarea>
-        <div style="margin-top:8px; font-size:10px; background:var(--white); padding:6px 8px; border-radius:6px; border:1px dashed var(--teal);"><strong>Teacher reveal:</strong> V = l × w × h → 120 = 10 × 4 × h → 120 = 40h → h = 3 cm.</div>
+        <p class="card-desc-sm">Explain why your answer is correct using today's vocabulary.</p>
+        <textarea id="exit3-work" class="slide-input-placeholder" rows="6" placeholder="Type your reasoning here..."></textarea>
+        <div class="teacher-reveal-box"><strong>Teacher reveal:</strong> V = l × w × h → 120 = 10 × 4 × h → 120 = 40h → h = 3 cm.</div>
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-26">
+        <div class="slide-body" id="slide-42" data-section="closure" data-slide-type="exit-ticket">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Reflection &amp; Exit Ticket</h3>
+    <h3 class="slide-main-title">Reflection &amp; Self-Assessment</h3>
     <div class="slide-grid-2">
-      <div class="slide-card" style="border:none; background:transparent; box-shadow:none; padding:0;">
+      <div class="slide-card post-it-container">
         <div class="post-it-grid">
           <div class="sticky-note post-it-3"><div class="post-it-title">3 Things I learned:</div>
             <input type="text" id="ref-3-1" placeholder="1." /><input type="text" id="ref-3-2" placeholder="2." /><input type="text" id="ref-3-3" placeholder="3." /></div>
@@ -1768,8 +2746,8 @@
             <input type="text" id="ref-1-1" placeholder="..." /></div>
         </div>
       </div>
-      <div class="slide-card" style="background:var(--teal-light);">
-        <strong style="font-size:10px;">Self-Assessment:</strong>
+      <div class="slide-card card-teal-light">
+        <strong class="self-assess-label">Self-Assessment:</strong>
         <div class="assess-row">
           <button class="assess-btn" id="btn-gotit" onclick="setSelfAssessment('gotit')">Got it! 👍</button>
           <button class="assess-btn" id="btn-getting" onclick="setSelfAssessment('getting')">Almost 🧭</button>
@@ -1778,44 +2756,68 @@
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-27">
+        <div class="slide-body" id="slide-43" data-section="closure" data-slide-type="activity-link">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Family Connection</h3>
-    <div class="slide-card" style="text-align:center; padding:20px;">
-      <p style="font-size:14px; font-weight:700; margin:0 0 12px;">Share tonight&apos;s family homework and discuss one vocabulary word at home.</p>
-      <a href="/lessons/10-1/homework.html" target="_blank" class="btn-present" style="text-decoration:none; display:inline-flex;">Open Family Homework ↗</a>
+    <h3 class="slide-main-title">Continue Learning</h3>
+    <div class="slide-card activity-cta-slide">
+      <div class="activity-cta-icon">🎮</div>
+      <h2 class="activity-cta-heading">Launch the Full Interactive Activity</h2>
+      <p class="card-desc">Students continue practice in the HTML lesson engine with auto-check, hints, and differentiation.</p>
+      <div class="activity-cta-buttons">
+        <a href="/lessons/10-1/index.html" target="_blank" class="btn-present activity-cta-btn">Open Lesson Activity ↗</a>
+        <a href="/lessons/10-1/homework.html" target="_blank" class="btn-present activity-cta-btn-secondary">Family Homework ↗</a>
+      </div>
+      <div class="teacher-cue teacher-cue-say">
+    <span class="teacher-cue-icon">👩‍🏫</span>
+    <span class="teacher-cue-label">Say:</span>
+    <span class="teacher-cue-text">Early finishers: open the activity. Everyone else: start homework tonight.</span>
+  </div>
     </div></div>
 
-        <div class="slide-body" id="slide-28">
+        <div class="slide-body" id="slide-44" data-section="closure" data-slide-type="activity-link">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Teacher Notes</h3>
+    <h3 class="slide-main-title">Family Connection</h3>
+    <div class="slide-card family-card">
+      <p class="family-prompt">Share tonight&apos;s family homework and discuss one vocabulary word at home.</p>
+      <a href="/lessons/10-1/homework.html" target="_blank" class="btn-present activity-cta-btn">Open Family Homework ↗</a>
+      <div class="teacher-cue teacher-cue-say">
+    <span class="teacher-cue-icon">👩‍🏫</span>
+    <span class="teacher-cue-label">Say:</span>
+    <span class="teacher-cue-text">Tell families: "Ask your student to teach you one thing from today's lesson."</span>
+  </div>
+    </div></div>
+
+        <div class="slide-body" id="slide-45" data-slide-type="teacher-notes" data-teacher-notes="Hide during presentation — use Notes panel (N key).">
+    
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
+    <h3 class="slide-main-title">Teacher Notes</h3>
     <div class="slide-grid-2">
       <div class="slide-card">
-        <h2 class="card-title">⏱️ Pacing</h2>
-        <ul style="font-size:11px; line-height:1.6; margin:0; padding-left:18px;">
-          <li>Warm-up &amp; vocab: 10 min</li>
-          <li>I Do / We Do / Explore: 15 min</li>
-          <li>Practice &amp; connect: 12 min</li>
-          <li>Exit ticket &amp; reflect: 8 min</li>
+        <h2 class="card-title">⏱️ Pacing Guide</h2>
+        <ul class="notes-list">
+          <li><strong>Launch &amp; vocab:</strong> 12 min</li>
+          <li><strong>I Do / We Do / You Do:</strong> 15 min</li>
+          <li><strong>Explore &amp; practice:</strong> 15 min</li>
+          <li><strong>Connect &amp; closure:</strong> 8 min</li>
         </ul>
-        <p style="font-size:10px; color:var(--gray); margin-top:8px;">Total: ~45 min</p>
+        <p class="notes-total">Total: ~45 min</p>
       </div>
-      <div class="slide-card" style="background:var(--coral);">
-        <h2 class="card-title">🎯 Listen For</h2>
-        <p style="font-size:10.5px; line-height:1.4; margin:0 0 8px;">• Students explain that volume is three-dimensional, so all three edges (length, width, height) are needed; two measurements only give area of one face.</p><p style="font-size:10.5px; line-height:1.4; margin:0 0 8px;">• Students compute Container C = 8 × 3 × 4 = 96 in³ and Container B = 5 × 5 × 2 = 50 in³, and conclude C holds more by connecting volume to multiplying all three edges.</p><p style="font-size:10.5px; line-height:1.4; margin:0 0 8px;">• Students compute large = 7776 in³, medium = 3024 in³, then subtract to get 4752 in³ more, and reason that you must find each volume before comparing.</p>
-        <p style="font-size:10px; margin-top:8px;"><strong>Common mistake:</strong> A common mistake in Volume with Whole Number Edges is skipping the key idea: &quot;To find the volume of a box, multiply all three edges: V = length × width × height.&quot; — always check your work against this rule before you submit.</p>
+      <div class="slide-card card-coral">
+        <h2 class="card-title">🎯 Listen For · Common Errors</h2>
+        <p class="notes-listen">• Students explain that volume is three-dimensional, so all three edges (length, width, height) are needed; two measurements only give area of one face.</p><p class="notes-listen">• Students compute Container C = 8 × 3 × 4 = 96 in³ and Container B = 5 × 5 × 2 = 50 in³, and conclude C holds more by connecting volume to multiplying all three edges.</p><p class="notes-listen">• Students compute large = 7776 in³, medium = 3024 in³, then subtract to get 4752 in³ more, and reason that you must find each volume before comparing.</p><p class="notes-listen">• Students change in² to in³ and explain that volume fills 3D space (three edges multiplied), while square units describe flat area of one face.</p>
+        <p class="notes-mistake"><strong>Common mistake:</strong> A common mistake in Volume with Whole Number Edges is skipping the key idea: &quot;To find the volume of a box, multiply all three edges: V = length × width × height.&quot; — always check your work against this rule before you submit.</p>
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-29">
+        <div class="slide-body" id="slide-46" data-slide-type="teacher-notes" data-teacher-notes="CONFIDENTIAL — do not display to students.">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
-    <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Answer Key (Teacher Appendix)</h3>
+    <h3 class="slide-main-title">Answer Key (Teacher Appendix)</h3>
     <div class="slide-card">
-      <p style="font-size:11px; color:var(--gray); margin:0 0 10px;">Hide this slide during presentation or move to the end of your copy.</p>
-      <p style="font-size:11px; line-height:1.4; margin:0 0 6px;">✓ Practice 1: Bin B by 12 in³ — Bin A: 8 × 6 × 5 = 240 in³. Bin B: 9 × 4 × 7 = 252 in³. Bin B holds 12 in³ more.</p><p style="font-size:11px; line-height:1.4; margin:0 0 6px;">✓ Practice 2: 84 in³ — V = l × w × h = 7 × 3 × 4 = 84 cubic inches.</p><p style="font-size:11px; line-height:1.4; margin:0 0 6px;">✓ Practice 3: 3 cm — V = l × w × h → 120 = 10 × 4 × h → 120 = 40h → h = 3 cm.</p><p style="font-size:11px; line-height:1.4; margin:0 0 6px;">✓ Exit ticket: 220 in³ — V = 11 × 5 × 4 = 220 cubic inches. Remember: volume uses cubic units (in³).</p>
+      <p class="answer-key-note">Hide this slide during presentation or move to the end of your copy.</p>
+      <p class="answer-key-item">✓ Practice 1: Bin B by 12 in³ — Bin A: 8 × 6 × 5 = 240 in³. Bin B: 9 × 4 × 7 = 252 in³. Bin B holds 12 in³ more.</p><p class="answer-key-item">✓ Practice 2: 84 in³ — V = l × w × h = 7 × 3 × 4 = 84 cubic inches.</p><p class="answer-key-item">✓ Practice 3: 3 cm — V = l × w × h → 120 = 10 × 4 × h → 120 = 40h → h = 3 cm.</p><p class="answer-key-item">✓ Practice 4: Cubic inches (in³) — Volume measures 3D space, so it uses cubic units like in³. Square units (in²) are for area, and inches are for length.</p><p class="answer-key-item">✓ Exit ticket: 220 in³ — V = 11 × 5 × 4 = 220 cubic inches. Remember: volume uses cubic units (in³).</p>
     </div></div>
         
         <!-- Subtle Slide Watermark -->
@@ -1830,20 +2832,32 @@
     
   </main>
 
-  <!-- Presenter Controls HUD (Visible only when in fullscreen Present Mode) -->
-  <div class="presenter-hud">
-    <button class="hud-btn" onclick="prevSlide()">◀</button>
-    <span id="hud-page-indicator">1 / 29</span>
-    <button class="hud-btn" onclick="nextSlide()">▶</button>
-    <div class="hud-timer" id="hud-timer-display">Pacing: 00:00</div>
-    <button class="hud-btn" onclick="exitFullscreen()" title="Exit Presentation" style="margin-left: 8px;">✕</button>
+  <!-- Presenter Notes Panel -->
+  <aside class="presenter-notes-panel" id="presenter-notes-panel">
+    <h3>📝 Teacher Notes — Slide <span id="notes-slide-num">1</span></h3>
+    <div id="notes-slide-content">Loading notes...</div>
+    <hr style="margin:12px 0; border:none; border-top:1px solid #e1eaef;" />
+    <p style="font-size:10px; color:var(--gray);"><strong>Pacing:</strong> ~45 min</p>
+    <p style="font-size:10px;"><strong>Common mistake:</strong> A common mistake in Volume with Whole Number Edges is skipping the key idea: &quot;To find the volume of a box, multiply all three edges: V = length × width × height.&quot; — always check your work against this rule before you submit.</p>
+  </aside>
+
+  <!-- Presenter Controls HUD (Visible in fullscreen Present Mode) -->
+  <div class="presenter-hud" id="presenter-hud">
+    <button class="hud-btn" onclick="prevSlide()" title="Previous (←)">◀</button>
+    <span id="hud-page-indicator">1 / 46</span>
+    <button class="hud-btn" onclick="nextSlide()" title="Next (→)">▶</button>
+    <button class="notes-toolbar-btn" onclick="toggleNotesPanel()" title="Notes (N)">📝 Notes</button>
+    <button class="notes-toolbar-btn" onclick="window.print()" title="Print">🖨️</button>
+    <div class="hud-timer" id="hud-timer-display">00:00</div>
+    <button class="hud-btn" onclick="exitFullscreen()" title="Exit (Esc)">✕</button>
   </div>
 
   <script>
     let currentSlide = 1;
-    const totalSlides = 29;
+    const totalSlides = 46;
     
-    const slideTitles = ["TITLE SLIDE","LEARNING TARGETS","LESSON AGENDA","WARM-UP HOOK","NOTICE & WONDER LAUNCH","CONCEPT LAUNCH","I DO — WATCH ME","WE DO — TOGETHER","YOU DO — YOUR TURN","SLIDE 10","SLIDE 11","SLIDE 12","SLIDE 13","SLIDE 14","SLIDE 15","SLIDE 16","SLIDE 17","SLIDE 18","SLIDE 19","SLIDE 20","SLIDE 21","SLIDE 22","SLIDE 23","SLIDE 24","SLIDE 25","SLIDE 26","SLIDE 27","SLIDE 28","SLIDE 29"];
+    const slideTitles = ["TITLE","HOW TO USE","LEARNING TARGETS","AGENDA","LAUNCH SECTION","WARM-UP HOOK","CFU 1","NOTICE &AMP; WONDER","CONCEPT LAUNCH","I DO — WATCH ME","I DO — KEY STEP","WE DO — TOGETHER","CFU 2","YOU DO — YOUR TURN","VOCABULARY SECTION","VOCABULARY — VOLUME","VOCABULARY — RECTANGULAR PRISM","VOCABULARY — CUBIC UNITS","VOCABULARY — LENGTH, WIDTH, HEIGHT","WHICH WORD?","CFU 3","TURN & TALK","EXPLORE SECTION","VISUAL MODEL","EXPLORE","WHITEBOARD CFU","DISCUSS EXPLORE","PRACTICE A","PRACTICE B","DRAG SORT","ERROR ANALYSIS","STUDENT WORKSPACE","DIFFERENTIATION","PARTNER ACTIVITY","CFU 4","MATH IN THE WILD","DISCUSS CONNECT","CLOSURE SECTION","EXIT TICKET","EXIT TICKET EXPLAIN","BONUS CHECK","REFLECTION","DIGITAL ACTIVITY","FAMILY CONNECTION","TEACHER NOTES","ANSWER KEY"];
+    const teacherNotesMap = {"1":"Display while students enter. Start presenter mode with ▶ Present.","2":"First day with deck? Spend 30 sec here. Skip on repeat lessons.","3":"Post objectives on board. Return to these at closure.","4":"Adjust minutes based on your block schedule.","6":"Students explain that volume is three-dimensional, so all three edges (length, width, height) are needed; two measurements only give area of one face.","9":"To find the volume of a box, multiply all three edges: V = length × width × height.","10":"Reveal one step at a time. Do NOT show all steps at once.","11":"Second reveal sequence — focus on the most critical step.","12":"Call on students to predict each step before revealing.","16":"How much space is inside a solid shape.","17":"A solid box shape with six flat rectangle sides.","18":"The units used to measure space inside, like cubic inches.","19":"How long, how wide, and how tall a box is.","22":"Students explain that volume is three-dimensional, so all three edges (length, width, height) are needed; two measurements only give area of one face.","25":"Calculate the volume of each time capsule container. Use V = l × w × h.","31":"A common mistake in Volume with Whole Number Edges is skipping the key idea: \"To find the volume of a box, multiply all three edges: V = length × width × height.\" — always check your work against this rule before you submit.","45":"Hide during presentation — use Notes panel (N key).","46":"CONFIDENTIAL — do not display to students."};
     
     // Concept Intro Tab Data
     const conceptData = {
@@ -1927,9 +2941,174 @@
       
       document.getElementById('hud-page-indicator').textContent = num + ' / ' + totalSlides;
       
-      if (num === 5) {
-        setTimeout(resizeSlides, 50);
+      const progressFill = document.getElementById('lesson-progress-fill');
+      if (progressFill) {
+        progressFill.style.width = Math.round((num / totalSlides) * 100) + '%';
       }
+      
+      updateNotesPanel(num);
+      setTimeout(resizeSlides, 50);
+    }
+
+    function updateNotesPanel(num) {
+      const notesNum = document.getElementById('notes-slide-num');
+      const notesContent = document.getElementById('notes-slide-content');
+      if (notesNum) notesNum.textContent = num;
+      if (notesContent) {
+        const activeSlide = document.getElementById('slide-' + num);
+        const dataNotes = activeSlide ? activeSlide.getAttribute('data-teacher-notes') : '';
+        const mapNotes = teacherNotesMap[num] || '';
+        const title = slideTitles[num - 1] || 'Slide ' + num;
+        notesContent.innerHTML = '<strong>' + title + '</strong><p style="margin:6px 0 0;">' + (dataNotes || mapNotes || 'No specific notes for this slide. Follow teacher cues on the slide.') + '</p>';
+      }
+    }
+
+    function toggleNotesPanel() {
+      const panel = document.getElementById('presenter-notes-panel');
+      if (panel) panel.classList.toggle('open');
+    }
+
+    // Click-to-reveal worked example steps
+    function revealStep(prefix, stepNum) {
+      const step = document.getElementById(prefix + '-step-' + stepNum);
+      if (!step) return;
+      const content = step.querySelector('.reveal-content');
+      const btn = step.querySelector('.reveal-btn');
+      if (content) content.classList.remove('hidden');
+      if (btn) btn.style.display = 'none';
+      saveWork();
+    }
+
+    function revealAllSteps(prefix, total) {
+      for (let i = 1; i <= total; i++) revealStep(prefix, i);
+    }
+
+    // Turn & Talk 90-second timer
+    const ttTimers = {};
+    function startTurnTalkTimer(id, seconds) {
+      if (ttTimers[id]) clearInterval(ttTimers[id]);
+      let remaining = seconds;
+      const display = document.getElementById('tt-countdown-' + id);
+      if (display) {
+        display.textContent = remaining + 's';
+        display.classList.add('running');
+      }
+      ttTimers[id] = setInterval(() => {
+        remaining--;
+        if (display) display.textContent = remaining + 's';
+        if (remaining <= 0) {
+          clearInterval(ttTimers[id]);
+          if (display) {
+            display.textContent = "Time's up! 🔔";
+            display.classList.remove('running');
+          }
+        }
+      }, 1000);
+    }
+
+    // CFU thumb responses
+    const cfuResponses = {};
+    function setCfuResponse(num, level) {
+      cfuResponses[num] = level;
+      const feedback = document.getElementById('cfu-feedback-' + num);
+      if (feedback) {
+        const labels = { up: '👍 Got it', side: '🤚 Almost', down: '👎 Need help' };
+        feedback.textContent = 'Recorded: ' + (labels[level] || level);
+        feedback.style.color = 'var(--teal)';
+      }
+      saveWork();
+    }
+
+    // Real drag-sort (mouse + touch)
+    let draggedItem = null;
+    document.addEventListener('dragstart', (e) => {
+      if (e.target.classList.contains('drag-item')) {
+        draggedItem = e.target;
+        e.target.classList.add('dragging');
+        e.dataTransfer.setData('text/plain', e.target.id);
+      }
+    });
+    document.addEventListener('dragend', (e) => {
+      if (e.target.classList.contains('drag-item')) {
+        e.target.classList.remove('dragging');
+      }
+    });
+    function dragOverZone(e) {
+      e.preventDefault();
+      const zone = e.target.closest('.drag-drop-zone, .drag-pool');
+      if (zone) zone.classList.add('drag-over');
+    }
+    function dropOnZone(e, sortId) {
+      e.preventDefault();
+      document.querySelectorAll('.drag-over').forEach(z => z.classList.remove('drag-over'));
+      const itemId = e.dataTransfer.getData('text/plain');
+      const item = document.getElementById(itemId);
+      const zone = e.target.closest('.drag-drop-zone, .drag-pool');
+      if (item && zone) {
+        const itemsContainer = zone.querySelector('.drag-zone-items') || zone;
+        itemsContainer.appendChild(item);
+      }
+      saveWork();
+    }
+
+    function checkDragSort(sortId) {
+      const feedback = document.getElementById('drag-feedback-' + sortId);
+      if (!feedback) return;
+      let correct = 0, total = 0;
+      document.querySelectorAll('[id^="drag-item-' + sortId + '"]').forEach(item => {
+        total++;
+        const parent = item.closest('.drag-drop-zone');
+        if (parent) {
+          const catId = parent.getAttribute('data-cat-id');
+          const correctCat = item.getAttribute('data-correct-cat');
+          if (catId === correctCat) {
+            correct++;
+            item.style.borderColor = 'var(--teal)';
+          } else {
+            item.style.borderColor = '#D9795D';
+          }
+        }
+      });
+      feedback.textContent = correct + '/' + total + ' correctly sorted.';
+      feedback.style.color = correct === total ? 'var(--teal)' : '#D9795D';
+    }
+
+    // Workspace table check
+    function checkWorkspaceCells() {
+      const feedback = document.getElementById('workspace-feedback');
+      let correct = 0, total = 0;
+      document.querySelectorAll('.workspace-cell').forEach(cell => {
+        total++;
+        const ans = (cell.getAttribute('data-answer') || '').trim();
+        const val = cell.value.trim();
+        if (val === ans) {
+          correct++;
+          cell.classList.add('correct');
+          cell.classList.remove('incorrect');
+        } else if (val) {
+          cell.classList.add('incorrect');
+          cell.classList.remove('correct');
+        }
+      });
+      if (feedback) {
+        feedback.textContent = correct + '/' + total + ' cells correct.';
+        feedback.style.color = correct === total ? 'var(--teal)' : '#D9795D';
+      }
+      saveWork();
+    }
+
+    // Sketch canvas
+    const sketchCanvas = document.getElementById('sketch-canvas');
+    const sketchCtx = sketchCanvas ? sketchCanvas.getContext('2d') : null;
+    let sketchDrawing = false;
+    if (sketchCanvas && sketchCtx) {
+      sketchCanvas.addEventListener('mousedown', (e) => { sketchDrawing = true; sketchCtx.beginPath(); sketchCtx.moveTo(e.offsetX, e.offsetY); });
+      sketchCanvas.addEventListener('mousemove', (e) => { if (!sketchDrawing) return; sketchCtx.lineTo(e.offsetX, e.offsetY); sketchCtx.strokeStyle = '#17324D'; sketchCtx.lineWidth = 2; sketchCtx.stroke(); });
+      sketchCanvas.addEventListener('mouseup', () => { sketchDrawing = false; });
+      sketchCanvas.addEventListener('mouseleave', () => { sketchDrawing = false; });
+    }
+    function clearSketchCanvas() {
+      if (sketchCtx && sketchCanvas) sketchCtx.clearRect(0, 0, sketchCanvas.width, sketchCanvas.height);
     }
     
     function prevSlide() {
@@ -1949,6 +3128,12 @@
         e.preventDefault();
       } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
         prevSlide();
+        e.preventDefault();
+      } else if (e.key === 'n' || e.key === 'N') {
+        toggleNotesPanel();
+        e.preventDefault();
+      } else if (e.key === 'f' || e.key === 'F') {
+        enterFullscreen();
         e.preventDefault();
       }
     });
@@ -3063,6 +4248,8 @@
     window.addEventListener('load', () => {
       loadWork();
       resizeSlides();
+      goToSlide(1);
+      document.getElementById('presenter-hud')?.classList.add('visible');
     });
     
   </script>
