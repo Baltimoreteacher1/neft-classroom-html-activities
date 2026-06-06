@@ -52,6 +52,9 @@
     <!-- 2) NTKit mounts its identity bar + Save buttons + results panel here -->
     <div id="ntkit"></div>
 
+    <!-- Premium design-system components (rendered by NTKit.ui below) -->
+    <div class="ntkit-root" id="ds-demo"></div>
+
     <form id="activity">
       <div class="q">
         <label for="a1">1. What is the mean of 4, 8, 6?</label>
@@ -73,6 +76,38 @@
     <script>
       // 4) mount + grade
       NTKit.mount("#ntkit");
+
+      // Premium design-system component showcase (Section 7)
+      var ui = NTKit.ui;
+      document.getElementById("ds-demo").innerHTML =
+        ui.vocab({
+          word: "mean",
+          def: "the average — add the numbers, then divide by how many there are",
+        }) +
+        ui.steps([
+          "Add all the numbers: 4 + 8 + 6 = 18",
+          "Count how many numbers there are: 3",
+          "Divide: 18 ÷ 3 = 6",
+        ]) +
+        ui.callout(
+          "mistake",
+          "Common Mistake",
+          "Forgetting to divide by how many numbers — that gives the sum, not the mean.",
+        ) +
+        ui.frames({
+          l0: "The mean is the ______. I add ___ + ___ + ___ = ___, then divide by ___.",
+          l1: "To find the mean, I add the numbers and divide by ___.",
+          l2: "Explain why the mean can be a number that is not in the data set.",
+        }) +
+        ui.hints(
+          ["Add the three numbers first.", "Then divide your total by 3."],
+          "6",
+        ) +
+        ui.callout(
+          "teacher",
+          "Teacher Note",
+          "Pause after the worked example; ask a student to restate step 3 in their own words.",
+        );
 
       document.getElementById("check").addEventListener("click", function () {
         NTKit.grade({

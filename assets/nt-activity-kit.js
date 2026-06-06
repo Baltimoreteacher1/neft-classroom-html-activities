@@ -549,6 +549,103 @@
     }, 0);
   }
 
+  /* ---------- design-system UI builders ----------
+     Return HTML strings for the premium Section-7 components styled in
+     nt-activity-kit.css. Author once, render anywhere:
+       el.innerHTML = NTKit.ui.vocab({word, def, img});
+     All inputs are escaped. Pairs with the `.nt-*` CSS classes.        */
+  function callout(variant, title, bodyHTML) {
+    var t = title
+      ? '<div class="nt-callout-title">' + esc(title) + "</div>"
+      : "";
+    return (
+      '<div class="nt-callout nt-' +
+      esc(variant || "info") +
+      '">' +
+      t +
+      "<div>" +
+      (bodyHTML == null ? "" : bodyHTML) +
+      "</div></div>"
+    );
+  }
+  function vocab(item) {
+    var items = Array.isArray(item) ? item : [item];
+    var rows = items
+      .map(function (v) {
+        v = v || {};
+        var img = v.img
+          ? '<img class="nt-vocab-img" src="' +
+            esc(v.img) +
+            '" alt="' +
+            esc(v.word || "") +
+            '">'
+          : '<span class="nt-vocab-img" aria-hidden="true"></span>';
+        return (
+          '<div class="nt-vocab-card">' +
+          img +
+          '<div class="nt-vocab-word">' +
+          esc(v.word || "") +
+          "</div>" +
+          '<div class="nt-vocab-def">' +
+          esc(v.def || "") +
+          "</div></div>"
+        );
+      })
+      .join("");
+    return callout("vocab", "Vocabulary", rows);
+  }
+  function frames(levels) {
+    // levels: {l0:"…", l1:"…", l2:"…"} — show any provided
+    levels = levels || {};
+    var labels = { l0: "Level 0", l1: "Level 1", l2: "Level 2" };
+    var out = ["l0", "l1", "l2"]
+      .filter(function (k) {
+        return levels[k];
+      })
+      .map(function (k) {
+        return (
+          '<div class="nt-frame nt-frame--' +
+          k +
+          '"><span class="nt-frame-label">' +
+          labels[k] +
+          "</span><div>" +
+          esc(levels[k]) +
+          "</div></div>"
+        );
+      })
+      .join("");
+    return '<div class="nt-frames">' + out + "</div>";
+  }
+  function steps(list) {
+    var lis = (list || [])
+      .map(function (s) {
+        return "<li>" + esc(s) + "</li>";
+      })
+      .join("");
+    return '<ol class="nt-steps">' + lis + "</ol>";
+  }
+  function hints(arr, answer) {
+    // arr: ["hint 1", "hint 2", …], answer: optional reveal text
+    var blocks = (arr || [])
+      .map(function (h, i) {
+        return (
+          "<details><summary>Hint " +
+          (i + 1) +
+          "</summary><div>" +
+          esc(h) +
+          "</div></details>"
+        );
+      })
+      .join("");
+    if (answer != null && answer !== "") {
+      blocks +=
+        '<details class="nt-reveal"><summary>Reveal answer</summary><div>' +
+        esc(answer) +
+        "</div></details>";
+    }
+    return '<div class="nt-hints">' + blocks + "</div>";
+  }
+
   /* ---------- public API ---------- */
   var NTKit = {
     mount: mount,
@@ -559,8 +656,15 @@
     clearResults: clearResults,
     savePDF: savePDF,
     saveDOC: saveDOC,
+    ui: {
+      callout: callout,
+      vocab: vocab,
+      frames: frames,
+      steps: steps,
+      hints: hints,
+    },
     _state: state,
-    version: "1.0.0",
+    version: "1.1.0",
   };
 
   if (typeof module !== "undefined" && module.exports) module.exports = NTKit;

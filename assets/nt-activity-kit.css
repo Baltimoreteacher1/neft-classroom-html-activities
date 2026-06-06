@@ -240,3 +240,282 @@
     color: #111;
   }
 }
+
+/* =========================================================================
+   Neft Teacher — Premium Design System (additive, self-contained)
+   Section 7 callout/box system + scaffold ladder + worked-example steps.
+   Namespaced `.nt-*`; uses design-tokens.css values when present, falls
+   back to literals so it works even when loaded standalone. Adds new
+   classes only — does not alter existing `.ntkit-*` behavior.
+   ========================================================================= */
+
+/* ---- shared callout/box base ---- */
+.nt-callout {
+  --_accent: var(--teal, #1fa6a2);
+  --_tint: var(--teal-light, #dff2ee);
+  position: relative;
+  border: 1px solid var(--line, #d7e2ed);
+  border-left: 5px solid var(--_accent);
+  background: var(--_tint);
+  border-radius: var(--radius-md, 14px);
+  padding: 14px 16px 14px 16px;
+  margin: 14px 0;
+  color: var(--ink, #21313f);
+  line-height: 1.55;
+}
+.nt-callout > .nt-callout-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  margin: 0 0 6px;
+  color: var(--_accent);
+}
+.nt-callout > .nt-callout-title::before {
+  font-size: 1.1em;
+  line-height: 1;
+}
+.nt-callout p:last-child,
+.nt-callout ul:last-child,
+.nt-callout ol:last-child {
+  margin-bottom: 0;
+}
+
+/* ---- box variants (one accent + icon each) ---- */
+.nt-vocab {
+  --_accent: #1fa6a2;
+  --_tint: #dff2ee;
+}
+.nt-vocab > .nt-callout-title::before {
+  content: "📖";
+}
+.nt-teacher {
+  --_accent: #5f6f80;
+  --_tint: #eef2f6;
+  font-style: italic;
+}
+.nt-teacher > .nt-callout-title::before {
+  content: "👩‍🏫";
+}
+.nt-teacher > .nt-callout-title {
+  font-style: normal;
+}
+.nt-challenge {
+  --_accent: #b8860b;
+  --_tint: var(--amber-light, #fef7e0);
+}
+.nt-challenge > .nt-callout-title::before {
+  content: "⭐";
+}
+.nt-mistake,
+.nt-error {
+  --_accent: var(--error, #b64e2f);
+  --_tint: var(--error-bg, #fef0ec);
+}
+.nt-mistake > .nt-callout-title::before,
+.nt-error > .nt-callout-title::before {
+  content: "⚠️";
+}
+.nt-selfcheck {
+  --_accent: var(--success, #0f7c4a);
+  --_tint: var(--success-bg, #e6f7ef);
+}
+.nt-selfcheck > .nt-callout-title::before {
+  content: "✅";
+}
+.nt-info {
+  --_accent: var(--navy, #12355b);
+  --_tint: #eaf1f9;
+}
+.nt-info > .nt-callout-title::before {
+  content: "💡";
+}
+
+/* ---- vocabulary card: word + plain definition + image ---- */
+.nt-vocab-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px 14px;
+  align-items: center;
+}
+.nt-vocab-card img,
+.nt-vocab-card .nt-vocab-img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: var(--radius-sm, 8px);
+  background: #fff;
+  border: 1px solid var(--line, #d7e2ed);
+  grid-row: span 2;
+}
+.nt-vocab-card .nt-vocab-word {
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--ink, #21313f);
+}
+.nt-vocab-card .nt-vocab-def {
+  font-size: 0.95rem;
+  color: var(--muted, #5f6f80);
+}
+
+/* ---- Level 0/1/2 scaffold frame panel ---- */
+.nt-frames {
+  border: 1px dashed var(--line, #d7e2ed);
+  background: #fbfcfe;
+  border-radius: var(--radius-md, 14px);
+  padding: 12px 14px;
+  margin: 14px 0;
+}
+.nt-frames .nt-frame {
+  border-left: 4px solid var(--line, #d7e2ed);
+  padding: 4px 0 4px 12px;
+  margin: 8px 0;
+}
+.nt-frames .nt-frame-label {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-bottom: 4px;
+  color: #fff;
+}
+.nt-frame--l0 {
+  border-left-color: #1fa6a2;
+}
+.nt-frame--l0 .nt-frame-label {
+  background: #1fa6a2;
+}
+.nt-frame--l1 {
+  border-left-color: #2b6cb0;
+}
+.nt-frame--l1 .nt-frame-label {
+  background: #2b6cb0;
+}
+.nt-frame--l2 {
+  border-left-color: #b8860b;
+}
+.nt-frame--l2 .nt-frame-label {
+  background: #b8860b;
+}
+
+/* ---- color-coded worked-example steps ---- */
+.nt-steps {
+  list-style: none;
+  counter-reset: nt-step;
+  margin: 14px 0;
+  padding: 0;
+}
+.nt-steps > li {
+  counter-increment: nt-step;
+  position: relative;
+  padding: 10px 12px 10px 46px;
+  margin: 8px 0;
+  border-radius: var(--radius-sm, 8px);
+  background: #f7fafd;
+  border: 1px solid var(--line, #d7e2ed);
+}
+.nt-steps > li::before {
+  content: counter(nt-step);
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  font-size: 0.85rem;
+}
+.nt-steps > li:nth-child(3n + 1)::before {
+  background: #2b6cb0;
+}
+.nt-steps > li:nth-child(3n + 2)::before {
+  background: #0f7c4a;
+}
+.nt-steps > li:nth-child(3n)::before {
+  background: #7b4bb0;
+}
+
+/* ---- hint ladder: hint 1 / hint 2 / reveal ---- */
+.nt-hints {
+  margin: 14px 0;
+}
+.nt-hints details {
+  border: 1px solid var(--line, #d7e2ed);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--hint-bg, #fef7e0);
+  margin: 6px 0;
+  padding: 0;
+}
+.nt-hints details > summary {
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  color: var(--hint, #875f00);
+  padding: 9px 12px;
+}
+.nt-hints details > summary::-webkit-details-marker {
+  display: none;
+}
+.nt-hints details > summary::before {
+  content: "💡 ";
+}
+.nt-hints details[open] > summary {
+  border-bottom: 1px solid var(--line, #d7e2ed);
+}
+.nt-hints details > div {
+  padding: 10px 12px;
+}
+.nt-hints details.nt-reveal {
+  background: var(--success-bg, #e6f7ef);
+}
+.nt-hints details.nt-reveal > summary {
+  color: var(--success, #0f7c4a);
+}
+.nt-hints details.nt-reveal > summary::before {
+  content: "✅ ";
+}
+
+/* ---- self-check rubric strip ---- */
+.nt-rubric {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  font-size: 0.9rem;
+}
+.nt-rubric .nt-rubric-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line, #d7e2ed);
+  border-radius: 999px;
+  padding: 4px 12px;
+  background: #fff;
+}
+
+/* ---- print friendliness for the design-system boxes ---- */
+@media print {
+  .nt-callout,
+  .nt-frames,
+  .nt-steps > li {
+    break-inside: avoid;
+    box-shadow: none;
+    background: #fff !important;
+  }
+  .nt-hints details {
+    background: #fff !important;
+  }
+  .nt-hints details:not([open]) > summary::after {
+    content: " (see answer key)";
+    font-style: italic;
+    color: #555;
+  }
+}
