@@ -352,7 +352,31 @@
           skillRows +
           "</ul></div>"
         : "") +
+      nextStep(tone) +
       "</div>";
+  }
+
+  /* Tone-based next-step recommendation appended to every results card.
+     Uses the premium `.nt-callout` design system; additive only. */
+  function nextStep(tone) {
+    var variant, title, msg;
+    if (tone === "good") {
+      variant = "challenge";
+      title = "Next step";
+      msg =
+        "Strong work — you have this skill. Try the challenge or enrichment task next.";
+    } else if (tone === "ok") {
+      variant = "selfcheck";
+      title = "Next step";
+      msg =
+        "Almost there. Review the items marked ✗ above, then retry just those questions.";
+    } else {
+      variant = "mistake";
+      title = "Next step";
+      msg =
+        "Let's rebuild this skill: re-read the worked example, use the hints, and try again. Mistakes are how we learn.";
+    }
+    return callout(variant, title, "<p>" + esc(msg) + "</p>");
   }
 
   /* ---------- export: shared HTML document body ---------- */
@@ -666,6 +690,36 @@
     _state: state,
     version: "1.1.0",
   };
+
+  /* Self-inject the kit stylesheet if the page didn't already link it, so
+     the `.nt-*` / `.ntkit-*` styles are always present. Resolves the path
+     from this script's own src; no-op when the CSS is already loaded. */
+  function ensureStyles() {
+    try {
+      if (typeof document === "undefined") return;
+      if (document.getElementById("nt-kit-css")) return;
+      if (document.querySelector('link[href*="nt-activity-kit.css"]')) return;
+      var scr =
+        (document.currentScript &&
+          /nt-activity-kit\.js/.test(document.currentScript.src || "") &&
+          document.currentScript) ||
+        document.querySelector('script[src*="nt-activity-kit.js"]');
+      var href = "/assets/nt-activity-kit.css";
+      if (scr && scr.getAttribute("src")) {
+        href = scr
+          .getAttribute("src")
+          .replace(/nt-activity-kit\.js(\?.*)?$/, "nt-activity-kit.css");
+      }
+      var l = document.createElement("link");
+      l.id = "nt-kit-css";
+      l.rel = "stylesheet";
+      l.href = href;
+      (document.head || document.documentElement).appendChild(l);
+    } catch (e) {
+      /* styling is non-critical; never block the kit */
+    }
+  }
+  ensureStyles();
 
   if (typeof module !== "undefined" && module.exports) module.exports = NTKit;
   if (global) global.NTKit = NTKit;
