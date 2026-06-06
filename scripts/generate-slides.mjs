@@ -1,7 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { buildTptSlideDeckV2 } from './lib/tpt-slide-deck-v2.mjs';
+import { buildTptSlideDeckV3 } from './lib/tpt-slide-deck-v3.mjs';
+import { getUnitPalette, paletteToCssVars } from './lib/slide-theme-palettes.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
@@ -804,7 +805,8 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
     || data.reflect?.openPrompt
     || `Explain the key idea from today's lesson in your own words. Use at least one vocabulary word from: ${(vocabList.slice(0, 3).map((v) => v.term).filter(Boolean)).join(', ') || 'today\'s lesson'}.`;
 
-  const deck = buildTptSlideDeckV2({
+  const unitPalette = getUnitPalette(unit);
+  const deck = buildTptSlideDeckV3({
     lessonId,
     data,
     themeEmoji,
@@ -859,20 +861,7 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --navy: #17324D;
-      --teal: #1FA6A2;
-      --teal-light: #DFF2EE;
-      --amber: #F2C15B;
-      --bg: #F7F4EC;
-      --white: #FFFFFF;
-      --coral: #FCE6DE;
-      --body-text: #24323F;
-      --gray: #8A96A3;
-      --shadow: 0 4px 20px rgba(23, 50, 77, 0.08);
-      --google-gray: #f1f3f4;
-      --google-blue: #1a73e8;
-      --theme-color: ${getThemeColor(data.theme)};
+    :root {${paletteToCssVars(unitPalette, getThemeColor(data.theme))}
     }
     * { box-sizing: border-box; }
     body {
@@ -1046,15 +1035,18 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
       overflow: hidden;
     }
     
-    /* Slide Canvas: Fixed 16:9 Aspect Ratio (960x540) with subtle math grid background */
+    /* Slide Canvas: warm student-friendly backgrounds per section */
     .slide-canvas {
       width: 960px;
       height: 540px;
-      background-color: var(--bg);
-      background-image: 
-        linear-gradient(rgba(31, 166, 162, 0.06) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(31, 166, 162, 0.06) 1px, transparent 1px);
-      background-size: 20px 20px;
+      background-color: var(--bg-warm);
+      background-image:
+        radial-gradient(ellipse at 10% 20%, color-mix(in srgb, var(--teal) 8%, transparent) 0%, transparent 50%),
+        radial-gradient(ellipse at 90% 80%, color-mix(in srgb, var(--amber) 10%, transparent) 0%, transparent 50%),
+        linear-gradient(rgba(56, 127, 132, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 127, 132, 0.05) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 24px 24px, 24px 24px;
+      transition: background-color 0.4s ease;
       border: 1px solid #dadce0;
       box-shadow: 0 10px 30px rgba(23, 50, 77, 0.15);
       border-radius: 8px;
@@ -1992,6 +1984,77 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
     }
     .slide-body { animation: slideFadeIn 0.25s ease; }
     @keyframes slideFadeIn { from{opacity:0.7} to{opacity:1} }
+
+    /* ── V3 Reference-Quality Enhancements ── */
+    .title-slide-v3 { background: linear-gradient(160deg, var(--bg-warm) 0%, var(--bg) 60%, var(--teal-light) 100%); border-radius:12px; padding:24px; }
+    .title-session-badge { font-size:11px; font-weight:800; color:var(--teal); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px; }
+    .title-standard { font-size:13px; font-weight:700; color:var(--accent); margin:0 0 4px; }
+    .title-objectives-preview { background:var(--white); border:2px solid var(--teal); border-radius:10px; padding:12px 16px; margin:12px 0; max-width:520px; text-align:left; }
+    .title-objectives-preview p { margin:4px 0 0; font-size:12px; font-weight:600; line-height:1.4; }
+    .choice-board-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0; }
+    .choice-board-card {
+      position:relative; text-align:left; padding:12px; border:2px solid var(--teal-light);
+      border-radius:10px; background:var(--white); cursor:pointer; transition:all 0.2s;
+      font-size:11px; line-height:1.3;
+    }
+    .choice-board-card:hover, .choice-board-card.selected { border-color:var(--teal); background:var(--teal-light); }
+    .choice-board-card strong { display:block; font-size:12px; color:var(--navy); margin:4px 0; }
+    .choice-board-card p { margin:0; color:var(--body-text); }
+    .choice-icon { font-size:20px; display:block; margin-bottom:4px; }
+    .choice-check { position:absolute; top:8px; right:8px; color:var(--teal); font-weight:800; opacity:0; }
+    .choice-board-card.selected .choice-check { opacity:1; }
+    .twr-frames { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
+    .twr-frame { display:flex; gap:8px; background:var(--white); border:1px solid #e1eaef; border-radius:8px; padding:8px; }
+    .twr-frame-num { background:var(--teal); color:white; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; flex-shrink:0; }
+    .twr-frame-body { flex:1; font-size:10px; }
+    .twr-frame-body strong { display:block; color:var(--navy); margin-bottom:2px; }
+    .twr-prompt { margin:0 0 4px; font-style:italic; color:var(--gray); }
+    .twr-input { font-size:10px; min-height:36px; }
+    .goal-tracker-card { text-align:center; }
+    .goal-objective { background:var(--teal-light); border-radius:8px; padding:10px; margin-bottom:12px; font-size:12px; text-align:left; }
+    .goal-levels { display:flex; flex-direction:column; gap:8px; }
+    .goal-level {
+      display:flex; align-items:center; gap:10px; text-align:left;
+      padding:10px 12px; border:2px solid var(--teal-light); border-radius:10px;
+      background:var(--white); cursor:pointer; transition:all 0.2s; width:100%;
+    }
+    .goal-level:hover, .goal-level.selected { border-color:var(--teal); background:var(--teal-light); }
+    .goal-num { background:var(--navy); color:white; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; flex-shrink:0; }
+    .goal-text { flex:1; font-size:11px; }
+    .goal-text p { margin:2px 0 0; color:var(--gray); }
+    .goal-circle { font-size:18px; color:var(--teal); }
+    .goal-level.selected .goal-circle { color:var(--teal); }
+    .goal-level.selected .goal-circle::after { content:'●'; }
+    .area-grid { display:grid; grid-template-columns:repeat(8,1fr); gap:2px; margin:8px 0; }
+    .area-cell { aspect-ratio:1; background:var(--white); border:1px solid #dadce0; cursor:pointer; border-radius:2px; transition:background 0.15s; }
+    .area-cell.shaded { background:var(--teal); border-color:var(--navy); }
+    .area-grid-controls { display:flex; justify-content:space-between; align-items:center; font-size:11px; }
+    .stat-sort-widget .stat-card-bank { display:flex; flex-wrap:wrap; gap:6px; padding:8px; background:var(--google-gray); border-radius:8px; margin-bottom:8px; min-height:40px; }
+    .stat-card { padding:6px 10px; background:white; border:1.5px solid var(--teal); border-radius:6px; font-size:10px; font-weight:600; cursor:grab; }
+    .stat-columns { display:flex; gap:8px; }
+    .stat-col { flex:1; min-height:80px; border:2px dashed var(--gray); border-radius:8px; padding:6px; }
+    .stat-col-label { font-size:9px; font-weight:800; text-align:center; margin-bottom:4px; color:var(--navy); }
+    .stat-col-items { display:flex; flex-direction:column; gap:4px; min-height:50px; }
+    .treasure-svg { border:1px solid var(--teal); border-radius:8px; cursor:crosshair; }
+    .treasure-log { font-size:10px; margin-top:6px; color:var(--gray); }
+    .power-card-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+    .power-card { padding:10px; border:2px solid var(--teal-light); border-radius:8px; background:white; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.2s; }
+    .power-card.matched { background:var(--teal-light); border-color:var(--teal); }
+    .power-card.selected-pair { background:var(--amber); border-color:var(--navy); }
+    .workspace-card { background:linear-gradient(135deg, var(--white) 0%, var(--teal-light) 100%); }
+    .slide-canvas:has(.slide-body[data-section="launch"].active) { background-color:var(--bg-warm); }
+    .slide-canvas:has(.slide-body[data-section="vocabulary"].active) { background-color:var(--teal-light); }
+    .slide-canvas:has(.slide-body[data-section="explore"].active) { background-color:var(--bg); }
+    .slide-canvas:has(.slide-body[data-section="practice"].active) { background-color:var(--bg-warm); }
+    .slide-canvas:has(.slide-body[data-section="connect"].active) { background-color:var(--coral); }
+    .slide-canvas:has(.slide-body[data-section="closure"].active) { background-color:var(--teal-light); }
+
+    @media (max-width: 768px) {
+      .sidebar-slides { width: 120px; }
+      .choice-board-grid, .twr-frames { grid-template-columns: 1fr; }
+      .g-menu-bar { display: none; }
+      .presenter-hud { font-size: 10px; padding: 6px 10px; }
+    }
     
   </style>
 </head>
@@ -2002,7 +2065,7 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
     <div class="g-left">
       <div class="g-logo">M</div>
       <div class="g-title-block">
-        <h1 class="g-doc-title">${esc(title)} <span>Grade 6 Math</span></h1>
+        <h1 class="g-doc-title">${esc(title)} <span>Reveal Math Grade 6</span></h1>
         <div class="g-menu-bar">
           <div class="g-menu-item" onclick="window.print()">File</div>
           <div class="g-menu-item" onclick="alert('Student work is automatically saved to local browser storage.')">Edit</div>
@@ -2057,7 +2120,7 @@ ${deck.thumbnailsHtml}
         
         <!-- Subtle Slide Watermark -->
         <div class="slide-watermark">
-          <span>Grade 6 Unit ${unit} · Lesson ${lessonId}</span>
+          <span>Reveal Math · Unit ${unit} · Lesson ${lessonId}</span>
           <span>STANDARD: ${esc(standard)}</span>
         </div>
         
@@ -2163,7 +2226,7 @@ ${deck.thumbnailsHtml}
     
     function goToSlide(num) {
       if (num < 1 || num > totalSlides) return;
-      
+      initV3Widgets();
       currentSlide = num;
       
       document.querySelectorAll('.slide-body').forEach((el, index) => {
@@ -2736,6 +2799,117 @@ ${deck.thumbnailsHtml}
         btn.classList.toggle('active', btn.id === 'btn-' + level);
       });
       saveWork();
+    }
+
+    // ── V3 Interactive Widgets ──
+    function selectChoiceBoard(idx) {
+      document.querySelectorAll('.choice-board-card').forEach((c, i) => c.classList.toggle('selected', i === idx));
+      saveWork();
+    }
+    function selectGoalLevel(num) {
+      document.querySelectorAll('.goal-level').forEach((l, i) => l.classList.toggle('selected', i + 1 === num));
+      saveWork();
+    }
+    function toggleAreaCell(idx) {
+      const cell = document.querySelector('.area-cell[data-idx="' + idx + '"]');
+      if (cell) {
+        cell.classList.toggle('shaded');
+        const count = document.querySelectorAll('.area-cell.shaded').length;
+        const el = document.getElementById('area-count');
+        if (el) el.textContent = count;
+        saveWork();
+      }
+    }
+    function clearAreaGrid() {
+      document.querySelectorAll('.area-cell').forEach(c => c.classList.remove('shaded'));
+      const el = document.getElementById('area-count');
+      if (el) el.textContent = '0';
+      saveWork();
+    }
+    let powerFirst = null;
+    function flipPowerCard(id) {
+      const card = document.getElementById('power-' + id);
+      if (!card || card.classList.contains('matched')) return;
+      if (!powerFirst) {
+        powerFirst = card;
+        card.classList.add('selected-pair');
+      } else {
+        if (powerFirst.dataset.match === card.dataset.match && powerFirst !== card) {
+          powerFirst.classList.add('matched');
+          card.classList.add('matched');
+          powerFirst.classList.remove('selected-pair');
+          const fb = document.getElementById('power-match-feedback');
+          if (fb) fb.textContent = '✓ Match found!';
+        } else {
+          powerFirst.classList.remove('selected-pair');
+        }
+        powerFirst = null;
+      }
+      saveWork();
+    }
+    const treasurePoints = [];
+    function treasureHuntClick(e) {
+      const svg = document.getElementById('treasure-grid');
+      if (!svg) return;
+      const rect = svg.getBoundingClientRect();
+      const x = Math.round((e.clientX - rect.left) / 28 - 1);
+      const y = Math.round((e.clientY - rect.top) / 28 - 1);
+      if (x < 0 || x > 9 || y < 0 || y > 9) return;
+      treasurePoints.push({ x, y });
+      const g = document.getElementById('treasure-markers');
+      if (g) {
+        const cx = 30 + x * 24;
+        const cy = 30 + y * 24;
+        g.innerHTML += '<circle cx="' + cx + '" cy="' + cy + '" r="6" fill="var(--amber)" stroke="var(--navy)" stroke-width="1.5"/>';
+      }
+      const log = document.getElementById('treasure-log');
+      if (log) log.textContent = 'Plotted: (' + x + ', ' + y + ')';
+      saveWork();
+    }
+    function checkTreasureHunt() {
+      const hit = treasurePoints.some(p => p.x === 4 && p.y === 3);
+      const log = document.getElementById('treasure-log');
+      if (log) log.textContent = hit ? '🎉 Treasure found at (4, 3)!' : 'Keep searching — target is (4, 3)';
+    }
+    function statDragOver(e) { e.preventDefault(); }
+    function statDrop(e, cat) {
+      e.preventDefault();
+      const cardId = e.dataTransfer.getData('text/plain');
+      const card = document.getElementById(cardId);
+      const col = document.getElementById('stat-col-' + cat);
+      if (card && col) col.appendChild(card);
+      saveWork();
+    }
+    function checkStatSort() {
+      let correct = 0, total = 0;
+      document.querySelectorAll('.stat-col').forEach(col => {
+        const expected = col.dataset.cat;
+        col.querySelectorAll('.stat-card').forEach(card => {
+          total++;
+          if (card.dataset.cat === expected) correct++;
+        });
+      });
+      const fb = document.getElementById('stat-sort-feedback');
+      if (fb) fb.textContent = correct === total && total > 0 ? '✓ All sorted correctly!' : correct + '/' + total + ' correct — keep trying!';
+    }
+    function initV3Widgets() {
+      document.querySelectorAll('.stat-card').forEach(card => {
+        if (!card.dataset.dragBound) {
+          card.dataset.dragBound = '1';
+          card.addEventListener('dragstart', e => e.dataTransfer.setData('text/plain', card.id));
+        }
+      });
+      const tg = document.getElementById('treasure-grid-lines');
+      if (tg && !tg.dataset.initialized) {
+        tg.dataset.initialized = '1';
+        let lines = '';
+        for (let i = 0; i <= 10; i++) {
+          const p = 30 + i * 24;
+          lines += '<line x1="' + p + '" y1="30" x2="' + p + '" y2="270" stroke="#e1eaef" stroke-width="0.5"/>';
+          lines += '<line x1="30" y1="' + p + '" x2="270" y2="' + p + '" stroke="#e1eaef" stroke-width="0.5"/>';
+        }
+        tg.innerHTML = lines;
+      }
     }
     
     function loadWork() {
@@ -3481,6 +3655,7 @@ ${deck.thumbnailsHtml}
     
     window.addEventListener('resize', resizeSlides);
     window.addEventListener('load', () => {
+      initV3Widgets();
       loadWork();
       resizeSlides();
       goToSlide(1);

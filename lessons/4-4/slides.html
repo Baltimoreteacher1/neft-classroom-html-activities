@@ -9,16 +9,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --navy: #17324D;
-      --teal: #1FA6A2;
-      --teal-light: #DFF2EE;
+      --navy: #1C2E42;
+      --teal: #387F84;
+      --teal-light: #E0F0F1;
       --amber: #F2C15B;
       --bg: #F7F4EC;
-      --white: #FFFFFF;
-      --coral: #FCE6DE;
+      --bg-warm: #FCF5E0;
+      --coral: #F5EAE7;
+      --accent: #5C8A5A;
       --body-text: #24323F;
       --gray: #8A96A3;
-      --shadow: 0 4px 20px rgba(23, 50, 77, 0.08);
+      --white: #FFFFFF;
+      --shadow: 0 4px 20px rgba(28, 46, 66, 0.08);
       --google-gray: #f1f3f4;
       --google-blue: #1a73e8;
       --theme-color: #D9795D;
@@ -195,15 +197,18 @@
       overflow: hidden;
     }
     
-    /* Slide Canvas: Fixed 16:9 Aspect Ratio (960x540) with subtle math grid background */
+    /* Slide Canvas: warm student-friendly backgrounds per section */
     .slide-canvas {
       width: 960px;
       height: 540px;
-      background-color: var(--bg);
-      background-image: 
-        linear-gradient(rgba(31, 166, 162, 0.06) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(31, 166, 162, 0.06) 1px, transparent 1px);
-      background-size: 20px 20px;
+      background-color: var(--bg-warm);
+      background-image:
+        radial-gradient(ellipse at 10% 20%, color-mix(in srgb, var(--teal) 8%, transparent) 0%, transparent 50%),
+        radial-gradient(ellipse at 90% 80%, color-mix(in srgb, var(--amber) 10%, transparent) 0%, transparent 50%),
+        linear-gradient(rgba(56, 127, 132, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 127, 132, 0.05) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 24px 24px, 24px 24px;
+      transition: background-color 0.4s ease;
       border: 1px solid #dadce0;
       box-shadow: 0 10px 30px rgba(23, 50, 77, 0.15);
       border-radius: 8px;
@@ -1141,6 +1146,77 @@
     }
     .slide-body { animation: slideFadeIn 0.25s ease; }
     @keyframes slideFadeIn { from{opacity:0.7} to{opacity:1} }
+
+    /* ── V3 Reference-Quality Enhancements ── */
+    .title-slide-v3 { background: linear-gradient(160deg, var(--bg-warm) 0%, var(--bg) 60%, var(--teal-light) 100%); border-radius:12px; padding:24px; }
+    .title-session-badge { font-size:11px; font-weight:800; color:var(--teal); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px; }
+    .title-standard { font-size:13px; font-weight:700; color:var(--accent); margin:0 0 4px; }
+    .title-objectives-preview { background:var(--white); border:2px solid var(--teal); border-radius:10px; padding:12px 16px; margin:12px 0; max-width:520px; text-align:left; }
+    .title-objectives-preview p { margin:4px 0 0; font-size:12px; font-weight:600; line-height:1.4; }
+    .choice-board-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0; }
+    .choice-board-card {
+      position:relative; text-align:left; padding:12px; border:2px solid var(--teal-light);
+      border-radius:10px; background:var(--white); cursor:pointer; transition:all 0.2s;
+      font-size:11px; line-height:1.3;
+    }
+    .choice-board-card:hover, .choice-board-card.selected { border-color:var(--teal); background:var(--teal-light); }
+    .choice-board-card strong { display:block; font-size:12px; color:var(--navy); margin:4px 0; }
+    .choice-board-card p { margin:0; color:var(--body-text); }
+    .choice-icon { font-size:20px; display:block; margin-bottom:4px; }
+    .choice-check { position:absolute; top:8px; right:8px; color:var(--teal); font-weight:800; opacity:0; }
+    .choice-board-card.selected .choice-check { opacity:1; }
+    .twr-frames { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
+    .twr-frame { display:flex; gap:8px; background:var(--white); border:1px solid #e1eaef; border-radius:8px; padding:8px; }
+    .twr-frame-num { background:var(--teal); color:white; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; flex-shrink:0; }
+    .twr-frame-body { flex:1; font-size:10px; }
+    .twr-frame-body strong { display:block; color:var(--navy); margin-bottom:2px; }
+    .twr-prompt { margin:0 0 4px; font-style:italic; color:var(--gray); }
+    .twr-input { font-size:10px; min-height:36px; }
+    .goal-tracker-card { text-align:center; }
+    .goal-objective { background:var(--teal-light); border-radius:8px; padding:10px; margin-bottom:12px; font-size:12px; text-align:left; }
+    .goal-levels { display:flex; flex-direction:column; gap:8px; }
+    .goal-level {
+      display:flex; align-items:center; gap:10px; text-align:left;
+      padding:10px 12px; border:2px solid var(--teal-light); border-radius:10px;
+      background:var(--white); cursor:pointer; transition:all 0.2s; width:100%;
+    }
+    .goal-level:hover, .goal-level.selected { border-color:var(--teal); background:var(--teal-light); }
+    .goal-num { background:var(--navy); color:white; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; flex-shrink:0; }
+    .goal-text { flex:1; font-size:11px; }
+    .goal-text p { margin:2px 0 0; color:var(--gray); }
+    .goal-circle { font-size:18px; color:var(--teal); }
+    .goal-level.selected .goal-circle { color:var(--teal); }
+    .goal-level.selected .goal-circle::after { content:'●'; }
+    .area-grid { display:grid; grid-template-columns:repeat(8,1fr); gap:2px; margin:8px 0; }
+    .area-cell { aspect-ratio:1; background:var(--white); border:1px solid #dadce0; cursor:pointer; border-radius:2px; transition:background 0.15s; }
+    .area-cell.shaded { background:var(--teal); border-color:var(--navy); }
+    .area-grid-controls { display:flex; justify-content:space-between; align-items:center; font-size:11px; }
+    .stat-sort-widget .stat-card-bank { display:flex; flex-wrap:wrap; gap:6px; padding:8px; background:var(--google-gray); border-radius:8px; margin-bottom:8px; min-height:40px; }
+    .stat-card { padding:6px 10px; background:white; border:1.5px solid var(--teal); border-radius:6px; font-size:10px; font-weight:600; cursor:grab; }
+    .stat-columns { display:flex; gap:8px; }
+    .stat-col { flex:1; min-height:80px; border:2px dashed var(--gray); border-radius:8px; padding:6px; }
+    .stat-col-label { font-size:9px; font-weight:800; text-align:center; margin-bottom:4px; color:var(--navy); }
+    .stat-col-items { display:flex; flex-direction:column; gap:4px; min-height:50px; }
+    .treasure-svg { border:1px solid var(--teal); border-radius:8px; cursor:crosshair; }
+    .treasure-log { font-size:10px; margin-top:6px; color:var(--gray); }
+    .power-card-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+    .power-card { padding:10px; border:2px solid var(--teal-light); border-radius:8px; background:white; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.2s; }
+    .power-card.matched { background:var(--teal-light); border-color:var(--teal); }
+    .power-card.selected-pair { background:var(--amber); border-color:var(--navy); }
+    .workspace-card { background:linear-gradient(135deg, var(--white) 0%, var(--teal-light) 100%); }
+    .slide-canvas:has(.slide-body[data-section="launch"].active) { background-color:var(--bg-warm); }
+    .slide-canvas:has(.slide-body[data-section="vocabulary"].active) { background-color:var(--teal-light); }
+    .slide-canvas:has(.slide-body[data-section="explore"].active) { background-color:var(--bg); }
+    .slide-canvas:has(.slide-body[data-section="practice"].active) { background-color:var(--bg-warm); }
+    .slide-canvas:has(.slide-body[data-section="connect"].active) { background-color:var(--coral); }
+    .slide-canvas:has(.slide-body[data-section="closure"].active) { background-color:var(--teal-light); }
+
+    @media (max-width: 768px) {
+      .sidebar-slides { width: 120px; }
+      .choice-board-grid, .twr-frames { grid-template-columns: 1fr; }
+      .g-menu-bar { display: none; }
+      .presenter-hud { font-size: 10px; padding: 6px 10px; }
+    }
     
   </style>
 </head>
@@ -1151,7 +1227,7 @@
     <div class="g-left">
       <div class="g-logo">M</div>
       <div class="g-title-block">
-        <h1 class="g-doc-title">Lesson 4-4: Find the Percent of a Number <span>Grade 6 Math</span></h1>
+        <h1 class="g-doc-title">Lesson 4-4: Find the Percent of a Number <span>Reveal Math Grade 6</span></h1>
         <div class="g-menu-bar">
           <div class="g-menu-item" onclick="window.print()">File</div>
           <div class="g-menu-item" onclick="alert('Student work is automatically saved to local browser storage.')">Edit</div>
@@ -1326,86 +1402,106 @@
 
       <div class="thumb-card" data-slide="30" onclick="goToSlide(30)">
         <span class="thumb-label">Slide 30</span>
-        <div class="thumb-preview">↕️ Sort</div>
+        <div class="thumb-preview">↕️</div>
       </div>
 
       <div class="thumb-card" data-slide="31" onclick="goToSlide(31)">
         <span class="thumb-label">Slide 31</span>
-        <div class="thumb-preview">⚠️ Error</div>
+        <div class="thumb-preview">↕️ Sort</div>
       </div>
 
       <div class="thumb-card" data-slide="32" onclick="goToSlide(32)">
         <span class="thumb-label">Slide 32</span>
-        <div class="thumb-preview">📊 Workspace</div>
+        <div class="thumb-preview">⚠️ Error</div>
       </div>
 
       <div class="thumb-card" data-slide="33" onclick="goToSlide(33)">
         <span class="thumb-label">Slide 33</span>
-        <div class="thumb-preview">🎯 Diff</div>
+        <div class="thumb-preview">🎯 Choice</div>
       </div>
 
       <div class="thumb-card" data-slide="34" onclick="goToSlide(34)">
         <span class="thumb-label">Slide 34</span>
-        <div class="thumb-preview">🤝 Partner</div>
+        <div class="thumb-preview">✍️ TWR</div>
       </div>
 
       <div class="thumb-card" data-slide="35" onclick="goToSlide(35)">
         <span class="thumb-label">Slide 35</span>
-        <div class="thumb-preview">✋ CFU</div>
+        <div class="thumb-preview">📊 Workspace</div>
       </div>
 
       <div class="thumb-card" data-slide="36" onclick="goToSlide(36)">
         <span class="thumb-label">Slide 36</span>
-        <div class="thumb-preview">🌍 Connect</div>
+        <div class="thumb-preview">🎯 Diff</div>
       </div>
 
       <div class="thumb-card" data-slide="37" onclick="goToSlide(37)">
         <span class="thumb-label">Slide 37</span>
-        <div class="thumb-preview">🗣️ Connect</div>
+        <div class="thumb-preview">🤝 Partner</div>
       </div>
 
       <div class="thumb-card" data-slide="38" onclick="goToSlide(38)">
         <span class="thumb-label">Slide 38</span>
-        <div class="thumb-preview">✅ Close</div>
+        <div class="thumb-preview">✋ CFU</div>
       </div>
 
       <div class="thumb-card" data-slide="39" onclick="goToSlide(39)">
         <span class="thumb-label">Slide 39</span>
-        <div class="thumb-preview">📝 Exit</div>
+        <div class="thumb-preview">🌍 Connect</div>
       </div>
 
       <div class="thumb-card" data-slide="40" onclick="goToSlide(40)">
         <span class="thumb-label">Slide 40</span>
-        <div class="thumb-preview">📝 Exit 2</div>
+        <div class="thumb-preview">🗣️ Connect</div>
       </div>
 
       <div class="thumb-card" data-slide="41" onclick="goToSlide(41)">
         <span class="thumb-label">Slide 41</span>
-        <div class="thumb-preview">📝 Bonus</div>
+        <div class="thumb-preview">✅ Close</div>
       </div>
 
       <div class="thumb-card" data-slide="42" onclick="goToSlide(42)">
         <span class="thumb-label">Slide 42</span>
-        <div class="thumb-preview">🤔 Reflect</div>
+        <div class="thumb-preview">📝 Exit</div>
       </div>
 
       <div class="thumb-card" data-slide="43" onclick="goToSlide(43)">
         <span class="thumb-label">Slide 43</span>
-        <div class="thumb-preview">🎮 Activity</div>
+        <div class="thumb-preview">📝 Exit 2</div>
       </div>
 
       <div class="thumb-card" data-slide="44" onclick="goToSlide(44)">
         <span class="thumb-label">Slide 44</span>
-        <div class="thumb-preview">🏠 Home</div>
+        <div class="thumb-preview">🏆 Goal</div>
       </div>
 
       <div class="thumb-card" data-slide="45" onclick="goToSlide(45)">
         <span class="thumb-label">Slide 45</span>
-        <div class="thumb-preview">👩‍🏫 Notes</div>
+        <div class="thumb-preview">📝 Bonus</div>
       </div>
 
       <div class="thumb-card" data-slide="46" onclick="goToSlide(46)">
         <span class="thumb-label">Slide 46</span>
+        <div class="thumb-preview">🤔 Reflect</div>
+      </div>
+
+      <div class="thumb-card" data-slide="47" onclick="goToSlide(47)">
+        <span class="thumb-label">Slide 47</span>
+        <div class="thumb-preview">🎮 Activity</div>
+      </div>
+
+      <div class="thumb-card" data-slide="48" onclick="goToSlide(48)">
+        <span class="thumb-label">Slide 48</span>
+        <div class="thumb-preview">🏠 Home</div>
+      </div>
+
+      <div class="thumb-card" data-slide="49" onclick="goToSlide(49)">
+        <span class="thumb-label">Slide 49</span>
+        <div class="thumb-preview">👩‍🏫 Notes</div>
+      </div>
+
+      <div class="thumb-card" data-slide="50" onclick="goToSlide(50)">
+        <span class="thumb-label">Slide 50</span>
         <div class="thumb-preview">🔑 Key</div>
       </div>
     </nav>
@@ -1431,12 +1527,18 @@
           <div class="spiral-ring"></div>
         </div>
       
-        <div class="slide-body active" id="slide-1" data-slide-type="title" data-teacher-notes="Display while students enter. Start presenter mode with ▶ Present.">
-    <div class="title-slide">
+        <div class="slide-body active" id="slide-1" data-section="launch" data-slide-type="title" data-teacher-notes="Display while students enter. Start presenter mode with ▶ Present.">
+    <div class="title-slide title-slide-v3">
+      <div class="title-session-badge">Reveal Math Grade 6 · Unit 4</div>
       <div class="title-emoji">🕹️</div>
       <h1 class="title-heading">Find the Percent of a Number</h1>
-      <p class="title-meta">Unit 4 · Lesson 4-4 · 6.RP.3c</p>
-      <span class="slide-badge title-theme-badge">ARCADE BUILDER THEME</span>
+      <p class="title-standard">6.RP.3c</p>
+      <p class="title-meta">Unit 4 · Lesson 4-4</p>
+      <div class="title-objectives-preview">
+        <strong>🎯 Learning Target</strong>
+        <p>I can find the percent of a number using an equation or a model.</p>
+      </div>
+      <span class="slide-badge title-theme-badge">ARCADE BUILDER</span>
       <p class="title-time">⏱️ ~45 min</p>
       <a href="https://docs.google.com/presentation/d/1bdIdSimqERzf_0VaX77MssAGyh096-SlflBGtK5hatc/edit" target="_blank" rel="noopener" class="title-gs-link">↗ Open editable Google Slides copy</a>
     </div></div>
@@ -2332,7 +2434,36 @@
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-30" data-section="practice" data-slide-type="drag-sort">
+        <div class="slide-body" id="slide-30" data-section="practice" data-slide-type="drag-sort-ratios">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the percent of a number using an equation or a model.</span>
+  </div>
+    
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🕹️ ARCADE BUILDER</span></div>
+    <h3 class="slide-main-title">Equivalent Ratio Sort</h3>
+    <div class="slide-grid-2">
+      <div class="slide-card workspace-card">
+        <span class="slide-badge badge-teal">↕️ DRAG-SORT</span>
+        <div class="teacher-cue teacher-cue-students">
+    <span class="teacher-cue-icon">👨‍🎓</span>
+    <span class="teacher-cue-label">Students:</span>
+    <span class="teacher-cue-text">Work at your own pace. Check with a partner before we discuss.</span>
+  </div>
+        <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">5 min</span>
+  </div>
+        <p class="card-desc">Complete the interactive activity using today's strategy.</p>
+      </div>
+      <div class="slide-card card-teal-light">
+        <h2 class="card-title">✍️ Justify Your Thinking</h2>
+        <textarea class="slide-input-placeholder" rows="6" placeholder="Explain your strategy and reasoning..."></textarea>
+      </div>
+    </div></div>
+
+        <div class="slide-body" id="slide-31" data-section="practice" data-slide-type="drag-sort">
     <div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can find the percent of a number using an equation or a model.</span>
@@ -2379,7 +2510,7 @@
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-31" data-section="practice" data-slide-type="error-analysis" data-teacher-notes="A common mistake in Find the Percent of a Number is skipping the key idea: &quot;To find the part, change the percent to a decimal, then multiply: part = percent × base.&quot; — always check your work against this rule before you submit."><div class="learning-target-bar">
+        <div class="slide-body" id="slide-32" data-section="practice" data-slide-type="error-analysis" data-teacher-notes="A common mistake in Find the Percent of a Number is skipping the key idea: &quot;To find the part, change the percent to a decimal, then multiply: part = percent × base.&quot; — always check your work against this rule before you submit."><div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can find the percent of a number using an equation or a model.</span>
   </div>
@@ -2440,7 +2571,112 @@
       </div>
     </div>
 
-        <div class="slide-body" id="slide-32" data-section="practice" data-slide-type="student-workspace">
+        <div class="slide-body" id="slide-33" data-section="practice" data-slide-type="choice-board">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the percent of a number using an equation or a model.</span>
+  </div>
+    
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🕹️ ARCADE BUILDER</span></div>
+    <h3 class="slide-main-title">Choice Board — Show What You Know</h3>
+    <div class="slide-card">
+      <span class="slide-badge badge-amber">🎯 CHOICE BOARD</span>
+      <div class="teacher-cue teacher-cue-students">
+    <span class="teacher-cue-icon">👨‍🎓</span>
+    <span class="teacher-cue-label">Students:</span>
+    <span class="teacher-cue-text">Choose ONE option to demonstrate understanding. Complete it on paper or whiteboard.</span>
+  </div>
+      <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">6 min</span>
+  </div>
+      <div class="choice-board-grid">
+    <button class="choice-board-card" onclick="selectChoiceBoard(0)" id="choice-card-0">
+      <span class="choice-icon">✏️</span>
+      <strong>Draw &amp; Label</strong>
+      <p>Sketch a visual model. Label key parts using today&#039;s vocabulary.</p>
+      <span class="choice-check" id="choice-check-0">✓</span>
+    </button>
+    <button class="choice-board-card" onclick="selectChoiceBoard(1)" id="choice-card-1">
+      <span class="choice-icon">💬</span>
+      <strong>Explain It</strong>
+      <p>Write 2–3 sentences explaining the key idea in your own words.</p>
+      <span class="choice-check" id="choice-check-1">✓</span>
+    </button>
+    <button class="choice-board-card" onclick="selectChoiceBoard(2)" id="choice-card-2">
+      <span class="choice-icon">🧮</span>
+      <strong>Solve It</strong>
+      <p>Work one practice problem showing each step clearly.</p>
+      <span class="choice-check" id="choice-check-2">✓</span>
+    </button>
+    <button class="choice-board-card" onclick="selectChoiceBoard(3)" id="choice-card-3">
+      <span class="choice-icon">↔️</span>
+      <strong>Compare</strong>
+      <p>How is today&#039;s method different from a related idea you already know?</p>
+      <span class="choice-check" id="choice-check-3">✓</span>
+    </button></div>
+      <textarea class="slide-input-placeholder" rows="2" placeholder="Record which choice you made and your response..."></textarea>
+      <p class="card-desc-sm"><strong>Use vocabulary:</strong> Percent, Base, Part</p>
+    </div></div>
+
+        <div class="slide-body" id="slide-34" data-section="practice" data-slide-type="think-write">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the percent of a number using an equation or a model.</span>
+  </div>
+    
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🕹️ ARCADE BUILDER</span></div>
+    <h3 class="slide-main-title">Think–Write–Respond</h3>
+    <div class="slide-card">
+      <span class="slide-badge badge-teal">✍️ THINK–WRITE–RESPOND</span>
+      <div class="teacher-cue teacher-cue-students">
+    <span class="teacher-cue-icon">👨‍🎓</span>
+    <span class="teacher-cue-label">Students:</span>
+    <span class="teacher-cue-text">Use evidence from today's lesson. Complete all four frames.</span>
+  </div>
+      <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">8 min</span>
+  </div>
+      <div class="key-idea-box"><strong>Key Idea:</strong><p>To find the part, change the percent to a decimal, then multiply: part = percent × base.</p></div>
+      <div class="twr-frames">
+    <div class="twr-frame">
+      <div class="twr-frame-num">1</div>
+      <div class="twr-frame-body">
+        <strong>Explain the Formula</strong>
+        <p class="twr-prompt">The key formula works because ___</p>
+        <textarea class="slide-input-placeholder twr-input" rows="2" placeholder="Write your response..."></textarea>
+      </div>
+    </div>
+    <div class="twr-frame">
+      <div class="twr-frame-num">2</div>
+      <div class="twr-frame-body">
+        <strong>Connect to Prior Learning</strong>
+        <p class="twr-prompt">This connects to what I already know about ___ because ___</p>
+        <textarea class="slide-input-placeholder twr-input" rows="2" placeholder="Write your response..."></textarea>
+      </div>
+    </div>
+    <div class="twr-frame">
+      <div class="twr-frame-num">3</div>
+      <div class="twr-frame-body">
+        <strong>Justify a Method</strong>
+        <p class="twr-prompt">I can justify this method by showing ___</p>
+        <textarea class="slide-input-placeholder twr-input" rows="2" placeholder="Write your response..."></textarea>
+      </div>
+    </div>
+    <div class="twr-frame">
+      <div class="twr-frame-num">4</div>
+      <div class="twr-frame-body">
+        <strong>Apply to a New Problem</strong>
+        <p class="twr-prompt">If I apply today&#039;s strategy to a new problem, I would ___</p>
+        <textarea class="slide-input-placeholder twr-input" rows="2" placeholder="Write your response..."></textarea>
+      </div>
+    </div></div>
+    </div></div>
+
+        <div class="slide-body" id="slide-35" data-section="practice" data-slide-type="student-workspace">
     <div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can find the percent of a number using an equation or a model.</span>
@@ -2473,7 +2709,7 @@
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-33" data-section="practice" data-slide-type="differentiation">
+        <div class="slide-body" id="slide-36" data-section="practice" data-slide-type="differentiation">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🕹️ ARCADE BUILDER</span></div>
     <h3 class="slide-main-title">Differentiation Paths</h3>
@@ -2505,7 +2741,7 @@
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-34" data-section="practice" data-slide-type="partner-activity">
+        <div class="slide-body" id="slide-37" data-section="practice" data-slide-type="partner-activity">
     <div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can find the percent of a number using an equation or a model.</span>
@@ -2534,7 +2770,7 @@
       <textarea class="slide-input-placeholder" rows="4" placeholder="Partners: write one thing you learned from each other..."></textarea>
     </div></div>
 
-        <div class="slide-body" id="slide-35" data-section="check" data-slide-type="cfu">
+        <div class="slide-body" id="slide-38" data-section="check" data-slide-type="cfu">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🕹️ ARCADE BUILDER</span></div>
     <h3 class="slide-main-title">Check for Understanding #4</h3>
@@ -2559,7 +2795,7 @@
       <p class="cfu-teacher-tip"><strong>Teacher:</strong> If &gt;30% thumbs down, re-teach with a fresh example before moving on.</p>
     </div></div>
 
-        <div class="slide-body" id="slide-36" data-section="connect" data-slide-type="real-world">
+        <div class="slide-body" id="slide-39" data-section="connect" data-slide-type="real-world">
     <div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can find the percent of a number using an equation or a model.</span>
@@ -2586,7 +2822,7 @@
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-37" data-section="connect" data-slide-type="turn-talk-timer">
+        <div class="slide-body" id="slide-40" data-section="connect" data-slide-type="turn-talk-timer">
     <div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can find the percent of a number using an equation or a model.</span>
@@ -2631,7 +2867,7 @@
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-38" data-section="closure" data-slide-type="section">
+        <div class="slide-body" id="slide-41" data-section="closure" data-slide-type="section">
     <div class="section-divider">
       <div class="section-divider-emoji">✅</div>
       <h2 class="section-divider-title">CLOSURE &amp; REFLECT</h2>
@@ -2639,7 +2875,7 @@
       <div class="section-divider-bar"></div>
     </div></div>
 
-        <div class="slide-body" id="slide-39" data-section="closure" data-slide-type="exit-ticket"><div class="learning-target-bar">
+        <div class="slide-body" id="slide-42" data-section="closure" data-slide-type="exit-ticket"><div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can find the percent of a number using an equation or a model.</span>
   </div>
@@ -2666,7 +2902,7 @@
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-40" data-section="closure" data-slide-type="exit-ticket">
+        <div class="slide-body" id="slide-43" data-section="closure" data-slide-type="exit-ticket">
     <div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can find the percent of a number using an equation or a model.</span>
@@ -2690,7 +2926,55 @@
       <textarea id="exit-open-response" class="slide-input-placeholder" rows="5" placeholder="Type your explanation here..."></textarea>
     </div></div>
 
-        <div class="slide-body" id="slide-41" data-section="closure" data-slide-type="interactive-mc">
+        <div class="slide-body" id="slide-44" data-section="closure" data-slide-type="goal-tracker">
+    <div class="learning-target-bar">
+    <span class="lt-icon">🎯</span>
+    <span class="lt-text">I can find the percent of a number using an equation or a model.</span>
+  </div>
+    
+    <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🕹️ ARCADE BUILDER</span></div>
+    <h3 class="slide-main-title">Goal Tracker</h3>
+    <div class="slide-card goal-tracker-card">
+      <span class="slide-badge badge-teal">🏆 GOAL TRACKER</span>
+      <div class="teacher-cue teacher-cue-students">
+    <span class="teacher-cue-icon">👨‍🎓</span>
+    <span class="teacher-cue-label">Students:</span>
+    <span class="teacher-cue-text">Circle the level that best describes where you are RIGHT NOW.</span>
+  </div>
+      <div class="teacher-cue teacher-cue-time">
+    <span class="teacher-cue-icon">⏱️</span>
+    <span class="teacher-cue-label">Time:</span>
+    <span class="teacher-cue-text">2 min</span>
+  </div>
+      <div class="goal-objective"><strong>My Goal:</strong> I can find the percent of a number using an equation or a model.</div>
+      <div class="goal-levels">
+    <button class="goal-level" onclick="selectGoalLevel(1)" id="goal-level-1">
+      <span class="goal-num">1</span>
+      <div class="goal-text">
+        <strong>Not Yet</strong>
+        <p>I need more help. The idea does not make sense to me yet.</p>
+      </div>
+      <span class="goal-circle" id="goal-circle-1">○</span>
+    </button>
+    <button class="goal-level" onclick="selectGoalLevel(2)" id="goal-level-2">
+      <span class="goal-num">2</span>
+      <div class="goal-text">
+        <strong>Getting There</strong>
+        <p>I understand the idea but I make mistakes when I work.</p>
+      </div>
+      <span class="goal-circle" id="goal-circle-2">○</span>
+    </button>
+    <button class="goal-level" onclick="selectGoalLevel(3)" id="goal-level-3">
+      <span class="goal-num">3</span>
+      <div class="goal-text">
+        <strong>Got It!</strong>
+        <p>I can solve problems independently and explain my thinking.</p>
+      </div>
+      <span class="goal-circle" id="goal-circle-3">○</span>
+    </button></div>
+    </div></div>
+
+        <div class="slide-body" id="slide-45" data-section="closure" data-slide-type="interactive-mc">
     <div class="learning-target-bar">
     <span class="lt-icon">🎯</span>
     <span class="lt-text">I can find the percent of a number using an equation or a model.</span>
@@ -2735,7 +3019,7 @@
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-42" data-section="closure" data-slide-type="exit-ticket">
+        <div class="slide-body" id="slide-46" data-section="closure" data-slide-type="exit-ticket">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🕹️ ARCADE BUILDER</span></div>
     <h3 class="slide-main-title">Reflection &amp; Self-Assessment</h3>
@@ -2760,7 +3044,7 @@
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-43" data-section="closure" data-slide-type="activity-link">
+        <div class="slide-body" id="slide-47" data-section="closure" data-slide-type="activity-link">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🕹️ ARCADE BUILDER</span></div>
     <h3 class="slide-main-title">Continue Learning</h3>
@@ -2779,7 +3063,7 @@
   </div>
     </div></div>
 
-        <div class="slide-body" id="slide-44" data-section="closure" data-slide-type="activity-link">
+        <div class="slide-body" id="slide-48" data-section="closure" data-slide-type="activity-link">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🕹️ ARCADE BUILDER</span></div>
     <h3 class="slide-main-title">Family Connection</h3>
@@ -2793,7 +3077,7 @@
   </div>
     </div></div>
 
-        <div class="slide-body" id="slide-45" data-slide-type="teacher-notes" data-teacher-notes="Hide during presentation — use Notes panel (N key).">
+        <div class="slide-body" id="slide-49" data-slide-type="teacher-notes" data-teacher-notes="Hide during presentation — use Notes panel (N key).">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🕹️ ARCADE BUILDER</span></div>
     <h3 class="slide-main-title">Teacher Notes</h3>
@@ -2815,7 +3099,7 @@
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-46" data-slide-type="teacher-notes" data-teacher-notes="CONFIDENTIAL — do not display to students.">
+        <div class="slide-body" id="slide-50" data-slide-type="teacher-notes" data-teacher-notes="CONFIDENTIAL — do not display to students.">
     
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🕹️ ARCADE BUILDER</span></div>
     <h3 class="slide-main-title">Answer Key (Teacher Appendix)</h3>
@@ -2826,7 +3110,7 @@
         
         <!-- Subtle Slide Watermark -->
         <div class="slide-watermark">
-          <span>Grade 6 Unit 4 · Lesson 4-4</span>
+          <span>Reveal Math · Unit 4 · Lesson 4-4</span>
           <span>STANDARD: 6.RP.3c</span>
         </div>
         
@@ -2848,7 +3132,7 @@
   <!-- Presenter Controls HUD (Visible in fullscreen Present Mode) -->
   <div class="presenter-hud" id="presenter-hud">
     <button class="hud-btn" onclick="prevSlide()" title="Previous (←)">◀</button>
-    <span id="hud-page-indicator">1 / 46</span>
+    <span id="hud-page-indicator">1 / 50</span>
     <button class="hud-btn" onclick="nextSlide()" title="Next (→)">▶</button>
     <button class="notes-toolbar-btn" onclick="toggleNotesPanel()" title="Notes (N)">📝 Notes</button>
     <button class="notes-toolbar-btn" onclick="window.print()" title="Print">🖨️</button>
@@ -2858,10 +3142,10 @@
 
   <script>
     let currentSlide = 1;
-    const totalSlides = 46;
+    const totalSlides = 50;
     
-    const slideTitles = ["TITLE","HOW TO USE","LEARNING TARGETS","AGENDA","LAUNCH SECTION","WARM-UP HOOK","CFU 1","NOTICE &AMP; WONDER","CONCEPT LAUNCH","I DO — WATCH ME","I DO — KEY STEP","WE DO — TOGETHER","CFU 2","YOU DO — YOUR TURN","VOCABULARY SECTION","VOCABULARY — PERCENT","VOCABULARY — BASE","VOCABULARY — PART","VOCABULARY — EQUATION","WHICH WORD?","CFU 3","TURN & TALK","EXPLORE SECTION","VISUAL MODEL","EXPLORE","WHITEBOARD CFU","DISCUSS EXPLORE","PRACTICE A","PRACTICE B","DRAG SORT","ERROR ANALYSIS","STUDENT WORKSPACE","DIFFERENTIATION","PARTNER ACTIVITY","CFU 4","MATH IN THE WILD","DISCUSS CONNECT","CLOSURE SECTION","EXIT TICKET","EXIT TICKET EXPLAIN","BONUS CHECK","REFLECTION","DIGITAL ACTIVITY","FAMILY CONNECTION","TEACHER NOTES","ANSWER KEY"];
-    const teacherNotesMap = {"1":"Display while students enter. Start presenter mode with ▶ Present.","2":"First day with deck? Spend 30 sec here. Skip on repeat lessons.","3":"Post objectives on board. Return to these at closure.","4":"Adjust minutes based on your block schedule.","6":"Students identify 60 as the base, the 25% discount as the part to find, and connect 'of' to the base.","9":"To find the part, change the percent to a decimal, then multiply: part = percent × base.","10":"Reveal one step at a time. Do NOT show all steps at once.","11":"Second reveal sequence — focus on the most critical step.","12":"Call on students to predict each step before revealing.","16":"A way to compare a number to 100, shown with the % sign.","17":"The whole amount you take a percent of.","18":"The piece you get when you take a percent of a number.","19":"A math sentence with an equal sign showing both sides are the same.","22":"Students identify 60 as the base, the 25% discount as the part to find, and connect 'of' to the base.","25":"Find the percent of each number. Use the equation: Part = Percent × Base. Convert the percent to a decimal first.","31":"A common mistake in Find the Percent of a Number is skipping the key idea: \"To find the part, change the percent to a decimal, then multiply: part = percent × base.\" — always check your work against this rule before you submit.","45":"Hide during presentation — use Notes panel (N key).","46":"CONFIDENTIAL — do not display to students."};
+    const slideTitles = ["TITLE","HOW TO USE","LEARNING TARGETS","AGENDA","LAUNCH SECTION","WARM-UP HOOK","CFU 1","NOTICE &AMP; WONDER","CONCEPT LAUNCH","I DO — WATCH ME","I DO — KEY STEP","WE DO — TOGETHER","CFU 2","YOU DO — YOUR TURN","VOCABULARY SECTION","VOCABULARY — PERCENT","VOCABULARY — BASE","VOCABULARY — PART","VOCABULARY — EQUATION","WHICH WORD?","CFU 3","TURN & TALK","EXPLORE SECTION","VISUAL MODEL","EXPLORE","WHITEBOARD CFU","DISCUSS EXPLORE","PRACTICE A","PRACTICE B","EQUIVALENT RATIO SORT","DRAG SORT","ERROR ANALYSIS","CHOICE BOARD","THINK WRITE","STUDENT WORKSPACE","DIFFERENTIATION","PARTNER ACTIVITY","CFU 4","MATH IN THE WILD","DISCUSS CONNECT","CLOSURE SECTION","EXIT TICKET","EXIT TICKET EXPLAIN","GOAL TRACKER","BONUS CHECK","REFLECTION","DIGITAL ACTIVITY","FAMILY CONNECTION","TEACHER NOTES","ANSWER KEY"];
+    const teacherNotesMap = {"1":"Display while students enter. Start presenter mode with ▶ Present.","2":"First day with deck? Spend 30 sec here. Skip on repeat lessons.","3":"Post objectives on board. Return to these at closure.","4":"Adjust minutes based on your block schedule.","6":"Students identify 60 as the base, the 25% discount as the part to find, and connect 'of' to the base.","9":"To find the part, change the percent to a decimal, then multiply: part = percent × base.","10":"Reveal one step at a time. Do NOT show all steps at once.","11":"Second reveal sequence — focus on the most critical step.","12":"Call on students to predict each step before revealing.","16":"A way to compare a number to 100, shown with the % sign.","17":"The whole amount you take a percent of.","18":"The piece you get when you take a percent of a number.","19":"A math sentence with an equal sign showing both sides are the same.","22":"Students identify 60 as the base, the 25% discount as the part to find, and connect 'of' to the base.","25":"Find the percent of each number. Use the equation: Part = Percent × Base. Convert the percent to a decimal first.","32":"A common mistake in Find the Percent of a Number is skipping the key idea: \"To find the part, change the percent to a decimal, then multiply: part = percent × base.\" — always check your work against this rule before you submit.","49":"Hide during presentation — use Notes panel (N key).","50":"CONFIDENTIAL — do not display to students."};
     
     // Concept Intro Tab Data
     const conceptData = {
@@ -2932,7 +3216,7 @@
     
     function goToSlide(num) {
       if (num < 1 || num > totalSlides) return;
-      
+      initV3Widgets();
       currentSlide = num;
       
       document.querySelectorAll('.slide-body').forEach((el, index) => {
@@ -3505,6 +3789,117 @@
         btn.classList.toggle('active', btn.id === 'btn-' + level);
       });
       saveWork();
+    }
+
+    // ── V3 Interactive Widgets ──
+    function selectChoiceBoard(idx) {
+      document.querySelectorAll('.choice-board-card').forEach((c, i) => c.classList.toggle('selected', i === idx));
+      saveWork();
+    }
+    function selectGoalLevel(num) {
+      document.querySelectorAll('.goal-level').forEach((l, i) => l.classList.toggle('selected', i + 1 === num));
+      saveWork();
+    }
+    function toggleAreaCell(idx) {
+      const cell = document.querySelector('.area-cell[data-idx="' + idx + '"]');
+      if (cell) {
+        cell.classList.toggle('shaded');
+        const count = document.querySelectorAll('.area-cell.shaded').length;
+        const el = document.getElementById('area-count');
+        if (el) el.textContent = count;
+        saveWork();
+      }
+    }
+    function clearAreaGrid() {
+      document.querySelectorAll('.area-cell').forEach(c => c.classList.remove('shaded'));
+      const el = document.getElementById('area-count');
+      if (el) el.textContent = '0';
+      saveWork();
+    }
+    let powerFirst = null;
+    function flipPowerCard(id) {
+      const card = document.getElementById('power-' + id);
+      if (!card || card.classList.contains('matched')) return;
+      if (!powerFirst) {
+        powerFirst = card;
+        card.classList.add('selected-pair');
+      } else {
+        if (powerFirst.dataset.match === card.dataset.match && powerFirst !== card) {
+          powerFirst.classList.add('matched');
+          card.classList.add('matched');
+          powerFirst.classList.remove('selected-pair');
+          const fb = document.getElementById('power-match-feedback');
+          if (fb) fb.textContent = '✓ Match found!';
+        } else {
+          powerFirst.classList.remove('selected-pair');
+        }
+        powerFirst = null;
+      }
+      saveWork();
+    }
+    const treasurePoints = [];
+    function treasureHuntClick(e) {
+      const svg = document.getElementById('treasure-grid');
+      if (!svg) return;
+      const rect = svg.getBoundingClientRect();
+      const x = Math.round((e.clientX - rect.left) / 28 - 1);
+      const y = Math.round((e.clientY - rect.top) / 28 - 1);
+      if (x < 0 || x > 9 || y < 0 || y > 9) return;
+      treasurePoints.push({ x, y });
+      const g = document.getElementById('treasure-markers');
+      if (g) {
+        const cx = 30 + x * 24;
+        const cy = 30 + y * 24;
+        g.innerHTML += '<circle cx="' + cx + '" cy="' + cy + '" r="6" fill="var(--amber)" stroke="var(--navy)" stroke-width="1.5"/>';
+      }
+      const log = document.getElementById('treasure-log');
+      if (log) log.textContent = 'Plotted: (' + x + ', ' + y + ')';
+      saveWork();
+    }
+    function checkTreasureHunt() {
+      const hit = treasurePoints.some(p => p.x === 4 && p.y === 3);
+      const log = document.getElementById('treasure-log');
+      if (log) log.textContent = hit ? '🎉 Treasure found at (4, 3)!' : 'Keep searching — target is (4, 3)';
+    }
+    function statDragOver(e) { e.preventDefault(); }
+    function statDrop(e, cat) {
+      e.preventDefault();
+      const cardId = e.dataTransfer.getData('text/plain');
+      const card = document.getElementById(cardId);
+      const col = document.getElementById('stat-col-' + cat);
+      if (card && col) col.appendChild(card);
+      saveWork();
+    }
+    function checkStatSort() {
+      let correct = 0, total = 0;
+      document.querySelectorAll('.stat-col').forEach(col => {
+        const expected = col.dataset.cat;
+        col.querySelectorAll('.stat-card').forEach(card => {
+          total++;
+          if (card.dataset.cat === expected) correct++;
+        });
+      });
+      const fb = document.getElementById('stat-sort-feedback');
+      if (fb) fb.textContent = correct === total && total > 0 ? '✓ All sorted correctly!' : correct + '/' + total + ' correct — keep trying!';
+    }
+    function initV3Widgets() {
+      document.querySelectorAll('.stat-card').forEach(card => {
+        if (!card.dataset.dragBound) {
+          card.dataset.dragBound = '1';
+          card.addEventListener('dragstart', e => e.dataTransfer.setData('text/plain', card.id));
+        }
+      });
+      const tg = document.getElementById('treasure-grid-lines');
+      if (tg && !tg.dataset.initialized) {
+        tg.dataset.initialized = '1';
+        let lines = '';
+        for (let i = 0; i <= 10; i++) {
+          const p = 30 + i * 24;
+          lines += '<line x1="' + p + '" y1="30" x2="' + p + '" y2="270" stroke="#e1eaef" stroke-width="0.5"/>';
+          lines += '<line x1="30" y1="' + p + '" x2="270" y2="' + p + '" stroke="#e1eaef" stroke-width="0.5"/>';
+        }
+        tg.innerHTML = lines;
+      }
     }
     
     function loadWork() {
@@ -4250,6 +4645,7 @@
     
     window.addEventListener('resize', resizeSlides);
     window.addEventListener('load', () => {
+      initV3Widgets();
       loadWork();
       resizeSlides();
       goToSlide(1);
