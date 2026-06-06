@@ -16,6 +16,7 @@ const STRINGS = {
   familyHomework: { en: "Family homework", es: "Tarea familiar" },
   guidedNotes: { en: "Guided notes", es: "Notas guiadas" },
   studentHandout: { en: "Printable handout", es: "Hoja imprimible" },
+  lessonSlides: { en: "Lesson slides", es: "Diapositivas de la lección" },
   teacherNotes: { en: "Teacher notes", es: "Notas del maestro" },
   teacherNotesToggle: { en: "Show teacher pacing & tips", es: "Ver ritmo y consejos del maestro" },
   teacherNotesHide: { en: "Hide teacher notes", es: "Ocultar notas del maestro" },

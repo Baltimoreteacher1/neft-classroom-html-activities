@@ -244,6 +244,7 @@ function showIdentityScreen(root, config) {
   const saved = findSavedStudents(config.lessonId);
   const homeworkHtmlHref = `/lessons/${encodeURIComponent(config.lessonId)}/homework.html`;
   const handoutHref = `/lessons/${encodeURIComponent(config.lessonId)}/handout.html`;
+  const slidesHref = `/lessons/${encodeURIComponent(config.lessonId)}/slides.html`;
 
   const screen = document.createElement("div");
   screen.className = "identity-screen";
@@ -284,6 +285,7 @@ function showIdentityScreen(root, config) {
         <p style="margin:var(--sp-4) 0 0; font-size:0.82rem; text-align:center;">
           <a href="${homeworkHtmlHref}" style="color:var(--teal); font-weight:700;">🏠 ${stackHtml(t("familyHomework", "en"), t("familyHomework", "es"))}</a>
           · <a href="/lessons/${encodeURIComponent(config.lessonId)}/notes.html" style="color:var(--navy); font-weight:700;">📝 ${stackHtml(t("guidedNotes", "en"), t("guidedNotes", "es"))}</a>
+          · <a href="${slidesHref}" target="_blank" rel="noopener" style="color:var(--blue,#1a6fb5); font-weight:700;">📊 ${stackHtml(t("lessonSlides", "en"), t("lessonSlides", "es"))}</a>
           · <a href="${handoutHref}" target="_blank" rel="noopener" style="color:var(--amber,#c85a3a); font-weight:700;">📄 ${stackHtml(t("studentHandout", "en"), t("studentHandout", "es"))}</a>
         </p>
         ${saved.length ? `<div class="identity-saved" id="id-saved-list"></div>` : ""}
