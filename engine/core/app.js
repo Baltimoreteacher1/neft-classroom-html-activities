@@ -239,6 +239,27 @@ function objectivesBlockHtml(config) {
     </div>`;
 }
 
+let googleSlidesUrlMapPromise = null;
+
+function loadGoogleSlidesUrlMap() {
+  if (!googleSlidesUrlMapPromise) {
+    googleSlidesUrlMapPromise = fetch("/data/google-slides-urls.json")
+      .then((r) => (r.ok ? r.json() : {}))
+      .catch(() => ({}));
+  }
+  return googleSlidesUrlMapPromise;
+}
+
+function mountWelcomeGoogleSlidesLink(lessonId, slot) {
+  if (!slot || !lessonId) return;
+  loadGoogleSlidesUrlMap().then((map) => {
+    const url = map && map[lessonId];
+    if (!url) return;
+    slot.innerHTML =
+      ` · <a href="${escHtml(url)}" target="_blank" rel="noopener" style="color:var(--teal); font-weight:700;">↗ ${stackHtml(t("googleSlides", "en"), t("googleSlides", "es"))}</a>`;
+  });
+}
+
 function showIdentityScreen(root, config) {
   const themeEmoji = config.themeEmoji || "📐";
   const saved = findSavedStudents(config.lessonId);
@@ -282,10 +303,11 @@ function showIdentityScreen(root, config) {
           <input id="id-period" type="text" placeholder="${t("periodPlaceholder")}" autocomplete="off" />
           <button id="id-start" class="identity-btn" disabled>${stackHtml(t("startActivity", "en"), t("startActivity", "es"))}</button>
         </div>
-        <p style="margin:var(--sp-4) 0 0; font-size:0.82rem; text-align:center;">
+        <p id="welcome-resource-links" style="margin:var(--sp-4) 0 0; font-size:0.82rem; text-align:center;">
           <a href="${homeworkHtmlHref}" style="color:var(--teal); font-weight:700;">🏠 ${stackHtml(t("familyHomework", "en"), t("familyHomework", "es"))}</a>
           · <a href="/lessons/${encodeURIComponent(config.lessonId)}/notes.html" style="color:var(--navy); font-weight:700;">📝 ${stackHtml(t("guidedNotes", "en"), t("guidedNotes", "es"))}</a>
           · <a href="${slidesHref}" target="_blank" rel="noopener" style="color:var(--blue,#1a6fb5); font-weight:700;">📊 ${stackHtml(t("lessonSlides", "en"), t("lessonSlides", "es"))}</a>
+          <span id="welcome-google-slides-slot"></span>
           · <a href="${handoutHref}" target="_blank" rel="noopener" style="color:var(--amber,#c85a3a); font-weight:700;">📄 ${stackHtml(t("studentHandout", "en"), t("studentHandout", "es"))}</a>
         </p>
         ${saved.length ? `<div class="identity-saved" id="id-saved-list"></div>` : ""}
@@ -293,6 +315,11 @@ function showIdentityScreen(root, config) {
     </div>
   `;
   root.append(screen);
+
+  mountWelcomeGoogleSlidesLink(
+    config.lessonId,
+    screen.querySelector("#welcome-google-slides-slot"),
+  );
 
   const teacherSlot = screen.querySelector("#welcome-teacher-slot");
   if (teacherSlot && !isTeacherMode()) {

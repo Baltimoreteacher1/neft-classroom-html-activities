@@ -17,6 +17,7 @@ const STRINGS = {
   guidedNotes: { en: "Guided notes", es: "Notas guiadas" },
   studentHandout: { en: "Printable handout", es: "Hoja imprimible" },
   lessonSlides: { en: "Lesson slides", es: "Diapositivas de la lección" },
+  googleSlides: { en: "Google Slides", es: "Google Slides" },
   teacherNotes: { en: "Teacher notes", es: "Notas del maestro" },
   teacherNotesToggle: { en: "Show teacher pacing & tips", es: "Ver ritmo y consejos del maestro" },
   teacherNotesHide: { en: "Hide teacher notes", es: "Ocultar notas del maestro" },
