@@ -894,6 +894,21 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
         onComplete: (c, t) => wrappedOnAnswer(c === t),
       });
       break;
+    case "matching": {
+      const pairs = (problemDef.pairs || []).map((p) => ({
+        term: p.left || p.term || p.prompt || "",
+        match: p.right || p.match || p.answer || "",
+      }));
+      renderMatchingGame(body, {
+        pairs,
+        columns: problemDef.columns || 2,
+        label: problemDef.hideStem
+          ? problemDef.label
+          : problemDef.stem || problemDef.label,
+        onComplete: (c, t) => wrappedOnAnswer(c === t),
+      });
+      break;
+    }
     case "bar-model":
       renderBarModel(body, {
         ...problemDef,
@@ -938,7 +953,14 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
       break;
     default:
       renderUnknownComponentFallback(body, problemDef);
-      wrappedOnAnswer(true);
+      {
+        const continueBtn = document.createElement("button");
+        continueBtn.type = "button";
+        continueBtn.className = "btn btn-secondary mt-4";
+        continueBtn.textContent = "Continue";
+        continueBtn.addEventListener("click", () => wrappedOnAnswer(true));
+        body.append(continueBtn);
+      }
   }
 }
 

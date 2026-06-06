@@ -32,16 +32,29 @@ function vocabRows(config) {
 }
 
 function practicePreview(config) {
-  const items =
-    config.practice?.onLevel ||
-    config.practice?.approaching ||
-    config.practice?.extending ||
-    [];
+  const practice = config.practice || {};
+  const items = [
+    ...(practice.approaching || []).slice(0, 1),
+    ...(practice.onLevel || []).slice(0, 2),
+    ...(practice.extending || []).slice(0, 1),
+  ].filter(Boolean);
+
   return items
-    .slice(0, 2)
+    .slice(0, 4)
     .map((p, i) => {
       const stem = p.stem || p.instructions || p.title || p.label || `Problem ${i + 1}`;
-      return `<li>${esc(stem)}<div class="work-space"></div></li>`;
+      let extra = "";
+      if (p.type === "multiple-choice" && Array.isArray(p.choices)) {
+        extra = `<ol type="A" style="margin:8px 0 0 1.2rem; font-size:0.88rem;">${p.choices
+          .map((c) => `<li>${esc(c)}</li>`)
+          .join("")}</ol>`;
+      } else if (p.type === "matching" && Array.isArray(p.pairs)) {
+        extra = `<ul style="margin:8px 0 0 1.2rem; font-size:0.88rem;">${p.pairs
+          .slice(0, 3)
+          .map((pair) => `<li>${esc(pair.left || pair.term || "")} → ___</li>`)
+          .join("")}</ul>`;
+      }
+      return `<li>${esc(stem)}${extra}<div class="work-space"></div></li>`;
     })
     .join("");
 }
