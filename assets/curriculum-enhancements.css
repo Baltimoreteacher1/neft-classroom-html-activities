@@ -1,0 +1,244 @@
+/* Curriculum Hub enhancements — additive styles only */
+
+.hub-enhance-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin: 0 0 12px;
+}
+
+.hub-mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  background: #161825;
+  color: var(--ink);
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.hub-mode-toggle:hover,
+.hub-mode-toggle:focus-visible {
+  background: #1e2133;
+  border-color: var(--teal);
+  color: var(--teal);
+  outline: none;
+}
+
+.hub-mode-toggle[aria-pressed="true"] {
+  background: rgba(45, 212, 191, 0.12);
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+.hub-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+
+.hub-filter-chip {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  background: #161825;
+  color: var(--muted);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.hub-filter-chip:hover,
+.hub-filter-chip:focus-visible {
+  border-color: var(--teal);
+  color: var(--teal);
+  outline: none;
+}
+
+.hub-filter-chip[aria-pressed="true"] {
+  background: rgba(45, 212, 191, 0.12);
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+.hub-progress-summary {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 16px;
+}
+
+.hub-progress-summary strong {
+  color: var(--teal);
+  font-weight: 700;
+}
+
+.unit-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  width: 100%;
+}
+
+.unit-progress-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.unit-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--teal), var(--amber));
+  border-radius: 999px;
+  transition: width 0.35s ease;
+}
+
+.unit-progress-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.lesson-real-world {
+  font-size: 13px;
+  color: var(--ink);
+  background: rgba(251, 191, 36, 0.06);
+  border: 1px solid rgba(251, 191, 36, 0.18);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
+
+.lesson-real-world-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--amber);
+  margin-bottom: 4px;
+}
+
+.lesson-outline-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.progress-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--line);
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--muted);
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.progress-check:hover,
+.progress-check:focus-visible {
+  border-color: var(--teal);
+  color: var(--teal);
+  outline: none;
+}
+
+.progress-check[aria-pressed="true"] {
+  background: rgba(45, 212, 191, 0.15);
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+.search-highlight {
+  background: rgba(251, 191, 36, 0.25);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+body:not(.teacher-mode) .teacher-only,
+body:not(.teacher-mode) details.teacher-tools {
+  display: none !important;
+}
+
+body.teacher-mode details.teacher-tools {
+  display: block;
+}
+
+.search-empty-enhanced {
+  text-align: center;
+  padding: 28px 18px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.search-empty-enhanced strong {
+  color: var(--ink);
+}
+
+/* Smooth accordion (print fallback) */
+@media screen {
+  details.unit .unit-body,
+  details.lesson .lesson-body {
+    overflow: hidden;
+    transition: opacity 0.25s ease;
+  }
+}
+
+body.light-theme .hub-mode-toggle,
+body.light-theme .hub-filter-chip {
+  background: #ffffff;
+  color: #5f6f80;
+  border-color: #dbe5ef;
+}
+
+body.light-theme .hub-mode-toggle:hover,
+body.light-theme .hub-mode-toggle:focus-visible,
+body.light-theme .hub-filter-chip:hover,
+body.light-theme .hub-filter-chip:focus-visible {
+  background: #e8f7f4;
+  border-color: #0f766e;
+  color: #0f766e;
+}
+
+body.light-theme .hub-mode-toggle[aria-pressed="true"],
+body.light-theme .hub-filter-chip[aria-pressed="true"] {
+  background: #e8f7f4;
+  border-color: #0f766e;
+  color: #0f766e;
+}
+
+body.light-theme .lesson-real-world {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #17283a;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .unit-progress-fill,
+  details.unit .unit-body,
+  details.lesson .lesson-body {
+    transition: none;
+  }
+}

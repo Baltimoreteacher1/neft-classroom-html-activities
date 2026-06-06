@@ -8,6 +8,7 @@
       content="Neft Teacher Grade 6 math curriculum hub — every lesson, notes packet, graphic novel, 3D game, and test organized by unit."
     />
     <title>Curriculum Hub — Neft Teacher Grade 6 Math</title>
+    <link rel="stylesheet" href="/assets/curriculum-enhancements.css" />
     <style>
       :root {
         --navy: #fbbf24; /* Clean amber-gold */
@@ -5301,9 +5302,16 @@
           }
         }
 
-        if (box) {
-          box.addEventListener("input", handleSearch);
-        }
+        // Search input wired by /assets/curriculum-enhancements.js
+
+        window.CurriculumHub = {
+          unitsData: unitsData,
+          renderHub: renderHub,
+          renderSearchResults: renderSearchResults,
+          searchBox: box,
+          hubEl: hub,
+          noResultsEl: noResults,
+        };
 
         // Theme Toggle Logic
         var themeToggleBtn = document.getElementById("theme-toggle");
@@ -5385,5 +5393,6 @@
         renderHub();
       })();
     </script>
+    <script src="/assets/curriculum-enhancements.js" defer></script>
   </body>
 </html>
