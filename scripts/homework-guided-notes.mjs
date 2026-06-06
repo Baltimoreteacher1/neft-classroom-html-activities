@@ -720,13 +720,17 @@ export function renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt) {
     </section>`;
 }
 
+function tabPanelAttrs(id, hidden = false) {
+  return `class="tab-panel-inner" data-tab-panel="${id}" id="hw_panel_${id}" role="tabpanel"${hidden ? " hidden" : ""}`;
+}
+
 export function renderLearnTab(config) {
   const learning = renderLearningTonight(config).replace(/<section[^>]*>|<\/section>/g, "");
   const concept = renderConceptExplainer(config).replace(/<section[^>]*>|<\/section>/g, "");
   const keyEn = keyIdea(config);
   const keyEs = keyIdeaEs(config);
   return `
-    <div class="tab-panel-inner" data-tab-panel="learn">
+    <div ${tabPanelAttrs("learn")}>
       ${learning}
       ${concept}
       <p class="tab-help-row">${helpButton("💡 Need more help? / ¿Más ayuda?", { titleEn: "The big idea", titleEs: "La idea principal", en: keyEn, es: keyEs })}</p>
@@ -736,20 +740,20 @@ export function renderLearnTab(config) {
 export function renderWordsTab(vocabList, resolveVocabImage, vocabImageAlt) {
   const inner = renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt);
   if (!inner) {
-    return `<div class="tab-panel-inner" data-tab-panel="words"><p class="lang-en">No vocabulary listed for this lesson.</p><p class="lang-es" lang="es">No hay vocabulario listado para esta lección.</p></div>`;
+    return `<div ${tabPanelAttrs("words", true)}><p class="lang-en">No vocabulary listed for this lesson.</p><p class="lang-es" lang="es">No hay vocabulario listado para esta lección.</p></div>`;
   }
-  return `<div class="tab-panel-inner" data-tab-panel="words">${inner.replace(/<section[^>]*>|<\/section>/g, "")}</div>`;
+  return `<div ${tabPanelAttrs("words", true)}>${inner.replace(/<section[^>]*>|<\/section>/g, "")}</div>`;
 }
 
 export function renderTogetherTab(config) {
   const inner = renderTryTogether(config).replace(/<section[^>]*>|<\/section>/g, "");
-  return `<div class="tab-panel-inner" data-tab-panel="together">${inner}</div>`;
+  return `<div ${tabPanelAttrs("together", true)}>${inner}</div>`;
 }
 
 export function renderCheckTab(quickCheckIntro, problemsHtml) {
   const intro = quickCheckIntro.replace(/<section[^>]*>|<\/section>/g, "");
   return `
-    <div class="tab-panel-inner" data-tab-panel="check">
+    <div ${tabPanelAttrs("check", true)}>
       ${intro}
       <main class="problems-container">${problemsHtml}</main>
     </div>`;
@@ -759,7 +763,7 @@ export function renderHelpTab(config) {
   const stuck = renderStuckSection(config).replace(/<section[^>]*>|<\/section>/g, "");
   const tips = stuckTips(config);
   return `
-    <div class="tab-panel-inner" data-tab-panel="help">
+    <div ${tabPanelAttrs("help", true)}>
       ${stuck}
       <div class="help-hub card-ish">
         <h3 class="section-title">💡 Quick help topics / Temas de ayuda</h3>
@@ -778,7 +782,7 @@ export function renderHelpTab(config) {
 export function renderMoreTab(config, lessonId) {
   const links = getExternalResources(config, lessonId);
   return `
-    <div class="tab-panel-inner" data-tab-panel="more">
+    <div ${tabPanelAttrs("more", true)}>
       <section class="guided-section card section-more" aria-label="Learn more online">
         <h2 class="section-title">🌐 Learn more online / Aprende más en línea</h2>
         <p class="bilingual-block">
@@ -805,7 +809,7 @@ export function renderMoreTab(config, lessonId) {
 
 export function renderPlayTabPanel(config) {
   const inner = renderPlayTab(config).replace(/<section[^>]*>|<\/section>/g, "");
-  return `<div class="tab-panel-inner" data-tab-panel="play">${inner}</div>`;
+  return `<div ${tabPanelAttrs("play", true)}>${inner}</div>`;
 }
 
 export function renderProblemHintButton(problem) {
@@ -824,7 +828,7 @@ export function renderProblemHintButton(problem) {
 
 export function renderDoneTab() {
   const inner = renderCelebration().replace(/<section[^>]*>|<\/section>/g, "");
-  return `<div class="tab-panel-inner" data-tab-panel="done">${inner}</div>`;
+  return `<div ${tabPanelAttrs("done", true)}>${inner}</div>`;
 }
 
 const HOMEWORK_TABS = [
@@ -876,6 +880,16 @@ export function renderHelpModal() {
 }
 
 export const HOMEWORK_TABS_JS = `
+function syncHomeworkChromeHeights() {
+  const status = document.querySelector('.bottom-status-bar');
+  const tabBar = document.querySelector('.homework-tab-bar');
+  const statusH = status ? Math.ceil(status.getBoundingClientRect().height) : 104;
+  const tabH = tabBar ? Math.ceil(tabBar.getBoundingClientRect().height) : 72;
+  document.documentElement.style.setProperty('--hw-status-height', statusH + 'px');
+  document.documentElement.style.setProperty('--hw-tab-height', tabH + 'px');
+  document.body.style.paddingBottom = (statusH + tabH + 16) + 'px';
+}
+
 function switchHomeworkTab(tabId) {
   const tabs = document.querySelectorAll('.homework-tab-btn');
   const panels = document.querySelectorAll('[data-tab-panel]');
@@ -894,7 +908,10 @@ function switchHomeworkTab(tabId) {
   if (prog) prog.textContent = idx + ' of ' + total + ' / ' + idx + ' de ' + total;
   if (tabId === 'play' && typeof initHomeworkGame === 'function') initHomeworkGame();
   const activeBtn = document.getElementById('hw_tab_' + tabId);
-  if (activeBtn) activeBtn.focus();
+  if (activeBtn) {
+    activeBtn.scrollIntoView({ inline: 'nearest', block: 'nearest', behavior: 'smooth' });
+    activeBtn.focus();
+  }
   try { localStorage.setItem('hw_last_tab', tabId); } catch(e) {}
 }
 
@@ -933,12 +950,15 @@ function triggerCelebration() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  syncHomeworkChromeHeights();
+  window.addEventListener('resize', syncHomeworkChromeHeights);
   document.querySelectorAll('[data-tab-panel]').forEach(function(p, i) {
     p.hidden = i > 0;
   });
   try {
     const last = localStorage.getItem('hw_last_tab');
     if (last && document.getElementById('hw_tab_' + last)) switchHomeworkTab(last);
+    else switchHomeworkTab('learn');
   } catch(e) {}
 });
 `;
@@ -1144,10 +1164,10 @@ export const GUIDED_NOTES_CSS = `
 .tab-panel-inner:not([hidden]) { display: block; }
 .homework-tab-bar {
   position: fixed;
-  bottom: 72px;
+  bottom: calc(var(--hw-status-height, 104px) + 4px);
   left: 0;
   right: 0;
-  z-index: 999;
+  z-index: 1001;
   display: flex;
   gap: 4px;
   overflow-x: auto;
@@ -1156,9 +1176,11 @@ export const GUIDED_NOTES_CSS = `
   border-top: 1px solid var(--line);
   box-shadow: 0 -4px 20px rgba(18,53,91,0.08);
   -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
 }
 .homework-tab-btn {
   flex: 0 0 auto;
+  scroll-snap-align: start;
   min-width: 64px;
   min-height: 48px;
   padding: 6px 8px;

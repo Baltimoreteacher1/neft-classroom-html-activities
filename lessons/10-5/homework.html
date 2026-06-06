@@ -50,7 +50,7 @@ body {
   color: var(--ink);
   font-family: var(--font-body);
   line-height: 1.5;
-  padding-bottom: 160px; /* Space for tab bar + sticky bottom bar */
+  padding-bottom: calc(var(--hw-status-height, 104px) + var(--hw-tab-height, 72px) + 16px);
 }
 
 a { color: var(--navy); text-decoration: none; font-weight: 700; }
@@ -1514,10 +1514,10 @@ header.homework-header h1 {
 .tab-panel-inner:not([hidden]) { display: block; }
 .homework-tab-bar {
   position: fixed;
-  bottom: 72px;
+  bottom: calc(var(--hw-status-height, 104px) + 4px);
   left: 0;
   right: 0;
-  z-index: 999;
+  z-index: 1001;
   display: flex;
   gap: 4px;
   overflow-x: auto;
@@ -1526,9 +1526,11 @@ header.homework-header h1 {
   border-top: 1px solid var(--line);
   box-shadow: 0 -4px 20px rgba(18,53,91,0.08);
   -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
 }
 .homework-tab-btn {
   flex: 0 0 auto;
+  scroll-snap-align: start;
   min-width: 64px;
   min-height: 48px;
   padding: 6px 8px;
@@ -1683,7 +1685,7 @@ body.help-modal-open { overflow: hidden; }
       </div>
       <div class="homework-tab-panels" id="hw_tab_panels">
         
-    <div class="tab-panel-inner" data-tab-panel="learn">
+    <div class="tab-panel-inner" data-tab-panel="learn" id="hw_panel_learn" role="tabpanel">
       
     
       <h2 class="section-title">📖 What we're learning tonight / Qué aprendemos hoy</h2>
@@ -1767,7 +1769,7 @@ body.help-modal-open { overflow: hidden; }
     
       <p class="tab-help-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"The big idea","titleEs":"La idea principal","en":"Surface area of a pyramid = base area + the area of all the triangular lateral faces.","es":"Esta noche practican: encontrar el área de superficie de una pirámide sumando el área de la Base y las caras laterales. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Need more help? / ¿Más ayuda?">💡 Need more help? / ¿Más ayuda?</button></p>
     </div>
-<div class="tab-panel-inner" data-tab-panel="words">
+<div class="tab-panel-inner" data-tab-panel="words" id="hw_panel_words" role="tabpanel" hidden>
     
       <h2 class="section-title">📚 Words to know / Palabras clave</h2>
       <p class="vocab-family-note bilingual-block">
@@ -1886,7 +1888,7 @@ body.help-modal-open { overflow: hidden; }
             </div>
       </div>
     </div>
-<div class="tab-panel-inner" data-tab-panel="together">
+<div class="tab-panel-inner" data-tab-panel="together" id="hw_panel_together" role="tabpanel" hidden>
     
       <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
       <p class="try-scenario lang-en">Your class is building a pyramid-shaped display to showcase the time capsule at the school entrance.</p>
@@ -1932,7 +1934,7 @@ body.help-modal-open { overflow: hidden; }
       </ol>
     </div>
 
-    <div class="tab-panel-inner" data-tab-panel="check">
+    <div class="tab-panel-inner" data-tab-panel="check" id="hw_panel_check" role="tabpanel" hidden>
       
     
       <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
@@ -2086,13 +2088,13 @@ body.help-modal-open { overflow: hidden; }
       <div class="problem-body">
         <p class="problem-stem">Put the steps in order for finding the surface area of a square pyramid (base edge 6, slant height 10).</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</span><span class="lang-es" lang="es">👪 Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.</span></p>
-        <div class="drag-order-workspace" id="dragorder_1" data-correct-order='[&quot;Find base area: 6 × 6 = 36&quot;,&quot;Find one lateral face: ½ × 6 × 10 = 30&quot;,&quot;Multiply by 4 faces: 4 × 30 = 120&quot;,&quot;Add base + lateral: 36 + 120&quot;,&quot;SA = 156 in²&quot;]' data-initial-order='[&quot;Find one lateral face: ½ × 6 × 10 = 30&quot;,&quot;Add base + lateral: 36 + 120&quot;,&quot;SA = 156 in²&quot;,&quot;Multiply by 4 faces: 4 × 30 = 120&quot;,&quot;Find base area: 6 × 6 = 36&quot;]'>
+        <div class="drag-order-workspace" id="dragorder_1" data-correct-order='[&quot;Find base area: 6 × 6 = 36&quot;,&quot;Find one lateral face: ½ × 6 × 10 = 30&quot;,&quot;Multiply by 4 faces: 4 × 30 = 120&quot;,&quot;Add base + lateral: 36 + 120&quot;,&quot;SA = 156 in²&quot;]' data-initial-order='[&quot;Multiply by 4 faces: 4 × 30 = 120&quot;,&quot;Add base + lateral: 36 + 120&quot;,&quot;Find base area: 6 × 6 = 36&quot;,&quot;Find one lateral face: ½ × 6 × 10 = 30&quot;,&quot;SA = 156 in²&quot;]'>
           <div class="drag-order-list" id="orderlist_1">
             
-              <div class="drag-order-row" draggable="true" id="order_1_0" data-step-text="Find one lateral face: ½ × 6 × 10 = 30" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_1_0" data-step-text="Multiply by 4 faces: 4 × 30 = 120" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">1</span>
-                <span class="drag-order-text">Find one lateral face: ½ × 6 × 10 = 30</span>
+                <span class="drag-order-text">Multiply by 4 faces: 4 × 30 = 120</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
@@ -2107,28 +2109,28 @@ body.help-modal-open { overflow: hidden; }
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_1_2" data-step-text="SA = 156 in²" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_1_2" data-step-text="Find base area: 6 × 6 = 36" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">3</span>
-                <span class="drag-order-text">SA = 156 in²</span>
+                <span class="drag-order-text">Find base area: 6 × 6 = 36</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_1_3" data-step-text="Multiply by 4 faces: 4 × 30 = 120" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_1_3" data-step-text="Find one lateral face: ½ × 6 × 10 = 30" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">4</span>
-                <span class="drag-order-text">Multiply by 4 faces: 4 × 30 = 120</span>
+                <span class="drag-order-text">Find one lateral face: ½ × 6 × 10 = 30</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_1_4" data-step-text="Find base area: 6 × 6 = 36" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_1_4" data-step-text="SA = 156 in²" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">5</span>
-                <span class="drag-order-text">Find base area: 6 × 6 = 36</span>
+                <span class="drag-order-text">SA = 156 in²</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
@@ -2151,7 +2153,7 @@ body.help-modal-open { overflow: hidden; }
   </main>
     </div>
 
-    <div class="tab-panel-inner" data-tab-panel="help">
+    <div class="tab-panel-inner" data-tab-panel="help" id="hw_panel_help" role="tabpanel" hidden>
       
     
       <h2 class="section-title">💬 If your student gets stuck / Si se atora</h2>
@@ -2182,7 +2184,7 @@ body.help-modal-open { overflow: hidden; }
       </div>
     </div>
 
-    <div class="tab-panel-inner" data-tab-panel="more">
+    <div class="tab-panel-inner" data-tab-panel="more" id="hw_panel_more" role="tabpanel" hidden>
       <section class="guided-section card section-more" aria-label="Learn more online">
         <h2 class="section-title">🌐 Learn more online / Aprende más en línea</h2>
         <p class="bilingual-block">
@@ -2208,7 +2210,7 @@ body.help-modal-open { overflow: hidden; }
         </ul>
       </section>
     </div>
-<div class="tab-panel-inner" data-tab-panel="play">
+<div class="tab-panel-inner" data-tab-panel="play" id="hw_panel_play" role="tabpanel" hidden>
     
       <h2 class="section-title">🎮 Play together / Juguemos juntos</h2>
       <p class="bilingual-block play-intro">
@@ -2231,7 +2233,7 @@ body.help-modal-open { overflow: hidden; }
         <button type="button" class="btn btn-primary hw-game-restart" id="hw_game_restart" hidden>Play again / Jugar otra vez</button>
       </div>
     </div>
-<div class="tab-panel-inner" data-tab-panel="done">
+<div class="tab-panel-inner" data-tab-panel="done" id="hw_panel_done" role="tabpanel" hidden>
     
       <h2 class="section-title">🎉 You did it together! / ¡Lo lograron juntos!</h2>
       <p class="celebrate-text lang-en">High five! Whether every answer was perfect or not, you showed up for your student tonight. That matters.</p>
@@ -2330,6 +2332,16 @@ body.help-modal-open { overflow: hidden; }
 
 <script>
 
+function syncHomeworkChromeHeights() {
+  const status = document.querySelector('.bottom-status-bar');
+  const tabBar = document.querySelector('.homework-tab-bar');
+  const statusH = status ? Math.ceil(status.getBoundingClientRect().height) : 104;
+  const tabH = tabBar ? Math.ceil(tabBar.getBoundingClientRect().height) : 72;
+  document.documentElement.style.setProperty('--hw-status-height', statusH + 'px');
+  document.documentElement.style.setProperty('--hw-tab-height', tabH + 'px');
+  document.body.style.paddingBottom = (statusH + tabH + 16) + 'px';
+}
+
 function switchHomeworkTab(tabId) {
   const tabs = document.querySelectorAll('.homework-tab-btn');
   const panels = document.querySelectorAll('[data-tab-panel]');
@@ -2348,7 +2360,10 @@ function switchHomeworkTab(tabId) {
   if (prog) prog.textContent = idx + ' of ' + total + ' / ' + idx + ' de ' + total;
   if (tabId === 'play' && typeof initHomeworkGame === 'function') initHomeworkGame();
   const activeBtn = document.getElementById('hw_tab_' + tabId);
-  if (activeBtn) activeBtn.focus();
+  if (activeBtn) {
+    activeBtn.scrollIntoView({ inline: 'nearest', block: 'nearest', behavior: 'smooth' });
+    activeBtn.focus();
+  }
   try { localStorage.setItem('hw_last_tab', tabId); } catch(e) {}
 }
 
@@ -2387,12 +2402,15 @@ function triggerCelebration() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  syncHomeworkChromeHeights();
+  window.addEventListener('resize', syncHomeworkChromeHeights);
   document.querySelectorAll('[data-tab-panel]').forEach(function(p, i) {
     p.hidden = i > 0;
   });
   try {
     const last = localStorage.getItem('hw_last_tab');
     if (last && document.getElementById('hw_tab_' + last)) switchHomeworkTab(last);
+    else switchHomeworkTab('learn');
   } catch(e) {}
 });
 

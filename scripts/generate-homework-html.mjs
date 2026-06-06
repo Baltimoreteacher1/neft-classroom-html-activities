@@ -650,7 +650,7 @@ body {
   color: var(--ink);
   font-family: var(--font-body);
   line-height: 1.5;
-  padding-bottom: 160px; /* Space for tab bar + sticky bottom bar */
+  padding-bottom: calc(var(--hw-status-height, 104px) + var(--hw-tab-height, 72px) + 16px);
 }
 
 a { color: var(--navy); text-decoration: none; font-weight: 700; }

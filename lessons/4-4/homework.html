@@ -50,7 +50,7 @@ body {
   color: var(--ink);
   font-family: var(--font-body);
   line-height: 1.5;
-  padding-bottom: 160px; /* Space for tab bar + sticky bottom bar */
+  padding-bottom: calc(var(--hw-status-height, 104px) + var(--hw-tab-height, 72px) + 16px);
 }
 
 a { color: var(--navy); text-decoration: none; font-weight: 700; }
@@ -1514,10 +1514,10 @@ header.homework-header h1 {
 .tab-panel-inner:not([hidden]) { display: block; }
 .homework-tab-bar {
   position: fixed;
-  bottom: 72px;
+  bottom: calc(var(--hw-status-height, 104px) + 4px);
   left: 0;
   right: 0;
-  z-index: 999;
+  z-index: 1001;
   display: flex;
   gap: 4px;
   overflow-x: auto;
@@ -1526,9 +1526,11 @@ header.homework-header h1 {
   border-top: 1px solid var(--line);
   box-shadow: 0 -4px 20px rgba(18,53,91,0.08);
   -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
 }
 .homework-tab-btn {
   flex: 0 0 auto;
+  scroll-snap-align: start;
   min-width: 64px;
   min-height: 48px;
   padding: 6px 8px;
@@ -1683,7 +1685,7 @@ body.help-modal-open { overflow: hidden; }
       </div>
       <div class="homework-tab-panels" id="hw_tab_panels">
         
-    <div class="tab-panel-inner" data-tab-panel="learn">
+    <div class="tab-panel-inner" data-tab-panel="learn" id="hw_panel_learn" role="tabpanel">
       
     
       <h2 class="section-title">📖 What we're learning tonight / Qué aprendemos hoy</h2>
@@ -1764,7 +1766,7 @@ body.help-modal-open { overflow: hidden; }
     
       <p class="tab-help-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"The big idea","titleEs":"La idea principal","en":"To find the part, change the percent to a decimal, then multiply: part = percent × base.","es":"Esta noche practican: encontrar el Porcentaje of a number using an Ecuación or a model. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Need more help? / ¿Más ayuda?">💡 Need more help? / ¿Más ayuda?</button></p>
     </div>
-<div class="tab-panel-inner" data-tab-panel="words">
+<div class="tab-panel-inner" data-tab-panel="words" id="hw_panel_words" role="tabpanel" hidden>
     
       <h2 class="section-title">📚 Words to know / Palabras clave</h2>
       <p class="vocab-family-note bilingual-block">
@@ -1865,7 +1867,7 @@ body.help-modal-open { overflow: hidden; }
             </div>
       </div>
     </div>
-<div class="tab-panel-inner" data-tab-panel="together">
+<div class="tab-panel-inner" data-tab-panel="together" id="hw_panel_together" role="tabpanel" hidden>
     
       <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
       <p class="try-scenario lang-en">It&#039;s Discount Day at the arcade! Different games are offering percent-off deals on ticket prices.</p>
@@ -1903,7 +1905,7 @@ body.help-modal-open { overflow: hidden; }
       </ol>
     </div>
 
-    <div class="tab-panel-inner" data-tab-panel="check">
+    <div class="tab-panel-inner" data-tab-panel="check" id="hw_panel_check" role="tabpanel" hidden>
       
     
       <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
@@ -2050,7 +2052,7 @@ body.help-modal-open { overflow: hidden; }
   </main>
     </div>
 
-    <div class="tab-panel-inner" data-tab-panel="help">
+    <div class="tab-panel-inner" data-tab-panel="help" id="hw_panel_help" role="tabpanel" hidden>
       
     
       <h2 class="section-title">💬 If your student gets stuck / Si se atora</h2>
@@ -2081,7 +2083,7 @@ body.help-modal-open { overflow: hidden; }
       </div>
     </div>
 
-    <div class="tab-panel-inner" data-tab-panel="more">
+    <div class="tab-panel-inner" data-tab-panel="more" id="hw_panel_more" role="tabpanel" hidden>
       <section class="guided-section card section-more" aria-label="Learn more online">
         <h2 class="section-title">🌐 Learn more online / Aprende más en línea</h2>
         <p class="bilingual-block">
@@ -2114,7 +2116,7 @@ body.help-modal-open { overflow: hidden; }
         </ul>
       </section>
     </div>
-<div class="tab-panel-inner" data-tab-panel="play">
+<div class="tab-panel-inner" data-tab-panel="play" id="hw_panel_play" role="tabpanel" hidden>
     
       <h2 class="section-title">🎮 Play together / Juguemos juntos</h2>
       <p class="bilingual-block play-intro">
@@ -2137,7 +2139,7 @@ body.help-modal-open { overflow: hidden; }
         <button type="button" class="btn btn-primary hw-game-restart" id="hw_game_restart" hidden>Play again / Jugar otra vez</button>
       </div>
     </div>
-<div class="tab-panel-inner" data-tab-panel="done">
+<div class="tab-panel-inner" data-tab-panel="done" id="hw_panel_done" role="tabpanel" hidden>
     
       <h2 class="section-title">🎉 You did it together! / ¡Lo lograron juntos!</h2>
       <p class="celebrate-text lang-en">High five! Whether every answer was perfect or not, you showed up for your student tonight. That matters.</p>
@@ -2236,6 +2238,16 @@ body.help-modal-open { overflow: hidden; }
 
 <script>
 
+function syncHomeworkChromeHeights() {
+  const status = document.querySelector('.bottom-status-bar');
+  const tabBar = document.querySelector('.homework-tab-bar');
+  const statusH = status ? Math.ceil(status.getBoundingClientRect().height) : 104;
+  const tabH = tabBar ? Math.ceil(tabBar.getBoundingClientRect().height) : 72;
+  document.documentElement.style.setProperty('--hw-status-height', statusH + 'px');
+  document.documentElement.style.setProperty('--hw-tab-height', tabH + 'px');
+  document.body.style.paddingBottom = (statusH + tabH + 16) + 'px';
+}
+
 function switchHomeworkTab(tabId) {
   const tabs = document.querySelectorAll('.homework-tab-btn');
   const panels = document.querySelectorAll('[data-tab-panel]');
@@ -2254,7 +2266,10 @@ function switchHomeworkTab(tabId) {
   if (prog) prog.textContent = idx + ' of ' + total + ' / ' + idx + ' de ' + total;
   if (tabId === 'play' && typeof initHomeworkGame === 'function') initHomeworkGame();
   const activeBtn = document.getElementById('hw_tab_' + tabId);
-  if (activeBtn) activeBtn.focus();
+  if (activeBtn) {
+    activeBtn.scrollIntoView({ inline: 'nearest', block: 'nearest', behavior: 'smooth' });
+    activeBtn.focus();
+  }
   try { localStorage.setItem('hw_last_tab', tabId); } catch(e) {}
 }
 
@@ -2293,12 +2308,15 @@ function triggerCelebration() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  syncHomeworkChromeHeights();
+  window.addEventListener('resize', syncHomeworkChromeHeights);
   document.querySelectorAll('[data-tab-panel]').forEach(function(p, i) {
     p.hidden = i > 0;
   });
   try {
     const last = localStorage.getItem('hw_last_tab');
     if (last && document.getElementById('hw_tab_' + last)) switchHomeworkTab(last);
+    else switchHomeworkTab('learn');
   } catch(e) {}
 });
 
