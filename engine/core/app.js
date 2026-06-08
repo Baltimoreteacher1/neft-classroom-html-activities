@@ -552,6 +552,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       if (kind === "projects") return this.openProjects();
       if (kind === "printables") return this.openPrintables();
       if (kind === "activity") return this.openActivity();
+      if (kind === "objectives") return this.openObjectives();
       const id = encodeURIComponent(config.lessonId);
       const meta =
         kind === "readiness"
@@ -604,6 +605,68 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           }
         });
       }
+      el.scrollIntoView({ block: "start" });
+    },
+
+    // Objectives: a non-graded pre-lesson page (between Get Ready and Notes)
+    // that shows today's Content + Language objectives in student-friendly
+    // wording, with a "Talk about it" discussion prompt and sentence starter
+    // under each so students can unpack what the goals mean before starting.
+    // Objectives are resolved from the lesson config (contentObjective /
+    // languageObjective), so this stays in sync with the Launch header and the
+    // notes. Non-graded: never touches phase state, XP, or stars.
+    openObjectives() {
+      // resolveContentObjective / resolveLanguageObjective return text that is
+      // already HTML-escaped, so insert directly (do not re-escape).
+      const content = resolveContentObjective(config);
+      const language = resolveLanguageObjective(config);
+
+      this.setExtraActive("objectives");
+      phaseContainer.innerHTML = "";
+      const el = document.createElement("div");
+      el.className = "phase active extra-panel";
+      el.setAttribute("role", "region");
+      el.setAttribute("aria-label", "Objectives");
+
+      const objectiveCard = ({ accent, color, label, text, prompt, starter }) =>
+        `<div class="card ${accent} launch-objective" style="margin-bottom:var(--sp-4, 18px);">
+          <h4 style="color:var(${color}); margin-bottom:var(--sp-2, 8px);">${label}</h4>
+          <p style="margin:0 0 var(--sp-3, 12px); font-weight:600; font-size:1.05rem;">${text}</p>
+          <div class="objective-talk" style="background:var(--cream, #fdf3e0); border:1px solid var(--gold, #d4952a); border-radius:var(--radius-md, 12px); padding:var(--sp-3, 12px) var(--sp-4, 16px);">
+            <div style="font-weight:800; color:var(--navy, #264653); margin-bottom:var(--sp-1, 4px);">💬 Talk about it</div>
+            <p style="margin:0 0 var(--sp-2, 8px);">${prompt}</p>
+            <p style="margin:0; font-style:italic; color:var(--navy, #264653);">Sentence starter: "${starter}"</p>
+          </div>
+        </div>`;
+
+      el.innerHTML = `
+        <div class="extra-head" style="display:flex; flex-wrap:wrap; gap:var(--sp-3, 12px); align-items:center; justify-content:space-between; margin-bottom:var(--sp-3, 12px);">
+          <div>
+            <div class="section-title" style="font-size:1.6rem;">🎯 Today's Objectives</div>
+            <div class="section-desc">What you'll learn today, and the words you'll use to talk about it. Read each one, then turn and talk about what it means.</div>
+          </div>
+        </div>
+        ${objectiveCard({
+          accent: "card-teal",
+          color: "--teal",
+          label: "Content Objective",
+          text: content,
+          prompt:
+            "Turn and talk: In your own words, what will you be able to do by the end of this lesson?",
+          starter: "By the end of today, I will be able to ______.",
+        })}
+        ${objectiveCard({
+          accent: "card-coral",
+          color: "--coral",
+          label: "Language Objective",
+          text: language,
+          prompt:
+            "Turn and talk: Which math words will you use today, and what do you think they mean?",
+          starter:
+            "One math word I will use is ______. I think it means ______.",
+        })}
+      `;
+      phaseContainer.append(el);
       el.scrollIntoView({ block: "start" });
     },
 
@@ -907,6 +970,12 @@ function preLessonNavHtml(config) {
       </button>`,
     );
   }
+  items.push(
+    `<button class="phase-btn extra-btn" data-extra="objectives">
+      <span class="phase-num">🎯</span>
+      <span>Objectives</span>
+    </button>`,
+  );
   items.push(
     `<button class="phase-btn extra-btn" data-extra="notes">
       <span class="phase-num">📝</span>
