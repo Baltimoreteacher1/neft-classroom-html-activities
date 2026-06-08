@@ -140,6 +140,22 @@ function copyStandaloneHtml() {
             mkdirSync(destDir, { recursive: true });
             cpSync(readiness, destDir, { recursive: true });
           }
+          // Generated lesson support pages (static index.html folders) linked
+          // from the curriculum hub: family / teacher-notes / student-help.
+          for (const sub of ["family", "teacher-notes", "student-help"]) {
+            const supportDir = resolve(lessonsDir, dir.name, sub);
+            if (existsSync(supportDir)) {
+              const destDir = resolve(
+                __dirname,
+                "dist",
+                "lessons",
+                dir.name,
+                sub,
+              );
+              mkdirSync(destDir, { recursive: true });
+              cpSync(supportDir, destDir, { recursive: true });
+            }
+          }
         }
       }
     },
