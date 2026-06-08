@@ -13,9 +13,9 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
     <script>
@@ -30,7 +30,7 @@
       window.addEventListener("load", function () {
         if (typeof Phaser === "undefined") {
           document.body.innerHTML =
-            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
         }
       });
     </script>
@@ -41,7 +41,23 @@
         /* =========================================================
    DETECTIVE INVESTIGATION — 6.SP.A.1
    Recognize statistical vs non-statistical questions.
-   Investigate crime scenes, classify clues to crack cases.
+
+   THE MATH IS THE MECHANIC — "Evidence Board / Poll for Variability":
+   A statistical question is one whose answer VARIES across a
+   population. The detective walks to each witness case, then POLLS
+   the respondents: every tap interviews one witness and their
+   answer lands as a dot on a live dot-plot (the evidence board).
+   - If answers come back IDENTICAL (a single tall stack, no spread)
+     the question is NON-statistical.
+   - If answers SCATTER across the number line (spread) the question
+     is STATISTICAL.
+   The player must collect enough responses to SEE the spread, then
+   file the case into the Statistical / Non-statistical bin. The
+   dot-plot's spread literally proves the classification, and the
+   poll deterministically spreads iff the question truly varies —
+   so variability is something the player produces and reads, never
+   a YES/NO guess made after walking to a clue.
+   Misfiling a wide-spread question scatters the board (real failure).
    Phaser 3 single-file game.
    ========================================================= */
 
@@ -65,6 +81,7 @@
               correct: { wave: "sine", f: [520, 780], dur: 0.18, vol: 0.06 },
               wrong: { wave: "sawtooth", f: [300, 180], dur: 0.22, vol: 0.05 },
               click: { wave: "sine", f: [440, 480], dur: 0.08, vol: 0.04 },
+              poll: { wave: "sine", f: [500, 560], dur: 0.07, vol: 0.04 },
               combo: { wave: "sine", f: [600, 900], dur: 0.25, vol: 0.06 },
               badge: { wave: "triangle", f: [660, 990], dur: 0.3, vol: 0.06 },
               whoosh: { wave: "sine", f: [200, 600], dur: 0.15, vol: 0.03 },
@@ -95,157 +112,262 @@
         };
 
         // ── Questions bank: 6.SP.A.1 ──
+        // Each case carries a TRUE "varies?" model so the simulated poll
+        // deterministically spreads (statistical) or collapses (non-statistical).
+        //   stat        : the correct classification (answers vary across people?)
+        //   unit        : label for the dot-plot number line
+        //   ticks       : the value buckets the dot-plot shows (left→right)
+        //   model.center: which bucket index identical answers stack on (non-stat)
+        //                 OR the middle of the spread (stat)
+        //   model.spread: how many buckets the responses scatter across.
+        //                 spread === 0  ⇒ identical (NON-statistical)
+        //                 spread >= 2   ⇒ scattered (STATISTICAL)
+        //   weights     : optional relative likelihood per offset for realism
+        // A poll draw = center + a random offset within ±spread (clamped to ticks).
         const CLUE_BANK = [
+          // ── tier-friendly clear-cut STATISTICAL ──
           {
             q: "How many minutes do students spend eating lunch?",
             stat: true,
-            explain: "Every student eats at a different speed — answers vary.",
-          },
-          {
-            q: "What time does lunch period start?",
-            stat: false,
-            explain: "The bell schedule gives one exact answer.",
-          },
-          {
-            q: "What is the most popular lunch choice this week?",
-            stat: true,
+            tier: 1,
+            unit: "minutes",
+            ticks: ["5", "10", "15", "20", "25"],
+            model: { center: 2, spread: 2 },
             explain:
-              "Students pick different foods — you must survey to find out.",
-          },
-          {
-            q: "How many tables are in the cafeteria?",
-            stat: false,
-            explain: "Count them — one exact number.",
-          },
-          {
-            q: "How many calories are in a school hamburger?",
-            stat: false,
-            explain: "One exact number on the nutrition label.",
-          },
-          {
-            q: "How much time do students spend eating lunch?",
-            stat: true,
-            explain: "Each student takes a different amount of time.",
-          },
-          {
-            q: "How tall is the tallest player on the team?",
-            stat: false,
-            explain: "One exact measurement.",
+              "Different students eat at different speeds, so the poll scatters across many minutes — that spread is what makes it STATISTICAL.",
           },
           {
             q: "How tall are the players on the basketball team?",
             stat: true,
-            explain: "Each player has a different height — data varies.",
-          },
-          {
-            q: "How many points does each player score per game?",
-            stat: true,
-            explain: "Points change every game and every player.",
-          },
-          {
-            q: "What color is the team uniform?",
-            stat: false,
-            explain: "One exact answer that does not change.",
-          },
-          {
-            q: "How fast can 6th graders run one mile?",
-            stat: true,
-            explain: "Every student runs at a different speed.",
-          },
-          {
-            q: "What time does the soccer game start?",
-            stat: false,
-            explain: "One specific answer on the schedule.",
-          },
-          {
-            q: "How much rain fell in Baltimore last month?",
-            stat: false,
-            explain: "One exact recorded measurement.",
-          },
-          {
-            q: "How much rain usually falls in Baltimore each month?",
-            stat: true,
-            explain: "It changes month to month — data varies.",
-          },
-          {
-            q: "What is the temperature right now?",
-            stat: false,
-            explain: "One exact thermometer reading.",
-          },
-          {
-            q: "What temperatures can we expect this week?",
-            stat: true,
-            explain: "Each day will be different — answers vary.",
-          },
-          {
-            q: "How many snow days does this school usually get per year?",
-            stat: true,
-            explain: "It changes year to year.",
-          },
-          {
-            q: "What month does spring start?",
-            stat: false,
-            explain: "One exact calendar answer.",
-          },
-          {
-            q: "How many apps are on my phone?",
-            stat: false,
-            explain: "Count them — one exact number.",
-          },
-          {
-            q: "How much screen time do 6th graders have each day?",
-            stat: true,
-            explain: "Everyone is different — data varies.",
-          },
-          {
-            q: "What is the most popular video game among students?",
-            stat: true,
-            explain: "Must survey students and answers will vary.",
-          },
-          {
-            q: "What year was the first iPhone released?",
-            stat: false,
-            explain: "2007 — one exact fact.",
-          },
-          {
-            q: "How many hours per week do students play video games?",
-            stat: true,
-            explain: "Each student plays a different amount.",
-          },
-          {
-            q: "What is my WiFi password?",
-            stat: false,
-            explain: "One exact string — no variability.",
-          },
-          {
-            q: "How long do dogs usually live?",
-            stat: true,
-            explain: "Different breeds and dogs live different lengths.",
-          },
-          {
-            q: "How many legs does a spider have?",
-            stat: false,
-            explain: "Always 8 — one exact answer.",
+            tier: 1,
+            unit: "height (in)",
+            ticks: ["58", "62", "66", "70", "74"],
+            model: { center: 2, spread: 2 },
+            explain:
+              "Each player has a different height, so responses spread out — variability means STATISTICAL.",
           },
           {
             q: "How many pets do students in our class have?",
             stat: true,
-            explain: "Each student has a different number.",
+            tier: 1,
+            unit: "# of pets",
+            ticks: ["0", "1", "2", "3", "4"],
+            model: { center: 1, spread: 2 },
+            explain:
+              "Students have different numbers of pets, so the dot-plot spreads — STATISTICAL.",
           },
           {
-            q: "What sound does a cat make?",
-            stat: false,
-            explain: "Meow — one expected answer.",
-          },
-          {
-            q: "How far can different birds fly without stopping?",
+            q: "How many hours per night do 6th graders sleep?",
             stat: true,
-            explain: "Every species and bird is different.",
+            tier: 1,
+            unit: "hours",
+            ticks: ["6", "7", "8", "9", "10"],
+            model: { center: 2, spread: 2 },
+            explain:
+              "People sleep different amounts, so answers spread out — STATISTICAL.",
           },
           {
-            q: "What is the fastest land animal?",
+            q: "How fast can 6th graders run one mile?",
+            stat: true,
+            tier: 1,
+            unit: "minutes",
+            ticks: ["7", "8", "9", "10", "11"],
+            model: { center: 2, spread: 2 },
+            explain:
+              "Every runner is different, so the times scatter — STATISTICAL.",
+          },
+          {
+            q: "How many books did students read over the summer?",
+            stat: true,
+            tier: 1,
+            unit: "# of books",
+            ticks: ["0", "2", "4", "6", "8"],
+            model: { center: 2, spread: 2 },
+            explain:
+              "Different students read different amounts — that spread makes it STATISTICAL.",
+          },
+          // ── tier-friendly clear-cut NON-statistical ──
+          {
+            q: "What time does the lunch period start?",
             stat: false,
-            explain: "Cheetah — one fact.",
+            tier: 1,
+            unit: "start time",
+            ticks: ["11:00", "11:15", "11:30", "11:45", "12:00"],
+            model: { center: 2, spread: 0 },
+            explain:
+              "The bell schedule gives ONE exact time, so every witness answers the same — no spread, NON-statistical.",
+          },
+          {
+            q: "How many legs does a spider have?",
+            stat: false,
+            tier: 1,
+            unit: "# of legs",
+            ticks: ["6", "7", "8", "9", "10"],
+            model: { center: 2, spread: 0 },
+            explain:
+              "It's always 8 — every answer stacks on one value, so NON-statistical.",
+          },
+          {
+            q: "How many tables are in the cafeteria?",
+            stat: false,
+            tier: 1,
+            unit: "# of tables",
+            ticks: ["10", "11", "12", "13", "14"],
+            model: { center: 2, spread: 0 },
+            explain:
+              "You count them once — one exact number, no spread, NON-statistical.",
+          },
+          {
+            q: "What year was the first iPhone released?",
+            stat: false,
+            tier: 1,
+            unit: "year",
+            ticks: ["2005", "2006", "2007", "2008", "2009"],
+            model: { center: 2, spread: 0 },
+            explain:
+              "2007 is one fixed fact — everyone answers the same, NON-statistical.",
+          },
+          {
+            q: "How many days are in the month of June?",
+            stat: false,
+            tier: 1,
+            unit: "# of days",
+            ticks: ["28", "29", "30", "31", "32"],
+            model: { center: 2, spread: 0 },
+            explain:
+              "June always has 30 days — one exact answer, NON-statistical.",
+          },
+          {
+            q: "What is the temperature shown on the classroom thermometer right now?",
+            stat: false,
+            tier: 1,
+            unit: "°F",
+            ticks: ["68", "70", "72", "74", "76"],
+            model: { center: 2, spread: 0 },
+            explain:
+              "One reading at one moment — every witness reads the same number, NON-statistical.",
+          },
+          // ── tier-2 subtler STATISTICAL ──
+          {
+            q: "How much rain usually falls in Baltimore each month?",
+            stat: true,
+            tier: 2,
+            unit: "inches",
+            ticks: ["1", "2", "3", "4", "5"],
+            model: { center: 2, spread: 2 },
+            explain:
+              '"Usually" means it changes month to month — the spread proves STATISTICAL.',
+          },
+          {
+            q: "How much screen time do 6th graders have each day?",
+            stat: true,
+            tier: 2,
+            unit: "hours",
+            ticks: ["1", "2", "3", "4", "5"],
+            model: { center: 2, spread: 2 },
+            explain:
+              "Everyone is different, so the responses spread out — STATISTICAL.",
+          },
+          {
+            q: "How long do dogs usually live?",
+            stat: true,
+            tier: 2,
+            unit: "years",
+            ticks: ["8", "10", "12", "14", "16"],
+            model: { center: 2, spread: 2 },
+            explain:
+              "Different breeds and dogs live different lengths — the spread means STATISTICAL.",
+          },
+          {
+            q: "What temperatures can we expect this week?",
+            stat: true,
+            tier: 2,
+            unit: "°F",
+            ticks: ["60", "65", "70", "75", "80"],
+            model: { center: 2, spread: 2 },
+            explain:
+              "Each day is different, so expected temps scatter — STATISTICAL.",
+          },
+          {
+            q: "How many snow days does this school usually get per year?",
+            stat: true,
+            tier: 2,
+            unit: "# of days",
+            ticks: ["0", "1", "2", "3", "4"],
+            model: { center: 2, spread: 2 },
+            explain:
+              "It changes year to year, so the answers spread — STATISTICAL.",
+          },
+          {
+            q: "How many hours per week do students play video games?",
+            stat: true,
+            tier: 2,
+            unit: "hours",
+            ticks: ["0", "3", "6", "9", "12"],
+            model: { center: 2, spread: 2 },
+            explain:
+              "Each student plays a different amount, so the dots scatter — STATISTICAL.",
+          },
+          // ── tier-2 subtler NON-statistical ──
+          {
+            q: "How much rain fell in Baltimore last month?",
+            stat: false,
+            tier: 2,
+            unit: "inches",
+            ticks: ["1", "2", "3", "4", "5"],
+            model: { center: 3, spread: 0 },
+            explain:
+              "ONE recorded measurement for that month — no variability, NON-statistical. (Compare to the 'usually' version!)",
+          },
+          {
+            q: "What was the high temperature in our city yesterday?",
+            stat: false,
+            tier: 2,
+            unit: "°F",
+            ticks: ["60", "65", "70", "75", "80"],
+            model: { center: 3, spread: 0 },
+            explain:
+              "Yesterday had ONE recorded high — every witness answers the same, NON-statistical.",
+          },
+          {
+            q: "How tall is the tallest player on the team?",
+            stat: false,
+            tier: 2,
+            unit: "height (in)",
+            ticks: ["68", "70", "72", "74", "76"],
+            model: { center: 3, spread: 0 },
+            explain:
+              "There's exactly one tallest player — one measurement, NON-statistical. (Compare to 'how tall ARE the players'!)",
+          },
+          {
+            q: "How many calories are in one school hamburger?",
+            stat: false,
+            tier: 2,
+            unit: "calories",
+            ticks: ["300", "350", "400", "450", "500"],
+            model: { center: 2, spread: 0 },
+            explain:
+              "The nutrition label lists ONE number — no spread, NON-statistical.",
+          },
+          {
+            q: "What time does today's soccer game start?",
+            stat: false,
+            tier: 2,
+            unit: "start time",
+            ticks: ["3:00", "3:30", "4:00", "4:30", "5:00"],
+            model: { center: 2, spread: 0 },
+            explain:
+              "The schedule gives ONE start time — every answer matches, NON-statistical.",
+          },
+          {
+            q: "How many students are enrolled in our school today?",
+            stat: false,
+            tier: 2,
+            unit: "# of students",
+            ticks: ["480", "490", "500", "510", "520"],
+            model: { center: 2, spread: 0 },
+            explain:
+              "There's one exact count today — no variability, NON-statistical.",
           },
         ];
 
@@ -263,10 +385,28 @@
         function shuffle(a) {
           const b = [...a];
           for (let i = b.length - 1; i > 0; i--) {
-            const j = (Math.random() * i + 1) | 0;
+            const j = (Math.random() * (i + 1)) | 0;
             [b[i], b[j]] = [b[j], b[i]];
           }
           return b;
+        }
+
+        // ── Deterministic poll model ──
+        // Draw one witness response = a bucket index on the dot-plot's number line.
+        // spread === 0 ⇒ always the same bucket (collapses). spread > 0 ⇒ scatters.
+        function pollResponse(clue) {
+          const n = clue.ticks.length;
+          const c = clue.model.center;
+          const s = clue.model.spread;
+          if (s <= 0) return c; // identical → no variability
+          // Triangular-ish draw centred on `center`, scatter up to ±spread.
+          const r1 = Math.random(),
+            r2 = Math.random();
+          const off = Math.round((r1 + r2 - 1) * s); // peak at 0, range ±s
+          let idx = c + off;
+          if (idx < 0) idx = 0;
+          if (idx > n - 1) idx = n - 1;
+          return idx;
         }
 
         // ═══════════════════════════════════════════════════
@@ -301,7 +441,7 @@
             g.fillCircle(26, 26, 8);
             g.generateTexture("detective", 52, 52);
             g.clear();
-            // Soft glow ring for clues
+            // Soft glow ring for cases
             g.fillStyle(0xffffff, 1);
             g.fillCircle(30, 30, 30);
             g.generateTexture("glow", 60, 60);
@@ -333,19 +473,19 @@
               blendMode: "ADD",
             });
             const mag = this.add
-              .text(cx, 130, "🔍", { fontSize: "72px" })
+              .text(cx, 110, "🔍", { fontSize: "64px" })
               .setOrigin(0.5);
             this.tweens.add({
               targets: mag,
-              y: 120,
+              y: 100,
               duration: 1500,
               yoyo: true,
               repeat: -1,
               ease: "Sine.easeInOut",
             });
             this.add
-              .text(cx, 220, "DETECTIVE\nINVESTIGATION", {
-                fontSize: "46px",
+              .text(cx, 188, "DETECTIVE\nINVESTIGATION", {
+                fontSize: "40px",
                 fontFamily: "Trebuchet MS, sans-serif",
                 fontStyle: "bold",
                 color: "#fbbf24",
@@ -358,19 +498,21 @@
             this.add
               .text(
                 cx,
-                310,
-                "Can you tell statistical questions\nfrom non-statistical questions?",
+                262,
+                "POLL the witnesses, watch the answers land on the evidence board.\n" +
+                  "If the dots SPREAD, the question is statistical. If they all STACK\n" +
+                  "on one spot, it is not. Let the variability solve the case.",
                 {
-                  fontSize: "18px",
+                  fontSize: "15px",
                   fontFamily: "Trebuchet MS, sans-serif",
                   color: "#f9d98a",
                   align: "center",
-                  lineSpacing: 4,
+                  lineSpacing: 5,
                 },
               )
               .setOrigin(0.5);
             this.add
-              .text(cx, 360, "6.SP.A.1 — Recognize Statistical Questions", {
+              .text(cx, 330, "6.SP.A.1 — Recognize Statistical Questions", {
                 fontSize: "13px",
                 fontFamily: "Trebuchet MS, sans-serif",
                 fontStyle: "bold",
@@ -380,137 +522,155 @@
               })
               .setOrigin(0.5);
             this.add
-              .text(cx, 410, "Choose Your Difficulty", {
+              .text(cx, 378, "Choose Your Level", {
                 fontSize: "16px",
                 fontFamily: "sans-serif",
                 fontStyle: "bold",
                 color: "#ffffff",
               })
               .setOrigin(0.5);
+            // Two real difficulty levels (not cosmetic):
+            //  L1 Support  → clear-cut cases, fewer witnesses to see the pattern, scaffold on.
+            //  L2 Challenge→ subtler cases, more witnesses needed, no scaffold hints.
             const modes = [
               {
-                label: "🧭 Rookie (15 clues)",
-                clues: 15,
-                speed: 200,
-                drift: 0,
-                y: 455,
+                label: "🧭 Level 1 — Support",
+                sub: "Clear-cut cases · 6 witnesses · evidence hints ON · 4 cases",
+                tier: 1,
+                cases: 8,
+                witnesses: 6,
+                scaffold: true,
+                y: 432,
                 key: "btn_teal",
               },
               {
-                label: "🔍 Detective (20 clues)",
-                clues: 20,
-                speed: 230,
-                drift: 18,
-                y: 515,
+                label: "🔍 Level 2 — Challenge",
+                sub: "Subtle cases · 10 witnesses · no hints · 6 cases",
+                tier: 2,
+                cases: 10,
+                witnesses: 10,
+                scaffold: false,
+                y: 528,
                 key: "btn_orange",
-              },
-              {
-                label: "🏆 Master (25 clues)",
-                clues: 25,
-                speed: 260,
-                drift: 34,
-                y: 575,
-                key: "btn_dark",
               },
             ];
             modes.forEach((m) => {
               const btn = this.add
                 .image(cx, m.y, m.key)
                 .setInteractive({ useHandCursor: true })
-                .setScale(1, 0.9);
+                .setScale(1.3, 1.05);
               this.add
-                .text(cx, m.y, m.label, {
-                  fontSize: "18px",
+                .text(cx, m.y - 12, m.label, {
+                  fontSize: "19px",
                   fontFamily: "Trebuchet MS, sans-serif",
                   fontStyle: "bold",
                   color: "#ffffff",
                 })
                 .setOrigin(0.5);
+              this.add
+                .text(cx, m.y + 14, m.sub, {
+                  fontSize: "12px",
+                  fontFamily: "sans-serif",
+                  color: "#ffffff",
+                })
+                .setOrigin(0.5);
               btn.on("pointerover", () => {
-                btn.setScale(1.05, 0.95);
+                btn.setScale(1.36, 1.1);
                 SFX.play("click");
               });
-              btn.on("pointerout", () => btn.setScale(1, 0.9));
+              btn.on("pointerout", () => btn.setScale(1.3, 1.05));
               btn.on("pointerdown", () => {
                 SFX.play("whoosh");
                 this.cameras.main.fade(400, 0, 0, 0);
                 this.time.delayedCall(400, () =>
                   this.scene.start("Game", {
-                    totalClues: m.clues,
-                    speed: m.speed,
-                    drift: m.drift,
+                    tier: m.tier,
+                    totalCases: m.cases,
+                    witnesses: m.witnesses,
+                    scaffold: m.scaffold,
                   }),
                 );
               });
             });
+            this.add
+              .text(
+                cx,
+                600,
+                "Move: WASD / Arrows / drag  ·  Poll: SPACE or tap a witness  ·  File: F=Statistical, G=Non-statistical",
+                {
+                  fontSize: "12px",
+                  fontFamily: "sans-serif",
+                  color: "#8aa0c6",
+                },
+              )
+              .setOrigin(0.5);
             this.cameras.main.fadeIn(500);
           }
         }
 
         // ═══════════════════════════════════════════════════
-        // Play-field bounds (area where the detective roams). HUD sits up top.
-        const FIELD = { x: 40, y: 120, w: W - 80, h: H - 160 };
+        // Play-field bounds (area where the detective roams). HUD up top,
+        // evidence board on the right.
+        const FIELD = { x: 30, y: 110, w: 560, h: H - 150 };
+        const BOARD = { x: 610, y: 110, w: 320, h: H - 150 };
 
         class GameScene extends Phaser.Scene {
           constructor() {
             super("Game");
           }
           init(data) {
-            this.totalClues = data.totalClues || 20;
-            this.moveSpeed = data.speed || 220;
-            this.drift = data.drift || 0;
+            this.tier = data.tier || 1;
+            this.totalCases = data.totalCases || 8;
+            this.witnessGoal = data.witnesses || 6;
+            this.scaffold = data.scaffold !== false;
+            this.moveSpeed = this.tier === 1 ? 200 : 240;
             this.score = 0;
             this.combo = 0;
             this.maxCombo = 0;
-            this.lives = 3;
-            this.filed = 0; // clues classified correctly = filed evidence
-            this.collected = 0; // total clues resolved
-            this.caseIndex = 0;
-            this.answering = false;
+            this.lives = this.tier === 1 ? 4 : 3;
+            this.filed = 0; // cases correctly filed
+            this.solved = 0; // cases resolved (right or wrong)
             this.correct = 0;
             this.wrong = 0;
-            this.clues = shuffle(CLUE_BANK).slice(0, this.totalClues);
+            this.caseIndex = 0;
+            this.cases = shuffle(
+              CLUE_BANK.filter((c) => (this.tier === 1 ? true : c.tier === 2)),
+            ).slice(0, this.totalCases);
+            // ensure a balanced-ish mix; if filter left too few, top up from full bank
+            if (this.cases.length < this.totalCases) {
+              const extra = shuffle(CLUE_BANK).filter(
+                (c) => !this.cases.includes(c),
+              );
+              this.cases = this.cases.concat(extra).slice(0, this.totalCases);
+            }
+            this.activeCaseIx = 0;
+            this.phase = "investigate"; // investigate → poll → file
           }
+
           create() {
             this.cameras.main.setBackgroundColor(0x0c1529);
             const bg = this.add.graphics();
             bg.fillGradientStyle(0x14213d, 0x14213d, 0x1a2744, 0x1a2744, 1);
             bg.fillRect(0, 0, W, H);
-            // Crime-scene floor with grid + dashed boundary tape
+
+            // Crime-scene floor (left) with grid + boundary tape
             const floor = this.add.graphics();
             floor.fillStyle(0x0f1b33, 0.6);
             floor.fillRoundedRect(FIELD.x, FIELD.y, FIELD.w, FIELD.h, 18);
             floor.lineStyle(1, 0x2d6cdf, 0.12);
-            for (let gx = FIELD.x; gx <= FIELD.x + FIELD.w; gx += 48) {
+            for (let gx = FIELD.x; gx <= FIELD.x + FIELD.w; gx += 48)
               floor.lineBetween(gx, FIELD.y, gx, FIELD.y + FIELD.h);
-            }
-            for (let gy = FIELD.y; gy <= FIELD.y + FIELD.h; gy += 48) {
+            for (let gy = FIELD.y; gy <= FIELD.y + FIELD.h; gy += 48)
               floor.lineBetween(FIELD.x, gy, FIELD.x + FIELD.w, gy);
-            }
             floor.lineStyle(3, 0xfbbf24, 0.55);
             floor.strokeRoundedRect(FIELD.x, FIELD.y, FIELD.w, FIELD.h, 18);
-            for (let i = 0; i < 40; i++) {
-              const s = this.add.circle(
-                FIELD.x + Math.random() * FIELD.w,
-                FIELD.y + Math.random() * FIELD.h,
-                Math.random() * 1.3 + 0.4,
-                0xffffff,
-                Math.random() * 0.4 + 0.05,
-              );
-              this.tweens.add({
-                targets: s,
-                alpha: 0.05,
-                duration: 1000 + Math.random() * 2000,
-                yoyo: true,
-                repeat: -1,
-              });
-            }
 
             this.createHUD();
+            this.buildBoard();
 
             this.caseText = this.add
-              .text(W / 2, 90, "", {
-                fontSize: "20px",
+              .text(FIELD.x + FIELD.w / 2, 88, "", {
+                fontSize: "17px",
                 fontFamily: "Trebuchet MS",
                 fontStyle: "bold",
                 color: "#fbbf24",
@@ -518,24 +678,23 @@
                 strokeThickness: 3,
               })
               .setOrigin(0.5);
-            this.caseIcon = this.add
-              .text(W / 2 - 150, 90, "", { fontSize: "26px" })
-              .setOrigin(0.5);
 
             this.hint = this.add
               .text(
-                W / 2,
-                H - 22,
-                "Move with WASD / Arrows / drag. Walk into a glowing CLUE to investigate.",
+                FIELD.x + FIELD.w / 2,
+                H - 24,
+                "Move to a 👤 witness and press SPACE / tap to poll them.",
                 {
-                  fontSize: "13px",
+                  fontSize: "12px",
                   fontFamily: "sans-serif",
                   color: "#8aa0c6",
+                  align: "center",
+                  wordWrap: { width: FIELD.w - 20 },
                 },
               )
               .setOrigin(0.5);
 
-            // ── Particle emitters (reused for collect / wrong feedback) ──
+            // Particle emitters
             this.correctEmitter = this.add.particles(0, 0, "dot", {
               speed: { min: 80, max: 250 },
               scale: { start: 0.8, end: 0 },
@@ -557,27 +716,27 @@
               quantity: 12,
             });
 
-            // ── Detective sprite ──
+            // Detective sprite
             this.player = this.physics.add
-              .sprite(W / 2, FIELD.y + FIELD.h - 60, "detective")
-              .setCircle(24)
-              .setCollideWorldBounds(true);
+              .sprite(
+                FIELD.x + FIELD.w / 2,
+                FIELD.y + FIELD.h - 60,
+                "detective",
+              )
+              .setCircle(24);
             this.physics.world.setBounds(
               FIELD.x + 4,
               FIELD.y + 4,
               FIELD.w - 8,
               FIELD.h - 8,
             );
+            this.player.setCollideWorldBounds(true);
             this.playerHat = this.add
-              .text(0, 0, "🕵️", { fontSize: "30px" })
+              .text(0, 0, "🕵️", { fontSize: "28px" })
               .setOrigin(0.5)
               .setDepth(5);
 
-            // ── Clue group ──
-            this.clueGroup = this.add.group();
-            this.spawnAllClues();
-
-            // ── Input: keyboard ──
+            // Input: keyboard
             this.keys = this.input.keyboard.addKeys({
               up: "W",
               down: "S",
@@ -587,29 +746,30 @@
               down2: "DOWN",
               left2: "LEFT",
               right2: "RIGHT",
-              y: "ONE",
-              n: "TWO",
             });
+            this.keyPoll = this.input.keyboard.addKey("SPACE");
+            this.keyStat = this.input.keyboard.addKey("F");
+            this.keyNon = this.input.keyboard.addKey("G");
+            this.keyPoll.on("down", () => this.tryPollNearest());
+            this.keyStat.on("down", () => this.fileCase(true));
+            this.keyNon.on("down", () => this.fileCase(false));
 
-            // ── Input: touch / pointer drag steering ──
+            // Input: touch / pointer drag steering on the field
             this.dragTarget = null;
             this.input.on("pointerdown", (p) => {
-              if (this.answering) return;
               if (this.isInField(p.worldX, p.worldY))
                 this.dragTarget = { x: p.worldX, y: p.worldY };
             });
             this.input.on("pointermove", (p) => {
-              if (this.dragTarget && p.isDown && !this.answering)
+              if (this.dragTarget && p.isDown)
                 this.dragTarget = { x: p.worldX, y: p.worldY };
             });
             this.input.on("pointerup", () => {
               this.dragTarget = null;
             });
 
-            // ── Inline classification prompt (hidden until a clue is grabbed) ──
-            this.buildPrompt();
-
             this.cameras.main.fadeIn(500);
+            this.startCase();
             this.updateHUD();
           }
 
@@ -622,11 +782,242 @@
             );
           }
 
-          spawnAllClues() {
-            // Scatter all clues across the field; each is a collectible token.
-            this.clueObjs = [];
+          // ── Evidence board (right panel: question + dot-plot + file bins) ──
+          buildBoard() {
+            const g = this.add.graphics();
+            g.fillStyle(0x0c1529, 0.85);
+            g.fillRoundedRect(BOARD.x, BOARD.y, BOARD.w, BOARD.h, 16);
+            g.lineStyle(3, 0xfbbf24, 0.7);
+            g.strokeRoundedRect(BOARD.x, BOARD.y, BOARD.w, BOARD.h, 16);
+            this.add
+              .text(BOARD.x + BOARD.w / 2, BOARD.y + 18, "📋 EVIDENCE BOARD", {
+                fontSize: "13px",
+                fontFamily: "sans-serif",
+                fontStyle: "bold",
+                color: "#fbbf24",
+                letterSpacing: 2,
+              })
+              .setOrigin(0.5);
+
+            this.boardQ = this.add
+              .text(BOARD.x + BOARD.w / 2, BOARD.y + 56, "", {
+                fontSize: "15px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#ffffff",
+                align: "center",
+                wordWrap: { width: BOARD.w - 36 },
+                lineSpacing: 3,
+              })
+              .setOrigin(0.5, 0);
+
+            // Dot-plot area
+            this.plotTop = BOARD.y + 150;
+            this.plotBottom = BOARD.y + 300;
+            this.plotLeft = BOARD.x + 36;
+            this.plotRight = BOARD.x + BOARD.w - 24;
+            this.plotGfx = this.add.graphics();
+            this.dotLayer = this.add.container();
+            this.tickLabels = [];
+
+            this.responseCount = this.add
+              .text(BOARD.x + BOARD.w / 2, BOARD.y + 118, "", {
+                fontSize: "13px",
+                fontFamily: "sans-serif",
+                fontStyle: "bold",
+                color: "#f9d98a",
+              })
+              .setOrigin(0.5);
+
+            this.spreadReadout = this.add
+              .text(BOARD.x + BOARD.w / 2, BOARD.y + 312, "", {
+                fontSize: "13px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#8aa0c6",
+                align: "center",
+                wordWrap: { width: BOARD.w - 30 },
+              })
+              .setOrigin(0.5, 0);
+
+            // File bins
+            this.statBin = this.makeBin(
+              BOARD.x + 16,
+              BOARD.y + BOARD.h - 96,
+              "📊 STATISTICAL",
+              "answers VARY (F)",
+              0x2a9d5c,
+              true,
+            );
+            this.nonBin = this.makeBin(
+              BOARD.x + 16 + (BOARD.w - 32) / 2 + 6,
+              BOARD.y + BOARD.h - 96,
+              "📌 NON-STAT",
+              "one exact answer (G)",
+              0xe63946,
+              false,
+            );
+          }
+
+          makeBin(x, y, title, sub, tint, said) {
+            const w = (BOARD.w - 32) / 2 - 6;
+            const c = this.add.container(x + w / 2, y + 40);
+            const bg = this.add.graphics();
+            bg.fillStyle(tint, 0.16);
+            bg.fillRoundedRect(-w / 2, -40, w, 80, 12);
+            bg.lineStyle(3, tint, 0.85);
+            bg.strokeRoundedRect(-w / 2, -40, w, 80, 12);
+            const t = this.add
+              .text(0, -16, title, {
+                fontSize: "14px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#ffffff",
+                align: "center",
+              })
+              .setOrigin(0.5);
+            const s = this.add
+              .text(0, 12, sub, {
+                fontSize: "10px",
+                fontFamily: "sans-serif",
+                color: "#f9d98a",
+                align: "center",
+                wordWrap: { width: w - 12 },
+              })
+              .setOrigin(0.5);
+            c.add([bg, t, s]);
+            c.setSize(w, 80).setInteractive({ useHandCursor: true });
+            c.setAlpha(0.5);
+            c.on("pointerover", () => {
+              if (c.input.enabled) c.setScale(1.04);
+            });
+            c.on("pointerout", () => c.setScale(1));
+            c.on("pointerdown", () => this.fileCase(said));
+            c._bg = bg;
+            c._tint = tint;
+            return c;
+          }
+
+          createHUD() {
+            this.add.text(28, 16, "🏆 SCORE", {
+              fontSize: "10px",
+              fontFamily: "sans-serif",
+              fontStyle: "bold",
+              color: "#fbbf24",
+              letterSpacing: 2,
+            });
+            this.scoreText = this.add.text(28, 31, "0", {
+              fontSize: "24px",
+              fontFamily: "Trebuchet MS",
+              fontStyle: "bold",
+              color: "#ffffff",
+            });
+            this.add.text(140, 16, "🔥 COMBO", {
+              fontSize: "10px",
+              fontFamily: "sans-serif",
+              fontStyle: "bold",
+              color: "#f77f00",
+              letterSpacing: 2,
+            });
+            this.comboText = this.add.text(140, 31, "0x", {
+              fontSize: "24px",
+              fontFamily: "Trebuchet MS",
+              fontStyle: "bold",
+              color: "#f77f00",
+            });
+            this.add.text(258, 16, "📁 FILED", {
+              fontSize: "10px",
+              fontFamily: "sans-serif",
+              fontStyle: "bold",
+              color: "#1b998b",
+              letterSpacing: 2,
+            });
+            this.fileText = this.add.text(258, 31, "0", {
+              fontSize: "24px",
+              fontFamily: "Trebuchet MS",
+              fontStyle: "bold",
+              color: "#1b998b",
+            });
+            this.add.text(W - 250, 16, "❤️ STRIKES", {
+              fontSize: "10px",
+              fontFamily: "sans-serif",
+              fontStyle: "bold",
+              color: "#fb7185",
+              letterSpacing: 2,
+            });
+            this.livesText = this.add.text(W - 250, 31, "", {
+              fontSize: "20px",
+            });
+            this.add.text(W - 96, 16, "CASE", {
+              fontSize: "10px",
+              fontFamily: "sans-serif",
+              fontStyle: "bold",
+              color: "#f9d98a",
+              letterSpacing: 2,
+            });
+            this.caseCountText = this.add
+              .text(W - 72, 31, "0", {
+                fontSize: "18px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#f9d98a",
+              })
+              .setOrigin(0, 0);
+          }
+
+          updateHUD() {
+            this.scoreText.setText(this.score.toString());
+            this.comboText
+              .setText(this.combo + "x")
+              .setColor(this.combo >= 3 ? "#fbbf24" : "#f77f00");
+            this.fileText.setText(this.filed.toString());
+            let h = "";
+            const maxLives = this.tier === 1 ? 4 : 3;
+            for (let i = 0; i < maxLives; i++)
+              h += i < this.lives ? "❤️" : "🖤";
+            this.livesText.setText(h);
+            this.caseCountText.setText(this.solved + "/" + this.totalCases);
+            const idx = Math.min(
+              Math.floor(
+                this.solved / Math.ceil(this.totalCases / CASE_THEMES.length),
+              ),
+              CASE_THEMES.length - 1,
+            );
+            this.caseIndex = idx;
+          }
+
+          // ── Start a case: clear board, scatter fresh witnesses ──
+          startCase() {
+            this.phase = "investigate";
+            this.responses = []; // bucket indices collected so far
+            this.activeClue = this.cases[this.activeCaseIx];
+            const theme = CASE_THEMES[this.caseIndex % CASE_THEMES.length];
+            this.caseText.setText(
+              theme.icon +
+                "  " +
+                theme.name +
+                "  —  Case " +
+                (this.activeCaseIx + 1),
+            );
+            this.boardQ.setText('"' + this.activeClue.q + '"');
+            this.responseCount.setText(
+              "Polled 0 / " + this.witnessGoal + " witnesses",
+            );
+            this.spreadReadout.setText(
+              this.scaffold
+                ? "Poll the witnesses. Spread of dots = variability."
+                : "",
+            );
+            this.setBinsEnabled(false);
+            this.drawPlot();
+            this.spawnWitnesses();
+          }
+
+          spawnWitnesses() {
+            if (this.witnesses) this.witnesses.forEach((w) => w.cont.destroy());
+            this.witnesses = [];
             const pts = [];
-            this.clues.forEach((clue, i) => {
+            for (let i = 0; i < this.witnessGoal; i++) {
               let x,
                 y,
                 tries = 0;
@@ -637,31 +1028,29 @@
               } while (
                 tries < 30 &&
                 pts.some(
-                  (p) => Phaser.Math.Distance.Between(p.x, p.y, x, y) < 80,
+                  (p) => Phaser.Math.Distance.Between(p.x, p.y, x, y) < 76,
                 )
               );
               pts.push({ x, y });
-
               const cont = this.add.container(x, y);
               const glow = this.add
                 .image(0, 0, "glow")
-                .setScale(0.9)
-                .setTint(0xfbbf24)
+                .setScale(0.8)
+                .setTint(0x2d6cdf)
                 .setAlpha(0.25)
                 .setBlendMode(Phaser.BlendModes.ADD);
               const disc = this.add.graphics();
               disc.fillStyle(0x14213d, 1);
-              disc.fillCircle(0, 0, 22);
-              disc.lineStyle(3, 0xfbbf24, 0.9);
-              disc.strokeCircle(0, 0, 22);
+              disc.fillCircle(0, 0, 20);
+              disc.lineStyle(3, 0x2d6cdf, 0.9);
+              disc.strokeCircle(0, 0, 20);
               const icon = this.add
-                .text(0, 0, "❓", { fontSize: "22px" })
+                .text(0, 0, "👤", { fontSize: "22px" })
                 .setOrigin(0.5);
               cont.add([glow, disc, icon]);
-              cont.setSize(44, 44);
               this.tweens.add({
                 targets: glow,
-                scale: 1.15,
+                scale: 1.0,
                 alpha: 0.45,
                 duration: 900,
                 yoyo: true,
@@ -670,232 +1059,388 @@
               });
               this.tweens.add({
                 targets: cont,
-                y: y - 6,
-                duration: 1200 + Math.random() * 600,
+                y: y - 5,
+                duration: 1100 + Math.random() * 600,
                 yoyo: true,
                 repeat: -1,
                 ease: "Sine.easeInOut",
               });
-              const obj = {
-                cont,
-                clue,
-                x,
-                y,
-                vx: (Math.random() - 0.5) * 2,
-                vy: (Math.random() - 0.5) * 2,
-                done: false,
-              };
-              this.clueObjs.push(obj);
-            });
-            this.activeClue = null;
+              this.witnesses.push({ cont, icon, polled: false });
+            }
           }
 
-          createHUD() {
-            this.add.text(30, 18, "🏆 SCORE", {
-              fontSize: "10px",
-              fontFamily: "sans-serif",
-              fontStyle: "bold",
-              color: "#fbbf24",
-              letterSpacing: 2,
-            });
-            this.scoreText = this.add.text(30, 35, "0", {
-              fontSize: "26px",
-              fontFamily: "Trebuchet MS",
-              fontStyle: "bold",
-              color: "#ffffff",
-            });
-            this.add.text(150, 18, "🔥 COMBO", {
-              fontSize: "10px",
-              fontFamily: "sans-serif",
-              fontStyle: "bold",
-              color: "#f77f00",
-              letterSpacing: 2,
-            });
-            this.comboText = this.add.text(150, 35, "0x", {
-              fontSize: "26px",
-              fontFamily: "Trebuchet MS",
-              fontStyle: "bold",
-              color: "#f77f00",
-            });
-            this.add.text(285, 18, "📁 CASE FILE", {
-              fontSize: "10px",
-              fontFamily: "sans-serif",
-              fontStyle: "bold",
-              color: "#1b998b",
-              letterSpacing: 2,
-            });
-            this.fileText = this.add.text(285, 35, "0", {
-              fontSize: "26px",
-              fontFamily: "Trebuchet MS",
-              fontStyle: "bold",
-              color: "#1b998b",
-            });
-            this.add.text(W - 210, 18, "❤️ STRIKES", {
-              fontSize: "10px",
-              fontFamily: "sans-serif",
-              fontStyle: "bold",
-              color: "#fb7185",
-              letterSpacing: 2,
-            });
-            this.livesText = this.add.text(W - 210, 35, "❤️❤️❤️", {
-              fontSize: "22px",
-            });
-            this.add.text(W - 70, 18, "CLUES", {
-              fontSize: "10px",
-              fontFamily: "sans-serif",
-              fontStyle: "bold",
-              color: "#f9d98a",
-              letterSpacing: 2,
-            });
-            this.clueCountText = this.add
-              .text(W - 50, 35, "0", {
-                fontSize: "20px",
-                fontFamily: "Trebuchet MS",
-                fontStyle: "bold",
-                color: "#f9d98a",
-              })
-              .setOrigin(0.5, 0);
+          // ── Draw the dot-plot from this.responses ──
+          drawPlot() {
+            const clue = this.activeClue;
+            const g = this.plotGfx;
+            g.clear();
+            this.dotLayer.removeAll(true);
+            this.tickLabels.forEach((t) => t.destroy());
+            this.tickLabels = [];
+
+            const n = clue.ticks.length;
+            const axisY = this.plotBottom;
+            // axis line
+            g.lineStyle(3, 0xfbbf24, 0.85);
+            g.lineBetween(this.plotLeft - 6, axisY, this.plotRight + 6, axisY);
+            // unit label
+            const unit = this.add
+              .text(
+                (this.plotLeft + this.plotRight) / 2,
+                axisY + 30,
+                clue.unit + " →",
+                {
+                  fontSize: "11px",
+                  fontFamily: "sans-serif",
+                  fontStyle: "bold",
+                  color: "#f9d98a",
+                },
+              )
+              .setOrigin(0.5);
+            this.tickLabels.push(unit);
+
+            const span = this.plotRight - this.plotLeft;
+            const colX = (i) =>
+              this.plotLeft + (n === 1 ? span / 2 : (span * i) / (n - 1));
+            // ticks + labels
+            for (let i = 0; i < n; i++) {
+              const x = colX(i);
+              g.lineStyle(2, 0xfbbf24, 0.6);
+              g.lineBetween(x, axisY - 4, x, axisY + 4);
+              const lbl = this.add
+                .text(x, axisY + 12, clue.ticks[i], {
+                  fontSize: "11px",
+                  fontFamily: "sans-serif",
+                  color: "#cdd9ef",
+                })
+                .setOrigin(0.5);
+              this.tickLabels.push(lbl);
+            }
+            // stacked dots
+            const counts = new Array(n).fill(0);
+            this.responses.forEach((b) => counts[b]++);
+            const dotR = 7,
+              gap = 16;
+            for (let i = 0; i < n; i++) {
+              const x = colX(i);
+              for (let s = 0; s < counts[i]; s++) {
+                const y = axisY - 12 - s * gap;
+                const dot = this.add.circle(x, y, dotR, 0x2a9d5c);
+                dot.setStrokeStyle(2, 0xffffff, 0.9);
+                this.dotLayer.add(dot);
+              }
+            }
           }
 
-          updateHUD() {
-            this.scoreText.setText(this.score.toString());
-            this.comboText
-              .setText(this.combo + "x")
-              .setColor(this.combo >= 3 ? "#fbbf24" : "#f77f00");
-            this.fileText.setText(this.filed.toString());
-            let h = "";
-            for (let i = 0; i < 3; i++) h += i < this.lives ? "❤️" : "🖤";
-            this.livesText.setText(h);
-            this.clueCountText.setText(this.collected + "/" + this.totalClues);
-            const idx = Math.min(
-              Math.floor(
-                this.collected /
-                  Math.ceil(this.totalClues / CASE_THEMES.length),
-              ),
-              CASE_THEMES.length - 1,
+          // ── Live spread metric the player reads ──
+          observedSpread() {
+            if (this.responses.length === 0) return 0;
+            const mn = Math.min(...this.responses);
+            const mx = Math.max(...this.responses);
+            return mx - mn; // range in buckets
+          }
+
+          tryPollNearest() {
+            if (this.phase !== "investigate") return;
+            let best = null,
+              bestD = 1e9;
+            for (const w of this.witnesses) {
+              if (w.polled) continue;
+              const d = Phaser.Math.Distance.Between(
+                this.player.x,
+                this.player.y,
+                w.cont.x,
+                w.cont.y,
+              );
+              if (d < bestD) {
+                bestD = d;
+                best = w;
+              }
+            }
+            if (best && bestD < 48) this.pollWitness(best);
+            else if (best)
+              this.flashHint("Walk closer to a 👤 witness, then poll.");
+          }
+
+          pollWitness(w) {
+            w.polled = true;
+            SFX.play("poll");
+            // Deterministic response from the case's true varies-model.
+            const bucket = pollResponse(this.activeClue);
+            this.responses.push(bucket);
+            this.tweens.killTweensOf(w.cont);
+            w.icon.setText("🗣️");
+            this.tweens.add({
+              targets: w.cont,
+              scale: 1.3,
+              alpha: 0,
+              duration: 320,
+              ease: "Back.easeIn",
+              onComplete: () => w.cont.destroy(),
+            });
+            this.drawPlot();
+            // animate a dot dropping onto the board
+            this.spawnResponseDot(w.cont.x, w.cont.y, bucket);
+
+            const polled = this.responses.length;
+            this.responseCount.setText(
+              "Polled " + polled + " / " + this.witnessGoal + " witnesses",
             );
-            this.caseIndex = idx;
-            const theme = CASE_THEMES[idx];
-            this.caseText.setText(theme.name);
-            this.caseIcon.setText(theme.icon);
+            this.updateSpreadReadout();
+
+            if (polled >= this.witnessGoal) this.enterFilePhase();
           }
 
-          buildPrompt() {
-            // Inline prompt overlay shown when player picks up a clue.
-            this.prompt = this.add
-              .container(W / 2, H / 2)
-              .setDepth(20)
-              .setVisible(false);
-            const panel = this.add.graphics();
-            panel.fillStyle(0x0c1529, 0.92);
-            panel.fillRoundedRect(-330, -150, 660, 300, 22);
-            panel.lineStyle(3, 0xfbbf24, 0.8);
-            panel.strokeRoundedRect(-330, -150, 660, 300, 22);
-            const label = this.add
-              .text(0, -118, "🔍 CLUE FOUND", {
-                fontSize: "13px",
-                fontFamily: "sans-serif",
-                fontStyle: "bold",
-                color: "#fbbf24",
-                letterSpacing: 3,
-              })
-              .setOrigin(0.5);
-            this.promptQ = this.add
-              .text(0, -55, "", {
-                fontSize: "22px",
-                fontFamily: "Trebuchet MS",
-                fontStyle: "bold",
-                color: "#ffffff",
-                align: "center",
-                wordWrap: { width: 580 },
-                lineSpacing: 6,
-              })
-              .setOrigin(0.5);
-            this.promptAsk = this.add
-              .text(0, 10, "Is this a STATISTICAL question?", {
-                fontSize: "15px",
-                fontFamily: "sans-serif",
-                color: "#f9d98a",
-              })
-              .setOrigin(0.5);
-            const yes = this.makeAnsBtn(
-              -160,
-              90,
-              "✅ YES (1)\nanswers vary",
-              true,
-              0x2a9d5c,
-            );
-            const no = this.makeAnsBtn(
-              160,
-              90,
-              "❌ NO (2)\none exact answer",
-              false,
-              0xe63946,
-            );
-            this.prompt.add([
-              panel,
-              label,
-              this.promptQ,
-              this.promptAsk,
-              yes,
-              no,
-            ]);
-
-            // Keyboard 1 / 2 answers while the prompt is open.
-            this.keys.y.on("down", () => {
-              if (this.prompt.visible && this.activeClue) this.answerClue(true);
-            });
-            this.keys.n.on("down", () => {
-              if (this.prompt.visible && this.activeClue)
-                this.answerClue(false);
+          spawnResponseDot(fromX, fromY, bucket) {
+            const n = this.activeClue.ticks.length;
+            const span = this.plotRight - this.plotLeft;
+            const tx =
+              this.plotLeft + (n === 1 ? span / 2 : (span * bucket) / (n - 1));
+            const ty = this.plotTop - 10;
+            const p = this.add.circle(fromX, fromY, 7, 0x2a9d5c);
+            p.setStrokeStyle(2, 0xffffff, 0.9).setDepth(12);
+            this.tweens.add({
+              targets: p,
+              x: tx,
+              y: ty,
+              duration: 360,
+              ease: "Cubic.easeIn",
+              onComplete: () => {
+                p.destroy();
+                this.drawPlot();
+              },
             });
           }
 
-          makeAnsBtn(x, y, label, said, tint) {
-            const c = this.add.container(x, y);
-            const bg = this.add.graphics();
-            bg.fillStyle(tint, 0.2);
-            bg.fillRoundedRect(-150, -45, 300, 90, 16);
-            bg.lineStyle(3, tint, 0.9);
-            bg.strokeRoundedRect(-150, -45, 300, 90, 16);
-            const txt = this.add
-              .text(0, 0, label, {
-                fontSize: "18px",
-                fontFamily: "Trebuchet MS",
-                fontStyle: "bold",
-                color: "#ffffff",
-                align: "center",
-                lineSpacing: 4,
-              })
-              .setOrigin(0.5);
-            c.add([bg, txt]);
-            c.setSize(300, 90).setInteractive({ useHandCursor: true });
-            c.on("pointerover", () =>
+          updateSpreadReadout() {
+            const spread = this.observedSpread();
+            const polled = this.responses.length;
+            if (polled < 2) {
+              this.spreadReadout
+                .setColor("#8aa0c6")
+                .setText(
+                  "Keep polling — you need more responses to judge spread.",
+                );
+              return;
+            }
+            if (spread === 0) {
+              this.spreadReadout
+                .setColor("#fb7185")
+                .setText(
+                  "No spread yet — every answer landed on the SAME value.",
+                );
+            } else {
+              this.spreadReadout
+                .setColor("#7ee0a8")
+                .setText(
+                  "Spread = " +
+                    spread +
+                    " step" +
+                    (spread === 1 ? "" : "s") +
+                    " — the answers VARY.",
+                );
+            }
+          }
+
+          enterFilePhase() {
+            this.phase = "file";
+            this.player.setVelocity(0, 0);
+            this.dragTarget = null;
+            this.setBinsEnabled(true);
+            const spread = this.observedSpread();
+            this.spreadReadout
+              .setColor(spread > 0 ? "#7ee0a8" : "#fb7185")
+              .setText(
+                spread > 0
+                  ? "The dots SPREAD across " +
+                      (spread + 1) +
+                      " values. File this case in the right bin."
+                  : "The dots all STACK on one value. File this case in the right bin.",
+              );
+            this.flashHint("All witnesses polled — file the case (F or G).");
+          }
+
+          setBinsEnabled(on) {
+            [this.statBin, this.nonBin].forEach((bin) => {
+              bin.input.enabled = on;
+              bin.setAlpha(on ? 1 : 0.5);
+              bin._bg.clear();
+              const w = (BOARD.w - 32) / 2 - 6;
+              bin._bg.fillStyle(bin._tint, on ? 0.28 : 0.16);
+              bin._bg.fillRoundedRect(-w / 2, -40, w, 80, 12);
+              bin._bg.lineStyle(3, bin._tint, on ? 1 : 0.7);
+              bin._bg.strokeRoundedRect(-w / 2, -40, w, 80, 12);
+            });
+          }
+
+          fileCase(saidStatistical) {
+            if (this.phase !== "file") {
+              if (this.phase === "investigate")
+                this.flashHint(
+                  "Poll all " +
+                    this.witnessGoal +
+                    " witnesses first — you can't file what you haven't measured.",
+                );
+              return;
+            }
+            const clue = this.activeClue;
+            const correct = saidStatistical === clue.stat;
+            const spread = this.observedSpread();
+            this.solved++;
+            this.phase = "resolved";
+            this.setBinsEnabled(false);
+
+            if (correct) {
+              SFX.play("correct");
+              this.combo++;
+              this.maxCombo = Math.max(this.maxCombo, this.combo);
+              const bonus = this.combo >= 5 ? 50 : this.combo >= 3 ? 25 : 0;
+              const pts = 100 + bonus;
+              this.score += pts;
+              this.correct++;
+              this.filed++;
+              this.correctEmitter.explode(
+                20,
+                BOARD.x + BOARD.w / 2,
+                this.plotBottom,
+              );
+              if (this.combo >= 3) {
+                SFX.play("combo");
+                this.cameras.main.shake(80, 0.003);
+              }
+              const why = clue.stat
+                ? "Correct — the spread proves answers VARY. " + clue.explain
+                : "Correct — no spread, one exact answer. " + clue.explain;
+              this.banner("📁 FILED!", "#7ee0a8");
+              this.flashExplain(why, "#7ee0a8");
+            } else {
+              SFX.play("wrong");
+              this.combo = 0;
+              this.lives--;
+              this.wrong++;
+              this.wrongEmitter.explode(
+                14,
+                BOARD.x + BOARD.w / 2,
+                this.plotBottom,
+              );
+              this.cameras.main.shake(160, 0.008);
+              // Misfiling a wide-spread question visibly scatters the board.
+              this.scatterBoard();
+              const why = clue.stat
+                ? "Misfiled. Look again: the dots SPREAD across the line — that variability means STATISTICAL. " +
+                  clue.explain
+                : "Misfiled. Look again: every dot STACKED on one value — no variability means NON-statistical. " +
+                  clue.explain;
+              this.banner("✖ MISFILED", "#fb7185");
+              this.flashExplain(why, "#fb7185");
+            }
+            this.updateHUD();
+
+            if (this.lives <= 0) {
+              this.time.delayedCall(1500, () => this.endGame());
+              return;
+            }
+            this.time.delayedCall(1700, () => {
+              this.activeCaseIx++;
+              if (
+                this.activeCaseIx >= this.totalCases ||
+                this.activeCaseIx >= this.cases.length
+              ) {
+                this.endGame();
+              } else {
+                this.startCase();
+                this.updateHUD();
+              }
+            });
+          }
+
+          // Meaningful failure: dots fly off the board when a spread is misjudged.
+          scatterBoard() {
+            this.dotLayer.list.slice().forEach((dot) => {
               this.tweens.add({
-                targets: c,
-                scaleX: 1.05,
-                scaleY: 1.05,
-                duration: 100,
-              }),
-            );
-            c.on("pointerout", () =>
-              this.tweens.add({
-                targets: c,
-                scaleX: 1,
-                scaleY: 1,
-                duration: 100,
-              }),
-            );
-            c.on("pointerdown", (p, lx, ly, ev) => {
-              if (ev) ev.stopPropagation();
-              this.answerClue(said);
+                targets: dot,
+                x: dot.x + (Math.random() - 0.5) * 320,
+                y: dot.y + (Math.random() - 0.5) * 240,
+                alpha: 0,
+                duration: 700,
+                ease: "Cubic.easeOut",
+                onComplete: () => dot.destroy(),
+              });
             });
-            return c;
           }
 
-          update(time, delta) {
-            if (this.answering || !this.player) return;
-            const d = delta / 1000;
+          flashExplain(msg, color) {
+            if (this.explainText) this.explainText.destroy();
+            this.explainText = this.add
+              .text(BOARD.x + BOARD.w / 2, BOARD.y + 312, msg, {
+                fontSize: "12px",
+                fontFamily: "Trebuchet MS",
+                color,
+                align: "center",
+                wordWrap: { width: BOARD.w - 30 },
+                lineSpacing: 3,
+              })
+              .setOrigin(0.5, 0)
+              .setDepth(14);
+            this.time.delayedCall(1600, () => {
+              if (this.explainText) {
+                this.tweens.add({
+                  targets: this.explainText,
+                  alpha: 0,
+                  duration: 300,
+                  onComplete: () => {
+                    if (this.explainText) this.explainText.destroy();
+                    this.explainText = null;
+                  },
+                });
+              }
+            });
+          }
+
+          flashHint(msg) {
+            this.hint.setText(msg).setColor("#fbbf24");
+            this.time.delayedCall(1600, () => {
+              if (this.hint.active)
+                this.hint
+                  .setColor("#8aa0c6")
+                  .setText(
+                    "Move to a 👤 witness and press SPACE / tap to poll them.",
+                  );
+            });
+          }
+
+          banner(text, color) {
+            const b = this.add
+              .text(FIELD.x + FIELD.w / 2, FIELD.y + FIELD.h / 2, text, {
+                fontSize: "32px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color,
+                stroke: "#14213d",
+                strokeThickness: 5,
+              })
+              .setOrigin(0.5)
+              .setDepth(18)
+              .setAlpha(0);
+            this.tweens.add({
+              targets: b,
+              alpha: 1,
+              scaleX: 1.2,
+              scaleY: 1.2,
+              duration: 320,
+              yoyo: true,
+              hold: 500,
+              onComplete: () => b.destroy(),
+            });
+          }
+
+          update() {
+            if (!this.player) return;
+            if (this.phase !== "investigate") {
+              this.player.setVelocity(0, 0);
+              this.playerHat.setPosition(this.player.x, this.player.y - 2);
+              return;
+            }
             const k = this.keys;
             let vx = 0,
               vy = 0;
@@ -913,235 +1458,41 @@
               }
             }
             const len = Math.hypot(vx, vy);
-            if (len > 0) {
+            if (len > 0)
               this.player.setVelocity(
                 (vx / len) * this.moveSpeed,
                 (vy / len) * this.moveSpeed,
               );
-            } else {
-              this.player.setVelocity(0, 0);
-            }
+            else this.player.setVelocity(0, 0);
             this.playerHat.setPosition(this.player.x, this.player.y - 2);
 
-            // Drifting clues (movement challenge on harder levels)
-            if (this.drift > 0) {
-              this.clueObjs.forEach((o) => {
-                if (o.done) return;
-                o.x += o.vx * this.drift * d;
-                o.y += o.vy * this.drift * d;
-                if (o.x < FIELD.x + 40 || o.x > FIELD.x + FIELD.w - 40)
-                  o.vx *= -1;
-                if (o.y < FIELD.y + 40 || o.y > FIELD.y + FIELD.h - 40)
-                  o.vy *= -1;
-                o.x = Phaser.Math.Clamp(
-                  o.x,
-                  FIELD.x + 40,
-                  FIELD.x + FIELD.w - 40,
-                );
-                o.y = Phaser.Math.Clamp(
-                  o.y,
-                  FIELD.y + 40,
-                  FIELD.y + FIELD.h - 40,
-                );
-                o.cont.x = o.x;
-              });
-            }
-
-            // Pickup detection (a wrong-answered clue must be re-approached)
-            for (const o of this.clueObjs) {
-              if (o.done) continue;
-              const dist = Phaser.Math.Distance.Between(
+            // Auto-poll when standing on a witness (touch-friendly), but SPACE/tap also work.
+            for (const w of this.witnesses) {
+              if (w.polled) continue;
+              const d = Phaser.Math.Distance.Between(
                 this.player.x,
                 this.player.y,
-                o.cont.x,
-                o.cont.y,
+                w.cont.x,
+                w.cont.y,
               );
-              if (o.cooldown) {
-                if (dist > 70) o.cooldown = false;
-                continue;
-              }
-              if (dist < 42) {
-                this.pickUp(o);
+              if (d < 34) {
+                this.pollWitness(w);
                 break;
               }
             }
-          }
-
-          pickUp(o) {
-            if (this.answering) return;
-            this.answering = true;
-            this.activeClue = o;
-            this.player.setVelocity(0, 0);
-            this.dragTarget = null;
-            SFX.play("whoosh");
-            this.promptQ.setText('"' + o.clue.q + '"');
-            this.prompt.setVisible(true).setScale(0.8).setAlpha(0);
-            this.tweens.add({
-              targets: this.prompt,
-              alpha: 1,
-              scale: 1,
-              duration: 220,
-              ease: "Back.easeOut",
-            });
-          }
-
-          answerClue(said) {
-            const o = this.activeClue;
-            if (!o) return;
-            const correct = said === o.clue.stat;
-            this.activeClue = null;
-            this.tweens.add({
-              targets: this.prompt,
-              alpha: 0,
-              scale: 0.85,
-              duration: 160,
-              onComplete: () => this.prompt.setVisible(false),
-            });
-
-            if (correct) {
-              SFX.play("correct");
-              this.combo++;
-              this.maxCombo = Math.max(this.maxCombo, this.combo);
-              const bonus = this.combo >= 5 ? 50 : this.combo >= 3 ? 25 : 0;
-              const pts = 100 + bonus;
-              this.score += pts;
-              this.correct++;
-              this.filed++;
-              this.collected++;
-              this.correctEmitter.explode(20, o.cont.x, o.cont.y);
-              if (this.combo >= 3) {
-                SFX.play("combo");
-                this.cameras.main.shake(90, 0.004);
-              }
-              this.floatText(
-                o.cont.x,
-                o.cont.y,
-                (this.combo >= 5 ? "🔥 +" : this.combo >= 3 ? "💥 +" : "📁 +") +
-                  pts,
-                "#fbbf24",
-              );
-              this.fileClue(o);
-            } else {
-              SFX.play("wrong");
-              this.combo = 0;
-              this.lives--;
-              this.wrong++;
-              this.wrongEmitter.explode(12, o.cont.x, o.cont.y);
-              this.cameras.main.shake(180, 0.01);
-              const why = o.clue.stat
-                ? "It's STATISTICAL — answers vary."
-                : "It's NOT statistical — one exact answer.";
-              this.floatText(
-                o.cont.x,
-                o.cont.y - 20,
-                "✖ " + why,
-                "#fb7185",
-                1600,
-                240,
-              );
-              // Wrong: clue stays, reset to ❓; must walk away before retrying
-              o.cont.list[2].setText("❓");
-              o.cooldown = true;
-            }
-            this.updateHUD();
-            this.answering = false;
-
-            if (this.lives <= 0) {
-              this.time.delayedCall(700, () => this.endGame());
-              return;
-            }
-            // Case-cleared banner every block
-            const per = Math.ceil(this.totalClues / CASE_THEMES.length);
-            if (
-              correct &&
-              this.collected % per === 0 &&
-              this.collected < this.totalClues
-            ) {
-              SFX.play("levelup");
-              this.banner("📁 CASE SOLVED!");
-            }
-            if (this.remaining() === 0) {
-              this.time.delayedCall(600, () => this.endGame());
-            }
-          }
-
-          remaining() {
-            return this.clueObjs.filter((o) => !o.done).length;
-          }
-
-          fileClue(o) {
-            o.done = true;
-            this.tweens.killTweensOf(o.cont);
-            o.cont.list[2].setText("✅");
-            this.tweens.add({
-              targets: o.cont,
-              scale: 1.4,
-              alpha: 0,
-              duration: 350,
-              ease: "Back.easeIn",
-              onComplete: () => o.cont.destroy(),
-            });
-          }
-
-          floatText(x, y, msg, color, life, wrap) {
-            const t = this.add
-              .text(x, y, msg, {
-                fontSize: "18px",
-                fontFamily: "Trebuchet MS",
-                fontStyle: "bold",
-                color,
-                align: "center",
-                wordWrap: wrap ? { width: 280 } : undefined,
-                stroke: "#0c1529",
-                strokeThickness: 3,
-              })
-              .setOrigin(0.5)
-              .setDepth(15);
-            this.tweens.add({
-              targets: t,
-              y: y - 50,
-              alpha: 0,
-              duration: life || 900,
-              onComplete: () => t.destroy(),
-            });
-          }
-
-          banner(text) {
-            const b = this.add
-              .text(W / 2, H / 2 - 40, text, {
-                fontSize: "34px",
-                fontFamily: "Trebuchet MS",
-                fontStyle: "bold",
-                color: "#fbbf24",
-                stroke: "#14213d",
-                strokeThickness: 5,
-              })
-              .setOrigin(0.5)
-              .setDepth(18)
-              .setAlpha(0);
-            this.tweens.add({
-              targets: b,
-              alpha: 1,
-              scaleX: 1.2,
-              scaleY: 1.2,
-              duration: 350,
-              yoyo: true,
-              hold: 500,
-              onComplete: () => b.destroy(),
-            });
           }
 
           endGame() {
             this.cameras.main.fade(500);
             this.time.delayedCall(500, () =>
               this.scene.start("Results", {
+                tier: this.tier,
                 score: this.score,
                 correct: this.correct,
                 wrong: this.wrong,
-                total: this.totalClues,
+                total: this.totalCases,
                 combo: this.maxCombo,
                 lives: this.lives,
-                casesCleared: this.caseIndex + 1,
               }),
             );
           }
@@ -1171,7 +1522,7 @@
                   score: d.correct,
                   maxScore: d.total,
                   problemsCorrect: d.correct,
-                  problemsAttempted: d.total,
+                  problemsAttempted: d.correct + d.wrong,
                   standard: "6.SP.A.1",
                 });
             } catch (e) {}
@@ -1212,12 +1563,17 @@
               })
               .setOrigin(0.5);
             this.add
-              .text(cx, 155, rank, {
-                fontSize: "20px",
-                fontFamily: "Trebuchet MS",
-                fontStyle: "bold",
-                color: "#f9d98a",
-              })
+              .text(
+                cx,
+                155,
+                rank + "  ·  Level " + (d.tier === 2 ? "2" : "1"),
+                {
+                  fontSize: "20px",
+                  fontFamily: "Trebuchet MS",
+                  fontStyle: "bold",
+                  color: "#f9d98a",
+                },
+              )
               .setOrigin(0.5);
             this.add
               .text(cx, 200, d.score.toString(), {
@@ -1237,7 +1593,11 @@
               })
               .setOrigin(0.5);
             [
-              { label: "Correct", val: d.correct + "/" + d.total, x: cx - 200 },
+              {
+                label: "Cases Solved",
+                val: d.correct + "/" + d.total,
+                x: cx - 200,
+              },
               { label: "Accuracy", val: pct + "%", x: cx },
               { label: "Best Combo", val: d.combo + "x", x: cx + 200 },
             ].forEach((s) => {
@@ -1285,7 +1645,7 @@
               .text(
                 cx,
                 475,
-                "A statistical question expects DIFFERENT answers from different people.\nA non-statistical question has ONE exact answer.",
+                "A STATISTICAL question makes the data SPREAD — different people, different answers.\nA NON-statistical question collapses to ONE exact value — no spread.",
                 {
                   fontSize: "15px",
                   fontFamily: "Trebuchet MS",
@@ -1300,13 +1660,15 @@
               .setScale(0.85)
               .setInteractive({ useHandCursor: true });
             this.add
-              .text(cx, 570, "🔄 Play Again", {
+              .text(cx, 570, "🔄 New Investigation", {
                 fontSize: "18px",
                 fontFamily: "Trebuchet MS",
                 fontStyle: "bold",
                 color: "#fff",
               })
               .setOrigin(0.5);
+            btn.on("pointerover", () => btn.setScale(0.89));
+            btn.on("pointerout", () => btn.setScale(0.85));
             btn.on("pointerdown", () => {
               SFX.play("whoosh");
               this.cameras.main.fade(400);
@@ -1341,7 +1703,7 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
 </html>

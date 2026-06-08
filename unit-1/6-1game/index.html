@@ -18,7 +18,7 @@
       window.addEventListener("load", function () {
         if (typeof Phaser === "undefined") {
           document.body.innerHTML =
-            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
         }
       });
     </script>
@@ -38,1154 +38,1038 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <div id="game-container"></div>
     <script>
       (() => {
-        const W = 1024,
-          H = 768;
+        // ════════════════════════════════════════════════════════════════
+        //  FRACTION DUNGEON — "Tile the Corridor" — 6.NS.A.1
+        //  The MATH IS THE MECHANIC: fraction division is felt as MEASUREMENT.
+        //  A corridor is drawn as a measured bar of length L (e.g. 3 units).
+        //  You drag/place identical segment-tiles of length 1/d (e.g. 3/4)
+        //  to physically TILE the hall. The door opens ONLY when the tiles
+        //  EXACTLY cover the length — no gap, no overshoot. So "3 ÷ 3/4 = 4"
+        //  is felt as "four 3/4-tiles fill a 3-length hall." The monster's
+        //  HP decrements by the FRACTION of the corridor you've covered
+        //  (graduated feedback, not binary). No A/B/C/D — you build the answer.
+        //  Variants: scoops filling a cup (mixed numbers) and 15-min time
+        //  blocks filling a named fraction of an hour (unit conversion).
+        // ════════════════════════════════════════════════════════════════
 
-        // Audio
-        const AC = window.AudioContext || window.webkitAudioContext;
+        // ─── SOUND ENGINE ───
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
         let actx = null;
-        function au() {
-          if (!actx) actx = new AC();
-          if (actx.state === "suspended") actx.resume();
+        function ensureAudio() {
+          if (!actx && AudioCtx) actx = new AudioCtx();
+          if (actx && actx.state === "suspended") actx.resume();
         }
-        function bip(f, d, t = "sine", v = 0.14) {
+        function beep(freq, dur, type = "sine", vol = 0.16) {
           if (!actx) return;
           const o = actx.createOscillator(),
             g = actx.createGain();
           o.connect(g);
           g.connect(actx.destination);
-          o.frequency.value = f;
-          o.type = t;
-          g.gain.setValueAtTime(v, actx.currentTime);
-          g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + d);
+          o.frequency.value = freq;
+          o.type = type;
+          g.gain.setValueAtTime(vol, actx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
           o.start();
-          o.stop(actx.currentTime + d);
+          o.stop(actx.currentTime + dur);
         }
-        function sfxOk() {
-          bip(523, 0.08);
-          setTimeout(() => bip(659, 0.08), 80);
-          setTimeout(() => bip(784, 0.15), 160);
-        }
-        function sfxNo() {
-          bip(150, 0.3, "sawtooth", 0.1);
-        }
-        function sfxCl() {
-          bip(440, 0.05, "sine", 0.08);
-        }
-        function sfxLv() {
+        const sfxPlace = () =>
+          beep(360 + Math.random() * 50, 0.06, "triangle", 0.12);
+        const sfxRemove = () => beep(220, 0.07, "sine", 0.1);
+        const sfxOpen = () => {
+          beep(523, 0.09);
+          setTimeout(() => beep(659, 0.09), 80);
+          setTimeout(() => beep(880, 0.18), 170);
+        };
+        const sfxWrong = () => beep(150, 0.22, "square", 0.1);
+        const sfxLevel = () =>
           [523, 659, 784, 1047].forEach((f, i) =>
-            setTimeout(() => bip(f, 0.12), i * 90),
+            setTimeout(() => beep(f, 0.14), i * 90),
           );
-        }
-        function sfxHit() {
-          bip(100, 0.15, "square", 0.12);
-          setTimeout(() => bip(80, 0.1, "square", 0.08), 60);
-        }
-        function sfxLoot() {
-          bip(880, 0.06, "triangle", 0.1);
-          setTimeout(() => bip(1100, 0.08, "triangle", 0.08), 50);
-          setTimeout(() => bip(1320, 0.1, "triangle", 0.06), 100);
-        }
-        function sfxDoor() {
-          bip(220, 0.2, "triangle", 0.08);
-          setTimeout(() => bip(330, 0.2, "triangle", 0.06), 100);
-        }
+        const sfxClick = () => beep(440, 0.05, "sine", 0.09);
 
-        const COL = {
+        // ─── LAYOUT / PALETTE ───
+        const W = 1024,
+          H = 768;
+        // Colourblind-safe: every state uses TEXT + ICON + shape, not colour alone.
+        const C = {
           bg: 0x0b0c10,
-          panel: 0x161822,
-          accent: 0x6366f1,
-          gold: 0xfbbf24,
-          red: 0xef4444,
-          green: 0x22c55e,
-          teal: 0x14b8a6,
-          purple: 0xa855f7,
-          rose: 0xf43f5e,
+          stone: 0x1c2230,
+          stoneHi: 0x2a3346,
+          gold: 0xf6c343,
           white: 0xffffff,
-          dark: 0x070810,
-          slate: 0x334155,
-          amber: 0xf59e0b,
-          sky: 0x38bdf8,
+          dim: 0x9aa6c0,
+          green: 0x2ec26b,
+          red: 0xe7556b,
+          floor: 0x141926,
+          stroke: 0x3c4a66,
+          tile: 0x4aa3ff, // a single colour for the player's tiles
+          tileEdge: 0x0d2742,
         };
 
-        function shuffle(a) {
-          const b = [...a];
-          for (let i = b.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [b[i], b[j]] = [b[j], b[i]];
-          }
-          return b;
+        // ─── MATH HELPERS ───
+        const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+        const rnd = (n) => Math.floor(Math.random() * n);
+        const pick = (arr) => arr[rnd(arr.length)];
+
+        // Render a value num/den as a clean string: whole + proper fraction.
+        function fracStr(num, den) {
+          if (den === 1) return String(num);
+          const g = gcd(num, den);
+          num /= g;
+          den /= g;
+          if (den === 1) return String(num);
+          const whole = Math.floor(num / den);
+          const rem = num - whole * den;
+          if (whole === 0) return `${rem}/${den}`;
+          if (rem === 0) return String(whole);
+          return `${whole} ${rem}/${den}`;
         }
 
-        // ─── QUESTION BANK ───
-        function genQuestions() {
-          const qs = [];
+        // ─── ROUND GENERATOR (solvability-verified; see _sim.mjs) ───
+        // Every corridor length is an EXACT integer multiple of the tile, so the
+        // quotient q is always a whole number and tiles tile the hall perfectly.
+        const MAX_TILES = 12; // tiles must fit visibly across the corridor
 
-          // Unit conversion
-          function unitConv() {
-            const pairs = [
-              { min: 15, frac: "1/4 hour", hint: "15 min = 1/4 of 60" },
-              { min: 30, frac: "1/2 hour", hint: "30 min = half of 60" },
-              {
-                min: 45,
-                frac: "3/4 hour",
-                hint: "45 = 3 groups of 15; 60 has 4 groups of 15",
-              },
-              { min: 20, frac: "1/3 hour", hint: "20 min = 1/3 of 60" },
-              {
-                min: 40,
-                frac: "2/3 hour",
-                hint: "40 = 2 groups of 20; 60 has 3 groups of 20",
-              },
-              { min: 10, frac: "1/6 hour", hint: "10 min = 1/6 of 60" },
-              {
-                min: 90,
-                frac: "1 1/2 hours",
-                hint: "90 = 60 + 30 = 1 hour + 1/2 hour",
-              },
-            ];
-            const p = pairs[Math.floor(Math.random() * pairs.length)];
-            const wrong = pairs
-              .filter((x) => x.frac !== p.frac)
-              .slice(0, 3)
-              .map((x) => x.frac);
-            return {
-              type: "conversion",
-              monster: "\u{1F47B}",
-              monsterName: "Time Wraith",
-              text: `${p.min} minutes equals how many hours?`,
-              correct: p.frac,
-              choices: shuffle([p.frac, ...wrong]),
-              hint: p.hint,
-              explain: `${p.min} minutes = ${p.frac}`,
-            };
+        function makeRound(tier, index) {
+          let type, tileNum, tileDen, q, corridorN, corridorD;
+
+          if (tier === 1) {
+            // Level 1: UNIT-fraction tiles 1/d, whole-number-ish corridor. q = tiles.
+            tileDen = pick([2, 3, 4]);
+            tileNum = 1;
+            q = 2 + rnd(MAX_TILES - 1); // 2..12 tiles → always fits
+            corridorN = q * tileNum;
+            corridorD = tileDen;
+            type = index % 3 === 2 ? "time" : "tile";
+          } else {
+            // Level 2: non-unit fractions / mixed numbers, fewer guides.
+            const variant = pick([
+              "nonunit",
+              "mixed",
+              "time",
+              "nonunit",
+              "mixed",
+            ]);
+            if (variant === "nonunit") {
+              const d = pick([3, 4, 5, 6, 8]);
+              let n = 2 + rnd(Math.max(1, d - 2));
+              if (n >= d) n = d - 1;
+              const g = gcd(n, d);
+              tileNum = n / g;
+              tileDen = d / g;
+              q = 2 + rnd(MAX_TILES - 1);
+              corridorN = q * tileNum;
+              corridorD = tileDen;
+              type = "tile";
+            } else if (variant === "mixed") {
+              tileDen = pick([2, 3, 4]);
+              tileNum = 1;
+              q = 3 + rnd(MAX_TILES - 2);
+              corridorN = q * tileNum;
+              corridorD = tileDen;
+              type = "tile";
+            } else {
+              tileDen = pick([2, 3, 4]);
+              tileNum = 1;
+              q = 2 + rnd(MAX_TILES - 1);
+              corridorN = q * tileNum;
+              corridorD = tileDen;
+              type = "time";
+            }
           }
 
-          // Fraction division (whole ÷ fraction)
-          function fracDiv1() {
-            const fracs = [
-              [3, 4, "3/4"],
-              [1, 2, "1/2"],
-              [2, 3, "2/3"],
-              [1, 3, "1/3"],
-              [1, 4, "1/4"],
-              [3, 5, "3/5"],
-              [5, 6, "5/6"],
-            ];
-            const f = fracs[Math.floor(Math.random() * fracs.length)];
-            const whole = 2 + Math.floor(Math.random() * 5);
-            const ans = (whole * f[1]) / f[0];
-            if (!Number.isInteger(ans)) return fracDiv1();
-            const correct = String(ans);
-            const wrong = [
-              String(ans + 1),
-              String(ans - 1),
-              String(whole),
-            ].filter((w) => w !== correct && parseInt(w) > 0);
-            while (wrong.length < 3) wrong.push(String(ans + wrong.length + 2));
-            return {
-              type: "division",
-              monster: "\u{1F409}",
-              monsterName: "Fraction Dragon",
-              text: `${whole} ÷ (${f[2]}) = ?`,
-              correct,
-              choices: shuffle([correct, ...wrong.slice(0, 3)]),
-              hint: `How many ${f[2]} groups fit in ${whole}? Multiply by reciprocal: ${whole} × ${f[1]}/${f[0]}`,
-              explain: `${whole} ÷ (${f[2]}) = ${whole} × ${f[1]}/${f[0]} = ${ans}`,
-            };
+          // Invariant guard: corridor must be an exact multiple of the tile.
+          // (corridorN/corridorD) ÷ (tileNum/tileDen) === q, integer.
+          const num = corridorN * tileDen,
+            den = corridorD * tileNum;
+          if (num % den !== 0 || num / den !== q) {
+            // self-heal to the canonical unit-fraction case (never ships a bad round)
+            tileNum = 1;
+            tileDen = pick([2, 3, 4]);
+            q = 2 + rnd(MAX_TILES - 1);
+            corridorN = q;
+            corridorD = tileDen;
           }
 
-          // Fraction ÷ fraction
-          function fracDiv2() {
-            const combos = [
-              { a: "7/2", b: "7/8", ans: 4, work: "7/2 × 8/7 = 56/14 = 4" },
-              { a: "9/4", b: "3/8", ans: 6, work: "9/4 × 8/3 = 72/12 = 6" },
-              { a: "5/3", b: "1/6", ans: 10, work: "5/3 × 6/1 = 30/3 = 10" },
-              { a: "3/2", b: "3/4", ans: 2, work: "3/2 × 4/3 = 12/6 = 2" },
-              { a: "4/3", b: "2/9", ans: 6, work: "4/3 × 9/2 = 36/6 = 6" },
-              { a: "5/2", b: "5/4", ans: 2, work: "5/2 × 4/5 = 20/10 = 2" },
-              {
-                a: "11/3",
-                b: "11/12",
-                ans: 4,
-                work: "11/3 × 12/11 = 132/33 = 4",
-              },
-            ];
-            const c = combos[Math.floor(Math.random() * combos.length)];
-            const correct = String(c.ans);
-            const wrong = [
-              String(c.ans * 2),
-              String(c.ans + 2),
-              String(Math.max(1, c.ans - 1)),
-            ].filter((w) => w !== correct);
-            while (wrong.length < 3)
-              wrong.push(String(c.ans + wrong.length + 3));
-            return {
-              type: "division",
-              monster: "\u{1F479}",
-              monsterName: "Ogre Mage",
-              text: `(${c.a}) ÷ (${c.b}) = ?`,
-              correct,
-              choices: shuffle([correct, ...wrong.slice(0, 3)]),
-              hint: `Multiply by the reciprocal: ${c.a} × flip(${c.b})`,
-              explain: `${c.work}`,
-            };
-          }
-
-          // Tape diagram / grouping
-          function tapeModel() {
-            const scenarios = [
-              {
-                text: "A 3-hour block has activities of 3/4 hour each. How many activities fit?",
-                ans: 4,
-                hint: "3 hours = 12 quarter-hours. Each activity = 3 quarters.",
-                explain: "3 ÷ (3/4) = 3 × 4/3 = 4",
-              },
-              {
-                text: "A 2-hour workshop has tasks of 1/2 hour. How many tasks?",
-                ans: 4,
-                hint: "2 hours = 4 half-hours.",
-                explain: "2 ÷ (1/2) = 2 × 2 = 4",
-              },
-              {
-                text: "A 4-hour block has sessions of 2/3 hour. How many full sessions?",
-                ans: 6,
-                hint: "Think: 4 ÷ (2/3) = 4 × 3/2",
-                explain: "4 ÷ (2/3) = 4 × 3/2 = 6",
-              },
-              {
-                text: "A 5-hour day has activities of 5/6 hour. How many activities?",
-                ans: 6,
-                hint: "5 ÷ (5/6) = 5 × 6/5",
-                explain: "5 ÷ (5/6) = 5 × 6/5 = 6",
-              },
-              {
-                text: "How many 3/5-hour groups fit in 3 hours?",
-                ans: 5,
-                hint: "3 ÷ (3/5) = 3 × 5/3",
-                explain: "3 ÷ (3/5) = 3 × 5/3 = 5",
-              },
-              {
-                text: "A 6-hour camp day: sessions are 3/4 hour. How many sessions?",
-                ans: 8,
-                hint: "6 ÷ (3/4) = 6 × 4/3",
-                explain: "6 ÷ (3/4) = 6 × 4/3 = 8",
-              },
-            ];
-            const s = scenarios[Math.floor(Math.random() * scenarios.length)];
-            const correct = String(s.ans);
-            const wrong = [
-              String(s.ans + 1),
-              String(s.ans - 1),
-              String(s.ans + 2),
-            ].filter((w) => w !== correct && parseInt(w) > 0);
-            while (wrong.length < 3)
-              wrong.push(String(s.ans + wrong.length + 3));
-            return {
-              type: "model",
-              monster: "\u{1F9DF}",
-              monsterName: "Zombie Guard",
-              text: s.text,
-              correct,
-              choices: shuffle([correct, ...wrong.slice(0, 3)]),
-              hint: s.hint,
-              explain: s.explain,
-            };
-          }
-
-          // Boss: mixed harder
-          function bossQ() {
-            const pool = [
-              {
-                text: "Boss: 3 hours has how many 45-minute activities?",
-                ans: "4",
-                hint: "3 ÷ (3/4) = 4",
-                explain: "45 min = 3/4 hr. 3 ÷ (3/4) = 4",
-              },
-              {
-                text: "Boss: (5/3) ÷ (1/6) = ?",
-                ans: "10",
-                hint: "Multiply by 6",
-                explain: "5/3 × 6/1 = 30/3 = 10",
-              },
-              {
-                text: "Boss: A 2.5-hour block split into 30-min chunks gives how many?",
-                ans: "5",
-                hint: "2.5 hours = 150 min. 150 ÷ 30 = 5",
-                explain: "2.5 hr = 150 min. 150 ÷ 30 = 5",
-              },
-              {
-                text: "Boss: In a tape of 2 hours split into fourths, how many 1/2-hour activities?",
-                ans: "4",
-                hint: "8 fourths total. 1/2 hour = 2 fourths. 8 ÷ 2 = 4",
-                explain:
-                  "2 hr = 8 quarter-hours. 1/2 hr = 2 quarters. 8 ÷ 2 = 4",
-              },
-            ];
-            const p = pool[Math.floor(Math.random() * pool.length)];
-            const wrong = [
-              String(parseInt(p.ans) + 2),
-              String(parseInt(p.ans) + 1),
-              String(Math.max(1, parseInt(p.ans) - 1)),
-            ].filter((w) => w !== p.ans);
-            while (wrong.length < 3)
-              wrong.push(String(parseInt(p.ans) + wrong.length + 3));
-            return {
-              type: "boss",
-              monster: "\u{1F432}",
-              monsterName: "DUNGEON LORD",
-              text: p.text,
-              correct: p.ans,
-              choices: shuffle([p.ans, ...wrong.slice(0, 3)]),
-              hint: p.hint,
-              explain: p.explain,
-            };
-          }
-
-          const gens = [
-            unitConv,
-            fracDiv1,
-            fracDiv2,
-            tapeModel,
-            fracDiv1,
-            unitConv,
-            tapeModel,
-            fracDiv2,
-          ];
-          for (let i = 0; i < 16; i++) qs.push(gens[i % gens.length]());
-          // Add 4 boss questions
-          for (let i = 0; i < 4; i++) qs.push(bossQ());
-          return qs; // Keep order: normal then boss
+          const cg = gcd(corridorN, corridorD);
+          return {
+            tier,
+            type,
+            tileNum,
+            tileDen,
+            q, // exact number of tiles that fill the hall
+            corridorN,
+            corridorD,
+            dispN: corridorN / cg,
+            dispD: corridorD / cg,
+          };
         }
 
-        // ─── DUNGEON ROOMS ───
-        const ROOMS = [
-          {
-            name: "CRYPT OF CONVERSIONS",
-            icon: "\u{1F47B}",
-            desc: "Convert time units",
-            color: COL.teal,
-            count: 4,
-          },
-          {
-            name: "FRACTION CAVERNS",
-            icon: "\u{1F409}",
-            desc: "Divide fractions",
-            color: COL.purple,
-            count: 4,
-          },
-          {
-            name: "MODEL MAZE",
-            icon: "\u{1F9DF}",
-            desc: "Tape diagrams & grouping",
-            color: COL.amber,
-            count: 4,
-          },
-          {
-            name: "MIXED DEPTHS",
-            icon: "\u{1F479}",
-            desc: "All skills combined",
-            color: COL.accent,
-            count: 4,
-          },
-          {
-            name: "DUNGEON LORD LAIR",
-            icon: "\u{1F432}",
-            desc: "Final boss battle!",
-            color: COL.rose,
-            count: 4,
-          },
-        ];
-
-        // ─── TITLE SCENE ───
+        // ════════════════════════════════════════════════════════════════
+        //  TITLE SCENE — real Level 1 (Support) vs Level 2 (Challenge)
+        // ════════════════════════════════════════════════════════════════
         class TitleScene extends Phaser.Scene {
           constructor() {
             super("TitleScene");
           }
           create() {
-            this.cameras.main.setBackgroundColor(COL.bg).fadeIn(500);
-
-            // Dungeon atmosphere
-            for (let i = 0; i < 40; i++) {
-              const s = this.add.circle(
-                Math.random() * W,
-                Math.random() * H,
-                1,
-                COL.white,
-                0.15 + Math.random() * 0.2,
-              );
-              this.tweens.add({
-                targets: s,
-                alpha: 0.05,
-                duration: 1500 + Math.random() * 2000,
-                yoyo: true,
-                repeat: -1,
-              });
-            }
-
-            // Torch particles
-            for (let tx of [80, W - 80]) {
-              this.add
-                .text(tx, 300, "\u{1F525}", { fontSize: "32px" })
-                .setOrigin(0.5);
-              for (let i = 0; i < 8; i++) {
-                const p = this.add.circle(
-                  tx + Math.random() * 20 - 10,
-                  290,
-                  2,
-                  [COL.gold, COL.amber, COL.red][Math.floor(Math.random() * 3)],
-                  0.6,
-                );
-                this.tweens.add({
-                  targets: p,
-                  y: p.y - 40 - Math.random() * 30,
-                  alpha: 0,
-                  duration: 800 + Math.random() * 600,
-                  delay: Math.random() * 500,
-                  repeat: -1,
-                });
-              }
-            }
-
+            this.cameras.main.setBackgroundColor(C.bg);
             this.add
-              .text(W / 2, 100, "\u{2694}️ \u{1F5E1}️ \u{1F6E1}️", {
-                fontSize: "48px",
-              })
-              .setOrigin(0.5);
-            const title = this.add
-              .text(W / 2, 170, "FRACTION\nDUNGEON", {
-                fontSize: "60px",
-                fontFamily: "Arial Black",
-                color: "#6366f1",
+              .text(W / 2, 96, "FRACTION DUNGEON", {
+                fontSize: "62px",
+                fontFamily: "Arial Black, sans-serif",
+                color: "#f6c343",
                 stroke: "#000",
-                strokeThickness: 6,
-                align: "center",
-                lineSpacing: 2,
+                strokeThickness: 7,
               })
               .setOrigin(0.5);
-            this.tweens.add({
-              targets: title,
-              y: 165,
-              duration: 2500,
-              yoyo: true,
-              repeat: -1,
-              ease: "Sine.easeInOut",
-            });
-
             this.add
               .text(
                 W / 2,
-                260,
-                "Unit 1 — Fraction Division & Unit Conversion",
-                { fontSize: "16px", color: "#64748b" },
+                150,
+                "6.NS.A.1 — Tile the corridor to open the door",
+                {
+                  fontSize: "20px",
+                  fontFamily: "Arial",
+                  color: "#bcd0ff",
+                },
               )
               .setOrigin(0.5);
             this.add
               .text(
                 W / 2,
-                288,
-                "Explore dungeons! Solve math to defeat monsters & unlock doors!",
-                { fontSize: "14px", color: "#475569" },
+                204,
+                "Each hall has a measured LENGTH. Lay down equal tiles of size 1/d\n" +
+                  "until they exactly cover it — no gap, no overflow. The number of\n" +
+                  "tiles that fit IS the answer to “length ÷ tile size.”",
+                {
+                  fontSize: "16px",
+                  fontFamily: "Arial",
+                  color: "#9aa6c0",
+                  align: "center",
+                  lineSpacing: 6,
+                },
               )
               .setOrigin(0.5);
 
-            // Hero selection
-            const heroes = [
+            this.drawDemo(W / 2, 400);
+
+            const tiers = [
               {
-                name: "Knight",
-                icon: "\u{1F9D1}‍\u{1F680}",
-                power: "Shield Block",
-                desc: "+1 life",
+                t: 1,
+                label: "Level 1",
+                sub: "Support",
+                desc: "Unit fractions (1/2, 1/3, 1/4) · gridlines shown · 5 keys",
+                col: C.green,
               },
               {
-                name: "Mage",
-                icon: "\u{1F9D9}",
-                power: "Arcane Hint",
-                desc: "Extra hints",
-              },
-              {
-                name: "Rogue",
-                icon: "\u{1F977}",
-                power: "Quick Strike",
-                desc: "+5s timer",
-              },
-              {
-                name: "Paladin",
-                icon: "\u{1F9DD}",
-                power: "Holy Light",
-                desc: "Combo boost",
+                t: 2,
+                label: "Level 2",
+                sub: "Challenge",
+                desc: "Non-unit & mixed numbers · fewer guides · 3 keys",
+                col: C.gold,
               },
             ];
-            this.sel = 0;
-            this.cards = [];
-            heroes.forEach((h, i) => {
-              const x = 162 + i * 225,
-                y = 430;
+            tiers.forEach((d, i) => {
+              const x = W / 2 + (i === 0 ? -200 : 200),
+                y = 588;
               const card = this.add
-                .rectangle(x, y, 190, 165, COL.panel)
-                .setStrokeStyle(3, i === 0 ? COL.accent : COL.slate)
+                .rectangle(x, y, 322, 132, C.stone)
+                .setStrokeStyle(3, C.stroke)
                 .setInteractive({ useHandCursor: true });
               this.add
-                .text(x, y - 45, h.icon, { fontSize: "40px" })
-                .setOrigin(0.5);
-              this.add
-                .text(x, y + 5, h.name, {
-                  fontSize: "16px",
+                .text(x, y - 40, d.label, {
+                  fontSize: "30px",
+                  fontFamily: "Arial Black",
                   color: "#fff",
-                  fontStyle: "bold",
                 })
                 .setOrigin(0.5);
               this.add
-                .text(x, y + 25, h.power, {
-                  fontSize: "12px",
-                  color: "#a855f7",
+                .text(x, y - 10, d.sub, {
+                  fontSize: "16px",
+                  fontFamily: "Arial",
+                  color: Phaser.Display.Color.IntegerToColor(d.col).rgba,
                 })
                 .setOrigin(0.5);
               this.add
-                .text(x, y + 45, h.desc, { fontSize: "11px", color: "#64748b" })
+                .text(x, y + 30, d.desc, {
+                  fontSize: "12.5px",
+                  fontFamily: "Arial",
+                  color: "#bcd0ff",
+                  align: "center",
+                  wordWrap: { width: 296 },
+                })
                 .setOrigin(0.5);
+              card.on("pointerover", () => {
+                card.setStrokeStyle(3, d.col);
+                card.setScale(1.04);
+              });
+              card.on("pointerout", () => {
+                card.setStrokeStyle(3, C.stroke);
+                card.setScale(1);
+              });
               card.on("pointerdown", () => {
-                au();
-                sfxCl();
-                this.sel = i;
-                this.cards.forEach((c, j) =>
-                  c.setStrokeStyle(3, j === i ? COL.accent : COL.slate),
+                ensureAudio();
+                sfxClick();
+                this.cameras.main.fadeOut(350, 0, 0, 0);
+                this.time.delayedCall(350, () =>
+                  this.scene.start("GameScene", { tier: d.t }),
                 );
               });
-              this.cards.push(card);
             });
 
-            const btn = this.add
-              .rectangle(W / 2, 580, 280, 56, COL.accent)
-              .setInteractive({ useHandCursor: true });
             this.add
-              .text(W / 2, 580, "ENTER DUNGEON", {
-                fontSize: "22px",
-                fontFamily: "Arial Black",
-                color: "#fff",
+              .text(
+                W / 2,
+                704,
+                "Touch: tap the tile bin to lay a tile, tap a placed tile to lift it.  " +
+                  "Keyboard: SPACE/→ lay a tile · ←/Backspace lift · Enter opens the door · H = hint",
+                { fontSize: "12px", color: "#6f7ba0", align: "center" },
+              )
+              .setOrigin(0.5);
+            this.cameras.main.fadeIn(400);
+          }
+          drawDemo(cx, cy) {
+            // 3-length hall tiled by four 3/4 tiles → 3 ÷ 3/4 = 4
+            const barW = 360,
+              x0 = cx - barW / 2;
+            this.add
+              .rectangle(cx, cy, barW + 8, 46, C.floor)
+              .setStrokeStyle(2, C.stroke);
+            for (let s = 0; s < 4; s++) {
+              this.add
+                .rectangle(
+                  x0 + 6 + s * (barW / 4),
+                  cy,
+                  barW / 4 - 6,
+                  36,
+                  C.tile,
+                )
+                .setOrigin(0, 0.5)
+                .setStrokeStyle(2, C.tileEdge);
+            }
+            this.add
+              .text(cx, cy - 44, "Hall length 3", {
+                fontSize: "15px",
+                color: "#9aa6c0",
               })
               .setOrigin(0.5);
-            btn.on("pointerdown", () => {
-              au();
-              sfxDoor();
-              this.cameras.main.fadeOut(400);
-              this.time.delayedCall(400, () =>
-                this.scene.start("GameScene", { hero: heroes[this.sel] }),
-              );
-            });
-            btn.on("pointerover", () => btn.setScale(1.05));
-            btn.on("pointerout", () => btn.setScale(1));
+            this.add
+              .text(cx, cy + 44, "4 tiles of 3/4 fill it  →  3 ÷ 3/4 = 4", {
+                fontSize: "18px",
+                fontFamily: "Arial Black",
+                color: "#f6c343",
+              })
+              .setOrigin(0.5);
           }
         }
 
-        // ─── GAME SCENE ───
+        // ════════════════════════════════════════════════════════════════
+        //  GAME SCENE
+        // ════════════════════════════════════════════════════════════════
         class GameScene extends Phaser.Scene {
           constructor() {
             super("GameScene");
           }
-          init(d) {
-            this.hero = d.hero;
+          init(data) {
+            this.tier = data.tier || 1;
           }
 
           create() {
-            this.cameras.main.setBackgroundColor(COL.bg).fadeIn(400);
+            this.cameras.main.setBackgroundColor(C.bg);
+            this.cameras.main.fadeIn(350);
 
-            this.questions = genQuestions();
-            this.qIdx = 0;
+            // ── state ──
             this.score = 0;
             this.streak = 0;
             this.bestStreak = 0;
+            this.cleared = 0; // corridors cleared
             this.correct = 0;
-            this.total = 0;
-            this.lives = this.hero.name === "Knight" ? 4 : 3;
-            this.maxLives = this.lives;
-            this.answered = false;
             this.attempts = 0;
-            this.timeLeft = this.hero.name === "Rogue" ? 35 : 30;
-            this.baseTime = this.timeLeft;
-            this.level = 1;
-            this.xp = 0;
-            this.loot = 0;
-            this.roomIdx = 0;
-            this.roomQ = 0;
-            this.hintsLeft = this.hero.name === "Mage" ? 4 : 2;
-            this.monsterHp = 100;
+            this.lives = this.tier === 1 ? 5 : 3;
+            this.depth = 1;
+            this.roundIx = 0;
+            this.placed = 0; // tiles currently laid down
 
-            // BG
-            this.add.rectangle(W / 2, H / 2, W, H, COL.dark);
-            // Stone texture
-            const gfx = this.add.graphics();
-            gfx.lineStyle(1, 0xffffff, 0.02);
-            for (let x = 0; x < W; x += 64) gfx.lineBetween(x, 0, x, H);
-            for (let y = 0; y < H; y += 64) gfx.lineBetween(0, y, W, y);
+            // ── backdrop: dungeon ──
+            this.add.rectangle(W / 2, H / 2, W, H, C.bg);
+            this.add.rectangle(W / 2, 690, W, 156, C.floor);
 
             // HUD
-            this.add.rectangle(W / 2, 28, W, 56, COL.bg, 0.96);
-            this.add.rectangle(W / 2, 56, W, 2, COL.accent, 0.2);
-            this.hudHero = this.add.text(
-              15,
-              8,
-              this.hero.icon + " " + this.hero.name,
-              { fontSize: "14px", color: "#a855f7", fontStyle: "bold" },
-            );
-            this.hudLv = this.add.text(15, 30, "Lv 1", {
-              fontSize: "11px",
-              color: "#64748b",
+            this.add.rectangle(W / 2, 28, W, 56, 0x06070b, 0.96);
+            this.hScore = this.add.text(24, 14, "0", {
+              fontSize: "26px",
+              fontFamily: "Arial Black",
+              color: "#f6c343",
             });
-            this.hudScore = this.add
-              .text(W / 2, 8, "0", {
-                fontSize: "22px",
+            this.add.text(26, 42, "GOLD", {
+              fontSize: "10px",
+              color: "#7e8ab0",
+            });
+            this.hDepth = this.add
+              .text(W / 2, 12, "Depth 1", {
+                fontSize: "16px",
                 fontFamily: "Arial Black",
-                color: "#fbbf24",
+                color: "#fff",
               })
               .setOrigin(0.5, 0);
+            this.hCleared = this.add
+              .text(W / 2, 36, "Cleared 0", {
+                fontSize: "12px",
+                color: "#9aa6c0",
+              })
+              .setOrigin(0.5, 0);
+            this.hLives = this.add
+              .text(W - 24, 16, "", { fontSize: "20px" })
+              .setOrigin(1, 0);
+            this.hStreak = this.add
+              .text(W - 24, 42, "", { fontSize: "13px", color: "#f6c343" })
+              .setOrigin(1, 0);
+
+            // ── Quest card (left) ──
             this.add
-              .text(W / 2, 34, "XP", { fontSize: "9px", color: "#64748b" })
-              .setOrigin(0.5, 0);
-            this.hudLives = this.add.text(W - 200, 8, "", {
-              fontSize: "14px",
-              color: "#ef4444",
-            });
-            this.hudStreak = this.add.text(W - 200, 30, "", {
-              fontSize: "12px",
-              color: "#a855f7",
-            });
-            this.hudTimer = this.add.text(W - 60, 14, "30s", {
-              fontSize: "14px",
-              color: "#fbbf24",
-            });
-            this.hudRoom = this.add.text(180, 14, "", {
-              fontSize: "11px",
-              color: "#64748b",
-            });
-            this.hudHints = this.add.text(180, 32, "", {
-              fontSize: "11px",
-              color: "#14b8a6",
-            });
-            this.hudXpBg = this.add.rectangle(W / 2, 54, 200, 3, 0x222, 0.3);
-            this.hudXpFill = this.add
-              .rectangle(W / 2 - 100, 54, 0, 3, COL.accent)
-              .setOrigin(0, 0.5);
-
-            // Room banner
-            this.roomBanner = this.add
-              .text(W / 2, 80, "", {
-                fontSize: "14px",
-                fontFamily: "Arial Black",
-                color: "#6366f1",
-              })
-              .setOrigin(0.5);
-            this.roomDesc = this.add
-              .text(W / 2, 100, "", { fontSize: "12px", color: "#64748b" })
-              .setOrigin(0.5);
-
-            // Room progress dots
-            this.roomDots = [];
-            for (let i = 0; i < 5; i++) {
-              const d = this.add.circle(W / 2 - 60 + i * 30, 125, 8, COL.slate);
-              this.add
-                .text(W / 2 - 60 + i * 30, 125, ROOMS[i].icon, {
-                  fontSize: "12px",
-                })
-                .setOrigin(0.5);
-              this.roomDots.push(d);
-            }
-
-            // Monster area
-            this.monsterSprite = this.add
-              .text(W / 2, 185, "", { fontSize: "56px" })
-              .setOrigin(0.5);
-            this.monsterName = this.add
-              .text(W / 2, 225, "", {
-                fontSize: "14px",
-                color: "#ef4444",
-                fontStyle: "bold",
-              })
-              .setOrigin(0.5);
-            this.monHpBg = this.add.rectangle(W / 2, 248, 180, 8, 0x222);
-            this.monHpBar = this.add
-              .rectangle(W / 2 - 90, 248, 180, 8, COL.red)
-              .setOrigin(0, 0.5);
-
-            // Question card
-            this.qCard = this.add
-              .rectangle(W / 2, 380, 720, 260, COL.panel)
-              .setStrokeStyle(1, COL.slate);
-            this.add.rectangle(W / 2, 251, 720, 3, COL.accent, 0.2);
-            this.qType = this.add
-              .text(W / 2, 268, "", {
-                fontSize: "10px",
-                color: "#6366f1",
-                letterSpacing: 2,
-              })
-              .setOrigin(0.5);
-            this.qText = this.add
-              .text(W / 2, 310, "", {
+              .rectangle(168, 250, 290, 332, C.stone)
+              .setStrokeStyle(3, C.stroke);
+            this.add
+              .text(168, 116, "\u{1F5FA}️ QUEST", {
                 fontSize: "18px",
-                color: "#e2e8f0",
+                fontFamily: "Arial Black",
+                color: "#f6c343",
+              })
+              .setOrigin(0.5);
+            this.monster = this.add
+              .text(168, 168, "", { fontSize: "52px" })
+              .setOrigin(0.5);
+            this.questLen = this.add
+              .text(168, 226, "", {
+                fontSize: "30px",
+                fontFamily: "Arial Black",
+                color: "#fff",
+              })
+              .setOrigin(0.5);
+            this.questTile = this.add
+              .text(168, 268, "", {
+                fontSize: "18px",
+                fontFamily: "Arial",
+                color: "#bcd0ff",
+              })
+              .setOrigin(0.5);
+            this.questTask = this.add
+              .text(168, 330, "", {
+                fontSize: "14px",
+                fontFamily: "Arial",
                 fontStyle: "bold",
-                wordWrap: { width: 660 },
+                color: "#ffe9a8",
                 align: "center",
+                wordWrap: { width: 262 },
                 lineSpacing: 4,
               })
               .setOrigin(0.5);
 
-            // Choices
-            this.btns = [];
-            this.btnTxts = [];
-            for (let i = 0; i < 4; i++) {
-              const col = i % 2,
-                row = Math.floor(i / 2);
-              const x = W / 2 - 170 + col * 340,
-                y = 380 + row * 58;
-              const btn = this.add
-                .rectangle(x, y, 320, 48, COL.dark)
-                .setStrokeStyle(2, COL.slate)
-                .setInteractive({ useHandCursor: true });
-              const txt = this.add
-                .text(x, y, "", {
-                  fontSize: "16px",
-                  color: "#e2e8f0",
-                  fontStyle: "bold",
-                })
-                .setOrigin(0.5);
-              btn.on("pointerdown", () => this.pick(i));
-              btn.on("pointerover", () => {
-                if (!this.answered) btn.setStrokeStyle(2, COL.accent);
-              });
-              btn.on("pointerout", () => {
-                if (!this.answered) btn.setStrokeStyle(2, COL.slate);
-              });
-              this.btns.push(btn);
-              this.btnTxts.push(txt);
-            }
+            // ── Corridor (center) ──
+            this.barX = 360; // left edge of corridor bar
+            this.barW = 540; // px width of the full corridor length
+            this.barY = 300;
+            this.barH = 88;
+            this.corridorGfx = this.add.graphics();
+            this.gridGfx = this.add.graphics();
+            this.tileLayer = this.add.container();
+            this.doorGfx = this.add.graphics();
 
-            // Hint button
-            this.hintBtn = this.add
-              .rectangle(W / 2 - 280, 520, 100, 32, COL.teal, 0.8)
-              .setInteractive({ useHandCursor: true });
-            this.hintBtnTxt = this.add
-              .text(W / 2 - 280, 520, "\u{1F4A1} Hint", {
-                fontSize: "12px",
-                color: "#fff",
+            // coverage read-out under the corridor
+            this.coverNote = this.add
+              .text(630, 408, "", {
+                fontSize: "17px",
+                fontFamily: "Arial",
                 fontStyle: "bold",
-              })
-              .setOrigin(0.5);
-            this.hintBtn.on("pointerdown", () => this.useHint());
-
-            // Hint display
-            this.hintBg = this.add
-              .rectangle(W / 2, 520, 500, 34, 0x1a2a1a, 0.8)
-              .setAlpha(0);
-            this.hintTxt = this.add
-              .text(W / 2, 520, "", { fontSize: "13px", color: "#14b8a6" })
-              .setOrigin(0.5)
-              .setAlpha(0);
-
-            // Feedback
-            this.fbBg = this.add
-              .rectangle(W / 2, 565, 720, 44, COL.panel)
-              .setAlpha(0);
-            this.fbTxt = this.add
-              .text(W / 2, 565, "", {
-                fontSize: "14px",
-                color: "#e2e8f0",
-                wordWrap: { width: 680 },
+                color: "#9aa6c0",
                 align: "center",
               })
-              .setOrigin(0.5)
-              .setAlpha(0);
+              .setOrigin(0.5);
 
-            // Next
-            this.nxtBtn = this.add
-              .rectangle(W / 2, 630, 220, 46, COL.accent)
-              .setInteractive({ useHandCursor: true })
-              .setAlpha(0);
-            this.nxtTxt = this.add
-              .text(W / 2, 630, "NEXT ROOM >", {
+            // monster HP bar (decrements by fraction covered)
+            this.add
+              .text(630, 196, "MONSTER HP", {
+                fontSize: "13px",
+                fontFamily: "Arial Black",
+                color: "#e7a0ad",
+              })
+              .setOrigin(0.5);
+            this.hpGfx = this.add.graphics();
+            this.hpLabel = this.add
+              .text(630, 168, "", {
                 fontSize: "14px",
                 fontFamily: "Arial Black",
                 color: "#fff",
               })
-              .setOrigin(0.5)
-              .setAlpha(0);
-            this.nxtBtn.on("pointerdown", () => {
-              if (this.answered) this.nextQ();
+              .setOrigin(0.5);
+
+            // ── Tile bin (right) ──
+            this.add
+              .rectangle(630, 540, 300, 150, C.stone)
+              .setStrokeStyle(3, C.stroke);
+            this.add
+              .text(630, 488, "TILE BIN — equal pieces", {
+                fontSize: "14px",
+                fontFamily: "Arial Black",
+                color: "#bcd0ff",
+              })
+              .setOrigin(0.5);
+            this.binTile = this.add
+              .rectangle(630, 540, 150, 44, C.tile)
+              .setStrokeStyle(3, C.tileEdge)
+              .setInteractive({ useHandCursor: true });
+            this.binTileLbl = this.add
+              .text(630, 540, "", {
+                fontSize: "18px",
+                fontFamily: "Arial Black",
+                color: "#06121f",
+              })
+              .setOrigin(0.5);
+            this.binTile.on("pointerover", () => this.binTile.setScale(1.05));
+            this.binTile.on("pointerout", () => this.binTile.setScale(1));
+            this.binTile.on("pointerdown", () => {
+              ensureAudio();
+              this.placeTile();
             });
+            this.add
+              .text(630, 580, "Tap to LAY one tile into the hall", {
+                fontSize: "12px",
+                color: "#7e8ab0",
+              })
+              .setOrigin(0.5);
 
-            // Loot display
-            this.lootTxt = this.add.text(W - 60, 42, "\u{1F48E} 0", {
-              fontSize: "11px",
-              color: "#fbbf24",
-            });
-
-            // Timer
-            this.timerEvt = this.time.addEvent({
-              delay: 1000,
-              callback: this.tick,
-              callbackScope: this,
-              loop: true,
-            });
-
-            // Keys
-            this.input.keyboard.on("keydown", (e) => {
-              if (e.key === "1" || e.key === "a") this.pick(0);
-              if (e.key === "2" || e.key === "b") this.pick(1);
-              if (e.key === "3" || e.key === "c") this.pick(2);
-              if (e.key === "4" || e.key === "d") this.pick(3);
-              if (e.key === "Enter" && this.answered) this.nextQ();
-              if (e.key === "h") this.useHint();
-            });
-
-            this.loadQ();
-          }
-
-          tick() {
-            if (this.answered || this.timeLeft <= 0) return;
-            this.timeLeft--;
-            this.hudTimer.setText(this.timeLeft + "s");
-            if (this.timeLeft <= 5 && this.timeLeft > 0) {
-              bip(300, 0.04, "square", 0.03);
-              this.hudTimer.setColor("#ff4444");
-            }
-            if (this.timeLeft <= 0) {
-              this.answered = true;
-              sfxNo();
-              this.streak = 0;
-              this.lives--;
-              this.showFB(false);
-              this.cameras.main.shake(200, 0.01);
-              this.updateHUD();
-              if (this.lives <= 0)
-                this.time.delayedCall(1500, () => this.endGame());
-            }
-          }
-
-          useHint() {
-            if (this.answered || this.hintsLeft <= 0) return;
-            au();
-            sfxCl();
-            this.hintsLeft--;
-            const q = this.questions[this.qIdx];
-            this.hintBg.setAlpha(0.8);
-            this.hintTxt.setText("\u{1F4A1} " + q.hint).setAlpha(1);
-            this.updateHUD();
-          }
-
-          loadQ() {
-            if (this.qIdx >= this.questions.length)
-              this.questions.push(...genQuestions());
-            const q = this.questions[this.qIdx];
-            this.answered = false;
-            this.attempts = 0;
-            this.timeLeft = this.baseTime;
-            this.hudTimer.setColor("#fbbf24");
-
-            // Determine room
-            this.roomIdx = Math.min(4, Math.floor(this.qIdx / 4));
-            this.roomQ = this.qIdx % 4;
-            const room = ROOMS[Math.min(this.roomIdx, 4)];
-
-            // Update room dots
-            this.roomDots.forEach((d, i) => {
-              if (i < this.roomIdx) d.fillColor = COL.green;
-              else if (i === this.roomIdx) d.fillColor = COL.gold;
-              else d.fillColor = COL.slate;
-            });
-
-            this.roomBanner.setText(room.icon + " " + room.name);
-            this.roomDesc.setText(
-              room.desc + " — Room " + (this.roomQ + 1) + "/" + room.count,
+            // ── Action buttons ──
+            this.openBtn = this.makeBtn(
+              630,
+              700,
+              240,
+              56,
+              "\u{1F6AA} OPEN DOOR",
+              0xf6c343,
+              () => this.tryOpen(),
+              "22px",
+              0x1a0d35,
+            );
+            this.liftBtn = this.makeBtn(
+              405,
+              700,
+              150,
+              48,
+              "↩ Lift tile",
+              0x35406a,
+              () => this.liftTile(),
+              "15px",
+            );
+            this.hintBtn = this.makeBtn(
+              855,
+              700,
+              140,
+              48,
+              "\u{1F4A1} Hint",
+              0x35406a,
+              () => this.showHint(),
+              "15px",
             );
 
-            // Monster
-            this.monsterSprite.setText(q.monster || "\u{1F47E}");
-            this.monsterName.setText(q.monsterName || "Monster");
-            this.monsterHp = 100;
-            this.monHpBar.setDisplaySize(180, 8);
-            this.tweens.add({
-              targets: this.monsterSprite,
-              scaleX: { from: 0.5, to: 1 },
-              scaleY: { from: 0.5, to: 1 },
-              duration: 300,
-              ease: "Back.easeOut",
+            this.feedback = this.add
+              .text(630, 444, "", {
+                fontSize: "16px",
+                fontFamily: "Arial",
+                fontStyle: "bold",
+                color: "#fff",
+                align: "center",
+                wordWrap: { width: 560 },
+              })
+              .setOrigin(0.5);
+
+            // ── keyboard ──
+            this.input.keyboard.on("keydown", (e) => {
+              const k = e.key;
+              if (k === " " || k === "ArrowRight") {
+                e.preventDefault?.();
+                this.placeTile();
+              } else if (k === "ArrowLeft" || k === "Backspace") {
+                e.preventDefault?.();
+                this.liftTile();
+              } else if (k === "Enter") this.tryOpen();
+              else if (k.toLowerCase() === "h") this.showHint();
             });
 
-            this.qType.setText(q.type.toUpperCase());
-            this.qText.setText(q.text);
-
-            q.choices.forEach((c, i) => {
-              this.btnTxts[i].setText(String.fromCharCode(65 + i) + ". " + c);
-              this.btns[i].fillColor = COL.dark;
-              this.btns[i].setStrokeStyle(2, COL.slate);
-              this.btns[i].setAlpha(1);
-              this.btnTxts[i].setAlpha(1);
-              this.btns[i].setInteractive();
-            });
-
-            this.hintBg.setAlpha(0);
-            this.hintTxt.setAlpha(0);
-            this.fbBg.setAlpha(0);
-            this.fbTxt.setAlpha(0);
-            this.nxtBtn.setAlpha(0);
-            this.nxtTxt.setAlpha(0);
-            this.hintBtn.setAlpha(this.hintsLeft > 0 ? 1 : 0.3);
-            this.updateHUD();
+            this.loadRound();
           }
 
-          pick(i) {
-            if (this.answered) return;
-            au();
-            const q = this.questions[this.qIdx];
-            const chosen = q.choices[i];
+          makeBtn(
+            x,
+            y,
+            w,
+            h,
+            label,
+            color,
+            cb,
+            fs = "18px",
+            txtColor = 0xffffff,
+          ) {
+            const r = this.add
+              .rectangle(x, y, w, h, color)
+              .setStrokeStyle(2, 0x000000, 0.25)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(x, y, label, {
+                fontSize: fs,
+                fontFamily: "Arial Black",
+                color: Phaser.Display.Color.IntegerToColor(txtColor).rgba,
+              })
+              .setOrigin(0.5);
+            r.on("pointerover", () => r.setScale(1.05));
+            r.on("pointerout", () => r.setScale(1));
+            r.on("pointerdown", () => {
+              ensureAudio();
+              cb();
+            });
+            return r;
+          }
 
-            if (chosen === q.correct) {
-              this.answered = true;
-              sfxOk();
-              sfxHit();
-              this.correct++;
-              this.total++;
-              this.streak++;
-              if (this.streak > this.bestStreak) this.bestStreak = this.streak;
-              const comboMult =
-                this.hero.name === "Paladin"
-                  ? Math.min(6, 1 + Math.floor(this.streak / 2))
-                  : Math.min(5, 1 + Math.floor(this.streak / 3));
-              const pts =
-                (100 + (this.attempts === 0 ? 50 : 0) + this.streak * 12) *
-                comboMult;
-              this.score += pts;
-              this.xp += 20;
-              if (this.xp >= 100) {
-                this.xp -= 100;
-                this.level++;
-                sfxLv();
-              }
+          loadRound() {
+            this.round = makeRound(this.tier, this.roundIx);
+            const r = this.round;
+            this.placed = 0;
+            this.attempts = 0;
+            this.feedback.setText("");
 
-              // Loot
-              const lootAmt = 10 + Math.floor(Math.random() * 20);
-              this.loot += lootAmt;
-              sfxLoot();
-
-              // Monster damage
-              this.monsterHp = 0;
-              this.monHpBar.setDisplaySize(0, 8);
-              this.tweens.add({
-                targets: this.monsterSprite,
-                alpha: 0,
-                scaleX: 1.5,
-                scaleY: 1.5,
-                duration: 400,
-              });
-
-              this.btns[i].fillColor = COL.green;
-              this.showFB(true);
-              this.spawnParts(this.btns[i].x, this.btns[i].y, true);
-              this.showPts(pts, lootAmt);
+            // theme: dungeon (tile) vs clock (time)
+            if (r.type === "time") {
+              this.monster.setText("\u{1F570}️");
+              const hallStr = fracStr(r.dispN, r.dispD);
+              this.questLen.setText(hallStr + " hour");
+              this.questTile.setText("Blocks of 15 min = 1/4 hour");
+              // for a time round we relabel: tile is always 1/4 hour (15 min)
+              r.tileNum = 1;
+              r.tileDen = 4;
+              r.corridorD = 4;
+              r.corridorN = r.q; // q quarter-hours; recompute hall display
+              const cg = gcd(r.corridorN, r.corridorD);
+              r.dispN = r.corridorN / cg;
+              r.dispD = r.corridorD / cg;
+              this.questLen.setText(fracStr(r.dispN, r.dispD) + " hour");
+              this.questTask.setText(
+                "Lay 15-minute blocks end to end until they exactly fill " +
+                  fracStr(r.dispN, r.dispD) +
+                  " of an hour. How many blocks?",
+              );
+              this.binTileLbl.setText("15 min");
             } else {
-              sfxNo();
-              this.attempts++;
-              this.btns[i].fillColor = COL.red;
-              this.btns[i].setAlpha(0.4);
-              this.btns[i].disableInteractive();
-              this.cameras.main.shake(120, 0.006);
+              this.monster.setText(
+                pick([
+                  "\u{1F479}",
+                  "\u{1F47E}",
+                  "\u{1F432}",
+                  "\u{1F9DF}",
+                  "\u{1F47B}",
+                ]),
+              );
+              this.questLen.setText("Hall = " + fracStr(r.dispN, r.dispD));
+              this.questTile.setText(
+                "Tile size = " + fracStr(r.tileNum, r.tileDen),
+              );
+              this.questTask.setText(
+                "Lay " +
+                  fracStr(r.tileNum, r.tileDen) +
+                  " tiles end to end until they EXACTLY cover the " +
+                  fracStr(r.dispN, r.dispD) +
+                  "-length hall. No gap, no overflow.",
+              );
+              this.binTileLbl.setText(fracStr(r.tileNum, r.tileDen));
+            }
 
-              // Monster attacks back
-              this.tweens.add({
-                targets: this.monsterSprite,
-                x: W / 2 - 20,
-                duration: 80,
-                yoyo: true,
-                repeat: 2,
+            this.updateHUD();
+            this.redraw();
+          }
+
+          // one tile spans (tileNum/tileDen) of a unit; corridor total length = corridorN/corridorD units.
+          // px per unit:
+          unitPx() {
+            return (this.barW * this.round.corridorD) / this.round.corridorN; // barW spans the whole hall
+          }
+          tilePx() {
+            // width of one tile in px = (tileNum/tileDen) units * unitPx
+            const r = this.round;
+            return this.barW / r.q; // exactly barW/q since q tiles fill the bar
+          }
+
+          placeTile() {
+            const r = this.round;
+            if (this.placed >= MAX_TILES + 2) {
+              sfxWrong();
+              this.flash(
+                this.feedback,
+                "The hall can't hold more tiles.",
+                "#ffb4b4",
+              );
+              return;
+            }
+            this.placed++;
+            sfxPlace();
+            this.redraw();
+            this.checkOvershoot();
+          }
+          liftTile() {
+            if (this.placed <= 0) {
+              sfxWrong();
+              return;
+            }
+            this.placed--;
+            sfxRemove();
+            this.feedback.setText("");
+            this.redraw();
+          }
+
+          checkOvershoot() {
+            const r = this.round;
+            if (this.placed > r.q)
+              this.flash(
+                this.feedback,
+                "Those tiles stick out past the end of the hall — lift " +
+                  (this.placed - r.q) +
+                  ".",
+                "#ffd9b4",
+              );
+          }
+
+          redraw() {
+            const r = this.round;
+            const g = this.corridorGfx;
+            g.clear();
+            this.gridGfx.clear();
+            this.doorGfx.clear();
+            this.tileLayer.removeAll(true);
+
+            const x0 = this.barX,
+              y = this.barY,
+              w = this.barW,
+              h = this.barH;
+
+            // corridor floor (measured bar of length L)
+            g.fillStyle(C.floor, 1).fillRoundedRect(
+              x0 - 4,
+              y - h / 2 - 4,
+              w + 8,
+              h + 8,
+              8,
+            );
+            g.lineStyle(3, C.stroke, 1).strokeRoundedRect(
+              x0 - 4,
+              y - h / 2 - 4,
+              w + 8,
+              h + 8,
+              8,
+            );
+
+            // whole-unit measure ticks + labels (always)
+            const units = r.corridorN / r.corridorD; // total length in units (may be fractional)
+            const upx = w / units;
+            for (let u = 0; u <= Math.ceil(units); u++) {
+              const ux = x0 + Math.min(u, units) * upx;
+              this.gridGfx.lineStyle(2, C.stroke, 0.9).beginPath();
+              this.gridGfx.moveTo(ux, y - h / 2 - 4);
+              this.gridGfx.lineTo(ux, y + h / 2 + 10);
+              this.gridGfx.strokePath();
+            }
+            // unit number labels under the bar
+            if (!this._unitLabels) this._unitLabels = [];
+            this._unitLabels.forEach((t) => t.destroy());
+            this._unitLabels = [];
+            for (let u = 0; u <= Math.floor(units); u++) {
+              const ux = x0 + u * upx;
+              this._unitLabels.push(
+                this.add
+                  .text(ux, y + h / 2 + 22, String(u), {
+                    fontSize: "13px",
+                    color: "#7e8ab0",
+                  })
+                  .setOrigin(0.5),
+              );
+            }
+            // end-of-hall marker
+            this._unitLabels.push(
+              this.add
+                .text(x0 + w, y - h / 2 - 20, "END", {
+                  fontSize: "12px",
+                  fontFamily: "Arial Black",
+                  color: "#f6c343",
+                })
+                .setOrigin(0.5),
+            );
+
+            // Level 1 (Support): faint gridlines at every tile boundary as a guide.
+            if (this.tier === 1) {
+              const tpx = w / r.q;
+              for (let s = 1; s < r.q; s++) {
+                const gx = x0 + s * tpx;
+                this.gridGfx.lineStyle(1, C.stroke, 0.5).beginPath();
+                this.gridGfx.moveTo(gx, y - h / 2);
+                this.gridGfx.lineTo(gx, y + h / 2);
+                this.gridGfx.strokePath();
+              }
+            }
+
+            // placed tiles (each exactly w/q wide → they tile perfectly)
+            const tpx = w / r.q;
+            for (let s = 0; s < this.placed; s++) {
+              const tx = x0 + s * tpx;
+              const over = s >= r.q; // this tile pokes past the end
+              const rect = this.add
+                .rectangle(tx + 2, y, tpx - 4, h - 14, over ? C.red : C.tile)
+                .setOrigin(0, 0.5)
+                .setStrokeStyle(2, over ? 0x5a1020 : C.tileEdge)
+                .setInteractive({ useHandCursor: true });
+              rect.on("pointerdown", () => {
+                ensureAudio();
+                this.liftTile();
               });
+              this.tileLayer.add(rect);
+              // count chip on the tile
+              this.tileLayer.add(
+                this.add
+                  .text(tx + tpx / 2, y, String(s + 1), {
+                    fontSize: "13px",
+                    fontFamily: "Arial Black",
+                    color: "#06121f",
+                  })
+                  .setOrigin(0.5),
+              );
+            }
 
-              if (this.attempts >= 2) {
-                this.answered = true;
-                this.total++;
-                this.streak = 0;
-                this.lives--;
-                q.choices.forEach((c, j) => {
-                  if (c === q.correct) this.btns[j].fillColor = COL.green;
-                });
-                this.showFB(false);
-                if (this.lives <= 0)
-                  this.time.delayedCall(1500, () => this.endGame());
-              } else {
-                // Auto-show hint on first miss
-                this.hintBg.setAlpha(0.8);
-                this.hintTxt.setText("\u{1F4A1} " + q.hint).setAlpha(1);
+            // door at the end of the hall
+            const doorOpen = this.placed === r.q;
+            this.doorGfx.fillStyle(doorOpen ? C.green : C.stoneHi, 1);
+            this.doorGfx.fillRoundedRect(
+              x0 + w + 8,
+              y - h / 2 - 4,
+              22,
+              h + 8,
+              5,
+            );
+            this.doorGfx.lineStyle(2, doorOpen ? C.green : C.stroke, 1);
+            this.doorGfx.strokeRoundedRect(
+              x0 + w + 8,
+              y - h / 2 - 4,
+              22,
+              h + 8,
+              5,
+            );
+
+            // coverage read-out (felt fraction) — ICON + words, not colour alone
+            const coveredUnits = this.placed * (r.tileNum / r.tileDen);
+            const coverStr = fracStr(this.placed * r.tileNum, r.tileDen);
+            let state;
+            if (this.placed === 0)
+              state = "Hall is empty — start laying tiles.";
+            else if (this.placed < r.q)
+              state = `△ Covered ${coverStr} of ${fracStr(r.dispN, r.dispD)} — a GAP remains. Add more.`;
+            else if (this.placed === r.q)
+              state = `✔ Exactly covered! ${this.placed} tiles = ${fracStr(r.dispN, r.dispD)}. Door is open.`;
+            else
+              state = `⚠ Overflow — tiles stick out past the END. Lift ${this.placed - r.q}.`;
+            this.coverNote
+              .setText(state)
+              .setColor(
+                this.placed === r.q
+                  ? "#2ec26b"
+                  : this.placed > r.q
+                    ? "#ffb4b4"
+                    : "#9aa6c0",
+              );
+
+            // monster HP = remaining fraction of hall NOT covered (graduated)
+            this.drawHP(Math.min(this.placed, r.q) / r.q);
+          }
+
+          drawHP(coveredFrac) {
+            const hp = Math.max(0, 1 - coveredFrac); // remaining
+            const g = this.hpGfx;
+            g.clear();
+            const bx = 520,
+              by = 210,
+              bw = 220,
+              bh = 18;
+            g.fillStyle(0x06070b, 1).fillRoundedRect(bx, by, bw, bh, 5);
+            g.lineStyle(2, C.stroke, 1).strokeRoundedRect(bx, by, bw, bh, 5);
+            g.fillStyle(hp <= 0 ? C.green : C.red, 0.92);
+            g.fillRoundedRect(
+              bx + 2,
+              by + 2,
+              Math.max(0, (bw - 4) * hp),
+              bh - 4,
+              4,
+            );
+            this.hpLabel.setText(
+              hp <= 0 ? "DEFEATED ✔" : Math.round(hp * 100) + "% HP",
+            );
+          }
+
+          tryOpen() {
+            const r = this.round;
+            if (this.placed === r.q) {
+              this.onCorrect();
+              return;
+            }
+            // diagnostic, non-giveaway feedback that teaches the GROUPING method
+            sfxWrong();
+            this.attempts++;
+            this.streak = 0;
+            this.cameras.main.shake(150, 0.006);
+            let msg;
+            if (this.placed === 0)
+              msg = "The door is sealed. Lay tiles to measure how many fit.";
+            else if (this.placed < r.q)
+              msg =
+                "There's still a GAP at the end. Keep laying " +
+                fracStr(r.tileNum, r.tileDen) +
+                " tiles until they reach the END mark.";
+            else
+              msg =
+                "Your tiles OVERSHOOT the end. Lift tiles until the last one stops exactly at the END.";
+            this.flash(this.feedback, "❌ " + msg, "#ffb4b4");
+
+            if (this.attempts >= (this.tier === 1 ? 3 : 2)) {
+              this.lives--;
+              this.attempts = 0;
+              if (this.lives <= 0) {
+                this.updateHUD();
+                this.time.delayedCall(900, () => this.endGame());
+                return;
               }
             }
             this.updateHUD();
           }
 
-          showFB(ok) {
-            const q = this.questions[this.qIdx];
-            this.fbBg.setAlpha(0.95);
-            this.fbBg.fillColor = ok ? 0x0a200a : 0x200a0a;
-            this.fbTxt
-              .setText(
-                (ok
-                  ? "\u{2694}️ Monster defeated! "
-                  : "💀 The monster strikes! ") + q.explain,
-              )
-              .setAlpha(1);
-            this.nxtBtn.setAlpha(1);
-            this.nxtTxt.setAlpha(1);
+          onCorrect() {
+            sfxOpen();
+            this.correct++;
+            this.cleared++;
+            this.streak++;
+            if (this.streak > this.bestStreak) this.bestStreak = this.streak;
+            const r = this.round;
+            const combo = Math.min(4, 1 + Math.floor(this.streak / 3));
+            const firstTry = this.attempts === 0 ? 60 : 0;
+            const pts = (100 + firstTry + this.streak * 8) * combo;
+            this.score += pts;
+            this.drawHP(1);
+            this.flash(
+              this.feedback,
+              `✅ ${fracStr(r.dispN, r.dispD)} ÷ ${fracStr(r.tileNum, r.tileDen)} = ${r.q} tiles!  +${pts}${combo > 1 ? " x" + combo : ""}`,
+              "#bff7cf",
+            );
+            this.popOpen();
 
-            const nextRoom = Math.floor((this.qIdx + 1) / 4);
-            const isRoomEnd = (this.qIdx + 1) % 4 === 0;
-            if (this.lives <= 0) this.nxtTxt.setText("GAME OVER");
-            else if (this.qIdx >= 19) this.nxtTxt.setText("CLAIM VICTORY");
-            else if (isRoomEnd) this.nxtTxt.setText("NEXT DUNGEON >");
-            else this.nxtTxt.setText("NEXT MONSTER >");
+            if (this.correct % 4 === 0) {
+              this.depth++;
+              sfxLevel();
+            }
+            this.updateHUD();
+
+            const done = this.cleared >= (this.tier === 1 ? 10 : 12);
+            this.time.delayedCall(1150, () => {
+              if (done) this.endGame();
+              else {
+                this.roundIx++;
+                this.loadRound();
+              }
+            });
           }
 
-          showPts(p, loot) {
-            const t = this.add
-              .text(W / 2, 200, "+" + p + " XP  \u{1F48E}+" + loot, {
-                fontSize: "20px",
-                fontFamily: "Arial Black",
-                color: "#fbbf24",
-                stroke: "#000",
-                strokeThickness: 3,
+          popOpen() {
+            const r = this.round;
+            const hero = this.add
+              .text(this.barX - 30, this.barY, "\u{1F9B8}", {
+                fontSize: "44px",
               })
               .setOrigin(0.5);
             this.tweens.add({
-              targets: t,
-              y: 160,
-              alpha: 0,
-              duration: 1000,
-              onComplete: () => t.destroy(),
+              targets: hero,
+              x: this.barX + this.barW + 20,
+              duration: 950,
+              ease: "Cubic.easeInOut",
+              onComplete: () => hero.destroy(),
             });
-          }
-
-          spawnParts(x, y, ok) {
-            const colors = ok
-              ? [COL.gold, COL.accent, COL.green, COL.purple, COL.white]
-              : [COL.red, COL.rose];
-            for (let i = 0; i < 16; i++) {
+            for (let i = 0; i < 18; i++) {
               const p = this.add.circle(
-                x,
-                y,
-                2 + Math.random() * 3,
-                colors[Math.floor(Math.random() * colors.length)],
+                this.barX + this.barW,
+                this.barY,
+                3 + Math.random() * 3,
+                [C.gold, C.green, C.tile][rnd(3)],
               );
               this.tweens.add({
                 targets: p,
-                x: x + (Math.random() - 0.5) * 280,
-                y: y + (Math.random() - 0.5) * 180,
+                x: this.barX + this.barW + (Math.random() - 0.2) * 200,
+                y: this.barY + (Math.random() - 0.5) * 200,
                 alpha: 0,
                 scale: 0,
-                duration: 500 + Math.random() * 400,
+                duration: 600 + Math.random() * 400,
                 onComplete: () => p.destroy(),
               });
             }
           }
 
-          nextQ() {
-            if (!this.answered) return;
-            sfxCl();
-            if (this.lives <= 0 || this.qIdx >= 19) {
-              this.endGame();
-              return;
-            }
-
-            // Room transition
-            const wasRoom = Math.floor(this.qIdx / 4);
-            this.qIdx++;
-            const newRoom = Math.floor(this.qIdx / 4);
-            if (newRoom !== wasRoom && newRoom < 5) {
-              sfxDoor();
-              this.showRoomTransition(newRoom);
-            } else {
-              this.monsterSprite.setAlpha(1).setScale(1);
-              this.loadQ();
-            }
+          showHint() {
+            sfxClick();
+            const r = this.round;
+            const h =
+              "\u{1F4A1} Ask: how many " +
+              fracStr(r.tileNum, r.tileDen) +
+              "-tiles fit in " +
+              fracStr(r.dispN, r.dispD) +
+              "? Lay one tile, see how far it reaches, then keep adding equal tiles until the last one lands on the END mark. You have " +
+              this.placed +
+              " down so far.";
+            this.flash(this.feedback, h, "#ffe9a8", 3400);
           }
 
-          showRoomTransition(idx) {
-            const room = ROOMS[Math.min(idx, 4)];
-            const bg = this.add
-              .rectangle(W / 2, H / 2, W, H, 0x000000, 0.9)
-              .setDepth(100);
-            const icon = this.add
-              .text(W / 2, H / 2 - 40, room.icon, { fontSize: "64px" })
-              .setOrigin(0.5)
-              .setDepth(101);
-            const title = this.add
-              .text(W / 2, H / 2 + 20, room.name, {
-                fontSize: "28px",
-                fontFamily: "Arial Black",
-                color: "#6366f1",
-              })
-              .setOrigin(0.5)
-              .setDepth(101);
-            const desc = this.add
-              .text(W / 2, H / 2 + 55, room.desc, {
-                fontSize: "14px",
-                color: "#64748b",
-              })
-              .setOrigin(0.5)
-              .setDepth(101);
-
-            this.time.delayedCall(1800, () => {
-              bg.destroy();
-              icon.destroy();
-              title.destroy();
-              desc.destroy();
-              this.monsterSprite.setAlpha(1).setScale(1);
-              this.loadQ();
+          flash(obj, msg, color = "#ffffff", hold = 2400) {
+            obj.setText(msg).setColor(color).setAlpha(1);
+            this.tweens.killTweensOf(obj);
+            this.time.delayedCall(hold, () => {
+              if (obj.text === msg)
+                this.tweens.add({ targets: obj, alpha: 0.0, duration: 400 });
             });
           }
 
           updateHUD() {
-            this.hudScore.setText(this.score.toLocaleString());
-            this.hudLv.setText("Lv " + this.level);
-            this.hudLives.setText(
-              "❤️".repeat(Math.max(0, this.lives)) +
-                "🖤".repeat(Math.max(0, this.maxLives - this.lives)),
+            this.hScore.setText(this.score.toLocaleString());
+            this.hDepth.setText("Depth " + this.depth);
+            this.hCleared.setText("Cleared " + this.cleared);
+            this.hLives.setText("\u{1F511}".repeat(Math.max(0, this.lives)));
+            this.hStreak.setText(
+              this.streak >= 3 ? "\u{1F525} streak " + this.streak : "",
             );
-            this.hudStreak.setText(
-              this.streak >= 3 ? "\u{1F525} " + this.streak + "x Combo" : "",
-            );
-            this.hudTimer.setText(this.timeLeft + "s");
-            this.hudRoom.setText(
-              "Room " + (this.roomIdx + 1) + "/5 | Q" + (this.roomQ + 1) + "/4",
-            );
-            this.hudHints.setText("\u{1F4A1} Hints: " + this.hintsLeft);
-            this.hudXpFill.setDisplaySize(this.xp * 2, 3);
-            this.lootTxt.setText("\u{1F48E} " + this.loot);
-            this.hintBtnTxt.setText("\u{1F4A1} Hint (" + this.hintsLeft + ")");
           }
 
           endGame() {
-            this.timerEvt.remove();
-            this.cameras.main.fadeOut(500);
-            this.time.delayedCall(500, () =>
+            this.cameras.main.fadeOut(450, 0, 0, 0);
+            this.time.delayedCall(450, () =>
               this.scene.start("ResultScene", {
-                hero: this.hero,
+                tier: this.tier,
                 score: this.score,
                 correct: this.correct,
-                total: this.total,
+                cleared: this.cleared,
                 bestStreak: this.bestStreak,
-                level: this.level,
-                loot: this.loot,
-                roomsCleared: this.roomIdx,
-                won: this.qIdx >= 19 && this.lives > 0,
+                depth: this.depth,
               }),
             );
           }
         }
 
-        // ─── RESULT SCENE ───
+        // ════════════════════════════════════════════════════════════════
+        //  RESULT SCENE
+        // ════════════════════════════════════════════════════════════════
         class ResultScene extends Phaser.Scene {
           constructor() {
             super("ResultScene");
@@ -1194,140 +1078,152 @@
             Object.assign(this, d);
           }
           create() {
-            this.cameras.main.setBackgroundColor(COL.bg).fadeIn(500);
-            const pct =
-              this.total > 0
-                ? Math.round((this.correct / this.total) * 100)
-                : 0;
+            this.cameras.main.setBackgroundColor(C.bg);
+            this.cameras.main.fadeIn(450);
+            const goal = this.tier === 1 ? 10 : 12;
+            const pct = goal > 0 ? Math.round((this.correct / goal) * 100) : 0;
+
             try {
               window.EduPulse &&
                 EduPulse.record({
                   activityTitle: document.title,
                   score: this.correct,
-                  maxScore: this.total,
+                  maxScore: goal,
                   problemsCorrect: this.correct,
-                  problemsAttempted: this.total,
+                  problemsAttempted: this.cleared,
+                  standard: "6.NS.A.1",
                 });
             } catch (e) {}
+
             let rank, emoji;
-            if (this.won) {
-              rank = "DUNGEON MASTER";
+            if (pct >= 90) {
+              rank = "DUNGEON MASTER!";
               emoji = "\u{1F451}";
-            } else if (pct >= 80) {
-              rank = "VETERAN EXPLORER";
+            } else if (pct >= 75) {
+              rank = "CORRIDOR CHAMPION!";
               emoji = "\u{1F3C6}";
-            } else if (pct >= 60) {
-              rank = "DUNGEON DIVER";
+            } else if (pct >= 50) {
+              rank = "TILE APPRENTICE";
               emoji = "⭐";
             } else {
-              rank = "APPRENTICE";
+              rank = "KEEP DELVING!";
               emoji = "\u{1F4DA}";
             }
 
             this.add
-              .text(W / 2, 70, emoji, { fontSize: "64px" })
+              .text(W / 2, 110, emoji, { fontSize: "76px" })
               .setOrigin(0.5);
             this.add
-              .text(
-                W / 2,
-                140,
-                this.won ? "DUNGEON CLEARED!" : "DUNGEON RUN OVER",
-                {
-                  fontSize: "40px",
-                  fontFamily: "Arial Black",
-                  color: this.won ? "#22c55e" : "#ef4444",
-                  stroke: "#000",
-                  strokeThickness: 4,
-                },
-              )
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 190, rank, {
-                fontSize: "20px",
-                color: "#e2e8f0",
-                fontStyle: "bold",
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 240, this.score.toLocaleString(), {
-                fontSize: "48px",
+              .text(W / 2, 196, "DUNGEON CLEARED", {
+                fontSize: "44px",
                 fontFamily: "Arial Black",
-                color: "#fbbf24",
+                color: "#f6c343",
+                stroke: "#000",
+                strokeThickness: 4,
               })
               .setOrigin(0.5);
             this.add
-              .text(W / 2, 278, "TOTAL XP", {
-                fontSize: "12px",
-                color: "#64748b",
+              .text(W / 2, 250, rank, {
+                fontSize: "24px",
+                fontFamily: "Arial",
+                fontStyle: "bold",
+                color: "#fff",
               })
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 312, this.score.toLocaleString(), {
+                fontSize: "58px",
+                fontFamily: "Arial Black",
+                color: "#f6c343",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 352, "GOLD", { fontSize: "13px", color: "#7e8ab0" })
               .setOrigin(0.5);
 
             const stats = [
-              { l: "Correct", v: this.correct + "/" + this.total },
-              { l: "Streak", v: this.bestStreak },
-              { l: "Level", v: this.level },
-              { l: "Loot", v: "\u{1F48E}" + this.loot },
-              { l: "Rooms", v: this.roomsCleared + 1 + "/5" },
+              { l: "Halls tiled", v: `${this.correct}/${goal}` },
+              { l: "Best streak", v: this.bestStreak },
+              { l: "Depth reached", v: this.depth },
             ];
             stats.forEach((s, i) => {
-              const x = 112 + i * 180,
-                y = 380;
+              const x = 282 + i * 230,
+                y = 440;
               this.add
-                .rectangle(x, y, 155, 80, COL.panel)
-                .setStrokeStyle(1, COL.slate);
+                .rectangle(x, y, 200, 96, C.stone)
+                .setStrokeStyle(2, C.stroke);
               this.add
-                .text(x, y - 10, String(s.v), {
-                  fontSize: "20px",
+                .text(x, y - 12, String(s.v), {
+                  fontSize: "30px",
                   fontFamily: "Arial Black",
-                  color: "#6366f1",
+                  color: "#f6c343",
                 })
                 .setOrigin(0.5);
               this.add
-                .text(x, y + 22, s.l, { fontSize: "11px", color: "#64748b" })
+                .text(x, y + 26, s.l, { fontSize: "13px", color: "#bcd0ff" })
                 .setOrigin(0.5);
             });
 
-            const btn = this.add
-              .rectangle(W / 2, 500, 260, 54, COL.accent)
+            const again = this.add
+              .rectangle(W / 2 - 130, 580, 240, 58, C.gold)
               .setInteractive({ useHandCursor: true });
             this.add
-              .text(W / 2, 500, "ENTER AGAIN", {
+              .text(W / 2 - 130, 580, "DELVE AGAIN", {
+                fontSize: "22px",
+                fontFamily: "Arial Black",
+                color: "#1a0d35",
+              })
+              .setOrigin(0.5);
+            again.on("pointerdown", () => {
+              ensureAudio();
+              sfxClick();
+              this.scene.start("GameScene", { tier: this.tier });
+            });
+            again.on("pointerover", () => again.setScale(1.05));
+            again.on("pointerout", () => again.setScale(1));
+
+            const menu = this.add
+              .rectangle(W / 2 + 130, 580, 240, 58, C.stone)
+              .setStrokeStyle(2, C.stroke)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(W / 2 + 130, 580, "CHANGE LEVEL", {
                 fontSize: "20px",
                 fontFamily: "Arial Black",
                 color: "#fff",
               })
               .setOrigin(0.5);
-            btn.on("pointerdown", () => {
-              sfxCl();
+            menu.on("pointerdown", () => {
+              ensureAudio();
+              sfxClick();
               this.scene.start("TitleScene");
             });
-            btn.on("pointerover", () => btn.setScale(1.05));
-            btn.on("pointerout", () => btn.setScale(1));
+            menu.on("pointerover", () => menu.setScale(1.05));
+            menu.on("pointerout", () => menu.setScale(1));
 
-            if (this.won) {
-              for (let i = 0; i < 30; i++) {
-                const p = this.add.circle(
+            for (let i = 0; i < 28; i++) {
+              const p = this.add
+                .circle(
                   Math.random() * W,
                   Math.random() * H,
                   2 + Math.random() * 3,
-                  [COL.gold, COL.accent, COL.purple, COL.teal][
-                    Math.floor(Math.random() * 4)
-                  ],
-                  0.6,
-                );
-                this.tweens.add({
-                  targets: p,
-                  y: p.y - 200 - Math.random() * 300,
-                  alpha: 0,
-                  duration: 2000 + Math.random() * 2000,
-                  delay: Math.random() * 1000,
-                  repeat: -1,
-                });
-              }
+                  [C.gold, C.tile, C.green][rnd(3)],
+                )
+                .setAlpha(0.7);
+              this.tweens.add({
+                targets: p,
+                y: p.y - 200 - Math.random() * 300,
+                alpha: 0,
+                duration: 2000 + Math.random() * 2000,
+                delay: Math.random() * 1000,
+                repeat: -1,
+                ease: "Power1",
+              });
             }
           }
         }
 
+        // ─── BOOT ───
         new Phaser.Game({
           type: Phaser.AUTO,
           parent: "game-container",
@@ -1346,7 +1242,7 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
 </html>

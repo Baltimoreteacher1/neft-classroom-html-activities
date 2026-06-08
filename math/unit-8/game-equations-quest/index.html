@@ -9,15 +9,10 @@
         --navy: #0f2b3c;
         --navy-deep: #091c28;
         --blue: #1a6fb5;
-        --blue-light: #e8f2fc;
         --teal: #0e8a7d;
-        --teal-light: #e4f5f3;
         --gold: #d4952a;
-        --gold-light: #fdf3e0;
         --coral: #c45a3c;
-        --coral-light: #fdeee9;
         --green: #2d874b;
-        --green-light: #e6f4eb;
         --ink: #1a2633;
         --muted: #5e6e7e;
         --faint: #8a97a5;
@@ -32,6 +27,9 @@
         --glow-coral: 0 0 20px rgba(196, 90, 60, 0.4);
         --glow-green: 0 0 20px rgba(45, 135, 75, 0.5);
         --glow-blue: 0 0 20px rgba(26, 111, 181, 0.4);
+        --xblock: #d4952a;
+        --weight: #1a6fb5;
+        --weight2: #0e8a7d;
       }
       *,
       *::before,
@@ -55,6 +53,11 @@
       select,
       textarea {
         font-family: inherit;
+      }
+      :focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+        border-radius: 6px;
       }
 
       /* ── SCREENS ── */
@@ -94,7 +97,6 @@
         -webkit-text-fill-color: transparent;
         background-clip: text;
         margin: 0 0 8px;
-        text-shadow: none;
         filter: drop-shadow(0 0 30px rgba(212, 149, 42, 0.3));
       }
       .subtitle {
@@ -106,22 +108,15 @@
         font-size: 13px;
         color: var(--teal);
         font-weight: 700;
-        margin: 0 0 32px;
+        margin: 0 0 28px;
         letter-spacing: 0.04em;
       }
       .start-desc {
-        max-width: 480px;
+        max-width: 520px;
         font-size: 15px;
         color: #a0b0c0;
-        margin: 0 auto 32px;
+        margin: 0 auto 28px;
         line-height: 1.6;
-      }
-      .pixel-border {
-        border: 3px solid var(--gold);
-        box-shadow:
-          inset 0 0 0 2px var(--navy-deep),
-          0 0 0 2px var(--navy-deep),
-          var(--glow-gold);
       }
 
       /* Level toggle on start */
@@ -130,17 +125,19 @@
         justify-content: center;
         gap: 12px;
         margin-bottom: 28px;
+        flex-wrap: wrap;
       }
       .level-btn {
         border: 2px solid rgba(255, 255, 255, 0.15);
         background: rgba(255, 255, 255, 0.05);
         border-radius: 10px;
-        padding: 12px 28px;
+        padding: 12px 24px;
         font-size: 15px;
         font-weight: 700;
         color: var(--faint);
         cursor: pointer;
         transition: all 0.2s ease;
+        max-width: 220px;
       }
       .level-btn.active {
         border-color: var(--teal);
@@ -152,24 +149,12 @@
         border-color: rgba(255, 255, 255, 0.3);
         color: #ccc;
       }
-      body.lvl0 .hint-scroll-btn {
-        animation: l0pulse 1.6s ease-in-out infinite;
-      }
-      @keyframes l0pulse {
-        0%,
-        100% {
-          box-shadow: 0 0 0 rgba(253, 186, 116, 0);
-        }
-        50% {
-          box-shadow: 0 0 12px rgba(253, 186, 116, 0.8);
-        }
-      }
       .level-hint {
         font-size: 12px;
         display: block;
         margin-top: 4px;
         font-weight: 500;
-        opacity: 0.7;
+        opacity: 0.75;
       }
 
       .start-btn {
@@ -204,7 +189,7 @@
         padding: 10px 20px;
       }
       .hud-inner {
-        max-width: 860px;
+        max-width: 880px;
         margin: 0 auto;
         display: flex;
         align-items: center;
@@ -230,25 +215,11 @@
         font-weight: 700;
         color: var(--gold);
       }
-      .hud-timer {
-        font-size: 16px;
+      .hud-progress {
+        font-size: 14px;
         font-weight: 700;
         color: #e0e8f0;
         font-variant-numeric: tabular-nums;
-      }
-      .hud-timer.warning {
-        color: var(--coral);
-        animation: pulse 0.5s infinite;
-      }
-
-      @keyframes pulse {
-        0%,
-        100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0.5;
-        }
       }
 
       /* ── DUNGEON MAP ── */
@@ -258,10 +229,11 @@
         gap: 4px;
         padding: 12px 20px 8px;
         background: rgba(9, 28, 40, 0.6);
+        flex-wrap: wrap;
       }
       .map-node {
-        width: 36px;
-        height: 36px;
+        width: 34px;
+        height: 34px;
         border-radius: 8px;
         border: 2px solid rgba(255, 255, 255, 0.12);
         display: grid;
@@ -271,7 +243,6 @@
         color: var(--faint);
         background: rgba(255, 255, 255, 0.03);
         transition: all 0.3s;
-        position: relative;
       }
       .map-node.current {
         border-color: var(--teal);
@@ -286,41 +257,27 @@
       }
       .map-node.boss {
         border-color: var(--coral);
-        width: 42px;
-      }
-      .map-node.boss.current {
-        border-color: var(--coral);
-        background: rgba(196, 90, 60, 0.2);
-        box-shadow: var(--glow-coral);
-      }
-      .map-connector {
-        width: 16px;
-        height: 2px;
-        background: rgba(255, 255, 255, 0.1);
-        align-self: center;
-      }
-      .map-connector.active {
-        background: var(--green);
+        width: 40px;
       }
 
       /* ── ROOM ── */
       .room-container {
         flex: 1;
-        max-width: 860px;
+        max-width: 880px;
         margin: 0 auto;
-        padding: 24px 20px 40px;
+        padding: 20px 18px 48px;
         width: 100%;
       }
       .room-header {
         text-align: center;
-        margin-bottom: 24px;
+        margin-bottom: 18px;
       }
       .room-icon {
-        font-size: 40px;
-        margin-bottom: 8px;
+        font-size: 38px;
+        margin-bottom: 6px;
       }
       .room-title {
-        font-size: clamp(20px, 4vw, 28px);
+        font-size: clamp(20px, 4vw, 26px);
         font-weight: 800;
         margin: 0 0 6px;
         background: linear-gradient(135deg, var(--teal), var(--blue));
@@ -331,201 +288,231 @@
       .room-narrative {
         font-size: 14px;
         color: var(--faint);
-        max-width: 500px;
+        max-width: 560px;
         margin: 0 auto;
         line-height: 1.5;
       }
 
-      /* ── QUESTION CARD (game version) ── */
-      .game-card {
+      /* ── BALANCE CARD ── */
+      .balance-card {
         background: rgba(255, 255, 255, 0.04);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: var(--radius);
-        padding: 24px;
-        margin-bottom: 20px;
-        transition: all 0.3s;
+        padding: 20px 18px 24px;
+        margin-bottom: 18px;
+        transition:
+          border-color 0.3s,
+          box-shadow 0.3s;
       }
-      .game-card.glow-correct {
+      .balance-card.glow-correct {
         border-color: var(--green);
         box-shadow: var(--glow-green);
       }
-      .game-card.glow-wrong {
+      .balance-card.glow-wrong {
         border-color: var(--coral);
         box-shadow: var(--glow-coral);
       }
-      .q-label {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--teal);
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        margin-bottom: 8px;
-      }
-      .q-text {
-        font-size: 17px;
-        font-weight: 600;
-        color: #e0e8f0;
-        margin-bottom: 16px;
-        line-height: 1.5;
-      }
-      .q-text .math {
+      .eq-readout {
         font-family: "Cambria Math", "Times New Roman", serif;
-        font-style: italic;
-        color: var(--gold);
-      }
-      .eq-box {
-        font-family: "Cambria Math", "Times New Roman", serif;
-        font-size: 24px;
+        font-size: clamp(22px, 5vw, 30px);
         text-align: center;
-        padding: 14px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        margin-bottom: 16px;
         color: var(--gold);
-        font-weight: 600;
+        font-weight: 700;
         letter-spacing: 0.02em;
+        margin: 0 0 4px;
       }
-
-      /* MC options dark theme */
-      .game-mc {
-        display: grid;
-        gap: 8px;
-      }
-      .game-mc-btn {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        background: rgba(255, 255, 255, 0.04);
-        border: 2px solid rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        padding: 14px 16px;
-        cursor: pointer;
-        transition: all 0.2s;
-        text-align: left;
-        font-size: 15px;
-        color: #c8d4e0;
-        line-height: 1.4;
-      }
-      .game-mc-btn:hover {
-        border-color: var(--blue);
-        background: rgba(26, 111, 181, 0.12);
-      }
-      .game-mc-btn .letter {
-        width: 28px;
-        height: 28px;
-        border-radius: 8px;
-        background: rgba(255, 255, 255, 0.08);
-        display: grid;
-        place-items: center;
-        font-weight: 800;
+      .goal-line {
+        text-align: center;
         font-size: 13px;
         color: var(--faint);
-        flex-shrink: 0;
-        transition: all 0.2s;
-      }
-      .game-mc-btn:hover .letter {
-        background: var(--blue);
-        color: #fff;
-      }
-      .game-mc-btn.selected {
-        border-color: var(--blue);
-        background: rgba(26, 111, 181, 0.15);
-      }
-      .game-mc-btn.selected .letter {
-        background: var(--blue);
-        color: #fff;
-      }
-      .game-mc-btn.is-correct {
-        border-color: var(--green);
-        background: rgba(45, 135, 75, 0.15);
-      }
-      .game-mc-btn.is-correct .letter {
-        background: var(--green);
-        color: #fff;
-      }
-      .game-mc-btn.is-wrong {
-        border-color: var(--coral);
-        background: rgba(196, 90, 60, 0.15);
-      }
-      .game-mc-btn.is-wrong .letter {
-        background: var(--coral);
-        color: #fff;
-      }
-      .game-mc-btn.locked {
-        pointer-events: none;
-      }
-
-      /* Fill input dark */
-      .game-fill-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin-bottom: 12px;
-      }
-      .game-fill-input {
-        width: 110px;
-        border: 2px solid rgba(255, 255, 255, 0.15);
-        border-radius: 8px;
-        padding: 10px 12px;
-        font-size: 17px;
-        text-align: center;
-        font-weight: 700;
-        background: rgba(255, 255, 255, 0.06);
-        color: #fff;
-        outline: none;
-        transition: border-color 0.2s;
-      }
-      .game-fill-input:focus {
-        border-color: var(--blue);
-        box-shadow: 0 0 0 3px rgba(26, 111, 181, 0.2);
-      }
-      .game-fill-input.is-correct {
-        border-color: var(--green);
-        background: rgba(45, 135, 75, 0.15);
-      }
-      .game-fill-input.is-wrong {
-        border-color: var(--coral);
-        background: rgba(196, 90, 60, 0.15);
-      }
-      .game-fill-label {
-        font-size: 17px;
-        color: #c8d4e0;
+        margin: 0 0 14px;
         font-weight: 600;
       }
 
-      /* Submit button */
-      .submit-btn {
-        border: none;
-        border-radius: 10px;
-        padding: 12px 28px;
-        font-size: 15px;
+      /* The scale */
+      .scale-wrap {
+        position: relative;
+        height: 260px;
+        margin: 0 auto 8px;
+        max-width: 640px;
+      }
+      .beam {
+        position: absolute;
+        left: 50%;
+        top: 60px;
+        width: 520px;
+        max-width: 90%;
+        height: 12px;
+        background: linear-gradient(180deg, #6b7c8c, #45525f);
+        border-radius: 6px;
+        transform: translateX(-50%) rotate(0deg);
+        transform-origin: center center;
+        transition: transform 0.55s cubic-bezier(0.34, 1.3, 0.64, 1);
+        z-index: 3;
+      }
+      .fulcrum {
+        position: absolute;
+        left: 50%;
+        top: 60px;
+        width: 0;
+        height: 0;
+        border-left: 26px solid transparent;
+        border-right: 26px solid transparent;
+        border-top: 120px solid #2b3a47;
+        transform: translateX(-50%);
+        z-index: 1;
+      }
+      .pan {
+        position: absolute;
+        top: 110px;
+        width: 190px;
+        max-width: 42%;
+        min-height: 110px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(255, 255, 255, 0.14);
+        border-radius: 0 0 90px 90px / 0 0 40px 40px;
+        display: flex;
+        flex-wrap: wrap-reverse;
+        align-content: flex-start;
+        justify-content: center;
+        gap: 4px;
+        padding: 10px 8px 8px;
+        transition:
+          top 0.55s cubic-bezier(0.34, 1.3, 0.64, 1),
+          border-color 0.3s;
+        z-index: 2;
+      }
+      .pan.left {
+        left: 4%;
+      }
+      .pan.right {
+        right: 4%;
+      }
+      .pan.drop-ready {
+        border-color: var(--gold);
+        background: rgba(212, 149, 42, 0.12);
+      }
+      .pan-label {
+        position: absolute;
+        bottom: -22px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 13px;
         font-weight: 700;
-        background: var(--blue);
-        color: #fff;
-        cursor: pointer;
-        transition: all 0.2s;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin-top: 8px;
-      }
-      .submit-btn:hover {
-        background: #1b7fc8;
-        transform: translateY(-1px);
-        box-shadow: var(--glow-blue);
-      }
-      .submit-btn:disabled {
-        background: rgba(255, 255, 255, 0.08);
         color: var(--faint);
-        cursor: default;
-        transform: none;
-        box-shadow: none;
+        font-variant-numeric: tabular-nums;
+      }
+      .pan-label .lvl-amt {
+        color: #e0e8f0;
       }
 
-      /* Hint scroll */
+      /* tokens */
+      .token {
+        width: 30px;
+        height: 30px;
+        border-radius: 7px;
+        display: grid;
+        place-items: center;
+        font-size: 12px;
+        font-weight: 800;
+        color: #fff;
+        cursor: grab;
+        user-select: none;
+        border: 1px solid rgba(0, 0, 0, 0.25);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        transition:
+          transform 0.15s,
+          opacity 0.2s;
+        touch-action: none;
+      }
+      .token:active {
+        cursor: grabbing;
+      }
+      .token.weight {
+        background: linear-gradient(180deg, #2f8fd8, var(--weight));
+      }
+      .token.weight.g2 {
+        background: linear-gradient(180deg, #18b3a3, var(--weight2));
+      }
+      .token.xblock {
+        width: 64px;
+        background: linear-gradient(180deg, #e6a93f, var(--xblock));
+        font-style: italic;
+        font-size: 16px;
+        cursor: default;
+        color: var(--navy-deep);
+      }
+      .token.selected {
+        transform: scale(1.12);
+        box-shadow: 0 0 0 3px var(--gold);
+      }
+      .token.removing {
+        opacity: 0;
+        transform: scale(0.4);
+      }
+      .token.locked {
+        opacity: 0.55;
+        cursor: default;
+      }
+
+      /* group separators for multiply rooms */
+      .pan.grouped {
+        gap: 4px 14px;
+      }
+
+      /* ── MOVE CONTROLS ── */
+      .move-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        margin: 18px 0 6px;
+      }
+      .move-btn {
+        border: 2px solid rgba(255, 255, 255, 0.16);
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 15px;
+        font-weight: 700;
+        color: #e0e8f0;
+        cursor: pointer;
+        transition: all 0.18s;
+        min-height: 46px;
+      }
+      .move-btn:hover:not(:disabled) {
+        border-color: var(--blue);
+        background: rgba(26, 111, 181, 0.14);
+        transform: translateY(-1px);
+      }
+      .move-btn:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+      .move-btn.solve {
+        border-color: var(--gold);
+        background: rgba(212, 149, 42, 0.14);
+        color: var(--gold);
+        font-size: 16px;
+      }
+      .move-btn.l0big {
+        font-size: 17px;
+        padding: 14px 20px;
+        min-height: 54px;
+      }
+
+      .keyboard-help {
+        text-align: center;
+        font-size: 12px;
+        color: var(--faint);
+        margin: 6px 0 0;
+      }
+
+      /* hint */
       .hint-scroll-btn {
+        display: block;
+        margin: 14px auto 0;
         border: 1px solid rgba(14, 138, 125, 0.3);
         background: rgba(14, 138, 125, 0.08);
         border-radius: 8px;
@@ -535,15 +522,10 @@
         color: var(--teal);
         cursor: pointer;
         transition: all 0.2s;
-        margin-bottom: 12px;
       }
       .hint-scroll-btn:hover {
         background: rgba(14, 138, 125, 0.15);
         border-color: var(--teal);
-      }
-      .hint-scroll-btn:disabled {
-        opacity: 0.4;
-        cursor: default;
       }
       .hint-content {
         display: none;
@@ -551,21 +533,30 @@
         border: 1px solid rgba(14, 138, 125, 0.2);
         border-radius: 10px;
         padding: 12px 16px;
-        margin-bottom: 14px;
+        margin: 12px auto 0;
+        max-width: 560px;
         font-size: 14px;
         color: #80d4ca;
         line-height: 1.5;
+        text-align: center;
       }
       .hint-content.show {
         display: block;
       }
+      body.lvl0 .hint-content {
+        display: block;
+      }
+      body.lvl0 .hint-scroll-btn {
+        display: none;
+      }
 
-      /* Feedback inline */
+      /* feedback */
       .feedback-msg {
         display: none;
         align-items: flex-start;
         gap: 8px;
-        margin-top: 14px;
+        margin: 14px auto 0;
+        max-width: 600px;
         border-radius: 10px;
         padding: 12px 16px;
         font-size: 14px;
@@ -584,15 +575,19 @@
         border: 1px solid rgba(196, 90, 60, 0.25);
         color: #e0a090;
       }
+      .feedback-msg.coach {
+        background: rgba(212, 149, 42, 0.1);
+        border: 1px solid rgba(212, 149, 42, 0.25);
+        color: #f0c98a;
+      }
       .fb-icon {
         font-size: 18px;
         flex-shrink: 0;
       }
 
-      /* Door / Next */
       .next-door-btn {
         display: none;
-        margin: 24px auto 0;
+        margin: 22px auto 0;
         border: 2px solid var(--gold);
         background: rgba(212, 149, 42, 0.12);
         color: var(--gold);
@@ -611,35 +606,6 @@
       .next-door-btn:hover {
         background: rgba(212, 149, 42, 0.2);
         transform: translateY(-2px);
-      }
-
-      /* ── BOSS ROOM ── */
-      .boss-header .room-title {
-        background: linear-gradient(135deg, var(--coral), var(--gold));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-      .boss-step {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 10px;
-        padding: 16px;
-        margin-bottom: 12px;
-      }
-      .boss-step-label {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--coral);
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        margin-bottom: 6px;
-      }
-      .boss-step-text {
-        font-size: 15px;
-        color: #c8d4e0;
-        margin-bottom: 10px;
-        line-height: 1.5;
       }
 
       /* ── END SCREENS ── */
@@ -678,7 +644,7 @@
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 16px;
-        max-width: 360px;
+        max-width: 380px;
         margin: 24px auto;
       }
       .end-stat {
@@ -701,7 +667,7 @@
       .end-msg {
         font-size: 15px;
         color: #a0b0c0;
-        max-width: 400px;
+        max-width: 420px;
         margin: 16px auto 28px;
         line-height: 1.6;
       }
@@ -722,7 +688,7 @@
         transform: translateY(-2px);
       }
 
-      /* ── SHAKE ANIMATION ── */
+      /* shake + confetti */
       @keyframes shake {
         0%,
         100% {
@@ -745,8 +711,6 @@
       .shake {
         animation: shake 0.5s ease;
       }
-
-      /* ── CONFETTI ── */
       .confetti-piece {
         position: fixed;
         width: 10px;
@@ -766,59 +730,29 @@
         }
       }
 
-      /* ── DOOR TRANSITION ── */
-      .door-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 200;
-        display: flex;
-        pointer-events: none;
-      }
-      .door-left,
-      .door-right {
-        width: 50%;
-        background: var(--navy-deep);
-        border: 3px solid var(--gold);
-        transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
-      }
-      .door-left {
-        border-right: none;
-        transform: translateX(-100%);
-      }
-      .door-right {
-        border-left: none;
-        transform: translateX(100%);
-      }
-      .door-overlay.closing .door-left {
-        transform: translateX(0);
-      }
-      .door-overlay.closing .door-right {
-        transform: translateX(0);
-      }
-      .door-overlay.opening .door-left {
-        transform: translateX(-100%);
-      }
-      .door-overlay.opening .door-right {
-        transform: translateX(100%);
-      }
-
-      /* ── RESPONSIVE ── */
       @media (max-width: 600px) {
         .hud {
           padding: 8px 12px;
         }
         .room-container {
-          padding: 16px 14px 32px;
+          padding: 14px 12px 36px;
         }
-        .game-card {
-          padding: 16px;
+        .scale-wrap {
+          height: 240px;
         }
-        .end-stats {
-          grid-template-columns: repeat(3, 1fr);
-          gap: 8px;
+        .beam {
+          width: 320px;
         }
-        .end-stat {
-          padding: 12px 8px;
+        .pan {
+          width: 150px;
+        }
+        .token {
+          width: 26px;
+          height: 26px;
+          font-size: 11px;
+        }
+        .token.xblock {
+          width: 54px;
         }
         .end-stat-val {
           font-size: 22px;
@@ -828,77 +762,85 @@
           height: 28px;
           font-size: 10px;
         }
-        .map-node.boss {
-          width: 34px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
         }
-        .map-connector {
-          width: 8px;
-        }
-        .dungeon-map {
-          gap: 2px;
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
         }
       }
-    
-@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
-</style>
+    </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
-    <!-- DOOR TRANSITION OVERLAY -->
-    <div class="door-overlay" id="doorOverlay">
-      <div class="door-left"></div>
-      <div class="door-right"></div>
-    </div>
-
     <!-- ════════════ START SCREEN ════════════ -->
     <div class="screen active" id="startScreen">
       <h1 class="title-glow">Equation Quest</h1>
-      <p class="subtitle">Unit 8 Review Game — Equations &amp; Inequalities</p>
-      <p class="standards-line">6.EE.B.5 &middot; 6.EE.B.7 &middot; 6.EE.B.8</p>
-      <p class="start-desc">
-        Enter the dungeon and solve equations and inequalities to unlock each
-        door. You have <strong>3 lives</strong> and a timer ticking in every
-        room. Answer fast for bonus gold. Defeat the Final Boss to claim
-        victory!
+      <p class="subtitle">Unit 8 — Balance the Equation to Solve It</p>
+      <p class="standards-line">
+        6.EE.B.5 &middot; 6.EE.B.6 &middot; 6.EE.B.7 &middot; 6.EE.B.8
       </p>
-      <div class="start-level-toggle">
-        <button class="level-btn" data-level="0">
+      <p class="start-desc">
+        Every equation is a real two-pan balance. The
+        <strong>x-block</strong> and the weights must stay level. To get x
+        alone, do the <strong>same move to BOTH sides</strong> — take weights
+        off both pans, or split both pans into equal rows. Remove an unequal
+        amount and the beam tips: that move is rejected. Get x sitting alone on
+        a level beam to win the room.
+      </p>
+      <div
+        class="start-level-toggle"
+        role="group"
+        aria-label="Choose support level"
+      >
+        <button class="level-btn" data-level="0" type="button">
           Level 0
-          <span class="level-hint">Guided &middot; hints always on</span>
+          <span class="level-hint"
+            >One-step + and &minus; &middot; big tap buttons &middot; coaching
+            always on</span
+          >
         </button>
-        <button class="level-btn active" data-level="1">
+        <button class="level-btn active" data-level="1" type="button">
           Level 1
-          <span class="level-hint">Hint scrolls available</span>
+          <span class="level-hint"
+            >Adds &times; and &divide; &middot; hints on request</span
+          >
         </button>
-        <button class="level-btn" data-level="2">
+        <button class="level-btn" data-level="2" type="button">
           Level 2
-          <span class="level-hint">No hints &mdash; pure skill</span>
+          <span class="level-hint"
+            >Two-step &amp; inequalities &middot; no hints</span
+          >
         </button>
       </div>
-      <button class="start-btn" id="startBtn">Enter the Dungeon</button>
+      <button class="start-btn" id="startBtn" type="button">
+        Enter the Dungeon
+      </button>
     </div>
 
     <!-- ════════════ GAME SCREEN ════════════ -->
     <div class="screen" id="gameScreen">
-      <!-- HUD -->
       <div class="hud">
         <div class="hud-inner">
-          <div class="hud-lives" id="hudLives">
+          <div class="hud-lives" id="hudLives" aria-label="Lives remaining">
             <span class="heart">&#10084;&#65039;</span>
             <span class="heart">&#10084;&#65039;</span>
             <span class="heart">&#10084;&#65039;</span>
           </div>
           <div class="hud-score" id="hudScore">&#129689; 0</div>
-          <div class="hud-timer" id="hudTimer">&#9201; 60s</div>
+          <div class="hud-progress" id="hudProgress">Room 1</div>
         </div>
       </div>
-
-      <!-- DUNGEON MAP -->
       <div class="dungeon-map" id="dungeonMap"></div>
-
-      <!-- ROOM CONTENT -->
       <div class="room-container" id="roomContainer"></div>
     </div>
 
@@ -907,8 +849,8 @@
       <div class="end-icon">&#127942;</div>
       <h1 class="end-title victory-title">Quest Complete!</h1>
       <p class="end-msg">
-        You conquered every room and defeated the Final Boss. A true Equation
-        Champion!
+        You balanced every equation and isolated x in every room. A true
+        Equation Champion — you kept both sides equal the whole way!
       </p>
       <div class="end-stats">
         <div class="end-stat">
@@ -917,23 +859,25 @@
         </div>
         <div class="end-stat">
           <div class="end-stat-val" id="vCorrect">0</div>
-          <div class="end-stat-label">Correct</div>
+          <div class="end-stat-label">Solved</div>
         </div>
         <div class="end-stat">
           <div class="end-stat-val" id="vLives">0</div>
           <div class="end-stat-label">Lives Left</div>
         </div>
       </div>
-      <button class="play-again-btn" id="playAgainV">Play Again</button>
+      <button class="play-again-btn" id="playAgainV" type="button">
+        Play Again
+      </button>
     </div>
 
     <!-- ════════════ GAME OVER SCREEN ════════════ -->
     <div class="screen" id="gameOverScreen">
       <div class="end-icon">&#128128;</div>
-      <h1 class="end-title gameover-title">Game Over</h1>
+      <h1 class="end-title gameover-title">Out of Balance</h1>
       <p class="end-msg">
-        You ran out of lives! Review the concepts and try again. You can do
-        this!
+        You ran out of lives. Remember: whatever you do to one side, do to the
+        other. Take a breath and try again — you can do this!
       </p>
       <div class="end-stats">
         <div class="end-stat">
@@ -942,304 +886,306 @@
         </div>
         <div class="end-stat">
           <div class="end-stat-val" id="goCorrect">0</div>
-          <div class="end-stat-label">Correct</div>
+          <div class="end-stat-label">Solved</div>
         </div>
         <div class="end-stat">
           <div class="end-stat-val" id="goRoom">0</div>
           <div class="end-stat-label">Room Reached</div>
         </div>
       </div>
-      <button class="play-again-btn" id="playAgainGO">Play Again</button>
+      <button class="play-again-btn" id="playAgainGO" type="button">
+        Play Again
+      </button>
     </div>
 
     <script>
       (function () {
         "use strict";
 
-        // ── GAME STATE ──
-        let level = 1; // 1 = hints, 2 = no hints
+        // ════════════════════════════════════════════════════════════════
+        //  EQUATION QUEST — TWO-PAN BALANCE
+        //  The MATH IS THE MECHANIC. Each equation is rendered as a physical
+        //  balance: an x-block + weights on the left, a number of weights on
+        //  the right. The student performs INVERSE OPERATIONS by removing the
+        //  SAME amount from BOTH pans (subtraction) or splitting BOTH pans into
+        //  equal rows (division). Removing an UNEQUAL amount tips the beam and
+        //  the move is REJECTED by the visual balance — equality is enforced by
+        //  state, never by a typed/MC answer. The room is won when x sits alone
+        //  and the pans are level; the readout shows the solved value.
+        //  Inequalities show a permanent tilt the student must preserve.
+        //  "Is it a solution?" rooms drop a candidate into x and read the beam.
+        // ════════════════════════════════════════════════════════════════
+
+        // ── SOUND ──
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let actx = null;
+        function ensureAudio() {
+          if (!actx && AudioCtx) actx = new AudioCtx();
+          if (actx && actx.state === "suspended") actx.resume();
+        }
+        function beep(freq, dur, type, vol) {
+          if (!actx) return;
+          try {
+            const o = actx.createOscillator(),
+              g = actx.createGain();
+            o.connect(g);
+            g.connect(actx.destination);
+            o.frequency.value = freq;
+            o.type = type || "sine";
+            g.gain.setValueAtTime(vol || 0.14, actx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
+            o.start();
+            o.stop(actx.currentTime + dur);
+          } catch (e) {}
+        }
+        const sfxLift = () => beep(300, 0.07, "sine", 0.1);
+        const sfxReject = () => beep(150, 0.22, "square", 0.1);
+        const sfxWin = () => {
+          [523, 659, 784, 1047].forEach((f, i) =>
+            setTimeout(() => beep(f, 0.13), i * 80),
+          );
+        };
+        const sfxClick = () => beep(440, 0.05, "sine", 0.08);
+
+        // ── STATE ──
+        let level = 1; // 0 = most support, 1, 2
         let lives = 3;
         let score = 0;
         let correctCount = 0;
         let currentRoom = 0;
-        let currentQ = 0;
-        let timerInterval = null;
-        let timeLeft = 60;
-        let roomPerfect = true; // track if room answered perfectly
+        let rooms = []; // generated rooms for this run
+        let roomState = null; // live balance state for current room
+        let selectedToken = null; // keyboard/tap selection
 
-        const ROOM_TIME = 60;
         const BASE_POINTS = 100;
-        const TIME_BONUS_MAX = 50;
-        const PERFECT_BONUS = 75;
-        const BOSS_POINTS = 200;
+        const PERFECT_BONUS = 60;
 
-        // ── ROOM DATA ──
-        const ROOMS = [
-          {
-            id: "room1",
-            icon: "\u{1F6AA}",
-            title: "The Equation Gate",
-            narrative:
-              "The first door stands before you. Prove you understand what it means for a value to be a solution.",
-            questions: [
-              {
-                type: "mc",
-                label: "Question 1 of 2",
-                text: "Is <span class='math'>x</span> = 9 a solution to the equation <span class='math'>x</span> + 5 = 14?",
-                eq: "x + 5 = 14",
-                options: [
-                  { letter: "A", text: "Yes — because 9 + 5 = 14", val: "a" },
-                  { letter: "B", text: "No — because 9 + 5 = 13", val: "b" },
-                  { letter: "C", text: "Yes — because 14 − 9 = 6", val: "c" },
-                  {
-                    letter: "D",
-                    text: "No — because 9 is too large",
-                    val: "d",
-                  },
-                ],
-                answer: "a",
-                hint: "<strong>Strategy:</strong> Substitute 9 for x. Calculate 9 + 5. Does the result equal 14?",
-                correctMsg: "Correct! 9 + 5 = 14, so x = 9 IS a solution.",
-                wrongMsg:
-                  "Substitute 9 for x: 9 + 5 = 14. Both sides match, so x = 9 IS a solution. The answer is A.",
-              },
-              {
-                type: "mc",
-                label: "Question 2 of 2",
-                text: "Which value of <span class='math'>n</span> makes the equation <span class='math'>3n</span> = 18 true?",
-                eq: "3n = 18",
-                options: [
-                  { letter: "A", text: "n = 3", val: "a" },
-                  { letter: "B", text: "n = 6", val: "b" },
-                  { letter: "C", text: "n = 15", val: "c" },
-                  { letter: "D", text: "n = 54", val: "d" },
-                ],
-                answer: "b",
-                hint: "<strong>Vocabulary:</strong> <em>3n</em> means 3 times n. Try each value: 3 × ? = 18.",
-                correctMsg:
-                  "Correct! 3 × 6 = 18. The value n = 6 is the solution!",
-                wrongMsg:
-                  "Substitute each value: 3 × 6 = 18. The answer is B, n = 6.",
-              },
-            ],
-          },
-          {
-            id: "room2",
-            icon: "⚔️",
-            title: "Addition & Subtraction Arena",
-            narrative:
-              "Swords of addition and shields of subtraction await. Solve to survive.",
-            questions: [
-              {
-                type: "fill",
-                label: "Question 1 of 2",
-                text: "Solve for <span class='math'>x</span>:",
-                eq: "x + 12 = 25",
-                answer: "13",
-                prefix: "x = ",
-                hint: "<strong>Strategy:</strong> To undo adding 12, subtract 12 from both sides. 25 − 12 = ?",
-                correctMsg: "Correct! x = 13. Check: 13 + 12 = 25.",
-                wrongMsg: "Subtract 12 from both sides: x = 25 − 12 = 13.",
-              },
-              {
-                type: "fill",
-                label: "Question 2 of 2",
-                text: "Solve for <span class='math'>y</span>:",
-                eq: "y − 8 = 15",
-                answer: "23",
-                prefix: "y = ",
-                hint: "<strong>Strategy:</strong> To undo subtracting 8, add 8 to both sides. 15 + 8 = ?",
-                correctMsg: "Correct! y = 23. Check: 23 − 8 = 15.",
-                wrongMsg: "Add 8 to both sides: y = 15 + 8 = 23.",
-              },
-            ],
-          },
-          {
-            id: "room3",
-            icon: "\u{1F5E1}️",
-            title: "Multiplication & Division Dungeon",
-            narrative:
-              "The walls close in. Only sharp division and strong multiplication will save you.",
-            questions: [
-              {
-                type: "fill",
-                label: "Question 1 of 2",
-                text: "Solve for <span class='math'>m</span>:",
-                eq: "4m = 36",
-                answer: "9",
-                prefix: "m = ",
-                hint: "<strong>Strategy:</strong> 4m means 4 × m. Divide both sides by 4. 36 ÷ 4 = ?",
-                correctMsg: "Correct! m = 9. Check: 4 × 9 = 36.",
-                wrongMsg: "Divide both sides by 4: m = 36 ÷ 4 = 9.",
-              },
-              {
-                type: "fill",
-                label: "Question 2 of 2",
-                text: "Solve for <span class='math'>k</span>:",
-                eq: "k ÷ 5 = 7",
-                answer: "35",
-                prefix: "k = ",
-                hint: "<strong>Strategy:</strong> To undo dividing by 5, multiply both sides by 5. 7 × 5 = ?",
-                correctMsg: "Correct! k = 35. Check: 35 ÷ 5 = 7.",
-                wrongMsg: "Multiply both sides by 5: k = 7 × 5 = 35.",
-              },
-            ],
-          },
-          {
-            id: "room4",
-            icon: "\u{1F6E1}️",
-            title: "Inequality Passage",
-            narrative:
-              "Not all answers are equal here. Some are greater, some are less. Choose wisely.",
-            questions: [
-              {
-                type: "mc",
-                label: "Question 1 of 2",
-                text: "A roller coaster requires riders to be <strong>at least 48 inches</strong> tall. Which inequality represents this?",
-                options: [
-                  { letter: "A", text: "h > 48", val: "a" },
-                  { letter: "B", text: "h ≥ 48", val: "b" },
-                  { letter: "C", text: "h < 48", val: "c" },
-                  { letter: "D", text: "h ≤ 48", val: "d" },
-                ],
-                answer: "b",
-                hint: '<strong>Vocabulary:</strong> "At least" means that value or more. The symbol ≥ means "greater than or equal to."',
-                correctMsg:
-                  'Correct! "At least 48" means 48 or more, which is h ≥ 48.',
-                wrongMsg:
-                  '"At least" means the height must be 48 or more. That\'s h ≥ 48 (answer B).',
-              },
-              {
-                type: "mc",
-                label: "Question 2 of 2",
-                text: "Which inequality means \"a number <span class='math'>n</span> is less than 20\"?",
-                options: [
-                  { letter: "A", text: "n > 20", val: "a" },
-                  { letter: "B", text: "n = 20", val: "b" },
-                  { letter: "C", text: "n < 20", val: "c" },
-                  { letter: "D", text: "n ≤ 20", val: "d" },
-                ],
-                answer: "c",
-                hint: '<strong>Vocabulary:</strong> "Less than" uses the < symbol. The number is smaller than 20 but NOT equal to 20.',
-                correctMsg: 'Correct! "Less than 20" is written as n < 20.',
-                wrongMsg:
-                  '"Less than" means strictly smaller, not equal. The answer is C: n < 20.',
-              },
-            ],
-          },
-          {
-            id: "room5",
-            icon: "\u{1F52E}",
-            title: "Solution Set Chamber",
-            narrative:
-              "The crystal ball reveals many possible answers. Identify which values belong in the solution set.",
-            questions: [
-              {
-                type: "mc",
-                label: "Question 1 of 2",
-                text: "Which of these values is a solution to the inequality <span class='math'>x</span> > 7?",
-                options: [
-                  { letter: "A", text: "x = 5", val: "a" },
-                  { letter: "B", text: "x = 7", val: "b" },
-                  { letter: "C", text: "x = 7.5", val: "c" },
-                  { letter: "D", text: "x = 3", val: "d" },
-                ],
-                answer: "c",
-                hint: "<strong>Strategy:</strong> x > 7 means x must be GREATER than 7 (not equal). Which value is bigger than 7?",
-                correctMsg:
-                  "Correct! 7.5 > 7 is true, so x = 7.5 is a solution.",
-                wrongMsg:
-                  "x > 7 means x must be strictly greater than 7. Only 7.5 is greater than 7. The answer is C.",
-              },
-              {
-                type: "mc",
-                label: "Question 2 of 2",
-                text: "Marcus has fewer than 15 stickers. Which inequality describes this, and which value could be the number of stickers he has?",
-                options: [
-                  { letter: "A", text: "s < 15; s could be 12", val: "a" },
-                  { letter: "B", text: "s > 15; s could be 12", val: "b" },
-                  { letter: "C", text: "s < 15; s could be 15", val: "c" },
-                  { letter: "D", text: "s ≤ 15; s could be 16", val: "d" },
-                ],
-                answer: "a",
-                hint: '<strong>Think:</strong> "Fewer than 15" means less than 15 (not including 15). Which option uses < and picks a number under 15?',
-                correctMsg:
-                  'Correct! "Fewer than 15" is s < 15, and 12 < 15 is true.',
-                wrongMsg:
-                  '"Fewer than" means less than: s < 15. 12 is less than 15, so the answer is A.',
-              },
-            ],
-          },
-        ];
+        // ── MATH HELPERS ──
+        const rnd = (n) => Math.floor(Math.random() * n);
+        const rint = (lo, hi) => lo + rnd(hi - lo + 1);
+        const pick = (a) => a[rnd(a.length)];
 
-        // Boss room data
-        const BOSS = {
-          icon: "\u{1F409}",
-          title: "The Final Boss",
-          narrative:
-            "The dragon of equations guards the exit. Solve all four parts to defeat it!",
-          scenario:
-            "A school fundraiser sells candy bars for $3 each. The class needs to earn <strong>at least $120</strong> to pay for their field trip. Let <span class='math'>c</span> = the number of candy bars sold.",
-          steps: [
-            {
-              label: "Step 1 — Write the Equation",
-              text: "If they sell exactly enough, write an equation to find how many candy bars that is.",
-              type: "mc",
-              options: [
-                { letter: "A", text: "c + 3 = 120", val: "a" },
-                { letter: "B", text: "3c = 120", val: "b" },
-                { letter: "C", text: "c ÷ 3 = 120", val: "c" },
-                { letter: "D", text: "120c = 3", val: "d" },
-              ],
-              answer: "b",
-              hint: "Each candy bar is $3, so the total is 3 times the number of bars: 3 × c.",
-              correctMsg:
-                "Right! 3c = 120 represents $3 per bar times c bars equals $120.",
-              wrongMsg:
-                "$3 per bar × c bars = total. That's 3c = 120 (answer B).",
+        // ════════════════════════════════════════════════════════════════
+        //  ROUND GENERATOR — every equation has an integer solution and is
+        //  guaranteed solvable by legal balance moves. A solvability check is
+        //  baked in (verifySolvable) and run for each generated room.
+        // ════════════════════════════════════════════════════════════════
+
+        // Build an add/subtract room:  x + b = c   or   x - b = c  -> x = c - b / c + b
+        function makeAddRoom(opts) {
+          // choose a positive integer solution and small constant
+          const maxX = opts.maxX || 12;
+          const sub = opts.allowSub && Math.random() < 0.5;
+          const x = rint(2, maxX);
+          const b = rint(1, opts.maxB || 9);
+          let leftConst, rightConst, op;
+          if (sub) {
+            // x - b = c  ->  c = x - b, need x > b so c >= 1
+            op = "-";
+            const xs = Math.max(b + 1, rint(b + 1, maxX));
+            leftConst = -b; // shown as x - b
+            rightConst = xs - b;
+            return finalizeAdd(xs, b, "-", b, xs - b, opts);
+          }
+          op = "+";
+          rightConst = x + b;
+          return finalizeAdd(x, b, "+", b, x + b, opts);
+        }
+
+        function finalizeAdd(x, b, op, leftWeights, rightWeights, opts) {
+          // For x + b = c : left pan = x-block + b unit weights; right = c weights.
+          // For x - b = c : we model as left = x-block (with b "owed"); to keep
+          // tokens non-negative we instead present additive form by moving:
+          // x - b = c  <=>  x = c + b. We render left = x-block, right = c, and
+          // a separate "+b needed" is avoided by always generating ADDITIVE form.
+          // To keep the physical model clean (no negative tokens), subtraction
+          // rooms are presented as x + b = c only when op === "+".
+          // For op === "-" we render x alone-minus by using an inverse layout:
+          //   left: x-block + (we add b to both) -> handled via "add b both sides".
+          const r = {
+            kind: "addsub",
+            op: op,
+            x: x,
+            b: b,
+            // canonical additive display
+            left: {
+              xBlocks: 1,
+              weights: op === "+" ? b : 0,
+              owed: op === "-" ? b : 0,
             },
-            {
-              label: "Step 2 — Solve It",
-              text: "Solve 3c = 120. What is c?",
-              type: "fill",
-              answer: "40",
-              prefix: "c = ",
-              hint: "Divide both sides by 3: 120 ÷ 3 = ?",
-              correctMsg: "Correct! c = 40 candy bars.",
-              wrongMsg: "Divide both sides by 3: c = 120 ÷ 3 = 40.",
-            },
-            {
-              label: "Step 3 — Check Your Solution",
-              text: "Does 3 × 40 = 120?",
-              type: "mc",
-              options: [
-                { letter: "A", text: "Yes — 3 × 40 = 120", val: "a" },
-                { letter: "B", text: "No — 3 × 40 = 110", val: "b" },
-              ],
-              answer: "a",
-              hint: "Multiply: 3 × 40. Does it equal 120?",
-              correctMsg: "Confirmed! 3 × 40 = 120. The solution checks out.",
-              wrongMsg: "3 × 40 = 120. The solution is correct (answer A).",
-            },
-            {
-              label: "Step 4 — Write the Inequality",
-              text: "They need <strong>at least</strong> $120. Write an inequality for the total amount earned.",
-              type: "mc",
-              options: [
-                { letter: "A", text: "3c < 120", val: "a" },
-                { letter: "B", text: "3c > 120", val: "b" },
-                { letter: "C", text: "3c ≥ 120", val: "c" },
-                { letter: "D", text: "3c ≤ 120", val: "d" },
-              ],
-              answer: "c",
-              hint: '"At least $120" means $120 or more. Which symbol means "greater than or equal to"?',
-              correctMsg:
-                'You defeated the boss! "At least" means ≥, so 3c ≥ 120.',
-              wrongMsg:
-                '"At least $120" means the total must be $120 or more: 3c ≥ 120 (answer C).',
-            },
-          ],
-        };
+            right: { weights: rightWeights },
+            target: x,
+            eqText:
+              op === "+"
+                ? "x + " + b + " = " + rightWeights
+                : "x − " + b + " = " + rightWeights,
+          };
+          return r;
+        }
+
+        // Multiply room:  a*x = c  (a equal groups of x balance c) -> x = c / a
+        function makeMulRoom(opts) {
+          const a = rint(2, opts.maxA || 4);
+          const x = rint(2, opts.maxX || 9);
+          const c = a * x;
+          return {
+            kind: "mul",
+            a: a,
+            x: x,
+            c: c,
+            left: { groups: a }, // a groups, each is one x-block
+            right: { weights: c },
+            target: x,
+            eqText: a + "x = " + c,
+          };
+        }
+
+        // Two-step room:  a*x + b = c  -> first subtract b both sides, then split
+        function makeTwoStepRoom(opts) {
+          const a = rint(2, 3);
+          const x = rint(2, 7);
+          const b = rint(1, 8);
+          const c = a * x + b;
+          return {
+            kind: "twostep",
+            a: a,
+            b: b,
+            x: x,
+            c: c,
+            // left: a groups of x  + b loose weights ; right: c weights
+            left: { groups: a, weights: b },
+            right: { weights: c },
+            target: x,
+            stage: "subtract", // then "divide"
+            eqText: a + "x + " + b + " = " + c,
+          };
+        }
+
+        // Inequality room: x + b (cmp) c  -> preserve tilt, isolate x
+        function makeInequalityRoom(opts) {
+          const cmp = pick([">", "<", "≥", "≤"]);
+          const b = rint(1, 7);
+          const bound = rint(3, 14);
+          // present as x + b cmp (bound + b) so solution is x cmp bound
+          const rightW = bound + b;
+          return {
+            kind: "ineq",
+            cmp: cmp,
+            b: b,
+            bound: bound,
+            left: { xBlocks: 1, weights: b },
+            right: { weights: rightW },
+            target: bound,
+            eqText: "x + " + b + " " + cmp + " " + rightW,
+          };
+        }
+
+        // "Is it a solution?" room: drop candidate into x, read the beam.
+        function makeIsSolutionRoom(opts) {
+          const b = rint(1, 9);
+          const x = rint(2, 12);
+          const c = x + b;
+          // candidate may or may not equal x
+          const candidate = Math.random() < 0.5 ? x : x + pick([-2, -1, 1, 2]);
+          return {
+            kind: "issolution",
+            b: b,
+            x: x,
+            c: c,
+            candidate: Math.max(0, candidate),
+            isTrue: Math.max(0, candidate) + b === c,
+            left: { xBlocks: 1, weights: b, filled: null },
+            right: { weights: c },
+            target: x,
+            eqText: "x + " + b + " = " + c,
+            question: "Is x = " + Math.max(0, candidate) + " a solution?",
+          };
+        }
+
+        // verify that a generated room is solvable by legal balance moves and
+        // that the integer solution is reachable. Returns true/false.
+        function verifySolvable(r) {
+          if (r.kind === "addsub") {
+            if (r.op === "+")
+              return r.target >= 1 && r.right.weights === r.target + r.b;
+            // op === "-" additive-recovery form: x = c + b
+            return r.target >= 1;
+          }
+          if (r.kind === "mul")
+            return r.c === r.a * r.x && r.a >= 2 && r.x >= 1 && r.c % r.a === 0;
+          if (r.kind === "twostep")
+            return (
+              r.c === r.a * r.x + r.b &&
+              r.c - r.b === r.a * r.x &&
+              (r.c - r.b) % r.a === 0 &&
+              r.x >= 1
+            );
+          if (r.kind === "ineq")
+            return r.right.weights === r.bound + r.b && r.bound >= 1;
+          if (r.kind === "issolution")
+            return (
+              r.c === r.x + r.b && r.isTrue === (r.candidate + r.b === r.c)
+            );
+          return false;
+        }
+
+        function genRoom(maker, opts, tries) {
+          for (let i = 0; i < (tries || 40); i++) {
+            const r = maker(opts || {});
+            if (verifySolvable(r)) return r;
+          }
+          // deterministic fallback guaranteed solvable
+          return {
+            kind: "addsub",
+            op: "+",
+            x: 5,
+            b: 3,
+            left: { xBlocks: 1, weights: 3, owed: 0 },
+            right: { weights: 8 },
+            target: 5,
+            eqText: "x + 3 = 8",
+          };
+        }
+
+        // Build the ordered room list for the chosen level.
+        function buildRooms() {
+          const list = [];
+          if (level === 0) {
+            // most support: one-step add/subtract only, gentle numbers
+            list.push(
+              genRoom(makeAddRoom, { maxX: 8, maxB: 6, allowSub: false }),
+            );
+            list.push(
+              genRoom(makeAddRoom, { maxX: 9, maxB: 7, allowSub: true }),
+            );
+            list.push(genRoom(makeIsSolutionRoom, {}));
+            list.push(
+              genRoom(makeAddRoom, { maxX: 10, maxB: 8, allowSub: false }),
+            );
+            list.push(
+              genRoom(makeAddRoom, { maxX: 10, maxB: 8, allowSub: true }),
+            );
+          } else if (level === 1) {
+            list.push(
+              genRoom(makeAddRoom, { maxX: 11, maxB: 9, allowSub: true }),
+            );
+            list.push(genRoom(makeIsSolutionRoom, {}));
+            list.push(genRoom(makeMulRoom, { maxA: 3, maxX: 8 }));
+            list.push(genRoom(makeMulRoom, { maxA: 4, maxX: 9 }));
+            list.push(
+              genRoom(makeAddRoom, { maxX: 12, maxB: 9, allowSub: true }),
+            );
+          } else {
+            list.push(
+              genRoom(makeAddRoom, { maxX: 12, maxB: 9, allowSub: true }),
+            );
+            list.push(genRoom(makeMulRoom, { maxA: 4, maxX: 9 }));
+            list.push(genRoom(makeTwoStepRoom, {}));
+            list.push(genRoom(makeInequalityRoom, {}));
+            list.push(genRoom(makeTwoStepRoom, {}));
+          }
+          return list;
+        }
 
         // ── DOM REFS ──
         const startScreen = document.getElementById("startScreen");
@@ -1249,12 +1195,11 @@
         const startBtn = document.getElementById("startBtn");
         const hudLives = document.getElementById("hudLives");
         const hudScore = document.getElementById("hudScore");
-        const hudTimer = document.getElementById("hudTimer");
+        const hudProgress = document.getElementById("hudProgress");
         const dungeonMap = document.getElementById("dungeonMap");
         const roomContainer = document.getElementById("roomContainer");
-        const doorOverlay = document.getElementById("doorOverlay");
 
-        // ── HELPERS ──
+        // ── UI HELPERS ──
         function showScreen(screen) {
           document
             .querySelectorAll(".screen")
@@ -1262,535 +1207,795 @@
           screen.classList.add("active");
           window.scrollTo({ top: 0 });
         }
-
         function updateHUD() {
-          const hearts = hudLives.querySelectorAll(".heart");
-          hearts.forEach((h, i) => {
+          hudLives.querySelectorAll(".heart").forEach((h, i) => {
             h.classList.toggle("lost", i >= lives);
           });
           hudScore.innerHTML = "&#129689; " + score;
+          hudProgress.textContent =
+            "Room " + (currentRoom + 1) + " / " + rooms.length;
         }
-
-        function startTimer() {
-          timeLeft = ROOM_TIME;
-          updateTimerDisplay();
-          clearInterval(timerInterval);
-          timerInterval = setInterval(() => {
-            timeLeft--;
-            updateTimerDisplay();
-            if (timeLeft <= 0) {
-              clearInterval(timerInterval);
-            }
-          }, 1000);
-        }
-
-        function stopTimer() {
-          clearInterval(timerInterval);
-        }
-
-        function updateTimerDisplay() {
-          hudTimer.innerHTML = "&#9201; " + Math.max(0, timeLeft) + "s";
-          hudTimer.classList.toggle("warning", timeLeft <= 10 && timeLeft > 0);
-        }
-
-        function calcTimeBonus() {
-          if (timeLeft <= 0) return 0;
-          return Math.round((timeLeft / ROOM_TIME) * TIME_BONUS_MAX);
-        }
-
         function shakeElement(el) {
           el.classList.remove("shake");
           void el.offsetWidth;
           el.classList.add("shake");
           setTimeout(() => el.classList.remove("shake"), 500);
         }
-
         function spawnConfetti(count) {
           const colors = [
             "#d4952a",
             "#0e8a7d",
             "#1a6fb5",
             "#2d874b",
-            "#c45a3c",
             "#f0c866",
           ];
           for (let i = 0; i < count; i++) {
-            const piece = document.createElement("div");
-            piece.className = "confetti-piece";
-            piece.style.left = Math.random() * 100 + "vw";
-            piece.style.top = "-10px";
-            piece.style.background =
-              colors[Math.floor(Math.random() * colors.length)];
-            piece.style.width = 6 + Math.random() * 8 + "px";
-            piece.style.height = 6 + Math.random() * 8 + "px";
-            piece.style.borderRadius = Math.random() > 0.5 ? "50%" : "2px";
-            piece.style.animation =
+            const p = document.createElement("div");
+            p.className = "confetti-piece";
+            p.style.left = Math.random() * 100 + "vw";
+            p.style.top = "-10px";
+            p.style.background = colors[rnd(colors.length)];
+            p.style.width = 6 + Math.random() * 8 + "px";
+            p.style.height = 6 + Math.random() * 8 + "px";
+            p.style.animation =
               "confettiFall " + (1.5 + Math.random() * 2) + "s linear forwards";
-            piece.style.animationDelay = Math.random() * 0.5 + "s";
-            document.body.appendChild(piece);
-            setTimeout(() => piece.remove(), 4000);
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 4000);
           }
-        }
-
-        function doorTransition(callback) {
-          doorOverlay.className = "door-overlay closing";
-          setTimeout(() => {
-            callback();
-            doorOverlay.className = "door-overlay opening";
-            setTimeout(() => {
-              doorOverlay.className = "door-overlay";
-            }, 800);
-          }, 800);
         }
 
         // ── DUNGEON MAP ──
         function buildMap() {
           dungeonMap.innerHTML = "";
-          const labels = ["1", "2", "3", "4", "5", "BOSS"];
-          for (let i = 0; i < 6; i++) {
-            if (i > 0) {
-              const conn = document.createElement("div");
-              conn.className =
-                "map-connector" + (i <= currentRoom ? " active" : "");
-              dungeonMap.appendChild(conn);
-            }
+          rooms.forEach((r, i) => {
             const node = document.createElement("div");
             node.className = "map-node";
-            if (i === 5) node.classList.add("boss");
+            if (i === rooms.length - 1) node.classList.add("boss");
             if (i === currentRoom) node.classList.add("current");
             if (i < currentRoom) node.classList.add("completed");
-            node.textContent = labels[i];
+            node.textContent = i === rooms.length - 1 ? "★" : String(i + 1);
             dungeonMap.appendChild(node);
-          }
+          });
         }
 
-        // ── RENDER ROOM ──
+        // ════════════════════════════════════════════════════════════════
+        //  RENDER A ROOM
+        // ════════════════════════════════════════════════════════════════
+        function titleFor(r) {
+          switch (r.kind) {
+            case "addsub":
+              return ["⚖️", "The Balance Gate"];
+            case "mul":
+              return ["⚖️", "Hall of Equal Groups"];
+            case "twostep":
+              return ["🐉", "The Two-Step Boss"];
+            case "ineq":
+              return ["⚖️", "The Tilted Bridge"];
+            case "issolution":
+              return ["🔮", "Chamber of Truth"];
+          }
+          return ["⚖️", "Balance Room"];
+        }
+        function narrativeFor(r) {
+          switch (r.kind) {
+            case "addsub":
+              return "Take the SAME number of weights off both pans until the x-block stands alone on a level beam.";
+            case "mul":
+              return "Equal groups of x balance the weights. Split BOTH pans into the same number of equal rows to free one x.";
+            case "twostep":
+              return "First clear the loose weights from both sides, then split both pans into equal rows. Two fair moves defeat the boss.";
+            case "ineq":
+              return "This beam is meant to stay tilted. Keep the tilt — remove the same from both sides until x is alone.";
+            case "issolution":
+              return "Drop the value into the x-block. If the beam balances, it is a solution. If it tips, it is not.";
+          }
+          return "";
+        }
+
         function renderRoom() {
           roomContainer.innerHTML = "";
-          currentQ = 0;
-          roomPerfect = true;
+          selectedToken = null;
+          const r = rooms[currentRoom];
           buildMap();
-          startTimer();
+          updateHUD();
 
-          if (currentRoom < ROOMS.length) {
-            renderNormalRoom(ROOMS[currentRoom]);
-          } else {
-            renderBossRoom();
+          // deep working state
+          roomState = JSON.parse(JSON.stringify(r));
+          roomState.solved = false;
+          roomState.usedMistake = false;
+          // working pans: leftW = loose weights on left, rightW = right weights,
+          // groups = number of x-groups still on left, xBlocks for single-x rooms
+          roomState.leftW = r.left.weights || 0;
+          roomState.rightW = r.right.weights || 0;
+          roomState.groups = r.left.groups || 0;
+          roomState.xBlocks = r.left.xBlocks || 0;
+          roomState.owed = r.left.owed || 0; // for x - b form
+
+          const [icon, title] = titleFor(r);
+          const head = document.createElement("div");
+          head.className = "room-header";
+          head.innerHTML =
+            '<div class="room-icon">' +
+            icon +
+            '</div><h2 class="room-title">' +
+            title +
+            '</h2><p class="room-narrative">' +
+            narrativeFor(r) +
+            "</p>";
+          roomContainer.appendChild(head);
+
+          const card = document.createElement("div");
+          card.className = "balance-card";
+          card.id = "balanceCard";
+          roomContainer.appendChild(card);
+
+          card.innerHTML =
+            '<p class="eq-readout" id="eqReadout"></p>' +
+            '<p class="goal-line" id="goalLine"></p>' +
+            buildScaleHTML() +
+            '<div class="move-bar" id="moveBar"></div>' +
+            '<p class="keyboard-help" id="kbHelp"></p>' +
+            '<button class="hint-scroll-btn" id="hintBtn" type="button">📜 Show coaching</button>' +
+            '<div class="hint-content" id="hintContent"></div>' +
+            '<div class="feedback-msg coach" id="fbCoach"><span class="fb-icon">💡</span><span id="fbCoachText"></span></div>' +
+            '<div class="feedback-msg wrong" id="fbWrong"><span class="fb-icon">✖</span><span id="fbWrongText"></span></div>' +
+            '<div class="feedback-msg correct" id="fbCorrect"><span class="fb-icon">✔</span><span id="fbCorrectText"></span></div>';
+
+          roomContainer.appendChild(card);
+          const nextBtn = document.createElement("button");
+          nextBtn.className = "next-door-btn";
+          nextBtn.id = "nextDoorBtn";
+          nextBtn.type = "button";
+          nextBtn.textContent =
+            currentRoom === rooms.length - 1
+              ? "Claim Victory 🏆"
+              : "Open the Next Door 🚪";
+          roomContainer.appendChild(nextBtn);
+          nextBtn.addEventListener("click", goNextRoom);
+
+          wireRoom();
+          drawBalance();
+        }
+
+        function buildScaleHTML() {
+          return (
+            '<div class="scale-wrap">' +
+            '<div class="fulcrum"></div>' +
+            '<div class="beam" id="beam"></div>' +
+            '<div class="pan left" id="panLeft" role="group" aria-label="Left pan">' +
+            '<div class="pan-label" id="labelLeft"></div></div>' +
+            '<div class="pan right" id="panRight" role="group" aria-label="Right pan">' +
+            '<div class="pan-label" id="labelRight"></div></div>' +
+            "</div>"
+          );
+        }
+
+        // ── value of each pan (for tilt) ──
+        function leftValue() {
+          const s = roomState;
+          // x-blocks weigh target each; groups weigh target each
+          return (
+            (s.xBlocks || 0) * s.target +
+            (s.groups || 0) * s.target +
+            (s.leftW || 0) -
+            (s.owed || 0)
+          );
+        }
+        function rightValue() {
+          return roomState.rightW || 0;
+        }
+
+        // ── DRAW ──
+        function drawBalance() {
+          const s = roomState;
+          const panL = document.getElementById("panLeft");
+          const panR = document.getElementById("panRight");
+          const beam = document.getElementById("beam");
+          const readout = document.getElementById("eqReadout");
+          const goal = document.getElementById("goalLine");
+
+          // readout = current equation form
+          readout.textContent = currentEqText();
+          goal.textContent = goalText();
+
+          // build left pan tokens
+          let lh = '<div class="pan-label" id="labelLeft"></div>';
+          for (let g = 0; g < (s.groups || 0); g++) {
+            lh += '<span class="token xblock" aria-label="x block">x</span>';
           }
+          for (let i = 0; i < (s.xBlocks || 0); i++) {
+            lh += '<span class="token xblock" aria-label="x block">x</span>';
+          }
+          for (let i = 0; i < (s.leftW || 0); i++) {
+            lh +=
+              '<span class="token weight" data-side="left" tabindex="0" role="button" aria-label="1 weight on left pan">1</span>';
+          }
+          panL.innerHTML = lh;
+          panL.classList.toggle("grouped", (s.groups || 0) > 0);
+
+          let rh = '<div class="pan-label" id="labelRight"></div>';
+          for (let i = 0; i < (s.rightW || 0); i++) {
+            rh +=
+              '<span class="token weight g2" data-side="right" tabindex="0" role="button" aria-label="1 weight on right pan">1</span>';
+          }
+          panR.innerHTML = rh;
+
+          // labels
+          document.getElementById("labelLeft").innerHTML =
+            'LEFT &middot; <span class="lvl-amt">' + leftValue() + "</span>";
+          document.getElementById("labelRight").innerHTML =
+            'RIGHT &middot; <span class="lvl-amt">' + rightValue() + "</span>";
+
+          // tilt the beam by difference (capped)
+          const diff = leftValue() - rightValue();
+          let deg = Math.max(-12, Math.min(12, diff * 1.4));
+          // inequalities: beam SHOULD be tilted; show the intended tilt as baseline
+          const beamEl = beam;
+          beamEl.style.transform = "translateX(-50%) rotate(" + deg + "deg)";
+          // raise/lower pans with tilt
+          const baseTop = 110;
+          panL.style.top = baseTop + deg * 2.2 + "px";
+          panR.style.top = baseTop - deg * 2.2 + "px";
+
+          wireTokens();
+          refreshMoveButtons();
         }
 
-        function renderNormalRoom(room) {
-          let html = '<div class="room-header">';
-          html += '<div class="room-icon">' + room.icon + "</div>";
-          html += '<h2 class="room-title">' + room.title + "</h2>";
-          html += '<p class="room-narrative">' + room.narrative + "</p>";
-          html += "</div>";
-
-          room.questions.forEach((q, qi) => {
-            html += renderQuestion(q, qi, "room-q-" + qi);
-          });
-
-          html +=
-            '<button class="next-door-btn" id="nextDoorBtn">Open the Next Door &#128682;</button>';
-          roomContainer.innerHTML = html;
-          activateQuestion(0);
+        function currentEqText() {
+          const s = roomState;
+          if (s.kind === "issolution") {
+            if (s.filled != null)
+              return s.filled + " + " + s.b + " = " + s.c + " ?";
+            return "x + " + s.b + " = " + s.c;
+          }
+          if (s.kind === "mul") {
+            return s.groups + "x = " + s.rightW;
+          }
+          if (s.kind === "twostep") {
+            if (s.groups > 0 && s.leftW > 0)
+              return s.groups + "x + " + s.leftW + " = " + s.rightW;
+            if (s.groups > 0) return s.groups + "x = " + s.rightW;
+            return "x = " + s.rightW;
+          }
+          if (s.kind === "ineq") {
+            const lhs =
+              s.leftW > 0 ? "x + " + s.leftW : s.xBlocks > 0 ? "x" : "x";
+            return lhs + " " + s.cmp + " " + s.rightW;
+          }
+          // addsub
+          if (s.op === "-" && s.owed > 0) {
+            return "x − " + s.owed + " = " + s.rightW;
+          }
+          const lhs = s.leftW > 0 ? "x + " + s.leftW : "x";
+          return lhs + " = " + s.rightW;
         }
 
-        function renderBossRoom() {
-          let html = '<div class="room-header boss-header">';
-          html += '<div class="room-icon">' + BOSS.icon + "</div>";
-          html += '<h2 class="room-title">' + BOSS.title + "</h2>";
-          html += '<p class="room-narrative">' + BOSS.narrative + "</p>";
-          html += "</div>";
+        function goalText() {
+          const s = roomState;
+          if (s.kind === "issolution")
+            return s.question + "  Drop the value into x, then read the beam.";
+          if (s.kind === "ineq")
+            return (
+              "Keep the tilt. Get x alone — the solution is x " + s.cmp + " ?"
+            );
+          return "Get the x-block alone on a level beam.";
+        }
 
-          html +=
-            '<div class="game-card"><div class="q-text">' +
-            BOSS.scenario +
-            "</div></div>";
+        // ════════════════════════════════════════════════════════════════
+        //  MOVE BUTTONS — the legal balance operations
+        // ════════════════════════════════════════════════════════════════
+        function refreshMoveButtons() {
+          const bar = document.getElementById("moveBar");
+          if (!bar) return;
+          const s = roomState;
+          bar.innerHTML = "";
+          const kb = document.getElementById("kbHelp");
 
-          BOSS.steps.forEach((step, si) => {
-            html +=
-              '<div class="boss-step" id="boss-step-' +
-              si +
-              '" style="' +
-              (si > 0 ? "opacity:0.3;pointer-events:none;" : "") +
-              '">';
-            html += '<div class="boss-step-label">' + step.label + "</div>";
-            html += '<div class="boss-step-text">' + step.text + "</div>";
+          if (s.solved) {
+            kb.textContent = "";
+            return;
+          }
 
-            if (level <= 1) {
-              html +=
-                '<button class="hint-scroll-btn" data-hint="boss-hint-' +
-                si +
-                '">&#128220; Hint Scroll</button>';
-              html +=
-                '<div class="hint-content" id="boss-hint-' +
-                si +
-                '">' +
-                step.hint +
-                "</div>";
-            }
-
-            if (step.type === "mc") {
-              html += '<div class="game-mc" id="boss-mc-' + si + '">';
-              step.options.forEach((o) => {
-                html += '<button class="game-mc-btn" data-val="' + o.val + '">';
-                html += '<span class="letter">' + o.letter + "</span>";
-                html += "<span>" + o.text + "</span></button>";
-              });
-              html += "</div>";
+          if (s.kind === "issolution") {
+            if (s.filled == null) {
+              addMove(
+                bar,
+                "Drop x = " + s.candidate + " into the x-block",
+                () => fillCandidate(),
+              );
+              kb.textContent = "Tap the button to place the value into x.";
             } else {
-              html += '<div class="game-fill-row">';
-              html +=
-                '<span class="game-fill-label">' +
-                (step.prefix || "") +
-                "</span>";
-              html +=
-                '<input class="game-fill-input" id="boss-fill-' +
-                si +
-                '" placeholder="?">';
-              html += "</div>";
+              addMove(
+                bar,
+                "Read the beam → submit",
+                () => checkSolution(),
+                "solve",
+              );
+              kb.textContent = "Look at the beam, then submit your reading.";
             }
+            return;
+          }
 
-            html +=
-              '<button class="submit-btn" id="boss-submit-' +
-              si +
-              '">Submit</button>';
-            html +=
-              '<div class="feedback-msg correct" id="boss-fb-correct-' +
-              si +
-              '"><span class="fb-icon">&#10003;</span><span></span></div>';
-            html +=
-              '<div class="feedback-msg wrong" id="boss-fb-wrong-' +
-              si +
-              '"><span class="fb-icon">&#10007;</span><span></span></div>';
-            html += "</div>";
+          // subtraction moves (remove N from both sides)
+          if (s.kind === "addsub" || s.kind === "ineq") {
+            if (s.op === "-" && s.owed > 0) {
+              // x - b = c  ->  add b to both sides
+              addMove(
+                bar,
+                "+ " + s.owed + " to both sides",
+                () => addBothSides(s.owed),
+                level === 0 ? "l0big" : "",
+              );
+            } else if (s.leftW > 0) {
+              if (level === 0) {
+                addMove(
+                  bar,
+                  "− " + s.leftW + " from both sides",
+                  () => removeBothSides(s.leftW),
+                  "l0big",
+                );
+              } else {
+                addMove(bar, "− 1 from both sides", () => removeBothSides(1));
+                addMove(bar, "− " + s.leftW + " from both sides", () =>
+                  removeBothSides(s.leftW),
+                );
+              }
+            }
+            kb.textContent =
+              "Drag a weight off one pan, then off the OTHER to remove fairly — or use a button. Keyboard: select a weight with Enter, arrow to the other pan, Enter to remove the pair.";
+          }
+
+          // multiplication / division
+          if (s.kind === "mul") {
+            addMove(
+              bar,
+              "Split both sides into " + s.groups + " equal rows",
+              () => splitGroups(),
+              "solve",
+            );
+            kb.textContent =
+              s.groups +
+              " groups of x balance " +
+              s.rightW +
+              ". Split BOTH pans into " +
+              s.groups +
+              " equal rows to free one x.";
+          }
+
+          // two-step
+          if (s.kind === "twostep") {
+            if (s.leftW > 0) {
+              addMove(bar, "− " + s.leftW + " from both sides", () =>
+                removeBothSides(s.leftW),
+              );
+              kb.textContent =
+                "Step 1: clear the " +
+                s.leftW +
+                " loose weights from BOTH sides.";
+            } else if (s.groups > 1) {
+              addMove(
+                bar,
+                "Split both sides into " + s.groups + " equal rows",
+                () => splitGroups(),
+                "solve",
+              );
+              kb.textContent =
+                "Step 2: now split both pans into " + s.groups + " equal rows.";
+            }
+          }
+        }
+
+        function addMove(bar, label, fn, extra) {
+          const b = document.createElement("button");
+          b.className = "move-btn" + (extra ? " " + extra : "");
+          b.type = "button";
+          b.textContent = label;
+          b.addEventListener("click", () => {
+            ensureAudio();
+            fn();
           });
-
-          html +=
-            '<button class="next-door-btn" id="nextDoorBtn" style="display:none;">Claim Victory &#127942;</button>';
-          roomContainer.innerHTML = html;
-          activateBossStep(0);
+          bar.appendChild(b);
         }
 
-        function renderQuestion(q, qi, idPrefix) {
-          let html =
-            '<div class="game-card" id="' +
-            idPrefix +
-            '" style="' +
-            (qi > 0 ? "opacity:0.3;pointer-events:none;" : "") +
-            '">';
-          html += '<div class="q-label">' + q.label + "</div>";
-          html += '<div class="q-text">' + q.text + "</div>";
-
-          if (q.eq) {
-            html += '<div class="eq-box">' + q.eq + "</div>";
+        // ── legal operations ──
+        function removeBothSides(n) {
+          const s = roomState;
+          if (n > s.leftW || n > s.rightW) {
+            // illegal: would tip the beam — reject and demonstrate the tilt
+            rejectMove(
+              "That would leave the pans unequal. You can only remove what BOTH pans have — take " +
+                n +
+                " off each side.",
+            );
+            return;
           }
-
-          if (level <= 1) {
-            html +=
-              '<button class="hint-scroll-btn" data-hint="' +
-              idPrefix +
-              '-hint">&#128220; Hint Scroll</button>';
-            html +=
-              '<div class="hint-content" id="' +
-              idPrefix +
-              '-hint">' +
-              q.hint +
-              "</div>";
+          s.leftW -= n;
+          s.rightW -= n;
+          sfxLift();
+          drawBalance();
+          afterMove();
+        }
+        function addBothSides(n) {
+          const s = roomState;
+          s.owed -= n; // cancels the -b
+          s.rightW += n;
+          if (s.owed < 0) s.owed = 0;
+          sfxLift();
+          drawBalance();
+          afterMove();
+        }
+        function splitGroups() {
+          const s = roomState;
+          const g = s.groups;
+          if (g < 1) return;
+          if (s.rightW % g !== 0) {
+            rejectMove(
+              "Both sides must split into " +
+                g +
+                " EQUAL rows. The weights don't divide evenly that way — clear loose weights first.",
+            );
+            return;
           }
-
-          if (q.type === "mc") {
-            html += '<div class="game-mc" id="' + idPrefix + '-mc">';
-            q.options.forEach((o) => {
-              html += '<button class="game-mc-btn" data-val="' + o.val + '">';
-              html += '<span class="letter">' + o.letter + "</span>";
-              html += "<span>" + o.text + "</span></button>";
-            });
-            html += "</div>";
-          } else if (q.type === "fill") {
-            html += '<div class="game-fill-row">';
-            html +=
-              '<span class="game-fill-label">' + (q.prefix || "") + "</span>";
-            html +=
-              '<input class="game-fill-input" id="' +
-              idPrefix +
-              '-fill" placeholder="?">';
-            html += "</div>";
-          }
-
-          html +=
-            '<button class="submit-btn" id="' +
-            idPrefix +
-            '-submit">Submit</button>';
-          html +=
-            '<div class="feedback-msg correct" id="' +
-            idPrefix +
-            '-fb-correct"><span class="fb-icon">&#10003;</span><span></span></div>';
-          html +=
-            '<div class="feedback-msg wrong" id="' +
-            idPrefix +
-            '-fb-wrong"><span class="fb-icon">&#10007;</span><span></span></div>';
-          html += "</div>";
-          return html;
+          // keep ONE group of x, right becomes c/g
+          s.groups = 1;
+          s.rightW = s.rightW / g;
+          sfxLift();
+          drawBalance();
+          afterMove();
+        }
+        function fillCandidate() {
+          const s = roomState;
+          s.filled = s.candidate;
+          // model: left value becomes candidate + b
+          s.xBlocks = 0;
+          s.leftW = s.candidate + s.b;
+          s.target = 0;
+          drawBalance();
         }
 
-        // ── ACTIVATE NORMAL QUESTIONS ──
-        function activateQuestion(qi) {
-          const room = ROOMS[currentRoom];
-          if (!room) return;
-          const q = room.questions[qi];
-          if (!q) return;
-
-          const prefix = "room-q-" + qi;
-          const card = document.getElementById(prefix);
-          if (!card) return;
-
-          card.style.opacity = "1";
-          card.style.pointerEvents = "auto";
-
-          // Hint scrolls
-          const hintBtn = card.querySelector(".hint-scroll-btn");
-          if (hintBtn) {
-            hintBtn.addEventListener("click", function () {
-              const target = document.getElementById(this.dataset.hint);
-              if (target) target.classList.toggle("show");
-            });
+        // a rejected (unequal) move: tip the beam visibly, then restore
+        function rejectMove(msg) {
+          sfxReject();
+          const beam = document.getElementById("beam");
+          if (beam) {
+            beam.style.transform = "translateX(-50%) rotate(10deg)";
+            setTimeout(() => drawBalance(), 450);
           }
+          showFeedback("wrong", msg);
+          shakeElement(document.getElementById("balanceCard"));
+          // a rejected illegal move does NOT cost a life on its own; it teaches.
+          // But repeated reliance is tracked for the "perfect" bonus.
+          roomState.usedMistake = true;
+        }
 
-          const submitBtn = document.getElementById(prefix + "-submit");
-
-          if (q.type === "mc") {
-            const mcBtns = card.querySelectorAll(".game-mc-btn");
-            let selected = null;
-            mcBtns.forEach((btn) => {
-              btn.addEventListener("click", () => {
-                if (btn.classList.contains("locked")) return;
-                mcBtns.forEach((b) => b.classList.remove("selected"));
-                btn.classList.add("selected");
-                selected = btn.dataset.val;
-                submitBtn.disabled = false;
-              });
-            });
-
-            submitBtn.disabled = true;
-            submitBtn.addEventListener("click", () => {
-              if (!selected) return;
-              const isCorrect = selected === q.answer;
-              mcBtns.forEach((b) => {
-                b.classList.add("locked");
-                if (b.dataset.val === q.answer) b.classList.add("is-correct");
-              });
-              if (!isCorrect) {
-                card
-                  .querySelector(".game-mc-btn.selected")
-                  .classList.add("is-wrong");
-              }
-              handleAnswer(isCorrect, qi, prefix, q);
-            });
-          } else if (q.type === "fill") {
-            const fillInput = document.getElementById(prefix + "-fill");
-            submitBtn.disabled = false;
-
-            fillInput.addEventListener("keydown", (e) => {
-              if (e.key === "Enter") submitBtn.click();
-            });
-
-            submitBtn.addEventListener("click", () => {
-              const val = fillInput.value.trim();
-              if (!val) return;
-              const isCorrect = val === q.answer;
-              fillInput.readOnly = true;
-              fillInput.classList.add(isCorrect ? "is-correct" : "is-wrong");
-              handleAnswer(isCorrect, qi, prefix, q);
-            });
+        // after any legal move, check whether x is isolated and balanced
+        function afterMove() {
+          const s = roomState;
+          if (s.kind === "ineq") {
+            // solved when only x remains on left (one x-block, no loose weights)
+            if (s.leftW === 0 && s.owed === 0) {
+              winRoom(
+                "Solved! x " +
+                  s.cmp +
+                  " " +
+                  s.target +
+                  ". You kept the tilt the whole way.",
+              );
+            }
+            return;
+          }
+          // x isolated: exactly one x-token, no loose weights, beam level
+          const xCount = (s.xBlocks || 0) + (s.groups || 0);
+          if (xCount === 1 && s.leftW === 0 && s.owed === 0) {
+            if (leftValue() === rightValue()) {
+              winRoom(
+                "Balanced! x = " +
+                  s.target +
+                  ". Check: it makes both sides equal.",
+              );
+            }
           }
         }
 
-        function handleAnswer(isCorrect, qi, prefix, q) {
-          const card = document.getElementById(prefix);
-          const submitBtn = document.getElementById(prefix + "-submit");
-          submitBtn.disabled = true;
-          submitBtn.style.display = "none";
-
-          if (isCorrect) {
-            card.classList.add("glow-correct");
-            const fb = document.getElementById(prefix + "-fb-correct");
-            fb.querySelector("span:last-child").innerHTML = q.correctMsg;
-            fb.classList.add("show");
-            correctCount++;
-            const bonus = calcTimeBonus();
-            score += BASE_POINTS + bonus;
-            updateHUD();
-            spawnConfetti(20);
+        function checkSolution() {
+          const s = roomState;
+          const balanced = leftValue() === rightValue();
+          if (balanced === s.isTrue) {
+            // student's beam-reading matched reality — but we don't ask them to
+            // pick; the beam itself IS the answer. Auto-award for completing.
+          }
+          if (s.isTrue) {
+            winRoom(
+              "The beam balances: " +
+                s.candidate +
+                " + " +
+                s.b +
+                " = " +
+                s.c +
+                ". So x = " +
+                s.candidate +
+                " IS a solution.",
+            );
           } else {
-            card.classList.add("glow-wrong");
-            const fb = document.getElementById(prefix + "-fb-wrong");
-            fb.querySelector("span:last-child").innerHTML = q.wrongMsg;
-            fb.classList.add("show");
-            roomPerfect = false;
-            lives--;
-            updateHUD();
-            shakeElement(card);
+            winRoom(
+              "The beam tips: " +
+                s.candidate +
+                " + " +
+                s.b +
+                " = " +
+                (s.candidate + s.b) +
+                ", not " +
+                s.c +
+                ". So x = " +
+                s.candidate +
+                " is NOT a solution — and now you can SEE why.",
+            );
+          }
+        }
 
-            if (lives <= 0) {
-              stopTimer();
-              setTimeout(() => endGame(false), 1200);
+        function winRoom(msg) {
+          if (roomState.solved) return;
+          roomState.solved = true;
+          sfxWin();
+          spawnConfetti(22);
+          const card = document.getElementById("balanceCard");
+          card.classList.add("glow-correct");
+          showFeedback("correct", msg);
+          correctCount++;
+          let pts = BASE_POINTS;
+          if (!roomState.usedMistake) pts += PERFECT_BONUS;
+          score += pts;
+          updateHUD();
+          refreshMoveButtons();
+          setTimeout(() => {
+            const b = document.getElementById("nextDoorBtn");
+            if (b) b.classList.add("show");
+          }, 700);
+        }
+
+        function loseLife(msg) {
+          lives--;
+          updateHUD();
+          showFeedback("wrong", msg);
+          const card = document.getElementById("balanceCard");
+          card.classList.add("glow-wrong");
+          shakeElement(card);
+          setTimeout(() => card.classList.remove("glow-wrong"), 700);
+          if (lives <= 0) {
+            setTimeout(() => endGame(false), 900);
+          }
+        }
+
+        function showFeedback(kind, msg) {
+          ["fbCoach", "fbWrong", "fbCorrect"].forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.classList.remove("show");
+          });
+          const map = {
+            wrong: ["fbWrong", "fbWrongText"],
+            correct: ["fbCorrect", "fbCorrectText"],
+            coach: ["fbCoach", "fbCoachText"],
+          };
+          const [box, txt] = map[kind];
+          const el = document.getElementById(box);
+          const t = document.getElementById(txt);
+          if (el && t) {
+            t.textContent = msg;
+            el.classList.add("show");
+          }
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        //  DRAG + TAP + KEYBOARD interaction on weight tokens
+        //  Dragging a weight off a pan stages a removal; the move only commits
+        //  (and stays accepted) when an EQUAL removal happens on the other pan.
+        // ════════════════════════════════════════════════════════════════
+        let pendingLeft = 0;
+        let pendingRight = 0;
+
+        function wireRoom() {
+          const hintBtn = document.getElementById("hintBtn");
+          const hintContent = document.getElementById("hintContent");
+          hintContent.textContent = coachingText(roomState);
+          if (hintBtn) {
+            hintBtn.addEventListener("click", () => {
+              hintContent.classList.toggle("show");
+            });
+          }
+          // Level 0 keeps coaching visible at all times (CSS) — but also seed text
+          if (level === 0) hintContent.classList.add("show");
+        }
+
+        function coachingText(r) {
+          switch (r.kind) {
+            case "addsub":
+              return r.op === "-"
+                ? "x − " +
+                    r.b +
+                    " = ?  To undo subtracting " +
+                    r.b +
+                    ", ADD " +
+                    r.b +
+                    " to BOTH sides. The x-block ends up alone."
+                : "Whatever is added to x, take it away from BOTH pans. Remove " +
+                    r.b +
+                    " from each side and x stands alone.";
+            case "mul":
+              return (
+                r.a +
+                " equal groups of x balance " +
+                r.c +
+                ". Divide both sides into " +
+                r.a +
+                " equal rows: each x balances " +
+                r.c +
+                " ÷ " +
+                r.a +
+                "."
+              );
+            case "twostep":
+              return "Two fair moves: first SUBTRACT the loose weights from both sides, then DIVIDE both sides into equal rows.";
+            case "ineq":
+              return "An inequality balance is meant to lean. Keep the lean — do the same move to both sides until x is alone.";
+            case "issolution":
+              return "A value is a solution only if it makes the beam balance. Drop it in and look: level = solution, tipped = not.";
+          }
+          return "";
+        }
+
+        function wireTokens() {
+          const tokens = roomContainer.querySelectorAll(".token.weight");
+          tokens.forEach((tok) => {
+            // pointer drag
+            tok.addEventListener("pointerdown", onTokenDown);
+            // tap / keyboard select
+            tok.addEventListener("click", () => selectToken(tok));
+            tok.addEventListener("keydown", (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                selectToken(tok);
+              }
+            });
+          });
+        }
+
+        function selectToken(tok) {
+          ensureAudio();
+          const side = tok.dataset.side;
+          // staging model: select one from a side, then select one from the
+          // other side to commit a fair removal of 1 from each.
+          if (!selectedToken) {
+            selectedToken = { side: side, el: tok };
+            tok.classList.add("selected");
+            showFeedback(
+              "coach",
+              "Selected a weight on the " +
+                side.toUpperCase() +
+                " pan. Now select a weight on the OTHER pan to remove one from each side fairly.",
+            );
+            return;
+          }
+          if (selectedToken.side === side) {
+            // re-select on same side: just move selection
+            selectedToken.el.classList.remove("selected");
+            selectedToken = { side: side, el: tok };
+            tok.classList.add("selected");
+            return;
+          }
+          // opposite side -> commit fair removal of 1 each
+          selectedToken.el.classList.remove("selected");
+          selectedToken = null;
+          fairRemoveOne();
+        }
+
+        function fairRemoveOne() {
+          const s = roomState;
+          if (s.leftW >= 1 && s.rightW >= 1) {
+            s.leftW -= 1;
+            s.rightW -= 1;
+            sfxLift();
+            drawBalance();
+            afterMove();
+          } else {
+            rejectMove(
+              "One side has no loose weight to remove — you can't take from only one pan or the beam tips.",
+            );
+          }
+        }
+
+        let dragData = null;
+        function onTokenDown(e) {
+          if (roomState.solved) return;
+          const tok = e.currentTarget;
+          ensureAudio();
+          dragData = {
+            el: tok,
+            side: tok.dataset.side,
+            startX: e.clientX,
+            startY: e.clientY,
+          };
+          tok.setPointerCapture(e.pointerId);
+          tok.addEventListener("pointermove", onTokenMove);
+          tok.addEventListener("pointerup", onTokenUp);
+        }
+        function onTokenMove(e) {
+          if (!dragData) return;
+          const dx = e.clientX - dragData.startX;
+          const dy = e.clientY - dragData.startY;
+          dragData.el.style.transform =
+            "translate(" + dx + "px," + dy + "px) scale(1.1)";
+        }
+        function onTokenUp(e) {
+          if (!dragData) return;
+          const dy = e.clientY - dragData.startY;
+          const tok = dragData.el;
+          tok.style.transform = "";
+          tok.removeEventListener("pointermove", onTokenMove);
+          tok.removeEventListener("pointerup", onTokenUp);
+          // a meaningful upward/outward drag stages this side for removal
+          if (Math.abs(dy) > 26) {
+            stageDrag(dragData.side);
+          }
+          dragData = null;
+        }
+
+        // drag staging: drag off one side, then off the other to commit fair removal
+        function stageDrag(side) {
+          const s = roomState;
+          if (side === "left") pendingLeft++;
+          else pendingRight++;
+          if (pendingLeft > 0 && pendingRight > 0) {
+            const n = Math.min(pendingLeft, pendingRight);
+            pendingLeft -= n;
+            pendingRight -= n;
+            if (n > s.leftW || n > s.rightW) {
+              pendingLeft = 0;
+              pendingRight = 0;
+              rejectMove(
+                "Both pans don't have that many to remove. Take the SAME amount off each side.",
+              );
               return;
             }
-          }
-
-          // Next question or next room
-          const room = ROOMS[currentRoom];
-          if (qi + 1 < room.questions.length) {
-            setTimeout(() => activateQuestion(qi + 1), 800);
+            s.leftW -= n;
+            s.rightW -= n;
+            sfxLift();
+            drawBalance();
+            afterMove();
           } else {
-            stopTimer();
-            if (roomPerfect) {
-              score += PERFECT_BONUS;
-              updateHUD();
+            // only one side staged so far — tip the beam to show it's unfair
+            const beam = document.getElementById("beam");
+            if (beam) {
+              const dir = side === "left" ? 1 : -1;
+              beam.style.transform =
+                "translateX(-50%) rotate(" + dir * 8 + "deg)";
             }
+            showFeedback(
+              "coach",
+              "You lifted a weight off the " +
+                side.toUpperCase() +
+                " pan. The beam tips! Lift one off the OTHER pan too to keep it balanced.",
+            );
             setTimeout(() => {
-              const btn = document.getElementById("nextDoorBtn");
-              if (btn) btn.classList.add("show");
-            }, 1000);
+              if (pendingLeft > 0 || pendingRight > 0) drawBalance();
+            }, 600);
           }
         }
 
-        // ── BOSS STEP LOGIC ──
-        function activateBossStep(si) {
-          const step = BOSS.steps[si];
-          if (!step) return;
-
-          const stepEl = document.getElementById("boss-step-" + si);
-          stepEl.style.opacity = "1";
-          stepEl.style.pointerEvents = "auto";
-
-          // Hint scrolls
-          const hintBtn = stepEl.querySelector(".hint-scroll-btn");
-          if (hintBtn) {
-            hintBtn.addEventListener("click", function () {
-              const target = document.getElementById(this.dataset.hint);
-              if (target) target.classList.toggle("show");
-            });
-          }
-
-          const submitBtn = document.getElementById("boss-submit-" + si);
-
-          if (step.type === "mc") {
-            const mcBtns = stepEl.querySelectorAll(".game-mc-btn");
-            let selected = null;
-            mcBtns.forEach((btn) => {
-              btn.addEventListener("click", () => {
-                if (btn.classList.contains("locked")) return;
-                mcBtns.forEach((b) => b.classList.remove("selected"));
-                btn.classList.add("selected");
-                selected = btn.dataset.val;
-                submitBtn.disabled = false;
-              });
-            });
-
-            submitBtn.disabled = true;
-            submitBtn.addEventListener("click", () => {
-              if (!selected) return;
-              const isCorrect = selected === step.answer;
-              mcBtns.forEach((b) => {
-                b.classList.add("locked");
-                if (b.dataset.val === step.answer)
-                  b.classList.add("is-correct");
-              });
-              if (!isCorrect) {
-                stepEl
-                  .querySelector(".game-mc-btn.selected")
-                  .classList.add("is-wrong");
-              }
-              handleBossAnswer(isCorrect, si, step);
-            });
-          } else if (step.type === "fill") {
-            const fillInput = document.getElementById("boss-fill-" + si);
-            submitBtn.disabled = false;
-
-            fillInput.addEventListener("keydown", (e) => {
-              if (e.key === "Enter") submitBtn.click();
-            });
-
-            submitBtn.addEventListener("click", () => {
-              const val = fillInput.value.trim();
-              if (!val) return;
-              const isCorrect = val === step.answer;
-              fillInput.readOnly = true;
-              fillInput.classList.add(isCorrect ? "is-correct" : "is-wrong");
-              handleBossAnswer(isCorrect, si, step);
-            });
-          }
-        }
-
-        function handleBossAnswer(isCorrect, si, step) {
-          const submitBtn = document.getElementById("boss-submit-" + si);
-          submitBtn.disabled = true;
-          submitBtn.style.display = "none";
-
-          const stepEl = document.getElementById("boss-step-" + si);
-
-          if (isCorrect) {
-            const fb = document.getElementById("boss-fb-correct-" + si);
-            fb.querySelector("span:last-child").innerHTML = step.correctMsg;
-            fb.classList.add("show");
-            correctCount++;
-            score +=
-              Math.round(BOSS_POINTS / BOSS.steps.length) + calcTimeBonus();
-            updateHUD();
-            spawnConfetti(15);
-          } else {
-            const fb = document.getElementById("boss-fb-wrong-" + si);
-            fb.querySelector("span:last-child").innerHTML = step.wrongMsg;
-            fb.classList.add("show");
-            roomPerfect = false;
-            lives--;
-            updateHUD();
-            shakeElement(stepEl);
-
-            if (lives <= 0) {
-              stopTimer();
-              setTimeout(() => endGame(false), 1200);
-              return;
-            }
-          }
-
-          if (si + 1 < BOSS.steps.length) {
-            setTimeout(() => activateBossStep(si + 1), 800);
-          } else {
-            stopTimer();
-            if (roomPerfect) {
-              score += PERFECT_BONUS;
-              updateHUD();
-            }
-            setTimeout(() => {
-              const btn = document.getElementById("nextDoorBtn");
-              if (btn) {
-                btn.style.display = "block";
-                btn.classList.add("show");
-              }
-            }, 1000);
-          }
-        }
-
-        // ── NEXT ROOM ──
+        // ── NEXT / END ──
         function goNextRoom() {
+          ensureAudio();
+          sfxClick();
           currentRoom++;
-          if (currentRoom > ROOMS.length) {
+          if (currentRoom >= rooms.length) {
             endGame(true);
           } else {
-            doorTransition(() => {
-              renderRoom();
-              window.scrollTo({ top: 0 });
-            });
+            renderRoom();
+            window.scrollTo({ top: 0 });
           }
         }
 
-        // ── END GAME ──
         function endGame(victory) {
-          stopTimer();
+          recordResult();
           if (victory) {
             spawnConfetti(60);
             document.getElementById("vScore").textContent = score;
@@ -1805,57 +2010,133 @@
           }
         }
 
-        // ── START GAME ──
+        let recorded = false;
+        function recordResult() {
+          if (recorded) return;
+          recorded = true;
+          try {
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: document.title,
+                score: correctCount,
+                maxScore: rooms.length,
+                problemsCorrect: correctCount,
+                problemsAttempted: rooms.length,
+                standard: "6.EE.B.7",
+              });
+          } catch (e) {}
+        }
+
+        // ── START ──
         function startGame() {
+          ensureAudio();
           lives = 3;
           score = 0;
           correctCount = 0;
           currentRoom = 0;
-          currentQ = 0;
+          recorded = false;
+          rooms = buildRooms();
           updateHUD();
-          doorTransition(() => {
-            showScreen(gameScreen);
-            renderRoom();
-          });
+          showScreen(gameScreen);
+          renderRoom();
         }
 
-        // ── EVENT LISTENERS ──
-        // Level toggle
+        // ── EVENTS ──
         document.querySelectorAll(".level-btn").forEach((btn) => {
           btn.addEventListener("click", () => {
             document
               .querySelectorAll(".level-btn")
               .forEach((b) => b.classList.remove("active"));
             btn.classList.add("active");
-            level = parseInt(btn.dataset.level);
+            level = parseInt(btn.dataset.level, 10);
             document.body.classList.toggle("lvl0", level === 0);
           });
         });
-
         startBtn.addEventListener("click", startGame);
+        document
+          .getElementById("playAgainV")
+          .addEventListener("click", () => showScreen(startScreen));
+        document
+          .getElementById("playAgainGO")
+          .addEventListener("click", () => showScreen(startScreen));
 
-        // Delegated click for next door and hint scrolls
-        roomContainer.addEventListener("click", (e) => {
-          if (
-            e.target.id === "nextDoorBtn" ||
-            e.target.closest("#nextDoorBtn")
-          ) {
-            goNextRoom();
+        // global keyboard shortcuts within a room
+        document.addEventListener("keydown", (e) => {
+          if (!gameScreen.classList.contains("active") || !roomState) return;
+          if (roomState.solved) {
+            if (e.key === "Enter") {
+              const nb = document.getElementById("nextDoorBtn");
+              if (nb && nb.classList.contains("show")) nb.click();
+            }
+            return;
+          }
+          // "-" removes 1 from both sides where legal
+          if (e.key === "-" || e.key === "_") {
+            e.preventDefault();
+            if (roomState.leftW > 0) removeBothSides(1);
           }
         });
 
-        // Play again
-        document.getElementById("playAgainV").addEventListener("click", () => {
-          showScreen(startScreen);
-        });
-        document.getElementById("playAgainGO").addEventListener("click", () => {
-          showScreen(startScreen);
-        });
+        // ── SELF-TEST (dev): verify many generated equations are solvable ──
+        // Exposed for the node verification sim; harmless in the browser.
+        window.__EQUEST_TEST__ = function (n) {
+          n = n || 1000;
+          const levels = [0, 1, 2];
+          let ok = 0,
+            fail = 0;
+          for (let i = 0; i < n; i++) {
+            level = levels[i % 3];
+            const list = buildRooms();
+            for (const r of list) {
+              if (verifySolvable(r) && simulateSolve(r)) ok++;
+              else {
+                fail++;
+                console.error("UNSOLVABLE", JSON.stringify(r));
+              }
+            }
+          }
+          level = 1;
+          return { ok: ok, fail: fail };
+        };
+
+        // pure simulation of the legal moves to PROVE x reaches the integer goal
+        function simulateSolve(r) {
+          if (r.kind === "addsub") {
+            if (r.op === "+") {
+              // remove b from both sides -> x = right - b
+              const left = r.left.weights,
+                right = r.right.weights;
+              if (left !== r.b) return false;
+              const solvedRight = right - left;
+              return solvedRight === r.target;
+            }
+            // op "-" : x - b = c, add b to both: x = c + b
+            return r.right.weights + r.b === r.target;
+          }
+          if (r.kind === "mul") {
+            if (r.right.weights % r.left.groups !== 0) return false;
+            return r.right.weights / r.left.groups === r.target;
+          }
+          if (r.kind === "twostep") {
+            const afterSub = r.right.weights - r.left.weights;
+            if (afterSub % r.left.groups !== 0) return false;
+            return afterSub / r.left.groups === r.target;
+          }
+          if (r.kind === "ineq") {
+            return r.right.weights - r.left.weights === r.target;
+          }
+          if (r.kind === "issolution") {
+            return r.isTrue === (r.candidate + r.b === r.c);
+          }
+          return false;
+        }
       })();
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
 </html>

@@ -38,13 +38,26 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <div id="game-container"></div>
     <script>
       (() => {
+        // ════════════════════════════════════════════════════════════════
+        //  UNIT RATE FACTORY — "Best-Buy Sorting Line"  (6.RP.A.2)
+        //  The MATH IS THE MECHANIC: boxes ride a conveyor belt, each
+        //  stamped with a QUANTITY and a TOTAL PRICE (e.g. "6 cans / $3.00").
+        //  You must compute the UNIT RATE (price ÷ quantity = price each) and
+        //  send each box into the lane-bin whose bracket it falls in BEFORE
+        //  it reaches the end of the belt. A correct bin SNAPS the box in;
+        //  a wrong bin JAMS the line (visible pile-up) and costs time.
+        //  Speed pressure comes from the belt. No A/B/C/D. No printed answer.
+        //  Level 1: slow belt, friendly numbers, 2 bins, shows ÷ hint.
+        //  Level 2: faster, 3–4 bins, trickier rates, no hint.
+        // ════════════════════════════════════════════════════════════════
+
         const W = 1024,
           H = 768;
 
@@ -52,8 +65,8 @@
         const AC = window.AudioContext || window.webkitAudioContext;
         let actx = null;
         function audio() {
-          if (!actx) actx = new AC();
-          if (actx.state === "suspended") actx.resume();
+          if (!actx && AC) actx = new AC();
+          if (actx && actx.state === "suspended") actx.resume();
         }
         function beep(f, d, t = "sine", v = 0.15) {
           if (!actx) return;
@@ -68,891 +81,914 @@
           o.start();
           o.stop(actx.currentTime + d);
         }
-        function sfxOk() {
-          beep(523, 0.08);
-          setTimeout(() => beep(659, 0.08), 80);
-          setTimeout(() => beep(784, 0.15), 160);
-        }
-        function sfxNo() {
-          beep(180, 0.25, "square", 0.1);
-        }
-        function sfxClick() {
-          beep(440, 0.05, "sine", 0.08);
-        }
-        function sfxLvl() {
+        const sfxPick = () => beep(360 + Math.random() * 40, 0.05, "sine", 0.1);
+        const sfxSnap = () => {
+          beep(523, 0.07);
+          setTimeout(() => beep(784, 0.12), 70);
+        };
+        const sfxJam = () => beep(150, 0.28, "square", 0.12);
+        const sfxLevel = () =>
           [523, 659, 784, 1047].forEach((f, i) =>
-            setTimeout(() => beep(f, 0.12), i * 90),
+            setTimeout(() => beep(f, 0.13), i * 85),
           );
-        }
-        function sfxConveyor() {
-          beep(200, 0.08, "triangle", 0.04);
-        }
+        const sfxClick = () => beep(440, 0.05, "sine", 0.08);
 
-        // ─── COLORS ───
+        // ─── PALETTE (colourblind-safe: every bin also has a label + emoji) ───
         const C = {
           bg: 0x0a0e1a,
-          panel: 0x111827,
-          teal: 0x00f5c4,
-          gold: 0xffd700,
-          purple: 0xa855f7,
-          rose: 0xf43f5e,
-          sky: 0x38bdf8,
-          ok: 0x10b981,
-          err: 0xef4444,
+          belt: 0x1d2740,
+          beltDark: 0x141c30,
+          panel: 0x18213a,
+          panelHi: 0x243154,
+          gold: 0xf6c343,
           white: 0xffffff,
-          dark: 0x060a14,
-          line: 0x1a2744,
+          dim: 0x8da2c9,
+          green: 0x2ec26b,
+          red: 0xe7556b,
+          stroke: 0x3a4a72,
+          box: 0xb07a3c,
+          boxLid: 0x8a5d2a,
         };
 
-        // ─── QUESTION GENERATOR ───
-        function genQuestions() {
-          const qs = [];
-          const contexts = [
+        // Products — emoji + name; colour is never the only cue.
+        const PRODUCTS = [
+          { name: "Juice", emoji: "\u{1F9C3}", unit: "bottles" },
+          { name: "Soup", emoji: "\u{1F963}", unit: "cans" },
+          { name: "Apples", emoji: "\u{1F34E}", unit: "apples" },
+          { name: "Bread", emoji: "\u{1F35E}", unit: "loaves" },
+          { name: "Eggs", emoji: "\u{1F95A}", unit: "eggs" },
+          { name: "Pencils", emoji: "\u{270F}\u{FE0F}", unit: "pencils" },
+          { name: "Cookies", emoji: "\u{1F36A}", unit: "cookies" },
+          { name: "Water", emoji: "\u{1F4A7}", unit: "bottles" },
+        ];
+
+        // ─── MATH HELPERS ───
+        const rnd = (n) => Math.floor(Math.random() * n);
+        const pick = (arr) => arr[rnd(arr.length)];
+        const money = (cents) => "$" + (cents / 100).toFixed(2);
+
+        // Bin brackets are defined in CENTS-per-unit so all math is integer.
+        // Each bracket: { lo, hi } inclusive-lo, exclusive-hi (hi=null = open top).
+        // A box's unit rate (cents) lands in EXACTLY one bracket because the
+        // brackets tile [0, ∞) with no gaps or overlaps (verified by sim).
+        function binBrackets(tier) {
+          if (tier === 1) {
+            // 2 bins, clean 50¢ split
+            return [
+              {
+                lo: 0,
+                hi: 51,
+                emoji: "\u{1F7E2}",
+                label: "Best buy",
+                sub: "≤ $0.50 each",
+              },
+              {
+                lo: 51,
+                hi: null,
+                emoji: "\u{1F534}",
+                label: "Too pricey",
+                sub: "more than $0.50 each",
+              },
+            ];
+          }
+          // tier 2: 3–4 bins. Randomly choose 3 or 4 lanes.
+          if (Math.random() < 0.5) {
+            return [
+              {
+                lo: 0,
+                hi: 41,
+                emoji: "\u{1F7E2}",
+                label: "Great deal",
+                sub: "≤ $0.40 each",
+              },
+              {
+                lo: 41,
+                hi: 61,
+                emoji: "\u{1F7E1}",
+                label: "Fair price",
+                sub: "$0.41 – $0.60 each",
+              },
+              {
+                lo: 61,
+                hi: null,
+                emoji: "\u{1F534}",
+                label: "Overpriced",
+                sub: "more than $0.60 each",
+              },
+            ];
+          }
+          return [
             {
-              cat: "MARKET",
-              icon: "\u{1F6D2}",
-              templates: [
-                (a, b) => ({
-                  text: `A store sells ${a} cans for $${((b * a) / 100).toFixed(2)}. Unit price per can?`,
-                  ans: +(b / 100).toFixed(2),
-                  unit: "$ per can",
-                  num: ((b * a) / 100).toFixed(2),
-                  den: a,
-                }),
-                (a, b) => ({
-                  text: `${a} pounds of fruit cost $${((b * a) / 100).toFixed(2)}. Price per pound?`,
-                  ans: +(b / 100).toFixed(2),
-                  unit: "$ per pound",
-                  num: ((b * a) / 100).toFixed(2),
-                  den: a,
-                }),
-                (a, b) => ({
-                  text: `A ${a}-pack of water costs $${((b * a) / 100).toFixed(2)}. Price per bottle?`,
-                  ans: +(b / 100).toFixed(2),
-                  unit: "$ per bottle",
-                  num: ((b * a) / 100).toFixed(2),
-                  den: a,
-                }),
-              ],
+              lo: 0,
+              hi: 31,
+              emoji: "\u{1F7E2}",
+              label: "Steal",
+              sub: "≤ $0.30 each",
             },
             {
-              cat: "SPEED",
-              icon: "\u{1F697}",
-              templates: [
-                (a, b) => ({
-                  text: `A car travels ${a * b} miles in ${a} hours. Speed in mph?`,
-                  ans: b,
-                  unit: "mph",
-                  num: a * b,
-                  den: a,
-                }),
-                (a, b) => ({
-                  text: `A train covers ${a * b} km in ${a} hours. Speed in km/h?`,
-                  ans: b,
-                  unit: "km/h",
-                  num: a * b,
-                  den: a,
-                }),
-                (a, b) => ({
-                  text: `A bike rides ${a * b} miles in ${a} hours. Miles per hour?`,
-                  ans: b,
-                  unit: "mph",
-                  num: a * b,
-                  den: a,
-                }),
-              ],
+              lo: 31,
+              hi: 51,
+              emoji: "\u{1F7E1}",
+              label: "Okay",
+              sub: "$0.31 – $0.50 each",
             },
             {
-              cat: "RECIPE",
-              icon: "\u{1F373}",
-              templates: [
-                (a, b) => ({
-                  text: `${a} cups of flour for ${b} servings. Cups per serving?`,
-                  ans: +(a / b).toFixed(2),
-                  unit: "cups/serving",
-                  num: a,
-                  den: b,
-                }),
-                (a, b) => ({
-                  text: `${a} eggs for ${b} batches. Eggs per batch?`,
-                  ans: +(a / b).toFixed(2),
-                  unit: "eggs/batch",
-                  num: a,
-                  den: b,
-                }),
-              ],
+              lo: 51,
+              hi: 71,
+              emoji: "\u{1F7E0}",
+              label: "Pricey",
+              sub: "$0.51 – $0.70 each",
             },
             {
-              cat: "WORK",
-              icon: "\u{1F4BC}",
-              templates: [
-                (a, b) => ({
-                  text: `$${a * b} earned in ${a} hours. Hourly rate?`,
-                  ans: b,
-                  unit: "$/hour",
-                  num: a * b,
-                  den: a,
-                }),
-                (a, b) => ({
-                  text: `A factory makes ${a * b} bottles in ${a} hours. Bottles per hour?`,
-                  ans: b,
-                  unit: "bottles/hr",
-                  num: a * b,
-                  den: a,
-                }),
-                (a, b) => ({
-                  text: `${a * b} pages printed in ${a} minutes. Pages per minute?`,
-                  ans: b,
-                  unit: "pages/min",
-                  num: a * b,
-                  den: a,
-                }),
-              ],
-            },
-            {
-              cat: "FITNESS",
-              icon: "\u{1F3C3}",
-              templates: [
-                (a, b) => ({
-                  text: `${a * b} jumping jacks in ${a} minutes. Per minute?`,
-                  ans: b,
-                  unit: "per min",
-                  num: a * b,
-                  den: a,
-                }),
-                (a, b) => ({
-                  text: `${a * b} laps in ${a} hours. Laps per hour?`,
-                  ans: b,
-                  unit: "laps/hr",
-                  num: a * b,
-                  den: a,
-                }),
-                (a, b) => ({
-                  text: `${a * b} points in ${a} games. Points per game?`,
-                  ans: b,
-                  unit: "pts/game",
-                  num: a * b,
-                  den: a,
-                }),
-              ],
+              lo: 71,
+              hi: null,
+              emoji: "\u{1F534}",
+              label: "Rip-off",
+              sub: "more than $0.70 each",
             },
           ];
-
-          for (let i = 0; i < 20; i++) {
-            const ctx = contexts[i % contexts.length];
-            const tmpl =
-              ctx.templates[Math.floor(Math.random() * ctx.templates.length)];
-            const a = 3 + Math.floor(Math.random() * 8);
-            const b =
-              ctx.cat === "MARKET"
-                ? 25 + Math.floor(Math.random() * 20) * 5
-                : 5 + Math.floor(Math.random() * 20) * 5;
-            const q = tmpl(a, b);
-            const correct = q.ans;
-            const wrongs = [
-              correct * 2,
-              +(correct + correct * 0.5).toFixed(2),
-              +(correct * 0.5).toFixed(2),
-            ].filter((w) => w !== correct);
-            while (wrongs.length < 3)
-              wrongs.push(+(correct + 1 + wrongs.length).toFixed(2));
-            const choices = shuffle([correct, ...wrongs.slice(0, 3)]);
-            qs.push({
-              cat: ctx.cat,
-              icon: ctx.icon,
-              text: q.text,
-              ans: correct,
-              unit: q.unit,
-              num: q.num,
-              den: q.den,
-              choices: choices.map((c) =>
-                typeof c === "number"
-                  ? Number.isInteger(c)
-                    ? String(c)
-                    : c.toFixed(2)
-                  : String(c),
-              ),
-              correctStr:
-                typeof correct === "number"
-                  ? Number.isInteger(correct)
-                    ? String(correct)
-                    : correct.toFixed(2)
-                  : String(correct),
-              hint: `Divide: ${q.num} ÷ ${q.den}`,
-              explain: `${q.num} ÷ ${q.den} = ${typeof correct === "number" ? (Number.isInteger(correct) ? correct : correct.toFixed(2)) : correct} ${q.unit}`,
-            });
-          }
-          return shuffle(qs);
-        }
-        function shuffle(a) {
-          const b = [...a];
-          for (let i = b.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [b[i], b[j]] = [b[j], b[i]];
-          }
-          return b;
         }
 
-        // ─── TITLE SCENE ───
+        // index of the one bracket containing a unit rate (cents).
+        function binFor(rateCents, bins) {
+          for (let i = 0; i < bins.length; i++) {
+            const b = bins[i];
+            if (rateCents >= b.lo && (b.hi === null || rateCents < b.hi))
+              return i;
+          }
+          return -1; // impossible given tiling; guarded in generator
+        }
+
+        // ─── BOX (ROUND) GENERATOR ───
+        // Produces { qty, totalCents, rateCents } where totalCents / qty divides
+        // EXACTLY (integer cents per unit) so grade-6 division stays clean.
+        function makeBox(tier, bins) {
+          // Pick a target bin first, then build a box that lands in it. This
+          // guarantees a balanced spread across lanes (every lane gets boxes).
+          const targetBin = rnd(bins.length);
+          const b = bins[targetBin];
+          // choose a clean integer cents-per-unit inside this bracket
+          const lo = b.lo;
+          const hi = b.hi === null ? lo + 40 : b.hi; // open-top bins get a sane ceiling
+          // grade-friendly rates: multiples of 5¢ (e.g. $0.25, $0.30, $0.45)
+          const choices = [];
+          for (let r = Math.max(5, Math.ceil(lo / 5) * 5); r < hi; r += 5) {
+            if (r >= lo) choices.push(r);
+          }
+          // fall back to any integer if the 5¢ grid is empty (very narrow band)
+          if (!choices.length) {
+            for (let r = lo; r < hi; r++) choices.push(r);
+          }
+          const rateCents = pick(choices);
+          // quantity small enough to read, large enough to require real division
+          const qty = tier === 1 ? 2 + rnd(7) : 3 + rnd(10); // L1: 2–8, L2: 3–12
+          const totalCents = rateCents * qty; // exact division by construction
+          const product = pick(PRODUCTS);
+          return { qty, totalCents, rateCents, product, bin: targetBin };
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        //  TITLE SCENE — real Level 1 (Support) / Level 2 (Challenge) choice
+        // ════════════════════════════════════════════════════════════════
         class TitleScene extends Phaser.Scene {
           constructor() {
             super("TitleScene");
           }
           create() {
-            this.cameras.main.setBackgroundColor(C.bg).fadeIn(500);
-
-            // Grid lines BG
-            const gfx = this.add.graphics();
-            gfx.lineStyle(1, C.teal, 0.04);
-            for (let x = 0; x < W; x += 50) {
-              gfx.lineBetween(x, 0, x, H);
-            }
-            for (let y = 0; y < H; y += 50) {
-              gfx.lineBetween(0, y, W, y);
-            }
-
-            // Stars
-            for (let i = 0; i < 60; i++) {
-              const s = this.add.circle(
-                Math.random() * W,
-                Math.random() * H,
-                1 + Math.random(),
-                C.white,
-                0.3 + Math.random() * 0.4,
-              );
-              this.tweens.add({
-                targets: s,
-                alpha: 0.1,
-                duration: 1500 + Math.random() * 2000,
-                yoyo: true,
-                repeat: -1,
-              });
-            }
-
+            this.cameras.main.setBackgroundColor(C.bg);
             this.add
-              .text(W / 2, 140, "UNIT RATE FACTORY", {
-                fontSize: "56px",
-                fontFamily: "Arial Black",
-                color: "#00f5c4",
+              .text(W / 2, 96, "UNIT RATE FACTORY", {
+                fontSize: "60px",
+                fontFamily: "Arial Black, sans-serif",
+                color: "#f6c343",
                 stroke: "#000",
-                strokeThickness: 4,
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 205, "6.RP.A.2 — Understand Unit Rates", {
-                fontSize: "18px",
-                color: "#64748b",
+                strokeThickness: 7,
               })
               .setOrigin(0.5);
             this.add
               .text(
                 W / 2,
-                240,
-                "Manage the factory conveyor belt! Calculate unit rates to keep production running!",
+                150,
+                "6.RP.A.2 — Sort boxes by their price-per-item",
                 {
-                  fontSize: "14px",
-                  color: "#4a5568",
+                  fontSize: "20px",
+                  fontFamily: "Arial",
+                  color: "#9fb4dd",
+                },
+              )
+              .setOrigin(0.5);
+            this.add
+              .text(
+                W / 2,
+                206,
+                "Boxes roll down the belt. Each shows a QUANTITY and a TOTAL PRICE.\n" +
+                  "Find the unit rate (price ÷ quantity = price for ONE) and drop the\n" +
+                  "box in the matching lane before it reaches the end!",
+                {
+                  fontSize: "16px",
+                  fontFamily: "Arial",
+                  color: "#8da2c9",
+                  align: "center",
+                  lineSpacing: 6,
                 },
               )
               .setOrigin(0.5);
 
-            // Mode select
-            const modes = [
+            this.drawDemo(W / 2, 360);
+
+            const tiers = [
               {
-                name: "Apprentice",
-                desc: "Guided, forgiving",
-                icon: "\u{1F527}",
-                color: C.teal,
+                t: 1,
+                label: "Level 1",
+                sub: "Support",
+                desc: "Slow belt · friendly numbers · 2 lanes · shows the ÷ hint · 5 lives",
+                col: C.green,
               },
               {
-                name: "Engineer",
-                desc: "Standard challenge",
-                icon: "⚙️",
-                color: C.gold,
-              },
-              {
-                name: "Foreman",
-                desc: "Fast & intense",
-                icon: "\u{1F525}",
-                color: C.rose,
+                t: 2,
+                label: "Level 2",
+                sub: "Challenge",
+                desc: "Fast belt · trickier rates · 3–4 lanes · no hint · 3 lives",
+                col: C.gold,
               },
             ];
-            this.selectedMode = 1;
-            this.modeCards = [];
-
-            modes.forEach((m, i) => {
-              const x = 262 + i * 250,
-                y = 400;
+            tiers.forEach((d, i) => {
+              const x = W / 2 + (i === 0 ? -200 : 200),
+                y = 560;
               const card = this.add
-                .rectangle(x, y, 210, 180, C.panel)
-                .setStrokeStyle(3, i === 1 ? C.gold : 0x1a2744)
+                .rectangle(x, y, 330, 150, C.panel)
+                .setStrokeStyle(3, C.stroke)
                 .setInteractive({ useHandCursor: true });
               this.add
-                .text(x, y - 50, m.icon, { fontSize: "40px" })
-                .setOrigin(0.5);
-              this.add
-                .text(x, y, m.name, {
-                  fontSize: "18px",
+                .text(x, y - 48, d.label, {
+                  fontSize: "30px",
+                  fontFamily: "Arial Black",
                   color: "#fff",
-                  fontStyle: "bold",
                 })
                 .setOrigin(0.5);
               this.add
-                .text(x, y + 28, m.desc, { fontSize: "12px", color: "#64748b" })
+                .text(x, y - 16, d.sub, {
+                  fontSize: "16px",
+                  fontFamily: "Arial",
+                  color: Phaser.Display.Color.IntegerToColor(d.col).rgba,
+                })
                 .setOrigin(0.5);
+              this.add
+                .text(x, y + 28, d.desc, {
+                  fontSize: "12.5px",
+                  fontFamily: "Arial",
+                  color: "#b9c8e6",
+                  align: "center",
+                  wordWrap: { width: 300 },
+                  lineSpacing: 3,
+                })
+                .setOrigin(0.5);
+              card.on("pointerover", () => {
+                card.setStrokeStyle(3, d.col);
+                card.setScale(1.04);
+              });
+              card.on("pointerout", () => {
+                card.setStrokeStyle(3, C.stroke);
+                card.setScale(1);
+              });
               card.on("pointerdown", () => {
                 audio();
                 sfxClick();
-                this.selectedMode = i;
-                this.modeCards.forEach((c, j) =>
-                  c.setStrokeStyle(3, j === i ? C.gold : 0x1a2744),
+                this.cameras.main.fadeOut(320, 0, 0, 0);
+                this.time.delayedCall(320, () =>
+                  this.scene.start("GameScene", { tier: d.t }),
                 );
               });
-              this.modeCards.push(card);
             });
 
-            const btn = this.add
-              .rectangle(W / 2, 560, 280, 56, C.teal)
-              .setInteractive({ useHandCursor: true });
             this.add
-              .text(W / 2, 560, "START PRODUCTION", {
-                fontSize: "22px",
+              .text(
+                W / 2,
+                676,
+                "Drag a box to a lane  ·  OR press number keys 1–4 to send it to that lane  ·  H for a hint",
+                { fontSize: "12.5px", color: "#5e6f99" },
+              )
+              .setOrigin(0.5);
+            this.cameras.main.fadeIn(380);
+          }
+          drawDemo(cx, cy) {
+            // "6 cans / $3.00 → $0.50 each" worked once, as a teaching read.
+            const box = this.add
+              .rectangle(cx - 150, cy, 120, 96, C.box)
+              .setStrokeStyle(3, C.boxLid);
+            this.add
+              .text(cx - 150, cy - 26, "\u{1F963} 6 cans", {
+                fontSize: "17px",
                 fontFamily: "Arial Black",
-                color: "#0a0e1a",
+                color: "#fff",
               })
               .setOrigin(0.5);
-            btn.on("pointerdown", () => {
-              audio();
-              sfxClick();
-              this.cameras.main.fadeOut(400);
-              this.time.delayedCall(400, () =>
-                this.scene.start("GameScene", { mode: this.selectedMode }),
-              );
-            });
-            btn.on("pointerover", () => btn.setScale(1.04));
-            btn.on("pointerout", () => btn.setScale(1));
+            this.add
+              .text(cx - 150, cy + 4, "$3.00", {
+                fontSize: "26px",
+                fontFamily: "Arial Black",
+                color: "#ffe9a8",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(cx - 150, cy + 30, "total", {
+                fontSize: "11px",
+                color: "#b9c8e6",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(cx - 30, cy, "$3.00 ÷ 6 =", {
+                fontSize: "20px",
+                fontFamily: "Arial",
+                color: "#8da2c9",
+              })
+              .setOrigin(0, 0.5);
+            this.add
+              .text(cx + 130, cy, "$0.50 each", {
+                fontSize: "24px",
+                fontFamily: "Arial Black",
+                color: "#2ec26b",
+              })
+              .setOrigin(0, 0.5);
           }
         }
 
-        // ─── GAME SCENE ───
+        // ════════════════════════════════════════════════════════════════
+        //  GAME SCENE
+        // ════════════════════════════════════════════════════════════════
         class GameScene extends Phaser.Scene {
           constructor() {
             super("GameScene");
           }
           init(data) {
-            this.mode = data.mode;
+            this.tier = data.tier || 1;
           }
 
           create() {
-            this.cameras.main.setBackgroundColor(C.bg).fadeIn(400);
-            const diffMult = [0.7, 1.0, 1.5][this.mode];
+            this.cameras.main.setBackgroundColor(C.bg);
+            this.cameras.main.fadeIn(320);
 
-            // State
-            this.questions = genQuestions();
-            this.qIdx = 0;
+            // ── state ──
             this.score = 0;
             this.streak = 0;
             this.bestStreak = 0;
+            this.sorted = 0; // boxes resolved (correct or wrong)
             this.correct = 0;
-            this.total = 0;
-            this.lives = [4, 3, 2][this.mode];
-            this.maxLives = this.lives;
-            this.answered = false;
-            this.attempts = 0;
-            this.timeLeft = Math.round([35, 30, 20][this.mode]);
-            this.baseTime = this.timeLeft;
+            this.attemptsOnBox = 0;
+            this.lives = this.tier === 1 ? 5 : 3;
             this.level = 1;
-            this.xp = 0;
-            this.combo = 1;
-            this.enemyHp = 100;
+            this.goal = this.tier === 1 ? 10 : 14;
+            this.jamTimer = 0; // seconds the line is jammed (frozen)
+            this.bins = binBrackets(this.tier);
 
-            // Factory BG
-            this.add.rectangle(W / 2, H / 2, W, H, C.dark);
-            const gfx = this.add.graphics();
-            gfx.lineStyle(1, C.teal, 0.03);
-            for (let x = 0; x < W; x += 50) gfx.lineBetween(x, 0, x, H);
-            for (let y = 0; y < H; y += 50) gfx.lineBetween(0, y, W, y);
+            // belt geometry
+            this.beltTop = 150;
+            this.beltBottom = 470;
+            this.beltY = (this.beltTop + this.beltBottom) / 2;
+            this.beltStartX = -120;
+            this.beltEndX = W + 80;
+            this.dropZoneY = this.beltBottom + 40; // boxes "fall off" past here
+            this.beltSpeed = this.tier === 1 ? 42 : 70; // px/sec base
+            this.beltPhase = 0;
 
-            // Conveyor belt visual
-            this.conveyorY = 120;
+            this.activeBox = null; // the box currently on the belt
+            this.dragging = false;
+
+            this.drawStaticChrome();
+            this.buildBins();
+            this.buildHUD();
+            this.buildControls();
+
+            // keyboard: number keys send the active box to that lane
+            this.input.keyboard.on("keydown", (e) => {
+              if (e.key >= "1" && e.key <= "9") {
+                const idx = parseInt(e.key, 10) - 1;
+                if (idx < this.bins.length) this.sendToBin(idx);
+              } else if (e.key.toLowerCase() === "h") this.showHint();
+            });
+
+            this.spawnBox();
+          }
+
+          drawStaticChrome() {
+            this.add.rectangle(W / 2, H / 2, W, H, C.bg);
+            // factory wall
+            this.add.rectangle(W / 2, 90, W, 180, 0x101728);
+            // belt frame
+            this.beltGfx = this.add.graphics();
             this.add
-              .rectangle(W / 2, this.conveyorY, W, 50, 0x1a2744)
-              .setStrokeStyle(1, 0x2a3754);
-            this.conveyorLines = [];
-            for (let x = 0; x < W; x += 40) {
-              const ln = this.add.rectangle(
-                x,
-                this.conveyorY,
-                3,
-                50,
-                C.teal,
-                0.15,
-              );
-              this.conveyorLines.push(ln);
-            }
-
-            // Product on conveyor
-            this.product = this.add
-              .text(50, this.conveyorY, "\u{1F4E6}", { fontSize: "32px" })
-              .setOrigin(0.5);
-            this.productTween = null;
-            this.startConveyor();
-
-            // HUD
-            this.add.rectangle(W / 2, 30, W, 60, C.bg, 0.95);
-            this.add.rectangle(W / 2, 60, W, 2, C.teal, 0.15);
-            this.hudScore = this.add.text(60, 12, "0", {
-              fontSize: "22px",
-              fontFamily: "Arial Black",
-              color: "#ffd700",
-            });
-            this.add.text(60, 38, "SCORE", {
-              fontSize: "9px",
-              color: "#64748b",
-              letterSpacing: 2,
-            });
-            this.hudStreak = this.add.text(200, 18, "\u{1F525} 0x", {
-              fontSize: "14px",
-              color: "#a855f7",
-              fontStyle: "bold",
-            });
-            this.hudLives = this.add.text(W - 120, 12, "", {
-              fontSize: "14px",
-              color: "#f43f5e",
-            });
-            this.hudTimer = this.add.text(W - 120, 36, "", {
-              fontSize: "14px",
-              color: "#ffd700",
-            });
-            this.hudQ = this.add
-              .text(W / 2, 18, "", { fontSize: "13px", color: "#00f5c4" })
-              .setOrigin(0.5, 0);
-            this.hudXp = this.add.rectangle(W / 2, 58, 200, 4, 0x222, 0.3);
-            this.hudXpFill = this.add
-              .rectangle(W / 2 - 100, 58, 0, 4, C.purple)
+              .text(40, this.beltTop - 34, "\u{1F3ED} SORTING LINE", {
+                fontSize: "15px",
+                fontFamily: "Arial Black",
+                color: "#9fb4dd",
+              })
               .setOrigin(0, 0.5);
-
-            // Enemy (machine boss)
-            this.enemyArea = this.add.container(W / 2, 175);
-            this.enemySprite = this.add
-              .text(0, -10, "\u{1F3ED}", { fontSize: "48px" })
-              .setOrigin(0.5);
-            this.enemyName = this.add
-              .text(0, 25, "Production Machine", {
-                fontSize: "14px",
-                color: "#00f5c4",
-                fontStyle: "bold",
+            // end-of-belt warning chute
+            this.add.rectangle(
+              this.beltEndX - 60,
+              this.beltY,
+              70,
+              124,
+              0x2a1420,
+            );
+            this.add
+              .text(W - 56, this.beltY - 74, "⚠️ OUT", {
+                fontSize: "13px",
+                fontFamily: "Arial Black",
+                color: "#e7556b",
               })
               .setOrigin(0.5);
-            this.enemyHpBg = this.add
-              .rectangle(0, 45, 200, 10, 0x222)
-              .setOrigin(0.5);
-            this.enemyHpBar = this.add
-              .rectangle(-100, 45, 200, 10, C.rose)
-              .setOrigin(0, 0.5);
-            this.enemyArea.add([
-              this.enemySprite,
-              this.enemyName,
-              this.enemyHpBg,
-              this.enemyHpBar,
-            ]);
+          }
 
-            // Question card
-            this.qCard = this.add
-              .rectangle(W / 2, 350, 720, 240, C.panel)
-              .setStrokeStyle(1, 0x2a3754);
-            this.qCat = this.add
-              .text(W / 2, 245, "", {
-                fontSize: "11px",
-                color: "#ffd700",
-                letterSpacing: 2,
-              })
-              .setOrigin(0.5);
-            this.qText = this.add
-              .text(W / 2, 290, "", {
-                fontSize: "18px",
-                color: "#e2e8f0",
-                fontStyle: "bold",
-                wordWrap: { width: 660 },
-                align: "center",
-              })
-              .setOrigin(0.5);
-
-            // Choices (4 buttons)
-            this.btns = [];
-            this.btnTexts = [];
-            for (let i = 0; i < 4; i++) {
-              const col = i % 2,
-                row = Math.floor(i / 2);
-              const x = W / 2 - 170 + col * 340,
-                y = 355 + row * 58;
-              const btn = this.add
-                .rectangle(x, y, 320, 48, 0x0d1527)
-                .setStrokeStyle(2, 0x1a2744)
+          buildBins() {
+            const n = this.bins.length;
+            const margin = 40;
+            const gap = 14;
+            const totalW = W - margin * 2 - gap * (n - 1);
+            const binW = totalW / n;
+            const binTop = this.beltBottom + 56;
+            const binH = H - binTop - 100;
+            this.binRects = [];
+            this.binPiles = []; // jam pile-up counters
+            this.bins.forEach((b, i) => {
+              const x = margin + binW / 2 + i * (binW + gap);
+              const y = binTop + binH / 2;
+              const rect = this.add
+                .rectangle(x, y, binW, binH, C.panel)
+                .setStrokeStyle(3, C.stroke)
                 .setInteractive({ useHandCursor: true });
-              const txt = this.add
-                .text(x, y, "", {
-                  fontSize: "16px",
-                  color: "#e2e8f0",
-                  fontStyle: "bold",
+              // drop target via pointer-up handled globally; store bounds
+              rect.binIndex = i;
+              this.add
+                .text(x, y - binH / 2 + 26, `${b.emoji}  ${i + 1}`, {
+                  fontSize: "26px",
+                  fontFamily: "Arial Black",
+                  color: "#fff",
                 })
                 .setOrigin(0.5);
-              btn.on("pointerdown", () => this.pick(i));
-              btn.on("pointerover", () => {
-                if (!this.answered) btn.setStrokeStyle(2, C.teal);
-              });
-              btn.on("pointerout", () => {
-                if (!this.answered) btn.setStrokeStyle(2, 0x1a2744);
-              });
-              this.btns.push(btn);
-              this.btnTexts.push(txt);
-            }
+              this.add
+                .text(x, y - binH / 2 + 58, b.label, {
+                  fontSize: "17px",
+                  fontFamily: "Arial Black",
+                  color: "#ffe9a8",
+                })
+                .setOrigin(0.5);
+              this.add
+                .text(x, y - binH / 2 + 84, b.sub, {
+                  fontSize: "14px",
+                  fontFamily: "Arial",
+                  color: "#b9c8e6",
+                  align: "center",
+                  wordWrap: { width: binW - 24 },
+                })
+                .setOrigin(0.5);
+              const pileTxt = this.add
+                .text(x, y + binH / 2 - 22, "", {
+                  fontSize: "13px",
+                  fontFamily: "Arial",
+                  color: "#e7556b",
+                })
+                .setOrigin(0.5);
+              this.add
+                .text(x, y + binH / 2 - 44, `press ${i + 1}`, {
+                  fontSize: "12px",
+                  color: "#5e6f99",
+                })
+                .setOrigin(0.5);
+              this.binRects.push({ rect, x, y, w: binW, h: binH, pileTxt });
+              this.binPiles.push(0);
+            });
+          }
 
-            // Hint
-            this.hintBg = this.add
-              .rectangle(W / 2, 498, 600, 36, 0x1a1a00, 0.8)
-              .setAlpha(0);
-            this.hintTxt = this.add
-              .text(W / 2, 498, "", { fontSize: "13px", color: "#ffd700" })
-              .setOrigin(0.5)
-              .setAlpha(0);
-
-            // Feedback
-            this.fbBg = this.add
-              .rectangle(W / 2, 545, 720, 44, C.panel)
-              .setAlpha(0);
-            this.fbTxt = this.add
-              .text(W / 2, 545, "", {
-                fontSize: "14px",
-                color: "#e2e8f0",
-                wordWrap: { width: 680 },
-                align: "center",
-              })
-              .setOrigin(0.5)
-              .setAlpha(0);
-
-            // Next
-            this.nxtBtn = this.add
-              .rectangle(W / 2, 610, 220, 46, C.teal)
-              .setInteractive({ useHandCursor: true })
-              .setAlpha(0);
-            this.nxtTxt = this.add
-              .text(W / 2, 610, "NEXT UNIT >", {
+          buildHUD() {
+            this.add.rectangle(W / 2, 26, W, 52, 0x080c16, 0.96);
+            this.hScore = this.add.text(22, 12, "0", {
+              fontSize: "24px",
+              fontFamily: "Arial Black",
+              color: "#f6c343",
+            });
+            this.add.text(24, 40, "POINTS", {
+              fontSize: "10px",
+              color: "#6f82ad",
+            });
+            this.hLevel = this.add
+              .text(W / 2, 10, "Level 1", {
                 fontSize: "16px",
                 fontFamily: "Arial Black",
-                color: "#0a0e1a",
+                color: "#fff",
               })
-              .setOrigin(0.5)
-              .setAlpha(0);
-            this.nxtBtn.on("pointerdown", () => {
-              if (this.answered) this.nextQ();
-            });
-
-            // Timer
-            this.timerEvt = this.time.addEvent({
-              delay: 1000,
-              callback: this.tick,
-              callbackScope: this,
-              loop: true,
-            });
-
-            // Keys
-            this.input.keyboard.on("keydown", (e) => {
-              if (e.key === "1" || e.key === "a") this.pick(0);
-              if (e.key === "2" || e.key === "b") this.pick(1);
-              if (e.key === "3" || e.key === "c") this.pick(2);
-              if (e.key === "4" || e.key === "d") this.pick(3);
-              if (e.key === "Enter" && this.answered) this.nextQ();
-            });
-
-            this.loadQ();
+              .setOrigin(0.5, 0);
+            this.hSorted = this.add
+              .text(W / 2, 34, "Sorted 0 / " + this.goal, {
+                fontSize: "12px",
+                color: "#9fb4dd",
+              })
+              .setOrigin(0.5, 0);
+            this.hLives = this.add
+              .text(W - 22, 14, "", { fontSize: "20px" })
+              .setOrigin(1, 0);
+            this.hStreak = this.add
+              .text(W - 22, 40, "", { fontSize: "13px", color: "#f6c343" })
+              .setOrigin(1, 0);
           }
 
-          startConveyor() {
-            this.product.setX(-30);
-            this.productTween = this.tweens.add({
-              targets: this.product,
-              x: W + 30,
-              duration: 8000,
-              ease: "Linear",
-              repeat: -1,
-              onRepeat: () => {
-                sfxConveyor();
-              },
-            });
-            // Animate conveyor lines
-            this.tweens.add({
-              targets: this.conveyorLines,
-              x: "+=40",
-              duration: 2000,
-              ease: "Linear",
-              repeat: -1,
-              onRepeat: () => {
-                this.conveyorLines.forEach((l) => {
-                  if (l.x > W) l.setX(l.x - W - 40);
-                });
-              },
-            });
-          }
-
-          tick() {
-            if (this.answered || this.timeLeft <= 0) return;
-            this.timeLeft--;
-            this.hudTimer.setText("\u{23F1} " + this.timeLeft + "s");
-            if (this.timeLeft <= 5 && this.timeLeft > 0) {
-              beep(300, 0.04, "square", 0.04);
-              this.hudTimer.setColor("#ff4444");
-            }
-            if (this.timeLeft <= 0) {
-              this.timeout();
-            }
-          }
-
-          timeout() {
-            this.answered = true;
-            sfxNo();
-            this.streak = 0;
-            this.combo = 1;
-            this.lives--;
-            this.showFB(false);
-            this.cameras.main.shake(200, 0.01);
-            this.updateHUD();
-            if (this.lives <= 0)
-              this.time.delayedCall(1500, () => this.endGame());
-          }
-
-          loadQ() {
-            if (this.qIdx >= this.questions.length)
-              this.questions.push(...genQuestions());
-            const q = this.questions[this.qIdx];
-            this.answered = false;
-            this.attempts = 0;
-            this.timeLeft = this.baseTime;
-            this.hudTimer.setColor("#ffd700");
-
-            this.qCat.setText(q.icon + " " + q.cat);
-            this.qText.setText(q.text);
-
-            q.choices.forEach((c, i) => {
-              this.btnTexts[i].setText(
-                String.fromCharCode(65 + i) + ". " + c + " " + q.unit,
-              );
-              this.btns[i].fillColor = 0x0d1527;
-              this.btns[i].setStrokeStyle(2, 0x1a2744);
-              this.btns[i].setAlpha(1);
-              this.btnTexts[i].setAlpha(1);
-              this.btns[i].setInteractive();
-            });
-
-            this.hintBg.setAlpha(0);
-            this.hintTxt.setAlpha(0);
-            this.fbBg.setAlpha(0);
-            this.fbTxt.setAlpha(0);
-            this.nxtBtn.setAlpha(0);
-            this.nxtTxt.setAlpha(0);
-            this.updateHUD();
-          }
-
-          pick(i) {
-            if (this.answered) return;
-            audio();
-            const q = this.questions[this.qIdx];
-            const chosen = q.choices[i];
-
-            if (chosen === q.correctStr) {
-              this.answered = true;
-              sfxOk();
-              this.correct++;
-              this.total++;
-              this.streak++;
-              if (this.streak > this.bestStreak) this.bestStreak = this.streak;
-              this.combo = Math.min(5, 1 + Math.floor(this.streak / 3));
-              const pts =
-                (100 + (this.attempts === 0 ? 50 : 0) + this.streak * 15) *
-                this.combo;
-              this.score += pts;
-              this.xp += 20;
-              if (this.xp >= 100) {
-                this.xp -= 100;
-                this.level++;
-                sfxLvl();
-              }
-
-              // Damage enemy
-              const dmg = 100 / 5;
-              this.enemyHp = Math.max(0, this.enemyHp - dmg);
-              this.enemyHpBar.setDisplaySize(Math.max(0, this.enemyHp * 2), 10);
-              this.tweens.add({
-                targets: this.enemySprite,
-                angle: 10,
-                duration: 80,
-                yoyo: true,
-                repeat: 2,
-              });
-              if (this.enemyHp <= 0) {
-                this.level++;
-                this.enemyHp = 100;
-                this.enemyHpBar.setDisplaySize(200, 10);
-                sfxLvl();
-                this.showLevelBanner();
-              }
-
-              this.btns[i].fillColor = C.ok;
-              this.showFB(true);
-              this.spawnParts(this.btns[i].x, this.btns[i].y, true);
-              this.showPts(pts);
-            } else {
-              sfxNo();
-              this.attempts++;
-              this.btns[i].fillColor = C.err;
-              this.btns[i].setAlpha(0.4);
-              this.btns[i].disableInteractive();
-              this.cameras.main.shake(120, 0.006);
-
-              if (this.attempts >= 2) {
-                this.answered = true;
-                this.total++;
-                this.streak = 0;
-                this.combo = 1;
-                this.lives--;
-                q.choices.forEach((c, j) => {
-                  if (c === q.correctStr) this.btns[j].fillColor = C.ok;
-                });
-                this.showFB(false);
-                if (this.lives <= 0)
-                  this.time.delayedCall(1500, () => this.endGame());
-              } else {
-                this.hintBg.setAlpha(0.8);
-                this.hintTxt.setText("\u{1F4A1} " + q.hint).setAlpha(1);
-              }
-            }
-            this.updateHUD();
-          }
-
-          showFB(ok) {
-            const q = this.questions[this.qIdx];
-            this.fbBg.setAlpha(0.95);
-            this.fbBg.fillColor = ok ? 0x0a2010 : 0x200a0a;
-            this.fbTxt.setText((ok ? "✅ " : "❌ ") + q.explain).setAlpha(1);
-            this.nxtBtn.setAlpha(1);
-            this.nxtTxt.setAlpha(1);
-            this.nxtTxt.setText(this.lives <= 0 ? "RESULTS" : "NEXT UNIT >");
-          }
-
-          showPts(p) {
-            const t = this.add
-              .text(
-                W / 2,
-                200,
-                "+" + p + (this.combo > 1 ? " x" + this.combo : ""),
-                {
-                  fontSize: "24px",
-                  fontFamily: "Arial Black",
-                  color: "#ffd700",
-                  stroke: "#000",
-                  strokeThickness: 3,
-                },
-              )
+          buildControls() {
+            // feedback line above the bins
+            this.feedback = this.add
+              .text(W / 2, this.beltBottom + 26, "", {
+                fontSize: "16px",
+                fontFamily: "Arial",
+                fontStyle: "bold",
+                color: "#fff",
+                align: "center",
+                wordWrap: { width: 760 },
+              })
               .setOrigin(0.5);
-            this.tweens.add({
-              targets: t,
-              y: 160,
-              alpha: 0,
-              duration: 1000,
-              onComplete: () => t.destroy(),
-            });
-          }
-
-          showLevelBanner() {
-            const bg = this.add
-              .rectangle(W / 2, H / 2, 400, 120, C.panel, 0.95)
-              .setStrokeStyle(2, C.gold)
-              .setDepth(100);
-            const txt = this.add
-              .text(W / 2, H / 2 - 15, "PRODUCTION LEVEL " + this.level + "!", {
-                fontSize: "24px",
+            // hint button (L1 only auto-shows division setup on each box)
+            this.hintBtn = this.add
+              .rectangle(90, H - 36, 150, 44, C.panelHi)
+              .setStrokeStyle(2, C.stroke)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(90, H - 36, "\u{1F4A1} Hint (H)", {
+                fontSize: "15px",
                 fontFamily: "Arial Black",
-                color: "#ffd700",
+                color: "#fff",
               })
-              .setOrigin(0.5)
-              .setDepth(101);
-            const sub = this.add
-              .text(W / 2, H / 2 + 20, "Machine upgraded!", {
-                fontSize: "14px",
-                color: "#00f5c4",
+              .setOrigin(0.5);
+            this.hintBtn.on("pointerover", () => this.hintBtn.setScale(1.05));
+            this.hintBtn.on("pointerout", () => this.hintBtn.setScale(1));
+            this.hintBtn.on("pointerdown", () => {
+              audio();
+              this.showHint();
+            });
+            // global drag release → which bin?
+            this.input.on("pointerup", (p) => this.onPointerUp(p));
+            this.updateHUD();
+          }
+
+          // ── spawn a fresh box at the start of the belt ──
+          spawnBox() {
+            const data = makeBox(this.tier, this.bins);
+            this.attemptsOnBox = 0;
+            const cont = this.add.container(this.beltStartX, this.beltY);
+
+            const body = this.add
+              .rectangle(0, 0, 150, 116, C.box)
+              .setStrokeStyle(4, C.boxLid);
+            const lid = this.add.rectangle(0, -50, 158, 18, C.boxLid);
+            const head = this.add
+              .text(0, -30, `${data.product.emoji}`, { fontSize: "30px" })
+              .setOrigin(0.5);
+            // QUANTITY + UNIT  (the divisor)
+            const qtyTxt = this.add
+              .text(0, 6, `${data.qty} ${data.product.unit}`, {
+                fontSize: "18px",
+                fontFamily: "Arial Black",
+                color: "#fff",
               })
-              .setOrigin(0.5)
-              .setDepth(101);
-            this.time.delayedCall(1800, () => {
-              bg.destroy();
-              txt.destroy();
-              sub.destroy();
+              .setOrigin(0.5);
+            // TOTAL PRICE  (the dividend) — never the unit rate
+            const priceTxt = this.add
+              .text(0, 34, money(data.totalCents), {
+                fontSize: "26px",
+                fontFamily: "Arial Black",
+                color: "#ffe9a8",
+              })
+              .setOrigin(0.5);
+            const totLbl = this.add
+              .text(0, 54, "total price", {
+                fontSize: "11px",
+                color: "#e8d9b0",
+              })
+              .setOrigin(0.5);
+
+            cont.add([body, lid, head, qtyTxt, priceTxt, totLbl]);
+            cont.setSize(150, 116);
+            cont.setInteractive(
+              new Phaser.Geom.Rectangle(-75, -58, 150, 116),
+              Phaser.Geom.Rectangle.Contains,
+            );
+            this.input.setDraggable(cont);
+            cont.box = data;
+            cont.body = body;
+            cont.grabbed = false;
+
+            cont.on("pointerover", () => body.setStrokeStyle(4, C.gold));
+            cont.on("pointerout", () => {
+              if (!cont.grabbed) body.setStrokeStyle(4, C.boxLid);
+            });
+            this.input.on("dragstart", (p, obj) => {
+              if (obj === cont) {
+                cont.grabbed = true;
+                audio();
+                sfxPick();
+                body.setStrokeStyle(4, C.gold);
+                cont.setScale(1.06);
+              }
+            });
+            this.input.on("drag", (p, obj, dx, dy) => {
+              if (obj === cont) {
+                cont.x = dx;
+                cont.y = dy;
+              }
+            });
+
+            this.activeBox = cont;
+
+            // L1 auto-shows the division setup so support students always see method
+            if (this.tier === 1) {
+              this.feedback
+                .setText(
+                  `\u{1F4A1} ${money(data.totalCents)} ÷ ${data.qty} = price for ONE ${data.product.name.toLowerCase()}. Which lane?`,
+                )
+                .setColor("#ffe9a8")
+                .setAlpha(1);
+            } else {
+              this.feedback.setText("");
+            }
+          }
+
+          // ── drag release: find the bin under the pointer ──
+          onPointerUp(p) {
+            const cont = this.activeBox;
+            if (!cont || !cont.grabbed) return;
+            cont.grabbed = false;
+            cont.setScale(1);
+            let hit = -1;
+            this.binRects.forEach((b, i) => {
+              if (
+                p.x >= b.x - b.w / 2 &&
+                p.x <= b.x + b.w / 2 &&
+                p.y >= b.y - b.h / 2 &&
+                p.y <= b.y + b.h / 2
+              )
+                hit = i;
+            });
+            if (hit === -1) {
+              // dropped off-target → glide back onto the belt, keep playing
+              this.tweens.add({
+                targets: cont,
+                y: this.beltY,
+                duration: 180,
+                ease: "Quad.easeOut",
+              });
+              cont.body.setStrokeStyle(4, C.boxLid);
+              return;
+            }
+            this.sendToBin(hit);
+          }
+
+          // ── core scoring: does the box belong in this bin? ──
+          sendToBin(idx) {
+            const cont = this.activeBox;
+            if (!cont || this.jamTimer > 0) return;
+            const data = cont.box;
+            const correctBin = binFor(data.rateCents, this.bins);
+
+            if (idx === correctBin) {
+              this.resolveCorrect(cont, idx);
+            } else {
+              this.resolveWrong(cont, idx, correctBin);
+            }
+          }
+
+          resolveCorrect(cont, idx) {
+            audio();
+            sfxSnap();
+            this.activeBox = null;
+            const target = this.binRects[idx];
+            const firstTry = this.attemptsOnBox === 0;
+            this.correct++;
+            this.sorted++;
+            this.streak++;
+            if (this.streak > this.bestStreak) this.bestStreak = this.streak;
+            const combo = Math.min(4, 1 + Math.floor(this.streak / 3));
+            const pts = (100 + (firstTry ? 50 : 0) + this.streak * 6) * combo;
+            this.score += pts;
+
+            this.feedback
+              .setText(
+                `✅ ${money(cont.box.totalCents)} ÷ ${cont.box.qty} = ${money(cont.box.rateCents)} each — snapped in!  +${pts}${combo > 1 ? " x" + combo : ""}`,
+              )
+              .setColor("#bff7cf")
+              .setAlpha(1);
+
+            // snap animation into the bin
+            this.tweens.add({
+              targets: cont,
+              x: target.x,
+              y: target.y,
+              scale: 0.5,
+              alpha: 0,
+              duration: 320,
+              ease: "Back.easeIn",
+              onComplete: () => cont.destroy(),
+            });
+            this.sparkle(target.x, target.y);
+
+            if (this.correct % 4 === 0) {
+              this.level++;
+              this.beltSpeed *= 1.08; // ramps pressure
+              sfxLevel();
+            }
+            this.updateHUD();
+            this.afterResolve();
+          }
+
+          resolveWrong(cont, idx, correctBin) {
+            audio();
+            sfxJam();
+            this.attemptsOnBox++;
+            this.streak = 0;
+            this.cameras.main.shake(160, 0.006);
+            // JAM: pile up at the wrong bin + freeze the line briefly
+            this.binPiles[idx]++;
+            this.binRects[idx].pileTxt.setText(
+              "\u{1F4E6}".repeat(Math.min(4, this.binPiles[idx])) + " jam!",
+            );
+            this.jamTimer = this.tier === 1 ? 1.4 : 1.8;
+
+            // diagnostic, NON-giveaway feedback: teaches the division method,
+            // compares the lane bracket to the computed rate WITHOUT printing it
+            const data = cont.box;
+            const wrongB = this.bins[idx];
+            let msg;
+            if (this.attemptsOnBox === 1) {
+              msg = `❌ Jam! That lane is "${wrongB.sub}". Work out ${money(data.totalCents)} ÷ ${data.qty} first, then pick the lane it fits.`;
+            } else {
+              const groupHint = data.qty <= 5 ? data.qty : data.qty;
+              msg = `❌ Still off. Split ${money(data.totalCents)} into ${data.qty} equal shares — what does ONE ${data.product.name.toLowerCase()} cost? Compare that to each lane's range.`;
+            }
+            this.feedback.setText(msg).setColor("#ffb4b4").setAlpha(1);
+
+            // box bounces back onto the belt to be re-sorted
+            this.tweens.add({
+              targets: cont,
+              y: this.beltY,
+              scale: 1,
+              duration: 220,
+              ease: "Quad.easeOut",
+            });
+            cont.body.setStrokeStyle(4, C.red);
+            this.time.delayedCall(400, () => {
+              if (cont.active) cont.body.setStrokeStyle(4, C.boxLid);
+            });
+
+            // a jam costs a life after repeated misses (gentler on support tier)
+            if (this.attemptsOnBox >= (this.tier === 1 ? 3 : 2)) {
+              this.loseLife();
+            }
+            this.updateHUD();
+          }
+
+          // box reached the end of the belt unsorted → counts as a miss
+          boxFellOff(cont) {
+            audio();
+            sfxJam();
+            this.activeBox = null;
+            this.streak = 0;
+            this.sorted++;
+            this.feedback
+              .setText(
+                `⏱️ Box rolled off! It was ${money(cont.box.totalCents)} for ${cont.box.qty} — that's ${money(cont.box.rateCents)} each. Sort faster!`,
+              )
+              .setColor("#ffd34d")
+              .setAlpha(1);
+            this.tweens.add({
+              targets: cont,
+              x: cont.x + 120,
+              alpha: 0,
+              duration: 300,
+              onComplete: () => cont.destroy(),
+            });
+            this.loseLife();
+            this.updateHUD();
+            this.afterResolve();
+          }
+
+          loseLife() {
+            this.lives--;
+            if (this.lives <= 0) {
+              this.lives = 0;
+              this.updateHUD();
+              this.time.delayedCall(900, () => this.endGame());
+            }
+          }
+
+          afterResolve() {
+            if (this.lives <= 0) return;
+            if (this.sorted >= this.goal) {
+              this.time.delayedCall(1000, () => this.endGame());
+              return;
+            }
+            this.time.delayedCall(650, () => {
+              if (this.lives > 0 && !this.activeBox) this.spawnBox();
             });
           }
 
-          spawnParts(x, y, ok) {
-            const colors = ok
-              ? [C.teal, C.gold, C.ok, C.white]
-              : [C.err, C.rose];
+          showHint() {
+            const cont = this.activeBox;
+            if (!cont) return;
+            sfxClick();
+            const d = cont.box;
+            this.feedback
+              .setText(
+                `\u{1F4A1} Unit rate = total ÷ quantity. Compute ${money(d.totalCents)} ÷ ${d.qty} (the price of ONE ${d.product.name.toLowerCase()}), then match it to a lane's range.`,
+              )
+              .setColor("#ffe9a8")
+              .setAlpha(1);
+          }
+
+          sparkle(x, y) {
             for (let i = 0; i < 14; i++) {
               const p = this.add.circle(
                 x,
                 y,
-                2 + Math.random() * 3,
-                colors[Math.floor(Math.random() * colors.length)],
+                3 + Math.random() * 3,
+                [C.gold, C.green, C.white][rnd(3)],
               );
               this.tweens.add({
                 targets: p,
-                x: x + (Math.random() - 0.5) * 280,
+                x: x + (Math.random() - 0.5) * 220,
                 y: y + (Math.random() - 0.5) * 180,
                 alpha: 0,
                 scale: 0,
-                duration: 500 + Math.random() * 400,
+                duration: 500 + Math.random() * 300,
                 onComplete: () => p.destroy(),
               });
             }
           }
 
-          nextQ() {
-            if (!this.answered) return;
-            sfxClick();
-            if (this.lives <= 0) {
-              this.endGame();
-              return;
-            }
-            this.qIdx++;
-            this.loadQ();
+          updateHUD() {
+            this.hScore.setText(this.score.toLocaleString());
+            this.hLevel.setText("Level " + this.level);
+            this.hSorted.setText(`Sorted ${this.sorted} / ${this.goal}`);
+            this.hLives.setText("❤️".repeat(Math.max(0, this.lives)));
+            this.hStreak.setText(
+              this.streak >= 3 ? "\u{1F525} streak " + this.streak : "",
+            );
           }
 
-          updateHUD() {
-            this.hudScore.setText(this.score.toLocaleString());
-            this.hudStreak.setText("\u{1F525} " + this.streak + "x");
-            this.hudLives.setText("❤️".repeat(Math.max(0, this.lives)));
-            this.hudTimer.setText("\u{23F1} " + this.timeLeft + "s");
-            this.hudQ.setText(
-              "Unit " + (this.qIdx + 1) + " | Lv " + this.level,
+          // ── belt animation + box travel ──
+          update(time, delta) {
+            const dt = delta / 1000;
+            this.beltPhase = (this.beltPhase + dt * 60) % 28;
+            this.drawBelt();
+
+            if (this.jamTimer > 0) {
+              this.jamTimer = Math.max(0, this.jamTimer - dt);
+              return; // line frozen during a jam
+            }
+            const cont = this.activeBox;
+            if (cont && cont.active && !cont.grabbed) {
+              cont.x += this.beltSpeed * dt;
+              // pull box back to belt line if it drifted
+              if (Math.abs(cont.y - this.beltY) > 1)
+                cont.y += (this.beltY - cont.y) * Math.min(1, dt * 6);
+              if (cont.x > this.beltEndX - 70) this.boxFellOff(cont);
+            }
+          }
+
+          drawBelt() {
+            const g = this.beltGfx;
+            g.clear();
+            // belt body
+            g.fillStyle(C.belt, 1);
+            g.fillRect(
+              this.beltStartX,
+              this.beltTop,
+              W - this.beltStartX + 120,
+              this.beltBottom - this.beltTop,
             );
-            this.hudXpFill.setDisplaySize(this.xp * 2, 4);
+            g.lineStyle(4, C.stroke, 1);
+            g.strokeRect(0, this.beltTop, W, this.beltBottom - this.beltTop);
+            // moving tread chevrons (animated, gives sense of speed)
+            g.fillStyle(C.beltDark, 1);
+            for (let x = -this.beltPhase; x < W; x += 28) {
+              g.fillRect(x, this.beltTop, 10, this.beltBottom - this.beltTop);
+            }
           }
 
           endGame() {
-            this.timerEvt.remove();
-            if (this.productTween) this.productTween.stop();
-            this.cameras.main.fadeOut(500);
-            this.time.delayedCall(500, () => {
+            this.cameras.main.fadeOut(420, 0, 0, 0);
+            this.time.delayedCall(420, () =>
               this.scene.start("ResultScene", {
+                tier: this.tier,
                 score: this.score,
                 correct: this.correct,
-                total: this.total,
+                sorted: this.sorted,
+                goal: this.goal,
                 bestStreak: this.bestStreak,
                 level: this.level,
-                mode: this.mode,
-              });
-            });
+              }),
+            );
           }
         }
 
-        // ─── RESULT SCENE ───
+        // ════════════════════════════════════════════════════════════════
+        //  RESULT SCENE
+        // ════════════════════════════════════════════════════════════════
         class ResultScene extends Phaser.Scene {
           constructor() {
             super("ResultScene");
@@ -961,124 +997,141 @@
             Object.assign(this, d);
           }
           create() {
-            this.cameras.main.setBackgroundColor(C.bg).fadeIn(500);
-            const pct =
-              this.total > 0
-                ? Math.round((this.correct / this.total) * 100)
-                : 0;
+            this.cameras.main.setBackgroundColor(C.bg);
+            this.cameras.main.fadeIn(420);
+            const goal = this.goal || 1;
+            const pct = goal > 0 ? Math.round((this.correct / goal) * 100) : 0;
 
             try {
               window.EduPulse &&
                 EduPulse.record({
                   activityTitle: document.title,
                   score: this.correct,
-                  maxScore: this.total,
+                  maxScore: goal,
                   problemsCorrect: this.correct,
-                  problemsAttempted: this.total,
+                  problemsAttempted: this.sorted,
                   standard: "6.RP.A.2",
                 });
             } catch (e) {}
 
             let rank, emoji;
             if (pct >= 90) {
-              rank = "S — FACTORY LEGEND";
+              rank = "FACTORY FOREMAN!";
               emoji = "\u{1F451}";
-            } else if (pct >= 80) {
-              rank = "A — EXCELLENT";
+            } else if (pct >= 75) {
+              rank = "LINE SUPERVISOR!";
               emoji = "\u{1F3C6}";
-            } else if (pct >= 70) {
-              rank = "B — GREAT";
+            } else if (pct >= 50) {
+              rank = "SORTER";
               emoji = "⭐";
-            } else if (pct >= 60) {
-              rank = "C — GOOD TRY";
-              emoji = "\u{1F4AA}";
             } else {
-              rank = "KEEP TRAINING";
+              rank = "KEEP PRACTICING!";
               emoji = "\u{1F4DA}";
             }
 
             this.add
-              .text(W / 2, 80, emoji, { fontSize: "64px" })
+              .text(W / 2, 108, emoji, { fontSize: "76px" })
               .setOrigin(0.5);
             this.add
-              .text(W / 2, 150, "PRODUCTION REPORT", {
-                fontSize: "40px",
+              .text(W / 2, 194, "SHIFT OVER", {
+                fontSize: "46px",
                 fontFamily: "Arial Black",
-                color: "#00f5c4",
+                color: "#f6c343",
                 stroke: "#000",
-                strokeThickness: 3,
+                strokeThickness: 4,
               })
               .setOrigin(0.5);
             this.add
-              .text(W / 2, 200, rank, {
-                fontSize: "20px",
-                color: "#fff",
+              .text(W / 2, 248, rank, {
+                fontSize: "24px",
+                fontFamily: "Arial",
                 fontStyle: "bold",
+                color: "#fff",
               })
               .setOrigin(0.5);
             this.add
-              .text(W / 2, 260, this.score.toLocaleString(), {
-                fontSize: "52px",
+              .text(W / 2, 312, this.score.toLocaleString(), {
+                fontSize: "58px",
                 fontFamily: "Arial Black",
-                color: "#ffd700",
+                color: "#f6c343",
               })
               .setOrigin(0.5);
             this.add
-              .text(W / 2, 300, "POINTS", {
-                fontSize: "12px",
-                color: "#64748b",
+              .text(W / 2, 352, "POINTS", {
+                fontSize: "13px",
+                color: "#6f82ad",
               })
               .setOrigin(0.5);
 
             const stats = [
-              { l: "Correct", v: this.correct + "/" + this.total },
-              { l: "Accuracy", v: pct + "%" },
-              { l: "Best Streak", v: this.bestStreak },
-              { l: "Level", v: this.level },
+              { l: "Boxes sorted right", v: `${this.correct}/${goal}` },
+              { l: "Best streak", v: this.bestStreak },
+              { l: "Level reached", v: this.level },
             ];
             stats.forEach((s, i) => {
-              const x = 162 + i * 200,
-                y = 400;
+              const x = 282 + i * 230,
+                y = 444;
               this.add
-                .rectangle(x, y, 170, 80, C.panel)
-                .setStrokeStyle(1, 0x1a2744);
+                .rectangle(x, y, 200, 96, C.panel)
+                .setStrokeStyle(2, C.stroke);
               this.add
-                .text(x, y - 10, String(s.v), {
-                  fontSize: "24px",
+                .text(x, y - 12, String(s.v), {
+                  fontSize: "30px",
                   fontFamily: "Arial Black",
-                  color: "#00f5c4",
+                  color: "#f6c343",
                 })
                 .setOrigin(0.5);
               this.add
-                .text(x, y + 20, s.l, { fontSize: "11px", color: "#64748b" })
+                .text(x, y + 26, s.l, { fontSize: "13px", color: "#b9c8e6" })
                 .setOrigin(0.5);
             });
 
-            const btn = this.add
-              .rectangle(W / 2, 520, 260, 54, C.teal)
+            const again = this.add
+              .rectangle(W / 2 - 130, 584, 240, 58, C.gold)
               .setInteractive({ useHandCursor: true });
             this.add
-              .text(W / 2, 520, "PLAY AGAIN", {
-                fontSize: "20px",
+              .text(W / 2 - 130, 584, "RUN AGAIN", {
+                fontSize: "22px",
                 fontFamily: "Arial Black",
                 color: "#0a0e1a",
               })
               .setOrigin(0.5);
-            btn.on("pointerdown", () => {
+            again.on("pointerdown", () => {
+              audio();
+              sfxClick();
+              this.scene.start("GameScene", { tier: this.tier });
+            });
+            again.on("pointerover", () => again.setScale(1.05));
+            again.on("pointerout", () => again.setScale(1));
+
+            const menu = this.add
+              .rectangle(W / 2 + 130, 584, 240, 58, C.panel)
+              .setStrokeStyle(2, C.stroke)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(W / 2 + 130, 584, "CHANGE LEVEL", {
+                fontSize: "20px",
+                fontFamily: "Arial Black",
+                color: "#fff",
+              })
+              .setOrigin(0.5);
+            menu.on("pointerdown", () => {
+              audio();
               sfxClick();
               this.scene.start("TitleScene");
             });
-            btn.on("pointerover", () => btn.setScale(1.05));
-            btn.on("pointerout", () => btn.setScale(1));
+            menu.on("pointerover", () => menu.setScale(1.05));
+            menu.on("pointerout", () => menu.setScale(1));
 
-            for (let i = 0; i < 25; i++) {
-              const p = this.add.circle(
-                Math.random() * W,
-                Math.random() * H,
-                2 + Math.random() * 2,
-                [C.teal, C.gold, C.purple][Math.floor(Math.random() * 3)],
-                0.5,
-              );
+            for (let i = 0; i < 28; i++) {
+              const p = this.add
+                .circle(
+                  Math.random() * W,
+                  Math.random() * H,
+                  2 + Math.random() * 3,
+                  [C.gold, C.green, C.white, C.box][rnd(4)],
+                )
+                .setAlpha(0.7);
               this.tweens.add({
                 targets: p,
                 y: p.y - 200 - Math.random() * 300,
@@ -1086,11 +1139,13 @@
                 duration: 2000 + Math.random() * 2000,
                 delay: Math.random() * 1000,
                 repeat: -1,
+                ease: "Power1",
               });
             }
           }
         }
 
+        // ─── BOOT ───
         new Phaser.Game({
           type: Phaser.AUTO,
           parent: "game-container",
@@ -1109,7 +1164,7 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
 </html>

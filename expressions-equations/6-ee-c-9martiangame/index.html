@@ -18,7 +18,7 @@
       window.addEventListener("load", function () {
         if (typeof Phaser === "undefined") {
           document.body.innerHTML =
-            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
         }
       });
     </script>
@@ -44,1253 +44,1438 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <div id="game-container"></div>
     <script>
-      // ============================================================
-      // MARS COLONY EXPLORER (6.EE.C.9)
-      // Explore Mars terrain, solve equations to unlock zones.
-      // Top-down rover exploration with 4 sectors, each with math gates.
-      // ============================================================
+      (() => {
+        // ════════════════════════════════════════════════════════════════
+        //  MARS COLONY EXPLORER — 6.EE.C.9 (y = kx relationships & tables)
+        //  THE MATH IS THE MECHANIC — "Drive the Relationship":
+        //  The rover's MOTION obeys the equation. There is NO A/B/C/D gate.
+        //
+        //  • FUEL-CELL PATH rounds: numbered fuel cells sit at grid points
+        //    (x, y). The rover may only drive THROUGH cells where y = k·x.
+        //    Driving the correct path IS identifying the proportional
+        //    relationship. A wrong cell vents oxygen (visible drain).
+        //
+        //  • INTERCEPT rounds (Level 2): a supply pod drifts across a sector.
+        //    The player SETS the rover's speed rule d = k·t by choosing k.
+        //    Wrong k under/overshoots visibly; correct k meets the pod.
+        //
+        //  Level 1 (Support): small k, table scaffold, fewer cells, 5 O2 buffer.
+        //  Level 2 (Challenge): larger k, intercept puzzles, less scaffold.
+        // ════════════════════════════════════════════════════════════════
 
-      const SECTORS = [
-        {
-          name: "Logistics Bay",
-          color: 0x70ddff,
-          desc: "Variables & Tables",
-          questions: [
-            {
-              q: "A supply drone makes 5 crates/minute. Which is the INDEPENDENT variable?",
-              choices: [
-                "Minutes",
-                "Total crates",
-                "Drone speed",
-                "Number of drones",
-              ],
-              correct: 0,
-              explain: "You choose minutes first; crates depend on it.",
-            },
-            {
-              q: "Table: Cycles(x) 1,2,3 | Cells(y) 8,16,24. What is the rate k?",
-              choices: ["8", "16", "24", "3"],
-              correct: 0,
-              explain: "k = 8/1 = 8 cells per cycle.",
-            },
-            {
-              q: "Water purifier: 4 liters/day. d=days, w=liters. Equation?",
-              choices: ["w = 4d", "d = 4w", "w = d + 4", "w = 4/d"],
-              correct: 0,
-              explain: "Total liters = 4 times days, so w = 4d.",
-            },
-            {
-              q: "An ice miner produces y ice blocks in x hours. y depends on x. Which is the OUTPUT?",
-              choices: ["y (ice blocks)", "x (hours)", "The miner", "Both"],
-              correct: 0,
-              explain: "y is the output because it depends on x.",
-            },
-          ],
-        },
-        {
-          name: "Navigation Grid",
-          color: 0x6fffb0,
-          desc: "Coordinate Graphing",
-          questions: [
-            {
-              q: "A graph line passes through (0,0) and (4,20). Equation?",
-              choices: ["y = 5x", "y = 4x", "y = 20x", "y = x + 5"],
-              correct: 0,
-              explain: "k = 20/4 = 5, so y = 5x.",
-            },
-            {
-              q: "Graph shows (1,6),(2,12),(3,18). x=hours, y=miles. Equation?",
-              choices: ["y = 6x", "y = x + 6", "y = 3x", "x = 6y"],
-              correct: 0,
-              explain: "6/1 = 6, 12/2 = 6, rate = 6. y = 6x.",
-            },
-            {
-              q: "Points (2,14),(4,28),(6,42). What is the constant rate?",
-              choices: ["7", "14", "6", "2"],
-              correct: 0,
-              explain: "14/2 = 7, 28/4 = 7, 42/6 = 7. Rate = 7.",
-            },
-            {
-              q: "Graph: y-intercept at 4, slope 2. Equation?",
-              choices: ["y = 2x + 4", "y = 4x + 2", "y = 2x", "y = 2x - 4"],
-              correct: 0,
-              explain: "Slope 2, starts at 4: y = 2x + 4.",
-            },
-          ],
-        },
-        {
-          name: "Energy Core",
-          color: 0xffcc00,
-          desc: "Building Equations",
-          questions: [
-            {
-              q: "Oxygen recycler: 7 packs/hour. Table: x 1,2,3,4 | y 7,14,21,28. Equation?",
-              choices: ["y = 7x", "y = x + 7", "y = 7 + x", "x = 7y"],
-              correct: 0,
-              explain: "Each output = 7 times input. y = 7x.",
-            },
-            {
-              q: "Habitat printer: 3 panels/cycle, started with 12. t=cycles, p=total. Equation?",
-              choices: ["p = 3t + 12", "p = 3t", "p = 12t + 3", "p = 3t - 12"],
-              correct: 0,
-              explain: "Rate times time plus starting amount: p = 3t + 12.",
-            },
-            {
-              q: "Fusion charger: $5 connection + $0.20/min. 45 min cost?",
-              choices: ["$14.00", "$9.00", "$225.20", "$50.20"],
-              correct: 0,
-              explain: "0.20 x 45 + 5 = 9 + 5 = $14.00.",
-            },
-            {
-              q: "y = 7x and y = 7x + 3. Which statement is TRUE?",
-              choices: [
-                "Both rate 7; only first through origin",
-                "Both proportional",
-                "Second has greater rate",
-                "They are the same",
-              ],
-              correct: 0,
-              explain: "Same rate 7, but y=7x+3 starts at 3, not proportional.",
-            },
-          ],
-        },
-        {
-          name: "Trade Hub",
-          color: 0xff7744,
-          desc: "Multi-Step Problems",
-          questions: [
-            {
-              q: "Route A: rate 4/unit. Route B: rate 6/unit. Difference at input 10?",
-              choices: ["20", "60", "40", "10"],
-              correct: 0,
-              explain: "A: 4x10=40. B: 6x10=60. Difference = 20.",
-            },
-            {
-              q: "Crew earns 8 credits/item, docking cost 12. Trade 7 items. Profit?",
-              choices: ["44", "56", "68", "96"],
-              correct: 0,
-              explain: "8 x 7 = 56. 56 - 12 = 44 credits.",
-            },
-            {
-              q: "Turbine A: y=40t+120. Turbine B: y=55t. B overtakes A at t=?",
-              choices: ["t = 8", "t = 4", "t = 3", "Never"],
-              correct: 0,
-              explain: "40t+120=55t -> 120=15t -> t=8.",
-            },
-            {
-              q: "Table: h 0,1,2,3 | GB 0,5,10,15. Proportional?",
-              choices: [
-                "Yes - constant rate 5, through (0,0)",
-                "No - keeps increasing",
-                "Yes - easy numbers",
-                "No - only for money",
-              ],
-              correct: 0,
-              explain: "5/1=5, 10/2=5. Starts at origin. Proportional.",
-            },
-          ],
-        },
-      ];
-
-      const SFX = {
-        ctx: null,
-        init() {
-          if (!this.ctx)
-            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        },
-        tone(f, d, t = "sine", v = 0.1) {
-          if (!this.ctx) return;
+        // ─── SOUND ENGINE ───
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let actx = null;
+        function ensureAudio() {
+          if (!actx && AudioCtx) actx = new AudioCtx();
+          if (actx && actx.state === "suspended") actx.resume();
+        }
+        function beep(freq, dur, type = "sine", vol = 0.12) {
+          if (!actx) return;
           try {
-            const o = this.ctx.createOscillator(),
-              g = this.ctx.createGain();
+            const o = actx.createOscillator(),
+              g = actx.createGain();
             o.connect(g);
-            g.connect(this.ctx.destination);
-            o.type = t;
-            o.frequency.value = f;
-            g.gain.setValueAtTime(v, this.ctx.currentTime);
-            g.gain.exponentialRampToValueAtTime(
-              0.001,
-              this.ctx.currentTime + d,
-            );
+            g.connect(actx.destination);
+            o.frequency.value = freq;
+            o.type = type;
+            g.gain.setValueAtTime(vol, actx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
             o.start();
-            o.stop(this.ctx.currentTime + d);
+            o.stop(actx.currentTime + dur);
           } catch (e) {}
-        },
-        correct() {
-          this.tone(660, 0.1);
-          setTimeout(() => this.tone(880, 0.12), 80);
-        },
-        wrong() {
-          this.tone(180, 0.25, "sawtooth", 0.08);
-        },
-        unlock() {
-          this.tone(523, 0.1);
-          setTimeout(() => this.tone(659, 0.1), 100);
-          setTimeout(() => this.tone(784, 0.15), 200);
-        },
-        step() {
-          this.tone(300, 0.03, "square", 0.03);
-        },
-        scan() {
-          this.tone(1200, 0.05, "sine", 0.04);
-        },
-      };
-
-      const W = 800,
-        H = 600;
-      const TILE = 40;
-      const MW = 20,
-        MH = 15; // map tiles
-
-      class BootScene extends Phaser.Scene {
-        constructor() {
-          super("Boot");
         }
-        create() {
-          const g = this.make.graphics({ add: false });
-          // Rover
-          g.fillStyle(0xff7744, 1);
-          g.fillRoundedRect(2, 2, 28, 28, 4);
-          g.fillStyle(0xffaa66, 1);
-          g.fillRect(8, 6, 16, 8);
-          g.fillStyle(0x884422, 1);
-          g.fillRect(0, 6, 32, 4);
-          g.fillRect(0, 22, 32, 4);
-          g.generateTexture("rover", 32, 32);
-          g.clear();
-          // Mars ground tile
-          g.fillStyle(0x8b4513, 1);
-          g.fillRect(0, 0, TILE, TILE);
-          g.fillStyle(0x7a3b10, 0.3);
-          g.fillCircle(12, 15, 5);
-          g.fillCircle(28, 8, 3);
-          g.fillCircle(8, 32, 4);
-          g.generateTexture("ground", TILE, TILE);
-          g.clear();
-          // Rock
-          g.fillStyle(0x555555, 1);
-          g.fillCircle(16, 16, 14);
-          g.fillStyle(0x444444, 1);
-          g.fillCircle(12, 12, 4);
-          g.generateTexture("rock", 32, 32);
-          g.clear();
-          // Gate
-          g.fillStyle(0x00ccff, 0.4);
-          g.fillRect(0, 0, TILE, TILE);
-          g.lineStyle(3, 0x00ccff, 0.8);
-          g.strokeRect(2, 2, TILE - 4, TILE - 4);
-          g.generateTexture("gate", TILE, TILE);
-          g.clear();
-          // Gate locked
-          g.fillStyle(0xff4444, 0.3);
-          g.fillRect(0, 0, TILE, TILE);
-          g.lineStyle(3, 0xff4444, 0.7);
-          g.strokeRect(2, 2, TILE - 4, TILE - 4);
-          g.generateTexture("gateLocked", TILE, TILE);
-          g.clear();
-          // Sector beacon
-          g.fillStyle(0xffcc00, 1);
-          g.fillCircle(12, 12, 12);
-          g.fillStyle(0xffffff, 0.5);
-          g.fillCircle(12, 12, 6);
-          g.generateTexture("beacon", 24, 24);
-          g.clear();
-          // Oxygen pickup
-          g.fillStyle(0x00ff88, 1);
-          g.fillCircle(8, 8, 8);
-          g.fillStyle(0xffffff, 0.6);
-          g.fillRect(6, 4, 4, 8);
-          g.fillRect(4, 6, 8, 4);
-          g.generateTexture("oxygen", 16, 16);
-          g.clear();
-          // Spark
-          g.fillStyle(0xffcc00, 1);
-          g.fillCircle(3, 3, 3);
-          g.generateTexture("spark", 6, 6);
-          g.clear();
-          // Sand tile
-          g.fillStyle(0xa0522d, 1);
-          g.fillRect(0, 0, TILE, TILE);
-          g.fillStyle(0x8b4513, 0.2);
-          for (let i = 0; i < 5; i++) {
-            g.fillCircle(
-              Phaser.Math.Between(5, 35),
-              Phaser.Math.Between(5, 35),
-              2,
-            );
+        const sfxDrive = () =>
+          beep(300 + Math.random() * 40, 0.05, "square", 0.05);
+        const sfxGood = () => {
+          beep(620, 0.08);
+          setTimeout(() => beep(880, 0.1), 70);
+        };
+        const sfxBad = () => beep(150, 0.24, "sawtooth", 0.09);
+        const sfxClear = () =>
+          [523, 659, 784, 1047].forEach((f, i) =>
+            setTimeout(() => beep(f, 0.13), i * 90),
+          );
+        const sfxClick = () => beep(440, 0.05, "sine", 0.08);
+        const sfxLaunch = () => {
+          beep(440, 0.12, "triangle", 0.1);
+          setTimeout(() => beep(660, 0.18, "triangle", 0.1), 120);
+        };
+
+        // ─── PALETTE (colourblind-safe: colour is NEVER the only cue; every
+        //     cell shows its number, the path shows numeric coords, correct/
+        //     wrong states also use ✓ / ✗ glyphs + shape) ───
+        const W = 800,
+          H = 600;
+        const TILE = 64;
+        const C = {
+          bg: 0x1a0f0a,
+          sky: 0x06111d,
+          panel: 0x0a1a2e,
+          stroke: 0x336699,
+          good: 0x00e08a, // teal-green
+          goodCss: "#00e08a",
+          bad: 0xff5a5a, // warm red
+          badCss: "#ff5a5a",
+          rule: 0xffcc33, // amber
+          ruleCss: "#ffcc33",
+          dim: 0x9bb0c9,
+          dimCss: "#9bb0c9",
+          rover: 0xff7744,
+        };
+
+        // ─── MATH HELPERS ───
+        const rnd = (n) => Math.floor(Math.random() * n);
+        const pick = (arr) => arr[rnd(arr.length)];
+        function shuffle(arr) {
+          const a = [...arr];
+          for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
           }
-          g.generateTexture("sand", TILE, TILE);
-          g.clear();
-          g.destroy();
-          this.scene.start("Title");
+          return a;
         }
-      }
+        // THE satisfies-equation test. A grid point (gx, gy) is "on the path"
+        // for rule y = k·x exactly when gy === k·gx. (Integers only by design.)
+        const onPath = (gx, gy, k) => gy === k * gx;
 
-      class TitleScene extends Phaser.Scene {
-        constructor() {
-          super("Title");
-        }
-        create() {
-          SFX.init();
-          this.cameras.main.setBackgroundColor(0x06111d);
+        // ─── ROUND GENERATOR (procedural + solvability-verified) ───
+        // The playfield is a coordinate grid. x runs across columns, y runs UP
+        // the rows (origin bottom-left). A round scatters fuel cells; the rover
+        // must visit, in order, every cell where y = k·x for x = 1,2,3,...
+        const GRID_COLS = 9; // x from 0..8
+        const GRID_ROWS = 8; // y from 0..7 (screen rows flipped)
 
-          // Mars surface gradient effect
-          for (let i = 0; i < 40; i++) {
-            this.add.circle(
-              Phaser.Math.Between(0, W),
-              Phaser.Math.Between(0, H),
-              Phaser.Math.FloatBetween(0.5, 2),
-              0xffffff,
-              Phaser.Math.FloatBetween(0.1, 0.4),
-            );
+        // Build the list of correct path coordinates for rule y=kx that fit grid.
+        function pathCoords(k) {
+          const pts = [];
+          for (let x = 1; x < GRID_COLS; x++) {
+            const y = k * x;
+            if (y >= GRID_ROWS) break;
+            pts.push({ x, y });
           }
+          return pts;
+        }
 
-          this.add
-            .text(W / 2, 80, "MARS COLONY", {
-              fontSize: "52px",
-              fontFamily: "monospace",
-              fontStyle: "bold",
-              color: "#ff7744",
-              stroke: "#441100",
-              strokeThickness: 4,
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(W / 2, 130, "EXPLORER", {
-              fontSize: "36px",
-              fontFamily: "monospace",
-              fontStyle: "bold",
-              color: "#ffaa66",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(W / 2, 170, "Solve equations to unlock Mars zones", {
-              fontSize: "15px",
-              fontFamily: "Arial",
-              color: "#cc8866",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(
-              W / 2,
-              192,
-              "6.EE.C.9 -- Variables, Tables, Equations & Graphs",
-              { fontSize: "12px", fontFamily: "Arial", color: "#886644" },
-            )
-            .setOrigin(0.5);
+        function makeFuelRound(tier, themeIx) {
+          // Level 1: small k so the path has >=3 cells; Level 2: larger k.
+          const kPool = tier === 1 ? [1, 2, 3] : [2, 3, 4, 5];
+          let k,
+            path,
+            guard = 0;
+          do {
+            k = pick(kPool);
+            path = pathCoords(k);
+            guard++;
+          } while (path.length < (tier === 1 ? 3 : 2) && guard < 30);
 
-          const rover = this.add.image(W / 2, 270, "rover").setScale(4);
-          this.tweens.add({
-            targets: rover,
-            angle: { from: -5, to: 5 },
-            duration: 1500,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut",
-          });
+          // Decoy cells: grid points NOT on the path. We pick a controlled set so
+          // wrong choices are pedagogically tempting (off-by-one in y, or y=kx±1,
+          // or a DIFFERENT but plausible rule). Never place a decoy that is also
+          // on the true path.
+          const onSet = new Set(path.map((p) => p.x + "," + p.y));
+          const decoyPool = [];
+          for (let x = 1; x < GRID_COLS; x++) {
+            for (let y = 1; y < GRID_ROWS; y++) {
+              const key = x + "," + y;
+              if (onSet.has(key)) continue;
+              // weight: keep close-call decoys (near the line) preferentially
+              const near = Math.abs(y - k * x) <= Math.max(2, k);
+              if (near) decoyPool.push({ x, y, near: true });
+              else if (Math.random() < 0.25)
+                decoyPool.push({ x, y, near: false });
+            }
+          }
+          const nDecoys = tier === 1 ? 4 : 7;
+          const decoys = shuffle(decoyPool).slice(0, nDecoys);
 
-          // Sector preview
-          this.add
-            .text(W / 2, 340, "4 SECTORS TO EXPLORE", {
-              fontSize: "16px",
-              fontFamily: "monospace",
-              color: "#aaa",
-            })
-            .setOrigin(0.5);
-          SECTORS.forEach((s, i) => {
-            const x = W / 2 - 225 + i * 150;
+          // Table scaffold rows (x -> y) shown on Level 1 always, Level 2 partial.
+          const tableRows = path
+            .slice(0, tier === 1 ? path.length : Math.min(2, path.length))
+            .map((p) => ({ x: p.x, y: p.y }));
+
+          return {
+            mode: "fuel",
+            k,
+            path, // ordered correct cells
+            decoys,
+            tableRows,
+            theme: THEMES[themeIx % THEMES.length],
+          };
+        }
+
+        // Intercept round (Level 2): a supply pod travels the grid; the player
+        // sets k for d = k·t so the rover reaches the pod's column at the right
+        // time. Correct k is computed from the pod's constant motion so a valid
+        // answer ALWAYS exists.
+        function makeInterceptRound(themeIx) {
+          // Pod moves right at podSpeed columns per "tick"; the rover, launched
+          // from x=0, must arrive at the pod's row at matching t. The relationship
+          // the student must satisfy: distance d = k·t where k is the rover speed
+          // (cells per tick) needed to meet the pod. We choose a target meet at
+          // t = T ticks, column = meetX; correct k = meetX / T (kept integer).
+          const T = 2 + rnd(3); // 2..4 ticks
+          const kAns = 2 + rnd(4); // 2..5  (the speed the student must pick)
+          const meetX = kAns * T; // guaranteed integer column
+          // Offer a k-dial range that contains the answer and plausible misses.
+          const kOptions = [];
+          for (let kk = Math.max(1, kAns - 3); kk <= kAns + 3; kk++)
+            kOptions.push(kk);
+          return {
+            mode: "intercept",
+            k: kAns,
+            T,
+            meetX,
+            kOptions,
+            theme: THEMES[themeIx % THEMES.length],
+          };
+        }
+
+        // Sector themes — flavour + the proportional context (rate words).
+        const THEMES = [
+          {
+            name: "Logistics Bay",
+            unit: "crates",
+            per: "minute",
+            icon: "\u{1F4E6}",
+          },
+          {
+            name: "Water Works",
+            unit: "liters",
+            per: "day",
+            icon: "\u{1F4A7}",
+          },
+          {
+            name: "Energy Core",
+            unit: "cells",
+            per: "cycle",
+            icon: "\u{26A1}",
+          },
+          { name: "Ice Mine", unit: "blocks", per: "hour", icon: "\u{1F9CA}" },
+          {
+            name: "Comms Array",
+            unit: "signals",
+            per: "scan",
+            icon: "\u{1F4E1}",
+          },
+        ];
+
+        // ════════════════════════════════════════════════════════════════
+        //  BOOT — generate textures
+        // ════════════════════════════════════════════════════════════════
+        class BootScene extends Phaser.Scene {
+          constructor() {
+            super("Boot");
+          }
+          create() {
+            const g = this.make.graphics({ add: false });
+            // Rover
+            g.fillStyle(C.rover, 1);
+            g.fillRoundedRect(3, 6, 26, 20, 4);
+            g.fillStyle(0xffd0a8, 1);
+            g.fillRect(10, 10, 12, 8);
+            g.fillStyle(0x552200, 1);
+            g.fillRect(2, 4, 28, 3);
+            g.fillRect(2, 25, 28, 3);
+            g.generateTexture("rover", 32, 32);
+            g.clear();
+            // Supply pod
+            g.fillStyle(0x9b6bff, 1);
+            g.fillRoundedRect(2, 2, 28, 28, 6);
+            g.fillStyle(0xd9c4ff, 1);
+            g.fillRect(8, 8, 16, 6);
+            g.lineStyle(2, 0xffffff, 0.7);
+            g.strokeRoundedRect(2, 2, 28, 28, 6);
+            g.generateTexture("pod", 32, 32);
+            g.clear();
+            // Spark
+            g.fillStyle(0xffe08a, 1);
+            g.fillCircle(3, 3, 3);
+            g.generateTexture("spark", 6, 6);
+            g.clear();
+            g.destroy();
+            this.scene.start("Title");
+          }
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        //  TITLE — real Level 1 / Level 2 choice
+        // ════════════════════════════════════════════════════════════════
+        class TitleScene extends Phaser.Scene {
+          constructor() {
+            super("Title");
+          }
+          create() {
+            ensureAudio();
+            this.cameras.main.setBackgroundColor(C.sky);
+            for (let i = 0; i < 50; i++)
+              this.add.circle(
+                Phaser.Math.Between(0, W),
+                Phaser.Math.Between(0, H),
+                Phaser.Math.FloatBetween(0.5, 2),
+                0xffffff,
+                Phaser.Math.FloatBetween(0.1, 0.4),
+              );
+
             this.add
-              .rectangle(
-                x,
-                400,
-                130,
-                60,
-                Phaser.Display.Color.ComponentToHex(0),
-                0.3,
-              )
-              .setStrokeStyle(2, s.color, 0.5);
-            this.add
-              .text(x, 388, s.name, {
-                fontSize: "12px",
+              .text(W / 2, 64, "MARS COLONY EXPLORER", {
+                fontSize: "40px",
                 fontFamily: "monospace",
                 fontStyle: "bold",
-                color: Phaser.Display.Color.IntegerToColor(s.color).rgba,
+                color: "#ff7744",
+                stroke: "#441100",
+                strokeThickness: 4,
               })
               .setOrigin(0.5);
             this.add
-              .text(x, 408, s.desc, {
-                fontSize: "10px",
+              .text(W / 2, 104, "Drive the rover along the line y = k·x", {
+                fontSize: "16px",
                 fontFamily: "Arial",
-                color: "#888",
+                color: "#ffcc88",
               })
               .setOrigin(0.5);
-          });
-
-          const btn = this.add
-            .text(W / 2, 480, "[ LAUNCH COLONY ]", {
-              fontSize: "22px",
-              fontFamily: "monospace",
-              fontStyle: "bold",
-              color: "#ff8844",
-              padding: { x: 20, y: 10 },
-              backgroundColor: "rgba(255,120,60,0.1)",
-            })
-            .setOrigin(0.5)
-            .setInteractive({ useHandCursor: true });
-          btn.on("pointerover", () =>
-            btn.setStyle({ backgroundColor: "rgba(255,120,60,0.25)" }),
-          );
-          btn.on("pointerout", () =>
-            btn.setStyle({ backgroundColor: "rgba(255,120,60,0.1)" }),
-          );
-          btn.on("pointerdown", () => {
-            SFX.init();
-            this.scene.start("Explore");
-          });
-
-          [
-            "WASD / Arrows to move",
-            "Solve to unlock gates",
-            "16 math missions",
-            "Keyboard + Touch",
-          ].forEach((t, i) => {
             this.add
-              .text(W / 2 - 200 + i * 130, 555, t, {
-                fontSize: "10px",
+              .text(
+                W / 2,
+                132,
+                "6.EE.C.9 — Variables, tables & the equation y = kx",
+                { fontSize: "12px", fontFamily: "Arial", color: "#886644" },
+              )
+              .setOrigin(0.5);
+
+            // Mini demo: 3 cells, only (1,k),(2,2k)... lie on the rule.
+            this.add
+              .text(
+                W / 2,
+                176,
+                "Only drive through fuel cells where y = k·x.\nA wrong cell vents your oxygen. The PATH is the proof.",
+                {
+                  fontSize: "13px",
+                  fontFamily: "Arial",
+                  color: "#9bb0c9",
+                  align: "center",
+                  lineSpacing: 5,
+                },
+              )
+              .setOrigin(0.5);
+
+            const rover = this.add.image(W / 2, 250, "rover").setScale(3);
+            this.tweens.add({
+              targets: rover,
+              x: { from: W / 2 - 60, to: W / 2 + 60 },
+              duration: 1600,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.easeInOut",
+            });
+
+            const tiers = [
+              {
+                t: 1,
+                label: "LEVEL 1",
+                sub: "Support",
+                desc: "Small k (1–3) · table shown · fewer cells · +O2 buffer",
+                col: C.good,
+              },
+              {
+                t: 2,
+                label: "LEVEL 2",
+                sub: "Challenge",
+                desc: "Bigger k (2–5) · partial table · intercept the supply pod",
+                col: C.rule,
+              },
+            ];
+            tiers.forEach((d, i) => {
+              const x = W / 2 + (i === 0 ? -170 : 170),
+                y = 380;
+              const card = this.add
+                .rectangle(x, y, 300, 132, C.panel, 0.95)
+                .setStrokeStyle(3, C.stroke)
+                .setInteractive({ useHandCursor: true });
+              this.add
+                .text(x, y - 40, d.label, {
+                  fontSize: "26px",
+                  fontFamily: "monospace",
+                  fontStyle: "bold",
+                  color: "#fff",
+                })
+                .setOrigin(0.5);
+              this.add
+                .text(x, y - 12, d.sub, {
+                  fontSize: "15px",
+                  fontFamily: "Arial",
+                  color: Phaser.Display.Color.IntegerToColor(d.col).rgba,
+                })
+                .setOrigin(0.5);
+              this.add
+                .text(x, y + 26, d.desc, {
+                  fontSize: "11.5px",
+                  fontFamily: "Arial",
+                  color: "#c9d6e8",
+                  align: "center",
+                  wordWrap: { width: 272 },
+                })
+                .setOrigin(0.5);
+              card.on("pointerover", () => {
+                card.setStrokeStyle(3, d.col);
+                card.setScale(1.04);
+              });
+              card.on("pointerout", () => {
+                card.setStrokeStyle(3, C.stroke);
+                card.setScale(1);
+              });
+              card.on("pointerdown", () => {
+                ensureAudio();
+                sfxLaunch();
+                this.scene.start("Explore", { tier: d.t });
+              });
+            });
+
+            this.add
+              .text(
+                W / 2,
+                500,
+                "MOVE: Arrow keys / WASD  ·  drive onto a cell to claim it",
+                {
+                  fontSize: "12px",
+                  fontFamily: "monospace",
+                  color: "#aaccee",
+                },
+              )
+              .setOrigin(0.5);
+            this.add
+              .text(
+                W / 2,
+                524,
+                "TOUCH: drag anywhere to steer  ·  Intercept: tap −/+ to set k, then LAUNCH",
+                {
+                  fontSize: "12px",
+                  fontFamily: "monospace",
+                  color: "#aaccee",
+                },
+              )
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 556, "Press H for a rule hint anytime", {
+                fontSize: "11px",
                 fontFamily: "Arial",
-                color: "#665544",
-                padding: { x: 4, y: 2 },
-                backgroundColor: "rgba(255,255,255,0.03)",
+                color: "#776655",
               })
               .setOrigin(0.5);
-          });
-        }
-      }
-
-      class ExploreScene extends Phaser.Scene {
-        constructor() {
-          super("Explore");
-        }
-        init() {
-          this.score = 0;
-          this.oxygen = 100;
-          this.streak = 0;
-          this.bestStreak = 0;
-          this.correct = 0;
-          this.total = 0;
-          this.sectorsCleared = 0;
-          this.currentSector = 0;
-          this.sectorProgress = [0, 0, 0, 0];
-          this.questionActive = false;
-          // Generate map
-          this.mapData = this.generateMap();
-        }
-
-        generateMap() {
-          // 20x15 grid. Sectors in quadrants. Gates between them.
-          const m = [];
-          for (let y = 0; y < MH; y++) {
-            m[y] = [];
-            for (let x = 0; x < MW; x++) {
-              let type = "ground";
-              // Borders with rocks
-              if (x === 0 || x === MW - 1 || y === 0 || y === MH - 1)
-                type = "rock";
-              // Sector dividers
-              else if (x === 10 && y > 0 && y < MH - 1)
-                type = y === 4 || y === 7 || y === 11 ? "gate" : "rock";
-              else if (y === 7 && x > 0 && x < MW - 1)
-                type = x === 4 || x === 15 ? "gate" : "rock";
-              m[y][x] = {
-                type,
-                sector: this.getSector(x, y),
-                gateOpen: false,
-                gateId: null,
-              };
-            }
           }
-          // Mark gates with sector IDs
-          [
-            [10, 4, 0],
-            [10, 11, 1],
-            [4, 7, 2],
-            [15, 7, 3],
-            [10, 7, 3],
-          ].forEach(([gx, gy, s]) => {
-            if (m[gy] && m[gy][gx]) {
-              m[gy][gx].gateId = s;
-              m[gy][gx].type = "gate";
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        //  EXPLORE — the core "Drive the Relationship" scene
+        // ════════════════════════════════════════════════════════════════
+        class ExploreScene extends Phaser.Scene {
+          constructor() {
+            super("Explore");
+          }
+          init(data) {
+            this.tier = data.tier || 1;
+            this.score = 0;
+            this.oxygen = 100;
+            this.streak = 0;
+            this.bestStreak = 0;
+            this.correct = 0; // cells/intercepts done right
+            this.attempted = 0;
+            this.roundIx = 0;
+            this.sectorsCleared = 0;
+            // Level 1: 4 fuel rounds. Level 2: 3 fuel + 2 intercept = 5 rounds.
+            this.totalRounds = this.tier === 1 ? 4 : 5;
+          }
+
+          create() {
+            this.cameras.main.setBackgroundColor(C.bg);
+
+            // ── Grid geometry. Playfield occupies the centre; HUD on top. ──
+            this.gridX0 = 150; // left pixel of column 0
+            this.gridY0 = 540; // bottom pixel of row 0 (y grows UP from here)
+            this.cell = 56; // pixel spacing between grid points
+
+            this.gridGfx = this.add.graphics().setDepth(1);
+            this.cellLayer = this.add.container().setDepth(3);
+            this.trailGfx = this.add.graphics().setDepth(2);
+
+            this.rover = this.add
+              .image(0, 0, "rover")
+              .setScale(0.95)
+              .setDepth(8);
+            this.pod = this.add
+              .image(0, 0, "pod")
+              .setVisible(false)
+              .setDepth(7);
+
+            this.sparks = this.add.particles(0, 0, "spark", {
+              speed: { min: 50, max: 160 },
+              angle: { min: 0, max: 360 },
+              lifespan: 420,
+              scale: { start: 0.9, end: 0 },
+              alpha: { start: 1, end: 0 },
+              blendMode: "ADD",
+              emitting: false,
+            });
+            this.sparks.setDepth(9);
+
+            this.buildHUD();
+            this.buildPanels();
+            this.bindInput();
+
+            this.loadRound();
+          }
+
+          // ── pixel position of grid point (gx, gy) ──
+          px(gx) {
+            return this.gridX0 + gx * this.cell;
+          }
+          py(gy) {
+            return this.gridY0 - gy * this.cell;
+          }
+
+          buildHUD() {
+            this.add.rectangle(W / 2, 18, W, 36, 0x000000, 0.72).setDepth(50);
+            this.hScore = this.add
+              .text(10, 5, "SCORE 0", {
+                fontSize: "13px",
+                fontFamily: "monospace",
+                fontStyle: "bold",
+                color: "#ffcc33",
+              })
+              .setDepth(51);
+            this.hO2 = this.add
+              .text(W / 2, 5, "O2 100%", {
+                fontSize: "13px",
+                fontFamily: "monospace",
+                color: "#00e08a",
+              })
+              .setOrigin(0.5, 0)
+              .setDepth(51);
+            this.hRound = this.add
+              .text(W - 10, 5, "", {
+                fontSize: "12px",
+                fontFamily: "monospace",
+                color: "#70ddff",
+              })
+              .setOrigin(1, 0)
+              .setDepth(51);
+            this.o2BarBg = this.add
+              .rectangle(W / 2, 32, W - 24, 4, 0x333333, 0.6)
+              .setDepth(51);
+            this.o2Fill = this.add
+              .rectangle(12, 32, W - 24, 4, C.good, 0.85)
+              .setOrigin(0, 0.5)
+              .setDepth(52);
+          }
+
+          buildPanels() {
+            // Left rule + table card
+            this.add
+              .rectangle(70, 300, 132, 360, C.panel, 0.92)
+              .setStrokeStyle(2, C.stroke)
+              .setDepth(40);
+            this.ruleTitle = this.add
+              .text(70, 140, "", {
+                fontSize: "13px",
+                fontFamily: "monospace",
+                color: "#70ddff",
+                align: "center",
+                wordWrap: { width: 120 },
+              })
+              .setOrigin(0.5)
+              .setDepth(41);
+            this.ruleBig = this.add
+              .text(70, 190, "", {
+                fontSize: "30px",
+                fontFamily: "monospace",
+                fontStyle: "bold",
+                color: "#ffcc33",
+              })
+              .setOrigin(0.5)
+              .setDepth(41);
+            this.tableText = this.add
+              .text(70, 320, "", {
+                fontSize: "16px",
+                fontFamily: "monospace",
+                color: "#dfeaf7",
+                align: "center",
+                lineSpacing: 5,
+              })
+              .setOrigin(0.5)
+              .setDepth(41);
+
+            // Task banner (top of grid)
+            this.taskText = this.add
+              .text(470, 60, "", {
+                fontSize: "15px",
+                fontFamily: "Arial",
+                fontStyle: "bold",
+                color: "#ffe9b8",
+                align: "center",
+                wordWrap: { width: 560 },
+              })
+              .setOrigin(0.5)
+              .setDepth(41);
+
+            // Feedback (diagnostic, never gives the cell away)
+            this.feedback = this.add
+              .text(470, 560, "", {
+                fontSize: "14px",
+                fontFamily: "Arial",
+                fontStyle: "bold",
+                color: "#fff",
+                align: "center",
+                wordWrap: { width: 580 },
+              })
+              .setOrigin(0.5)
+              .setDepth(60);
+
+            // Intercept k-dial (hidden unless intercept round)
+            this.dial = this.add
+              .container(470, 500)
+              .setDepth(45)
+              .setVisible(false);
+            const dbg = this.add
+              .rectangle(0, 0, 360, 60, C.panel, 0.95)
+              .setStrokeStyle(2, C.stroke);
+            this.kMinus = this.add
+              .rectangle(-150, 0, 48, 44, 0x442d6a)
+              .setStrokeStyle(2, 0x6a3a52)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(-150, 0, "−", {
+                fontSize: "26px",
+                fontFamily: "Arial Black",
+                color: "#fff",
+              })
+              .setOrigin(0.5)
+              .setDepth(46);
+            this.kVal = this.add
+              .text(-60, 0, "", {
+                fontSize: "18px",
+                fontFamily: "monospace",
+                fontStyle: "bold",
+                color: "#ffcc33",
+              })
+              .setOrigin(0.5);
+            this.kPlus = this.add
+              .rectangle(30, 0, 48, 44, 0x2e6a46)
+              .setStrokeStyle(2, 0x3a8f5a)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(30, 0, "+", {
+                fontSize: "26px",
+                fontFamily: "Arial Black",
+                color: "#fff",
+              })
+              .setOrigin(0.5)
+              .setDepth(46);
+            this.launchBtn = this.add
+              .rectangle(135, 0, 110, 44, 0xf6a83a)
+              .setStrokeStyle(2, 0x000000, 0.25)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(135, 0, "LAUNCH", {
+                fontSize: "16px",
+                fontFamily: "Arial Black",
+                color: "#1a0d05",
+              })
+              .setOrigin(0.5)
+              .setDepth(46);
+            this.dial.add([
+              dbg,
+              this.kMinus,
+              this.kVal,
+              this.kPlus,
+              this.launchBtn,
+            ]);
+            this.kMinus.on("pointerdown", () => this.nudgeK(-1));
+            this.kPlus.on("pointerdown", () => this.nudgeK(1));
+            this.launchBtn.on("pointerdown", () => this.launchIntercept());
+
+            // Hint button (always available)
+            this.hintBtn = this.add
+              .rectangle(720, 60, 110, 36, 0x33405a)
+              .setStrokeStyle(2, C.stroke)
+              .setInteractive({ useHandCursor: true })
+              .setDepth(45);
+            this.add
+              .text(720, 60, "\u{1F4A1} Hint", {
+                fontSize: "14px",
+                fontFamily: "Arial",
+                fontStyle: "bold",
+                color: "#ffe9b8",
+              })
+              .setOrigin(0.5)
+              .setDepth(46);
+            this.hintBtn.on("pointerdown", () => this.showHint());
+          }
+
+          bindInput() {
+            this.cursors = this.input.keyboard.createCursorKeys();
+            this.wasd = this.input.keyboard.addKeys("W,A,S,D");
+            this.input.keyboard.on("keydown-H", () => this.showHint());
+            this.moveCooldown = 0;
+            // touch drag → discrete step toward drag direction
+            this.touchDir = null;
+            this.input.on("pointerdown", (p) => {
+              ensureAudio();
+              if (this.mode === "fuel") this.touchStart = { x: p.x, y: p.y };
+            });
+            this.input.on("pointerup", () => {
+              this.touchStart = null;
+            });
+            this.input.on("pointermove", (p) => {
+              if (!this.touchStart || this.mode !== "fuel" || this.busy) return;
+              const dx = p.x - this.touchStart.x,
+                dy = p.y - this.touchStart.y;
+              if (Math.abs(dx) < 26 && Math.abs(dy) < 26) return;
+              if (Math.abs(dx) > Math.abs(dy))
+                this.stepRover(dx > 0 ? 1 : -1, 0);
+              else this.stepRover(0, dy > 0 ? -1 : 1); // screen-down = grid-down
+              this.touchStart = { x: p.x, y: p.y };
+            });
+          }
+
+          loadRound() {
+            this.busy = false;
+            this.feedback.setText("");
+            const fuelRounds = this.tier === 1 ? this.totalRounds : 3;
+            let round;
+            if (this.tier === 2 && this.roundIx >= fuelRounds) {
+              round = makeInterceptRound(this.roundIx);
+            } else {
+              round = makeFuelRound(this.tier, this.roundIx);
             }
-          });
-          return m;
-        }
+            this.round = round;
+            this.mode = round.mode;
 
-        getSector(x, y) {
-          if (x <= 10 && y <= 7) return 0;
-          if (x > 10 && y <= 7) return 1;
-          if (x <= 10 && y > 7) return 2;
-          return 3;
-        }
+            // rule card
+            const th = round.theme;
+            this.ruleTitle.setText(
+              th.icon + " " + th.name + "\n" + th.unit + " per " + th.per,
+            );
+            this.hRound.setText(
+              "Round " + (this.roundIx + 1) + "/" + this.totalRounds,
+            );
 
-        create() {
-          this.cameras.main.setBackgroundColor(0x1a0f0a);
+            if (this.mode === "fuel") this.setupFuelRound(round);
+            else this.setupInterceptRound(round);
 
-          // Tilemap
-          this.groundTiles = this.add.group();
-          this.gateTiles = this.add.group();
-          this.rockTiles = this.add.group();
+            this.updateHUD();
+          }
 
-          for (let y = 0; y < MH; y++) {
-            for (let x = 0; x < MW; x++) {
-              const px = x * TILE + TILE / 2,
-                py = y * TILE + TILE / 2;
-              const cell = this.mapData[y][x];
-              if (cell.type === "ground") {
-                this.add.image(px, py, "ground");
-              } else if (cell.type === "rock") {
-                this.add.image(px, py, "ground");
-                const r = this.add.image(px, py, "rock").setScale(0.9);
-                this.rockTiles.add(r);
-              } else if (cell.type === "gate") {
-                this.add.image(px, py, "ground");
-                const gt = this.add.image(px, py, "gateLocked");
-                gt.tileX = x;
-                gt.tileY = y;
-                gt.gateId = cell.gateId;
-                this.gateTiles.add(gt);
-                cell.gateSprite = gt;
+          setupFuelRound(r) {
+            this.dial.setVisible(false);
+            this.pod.setVisible(false);
+            // Rule display: on Level 1 we reveal k via a table; Level 2 shows the
+            // FORM y=kx and a partial table, never the full path — the student
+            // must infer k and then DRIVE it.
+            this.ruleBig.setText("y = " + r.k + "·x");
+            const rows = r.tableRows
+              .map((t) => t.x + "    →    " + t.y)
+              .join("\n");
+            this.tableText.setText(
+              " x   →   y\n" +
+                "————\n" +
+                rows +
+                (this.tier === 2 ? "\n ?   →   ?" : ""),
+            );
+            this.taskText.setText(
+              "Drive ONLY through fuel cells where  y = " +
+                r.k +
+                "·x.  Collect them in order (x = 1, 2, 3 …). A wrong cell vents O2.",
+            );
+
+            // place rover at origin (0,0)
+            this.roverG = { x: 0, y: 0 };
+            this.rover.setPosition(this.px(0), this.py(0)).setVisible(true);
+            this.rover.setAngle(0);
+
+            // build cells: correct path + decoys, all rendered identically so
+            // colour/position never reveals the answer until claimed.
+            this.pathIx = 0; // how many correct cells claimed
+            this.cells = [];
+            const all = shuffle([
+              ...r.path.map((p) => ({ ...p, good: true })),
+              ...r.decoys.map((p) => ({ ...p, good: false })),
+            ]);
+            this.cellLayer.removeAll(true);
+            this.trailGfx.clear();
+            this.drawGrid();
+            all.forEach((c) => {
+              const cx = this.px(c.x),
+                cy = this.py(c.y);
+              const box = this.add
+                .rectangle(cx, cy, 40, 40, 0x24405e, 0.92)
+                .setStrokeStyle(2, 0x5577aa);
+              const lbl = this.add
+                .text(cx, cy - 2, "(" + c.x + "," + c.y + ")", {
+                  fontSize: "11px",
+                  fontFamily: "monospace",
+                  fontStyle: "bold",
+                  color: "#dfeaf7",
+                })
+                .setOrigin(0.5);
+              this.cellLayer.add([box, lbl]);
+              c.box = box;
+              c.lbl = lbl;
+              c.claimed = false;
+              this.cells.push(c);
+            });
+          }
+
+          drawGrid() {
+            const g = this.gridGfx;
+            g.clear();
+            g.lineStyle(1, 0x3a5070, 0.45);
+            for (let x = 0; x < GRID_COLS; x++) {
+              g.beginPath();
+              g.moveTo(this.px(x), this.py(0));
+              g.lineTo(this.px(x), this.py(GRID_ROWS - 1));
+              g.strokePath();
+            }
+            for (let y = 0; y < GRID_ROWS; y++) {
+              g.beginPath();
+              g.moveTo(this.px(0), this.py(y));
+              g.lineTo(this.px(GRID_COLS - 1), this.py(y));
+              g.strokePath();
+            }
+            // axes emphasis
+            g.lineStyle(2, 0x6688aa, 0.8);
+            g.beginPath();
+            g.moveTo(this.px(0), this.py(0));
+            g.lineTo(this.px(GRID_COLS - 1), this.py(0));
+            g.strokePath();
+            g.beginPath();
+            g.moveTo(this.px(0), this.py(0));
+            g.lineTo(this.px(0), this.py(GRID_ROWS - 1));
+            g.strokePath();
+          }
+
+          // discrete grid step; the rover only moves one grid unit at a time
+          stepRover(dx, dy) {
+            if (this.busy || this.mode !== "fuel") return;
+            const nx = this.roverG.x + dx,
+              ny = this.roverG.y + dy;
+            if (nx < 0 || nx >= GRID_COLS || ny < 0 || ny >= GRID_ROWS) return;
+            this.roverG = { x: nx, y: ny };
+            sfxDrive();
+            this.tweens.add({
+              targets: this.rover,
+              x: this.px(nx),
+              y: this.py(ny),
+              duration: 120,
+              onComplete: () => this.checkCell(),
+            });
+            // tilt toward motion
+            if (dx !== 0) this.rover.setFlipX(dx < 0);
+          }
+
+          checkCell() {
+            const here = this.cells.find(
+              (c) =>
+                !c.claimed && c.x === this.roverG.x && c.y === this.roverG.y,
+            );
+            if (!here) return;
+            // THE math test: is (x,y) on y = k·x ?
+            const correct = onPath(here.x, here.y, this.round.k);
+            // We also require IN-ORDER collection (next expected x).
+            const expected = this.round.path[this.pathIx];
+            const inOrder =
+              correct &&
+              expected &&
+              here.x === expected.x &&
+              here.y === expected.y;
+
+            this.attempted++;
+            if (correct && inOrder) {
+              here.claimed = true;
+              here.box
+                .setFillStyle(C.good, 0.95)
+                .setStrokeStyle(3, 0xffffff, 0.9);
+              here.lbl.setColor("#06301f");
+              this.add
+                .text(here.box.x, here.box.y - 22, "✓", {
+                  fontSize: "16px",
+                  fontFamily: "Arial Black",
+                  color: "#00e08a",
+                })
+                .setOrigin(0.5)
+                .setDepth(9);
+              this.sparks.emitParticleAt(here.box.x, here.box.y, 8);
+              sfxGood();
+              this.correct++;
+              this.streak++;
+              if (this.streak > this.bestStreak) this.bestStreak = this.streak;
+              this.score += 50 * Math.min(4, 1 + Math.floor(this.streak / 3));
+              this.oxygen = Math.min(100, this.oxygen + 4);
+              // trail to show the satisfied line
+              this.drawTrail(here);
+              this.pathIx++;
+              this.flash(
+                "✓ " +
+                  here.y +
+                  " = " +
+                  this.round.k +
+                  "·" +
+                  here.x +
+                  " — on the line!",
+                C.goodCss,
+              );
+              if (this.pathIx >= this.round.path.length)
+                this.completeFuelRound();
+            } else if (correct && !inOrder) {
+              // right rule, wrong order — gentle nudge, no O2 loss
+              const want = expected ? "x = " + expected.x : "the next cell";
+              this.flash(
+                "Right rule, wrong order. Collect cells left-to-right: next is " +
+                  want +
+                  ".",
+                C.ruleCss,
+              );
+              this.streak = 0;
+            } else {
+              // WRONG cell — vent oxygen, mark it, teach WHY it fails
+              here.claimed = true;
+              here.box
+                .setFillStyle(C.bad, 0.85)
+                .setStrokeStyle(3, 0x000000, 0.4);
+              here.lbl.setColor("#3a0000");
+              this.add
+                .text(here.box.x, here.box.y - 22, "✗", {
+                  fontSize: "16px",
+                  fontFamily: "Arial Black",
+                  color: "#ff5a5a",
+                })
+                .setOrigin(0.5)
+                .setDepth(9);
+              sfxBad();
+              this.cameras.main.shake(180, 0.006);
+              this.streak = 0;
+              const drain = this.tier === 1 ? 8 : 12;
+              this.oxygen = Math.max(0, this.oxygen - drain);
+              this.flash(
+                "✗ " +
+                  this.round.k +
+                  "·" +
+                  here.x +
+                  " = " +
+                  this.round.k * here.x +
+                  ", not " +
+                  here.y +
+                  ". That cell is off the line — back up and try y = k·x.",
+                C.badCss,
+              );
+              this.updateHUD();
+              if (this.oxygen <= 0) {
+                this.busy = true;
+                this.time.delayedCall(900, () => this.endGame(false));
               }
             }
+            this.updateHUD();
           }
 
-          // Beacons (collectibles in each sector)
-          this.beacons = this.physics.add.group();
-          [
-            [3, 3],
-            [7, 2],
-            [5, 5],
-            [14, 3],
-            [17, 5],
-            [13, 2],
-            [3, 10],
-            [7, 12],
-            [5, 9],
-            [14, 10],
-            [17, 12],
-            [15, 9],
-          ].forEach(([bx, by]) => {
-            const b = this.beacons.create(
-              bx * TILE + TILE / 2,
-              by * TILE + TILE / 2,
-              "beacon",
+          drawTrail() {
+            // redraw the proportional line through all claimed correct cells
+            const g = this.trailGfx;
+            g.clear();
+            g.lineStyle(4, C.good, 0.55);
+            g.beginPath();
+            g.moveTo(this.px(0), this.py(0));
+            for (
+              let i = 0;
+              i < this.pathIx + 1 && i < this.round.path.length;
+              i++
+            ) {
+              const p = this.round.path[i];
+              g.lineTo(this.px(p.x), this.py(p.y));
+            }
+            g.strokePath();
+          }
+
+          completeFuelRound() {
+            this.busy = true;
+            sfxClear();
+            this.sectorsCleared++;
+            this.cameras.main.flash(180, 0, 90, 50);
+            this.flash(
+              "✅ Sector clear! Every cell satisfied y = " +
+                this.round.k +
+                "·x.",
+              C.goodCss,
             );
-            b.setScale(0.8);
-            b.body.setSize(16, 16);
+            this.time.delayedCall(1300, () => this.nextRound());
+          }
+
+          // ── INTERCEPT MODE ──
+          setupInterceptRound(r) {
+            this.busy = false;
+            this.cellLayer.removeAll(true);
+            this.trailGfx.clear();
+            this.drawGrid();
+            this.ruleBig.setText("d = k·t");
+            this.tableText.setText(
+              "Pod meets you\nat t = " +
+                r.T +
+                " ticks,\ncolumn x = " +
+                r.meetX +
+                ".\n\nPick k so the\nrover's distance\nd = k·t lands\nthere on time.",
+            );
+            this.taskText.setText(
+              "INTERCEPT: the pod is at column " +
+                r.meetX +
+                " after " +
+                r.T +
+                " ticks. Set the rover's speed k so d = k·t reaches it. Wrong k under/overshoots.",
+            );
+            this.kChoice = r.kOptions[Math.floor(r.kOptions.length / 2)];
+            this.kVal.setText("k = " + this.kChoice);
+            this.dial.setVisible(true);
+
+            // place rover at origin, pod at the meet column on row meet (we use a
+            // visual meet row = min(meetX's height, top); pod drifts in)
+            this.meetRow = Math.min(GRID_ROWS - 1, r.T); // visual anchor
+            this.roverG = { x: 0, y: 0 };
+            this.rover
+              .setPosition(this.px(0), this.py(this.meetRow))
+              .setVisible(true)
+              .setFlipX(false);
+            this.pod
+              .setPosition(this.px(r.meetX), this.py(this.meetRow))
+              .setVisible(true);
             this.tweens.add({
-              targets: b,
-              alpha: { from: 0.6, to: 1 },
-              scale: { from: 0.7, to: 0.9 },
-              duration: 800,
+              targets: this.pod,
+              y: this.py(this.meetRow) - 6,
+              duration: 700,
               yoyo: true,
               repeat: -1,
             });
-          });
-
-          // Oxygen pickups
-          this.oxygenPickups = this.physics.add.group();
-          [
-            [2, 5],
-            [8, 4],
-            [16, 4],
-            [12, 10],
-            [6, 11],
-            [18, 9],
-          ].forEach(([ox, oy]) => {
-            const o = this.oxygenPickups.create(
-              ox * TILE + TILE / 2,
-              oy * TILE + TILE / 2,
-              "oxygen",
-            );
-            o.body.setSize(12, 12);
-          });
-
-          // Rover
-          this.rover = this.physics.add
-            .image(2 * TILE + TILE / 2, 2 * TILE + TILE / 2, "rover")
-            .setScale(1.2);
-          this.rover.setCollideWorldBounds(true);
-          this.rover.body.setSize(24, 24);
-          this.physics.world.setBounds(0, 0, MW * TILE, MH * TILE);
-
-          // Collisions
-          this.physics.add.overlap(
-            this.rover,
-            this.beacons,
-            this.collectBeacon,
-            null,
-            this,
-          );
-          this.physics.add.overlap(
-            this.rover,
-            this.oxygenPickups,
-            this.collectOxygen,
-            null,
-            this,
-          );
-
-          // Camera
-          this.cameras.main.startFollow(this.rover, true, 0.1, 0.1);
-          this.cameras.main.setBounds(0, 0, MW * TILE, MH * TILE);
-
-          // Spark particles
-          this.sparkEmitter = this.add.particles(0, 0, "spark", {
-            speed: { min: 50, max: 150 },
-            angle: { min: 0, max: 360 },
-            lifespan: 400,
-            scale: { start: 0.8, end: 0 },
-            alpha: { start: 1, end: 0 },
-            blendMode: "ADD",
-            emitting: false,
-          });
-
-          // HUD (fixed to camera)
-          this.hudBg = this.add
-            .rectangle(W / 2, 20, W, 40, 0x000000, 0.7)
-            .setScrollFactor(0)
-            .setDepth(100);
-          this.scoreText = this.add
-            .text(10, 6, "SCORE: 0", {
-              fontSize: "13px",
-              fontFamily: "monospace",
-              fontStyle: "bold",
-              color: "#ffcc00",
-            })
-            .setScrollFactor(0)
-            .setDepth(101);
-          this.oxygenText = this.add
-            .text(W / 2, 6, "O2: 100%", {
-              fontSize: "13px",
-              fontFamily: "monospace",
-              color: "#00ff88",
-            })
-            .setOrigin(0.5, 0)
-            .setScrollFactor(0)
-            .setDepth(101);
-          this.sectorText = this.add
-            .text(W - 10, 6, "", {
-              fontSize: "12px",
-              fontFamily: "monospace",
-              color: "#70ddff",
-            })
-            .setOrigin(1, 0)
-            .setScrollFactor(0)
-            .setDepth(101);
-          this.streakText = this.add
-            .text(W / 2, 22, "", {
-              fontSize: "10px",
-              fontFamily: "monospace",
-              color: "#ff8800",
-            })
-            .setOrigin(0.5, 0)
-            .setScrollFactor(0)
-            .setDepth(101);
-          this.oxygenBar = this.add
-            .rectangle(W / 2, 35, W - 40, 5, 0x333333, 0.6)
-            .setScrollFactor(0)
-            .setDepth(101);
-          this.oxygenFill = this.add
-            .rectangle(20, 35, W - 40, 5, 0x00ff88, 0.8)
-            .setOrigin(0, 0.5)
-            .setScrollFactor(0)
-            .setDepth(102);
-          this.updateHUD();
-
-          // Question panel
-          this.qContainer = this.add
-            .container(W / 2, H / 2)
-            .setDepth(200)
-            .setScrollFactor(0)
-            .setVisible(false);
-          const qBg = this.add
-            .rectangle(0, 0, 660, 320, 0x0a1a2e, 0.96)
-            .setStrokeStyle(2, 0x70ddff, 0.6);
-          this.qTitle = this.add
-            .text(0, -135, "", {
-              fontSize: "13px",
-              fontFamily: "monospace",
-              color: "#70ddff",
-            })
-            .setOrigin(0.5);
-          this.qText = this.add
-            .text(0, -100, "", {
-              fontSize: "15px",
-              fontFamily: "Arial",
-              fontStyle: "bold",
-              color: "#fff",
-              wordWrap: { width: 600 },
-              align: "center",
-            })
-            .setOrigin(0.5);
-          this.qContainer.add([qBg, this.qTitle, this.qText]);
-
-          this.qBtns = [];
-          this.qTxts = [];
-          for (let i = 0; i < 4; i++) {
-            const y = -35 + i * 45;
-            const bg = this.add
-              .rectangle(0, y, 540, 38, 0x112244, 0.8)
-              .setStrokeStyle(1, 0x336699, 0.6)
-              .setInteractive({ useHandCursor: true });
-            const txt = this.add
-              .text(0, y, "", {
-                fontSize: "14px",
-                fontFamily: "Arial",
-                color: "#ccddff",
-                wordWrap: { width: 500 },
-                align: "center",
-              })
-              .setOrigin(0.5);
-            const idx = i;
-            bg.on("pointerdown", () => this.answerQ(idx));
-            bg.on("pointerover", () => {
-              if (this.questionActive) bg.setStrokeStyle(2, 0x00ccff, 1);
-            });
-            bg.on("pointerout", () => {
-              if (this.questionActive) bg.setStrokeStyle(1, 0x336699, 0.6);
-            });
-            this.qContainer.add([bg, txt]);
-            this.qBtns.push(bg);
-            this.qTxts.push(txt);
           }
-          this.qExplain = this.add
-            .text(0, 148, "", {
-              fontSize: "12px",
-              fontFamily: "Arial",
-              color: "#88ff88",
-              wordWrap: { width: 580 },
-              align: "center",
-            })
-            .setOrigin(0.5);
-          this.qContainer.add(this.qExplain);
 
-          // Input
-          this.cursors = this.input.keyboard.createCursorKeys();
-          this.wasd = this.input.keyboard.addKeys("W,A,S,D");
-          this.input.keyboard.on("keydown-ONE", () => this.answerQ(0));
-          this.input.keyboard.on("keydown-TWO", () => this.answerQ(1));
-          this.input.keyboard.on("keydown-THREE", () => this.answerQ(2));
-          this.input.keyboard.on("keydown-FOUR", () => this.answerQ(3));
+          nudgeK(d) {
+            if (this.mode !== "intercept" || this.busy) return;
+            const opts = this.round.kOptions;
+            let i = opts.indexOf(this.kChoice) + d;
+            i = Math.max(0, Math.min(opts.length - 1, i));
+            this.kChoice = opts[i];
+            this.kVal.setText("k = " + this.kChoice);
+            sfxClick();
+          }
 
-          // Oxygen drain timer
-          this.time.addEvent({
-            delay: 2000,
-            callback: () => {
-              if (!this.questionActive) {
-                this.oxygen = Math.max(0, this.oxygen - 1);
-                this.updateHUD();
-                if (this.oxygen <= 0) this.gameOver();
-              }
-            },
-            loop: true,
-          });
-
-          // Touch joystick area
-          this.touchDir = { x: 0, y: 0 };
-          this.input.on("pointermove", (p) => {
-            if (p.isDown && !this.questionActive) {
-              const dx = p.x - W / 2,
-                dy = p.y - H / 2;
-              const dist = Math.sqrt(dx * dx + dy * dy);
-              if (dist > 20) {
-                this.touchDir.x = dx / dist;
-                this.touchDir.y = dy / dist;
-              } else {
-                this.touchDir.x = 0;
-                this.touchDir.y = 0;
-              }
-            }
-          });
-          this.input.on("pointerup", () => {
-            this.touchDir.x = 0;
-            this.touchDir.y = 0;
-          });
-        }
-
-        updateHUD() {
-          this.scoreText.setText("SCORE: " + this.score);
-          this.oxygenText.setText("O2: " + this.oxygen + "%");
-          this.oxygenFill.width = (W - 40) * (this.oxygen / 100);
-          this.oxygenFill.setFillStyle(
-            this.oxygen > 30 ? 0x00ff88 : 0xff4444,
-            0.8,
-          );
-          const sec = SECTORS[this.currentSector];
-          this.sectorText.setText(
-            sec.name +
-              " [" +
-              this.sectorProgress[this.currentSector] +
-              "/" +
-              sec.questions.length +
-              "]",
-          );
-          this.streakText.setText(
-            this.streak >= 2 ? "STREAK x" + this.streak : "",
-          );
-        }
-
-        collectBeacon(rover, beacon) {
-          beacon.destroy();
-          this.score += 25;
-          SFX.scan();
-          this.sparkEmitter.emitParticleAt(beacon.x, beacon.y, 10);
-          this.updateHUD();
-        }
-
-        collectOxygen(rover, pickup) {
-          pickup.destroy();
-          this.oxygen = Math.min(100, this.oxygen + 20);
-          SFX.correct();
-          const pop = this.add
-            .text(pickup.x, pickup.y - 10, "+20 O2", {
-              fontSize: "14px",
-              fontFamily: "monospace",
-              fontStyle: "bold",
-              color: "#00ff88",
-            })
-            .setOrigin(0.5)
-            .setDepth(150);
-          this.tweens.add({
-            targets: pop,
-            y: pop.y - 30,
-            alpha: 0,
-            duration: 800,
-            onComplete: () => pop.destroy(),
-          });
-          this.updateHUD();
-        }
-
-        checkGateCollision() {
-          if (this.questionActive) return;
-          const rx = Math.floor(this.rover.x / TILE);
-          const ry = Math.floor(this.rover.y / TILE);
-          // Check adjacent tiles for gates
-          for (let dy = -1; dy <= 1; dy++) {
-            for (let dx = -1; dx <= 1; dx++) {
-              const tx = rx + dx,
-                ty = ry + dy;
-              if (tx < 0 || tx >= MW || ty < 0 || ty >= MH) continue;
-              const cell = this.mapData[ty][tx];
-              if (cell.type === "gate" && !cell.gateOpen) {
-                const dist = Phaser.Math.Distance.Between(
-                  this.rover.x,
-                  this.rover.y,
-                  (tx + 0.5) * TILE,
-                  (ty + 0.5) * TILE,
-                );
-                if (dist < TILE * 0.8) {
-                  this.triggerGate(cell, tx, ty);
-                  return;
+          launchIntercept() {
+            if (this.mode !== "intercept" || this.busy) return;
+            this.busy = true;
+            this.attempted++;
+            const r = this.round;
+            const landX = this.kChoice * r.T; // d = k·t at t = T
+            const correct = landX === r.meetX; // satisfies the relationship
+            const targetPx = this.px(Math.min(GRID_COLS - 1, landX));
+            this.tweens.killTweensOf(this.pod);
+            this.tweens.add({
+              targets: this.rover,
+              x: targetPx,
+              duration: 900,
+              ease: "Sine.easeIn",
+              onComplete: () => {
+                if (correct) {
+                  this.sparks.emitParticleAt(this.pod.x, this.pod.y, 14);
+                  sfxClear();
+                  this.cameras.main.flash(180, 0, 90, 50);
+                  this.correct++;
+                  this.sectorsCleared++;
+                  this.streak++;
+                  if (this.streak > this.bestStreak)
+                    this.bestStreak = this.streak;
+                  this.score += 120;
+                  this.flash(
+                    "✅ Intercept! d = " +
+                      this.kChoice +
+                      "·" +
+                      r.T +
+                      " = " +
+                      landX +
+                      " = meet column. Perfect speed.",
+                    C.goodCss,
+                  );
+                  this.updateHUD();
+                  this.time.delayedCall(1300, () => this.nextRound());
+                } else {
+                  sfxBad();
+                  this.cameras.main.shake(220, 0.008);
+                  this.streak = 0;
+                  this.oxygen = Math.max(0, this.oxygen - 12);
+                  const over = landX > r.meetX;
+                  this.flash(
+                    "✗ d = " +
+                      this.kChoice +
+                      "·" +
+                      r.T +
+                      " = " +
+                      landX +
+                      " — you " +
+                      (over ? "OVERSHOT" : "fell short") +
+                      ". Need d = " +
+                      r.meetX +
+                      " at t = " +
+                      r.T +
+                      ". What k makes k·" +
+                      r.T +
+                      " = " +
+                      r.meetX +
+                      "?",
+                    C.badCss,
+                  );
+                  this.updateHUD();
+                  if (this.oxygen <= 0) {
+                    this.time.delayedCall(900, () => this.endGame(false));
+                  } else {
+                    // reset rover & pod for another try
+                    this.time.delayedCall(1500, () => {
+                      this.rover.setPosition(this.px(0), this.py(this.meetRow));
+                      this.pod.setPosition(
+                        this.px(r.meetX),
+                        this.py(this.meetRow),
+                      );
+                      this.tweens.add({
+                        targets: this.pod,
+                        y: this.py(this.meetRow) - 6,
+                        duration: 700,
+                        yoyo: true,
+                        repeat: -1,
+                      });
+                      this.busy = false;
+                    });
+                  }
                 }
-              }
-            }
-          }
-        }
-
-        triggerGate(cell, tx, ty) {
-          const sectorId =
-            cell.gateId !== null ? cell.gateId : this.getSector(tx, ty);
-          const sector = SECTORS[sectorId];
-          if (!sector) return;
-          const qIdx = this.sectorProgress[sectorId];
-          if (qIdx >= sector.questions.length) {
-            // Already cleared, open gate
-            this.openGate(cell);
-            return;
-          }
-          this.currentGate = cell;
-          this.currentGateSector = sectorId;
-          this.showQuestion(sector, qIdx);
-        }
-
-        showQuestion(sector, qIdx) {
-          const q = sector.questions[qIdx];
-          this.currentQ = q;
-          this.questionActive = true;
-          this.rover.setVelocity(0);
-          this.qContainer.setVisible(true);
-          this.qTitle.setText(
-            sector.name +
-              " -- Mission " +
-              (qIdx + 1) +
-              "/" +
-              sector.questions.length,
-          );
-          this.qText.setText(q.q);
-          this.qExplain.setText("").setVisible(false);
-
-          q.choices.forEach((c, i) => {
-            this.qTxts[i]
-              .setText(String.fromCharCode(65 + i) + ". " + c)
-              .setStyle({ color: "#ccddff" });
-            this.qBtns[i]
-              .setFillStyle(0x112244, 0.8)
-              .setStrokeStyle(1, 0x336699, 0.6)
-              .setInteractive();
-          });
-        }
-
-        answerQ(idx) {
-          if (!this.questionActive) return;
-          this.questionActive = false;
-          this.total++;
-          const q = this.currentQ;
-          const right = idx === q.correct;
-
-          this.qBtns.forEach((b, i) => {
-            b.disableInteractive();
-            if (i === q.correct) {
-              b.setFillStyle(0x004400, 0.9).setStrokeStyle(2, 0x00ff88, 1);
-              this.qTxts[i].setStyle({ color: "#00ff88" });
-            } else if (i === idx && !right) {
-              b.setFillStyle(0x440000, 0.9).setStrokeStyle(2, 0xff4444, 1);
-              this.qTxts[i].setStyle({ color: "#ff4444" });
-            }
-          });
-
-          this.qExplain.setText(q.explain).setVisible(true);
-
-          if (right) {
-            this.correct++;
-            this.streak++;
-            if (this.streak > this.bestStreak) this.bestStreak = this.streak;
-            const pts = 100 * Math.min(4, 1 + Math.floor(this.streak / 3));
-            this.score += pts;
-            this.sectorProgress[this.currentGateSector]++;
-            this.oxygen = Math.min(100, this.oxygen + 10);
-            SFX.correct();
-            this.cameras.main.flash(150, 0, 80, 0);
-
-            // Open gate
-            if (this.currentGate) {
-              this.openGate(this.currentGate);
-            }
-
-            // Check sector clear
-            const sec = SECTORS[this.currentGateSector];
-            if (
-              this.sectorProgress[this.currentGateSector] >=
-              sec.questions.length
-            ) {
-              this.sectorsCleared++;
-              SFX.unlock();
-            }
-          } else {
-            this.streak = 0;
-            this.oxygen = Math.max(0, this.oxygen - 15);
-            SFX.wrong();
-            this.cameras.main.shake(300, 0.01);
+              },
+            });
           }
 
-          this.updateHUD();
+          nextRound() {
+            this.roundIx++;
+            if (this.roundIx >= this.totalRounds) {
+              this.endGame(true);
+            } else {
+              this.loadRound();
+            }
+          }
 
-          this.time.delayedCall(1800, () => {
-            this.qContainer.setVisible(false);
-            // Check win
-            if (this.sectorsCleared >= 4) {
-              this.time.delayedCall(500, () =>
-                this.scene.start("Results", {
-                  score: this.score,
-                  correct: this.correct,
-                  total: this.total,
-                  bestStreak: this.bestStreak,
-                  sectorsCleared: this.sectorsCleared,
-                  oxygen: this.oxygen,
-                }),
+          showHint() {
+            sfxClick();
+            const r = this.round;
+            if (this.mode === "fuel") {
+              const ex = r.path[Math.min(this.pathIx, r.path.length - 1)];
+              this.flash(
+                "\u{1F4A1} Multiply x by " +
+                  r.k +
+                  " to get y. For x = " +
+                  ex.x +
+                  ", y must be " +
+                  r.k +
+                  "·" +
+                  ex.x +
+                  " = " +
+                  r.k * ex.x +
+                  ".",
+                C.ruleCss,
+                3400,
+              );
+            } else {
+              this.flash(
+                "\u{1F4A1} You need d = " +
+                  r.meetX +
+                  " when t = " +
+                  r.T +
+                  ". Solve k·" +
+                  r.T +
+                  " = " +
+                  r.meetX +
+                  " → k = " +
+                  r.meetX +
+                  " ÷ " +
+                  r.T +
+                  ".",
+                C.ruleCss,
+                3400,
               );
             }
-          });
-        }
-
-        openGate(cell) {
-          cell.gateOpen = true;
-          cell.type = "ground";
-          if (cell.gateSprite) {
-            cell.gateSprite.setTexture("ground");
-            this.sparkEmitter.emitParticleAt(
-              cell.gateSprite.x,
-              cell.gateSprite.y,
-              15,
-            );
-          }
-        }
-
-        gameOver() {
-          this.scene.start("Results", {
-            score: this.score,
-            correct: this.correct,
-            total: this.total,
-            bestStreak: this.bestStreak,
-            sectorsCleared: this.sectorsCleared,
-            oxygen: 0,
-          });
-        }
-
-        update() {
-          if (this.questionActive) {
-            this.rover.setVelocity(0);
-            return;
           }
 
-          const spd = 160;
-          let vx = 0,
-            vy = 0;
-
-          if (this.cursors.left.isDown || this.wasd.A.isDown) vx = -spd;
-          else if (this.cursors.right.isDown || this.wasd.D.isDown) vx = spd;
-          if (this.cursors.up.isDown || this.wasd.W.isDown) vy = -spd;
-          else if (this.cursors.down.isDown || this.wasd.S.isDown) vy = spd;
-
-          // Touch
-          if (this.touchDir.x !== 0 || this.touchDir.y !== 0) {
-            vx = this.touchDir.x * spd;
-            vy = this.touchDir.y * spd;
+          flash(msg, color = "#ffffff", hold = 2400) {
+            this.feedback.setText(msg).setColor(color).setAlpha(1);
+            this.tweens.killTweensOf(this.feedback);
+            this.time.delayedCall(hold, () => {
+              if (this.feedback.text === msg)
+                this.tweens.add({
+                  targets: this.feedback,
+                  alpha: 0,
+                  duration: 400,
+                });
+            });
           }
 
-          this.rover.setVelocity(vx, vy);
+          updateHUD() {
+            this.hScore.setText("SCORE " + this.score);
+            this.hO2.setText("O2 " + this.oxygen + "%");
+            this.hO2.setColor(this.oxygen > 30 ? "#00e08a" : "#ff5a5a");
+            this.o2Fill.width = (W - 24) * (this.oxygen / 100);
+            this.o2Fill.setFillStyle(this.oxygen > 30 ? C.good : C.bad, 0.85);
+          }
 
-          // Block on rocks
-          const rx = Math.floor(this.rover.x / TILE);
-          const ry = Math.floor(this.rover.y / TILE);
-          if (rx >= 0 && rx < MW && ry >= 0 && ry < MH) {
-            const cell = this.mapData[ry][rx];
-            if (cell.type === "rock") {
-              // Push back
-              this.rover.setVelocity(-vx * 0.5, -vy * 0.5);
+          update() {
+            if (this.mode !== "fuel" || this.busy) return;
+            // keyboard discrete movement with a small cooldown
+            this.moveCooldown -= this.game.loop.delta;
+            if (this.moveCooldown > 0) return;
+            let dx = 0,
+              dy = 0;
+            if (this.cursors.left.isDown || this.wasd.A.isDown) dx = -1;
+            else if (this.cursors.right.isDown || this.wasd.D.isDown) dx = 1;
+            else if (this.cursors.up.isDown || this.wasd.W.isDown)
+              dy = 1; // grid up
+            else if (this.cursors.down.isDown || this.wasd.S.isDown) dy = -1;
+            if (dx !== 0 || dy !== 0) {
+              this.stepRover(dx, dy);
+              this.moveCooldown = 150;
             }
-            // Update current sector
-            this.currentSector = this.getSector(rx, ry);
           }
 
-          this.checkGateCollision();
-
-          // Rover tilt
-          if (vx !== 0 || vy !== 0) {
-            this.rover.angle = Phaser.Math.RadToDeg(Math.atan2(vy, vx)) + 90;
-          }
-        }
-      }
-
-      class ResultsScene extends Phaser.Scene {
-        constructor() {
-          super("Results");
-        }
-        init(data) {
-          this.finalScore = data.score || 0;
-          this.correct = data.correct || 0;
-          this.total = data.total || 0;
-          this.bestStreak = data.bestStreak || 0;
-          this.sectorsCleared = data.sectorsCleared || 0;
-          this.oxygen = data.oxygen || 0;
-        }
-        create() {
-          this.cameras.main.setBackgroundColor(0x06111d);
-          for (let i = 0; i < 50; i++)
-            this.add.circle(
-              Phaser.Math.Between(0, W),
-              Phaser.Math.Between(0, H),
-              Phaser.Math.FloatBetween(0.5, 1.5),
-              0xffffff,
-              Phaser.Math.FloatBetween(0.1, 0.4),
+          endGame(won) {
+            this.busy = true;
+            this.cameras.main.fadeOut(420, 0, 0, 0);
+            this.time.delayedCall(420, () =>
+              this.scene.start("Results", {
+                tier: this.tier,
+                score: this.score,
+                correct: this.correct,
+                attempted: this.attempted,
+                bestStreak: this.bestStreak,
+                sectorsCleared: this.sectorsCleared,
+                totalRounds: this.totalRounds,
+                oxygen: this.oxygen,
+                won,
+              }),
             );
-
-          const pct =
-            this.total > 0 ? Math.round((this.correct / this.total) * 100) : 0;
-          try {
-            window.EduPulse &&
-              EduPulse.record({
-                activityTitle: document.title,
-                score: this.correct,
-                maxScore: this.total,
-                percent: pct,
-                problemsCorrect: this.correct,
-                problemsAttempted: this.total,
-                standard: "6.EE.C.9",
-              });
-          } catch (e) {}
-          const allClear = this.sectorsCleared >= 4;
-          const title = allClear
-            ? "COLONY ESTABLISHED!"
-            : this.oxygen <= 0
-              ? "OXYGEN DEPLETED"
-              : "EXPLORATION ENDED";
-          const tc = allClear
-            ? "#ffcc00"
-            : this.oxygen <= 0
-              ? "#ff4444"
-              : "#ff8844";
-
-          this.add
-            .text(W / 2, 50, title, {
-              fontSize: "36px",
-              fontFamily: "monospace",
-              fontStyle: "bold",
-              color: tc,
-              stroke: "#333",
-              strokeThickness: 3,
-            })
-            .setOrigin(0.5);
-
-          this.add
-            .text(W / 2, 120, String(this.finalScore), {
-              fontSize: "56px",
-              fontFamily: "monospace",
-              fontStyle: "bold",
-              color: "#ffcc00",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(W / 2, 158, "POINTS", {
-              fontSize: "13px",
-              fontFamily: "monospace",
-              color: "#888",
-            })
-            .setOrigin(0.5);
-
-          let grade, gc;
-          if (pct >= 90) {
-            grade = "S RANK";
-            gc = "#ffcc00";
-          } else if (pct >= 80) {
-            grade = "A RANK";
-            gc = "#00ff88";
-          } else if (pct >= 70) {
-            grade = "B RANK";
-            gc = "#00ccff";
-          } else if (pct >= 60) {
-            grade = "C RANK";
-            gc = "#ff8800";
-          } else {
-            grade = "KEEP EXPLORING";
-            gc = "#ff4444";
           }
-          this.add
-            .text(W / 2, 195, grade, {
-              fontSize: "20px",
-              fontFamily: "monospace",
-              fontStyle: "bold",
-              color: gc,
-            })
-            .setOrigin(0.5);
+        }
 
-          [
-            { l: "Correct", v: this.correct + "/" + this.total },
-            { l: "Accuracy", v: pct + "%" },
-            { l: "Best Streak", v: String(this.bestStreak) },
-            { l: "Sectors", v: this.sectorsCleared + "/4" },
-          ].forEach((s, i) => {
-            const x = W / 2 - 180 + i * 120;
+        // ════════════════════════════════════════════════════════════════
+        //  RESULTS — EduPulse.record, standard 6.EE.C.9
+        // ════════════════════════════════════════════════════════════════
+        class ResultsScene extends Phaser.Scene {
+          constructor() {
+            super("Results");
+          }
+          init(d) {
+            Object.assign(this, d);
+          }
+          create() {
+            this.cameras.main.setBackgroundColor(C.sky);
+            this.cameras.main.fadeIn(420);
+            for (let i = 0; i < 50; i++)
+              this.add.circle(
+                Phaser.Math.Between(0, W),
+                Phaser.Math.Between(0, H),
+                Phaser.Math.FloatBetween(0.5, 1.5),
+                0xffffff,
+                Phaser.Math.FloatBetween(0.1, 0.4),
+              );
+
+            const pct =
+              this.attempted > 0
+                ? Math.round((this.correct / this.attempted) * 100)
+                : 0;
+
+            try {
+              window.EduPulse &&
+                EduPulse.record({
+                  activityTitle: document.title,
+                  score: this.correct,
+                  maxScore: this.attempted,
+                  percent: pct,
+                  problemsCorrect: this.correct,
+                  problemsAttempted: this.attempted,
+                  standard: "6.EE.C.9",
+                });
+            } catch (e) {}
+
+            const allClear =
+              this.won && this.sectorsCleared >= this.totalRounds;
+            const title = allClear
+              ? "COLONY ESTABLISHED!"
+              : this.oxygen <= 0
+                ? "OXYGEN DEPLETED"
+                : "EXPLORATION ENDED";
+            const tc = allClear
+              ? "#ffcc33"
+              : this.oxygen <= 0
+                ? "#ff5a5a"
+                : "#ff8844";
+
             this.add
-              .rectangle(x, 270, 105, 60, 0x112233, 0.8)
-              .setStrokeStyle(1, 0x336699, 0.5);
-            this.add
-              .text(x, 258, s.v, {
-                fontSize: "22px",
+              .text(W / 2, 70, title, {
+                fontSize: "34px",
                 fontFamily: "monospace",
                 fontStyle: "bold",
-                color: "#70ddff",
+                color: tc,
+                stroke: "#222",
+                strokeThickness: 3,
               })
               .setOrigin(0.5);
-            this.add
-              .text(x, 282, s.l, {
-                fontSize: "10px",
-                fontFamily: "Arial",
-                color: "#888",
-              })
-              .setOrigin(0.5);
-          });
 
-          // Sector status
-          SECTORS.forEach((s, i) => {
-            const x = W / 2 - 225 + i * 150;
-            const cleared =
-              this.sectorsCleared > i ||
-              this.correct >=
-                SECTORS.slice(0, i + 1).reduce(
-                  (a, sec) => a + sec.questions.length,
-                  0,
-                );
             this.add
-              .text(x, 340, s.name, {
-                fontSize: "11px",
+              .text(W / 2, 140, String(this.score), {
+                fontSize: "54px",
                 fontFamily: "monospace",
-                color: cleared ? "#00ff88" : "#ff4444",
+                fontStyle: "bold",
+                color: "#ffcc33",
               })
               .setOrigin(0.5);
             this.add
-              .text(x, 356, cleared ? "CLEARED" : "LOCKED", {
-                fontSize: "10px",
-                fontFamily: "Arial",
+              .text(W / 2, 178, "POINTS", {
+                fontSize: "12px",
+                fontFamily: "monospace",
                 color: "#888",
               })
               .setOrigin(0.5);
-          });
 
-          const btn = this.add
-            .text(W / 2, 420, "[ EXPLORE AGAIN ]", {
-              fontSize: "22px",
-              fontFamily: "monospace",
-              fontStyle: "bold",
-              color: "#ff8844",
-              padding: { x: 20, y: 10 },
-              backgroundColor: "rgba(255,120,60,0.1)",
-            })
-            .setOrigin(0.5)
-            .setInteractive({ useHandCursor: true });
-          btn.on("pointerover", () =>
-            btn.setStyle({ backgroundColor: "rgba(255,120,60,0.25)" }),
-          );
-          btn.on("pointerout", () =>
-            btn.setStyle({ backgroundColor: "rgba(255,120,60,0.1)" }),
-          );
-          btn.on("pointerdown", () => this.scene.start("Title"));
+            let grade, gc;
+            if (pct >= 90) {
+              grade = "S RANK — y=kx MASTER";
+              gc = "#ffcc33";
+            } else if (pct >= 75) {
+              grade = "A RANK — Pathfinder";
+              gc = "#00e08a";
+            } else if (pct >= 60) {
+              grade = "B RANK — Navigator";
+              gc = "#70ddff";
+            } else {
+              grade = "KEEP DRIVING THE LINE";
+              gc = "#ff8844";
+            }
+            this.add
+              .text(W / 2, 212, grade, {
+                fontSize: "18px",
+                fontFamily: "monospace",
+                fontStyle: "bold",
+                color: gc,
+              })
+              .setOrigin(0.5);
 
-          this.add
-            .text(
-              W / 2,
-              500,
-              "6.EE.C.9 -- Variables, Tables, Equations, Graphs",
-              { fontSize: "12px", fontFamily: "Arial", color: "#665544" },
-            )
-            .setOrigin(0.5);
+            [
+              { l: "Cells on-line", v: this.correct + "/" + this.attempted },
+              { l: "Accuracy", v: pct + "%" },
+              { l: "Best Streak", v: String(this.bestStreak) },
+              { l: "Sectors", v: this.sectorsCleared + "/" + this.totalRounds },
+            ].forEach((s, i) => {
+              const x = W / 2 - 180 + i * 120;
+              this.add
+                .rectangle(x, 290, 105, 64, 0x112233, 0.85)
+                .setStrokeStyle(1, C.stroke);
+              this.add
+                .text(x, 278, s.v, {
+                  fontSize: "20px",
+                  fontFamily: "monospace",
+                  fontStyle: "bold",
+                  color: "#70ddff",
+                })
+                .setOrigin(0.5);
+              this.add
+                .text(x, 302, s.l, {
+                  fontSize: "10px",
+                  fontFamily: "Arial",
+                  color: "#999",
+                })
+                .setOrigin(0.5);
+            });
+
+            this.add
+              .text(
+                W / 2,
+                362,
+                "You proved y = k·x by DRIVING it: every claimed cell made y equal k times x.",
+                {
+                  fontSize: "12.5px",
+                  fontFamily: "Arial",
+                  color: "#bcd0e8",
+                  align: "center",
+                  wordWrap: { width: 560 },
+                },
+              )
+              .setOrigin(0.5);
+
+            const mkBtn = (x, label, col, txtCol, cb) => {
+              const b = this.add
+                .rectangle(x, 430, 220, 52, col)
+                .setStrokeStyle(2, 0x000000, 0.2)
+                .setInteractive({ useHandCursor: true });
+              this.add
+                .text(x, 430, label, {
+                  fontSize: "18px",
+                  fontFamily: "monospace",
+                  fontStyle: "bold",
+                  color: txtCol,
+                })
+                .setOrigin(0.5);
+              b.on("pointerover", () => b.setScale(1.05));
+              b.on("pointerout", () => b.setScale(1));
+              b.on("pointerdown", () => {
+                ensureAudio();
+                sfxClick();
+                cb();
+              });
+              return b;
+            };
+            mkBtn(W / 2 - 125, "DRIVE AGAIN", 0xf6a83a, "#1a0d05", () =>
+              this.scene.start("Explore", { tier: this.tier }),
+            );
+            mkBtn(W / 2 + 125, "CHANGE LEVEL", 0x33405a, "#ffffff", () =>
+              this.scene.start("Title"),
+            );
+
+            this.add
+              .text(
+                W / 2,
+                510,
+                "6.EE.C.9 — y = kx relationships, tables & graphs",
+                {
+                  fontSize: "12px",
+                  fontFamily: "Arial",
+                  color: "#665544",
+                },
+              )
+              .setOrigin(0.5);
+          }
         }
-      }
 
-      const config = {
-        type: Phaser.AUTO,
-        width: W,
-        height: H,
-        parent: "game-container",
-        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        physics: {
-          default: "arcade",
-          arcade: { gravity: { y: 0 }, debug: false },
-        },
-        scene: [BootScene, TitleScene, ExploreScene, ResultsScene],
-        backgroundColor: "#06111d",
-      };
-      new Phaser.Game(config);
+        // ─── BOOT ───
+        const config = {
+          type: Phaser.AUTO,
+          width: W,
+          height: H,
+          parent: "game-container",
+          scale: {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH,
+          },
+          backgroundColor: "#06111d",
+          scene: [BootScene, TitleScene, ExploreScene, ResultsScene],
+        };
+        new Phaser.Game(config);
+      })();
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
 </html>

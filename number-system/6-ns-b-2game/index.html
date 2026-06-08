@@ -42,9 +42,9 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <div
       id="game-container"
@@ -52,8 +52,10 @@
       aria-label="Asteroid Miner — a Grade 6 math game for dividing multi-digit numbers (6.NS.B.2)."
     >
       <p class="sr-only">
-        Asteroid Miner is an interactive math game. Solve multi-digit division
-        problems to mine asteroids and pick the correct answer. Play with touch,
+        Asteroid Miner is an interactive math game. You run a long-division
+        mining rig: for each place value you set how many times the divisor
+        fits, and the rig live-subtracts the partial product and brings the next
+        digit down, so you build the quotient digit by digit. Play with touch,
         mouse, or keyboard.
       </p>
     </div>
@@ -78,19 +80,29 @@
       "use strict";
       (() => {
         /* ============================================================
-   ASTEROID MINER — 6.NS.B.2
-   Fluently divide multi-digit numbers.
-   Mine asteroids by computing divisions, collect gems.
+   ASTEROID MINER — 6.NS.B.2  (Fluently divide multi-digit numbers)
+
+   THE MATH IS THE MECHANIC — "Place-Value Mining Rig".
+   You ENACT long division, you do not recognize it. The dividend sits
+   under the bracket, the divisor outside. Working LEFT to RIGHT, for
+   each place you set how many times the divisor fits (the quotient
+   digit) with a dial / +- / drag. The rig live-subtracts the partial
+   product (digit x divisor) and brings the next digit down, exposing
+   the running remainder. Over-estimate and the rock OVERFLOWS RED
+   (partial product > the value you are dividing). Under-estimate and
+   GLOWING ORE is left behind (remainder >= divisor — "you can fit
+   more"). The quotient is BUILT digit by digit; the round only finishes
+   when every place is right and the final remainder is correct. There
+   is no A/B/C/D and the quotient is never shown.
    ============================================================ */
 
-        // --- Audio ---
+        // ---------- Audio ----------
         let audioCtx = null;
         function getAudio() {
           if (!audioCtx)
             try {
-              audioCtx = new (
-                window.AudioContext || window.webkitAudioContext
-              )();
+              audioCtx = new (window.AudioContext ||
+                window.webkitAudioContext)();
             } catch (e) {}
           return audioCtx;
         }
@@ -109,240 +121,190 @@
           o.start();
           o.stop(c.currentTime + d + 0.01);
         }
-        function sfxMine() {
-          playTone(440, 0.1, "square", 0.03);
-          setTimeout(() => playTone(660, 0.12, "square", 0.03), 80);
-          setTimeout(() => playTone(880, 0.15, "triangle", 0.04), 160);
-        }
-        function sfxWrong() {
-          playTone(180, 0.15, "sawtooth", 0.03);
-          setTimeout(() => playTone(140, 0.2, "sawtooth", 0.03), 100);
-        }
-        function sfxGem() {
-          playTone(1200, 0.1, "sine", 0.03);
-          setTimeout(() => playTone(1400, 0.08), 60);
-        }
-        function sfxExplosion() {
-          playTone(80, 0.3, "sawtooth", 0.04);
-        }
-        function sfxLevelUp() {
+        const sfxTick = () => playTone(560, 0.05, "square", 0.025);
+        const sfxLock = () => {
+          playTone(440, 0.08, "square", 0.03);
+          setTimeout(() => playTone(720, 0.1, "triangle", 0.03), 70);
+        };
+        const sfxOver = () => playTone(150, 0.18, "sawtooth", 0.035);
+        const sfxOre = () => playTone(330, 0.12, "sine", 0.03);
+        const sfxWin = () => {
+          playTone(523, 0.12, "square", 0.035);
+          setTimeout(() => playTone(659, 0.12, "square", 0.035), 110);
+          setTimeout(() => playTone(880, 0.18, "triangle", 0.04), 230);
+        };
+        const sfxLevelUp = () =>
           [440, 554, 659, 880].forEach((f, i) =>
             setTimeout(() => playTone(f, 0.15, "sine", 0.04), i * 90),
           );
-        }
-        function sfxLaser() {
+        const sfxLaser = () => {
           playTone(900, 0.06, "square", 0.03);
           setTimeout(() => playTone(600, 0.08, "square", 0.02), 50);
-        }
+        };
 
-        // --- Math ---
+        // ---------- Helpers ----------
         function rand(a, b) {
           return Math.floor(Math.random() * (b - a + 1)) + a;
         }
         function pick(a) {
           return a[rand(0, a.length - 1)];
         }
-        function shuffle(a) {
-          const r = [...a];
-          for (let i = r.length - 1; i > 0; i--) {
-            const j = rand(0, i);
-            [r[i], r[j]] = [r[j], r[i]];
-          }
-          return r;
-        }
 
-        function generateDivision(level) {
-          let dividend, divisor, quotient;
-          if (level <= 2) {
-            // 2-digit ÷ 1-digit
-            divisor = rand(2, 9);
-            quotient = rand(10, 99);
-            dividend = divisor * quotient;
-          } else if (level <= 4) {
-            // 3-digit ÷ 1-digit
-            divisor = rand(3, 9);
-            quotient = rand(100, 999);
-            dividend = divisor * quotient;
-            // Sometimes make it simpler
-            if (Math.random() > 0.5) {
-              quotient = rand(20, 300);
-              dividend = divisor * quotient;
-            }
-          } else {
-            // 4-digit ÷ 1-digit or 2-digit
-            if (Math.random() > 0.4) {
-              divisor = rand(4, 9);
-              quotient = rand(100, 999);
-            } else {
-              divisor = rand(11, 25);
-              quotient = rand(10, 200);
-            }
-            dividend = divisor * quotient;
-          }
+        // ============================================================
+        // PROBLEM GENERATOR  +  digit-by-digit long-division solver.
+        // The solver is the SAME logic the game enforces, so generating
+        // a problem and verifying it walk identical steps.
+        // ============================================================
 
-          const stem = dividend.toLocaleString() + " ÷ " + divisor;
-          const answer = quotient;
-
-          // Generate wrong choices
-          const wrongs = new Set();
-          wrongs.add(answer + rand(1, 10));
-          wrongs.add(Math.max(1, answer - rand(1, 10)));
-          wrongs.add(answer + divisor);
-          wrongs.add(Math.max(1, answer - divisor));
-          // Place-value error
-          if (answer >= 100) wrongs.add(Math.floor(answer / 10) * 10);
-          wrongs.add(answer * 10);
-          wrongs.delete(answer);
-
-          const wrongArr = [...wrongs]
-            .filter((w) => w > 0 && w !== answer)
-            .slice(0, 3);
-          while (wrongArr.length < 3) wrongArr.push(answer + rand(5, 50));
-
-          const choices = shuffle([
-            { text: String(answer), correct: true },
-            ...wrongArr
-              .slice(0, 3)
-              .map((w) => ({ text: String(w), correct: false })),
-          ]);
-
-          // Build worked example steps
+        // Run the standard long-division algorithm and return the list
+        // of per-place steps. Each step records: the digit brought into
+        // play, the "working value" being divided at that place, the
+        // correct quotient digit, the partial product, and the carry
+        // (remainder) handed to the next place. This is the ground truth.
+        function solveLongDivision(dividend, divisor) {
+          const digits = String(dividend).split("").map(Number);
           const steps = [];
-          const dStr = String(dividend);
-          steps.push("Start: " + stem);
-          if (dStr.length >= 3) {
-            const h = parseInt(dStr.substring(0, dStr.length - 1));
-            const qh = Math.floor(h / divisor);
-            steps.push(
-              h +
-                " ÷ " +
-                divisor +
-                " = " +
-                qh +
-                " (with remainder " +
-                (h - qh * divisor) +
-                ")",
-            );
+          let carry = 0;
+          for (let i = 0; i < digits.length; i++) {
+            const working = carry * 10 + digits[i]; // value to divide here
+            const q = Math.floor(working / divisor); // correct quotient digit
+            const product = q * divisor;
+            carry = working - product; // remainder -> next place
+            steps.push({
+              place: i,
+              broughtDown: digits[i],
+              working,
+              digit: q,
+              product,
+              remainder: carry,
+            });
           }
-          steps.push("Final quotient: " + answer);
-          steps.push("Check: " + answer + " × " + divisor + " = " + dividend);
-
+          const quotient = steps.map((s) => s.digit).join("");
           return {
-            dividend,
-            divisor,
-            quotient: answer,
-            stem,
-            choices,
             steps,
-            hint:
-              "Divide place by place. " +
-              divisor +
-              " goes into " +
-              dividend +
-              " = " +
-              answer,
+            quotient: parseInt(quotient, 10),
+            remainder: carry,
           };
         }
 
-        // --- Phaser ---
+        // Build a problem for the given level. Level 1 (tier 1) = support:
+        // 2-digit / 1-digit, no remainder. Level 2 (tier 2) = challenge:
+        // 3-4 digit / 1-2 digit, remainders allowed.
+        // Every generated problem is verified: its solver steps must
+        // reconstruct the true quotient and remainder, every quotient
+        // digit is 0..9, and the partial products subtract cleanly.
+        function makeProblem(tier, level) {
+          for (let tries = 0; tries < 200; tries++) {
+            let dividend, divisor;
+            if (tier === 1) {
+              // Support: 2-digit / 1-digit, exact (no remainder).
+              divisor = rand(2, 9);
+              const quotient = rand(10, 99);
+              dividend = divisor * quotient; // guarantees no remainder
+              if (dividend > 99) continue; // keep dividend 2-digit
+            } else {
+              // Challenge: scale digits with level, remainders welcome.
+              if (level <= 2) {
+                divisor = rand(3, 9);
+                dividend = rand(100, 999);
+              } else if (level <= 4) {
+                divisor = Math.random() < 0.5 ? rand(4, 9) : rand(11, 25);
+                dividend = rand(100, 1999);
+              } else {
+                divisor = Math.random() < 0.4 ? rand(6, 9) : rand(11, 39);
+                dividend = rand(1000, 9999);
+              }
+            }
+            const sol = solveLongDivision(dividend, divisor);
+            // Validity gate: reconstruct & range-check every digit.
+            if (!isSolvable(dividend, divisor, sol)) continue;
+            // Support tier must stay remainder-free and 2-place.
+            if (tier === 1 && (sol.remainder !== 0 || sol.steps.length !== 2))
+              continue;
+            return {
+              dividend,
+              divisor,
+              steps: sol.steps,
+              trueQuotient: sol.quotient,
+              trueRemainder: sol.remainder,
+            };
+          }
+          // Deterministic fallback (always valid) if RNG was unlucky.
+          const divisor = 4,
+            dividend = tier === 1 ? 48 : 852;
+          const sol = solveLongDivision(dividend, divisor);
+          return {
+            dividend,
+            divisor,
+            steps: sol.steps,
+            trueQuotient: sol.quotient,
+            trueRemainder: sol.remainder,
+          };
+        }
+
+        // Independent verifier used by the generator AND the test harness.
+        function isSolvable(dividend, divisor, sol) {
+          if (divisor < 2) return false;
+          let carry = 0;
+          const digits = String(dividend).split("").map(Number);
+          if (sol.steps.length !== digits.length) return false;
+          for (let i = 0; i < digits.length; i++) {
+            const working = carry * 10 + digits[i];
+            const q = Math.floor(working / divisor);
+            if (q < 0 || q > 9) return false; // each place must be a single digit
+            const product = q * divisor;
+            if (product > working) return false; // partial product cannot exceed value
+            const rem = working - product;
+            if (rem >= divisor) return false; // remainder must be < divisor
+            const s = sol.steps[i];
+            if (
+              s.digit !== q ||
+              s.product !== product ||
+              s.remainder !== rem ||
+              s.working !== working
+            )
+              return false;
+            carry = rem;
+          }
+          // Reconstruction must equal quotient * divisor + remainder.
+          if (sol.quotient * divisor + carry !== dividend) return false;
+          if (sol.remainder !== carry) return false;
+          return true;
+        }
+
+        // Expose for the offline sim harness (no effect in the browser).
+        if (typeof module !== "undefined" && module.exports) {
+          module.exports = { solveLongDivision, makeProblem, isSolvable };
+        }
+
+        // ---------- Phaser config ----------
         const W = 960,
           H = 640;
+        const COL = {
+          // Colourblind-safe: red/green never carry meaning alone — every
+          // state also has a label, icon, or shape change.
+          good: 0x2bb673,
+          goodHex: "#2bb673",
+          bad: 0xe8533a,
+          badHex: "#e8533a",
+          ore: 0x46b3ff,
+          oreHex: "#46b3ff",
+          gold: 0xfbbf24,
+          goldHex: "#fbbf24",
+          ink: "#ecfbff",
+          dim: "#94a3b8",
+          panel: 0x111827,
+          line: 0x61dafb,
+        };
         const config = {
           type: Phaser.AUTO,
           parent: "game-container",
           width: W,
           height: H,
           backgroundColor: "#05050f",
-          scale: {
-            mode: Phaser.Scale.FIT,
-            autoCenter: Phaser.Scale.CENTER_BOTH,
-          },
-          physics: {
-            default: "arcade",
-            arcade: { gravity: { y: 0 }, debug: false },
-          },
+          scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
           scene: [],
         };
-
-        // ==================== BOOT ====================
-        class BootScene extends Phaser.Scene {
-          constructor() {
-            super("Boot");
-          }
-          create() {
-            const g = this.make.graphics({ add: false });
-
-            // Ship
-            g.clear();
-            g.fillStyle(0x61dafb);
-            g.fillTriangle(24, 0, 0, 20, 24, 14);
-            g.fillTriangle(24, 0, 48, 20, 24, 14);
-            g.fillStyle(0x38bdf8);
-            g.fillRect(10, 14, 28, 10);
-            g.fillStyle(0xffd166);
-            g.fillCircle(24, 10, 4);
-            g.generateTexture("ship", 48, 24);
-
-            // Asteroid
-            g.clear();
-            g.fillStyle(0x4a5568);
-            g.fillCircle(24, 24, 24);
-            g.fillStyle(0x6b7280);
-            g.fillCircle(16, 14, 6);
-            g.fillCircle(30, 20, 4);
-            g.fillCircle(20, 32, 5);
-            g.generateTexture("asteroid", 48, 48);
-
-            // Small asteroid
-            g.clear();
-            g.fillStyle(0x6b7280);
-            g.fillCircle(12, 12, 12);
-            g.fillStyle(0x9ca3af);
-            g.fillCircle(8, 8, 3);
-            g.generateTexture("asteroid_sm", 24, 24);
-
-            // Gem
-            g.clear();
-            g.fillStyle(0xfbbf24);
-            g.fillTriangle(8, 0, 0, 12, 16, 12);
-            g.fillTriangle(0, 12, 16, 12, 8, 20);
-            g.generateTexture("gem", 16, 20);
-
-            // Laser
-            g.clear();
-            g.fillStyle(0x61dafb);
-            g.fillRect(0, 0, 20, 3);
-            g.generateTexture("laser", 20, 3);
-
-            // Star particle
-            g.clear();
-            g.fillStyle(0xffffff);
-            g.fillCircle(2, 2, 2);
-            g.generateTexture("star", 4, 4);
-
-            // Explosion particle
-            g.clear();
-            g.fillStyle(0xfb923c);
-            g.fillCircle(4, 4, 4);
-            g.generateTexture("explosion", 8, 8);
-
-            // Health bar bg
-            g.clear();
-            g.fillStyle(0x1a1a2e);
-            g.fillRoundedRect(0, 0, 200, 16, 6);
-            g.generateTexture("hpbg", 200, 16);
-
-            // Pod answer
-            g.clear();
-            g.lineStyle(2, 0x61dafb, 0.5);
-            g.fillStyle(0x111827, 0.9);
-            g.fillRoundedRect(0, 0, 80, 40, 10);
-            g.strokeRoundedRect(0, 0, 80, 40, 10);
-            g.generateTexture("pod", 80, 40);
-
-            this.scene.start("Title");
-          }
-        }
 
         // ==================== TITLE ====================
         class TitleScene extends Phaser.Scene {
@@ -350,14 +312,152 @@
             super("Title");
           }
           create() {
-            // Starfield
+            this.starfield();
+
+            this.add
+              .text(W / 2, 70, "ASTEROID MINER", {
+                fontSize: "48px",
+                fontStyle: "bold",
+                color: COL.goldHex,
+                stroke: "#78350f",
+                strokeThickness: 4,
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 112, "6.NS.B.2 — Fluently Divide Multi-Digit Numbers", {
+                fontSize: "15px",
+                color: COL.dim,
+              })
+              .setOrigin(0.5);
+
+            // How-to card
+            const card = this.add
+              .rectangle(W / 2, 250, 720, 150, COL.panel, 0.85)
+              .setStrokeStyle(1, COL.line, 0.35);
+            this.add
+              .text(W / 2, 195, "Run the Place-Value Mining Rig", {
+                fontSize: "18px",
+                fontStyle: "bold",
+                color: COL.ink,
+              })
+              .setOrigin(0.5);
+            const how = [
+              "Work LEFT to RIGHT through the dividend, one place at a time.",
+              "Set how many times the divisor FITS — the rig subtracts it and drops the next digit.",
+              "Too big? The rock overflows RED.   Too small? Glowing ORE is left behind.",
+              "Build the whole quotient to clear the asteroid. No multiple choice — you make each digit.",
+            ];
+            how.forEach((t, i) =>
+              this.add
+                .text(W / 2, 228 + i * 24, t, {
+                  fontSize: "13px",
+                  color: COL.dim,
+                  align: "center",
+                })
+                .setOrigin(0.5),
+            );
+
+            // Level cards (real difficulty, not cosmetic)
+            const tiers = [
+              {
+                t: 1,
+                label: "Level 1",
+                sub: "Support",
+                desc:
+                  "2-digit ÷ 1-digit\nNo remainders\nMultiplication table shown",
+                col: COL.good,
+              },
+              {
+                t: 2,
+                label: "Level 2",
+                sub: "Challenge",
+                desc:
+                  "3-4 digit ÷ 1-2 digit\nRemainders\nLess help",
+                col: COL.gold,
+              },
+            ];
+            tiers.forEach((d, i) => {
+              const x = W / 2 + (i === 0 ? -150 : 150),
+                y = 410;
+              const c = this.add
+                .rectangle(x, y, 250, 150, COL.panel, 0.9)
+                .setStrokeStyle(2, 0x334155)
+                .setInteractive({ useHandCursor: true });
+              this.add
+                .text(x, y - 50, d.label, {
+                  fontSize: "26px",
+                  fontStyle: "bold",
+                  color: COL.ink,
+                })
+                .setOrigin(0.5);
+              this.add
+                .text(x, y - 22, d.sub, {
+                  fontSize: "15px",
+                  fontStyle: "bold",
+                  color: Phaser.Display.Color.IntegerToColor(d.col).rgba,
+                })
+                .setOrigin(0.5);
+              this.add
+                .text(x, y + 24, d.desc, {
+                  fontSize: "13px",
+                  color: COL.dim,
+                  align: "center",
+                  lineSpacing: 4,
+                })
+                .setOrigin(0.5);
+              c.on("pointerover", () => {
+                c.setStrokeStyle(2, d.col);
+                c.setScale(1.04);
+              });
+              c.on("pointerout", () => {
+                c.setStrokeStyle(2, 0x334155);
+                c.setScale(1);
+              });
+              c.on("pointerdown", () => {
+                getAudio();
+                sfxLaser();
+                this.cameras.main.fadeOut(350);
+                this.time.delayedCall(350, () =>
+                  this.scene.start("Game", { tier: d.t }),
+                );
+              });
+            });
+
+            this.add
+              .text(
+                W / 2,
+                540,
+                "Touch / mouse: tap +1 and −1 on the digit dial, then LOCK.   " +
+                  "Keyboard: ↑↓ or +/− set the digit, Enter locks, H for a hint.",
+                { fontSize: "12px", color: COL.dim, align: "center" },
+              )
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 575, "Tap a level to start (key 1 or 2)", {
+                fontSize: "13px",
+                fontStyle: "bold",
+                color: COL.goldHex,
+              })
+              .setOrigin(0.5);
+
+            this.input.keyboard.on("keydown-ONE", () => this.go(1));
+            this.input.keyboard.on("keydown-TWO", () => this.go(2));
+            this.cameras.main.fadeIn(400);
+          }
+          go(t) {
+            getAudio();
+            sfxLaser();
+            this.cameras.main.fadeOut(350);
+            this.time.delayedCall(350, () => this.scene.start("Game", { tier: t }));
+          }
+          starfield() {
             for (let i = 0; i < 120; i++) {
               const s = this.add.circle(
                 rand(0, W),
                 rand(0, H),
-                Math.random() * 1.5 + 0.3,
+                Math.random() * 1.4 + 0.3,
                 0xffffff,
-                0.3 + Math.random() * 0.5,
+                0.25 + Math.random() * 0.5,
               );
               this.tweens.add({
                 targets: s,
@@ -367,144 +467,6 @@
                 repeat: -1,
               });
             }
-
-            // Nebula glow
-            const neb = this.add.ellipse(
-              W * 0.3,
-              H * 0.4,
-              400,
-              250,
-              0x4c1d95,
-              0.08,
-            );
-            this.tweens.add({
-              targets: neb,
-              scaleX: 1.1,
-              scaleY: 1.1,
-              alpha: 0.04,
-              duration: 4000,
-              yoyo: true,
-              repeat: -1,
-            });
-            const neb2 = this.add.ellipse(
-              W * 0.7,
-              H * 0.6,
-              300,
-              200,
-              0x1e40af,
-              0.06,
-            );
-            this.tweens.add({
-              targets: neb2,
-              scaleX: 1.1,
-              alpha: 0.03,
-              duration: 3500,
-              yoyo: true,
-              repeat: -1,
-            });
-
-            this.add
-              .text(W / 2, 100, "ASTEROID\nMINER", {
-                fontSize: "56px",
-                fontStyle: "bold",
-                color: "#fbbf24",
-                align: "center",
-                lineSpacing: 6,
-                stroke: "#78350f",
-                strokeThickness: 4,
-              })
-              .setOrigin(0.5);
-
-            this.add
-              .text(
-                W / 2,
-                195,
-                "6.NS.B.2 — Fluently Divide Multi-Digit Numbers",
-                { fontSize: "15px", color: "#94a3b8" },
-              )
-              .setOrigin(0.5);
-
-            // Floating asteroids
-            for (let i = 0; i < 6; i++) {
-              const a = this.add
-                .image(rand(100, W - 100), rand(240, 380), "asteroid")
-                .setScale(0.8 + Math.random() * 0.8)
-                .setAlpha(0.6)
-                .setAngle(rand(0, 360));
-              this.tweens.add({
-                targets: a,
-                y: a.y + rand(-15, 15),
-                x: a.x + rand(-10, 10),
-                angle: a.angle + rand(-30, 30),
-                duration: 3000 + rand(0, 2000),
-                yoyo: true,
-                repeat: -1,
-                ease: "Sine.easeInOut",
-              });
-            }
-
-            // Ship
-            const ship = this.add.image(W / 2, 330, "ship").setScale(2.5);
-            this.tweens.add({
-              targets: ship,
-              y: 340,
-              duration: 2000,
-              yoyo: true,
-              repeat: -1,
-              ease: "Sine.easeInOut",
-            });
-
-            // Instructions
-            const lines = [
-              "Fly your ship and mine asteroids with division!",
-              "Each asteroid shows a division problem.",
-              "Fly into the correct answer to mine it.",
-              "Collect gems for bonus points.",
-              "Arrow keys / WASD / Touch to fly",
-            ];
-            lines.forEach((t, i) =>
-              this.add
-                .text(W / 2, 400 + i * 22, t, {
-                  fontSize: "13px",
-                  color: "#94a3b8",
-                })
-                .setOrigin(0.5),
-            );
-
-            // Start button
-            const btn = this.add
-              .rectangle(W / 2, 565, 200, 48, 0xfbbf24)
-              .setInteractive({ useHandCursor: true });
-            this.add
-              .text(W / 2, 565, "LAUNCH", {
-                fontSize: "20px",
-                fontStyle: "bold",
-                color: "#000",
-              })
-              .setOrigin(0.5);
-            btn.on("pointerover", () => btn.setFillStyle(0xfcd34d));
-            btn.on("pointerout", () => btn.setFillStyle(0xfbbf24));
-            btn.on("pointerdown", () => {
-              getAudio();
-              sfxLaser();
-              this.cameras.main.fadeOut(400);
-              this.time.delayedCall(400, () => this.scene.start("Game"));
-            });
-
-            this.input.keyboard.on("keydown-SPACE", () => {
-              getAudio();
-              sfxLaser();
-              this.cameras.main.fadeOut(400);
-              this.time.delayedCall(400, () => this.scene.start("Game"));
-            });
-            this.input.keyboard.on("keydown-ENTER", () => {
-              getAudio();
-              sfxLaser();
-              this.cameras.main.fadeOut(400);
-              this.time.delayedCall(400, () => this.scene.start("Game"));
-            });
-
-            this.cameras.main.fadeIn(400);
           }
         }
 
@@ -513,666 +475,744 @@
           constructor() {
             super("Game");
           }
+          init(data) {
+            this.tier = data && data.tier ? data.tier : 1;
+          }
 
           create() {
             this.cameras.main.fadeIn(300);
+            this.starLayer();
 
-            // State
+            // Run state
             this.score = 0;
-            this.combo = 0;
-            this.bestCombo = 0;
-            this.lives = 4;
+            this.streak = 0;
+            this.bestStreak = 0;
+            this.lives = this.tier === 1 ? 5 : 3;
             this.level = 1;
-            this.gems = 0;
-            this.questionsCorrect = 0;
-            this.questionsTotal = 0;
-            this.shield = 100;
-            this.currentQ = null;
-            this.answered = false;
-            this.scrollSpeed = 0.5;
+            this.solved = 0; // asteroids fully mined
+            this.placeErrors = 0; // wrong locks this round
+            this.goal = this.tier === 1 ? 8 : 10;
 
-            // Starfield background (parallax layers)
-            this.starLayers = [];
-            for (let layer = 0; layer < 3; layer++) {
-              const stars = [];
-              for (let i = 0; i < 40; i++) {
-                const s = this.add.circle(
-                  rand(0, W),
-                  rand(0, H),
-                  0.5 + layer * 0.4,
-                  0xffffff,
-                  0.2 + layer * 0.15,
-                );
-                s.setData("speed", 0.2 + layer * 0.3);
-                stars.push(s);
-              }
-              this.starLayers.push(stars);
-            }
+            // Geometry for the long-division frame
+            this.cellW = 54;
+            this.cellH = 60;
+            this.frameTop = 150;
+            this.frameLeft = 360;
 
-            // Nebula
-            this.add.ellipse(300, 200, 500, 300, 0x4c1d95, 0.04);
-            this.add.ellipse(700, 450, 400, 250, 0x1e3a5f, 0.04);
+            this.buildHUD();
+            this.buildDial();
+            this.bindKeys();
 
-            // Player ship
-            this.player = this.physics.add
-              .image(120, H / 2, "ship")
-              .setScale(1.6)
-              .setDepth(10);
-            this.player.setCollideWorldBounds(true);
-            this.player.body.setMaxVelocity(350, 350);
-            this.player.setDamping(true);
-            this.player.setDrag(0.9);
-
-            // Engine glow
-            this.engineGlow = this.add
-              .ellipse(0, 0, 30, 12, 0x61dafb, 0.25)
-              .setDepth(9);
-            this.tweens.add({
-              targets: this.engineGlow,
-              scaleX: 1.3,
-              alpha: 0.1,
-              duration: 300,
-              yoyo: true,
-              repeat: -1,
-            });
-
-            // Engine particles
-            this.engineParticles = this.add
-              .particles(0, 0, "star", {
-                follow: this.player,
-                followOffset: { x: -28, y: 0 },
-                lifespan: 400,
-                speedX: { min: -80, max: -40 },
-                speedY: { min: -10, max: 10 },
-                scale: { start: 0.8, end: 0 },
-                alpha: { start: 0.6, end: 0 },
-                tint: [0x61dafb, 0x38bdf8, 0x818cf8],
-                frequency: 40,
-                quantity: 1,
-              })
-              .setDepth(9);
-
-            // Groups
-            this.pods = this.physics.add.group();
-            this.asteroids = this.physics.add.group();
-            this.gemGroup = this.physics.add.group();
-            this.hazards = this.physics.add.group();
-
-            // HUD
-            this.createHUD();
-
-            // Controls
-            this.cursors = this.input.keyboard.createCursorKeys();
-            this.wasd = {
-              up: this.input.keyboard.addKey("W"),
-              down: this.input.keyboard.addKey("S"),
-              left: this.input.keyboard.addKey("A"),
-              right: this.input.keyboard.addKey("D"),
-            };
-
-            // Touch
-            this.touchTarget = null;
-            this.input.on("pointerdown", (p) => {
-              this.touchTarget = { x: p.worldX, y: p.worldY };
-            });
-            this.input.on("pointermove", (p) => {
-              if (p.isDown) this.touchTarget = { x: p.worldX, y: p.worldY };
-            });
-            this.input.on("pointerup", () => (this.touchTarget = null));
-
-            // Collisions
-            this.physics.add.overlap(
-              this.player,
-              this.pods,
-              (p, pod) => this.hitPod(pod),
-              null,
-              this,
-            );
-            this.physics.add.overlap(
-              this.player,
-              this.gemGroup,
-              (p, gem) => this.collectGem(gem),
-              null,
-              this,
-            );
-            this.physics.add.overlap(
-              this.player,
-              this.hazards,
-              (p, h) => this.hitHazard(h),
-              null,
-              this,
-            );
-
-            // Spawn question
-            this.nextQuestion();
-
-            // Floating debris spawner
-            this.time.addEvent({
-              delay: 2000,
-              callback: () => this.spawnDebris(),
-              loop: true,
-            });
-
-            // Gem spawner
-            this.time.addEvent({
-              delay: 4000,
-              callback: () => this.spawnGem(),
-              loop: true,
-            });
-
-            // Small hazard spawner
-            this.time.addEvent({
-              delay: 3000 + rand(0, 2000),
-              callback: () => this.spawnHazard(),
-              loop: true,
-            });
+            this.loadProblem();
           }
 
-          createHUD() {
-            const pad = 10;
-            // Score
-            this.add
-              .rectangle(80, pad + 16, 140, 32, 0x111827, 0.85)
-              .setStrokeStyle(1, 0xfbbf24, 0.3)
-              .setScrollFactor(0)
-              .setDepth(100);
+          // ---------- background ----------
+          starLayer() {
+            this.add.ellipse(280, 200, 460, 280, 0x4c1d95, 0.05);
+            this.add.ellipse(720, 460, 380, 240, 0x1e3a5f, 0.05);
+            this.stars = [];
+            for (let i = 0; i < 70; i++) {
+              const s = this.add.circle(
+                rand(0, W),
+                rand(0, H),
+                0.5 + Math.random(),
+                0xffffff,
+                0.2 + Math.random() * 0.4,
+              );
+              s.setData("sp", 0.15 + Math.random() * 0.5);
+              this.stars.push(s);
+            }
+          }
+
+          // ---------- HUD ----------
+          buildHUD() {
+            const chip = (x, w, c) =>
+              this.add
+                .rectangle(x, 26, w, 34, COL.panel, 0.85)
+                .setStrokeStyle(1, c, 0.35)
+                .setDepth(100);
+            chip(80, 150, COL.gold);
             this.scoreText = this.add
-              .text(80, pad + 16, "Score: 0", {
+              .text(80, 26, "Score: 0", {
                 fontSize: "15px",
                 fontStyle: "bold",
-                color: "#fbbf24",
+                color: COL.goldHex,
               })
               .setOrigin(0.5)
-              .setScrollFactor(0)
               .setDepth(101);
-
-            // Combo
-            this.add
-              .rectangle(220, pad + 16, 110, 32, 0x111827, 0.85)
-              .setStrokeStyle(1, 0xfb923c, 0.3)
-              .setScrollFactor(0)
-              .setDepth(100);
-            this.comboText = this.add
-              .text(220, pad + 16, "Combo: 0", {
-                fontSize: "15px",
-                fontStyle: "bold",
-                color: "#fb923c",
-              })
-              .setOrigin(0.5)
-              .setScrollFactor(0)
-              .setDepth(101);
-
-            // Level
-            this.add
-              .rectangle(345, pad + 16, 110, 32, 0x111827, 0.85)
-              .setStrokeStyle(1, 0xa78bfa, 0.3)
-              .setScrollFactor(0)
-              .setDepth(100);
+            chip(225, 120, COL.line);
             this.levelText = this.add
-              .text(345, pad + 16, "Level: 1", {
+              .text(225, 26, "Level: 1", {
                 fontSize: "15px",
                 fontStyle: "bold",
                 color: "#a78bfa",
               })
               .setOrigin(0.5)
-              .setScrollFactor(0)
               .setDepth(101);
-
-            // Gems
-            this.add
-              .rectangle(470, pad + 16, 110, 32, 0x111827, 0.85)
-              .setStrokeStyle(1, 0xfbbf24, 0.3)
-              .setScrollFactor(0)
-              .setDepth(100);
-            this.gemText = this.add
-              .text(470, pad + 16, "Gems: 0", {
+            chip(360, 130, COL.good);
+            this.solvedText = this.add
+              .text(360, 26, "Mined: 0/" + this.goal, {
                 fontSize: "15px",
                 fontStyle: "bold",
-                color: "#fbbf24",
+                color: COL.goodHex,
               })
               .setOrigin(0.5)
-              .setScrollFactor(0)
+              .setDepth(101);
+            this.livesText = this.add
+              .text(W - 20, 26, "", { fontSize: "18px" })
+              .setOrigin(1, 0.5)
               .setDepth(101);
 
-            // Shield bar
+            // Tier badge
             this.add
-              .rectangle(W - 110, pad + 16, 180, 32, 0x111827, 0.85)
-              .setStrokeStyle(1, 0x34d399, 0.3)
-              .setScrollFactor(0)
-              .setDepth(100);
-            this.shieldBar = this.add
-              .rectangle(W - 190, pad + 16, 0, 22, 0x34d399, 0.8)
-              .setOrigin(0, 0.5)
-              .setScrollFactor(0)
-              .setDepth(101);
-            this.shieldBar.width = 160;
-            this.shieldText = this.add
-              .text(W - 110, pad + 16, "Shield: 100%", {
-                fontSize: "13px",
-                fontStyle: "bold",
-                color: "#fff",
-              })
+              .text(
+                W / 2,
+                64,
+                this.tier === 1 ? "Level 1 · Support" : "Level 2 · Challenge",
+                { fontSize: "12px", color: COL.dim },
+              )
               .setOrigin(0.5)
-              .setScrollFactor(0)
-              .setDepth(102);
-
-            // Question panel
-            this.qPanel = this.add
-              .rectangle(W / 2, H - 44, W - 60, 68, 0x111827, 0.88)
-              .setStrokeStyle(1, 0x61dafb, 0.3)
-              .setScrollFactor(0)
-              .setDepth(100);
-            this.qText = this.add
-              .text(W / 2, H - 52, "", {
-                fontSize: "22px",
-                fontStyle: "bold",
-                color: "#fff",
-              })
-              .setOrigin(0.5)
-              .setScrollFactor(0)
-              .setDepth(101);
-            this.qHint = this.add
-              .text(W / 2, H - 30, "", { fontSize: "12px", color: "#94a3b8" })
-              .setOrigin(0.5)
-              .setScrollFactor(0)
               .setDepth(101);
 
-            // Feedback
-            this.feedbackText = this.add
-              .text(W / 2, H / 2, "", {
-                fontSize: "28px",
+            // Instruction / feedback line (nudges, never the answer)
+            this.coach = this.add
+              .text(W / 2, 96, "", {
+                fontSize: "16px",
                 fontStyle: "bold",
-                color: "#34d399",
+                color: COL.ink,
+                align: "center",
+                wordWrap: { width: W - 80 },
+              })
+              .setOrigin(0.5)
+              .setDepth(101);
+
+            // Big momentary feedback
+            this.flash = this.add
+              .text(W / 2, 300, "", {
+                fontSize: "30px",
+                fontStyle: "bold",
+                color: COL.goodHex,
                 stroke: "#000",
                 strokeThickness: 4,
               })
               .setOrigin(0.5)
-              .setScrollFactor(0)
-              .setDepth(102)
+              .setDepth(120)
               .setAlpha(0);
           }
 
-          nextQuestion() {
-            this.pods.clear(true, true);
-            this.answered = false;
+          // ---------- the digit dial (touch + keyboard) ----------
+          buildDial() {
+            const cx = 150,
+              cy = 430;
+            this.dialPanel = this.add
+              .rectangle(cx, cy, 240, 250, COL.panel, 0.9)
+              .setStrokeStyle(2, COL.line, 0.4);
+            this.add
+              .text(cx, cy - 108, "MINING DIAL", {
+                fontSize: "13px",
+                fontStyle: "bold",
+                color: COL.dim,
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(cx, cy - 88, "Times the divisor fits", {
+                fontSize: "11px",
+                color: COL.dim,
+              })
+              .setOrigin(0.5);
 
-            this.currentQ = generateDivision(this.level);
-            this.qText.setText(this.currentQ.stem);
-            this.qHint.setText("Fly into the correct quotient!");
+            // up
+            this.upBtn = this.bigBtn(cx, cy - 52, 70, 40, "+1  (↑)", () =>
+              this.bumpDigit(1),
+            );
+            // big read-out
+            this.dialText = this.add
+              .text(cx, cy + 4, "0", {
+                fontSize: "64px",
+                fontStyle: "bold",
+                color: COL.goldHex,
+              })
+              .setOrigin(0.5);
+            // down
+            this.downBtn = this.bigBtn(cx, cy + 58, 70, 40, "−1  (↓)", () =>
+              this.bumpDigit(-1),
+            );
+            // lock
+            this.lockBtn = this.add
+              .rectangle(cx, cy + 108, 200, 40, COL.good)
+              .setInteractive({ useHandCursor: true });
+            this.lockLbl = this.add
+              .text(cx, cy + 108, "⚒ LOCK DIGIT (Enter)", {
+                fontSize: "15px",
+                fontStyle: "bold",
+                color: "#04120b",
+              })
+              .setOrigin(0.5);
+            this.lockBtn.on("pointerover", () => this.lockBtn.setScale(1.04));
+            this.lockBtn.on("pointerout", () => this.lockBtn.setScale(1));
+            this.lockBtn.on("pointerdown", () => {
+              getAudio();
+              this.lockDigit();
+            });
 
-            // Spawn answer asteroids
-            const choices = this.currentQ.choices;
-            const startX = W * 0.35;
-            choices.forEach((c, i) => {
-              const x = startX + rand(80, 400);
-              const y = 70 + (i * (H - 220)) / choices.length + rand(-25, 25);
-
-              // Asteroid
-              const ast = this.add
-                .image(x, y, "asteroid")
-                .setScale(1.3 + Math.random() * 0.3)
-                .setDepth(5);
-              this.tweens.add({
-                targets: ast,
-                angle: ast.angle + 360,
-                duration: 8000 + rand(0, 4000),
-                repeat: -1,
-              });
-
-              // Pod overlay
-              const pod = this.physics.add
-                .image(x, y, "pod")
-                .setScale(1.1)
-                .setDepth(6)
-                .setAlpha(0.9);
-              pod.setData("correct", c.correct);
-              pod.setData("text", c.text);
-              pod.setData("asteroid", ast);
-              pod.body.setImmovable(true);
-
-              const label = this.add
-                .text(x, y, c.text, {
-                  fontSize: "17px",
-                  fontStyle: "bold",
-                  color: "#ecfbff",
-                })
-                .setOrigin(0.5)
-                .setDepth(7);
-              pod.setData("label", label);
-
-              // Bob
-              this.tweens.add({
-                targets: [pod, label, ast],
-                y: y + 10,
-                duration: 1800 + rand(0, 600),
-                yoyo: true,
-                repeat: -1,
-                ease: "Sine.easeInOut",
-                delay: rand(0, 400),
-              });
-
-              this.pods.add(pod);
+            // hint button
+            this.hintBtn = this.add
+              .rectangle(cx, cy + 152, 200, 30, 0x1f2937)
+              .setStrokeStyle(1, COL.gold, 0.5)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(cx, cy + 152, "💡 Hint (H)", {
+                fontSize: "13px",
+                fontStyle: "bold",
+                color: COL.goldHex,
+              })
+              .setOrigin(0.5);
+            this.hintBtn.on("pointerdown", () => {
+              getAudio();
+              this.showHint();
             });
           }
 
-          hitPod(pod) {
-            if (this.answered) return;
-            this.answered = true;
+          bigBtn(x, y, w, h, label, cb) {
+            const r = this.add
+              .rectangle(x, y, w, h, 0x243042)
+              .setStrokeStyle(1, COL.line, 0.5)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(x, y, label, {
+                fontSize: "15px",
+                fontStyle: "bold",
+                color: COL.ink,
+              })
+              .setOrigin(0.5);
+            r.on("pointerover", () => r.setScale(1.05));
+            r.on("pointerout", () => r.setScale(1));
+            r.on("pointerdown", () => {
+              getAudio();
+              cb();
+            });
+            return r;
+          }
 
-            const correct = pod.getData("correct");
-            const label = pod.getData("label");
-            const ast = pod.getData("asteroid");
+          bindKeys() {
+            this.input.keyboard.on("keydown", (e) => {
+              const k = e.key;
+              if (k === "ArrowUp" || k === "+" || k === "=") {
+                e.preventDefault && e.preventDefault();
+                this.bumpDigit(1);
+              } else if (k === "ArrowDown" || k === "-" || k === "_") {
+                e.preventDefault && e.preventDefault();
+                this.bumpDigit(-1);
+              } else if (k === "Enter") {
+                e.preventDefault && e.preventDefault();
+                this.lockDigit();
+              } else if (k.toLowerCase() === "h") {
+                this.showHint();
+              } else if (k >= "0" && k <= "9") {
+                this.setDigit(parseInt(k, 10));
+              }
+            });
+          }
 
-            if (correct) {
-              sfxMine();
-              this.combo++;
-              this.bestCombo = Math.max(this.bestCombo, this.combo);
-              this.questionsCorrect++;
-              this.questionsTotal++;
+          // ---------- load a problem & draw the long-division frame ----------
+          loadProblem() {
+            this.problem = makeProblem(this.tier, this.level);
+            this.digits = String(this.problem.dividend).split("").map(Number);
+            this.stepIx = 0; // which place we are on
+            this.carry = 0; // remainder carried down so far
+            this.dialDigit = 0; // current dial value
+            this.placeErrors = 0;
+            this.quotientDigits = []; // built so far
+            this.locked = false; // round done?
 
-              const pts = 120 + this.combo * 25 + this.level * 40;
-              this.score += pts;
+            this.coach.setText(
+              "Divide left to right. How many times does " +
+                this.problem.divisor +
+                " fit into the first chunk?",
+            );
 
-              // Explosion effect
+            this.drawFrame();
+            this.updateDial();
+            this.updateHUD();
+            this.divTable();
+          }
+
+          // Asteroid + the classic bracket frame
+          drawFrame() {
+            if (this.frame) this.frame.destroy(true);
+            this.frame = this.add.container(0, 0).setDepth(20);
+
+            const n = this.digits.length;
+            const left = W / 2 - (n * this.cellW) / 2 + 20;
+            this.frameLeft = left;
+            const top = this.frameTop;
+
+            // Divisor (outside the bracket) drawn as a glowing core asteroid
+            const divX = left - 90;
+            const ast = this.add
+              .circle(divX, top + this.cellH / 2 + 14, 34, 0x3a4458)
+              .setStrokeStyle(3, COL.gold, 0.8);
+            const divLbl = this.add
+              .text(divX, top + this.cellH / 2 + 14, String(this.problem.divisor), {
+                fontSize: "30px",
+                fontStyle: "bold",
+                color: COL.goldHex,
+              })
+              .setOrigin(0.5);
+            this.add.existing(ast);
+            this.frame.add([ast, divLbl]);
+            this.frame.add(
               this.add
-                .particles(pod.x, pod.y, "explosion", {
-                  speed: { min: 80, max: 250 },
-                  lifespan: 700,
-                  scale: { start: 1.2, end: 0 },
-                  alpha: { start: 1, end: 0 },
-                  quantity: 20,
-                  tint: [0xfbbf24, 0xfb923c, 0xef4444],
-                  emitting: false,
+                .text(divX, top - 24, "DIVISOR", {
+                  fontSize: "11px",
+                  color: COL.dim,
                 })
-                .explode(20);
+                .setOrigin(0.5),
+            );
 
-              if (ast) ast.destroy();
-              pod.setTint(0x34d399);
-              if (label) label.setColor("#34d399");
+            // Bracket: vertical bar + horizontal bar over the dividend
+            const g = this.add.graphics();
+            g.lineStyle(3, 0x9fb4c8, 1);
+            const bx = left - 30,
+              by = top - 6,
+              bw = n * this.cellW + 30;
+            g.beginPath();
+            g.moveTo(bx, top + this.cellH + 8);
+            g.lineTo(bx, by);
+            g.lineTo(bx + bw, by);
+            g.strokePath();
+            this.frame.add(g);
 
-              this.showFeedback("MINED! +" + pts, 0x34d399);
-              this.cameras.main.shake(150, 0.006);
-              sfxExplosion();
+            // Quotient row (above the bar) — one slot per place, filled as
+            // the player locks each digit. Starts EMPTY (no giveaway).
+            this.quotSlots = [];
+            for (let i = 0; i < n; i++) {
+              const x = left + i * this.cellW + this.cellW / 2;
+              const slot = this.add
+                .rectangle(x, by - 30, this.cellW - 8, 44, 0x0c1322)
+                .setStrokeStyle(1, 0x334155, 0.8);
+              const t = this.add
+                .text(x, by - 30, "", {
+                  fontSize: "32px",
+                  fontStyle: "bold",
+                  color: COL.goodHex,
+                })
+                .setOrigin(0.5);
+              this.frame.add([slot, t]);
+              this.quotSlots.push({ slot, t });
+            }
+            this.frame.add(
+              this.add
+                .text(left + bw / 2 - 15, by - 64, "QUOTIENT (you build this)", {
+                  fontSize: "11px",
+                  color: COL.dim,
+                })
+                .setOrigin(0.5),
+            );
 
-              // Drop gems
-              for (let i = 0; i < rand(2, 4); i++) {
-                const gem = this.physics.add
-                  .image(pod.x + rand(-30, 30), pod.y + rand(-20, 20), "gem")
-                  .setScale(1.2)
-                  .setDepth(5);
-                gem.body.velocity.x = rand(-100, 100);
-                gem.body.velocity.y = rand(-100, 100);
-                gem.body.drag.x = 80;
-                gem.body.drag.y = 80;
-                this.gemGroup.add(gem);
-              }
+            // Dividend digits inside, drawn as asteroid cells.
+            this.cells = [];
+            for (let i = 0; i < n; i++) {
+              const x = left + i * this.cellW + this.cellW / 2;
+              const y = top + this.cellH / 2;
+              const rock = this.add
+                .circle(x, y, 24, 0x4a5568)
+                .setStrokeStyle(2, 0x2b3340);
+              const t = this.add
+                .text(x, y, String(this.digits[i]), {
+                  fontSize: "30px",
+                  fontStyle: "bold",
+                  color: COL.ink,
+                })
+                .setOrigin(0.5);
+              this.frame.add([rock, t]);
+              this.cells.push({ rock, t, x, y });
+            }
 
-              // Level up
-              if (
-                this.questionsCorrect > 0 &&
-                this.questionsCorrect % 4 === 0 &&
-                this.level < 6
-              ) {
-                this.level++;
-                this.levelText.setText("Level: " + this.level);
-                sfxLevelUp();
-                this.showFeedback("SECTOR " + this.level + "!", 0xa78bfa);
-              }
+            // Working-column area (partial products + remainders appear here)
+            this.workLayer = this.add.container(0, 0).setDepth(21);
+            this.frame.add(this.workLayer);
 
-              this.updateHUD();
-              this.time.delayedCall(1000, () => {
-                if (this.shield > 0) this.nextQuestion();
-              });
-            } else {
-              sfxWrong();
-              this.combo = 0;
-              this.shield -= 18;
-              this.questionsTotal++;
+            this.highlightActive();
+          }
 
-              pod.setTint(0xef4444);
-              if (label) label.setColor("#ef4444");
-
-              // Show correct
-              this.pods.getChildren().forEach((p) => {
-                if (p.getData("correct")) {
-                  p.setTint(0x34d399);
-                  const l = p.getData("label");
-                  if (l) l.setColor("#34d399");
-                }
-              });
-
-              this.showFeedback(
-                "Miss! Answer: " + this.currentQ.quotient,
-                0xef4444,
+          // shows the multiplication table for the divisor (Level 1 support)
+          divTable() {
+            if (this.tableBox) this.tableBox.destroy(true);
+            if (this.tier !== 1) return;
+            const d = this.problem.divisor;
+            const x = W - 120,
+              y = 360;
+            this.tableBox = this.add.container(0, 0).setDepth(30);
+            const bg = this.add
+              .rectangle(x, y, 190, 320, COL.panel, 0.92)
+              .setStrokeStyle(1, COL.gold, 0.4);
+            this.tableBox.add(bg);
+            this.tableBox.add(
+              this.add
+                .text(x, y - 145, d + " times table", {
+                  fontSize: "13px",
+                  fontStyle: "bold",
+                  color: COL.goldHex,
+                })
+                .setOrigin(0.5),
+            );
+            for (let i = 1; i <= 9; i++) {
+              this.tableBox.add(
+                this.add
+                  .text(x, y - 120 + i * 28, d + " × " + i + " = " + d * i, {
+                    fontSize: "15px",
+                    color: COL.ink,
+                  })
+                  .setOrigin(0.5),
               );
-              this.qHint.setText(this.currentQ.hint);
-              this.cameras.main.shake(250, 0.01);
+            }
+          }
 
+          highlightActive() {
+            if (!this.cells) return;
+            this.cells.forEach((c, i) => {
+              const on = i === this.stepIx && !this.locked;
+              c.rock.setStrokeStyle(on ? 3 : 2, on ? COL.gold : 0x2b3340);
+              c.rock.setFillStyle(on ? 0x5a6478 : 0x4a5568);
+            });
+            // glow the active quotient slot
+            this.quotSlots.forEach((q, i) =>
+              q.slot.setStrokeStyle(
+                i === this.stepIx && !this.locked ? 2 : 1,
+                i === this.stepIx && !this.locked ? COL.gold : 0x334155,
+                0.9,
+              ),
+            );
+          }
+
+          currentWorking() {
+            // The value being divided at this place = carry*10 + this digit.
+            return this.carry * 10 + this.digits[this.stepIx];
+          }
+
+          // ---------- dial control ----------
+          bumpDigit(d) {
+            this.setDigit(this.dialDigit + d);
+          }
+          setDigit(v) {
+            if (this.locked) return;
+            this.dialDigit = Math.max(0, Math.min(9, v));
+            sfxTick();
+            this.updateDial();
+          }
+
+          updateDial() {
+            if (!this.dialText) return;
+            this.dialText.setText(String(this.dialDigit));
+            // Live preview: show this place's working value, the partial
+            // product for the current dial digit, and the would-be remainder.
+            const working = this.currentWorking();
+            const product = this.dialDigit * this.problem.divisor;
+            const rem = working - product;
+            const over = product > working; // overflow
+            const under = rem >= this.problem.divisor; // ore left
+            this.dialText.setColor(
+              over ? COL.badHex : under ? COL.oreHex : COL.goldHex,
+            );
+            this.renderWorking(working, product, rem, over, under);
+          }
+
+          // Draw the live subtraction under the active column.
+          renderWorking(working, product, rem, over, under) {
+            this.workLayer.removeAll(true);
+            const colX = this.frameLeft + this.stepIx * this.cellW + this.cellW / 2;
+            const baseY = this.frameTop + this.cellH + 26;
+
+            // value being divided here
+            this.workLayer.add(
               this.add
-                .particles(pod.x, pod.y, "star", {
-                  speed: { min: 30, max: 100 },
-                  lifespan: 500,
-                  scale: { start: 0.6, end: 0 },
-                  tint: 0xef4444,
-                  quantity: 10,
-                  emitting: false,
+                .text(colX, baseY, String(working), {
+                  fontSize: "22px",
+                  fontStyle: "bold",
+                  color: COL.ink,
                 })
-                .explode(10);
+                .setOrigin(0.5),
+            );
+            // minus partial product
+            this.workLayer.add(
+              this.add
+                .text(colX, baseY + 28, "− " + product, {
+                  fontSize: "20px",
+                  color: over ? COL.badHex : COL.dim,
+                })
+                .setOrigin(0.5),
+            );
+            // subtraction bar
+            const g = this.add.graphics();
+            g.lineStyle(2, 0x9fb4c8, 0.8);
+            g.beginPath();
+            g.moveTo(colX - 30, baseY + 42);
+            g.lineTo(colX + 30, baseY + 42);
+            g.strokePath();
+            this.workLayer.add(g);
+            // remainder
+            this.workLayer.add(
+              this.add
+                .text(colX, baseY + 58, over ? "?" : String(rem), {
+                  fontSize: "22px",
+                  fontStyle: "bold",
+                  color: over ? COL.badHex : under ? COL.oreHex : COL.goodHex,
+                })
+                .setOrigin(0.5),
+            );
 
+            // Visual state on the active rock: overflow red, ore blue glow.
+            const cell = this.cells[this.stepIx];
+            if (cell) {
+              if (over) cell.rock.setFillStyle(0x7a2b22);
+              else if (under) cell.rock.setFillStyle(0x234a66);
+              else cell.rock.setFillStyle(0x5a6478);
+            }
+
+            // status word (text label so colour is not the only cue)
+            let tag = "";
+            if (over) tag = "OVERFLOW — too big";
+            else if (under) tag = "ORE LEFT — too small";
+            else tag = "clean fit";
+            this.workLayer.add(
+              this.add
+                .text(colX, baseY + 84, tag, {
+                  fontSize: "12px",
+                  fontStyle: "bold",
+                  color: over ? COL.badHex : under ? COL.oreHex : COL.goodHex,
+                })
+                .setOrigin(0.5),
+            );
+          }
+
+          // ---------- lock the digit (the enforcement gate) ----------
+          lockDigit() {
+            if (this.locked) return;
+            const step = this.problem.steps[this.stepIx];
+            const working = this.currentWorking();
+            const product = this.dialDigit * this.problem.divisor;
+            const rem = working - product;
+
+            // Enforce the algorithm — NOT a stored answer key match. We
+            // re-derive correctness from the live subtraction itself.
+            if (product > working) {
+              sfxOver();
+              this.cameras.main.shake(140, 0.006);
+              this.bumpError(
+                "Too big — the partial product " +
+                  product +
+                  " is more than " +
+                  working +
+                  ". Overflow! Lower the dial.",
+              );
+              return;
+            }
+            if (rem >= this.problem.divisor) {
+              sfxOre();
+              this.bumpError(
+                "Glowing ore left — " +
+                  rem +
+                  " is still ≥ " +
+                  this.problem.divisor +
+                  ", so the divisor fits more. Raise the dial.",
+              );
+              return;
+            }
+
+            // Correct digit for this place (guaranteed == step.digit).
+            sfxLock();
+            this.carry = rem;
+            this.quotientDigits.push(this.dialDigit);
+            const qs = this.quotSlots[this.stepIx];
+            qs.t.setText(String(this.dialDigit));
+            qs.slot.setStrokeStyle(2, COL.good, 1);
+            // mine the rock
+            const cell = this.cells[this.stepIx];
+            if (cell) {
+              cell.rock.setFillStyle(0x234a66).setStrokeStyle(2, COL.good);
+              this.minePop(cell.x, cell.y);
+            }
+
+            this.stepIx++;
+            this.dialDigit = 0;
+            this.streak++;
+            this.bestStreak = Math.max(this.bestStreak, this.streak);
+            this.score += 40 + this.streak * 5 + this.level * 10;
+
+            if (this.stepIx >= this.digits.length) {
+              this.finishRound();
+            } else {
+              const carried =
+                this.carry > 0
+                  ? "Bring down the next digit beside the " + this.carry + " you carried. "
+                  : "Bring down the next digit. ";
+              this.coach.setText(
+                carried +
+                  "How many times does " +
+                  this.problem.divisor +
+                  " fit into " +
+                  this.currentWorking() +
+                  "?",
+              );
+              this.highlightActive();
+              this.updateDial();
               this.updateHUD();
-              if (this.shield <= 0) {
-                this.time.delayedCall(1200, () => this.endGame());
-              } else {
-                this.time.delayedCall(1800, () => this.nextQuestion());
+            }
+          }
+
+          bumpError(msg) {
+            this.placeErrors++;
+            this.streak = 0;
+            this.coach.setText("⚠ " + msg);
+            this.coach.setColor(COL.badHex);
+            this.time.delayedCall(60, () => this.coach.setColor(COL.ink));
+            // a life is only lost after repeated misses on one place
+            if (this.placeErrors >= (this.tier === 1 ? 4 : 3)) {
+              this.placeErrors = 0;
+              this.lives--;
+              this.updateHUD();
+              if (this.lives <= 0) {
+                this.time.delayedCall(700, () => this.endGame());
               }
             }
           }
 
-          collectGem(gem) {
-            sfxGem();
-            this.gems++;
-            this.score += 30;
-            this.add
-              .particles(gem.x, gem.y, "star", {
-                speed: { min: 20, max: 80 },
-                lifespan: 400,
-                scale: { start: 0.5, end: 0 },
-                tint: 0xfbbf24,
-                quantity: 5,
-                emitting: false,
-              })
-              .explode(5);
-            gem.destroy();
-            this.updateHUD();
-          }
-
-          hitHazard(h) {
-            sfxWrong();
-            this.shield -= 10;
-            this.combo = 0;
-            this.cameras.main.shake(150, 0.005);
-            this.tweens.add({
-              targets: this.player,
-              alpha: 0.3,
-              duration: 80,
-              yoyo: true,
-              repeat: 3,
-            });
-
-            const angle = Phaser.Math.Angle.Between(
-              h.x,
-              h.y,
-              this.player.x,
-              this.player.y,
+          finishRound() {
+            // The division is complete. The final carry IS the remainder.
+            this.locked = true;
+            this.solved++;
+            const q = parseInt(this.quotientDigits.join(""), 10);
+            const r = this.carry;
+            // Sanity (belt-and-braces): the built quotient must match truth.
+            const ok =
+              q === this.problem.trueQuotient && r === this.problem.trueRemainder;
+            sfxWin();
+            this.cameras.main.shake(180, 0.006);
+            this.minePop(W / 2, this.frameTop + this.cellH / 2, true);
+            this.showFlash(
+              "ASTEROID MINED!  " +
+                this.problem.dividend +
+                " ÷ " +
+                this.problem.divisor +
+                " = " +
+                q +
+                (r > 0 ? " R " + r : ""),
+              COL.good,
             );
-            this.player.body.velocity.x = Math.cos(angle) * 200;
-            this.player.body.velocity.y = Math.sin(angle) * 200;
-
-            h.destroy();
+            this.score += 120 + this.level * 30;
             this.updateHUD();
-            if (this.shield <= 0)
-              this.time.delayedCall(500, () => this.endGame());
+
+            // level up every 3 mined asteroids (challenge ramps digits)
+            if (this.solved % 3 === 0 && this.level < 6 && this.tier === 2) {
+              this.level++;
+              sfxLevelUp();
+              this.time.delayedCall(500, () =>
+                this.showFlash("SECTOR " + this.level + "!", 0xa78bfa),
+              );
+            }
+
+            if (this.solved >= this.goal) {
+              this.time.delayedCall(1300, () => this.endGame());
+            } else {
+              this.time.delayedCall(1300, () => this.loadProblem());
+            }
+            if (!ok) {
+              // Should never happen (generator + solver verified). Recover.
+              this.time.delayedCall(1300, () => this.loadProblem());
+            }
           }
 
-          spawnDebris() {
-            const y = rand(40, H - 100);
-            const a = this.add
-              .image(W + 30, y, "asteroid_sm")
-              .setScale(0.6 + Math.random() * 0.6)
-              .setAlpha(0.35)
-              .setAngle(rand(0, 360));
-            this.tweens.add({
-              targets: a,
-              x: -40,
-              angle: a.angle + 180,
-              duration: 5000 + rand(0, 3000),
-              onComplete: () => a.destroy(),
-            });
+          showHint() {
+            if (this.locked) return;
+            const working = this.currentWorking();
+            const d = this.problem.divisor;
+            // Nudge toward estimation; never reveal the digit outright.
+            const lo = Math.floor((working * 10) / d) / 10;
+            this.coach.setText(
+              "💡 You are dividing " +
+                working +
+                " by " +
+                d +
+                ". Think: " +
+                d +
+                " × ? gets close to " +
+                working +
+                " without going over (about " +
+                lo.toFixed(1).replace(/\.0$/, "") +
+                ").",
+            );
+            this.coach.setColor(COL.goldHex);
+            this.time.delayedCall(1800, () => this.coach.setColor(COL.ink));
           }
 
-          spawnGem() {
-            if (this.gems > 30) return;
-            const gem = this.physics.add
-              .image(W + 20, rand(60, H - 120), "gem")
-              .setScale(1)
-              .setDepth(5);
-            gem.body.velocity.x = -60 - rand(0, 40);
-            this.tweens.add({
-              targets: gem,
-              y: gem.y + rand(-20, 20),
-              duration: 1500,
-              yoyo: true,
-              repeat: -1,
-              ease: "Sine.easeInOut",
-            });
-            this.gemGroup.add(gem);
-            this.time.delayedCall(8000, () => {
-              if (gem.active) gem.destroy();
-            });
+          minePop(x, y, big) {
+            const n = big ? 26 : 12;
+            for (let i = 0; i < n; i++) {
+              const p = this.add
+                .circle(
+                  x,
+                  y,
+                  2 + Math.random() * 3,
+                  pick([COL.gold, COL.ore, COL.good]),
+                )
+                .setDepth(40);
+              this.tweens.add({
+                targets: p,
+                x: x + (Math.random() - 0.5) * (big ? 320 : 160),
+                y: y + (Math.random() - 0.5) * (big ? 240 : 140),
+                alpha: 0,
+                scale: 0,
+                duration: 600 + Math.random() * 400,
+                onComplete: () => p.destroy(),
+              });
+            }
           }
 
-          spawnHazard() {
-            if (!this.answered) return;
-            const h = this.physics.add
-              .image(W + 30, rand(50, H - 100), "asteroid_sm")
-              .setScale(0.8)
-              .setTint(0xef4444)
-              .setDepth(4);
-            h.body.velocity.x = -120 - this.level * 20;
-            h.body.velocity.y = rand(-30, 30);
-            this.hazards.add(h);
-            this.time.delayedCall(6000, () => {
-              if (h.active) h.destroy();
-            });
-          }
-
-          showFeedback(text, color) {
+          showFlash(text, color) {
             const hex = "#" + color.toString(16).padStart(6, "0");
-            this.feedbackText
-              .setText(text)
-              .setColor(hex)
-              .setAlpha(1)
-              .setScale(0.5);
+            this.flash.setText(text).setColor(hex).setAlpha(1).setScale(0.6);
             this.tweens.add({
-              targets: this.feedbackText,
+              targets: this.flash,
               scale: 1,
-              duration: 200,
+              duration: 220,
               ease: "Back.easeOut",
             });
             this.tweens.add({
-              targets: this.feedbackText,
+              targets: this.flash,
               alpha: 0,
               duration: 700,
-              delay: 900,
+              delay: 1000,
             });
           }
 
           updateHUD() {
             this.scoreText.setText("Score: " + this.score);
-            this.comboText.setText(
-              "Combo: " + this.combo + (this.combo >= 3 ? " 🔥" : ""),
-            );
             this.levelText.setText("Level: " + this.level);
-            this.gemText.setText("Gems: " + this.gems);
-            this.shield = Math.max(0, Math.min(100, this.shield));
-            this.shieldBar.width = Math.max(0, (this.shield / 100) * 160);
-            this.shieldBar.fillColor =
-              this.shield > 50
-                ? 0x34d399
-                : this.shield > 25
-                  ? 0xfbbf24
-                  : 0xef4444;
-            this.shieldText.setText("Shield: " + Math.round(this.shield) + "%");
+            this.solvedText.setText("Mined: " + this.solved + "/" + this.goal);
+            this.livesText.setText("❤️".repeat(Math.max(0, this.lives)));
           }
 
           endGame() {
-            this.physics.pause();
             this.scene.start("Results", {
+              tier: this.tier,
               score: this.score,
-              correct: this.questionsCorrect,
-              total: this.questionsTotal,
+              correct: this.solved,
+              total: this.goal,
               level: this.level,
-              bestCombo: this.bestCombo,
-              gems: this.gems,
+              bestStreak: this.bestStreak,
             });
           }
 
-          update(time, delta) {
-            if (this.shield <= 0) return;
-
-            const speed = 340;
-            let vx = 0,
-              vy = 0;
-            if (this.cursors.left.isDown || this.wasd.left.isDown) vx = -speed;
-            if (this.cursors.right.isDown || this.wasd.right.isDown) vx = speed;
-            if (this.cursors.up.isDown || this.wasd.up.isDown) vy = -speed;
-            if (this.cursors.down.isDown || this.wasd.down.isDown) vy = speed;
-
-            if (this.touchTarget) {
-              const dx = this.touchTarget.x - this.player.x;
-              const dy = this.touchTarget.y - this.player.y;
-              const dist = Math.hypot(dx, dy);
-              if (dist > 15) {
-                vx = (dx / dist) * speed;
-                vy = (dy / dist) * speed;
-              }
-            }
-
-            this.player.body.velocity.x = Phaser.Math.Linear(
-              this.player.body.velocity.x,
-              vx,
-              0.15,
-            );
-            this.player.body.velocity.y = Phaser.Math.Linear(
-              this.player.body.velocity.y,
-              vy,
-              0.15,
-            );
-
-            if (vx < -20) this.player.setFlipX(true);
-            else if (vx > 20) this.player.setFlipX(false);
-
-            // Engine glow
-            this.engineGlow.setPosition(this.player.x - 22, this.player.y);
-
-            // Parallax stars
-            this.starLayers.forEach((layer) => {
-              layer.forEach((s) => {
-                s.x -= s.getData("speed");
-                if (s.x < -5) {
-                  s.x = W + 5;
+          update() {
+            if (this.stars)
+              this.stars.forEach((s) => {
+                s.x -= s.getData("sp");
+                if (s.x < -4) {
+                  s.x = W + 4;
                   s.y = rand(0, H);
                 }
               });
-            });
-
-            // Clean offscreen
-            this.gemGroup.getChildren().forEach((g) => {
-              if (g.x < -30) g.destroy();
-            });
-            this.hazards.getChildren().forEach((h) => {
-              if (h.x < -40) h.destroy();
-            });
           }
         }
 
@@ -1193,105 +1233,73 @@
                   activityTitle: document.title,
                   score: d.correct,
                   maxScore: d.total,
-                  percent: d.total
-                    ? Math.round((d.correct / d.total) * 100)
-                    : 0,
+                  percent: d.total ? Math.round((d.correct / d.total) * 100) : 0,
                   problemsCorrect: d.correct,
                   problemsAttempted: d.total,
                   standard: "6.NS.B.2",
                 });
             } catch (e) {}
 
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 90; i++)
               this.add.circle(
                 rand(0, W),
                 rand(0, H),
-                Math.random() * 1.5 + 0.3,
+                Math.random() * 1.4 + 0.3,
                 0xffffff,
                 0.2 + Math.random() * 0.4,
               );
-            }
 
             const acc = d.total ? Math.round((d.correct / d.total) * 100) : 0;
-            const won = d.correct >= 10;
+            const won = d.correct >= d.total;
 
             this.add
-              .text(W / 2, 55, won ? "MISSION COMPLETE!" : "MINING REPORT", {
+              .text(W / 2, 70, won ? "MISSION COMPLETE!" : "MINING REPORT", {
                 fontSize: "36px",
                 fontStyle: "bold",
-                color: won ? "#fbbf24" : "#61dafb",
+                color: won ? COL.goldHex : COL.line,
                 stroke: "#000",
                 strokeThickness: 3,
               })
               .setOrigin(0.5);
             this.add
-              .text(W / 2, 90, "6.NS.B.2 — Multi-Digit Division", {
+              .text(W / 2, 108, "6.NS.B.2 — Multi-Digit Division", {
                 fontSize: "14px",
-                color: "#94a3b8",
+                color: COL.dim,
               })
               .setOrigin(0.5);
 
             const stats = [
-              { label: "Score", value: d.score, color: "#fbbf24" },
+              { label: "Score", value: d.score, color: COL.goldHex },
               {
-                label: "Correct",
+                label: "Asteroids mined",
                 value: d.correct + "/" + d.total,
-                color: "#34d399",
+                color: COL.goodHex,
               },
               { label: "Accuracy", value: acc + "%", color: "#61dafb" },
-              { label: "Level", value: d.level, color: "#a78bfa" },
-              { label: "Best Combo", value: d.bestCombo, color: "#fb923c" },
-              { label: "Gems", value: d.gems, color: "#fbbf24" },
+              { label: "Level reached", value: d.level, color: "#a78bfa" },
+              { label: "Best streak", value: d.bestStreak, color: "#fb923c" },
+              {
+                label: "Mode",
+                value: d.tier === 1 ? "Support" : "Challenge",
+                color: COL.goldHex,
+              },
             ];
-
             stats.forEach((s, i) => {
               const col = i % 3,
                 row = Math.floor(i / 3);
               const x = W / 2 - 190 + col * 190,
-                y = 150 + row * 95;
+                y = 180 + row * 95;
               this.add
-                .rectangle(x, y, 165, 70, 0x111827, 0.85)
+                .rectangle(x, y, 170, 72, COL.panel, 0.85)
                 .setStrokeStyle(1, parseInt(s.color.slice(1), 16), 0.4);
               this.add
-                .text(x, y - 14, s.label, {
-                  fontSize: "11px",
-                  color: "#94a3b8",
-                })
+                .text(x, y - 15, s.label, { fontSize: "11px", color: COL.dim })
                 .setOrigin(0.5);
               this.add
                 .text(x, y + 12, String(s.value), {
-                  fontSize: "24px",
+                  fontSize: "23px",
                   fontStyle: "bold",
                   color: s.color,
-                })
-                .setOrigin(0.5);
-            });
-
-            // Badges
-            const badges = [];
-            if (acc >= 90) badges.push("Division Master");
-            if (acc >= 70) badges.push("Skilled Miner");
-            if (d.bestCombo >= 5) badges.push("Combo Expert");
-            if (d.gems >= 10) badges.push("Gem Collector");
-            if (d.level >= 4) badges.push("Deep Space");
-            if (!badges.length) badges.push("Keep Mining!");
-
-            this.add
-              .text(W / 2, 370, "Achievements", {
-                fontSize: "13px",
-                color: "#94a3b8",
-              })
-              .setOrigin(0.5);
-            badges.forEach((b, i) => {
-              const bx = W / 2 + (i - (badges.length - 1) / 2) * 130;
-              this.add
-                .rectangle(bx, 400, 115, 28, 0x1a0d3e, 0.8)
-                .setStrokeStyle(1, 0xa78bfa, 0.5);
-              this.add
-                .text(bx, 400, b, {
-                  fontSize: "11px",
-                  fontStyle: "bold",
-                  color: "#a78bfa",
                 })
                 .setOrigin(0.5);
             });
@@ -1299,75 +1307,83 @@
             this.add
               .text(
                 W / 2,
-                455,
-                "Tip: Divide place by place.\nEstimate first, then refine each digit.",
+                400,
+                "You built every quotient digit by hand — that IS long division.\n" +
+                  "Estimate each place, subtract the partial product, bring down, repeat.",
                 {
                   fontSize: "13px",
-                  color: "#94a3b8",
+                  color: COL.dim,
                   align: "center",
                   lineSpacing: 4,
                 },
               )
               .setOrigin(0.5);
 
-            // Buttons
-            const btn = this.add
-              .rectangle(W / 2 - 80, 530, 160, 46, 0xfbbf24)
+            const again = this.add
+              .rectangle(W / 2 - 95, 480, 170, 46, COL.gold)
               .setInteractive({ useHandCursor: true });
             this.add
-              .text(W / 2 - 80, 530, "MINE AGAIN", {
+              .text(W / 2 - 95, 480, "MINE AGAIN", {
                 fontSize: "17px",
                 fontStyle: "bold",
                 color: "#000",
               })
               .setOrigin(0.5);
-            btn.on("pointerover", () => btn.setFillStyle(0xfcd34d));
-            btn.on("pointerout", () => btn.setFillStyle(0xfbbf24));
-            btn.on("pointerdown", () => {
+            again.on("pointerover", () => again.setFillStyle(0xfcd34d));
+            again.on("pointerout", () => again.setFillStyle(0xfbbf24));
+            again.on("pointerdown", () => {
+              getAudio();
               sfxLaser();
-              this.scene.start("Game");
+              this.scene.start("Game", { tier: d.tier });
             });
 
             const menu = this.add
-              .rectangle(W / 2 + 100, 530, 110, 46, 0x111827)
-              .setStrokeStyle(1, 0x61dafb, 0.5)
+              .rectangle(W / 2 + 95, 480, 150, 46, COL.panel)
+              .setStrokeStyle(1, COL.line, 0.5)
               .setInteractive({ useHandCursor: true });
             this.add
-              .text(W / 2 + 100, 530, "MENU", {
-                fontSize: "15px",
+              .text(W / 2 + 95, 480, "CHANGE LEVEL", {
+                fontSize: "14px",
                 fontStyle: "bold",
                 color: "#61dafb",
               })
               .setOrigin(0.5);
-            menu.on("pointerdown", () => this.scene.start("Title"));
-
-            this.input.keyboard.on("keydown-SPACE", () => {
+            menu.on("pointerdown", () => {
+              getAudio();
               sfxLaser();
-              this.scene.start("Game");
+              this.scene.start("Title");
             });
-            this.cameras.main.fadeIn(400);
 
+            this.add
+              .text(W / 2, 540, "Enter / tap a button to continue", {
+                fontSize: "12px",
+                color: COL.dim,
+              })
+              .setOrigin(0.5);
+            this.input.keyboard.on("keydown-ENTER", () =>
+              this.scene.start("Game", { tier: d.tier }),
+            );
+
+            this.cameras.main.fadeIn(400);
             if (acc >= 70) {
-              for (let i = 0; i < 20; i++) {
+              for (let i = 0; i < 18; i++) {
                 const s = this.add
-                  .image(rand(50, W - 50), -20, "gem")
-                  .setScale(1 + Math.random())
-                  .setTint(pick([0xfbbf24, 0xfb923c, 0xa78bfa, 0x61dafb]));
+                  .circle(rand(40, W - 40), -20, 3 + Math.random() * 3, pick([0xfbbf24, 0x46b3ff, 0x2bb673]))
+                  .setDepth(5);
                 this.tweens.add({
                   targets: s,
                   y: H + 20,
                   x: s.x + rand(-80, 80),
-                  angle: 360,
+                  alpha: 0,
                   duration: 2000 + rand(0, 1500),
                   delay: rand(0, 800),
-                  alpha: 0,
                 });
               }
             }
           }
         }
 
-        config.scene = [BootScene, TitleScene, GameScene, ResultsScene];
+        config.scene = [TitleScene, GameScene, ResultsScene];
         new Phaser.Game(config);
       })();
     </script>
@@ -1375,7 +1391,7 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
 </html>

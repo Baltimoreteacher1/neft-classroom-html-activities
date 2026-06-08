@@ -18,7 +18,7 @@
       window.addEventListener("load", function () {
         if (typeof Phaser === "undefined") {
           document.body.innerHTML =
-            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
         }
       });
     </script>
@@ -56,25 +56,40 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <div
       id="game-container"
       role="application"
-      aria-label="Expression Arena — a Grade 6 math game for comparing algebraic expressions and equations (6.EE)."
+      aria-label="Expression Arena — a Grade 6 math game where you slide a value of x to tip or level a balance beam between two algebraic expressions (6.EE)."
     >
       <p class="sr-only">
-        Expression Arena is an interactive battle game. Evaluate and compare
-        expressions with variables, then choose the correct comparison to win
-        each round. Play with touch, mouse, or keyboard.
+        Expression Arena is a balance-beam game. Two expressions sit on the two
+        sides of a scale. Slide the value of the variable to make one side
+        heavier, or to level the beam so the two expressions are equal. The math
+        is the mechanic: you win by substituting and balancing, not by guessing
+        a symbol. Play with touch, mouse, or keyboard (arrow keys move the
+        slider, Enter locks in your value).
       </p>
     </div>
     <script>
       // ============================================================
-      //  EXPRESSION ARENA — 6.EE Variable Comparison Battle Game
+      //  EXPRESSION ARENA — Balance Beam (6.EE)
       //  Neft Teacher | Grade 6 Math
+      //
+      //  THE MATH IS THE MECHANIC.
+      //  Two expressions (e.g. 3x+2 and x+10) ride opposite pans of a
+      //  live balance scale. A slider sets the value of x. As x changes,
+      //  each side's value is recomputed by SUBSTITUTION and the beam
+      //  tips toward the heavier side in real time. Round goals are
+      //  stated as relations on the truth set of an inequality/equation:
+      //    • Level 1: land x where the required relation holds, and
+      //      (boss) level the beam exactly — solve ax+b = cx+d.
+      //    • Level 2: strict-inequality target REGIONS (make left < right,
+      //      etc.) plus solve-the-equal-x bosses.
+      //  The student SEES which pan drops; they never click </=/>.
       // ============================================================
 
       // ---- Audio Manager (Web Audio API synthesized sounds) ----
@@ -112,12 +127,18 @@
           o.start();
           o.stop(this.ctx.currentTime + dur);
         }
-        slash() {
-          this._tone(300, 0.08, "sawtooth", 0.2);
-          setTimeout(() => this._tone(600, 0.12, "sawtooth", 0.15), 40);
+        // soft click as the slider steps
+        slide() {
+          this._tone(620, 0.03, "sine", 0.05);
         }
-        hit() {
-          this._tone(100, 0.2, "sawtooth", 0.25, 40);
+        // beam settling thud
+        tip() {
+          this._tone(180, 0.06, "sine", 0.08);
+        }
+        // beam reaches dead-level
+        level() {
+          this._tone(720, 0.08, "sine", 0.12);
+          setTimeout(() => this._tone(960, 0.1, "sine", 0.1), 70);
         }
         correct() {
           this._tone(523, 0.1, "square", 0.12);
@@ -155,157 +176,199 @@
             setTimeout(() => this._tone(f, 0.15, "square", 0.1), i * 100),
           );
         }
-        shieldUp() {
-          this._tone(600, 0.15, "sine", 0.1);
-          setTimeout(() => this._tone(900, 0.2, "sine", 0.1), 100);
-        }
         tick() {
           this._tone(800, 0.03, "sine", 0.06);
         }
       }
       const sfx = new SFX();
 
-      // ---- Question Generator ----
-      const QGen = {
-        // Difficulty 1-6
-        generate(difficulty, count) {
-          const qs = [];
-          for (let i = 0; i < count; i++) {
-            qs.push(this._make(difficulty));
-          }
-          return qs;
-        },
+      // ============================================================
+      //  EXPRESSION MODEL
+      //  Every expression is a LINEAR function value(x) = m*x + k, with
+      //  a printable label. Quadratic bosses are handled separately so
+      //  the equal-point math stays exact and verifiable.
+      // ============================================================
+      function evalExpr(expr, x) {
+        return expr.m * x + expr.k;
+      }
 
+      // ============================================================
+      //  ROUND GENERATOR  (procedural + solvability-verified)
+      //  Slider domain: integer x in [X_MIN, X_MAX], step 1.
+      //  Round kinds:
+      //   • "tip"   — make the named side heavier (>, region of x).
+      //   • "tipL2" — strict inequality target region (Level 2 framing).
+      //   • "equal" — level the beam: find the x where left = right
+      //               (solve ax+b = cx+d). Only generated when an
+      //               INTEGER solution in-domain exists.
+      // ============================================================
+      const X_MIN = 0;
+      const X_MAX = 12;
+
+      const QGen = {
         _randInt(min, max) {
           return Math.floor(Math.random() * (max - min + 1)) + min;
         },
+        _domain() {
+          const xs = [];
+          for (let x = X_MIN; x <= X_MAX; x++) xs.push(x);
+          return xs;
+        },
 
-        _make(diff) {
-          const x = this._randInt(2, 10);
-          let leftExpr, rightExpr, leftVal, rightVal, leftLabel, rightLabel;
-          const varName = ["x", "n", "m", "y"][this._randInt(0, 3)];
+        // Build a linear expr {m,k,label}. coeffMax keeps numbers grade-6 sized.
+        _linear(varName, opts) {
+          const m = this._randInt(opts.mMin, opts.mMax);
+          const k = this._randInt(opts.kMin, opts.kMax);
+          let label;
+          if (m === 0) label = `${k}`;
+          else if (m === 1)
+            label = k === 0 ? `${varName}` : `${varName} + ${k}`;
+          else label = k === 0 ? `${m}${varName}` : `${m}${varName} + ${k}`;
+          return { m, k, label };
+        },
 
-          switch (diff) {
-            case 1: {
-              // Simple: ax vs b
-              const a = this._randInt(2, 5);
-              const b = this._randInt(3, 20);
-              leftLabel = `${a}${varName}`;
-              rightLabel = `${b}`;
-              leftVal = a * x;
-              rightVal = b;
-              break;
-            }
-            case 2: {
-              // ax vs ax (different coefficients)
-              const a = this._randInt(2, 6);
-              const b = this._randInt(2, 6);
-              leftLabel = `${a}${varName}`;
-              rightLabel = `${b}${varName}`;
-              leftVal = a * x;
-              rightVal = b * x;
-              break;
-            }
-            case 3: {
-              // ax + b vs c
-              const a = this._randInt(2, 5);
-              const b = this._randInt(1, 8);
-              const c = this._randInt(5, 30);
-              leftLabel = `${a}${varName} + ${b}`;
-              rightLabel = `${c}`;
-              leftVal = a * x + b;
-              rightVal = c;
-              break;
-            }
-            case 4: {
-              // ax + b vs cx + d
-              const a = this._randInt(2, 5);
-              const b = this._randInt(1, 6);
-              const c = this._randInt(2, 5);
-              const d = this._randInt(1, 6);
-              leftLabel = `${a}${varName} + ${b}`;
-              rightLabel = `${c}${varName} + ${d}`;
-              leftVal = a * x + b;
-              rightVal = c * x + d;
-              break;
-            }
-            case 5: {
-              // ax - b vs cx + d or multiplication
-              const a = this._randInt(3, 7);
-              const b = this._randInt(1, 5);
-              const c = this._randInt(2, 6);
-              const d = this._randInt(1, 8);
-              if (Math.random() < 0.5) {
-                leftLabel = `${a}${varName} - ${b}`;
-                rightLabel = `${c}${varName} + ${d}`;
-                leftVal = a * x - b;
-                rightVal = c * x + d;
-              } else {
-                const m = this._randInt(2, 4);
-                leftLabel = `${a} * ${varName}`;
-                rightLabel = `${m}${varName} + ${d}`;
-                leftVal = a * x;
-                rightVal = m * x + d;
-              }
-              break;
-            }
-            case 6: {
-              // Multi-step / squared terms / complex
-              const a = this._randInt(2, 5);
-              const b = this._randInt(1, 10);
-              const c = this._randInt(2, 5);
-              const d = this._randInt(1, 5);
-              const type = this._randInt(0, 2);
-              if (type === 0) {
-                leftLabel = `${a}(${varName} + ${d})`;
-                rightLabel = `${c}${varName} + ${b}`;
-                leftVal = a * (x + d);
-                rightVal = c * x + b;
-              } else if (type === 1) {
-                leftLabel = `${varName} * ${varName}`;
-                rightLabel = `${a}${varName} + ${b}`;
-                leftVal = x * x;
-                rightVal = a * x + b;
-              } else {
-                leftLabel = `${a}${varName} + ${b} - ${d}`;
-                rightLabel = `${c}(${varName} + ${this._randInt(1, 3)})`;
-                leftVal = a * x + b - d;
-                const e = this._randInt(1, 3);
-                rightLabel = `${c}(${varName} + ${e})`;
-                rightVal = c * (x + e);
-              }
-              break;
-            }
-            default:
-              return this._make(1);
+        // Count how many domain points satisfy a relation, and return them.
+        _truthSet(left, right, rel) {
+          const hits = [];
+          for (let x = X_MIN; x <= X_MAX; x++) {
+            const l = evalExpr(left, x),
+              r = evalExpr(right, x);
+            if (rel === ">" && l > r) hits.push(x);
+            else if (rel === "<" && l < r) hits.push(x);
+            else if (rel === "=" && l === r) hits.push(x);
           }
+          return hits;
+        },
 
-          let answer;
-          if (leftVal > rightVal) answer = ">";
-          else if (leftVal < rightVal) answer = "<";
-          else answer = "=";
-
+        // Generate a "make this side heavier / lighter" region round.
+        _makeRegion(level) {
+          const varName = "x";
+          // coefficient ranges grow gently with level
+          const span = Math.min(level, 6);
+          for (let tries = 0; tries < 200; tries++) {
+            const left = this._linear(varName, {
+              mMin: 1,
+              mMax: 1 + span,
+              kMin: 0,
+              kMax: 4 + span,
+            });
+            const right = this._linear(varName, {
+              mMin: 1,
+              mMax: 1 + span,
+              kMin: 0,
+              kMax: 6 + span * 2,
+            });
+            // Need a genuine crossing so the region is a real strategic choice,
+            // not "always true". Require both a satisfying and a violating x.
+            const rel = Math.random() < 0.5 ? ">" : "<";
+            const yes = this._truthSet(left, right, rel);
+            const no = this._domain().filter((x) => !yes.includes(x));
+            if (yes.length >= 2 && no.length >= 2) {
+              return {
+                kind: level >= 4 ? "tipL2" : "tip",
+                left,
+                right,
+                rel,
+                targetSet: yes,
+                varName,
+                isBoss: false,
+              };
+            }
+          }
+          // Fallback: guaranteed-solvable simple round.
+          const left = { m: 2, k: 1, label: "2x + 1" };
+          const right = { m: 1, k: 6, label: "x + 6" };
           return {
-            leftLabel,
-            rightLabel,
-            leftVal,
-            rightVal,
+            kind: "tip",
+            left,
+            right,
+            rel: ">",
+            targetSet: this._truthSet(left, right, ">"),
             varName,
-            varValue: x,
-            answer,
-            difficulty: diff,
             isBoss: false,
           };
         },
 
-        makeBoss(diff) {
-          const q = this._make(Math.min(diff + 1, 6));
+        // Generate a "level the beam" (solve) round with an INTEGER root in-domain.
+        _makeEqual(level) {
+          const varName = "x";
+          const span = Math.min(level, 6);
+          for (let tries = 0; tries < 300; tries++) {
+            // Choose the solution first, then build coefficients that hit it,
+            // so an integer in-domain root is guaranteed.
+            const root = this._randInt(X_MIN + 1, X_MAX - 1);
+            const a = this._randInt(2, 2 + span); // left slope
+            let c = this._randInt(1, 1 + span); // right slope
+            if (c === a) c = a === 1 ? 2 : a - 1; // ensure a != c (unique root)
+            // ax + b = cx + d  ->  b - d = (c - a)*root
+            // pick d freely, then b = d + (c - a)*root
+            const d = this._randInt(0, 6 + span);
+            const b = d + (c - a) * root;
+            if (b < 0 || b > 30) continue; // keep grade-6 friendly, non-negative
+            const left = {
+              m: a,
+              k: b,
+              label: b === 0 ? `${a}${varName}` : `${a}${varName} + ${b}`,
+            };
+            const right = {
+              m: c,
+              k: d,
+              label:
+                c === 1
+                  ? d === 0
+                    ? `${varName}`
+                    : `${varName} + ${d}`
+                  : d === 0
+                    ? `${c}${varName}`
+                    : `${c}${varName} + ${d}`,
+            };
+            // Verify exactly one integer root in-domain.
+            const roots = this._truthSet(left, right, "=");
+            if (roots.length === 1 && roots[0] === root) {
+              return {
+                kind: "equal",
+                left,
+                right,
+                rel: "=",
+                targetSet: roots,
+                varName,
+                isBoss: false,
+              };
+            }
+          }
+          // Fallback: 2x = x + 5 -> x = 5
+          const left = { m: 2, k: 0, label: "2x" };
+          const right = { m: 1, k: 5, label: "x + 5" };
+          return {
+            kind: "equal",
+            left,
+            right,
+            rel: "=",
+            targetSet: [5],
+            varName,
+            isBoss: false,
+          };
+        },
+
+        generate(level) {
+          // Level 1 (overall game level 1-3): mostly regions + occasional equal.
+          // Level 2 (game level 4-6): strict regions + more equal rounds.
+          const wantEqual =
+            level >= 4 ? Math.random() < 0.45 : Math.random() < 0.3;
+          return wantEqual ? this._makeEqual(level) : this._makeRegion(level);
+        },
+
+        makeBoss(level) {
+          // Boss = always "level the beam" (solve), slightly harder slopes.
+          const q = this._makeEqual(Math.min(level + 1, 6));
           q.isBoss = true;
           return q;
         },
       };
 
-      // ---- Color palette ----
+      // ---- Color palette (colourblind-safe: every cue has shape + text,
+      //      never colour alone; teal-left / coral-right are reinforced by
+      //      side labels "LEFT"/"RIGHT" and the heavier pan always sits LOWER) ----
       const C = {
         bg: 0x0a0a1a,
         arena: 0x141428,
@@ -323,6 +386,8 @@
         pink: 0xec4899,
         gray: 0x64748b,
         panelBg: 0x1e1e3a,
+        beam: 0xcbd5e1,
+        post: 0x475569,
       };
 
       // ---- Game dimensions ----
@@ -331,7 +396,7 @@
 
       // ---- Shared state ----
       const STATE = {
-        character: 0,
+        tier: 1, // 1 = Support (Level 1), 2 = Challenge (Level 2)
         score: 0,
         combo: 0,
         maxCombo: 0,
@@ -342,9 +407,6 @@
         totalCorrect: 0,
         totalWrong: 0,
         xp: 0,
-        shield: false,
-        doubleXP: false,
-        doubleXPRounds: 0,
         questionsAnswered: [],
       };
 
@@ -354,44 +416,13 @@
         STATE.maxCombo = 0;
         STATE.hp = 100;
         STATE.maxHp = 100;
-        STATE.level = 1;
+        STATE.level = STATE.tier === 2 ? 4 : 1;
         STATE.round = 0;
         STATE.totalCorrect = 0;
         STATE.totalWrong = 0;
         STATE.xp = 0;
-        STATE.shield = false;
-        STATE.doubleXP = false;
-        STATE.doubleXPRounds = 0;
         STATE.questionsAnswered = [];
       }
-
-      // Characters
-      const CHARS = [
-        {
-          name: "Knight",
-          color: 0x3b82f6,
-          icon: "K",
-          desc: "Strong armor, slow attack",
-        },
-        {
-          name: "Ninja",
-          color: 0x7c3aed,
-          icon: "N",
-          desc: "Fast combos, less health",
-        },
-        {
-          name: "Mage",
-          color: 0x14b8a6,
-          icon: "M",
-          desc: "Magic power, balanced",
-        },
-        {
-          name: "Viking",
-          color: 0xf97316,
-          icon: "V",
-          desc: "Extra health, heavy hits",
-        },
-      ];
 
       // ============================================================
       //  BOOT SCENE
@@ -400,16 +431,13 @@
         constructor() {
           super("Boot");
         }
-        preload() {
-          // No external assets — everything is procedural
-        }
         create() {
           this.scene.start("Title");
         }
       }
 
       // ============================================================
-      //  TITLE SCENE
+      //  TITLE SCENE — real level choice (Support vs Challenge)
       // ============================================================
       class TitleScene extends Phaser.Scene {
         constructor() {
@@ -418,10 +446,7 @@
 
         create() {
           sfx.init();
-          const cx = W / 2,
-            cy = H / 2;
-
-          // Background
+          const cx = W / 2;
           this.cameras.main.setBackgroundColor(C.bg);
 
           // Animated background particles
@@ -437,18 +462,10 @@
             this._particles.push({ obj: p, speed: 0.2 + Math.random() * 0.5 });
           }
 
-          // Title card
-          const panel = this.add
-            .rectangle(cx, cy - 40, 700, 340, C.panelBg, 0.9)
-            .setStrokeStyle(3, C.teal);
-          panel.setOrigin(0.5);
-
-          // Crossed swords icon
-          this.add.text(cx, cy - 160, "⚔", { fontSize: "64px" }).setOrigin(0.5);
-
+          this.add.text(cx, 70, "⚖", { fontSize: "60px" }).setOrigin(0.5);
           this.add
-            .text(cx, cy - 90, "EXPRESSION ARENA", {
-              fontSize: "48px",
+            .text(cx, 140, "EXPRESSION ARENA", {
+              fontSize: "46px",
               fontFamily: "ui-sans-serif, system-ui, sans-serif",
               fontStyle: "bold",
               color: "#14b8a6",
@@ -456,80 +473,170 @@
               strokeThickness: 4,
             })
             .setOrigin(0.5);
-
           this.add
-            .text(cx, cy - 40, "Compare Variable Expressions", {
-              fontSize: "20px",
+            .text(cx, 182, "Balance the Beam — Compare & Solve Expressions", {
+              fontSize: "18px",
               fontFamily: "ui-sans-serif, system-ui, sans-serif",
               color: "#94a3b8",
             })
             .setOrigin(0.5);
-
           this.add
-            .text(cx, cy + 5, "6.EE  |  Grade 6 Math", {
-              fontSize: "16px",
-              fontFamily: "ui-sans-serif, system-ui, sans-serif",
-              color: "#64748b",
-            })
+            .text(
+              cx,
+              224,
+              "Slide the value of x. Watch the heavier expression pull its pan DOWN.\n" +
+                "Make one side win — or solve for x to make the beam level.",
+              {
+                fontSize: "15px",
+                fontFamily: "ui-sans-serif, system-ui, sans-serif",
+                color: "#64748b",
+                align: "center",
+                lineSpacing: 5,
+              },
+            )
             .setOrigin(0.5);
-
-          // Arena decoration lines
-          const g = this.add.graphics();
-          g.lineStyle(2, C.teal, 0.3);
-          g.strokeRect(cx - 340, cy - 200, 680, 330);
-
-          // Start button
-          const btnBg = this.add
-            .rectangle(cx, cy + 100, 260, 60, C.teal)
-            .setInteractive({ useHandCursor: true });
-          const btnTxt = this.add
-            .text(cx, cy + 100, "START BATTLE", {
-              fontSize: "24px",
-              fontFamily: "ui-sans-serif, system-ui, sans-serif",
-              fontStyle: "bold",
-              color: "#ffffff",
-            })
-            .setOrigin(0.5);
-
-          btnBg.on("pointerover", () => {
-            btnBg.setFillStyle(C.tealBright);
-            sfx.tick();
-          });
-          btnBg.on("pointerout", () => btnBg.setFillStyle(C.teal));
-          btnBg.on("pointerdown", () => {
-            sfx.select();
-            this.scene.start("CharSelect");
-          });
-
-          // Pulsing animation on button
-          this.tweens.add({
-            targets: [btnBg, btnTxt],
-            scaleX: 1.05,
-            scaleY: 1.05,
-            duration: 800,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut",
-          });
-
-          // Footer
           this.add
-            .text(cx, H - 30, "Neft Teacher  |  Keyboard or Touch", {
-              fontSize: "13px",
+            .text(cx, 268, "6.EE.B.5  |  Grade 6 Math", {
+              fontSize: "15px",
               fontFamily: "ui-sans-serif, system-ui, sans-serif",
               color: "#475569",
             })
             .setOrigin(0.5);
 
-          // Keyboard shortcut
-          this.input.keyboard.on("keydown-SPACE", () => {
-            sfx.select();
-            this.scene.start("CharSelect");
+          // Mini demo beam (static, tipped left)
+          this._drawDemo(cx, 330);
+
+          // ---- Level pick (real difficulty) ----
+          const tiers = [
+            {
+              t: 1,
+              label: "Level 1",
+              sub: "Support",
+              desc: "Compare sides · find the equal x · more lives",
+              col: C.green,
+            },
+            {
+              t: 2,
+              label: "Level 2",
+              sub: "Challenge",
+              desc: "Strict target regions · harder solves · fewer lives",
+              col: C.gold,
+            },
+          ];
+          this._cards = [];
+          tiers.forEach((d, i) => {
+            const x = cx + (i === 0 ? -180 : 180);
+            const y = 470;
+            const card = this.add
+              .rectangle(x, y, 320, 150, C.panelBg, 0.92)
+              .setStrokeStyle(3, 0x334155)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(x, y - 46, d.label, {
+                fontSize: "28px",
+                fontFamily: "ui-sans-serif, system-ui, sans-serif",
+                fontStyle: "bold",
+                color: "#ffffff",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(x, y - 16, d.sub, {
+                fontSize: "16px",
+                fontFamily: "ui-sans-serif, system-ui, sans-serif",
+                fontStyle: "bold",
+                color: Phaser.Display.Color.IntegerToColor(d.col).rgba,
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(x, y + 28, d.desc, {
+                fontSize: "13px",
+                fontFamily: "ui-sans-serif, system-ui, sans-serif",
+                color: "#94a3b8",
+                align: "center",
+                wordWrap: { width: 290 },
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(x, y + 60, `Press ${i + 1}`, {
+                fontSize: "12px",
+                fontFamily: "ui-sans-serif, system-ui, sans-serif",
+                color: "#64748b",
+              })
+              .setOrigin(0.5);
+            card.on("pointerover", () => {
+              card.setStrokeStyle(3, d.col);
+              sfx.tick();
+            });
+            card.on("pointerout", () => card.setStrokeStyle(3, 0x334155));
+            card.on("pointerdown", () => this._start(d.t));
+            this._cards.push(card);
           });
-          this.input.keyboard.on("keydown-ENTER", () => {
-            sfx.select();
-            this.scene.start("CharSelect");
-          });
+
+          this.input.keyboard.on("keydown-ONE", () => this._start(1));
+          this.input.keyboard.on("keydown-TWO", () => this._start(2));
+
+          this.add
+            .text(
+              cx,
+              H - 26,
+              "Neft Teacher  |  Arrow keys / drag the slider · Enter to lock in · works with touch",
+              {
+                fontSize: "13px",
+                fontFamily: "ui-sans-serif, system-ui, sans-serif",
+                color: "#475569",
+              },
+            )
+            .setOrigin(0.5);
+        }
+
+        _drawDemo(cx, cy) {
+          // Tiny balance: left pan lower (heavier) to teach the read.
+          const g = this.add.graphics();
+          g.lineStyle(4, C.post, 1);
+          g.lineBetween(cx, cy + 30, cx, cy - 8);
+          g.lineStyle(6, C.beam, 1);
+          const ang = -0.18;
+          const len = 90;
+          const lx = cx - Math.cos(ang) * len,
+            ly = cy - Math.sin(ang) * len;
+          const rx = cx + Math.cos(ang) * len,
+            ry = cy + Math.sin(ang) * len;
+          g.lineBetween(lx, ly, rx, ry);
+          this.add
+            .circle(lx, ly + 14, 16, C.teal, 0.85)
+            .setStrokeStyle(2, C.tealBright);
+          this.add
+            .circle(rx, ry + 14, 16, C.coral, 0.85)
+            .setStrokeStyle(2, 0xf87171);
+          this.add
+            .text(lx, ly + 14, "3x+2", {
+              fontSize: "11px",
+              fontFamily: "ui-monospace, monospace",
+              color: "#fff",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(rx, ry + 14, "x+6", {
+              fontSize: "11px",
+              fontFamily: "ui-monospace, monospace",
+              color: "#fff",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, cy + 56, "heavier side drops ↓", {
+              fontSize: "12px",
+              fontFamily: "ui-sans-serif, system-ui, sans-serif",
+              color: "#64748b",
+            })
+            .setOrigin(0.5);
+        }
+
+        _start(tier) {
+          sfx.select();
+          STATE.tier = tier;
+          resetState();
+          this.cameras.main.flash(250, 20, 184, 166);
+          this.time.delayedCall(280, () => this.scene.start("Game"));
         }
 
         update() {
@@ -545,130 +652,7 @@
       }
 
       // ============================================================
-      //  CHARACTER SELECT SCENE
-      // ============================================================
-      class CharSelectScene extends Phaser.Scene {
-        constructor() {
-          super("CharSelect");
-        }
-
-        create() {
-          const cx = W / 2,
-            cy = H / 2;
-          this.cameras.main.setBackgroundColor(C.bg);
-
-          this.add
-            .text(cx, 50, "CHOOSE YOUR WARRIOR", {
-              fontSize: "36px",
-              fontFamily: "ui-sans-serif, system-ui, sans-serif",
-              fontStyle: "bold",
-              color: "#14b8a6",
-              stroke: "#000",
-              strokeThickness: 3,
-            })
-            .setOrigin(0.5);
-
-          this.add
-            .text(cx, 90, "Each warrior has a different style", {
-              fontSize: "16px",
-              fontFamily: "ui-sans-serif, system-ui, sans-serif",
-              color: "#94a3b8",
-            })
-            .setOrigin(0.5);
-
-          const startX = cx - (CHARS.length - 1) * 110;
-
-          this._cards = [];
-          CHARS.forEach((ch, i) => {
-            const x = startX + i * 220;
-            const y = cy + 20;
-
-            const card = this.add
-              .rectangle(x, y, 180, 260, C.panelBg, 0.9)
-              .setStrokeStyle(3, 0x334155);
-            card.setInteractive({ useHandCursor: true });
-
-            // Character icon circle
-            const circle = this.add.circle(x, y - 60, 45, ch.color, 0.9);
-            this.add
-              .text(x, y - 60, ch.icon, {
-                fontSize: "40px",
-                fontFamily: "ui-sans-serif, system-ui, sans-serif",
-                fontStyle: "bold",
-                color: "#ffffff",
-              })
-              .setOrigin(0.5);
-
-            this.add
-              .text(x, y + 15, ch.name, {
-                fontSize: "22px",
-                fontFamily: "ui-sans-serif, system-ui, sans-serif",
-                fontStyle: "bold",
-                color: "#e2e8f0",
-              })
-              .setOrigin(0.5);
-
-            this.add
-              .text(x, y + 50, ch.desc, {
-                fontSize: "13px",
-                fontFamily: "ui-sans-serif, system-ui, sans-serif",
-                color: "#94a3b8",
-                wordWrap: { width: 160 },
-                align: "center",
-              })
-              .setOrigin(0.5);
-
-            // Number hint
-            this.add
-              .text(x, y + 100, `Press ${i + 1}`, {
-                fontSize: "14px",
-                fontFamily: "ui-sans-serif, system-ui, sans-serif",
-                color: "#64748b",
-              })
-              .setOrigin(0.5);
-
-            card.on("pointerover", () => {
-              card.setStrokeStyle(3, ch.color);
-              sfx.tick();
-            });
-            card.on("pointerout", () => card.setStrokeStyle(3, 0x334155));
-            card.on("pointerdown", () => this._selectChar(i));
-
-            this._cards.push({ card, circle });
-          });
-
-          // Keyboard
-          for (let i = 0; i < CHARS.length; i++) {
-            this.input.keyboard.on(`keydown-${i + 1}`, () =>
-              this._selectChar(i),
-            );
-          }
-
-          // Back hint
-          this.add
-            .text(cx, H - 30, "Tap a warrior or press 1-4", {
-              fontSize: "14px",
-              fontFamily: "ui-sans-serif, system-ui, sans-serif",
-              color: "#475569",
-            })
-            .setOrigin(0.5);
-        }
-
-        _selectChar(idx) {
-          sfx.select();
-          STATE.character = idx;
-          resetState();
-
-          // Flash animation
-          const ch = CHARS[idx];
-          this._cards[idx].card.setStrokeStyle(4, ch.color);
-          this.cameras.main.flash(300, 20, 184, 166);
-          this.time.delayedCall(400, () => this.scene.start("Game"));
-        }
-      }
-
-      // ============================================================
-      //  MAIN GAME SCENE
+      //  MAIN GAME SCENE — the Balance Beam
       // ============================================================
       class GameScene extends Phaser.Scene {
         constructor() {
@@ -679,326 +663,417 @@
           this.cameras.main.setBackgroundColor(C.arena);
           sfx.init();
 
-          // State
           this.currentQ = null;
+          this.x = X_MIN; // current slider value of the variable
+          this.beamAngle = 0; // visual smoothing target
+          this.beamAngleNow = 0;
           this.canAnswer = false;
-          this.enemyActive = false;
-          this.roundTimer = 0;
-          this.powerups = [];
-          this.shakeIntensity = 0;
 
-          // ---- ARENA BACKGROUND ----
+          // ---- pivot geometry ----
+          this.pivotX = W / 2;
+          this.pivotY = 250;
+          this.beamLen = 250; // half-length to each pan
+          this.panDrop = 70; // chain length below the beam tip
+
           this._drawArena();
-
-          // ---- PLAYER CHARACTER ----
-          this._createPlayer();
-
-          // ---- HUD ----
           this._createHUD();
+          this._createBeam();
+          this._createSlider();
+          this._createControls();
 
-          // ---- ENEMY CONTAINER ----
-          this.enemyContainer = this.add.container(W / 2, -100);
+          // Keyboard: arrows / A-D step the slider; Enter / Space locks in.
+          this.input.keyboard.on("keydown-LEFT", () => this._step(-1));
+          this.input.keyboard.on("keydown-A", () => this._step(-1));
+          this.input.keyboard.on("keydown-RIGHT", () => this._step(1));
+          this.input.keyboard.on("keydown-D", () => this._step(1));
+          this.input.keyboard.on("keydown-ENTER", () => this._lockIn());
+          this.input.keyboard.on("keydown-SPACE", () => this._lockIn());
 
-          // ---- TOUCH BUTTONS ----
-          this._createButtons();
-
-          // ---- KEYBOARD ----
-          this.keys = {
-            left: this.input.keyboard.addKey("LEFT"),
-            right: this.input.keyboard.addKey("RIGHT"),
-            down: this.input.keyboard.addKey("DOWN"),
-            a: this.input.keyboard.addKey("A"),
-            d: this.input.keyboard.addKey("D"),
-            s: this.input.keyboard.addKey("S"),
-            space: this.input.keyboard.addKey("SPACE"),
-          };
-          this.keyLock = false;
-
-          // ---- PARTICLES ----
-          this.sparkEmitters = [];
-
-          // ---- START FIRST ROUND ----
           this._showLevelBanner();
         }
 
-        // ---- ARENA DRAWING ----
+        // ---- ARENA ----
         _drawArena() {
           const g = this.add.graphics();
-
-          // Floor gradient
           g.fillGradientStyle(0x141428, 0x141428, 0x1a1a3a, 0x1a1a3a, 1);
           g.fillRect(0, 0, W, H);
-
-          // Arena circle
-          g.lineStyle(2, C.teal, 0.2);
-          g.strokeCircle(W / 2, H / 2 + 40, 200);
-          g.strokeCircle(W / 2, H / 2 + 40, 140);
-
-          // Grid lines
           g.lineStyle(1, 0x1e293b, 0.4);
           for (let x = 0; x < W; x += 60) g.lineBetween(x, 0, x, H);
           for (let y = 0; y < H; y += 60) g.lineBetween(0, y, W, y);
 
-          // Decorative runes on floor
-          g.lineStyle(1, C.teal, 0.08);
-          for (let a = 0; a < Math.PI * 2; a += Math.PI / 6) {
-            const cx = W / 2,
-              cy = H / 2 + 40;
-            g.lineBetween(
-              cx + Math.cos(a) * 80,
-              cy + Math.sin(a) * 80,
-              cx + Math.cos(a) * 195,
-              cy + Math.sin(a) * 195,
-            );
-          }
-
-          // Ambient floating particles
           this._bgParticles = [];
-          for (let i = 0; i < 25; i++) {
+          for (let i = 0; i < 22; i++) {
             const p = this.add.circle(
               Phaser.Math.Between(0, W),
               Phaser.Math.Between(0, H),
               Phaser.Math.Between(1, 2),
               C.tealBright,
-              Phaser.Math.FloatBetween(0.05, 0.2),
+              Phaser.Math.FloatBetween(0.05, 0.18),
             );
             this._bgParticles.push({
               obj: p,
-              sx: Phaser.Math.FloatBetween(-0.3, 0.3),
-              sy: Phaser.Math.FloatBetween(-0.5, -0.1),
+              sx: Phaser.Math.FloatBetween(-0.2, 0.2),
+              sy: Phaser.Math.FloatBetween(-0.4, -0.1),
             });
           }
-        }
-
-        // ---- PLAYER ----
-        _createPlayer() {
-          const ch = CHARS[STATE.character];
-          const px = W / 2,
-            py = H / 2 + 80;
-
-          // Shadow
-          this.playerShadow = this.add.ellipse(
-            px,
-            py + 35,
-            50,
-            16,
-            0x000000,
-            0.3,
-          );
-
-          // Body
-          this.playerBody = this.add.rectangle(px, py, 36, 44, ch.color);
-          this.playerBody.setStrokeStyle(2, 0xffffff, 0.3);
-
-          // Head
-          this.playerHead = this.add.circle(px, py - 30, 16, ch.color);
-          this.playerHead.setStrokeStyle(2, 0xffffff, 0.3);
-
-          // Eyes
-          this.playerEyeL = this.add.circle(px - 6, py - 32, 3, 0xffffff);
-          this.playerEyeR = this.add.circle(px + 6, py - 32, 3, 0xffffff);
-
-          // Weapon (small line)
-          this.playerWeapon = this.add.rectangle(
-            px + 24,
-            py - 5,
-            6,
-            34,
-            0xd4d4d8,
-          );
-          this.playerWeapon.setStrokeStyle(1, 0xffffff, 0.4);
-
-          // Shield indicator
-          this.shieldGlow = this.add
-            .circle(px, py, 50, C.blue, 0)
-            .setStrokeStyle(3, C.blue, 0);
-
-          // Idle animation
-          this.tweens.add({
-            targets: [
-              this.playerBody,
-              this.playerHead,
-              this.playerEyeL,
-              this.playerEyeR,
-              this.playerWeapon,
-            ],
-            y: "-=3",
-            duration: 600,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut",
-          });
         }
 
         // ---- HUD ----
         _createHUD() {
           const s = { fontFamily: "ui-sans-serif, system-ui, sans-serif" };
+          this.add.rectangle(W / 2, 0, W, 52, 0x0f172a, 0.92).setOrigin(0.5, 0);
 
-          // Top bar background
-          this.add.rectangle(W / 2, 0, W, 56, 0x0f172a, 0.9).setOrigin(0.5, 0);
-
-          // HP bar
-          this.add.text(16, 8, "HP", {
+          this.add.text(16, 6, "LIVES", {
             ...s,
-            fontSize: "14px",
+            fontSize: "12px",
             fontStyle: "bold",
             color: "#ef4444",
           });
-          this.hpBarBg = this.add
-            .rectangle(50, 12, 180, 16, 0x1e293b)
-            .setOrigin(0, 0);
-          this.hpBar = this.add
-            .rectangle(50, 12, 180, 16, C.red)
-            .setOrigin(0, 0);
-          this.hpText = this.add
-            .text(140, 12, "100/100", { ...s, fontSize: "12px", color: "#fff" })
-            .setOrigin(0.5, 0);
+          this.livesText = this.add.text(16, 22, "", {
+            ...s,
+            fontSize: "20px",
+          });
 
-          // Score
-          this.scoreText = this.add.text(260, 8, "SCORE: 0", {
+          this.scoreText = this.add.text(150, 8, "SCORE: 0", {
             ...s,
             fontSize: "16px",
             fontStyle: "bold",
             color: "#f59e0b",
           });
-
-          // Combo
-          this.comboText = this.add.text(440, 8, "", {
+          this.comboText = this.add.text(150, 30, "", {
             ...s,
-            fontSize: "16px",
+            fontSize: "13px",
             fontStyle: "bold",
             color: "#ec4899",
           });
 
-          // Level
-          this.levelText = this.add.text(600, 8, "LEVEL 1", {
+          this.levelText = this.add.text(360, 8, "LEVEL 1", {
             ...s,
             fontSize: "16px",
             fontStyle: "bold",
             color: "#14b8a6",
           });
-
-          // Round
-          this.roundText = this.add.text(740, 8, "ROUND 0", {
+          this.roundText = this.add.text(360, 30, "ROUND 0", {
             ...s,
-            fontSize: "14px",
+            fontSize: "13px",
             color: "#94a3b8",
           });
 
           // XP bar
-          this.add.text(16, 32, "XP", {
+          this.add.text(520, 8, "XP", {
             ...s,
             fontSize: "12px",
-            color: "#7c3aed",
+            color: "#a78bfa",
           });
           this.xpBarBg = this.add
-            .rectangle(50, 36, 180, 10, 0x1e293b)
+            .rectangle(545, 12, 150, 10, 0x1e293b)
             .setOrigin(0, 0);
           this.xpBar = this.add
-            .rectangle(50, 36, 0, 10, C.purple)
+            .rectangle(545, 12, 0, 10, C.purple)
             .setOrigin(0, 0);
 
-          // Status icons area
-          this.statusText = this.add.text(260, 34, "", {
-            ...s,
-            fontSize: "12px",
-            color: "#22c55e",
-          });
-
-          // Variable value display (bottom center)
-          this.varDisplay = this.add
-            .text(W / 2, H - 12, "", {
+          // Goal banner (what relation to achieve this round)
+          this.goalText = this.add
+            .text(W / 2, 36, "", {
               ...s,
               fontSize: "16px",
               fontStyle: "bold",
-              color: "#f59e0b",
+              color: "#fde68a",
+              align: "center",
             })
-            .setOrigin(0.5, 1);
+            .setOrigin(0.5);
         }
 
-        // ---- BUTTONS ----
-        _createButtons() {
+        // ---- BEAM (post, beam, two pans with expression chips + value readouts) ----
+        _createBeam() {
+          // Stand / post
+          this.postGfx = this.add.graphics();
+          this.beamGfx = this.add.graphics();
+
+          const chipStyle = {
+            fontFamily: "ui-monospace, monospace",
+            fontStyle: "bold",
+            color: "#ffffff",
+            align: "center",
+          };
+
+          // LEFT pan group
+          this.leftPan = this.add.container(0, 0);
+          this.leftPlate = this.add
+            .ellipse(0, 0, 130, 24, C.teal, 0.9)
+            .setStrokeStyle(3, C.tealBright);
+          this.leftSideLbl = this.add
+            .text(0, -54, "LEFT", {
+              ...chipStyle,
+              fontSize: "13px",
+              color: "#5eead4",
+            })
+            .setOrigin(0.5);
+          this.leftExprTxt = this.add
+            .text(0, -32, "", { ...chipStyle, fontSize: "22px" })
+            .setOrigin(0.5);
+          this.leftValTxt = this.add
+            .text(0, 4, "", {
+              ...chipStyle,
+              fontSize: "16px",
+              color: "#bef264",
+            })
+            .setOrigin(0.5);
+          this.leftPan.add([
+            this.leftPlate,
+            this.leftSideLbl,
+            this.leftExprTxt,
+            this.leftValTxt,
+          ]);
+
+          // RIGHT pan group
+          this.rightPan = this.add.container(0, 0);
+          this.rightPlate = this.add
+            .ellipse(0, 0, 130, 24, C.coral, 0.9)
+            .setStrokeStyle(3, 0xf87171);
+          this.rightSideLbl = this.add
+            .text(0, -54, "RIGHT", {
+              ...chipStyle,
+              fontSize: "13px",
+              color: "#fca5a5",
+            })
+            .setOrigin(0.5);
+          this.rightExprTxt = this.add
+            .text(0, -32, "", { ...chipStyle, fontSize: "22px" })
+            .setOrigin(0.5);
+          this.rightValTxt = this.add
+            .text(0, 4, "", {
+              ...chipStyle,
+              fontSize: "16px",
+              color: "#fde68a",
+            })
+            .setOrigin(0.5);
+          this.rightPan.add([
+            this.rightPlate,
+            this.rightSideLbl,
+            this.rightExprTxt,
+            this.rightValTxt,
+          ]);
+
+          // Level indicator near the pivot ("LEVEL!" when balanced)
+          this.levelFlag = this.add
+            .text(this.pivotX, this.pivotY - 36, "", {
+              fontFamily: "ui-sans-serif, system-ui, sans-serif",
+              fontSize: "16px",
+              fontStyle: "bold",
+              color: "#22c55e",
+            })
+            .setOrigin(0.5);
+
+          // Comparison readout under the pivot ("LEFT 14  >  RIGHT 11")
+          this.compareText = this.add
+            .text(this.pivotX, 380, "", {
+              fontFamily: "ui-monospace, monospace",
+              fontStyle: "bold",
+              fontSize: "20px",
+              color: "#e2e8f0",
+            })
+            .setOrigin(0.5);
+        }
+
+        // ---- SLIDER (the manipulation that sets x) ----
+        _createSlider() {
+          const trackY = 470;
+          this.trackY = trackY;
+          this.trackX0 = 180;
+          this.trackX1 = W - 180;
+          const s = { fontFamily: "ui-sans-serif, system-ui, sans-serif" };
+
+          this.add.text(W / 2, trackY - 40, "", { ...s }).setOrigin(0.5); // spacer
+          this.sliderLabel = this.add
+            .text(W / 2, trackY - 42, "", {
+              ...s,
+              fontSize: "20px",
+              fontStyle: "bold",
+              color: "#f59e0b",
+            })
+            .setOrigin(0.5);
+
+          // Track
+          const trk = this.add.graphics();
+          trk.fillStyle(0x1e293b, 1);
+          trk.fillRoundedRect(
+            this.trackX0,
+            trackY - 6,
+            this.trackX1 - this.trackX0,
+            12,
+            6,
+          );
+          trk.lineStyle(2, 0x334155, 1);
+          trk.strokeRoundedRect(
+            this.trackX0,
+            trackY - 6,
+            this.trackX1 - this.trackX0,
+            12,
+            6,
+          );
+
+          // Tick marks + numbers for every integer in domain
+          const tickStyle = { ...s, fontSize: "12px", color: "#64748b" };
+          this.tickLabels = [];
+          for (let v = X_MIN; v <= X_MAX; v++) {
+            const tx = this._valueToX(v);
+            trk.lineStyle(2, 0x475569, 0.8);
+            trk.lineBetween(tx, trackY - 10, tx, trackY + 10);
+            const lbl = this.add
+              .text(tx, trackY + 18, String(v), tickStyle)
+              .setOrigin(0.5);
+            this.tickLabels.push(lbl);
+          }
+
+          // Highlight band for the target region (drawn per round)
+          this.regionGfx = this.add.graphics();
+
+          // Knob
+          this.knob = this.add
+            .circle(this._valueToX(this.x), trackY, 18, C.gold)
+            .setStrokeStyle(3, 0xfde68a)
+            .setInteractive({ useHandCursor: true, draggable: true });
+          this.knobLabel = this.add
+            .text(this._valueToX(this.x), trackY, String(this.x), {
+              ...s,
+              fontSize: "16px",
+              fontStyle: "bold",
+              color: "#1e1b4b",
+            })
+            .setOrigin(0.5);
+
+          this.input.setDraggable(this.knob);
+          this.input.on("drag", (pointer, obj, dragX) => {
+            if (obj !== this.knob || !this.canAnswer) return;
+            const v = this._xToValue(dragX);
+            if (v !== this.x) {
+              this.x = v;
+              sfx.slide();
+              this._refreshFromX();
+            } else {
+              this._placeKnob(); // snap visually
+            }
+          });
+          this.input.on("dragend", (pointer, obj) => {
+            if (obj === this.knob) this._placeKnob();
+          });
+
+          // Tapping the track also moves the knob (touch-friendly).
+          const hit = this.add
+            .rectangle(
+              (this.trackX0 + this.trackX1) / 2,
+              trackY,
+              this.trackX1 - this.trackX0 + 40,
+              48,
+              0xffffff,
+              0,
+            )
+            .setInteractive({ useHandCursor: true });
+          hit.on("pointerdown", (pointer) => {
+            if (!this.canAnswer) return;
+            const v = this._xToValue(pointer.x);
+            if (v !== this.x) {
+              this.x = v;
+              sfx.slide();
+              this._refreshFromX();
+            }
+          });
+        }
+
+        _valueToX(v) {
+          const t = (v - X_MIN) / (X_MAX - X_MIN);
+          return this.trackX0 + t * (this.trackX1 - this.trackX0);
+        }
+        _xToValue(px) {
+          const t = Phaser.Math.Clamp(
+            (px - this.trackX0) / (this.trackX1 - this.trackX0),
+            0,
+            1,
+          );
+          return Math.round(X_MIN + t * (X_MAX - X_MIN));
+        }
+        _placeKnob() {
+          const tx = this._valueToX(this.x);
+          this.knob.x = tx;
+          this.knobLabel.x = tx;
+          this.knobLabel.setText(String(this.x));
+        }
+        _step(dir) {
+          if (!this.canAnswer) return;
+          const nv = Phaser.Math.Clamp(this.x + dir, X_MIN, X_MAX);
+          if (nv !== this.x) {
+            this.x = nv;
+            sfx.slide();
+            this._refreshFromX();
+          }
+        }
+
+        // ---- CONTROL BUTTONS (lock in / hint) ----
+        _createControls() {
           const s = {
             fontFamily: "ui-sans-serif, system-ui, sans-serif",
             fontStyle: "bold",
           };
-          const btnY = H - 70;
-          const btnW = 120,
-            btnH = 50;
+          const by = 545;
 
-          // Left (<) button
-          this.btnLeft = this.add
-            .rectangle(W / 2 - 160, btnY, btnW, btnH, C.blue, 0.85)
-            .setStrokeStyle(2, 0x60a5fa)
+          this.lockBtn = this.add
+            .rectangle(W / 2 + 130, by, 200, 54, C.green, 0.92)
+            .setStrokeStyle(2, 0x86efac)
             .setInteractive({ useHandCursor: true });
-          this.btnLeftTxt = this.add
-            .text(W / 2 - 160, btnY, "< LESS", {
-              ...s,
-              fontSize: "20px",
-              color: "#fff",
-            })
-            .setOrigin(0.5);
-          this.btnLeft.on("pointerdown", () => this._answer("<"));
-          this.btnLeft.on("pointerover", () =>
-            this.btnLeft.setFillStyle(0x60a5fa),
-          );
-          this.btnLeft.on("pointerout", () =>
-            this.btnLeft.setFillStyle(C.blue, 0.85),
-          );
-
-          // Equal (=) button
-          this.btnEqual = this.add
-            .rectangle(W / 2, btnY, btnW, btnH, C.gold, 0.85)
-            .setStrokeStyle(2, 0xfbbf24)
-            .setInteractive({ useHandCursor: true });
-          this.btnEqualTxt = this.add
-            .text(W / 2, btnY, "= EQUAL", {
-              ...s,
-              fontSize: "20px",
-              color: "#fff",
-            })
-            .setOrigin(0.5);
-          this.btnEqual.on("pointerdown", () => this._answer("="));
-          this.btnEqual.on("pointerover", () =>
-            this.btnEqual.setFillStyle(0xfbbf24),
-          );
-          this.btnEqual.on("pointerout", () =>
-            this.btnEqual.setFillStyle(C.gold, 0.85),
-          );
-
-          // Right (>) button
-          this.btnRight = this.add
-            .rectangle(W / 2 + 160, btnY, btnW, btnH, C.coral, 0.85)
-            .setStrokeStyle(2, 0xf87171)
-            .setInteractive({ useHandCursor: true });
-          this.btnRightTxt = this.add
-            .text(W / 2 + 160, btnY, "MORE >", {
-              ...s,
-              fontSize: "20px",
-              color: "#fff",
-            })
-            .setOrigin(0.5);
-          this.btnRight.on("pointerdown", () => this._answer(">"));
-          this.btnRight.on("pointerover", () =>
-            this.btnRight.setFillStyle(0xf87171),
-          );
-          this.btnRight.on("pointerout", () =>
-            this.btnRight.setFillStyle(C.coral, 0.85),
-          );
-
-          // Key hints below buttons
-          const hintStyle = {
-            ...s,
-            fontSize: "12px",
-            color: "#475569",
-            fontStyle: "normal",
-          };
           this.add
-            .text(W / 2 - 160, btnY + 35, "← or A", hintStyle)
+            .text(W / 2 + 130, by, "LOCK IN ✓", {
+              ...s,
+              fontSize: "20px",
+              color: "#06281a",
+            })
             .setOrigin(0.5);
-          this.add.text(W / 2, btnY + 35, "↓ or S", hintStyle).setOrigin(0.5);
+          this.lockBtn.on("pointerover", () =>
+            this.lockBtn.setFillStyle(C.green, 1),
+          );
+          this.lockBtn.on("pointerout", () =>
+            this.lockBtn.setFillStyle(C.green, 0.92),
+          );
+          this.lockBtn.on("pointerdown", () => this._lockIn());
+
+          this.hintBtn = this.add
+            .rectangle(W / 2 - 130, by, 200, 54, 0x334155, 0.95)
+            .setStrokeStyle(2, C.teal)
+            .setInteractive({ useHandCursor: true });
           this.add
-            .text(W / 2 + 160, btnY + 35, "→ or D", hintStyle)
+            .text(W / 2 - 130, by, "💡 HINT", {
+              ...s,
+              fontSize: "18px",
+              color: "#ffffff",
+            })
+            .setOrigin(0.5);
+          this.hintBtn.on("pointerover", () =>
+            this.hintBtn.setFillStyle(0x475569, 1),
+          );
+          this.hintBtn.on("pointerout", () =>
+            this.hintBtn.setFillStyle(0x334155, 0.95),
+          );
+          this.hintBtn.on("pointerdown", () => this._showHint());
+
+          // Feedback line
+          this.feedback = this.add
+            .text(W / 2, 600, "", {
+              fontFamily: "ui-sans-serif, system-ui, sans-serif",
+              fontStyle: "bold",
+              fontSize: "16px",
+              color: "#fde68a",
+              align: "center",
+              wordWrap: { width: 880 },
+            })
+            .setOrigin(0.5);
+
+          // Key hint
+          this.add
+            .text(W / 2, 628, "← → move slider   ·   Enter = lock in", {
+              fontFamily: "ui-sans-serif, system-ui, sans-serif",
+              fontSize: "12px",
+              color: "#475569",
+            })
             .setOrigin(0.5);
         }
 
@@ -1007,7 +1082,6 @@
           const cx = W / 2,
             cy = H / 2;
           sfx.levelUp();
-
           const overlay = this.add
             .rectangle(cx, cy, W, H, 0x000000, 0.7)
             .setDepth(100);
@@ -1016,7 +1090,7 @@
             .setStrokeStyle(3, C.teal)
             .setDepth(101);
           const txt1 = this.add
-            .text(cx, cy - 20, `LEVEL ${STATE.level}`, {
+            .text(cx, cy - 18, `LEVEL ${STATE.level}`, {
               fontSize: "40px",
               fontFamily: "ui-sans-serif, system-ui, sans-serif",
               fontStyle: "bold",
@@ -1026,18 +1100,17 @@
             })
             .setOrigin(0.5)
             .setDepth(102);
-
-          const diffNames = [
+          const names = [
             "",
-            "Simple",
-            "Basic",
-            "Standard",
-            "Advanced",
-            "Expert",
-            "Master",
+            "Compare the sides",
+            "Heavier wins",
+            "Find the balance",
+            "Target regions",
+            "Strict & solve",
+            "Master balancer",
           ];
           const txt2 = this.add
-            .text(cx, cy + 25, diffNames[STATE.level] || "Master", {
+            .text(cx, cy + 26, names[STATE.level] || "Master balancer", {
               fontSize: "18px",
               fontFamily: "ui-sans-serif, system-ui, sans-serif",
               color: "#94a3b8",
@@ -1045,7 +1118,6 @@
             .setOrigin(0.5)
             .setDepth(102);
 
-          // Animate in
           banner.setScale(0);
           txt1.setScale(0);
           txt2.setScale(0);
@@ -1055,8 +1127,7 @@
             duration: 400,
             ease: "Back.easeOut",
           });
-
-          this.time.delayedCall(1500, () => {
+          this.time.delayedCall(1400, () => {
             this.tweens.add({
               targets: [overlay, banner, txt1, txt2],
               alpha: 0,
@@ -1066,282 +1137,165 @@
                 banner.destroy();
                 txt1.destroy();
                 txt2.destroy();
-                this._spawnEnemy();
+                this._nextRound();
               },
             });
           });
         }
 
-        // ---- SPAWN ENEMY ----
-        _spawnEnemy() {
+        // ---- START A ROUND ----
+        _nextRound() {
           STATE.round++;
           const isBoss = STATE.round % 5 === 0;
-
-          // Generate question
           this.currentQ = isBoss
             ? QGen.makeBoss(STATE.level)
-            : QGen.generate(STATE.level, 1)[0];
+            : QGen.generate(STATE.level);
           if (isBoss) sfx.boss();
 
-          // Clear old enemy
-          this.enemyContainer.removeAll(true);
+          const q = this.currentQ;
+          this.x = X_MIN; // reset slider each round
+          this.feedback.setText("");
 
-          const enemyColor = isBoss ? C.red : C.purple;
-          const enemySize = isBoss ? 1.3 : 1;
+          // expression chips
+          this.leftExprTxt.setText(q.left.label);
+          this.rightExprTxt.setText(q.right.label);
 
-          // Enemy body
-          const body = this.add.rectangle(
-            0,
-            0,
-            40 * enemySize,
-            50 * enemySize,
-            enemyColor,
-          );
-          body.setStrokeStyle(2, 0xffffff, 0.3);
-          const head = this.add.circle(
-            0,
-            -35 * enemySize,
-            18 * enemySize,
-            enemyColor,
-          );
-          head.setStrokeStyle(2, 0xffffff, 0.3);
-          // Angry eyes
-          const eyeL = this.add.circle(
-            -7 * enemySize,
-            -37 * enemySize,
-            3 * enemySize,
-            0xff0000,
-          );
-          const eyeR = this.add.circle(
-            7 * enemySize,
-            -37 * enemySize,
-            3 * enemySize,
-            0xff0000,
-          );
-
-          // Boss crown
-          if (isBoss) {
-            const crown = this.add
-              .text(0, -60, "♚", { fontSize: "28px", color: "#fbbf24" })
-              .setOrigin(0.5);
-            this.enemyContainer.add(crown);
-          }
-
-          // Expression panels
-          const panelW = 160,
-            panelH = 70;
-          const lPanel = this.add
-            .rectangle(-130, 10, panelW, panelH, C.blue, 0.9)
-            .setStrokeStyle(2, 0x60a5fa);
-          const rPanel = this.add
-            .rectangle(130, 10, panelW, panelH, C.coral, 0.9)
-            .setStrokeStyle(2, 0xf87171);
-
-          const fontS = {
-            fontFamily: "ui-monospace, monospace",
-            fontStyle: "bold",
-            color: "#ffffff",
-            align: "center",
-            wordWrap: { width: 145 },
-          };
-
-          const lText = this.add
-            .text(-130, 4, this.currentQ.leftLabel, {
-              ...fontS,
-              fontSize: "20px",
-            })
-            .setOrigin(0.5);
-          const rText = this.add
-            .text(130, 4, this.currentQ.rightLabel, {
-              ...fontS,
-              fontSize: "20px",
-            })
-            .setOrigin(0.5);
-
-          const lValTxt = this.add
-            .text(-130, 28, `= ${this.currentQ.leftVal}`, {
-              ...fontS,
-              fontSize: "14px",
-              color: "#94a3b8",
-            })
-            .setOrigin(0.5)
-            .setAlpha(0);
-          const rValTxt = this.add
-            .text(130, 28, `= ${this.currentQ.rightVal}`, {
-              ...fontS,
-              fontSize: "14px",
-              color: "#94a3b8",
-            })
-            .setOrigin(0.5)
-            .setAlpha(0);
-
-          this.enemyValTexts = [lValTxt, rValTxt];
-
-          // VS text
-          const vs = this.add
-            .text(0, 55, "VS", {
-              fontFamily: "ui-sans-serif, system-ui, sans-serif",
-              fontSize: "16px",
-              fontStyle: "bold",
-              color: "#f59e0b",
-            })
-            .setOrigin(0.5);
-
-          this.enemyContainer.add([
-            body,
-            head,
-            eyeL,
-            eyeR,
-            lPanel,
-            rPanel,
-            lText,
-            rText,
-            lValTxt,
-            rValTxt,
-            vs,
-          ]);
-
-          // Position and animate in
-          const fromSide = Math.random() < 0.5;
-          if (fromSide) {
-            this.enemyContainer.setPosition(
-              Math.random() < 0.5 ? -200 : W + 200,
-              H / 2 - 60,
+          // goal text + region highlight
+          this.regionGfx.clear();
+          if (q.kind === "equal") {
+            this.goalText.setText(
+              isBoss
+                ? "⚔ BOSS — LEVEL THE BEAM: solve for x so LEFT = RIGHT"
+                : "LEVEL THE BEAM: find x so LEFT = RIGHT (solve)",
             );
           } else {
-            this.enemyContainer.setPosition(W / 2, -200);
+            const want =
+              q.rel === ">"
+                ? "make LEFT heavier than RIGHT (LEFT > RIGHT)"
+                : "make LEFT lighter than RIGHT (LEFT < RIGHT)";
+            this.goalText.setText(
+              (q.kind === "tipL2" ? "TARGET REGION: " : "TIP THE BEAM: ") +
+                want,
+            );
+            // Highlight the truth-set band on the slider so the region is felt,
+            // not given as a single answer.
+            this._drawRegion(q.targetSet);
           }
 
-          this.tweens.add({
-            targets: this.enemyContainer,
-            x: W / 2,
-            y: H / 2 - 60,
-            duration: 800,
-            ease: "Back.easeOut",
-            onComplete: () => {
-              this.canAnswer = true;
-              this.keyLock = false;
-              this.enemyActive = true;
-
-              // Idle bob
-              this.tweens.add({
-                targets: this.enemyContainer,
-                y: H / 2 - 66,
-                duration: 500,
-                yoyo: true,
-                repeat: -1,
-                ease: "Sine.easeInOut",
-              });
-            },
-          });
-
-          // Update variable display
-          this.varDisplay.setText(
-            `${this.currentQ.varName} = ${this.currentQ.varValue}`,
-          );
+          this.canAnswer = true;
           this.roundText.setText(`ROUND ${STATE.round}`);
+          this._placeKnob();
+          this._refreshFromX();
 
-          // Round timer (auto-damage if too slow)
-          this.roundTimer = 12;
+          // timer: gentle, only nudges; in support tier it never times out.
+          this.roundTimer = STATE.tier === 1 ? 0 : 22;
           if (this.roundTimerEvent) this.roundTimerEvent.remove();
-          this.roundTimerEvent = this.time.addEvent({
-            delay: 1000,
-            repeat: 11,
-            callback: () => {
-              this.roundTimer--;
-              if (this.roundTimer <= 3 && this.roundTimer > 0) sfx.tick();
-              if (this.roundTimer <= 0 && this.canAnswer) {
-                this._answer("timeout");
-              }
-            },
-          });
-        }
-
-        // ---- ANSWER HANDLER ----
-        _answer(choice) {
-          if (!this.canAnswer || !this.currentQ) return;
-          this.canAnswer = false;
-          this.keyLock = true;
-          if (this.roundTimerEvent) this.roundTimerEvent.remove();
-
-          const correct = choice === this.currentQ.answer;
-
-          // Show actual values
-          if (this.enemyValTexts) {
-            this.enemyValTexts.forEach((t) => {
-              if (t && t.active) t.setAlpha(1);
+          if (this.roundTimer > 0) {
+            this.roundTimerEvent = this.time.addEvent({
+              delay: 1000,
+              repeat: this.roundTimer - 1,
+              callback: () => {
+                this.roundTimer--;
+                if (this.roundTimer <= 3 && this.roundTimer > 0) sfx.tick();
+                if (this.roundTimer <= 0 && this.canAnswer) this._lockIn(true);
+              },
             });
           }
-
-          STATE.questionsAnswered.push({
-            ...this.currentQ,
-            playerAnswer: choice,
-            correct,
-          });
-
-          if (correct) {
-            this._onCorrect();
-          } else {
-            this._onWrong(choice === "timeout");
-          }
         }
 
-        // ---- CORRECT ANSWER ----
-        _onCorrect() {
-          sfx.slash();
-          setTimeout(() => sfx.correct(), 150);
-          STATE.totalCorrect++;
+        _drawRegion(set) {
+          if (!set.length) return;
+          // Shade the slider ticks that satisfy the relation (a band of x's).
+          this.regionGfx.fillStyle(C.green, 0.16);
+          set.forEach((v) => {
+            const tx = this._valueToX(v);
+            this.regionGfx.fillRect(tx - 14, this.trackY - 26, 28, 52);
+          });
+        }
 
-          // Combo
+        // ---- RECOMPUTE on every slider change: substitution + tipping ----
+        _refreshFromX() {
+          this._placeKnob();
+          const q = this.currentQ;
+          if (!q) return;
+          const l = evalExpr(q.left, this.x);
+          const r = evalExpr(q.right, this.x);
+
+          // slider readout
+          this.sliderLabel.setText(`x = ${this.x}`);
+
+          // value chips (the substitution, shown live)
+          this.leftValTxt.setText(`= ${l}`);
+          this.rightValTxt.setText(`= ${r}`);
+
+          // comparison readout — uses the BEAM, plus words, never a clickable symbol
+          let rel;
+          if (l > r) rel = "drops LEFT  (LEFT is heavier)";
+          else if (l < r) rel = "drops RIGHT  (RIGHT is heavier)";
+          else rel = "LEVEL  (equal!)";
+          this.compareText.setText(`LEFT ${l}    RIGHT ${r}   →  ${rel}`);
+          this.compareText.setColor(l === r ? "#22c55e" : "#e2e8f0");
+
+          // beam tips toward the heavier (larger) side; magnitude ~ difference
+          const diff = l - r;
+          const maxTilt = 0.42; // radians
+          const norm = Phaser.Math.Clamp(diff / 14, -1, 1);
+          this.beamAngle = norm * maxTilt; // left-down is negative angle below
+
+          this.levelFlag.setText(l === r ? "⚖ LEVEL!" : "");
+
+          // sound cue when crossing into balance
+          if (l === r) sfx.level();
+        }
+
+        // ---- LOCK IN: did the player's x satisfy the round goal? ----
+        _lockIn(isTimeout) {
+          if (!this.canAnswer || !this.currentQ) return;
+          this.canAnswer = false;
+          if (this.roundTimerEvent) this.roundTimerEvent.remove();
+
+          const q = this.currentQ;
+          const success = !isTimeout && q.targetSet.includes(this.x);
+
+          STATE.questionsAnswered.push({
+            kind: q.kind,
+            leftLabel: q.left.label,
+            rightLabel: q.right.label,
+            rel: q.rel,
+            chosenX: this.x,
+            targetSet: q.targetSet.slice(),
+            isBoss: q.isBoss,
+            correct: success,
+          });
+
+          if (success) this._onCorrect();
+          else this._onWrong(isTimeout, q);
+        }
+
+        _onCorrect() {
+          sfx.correct();
+          STATE.totalCorrect++;
           STATE.combo++;
           if (STATE.combo > STATE.maxCombo) STATE.maxCombo = STATE.combo;
-          const comboMult = Math.min(STATE.combo, 10);
+          const mult = Math.min(STATE.combo, 8);
+          let pts = 100 * mult;
+          if (this.currentQ.isBoss) pts *= 3;
+          STATE.score += pts;
+          STATE.xp += pts;
 
-          // Score
-          let points = 100 * comboMult;
-          if (this.currentQ.isBoss) points *= 3;
-          if (STATE.doubleXP) points *= 2;
-          STATE.score += points;
-          STATE.xp += points;
+          this.cameras.main.flash(180, 20, 184, 120);
+          this._burst(this.pivotX, this.pivotY, C.tealBright, 18);
+          this._burst(this.pivotX, this.pivotY, C.gold, 12);
 
-          // Slash animation — player lunges forward
-          const px = W / 2,
-            py = H / 2 + 80;
-          this.tweens.add({
-            targets: [
-              this.playerBody,
-              this.playerHead,
-              this.playerEyeL,
-              this.playerEyeR,
-              this.playerWeapon,
-              this.playerShadow,
-            ],
-            y: "-=40",
-            duration: 100,
-            yoyo: true,
-            ease: "Power2",
-          });
+          const msg =
+            this.currentQ.kind === "equal"
+              ? `Balanced! At x = ${this.x} both sides equal ${evalExpr(this.currentQ.left, this.x)}.  +${pts}`
+              : `Beam tipped the right way at x = ${this.x}.  +${pts}${STATE.combo > 1 ? "  ×" + STATE.combo + " combo" : ""}`;
+          this.feedback.setColor("#bbf7d0").setText("✅ " + msg);
 
-          // Weapon swing
-          this.tweens.add({
-            targets: this.playerWeapon,
-            angle: 90,
-            duration: 150,
-            yoyo: true,
-            ease: "Power2",
-          });
-
-          // Screen shake
-          this.cameras.main.shake(200, 0.01);
-
-          // Hit particles
-          this._spawnParticles(W / 2, H / 2 - 40, C.tealBright, 20);
-          this._spawnParticles(W / 2, H / 2 - 40, C.gold, 12);
-
-          // Floating score text
-          const floatTxt = this.add
-            .text(W / 2, H / 2 - 100, `+${points}`, {
-              fontSize: "32px",
+          const float = this.add
+            .text(this.pivotX, this.pivotY - 80, `+${pts}`, {
+              fontSize: "30px",
               fontFamily: "ui-sans-serif, system-ui, sans-serif",
               fontStyle: "bold",
               color: "#22c55e",
@@ -1350,412 +1304,146 @@
             })
             .setOrigin(0.5)
             .setDepth(50);
-
-          if (STATE.combo > 1) {
-            const comboFloat = this.add
-              .text(W / 2, H / 2 - 130, `${STATE.combo}x COMBO!`, {
-                fontSize: "24px",
-                fontFamily: "ui-sans-serif, system-ui, sans-serif",
-                fontStyle: "bold",
-                color: "#ec4899",
-                stroke: "#000",
-                strokeThickness: 3,
-              })
-              .setOrigin(0.5)
-              .setDepth(50);
-            this.tweens.add({
-              targets: comboFloat,
-              y: "-=60",
-              alpha: 0,
-              duration: 1200,
-              onComplete: () => comboFloat.destroy(),
-            });
-          }
-
           this.tweens.add({
-            targets: floatTxt,
-            y: "-=80",
+            targets: float,
+            y: "-=70",
             alpha: 0,
             duration: 1000,
-            onComplete: () => floatTxt.destroy(),
+            onComplete: () => float.destroy(),
           });
 
-          // Enemy death
-          this.tweens.add({
-            targets: this.enemyContainer,
-            alpha: 0,
-            scaleX: 1.5,
-            scaleY: 0,
-            duration: 400,
-            ease: "Power2",
-            onComplete: () => {
-              this.enemyContainer.removeAll(true);
-              this.enemyContainer.setAlpha(1).setScale(1);
-              this.enemyActive = false;
-
-              // Power-up chance (20%)
-              if (Math.random() < 0.2) {
-                this._spawnPowerup();
-              }
-
-              // Check level up
-              this._checkLevelUp();
-
-              // Update HUD and next round
-              this._updateHUD();
-              this.time.delayedCall(800, () => this._spawnEnemy());
-            },
-          });
-
+          this._checkLevelUp();
           this._updateHUD();
+
+          const goal = STATE.tier === 1 ? 10 : 12;
+          this.time.delayedCall(1300, () => {
+            if (STATE.totalCorrect >= goal) this.scene.start("Results");
+            else this._nextRound();
+          });
         }
 
-        // ---- WRONG ANSWER ----
-        _onWrong(isTimeout) {
+        _onWrong(isTimeout, q) {
           sfx.wrong();
-          sfx.hit();
           STATE.totalWrong++;
           STATE.combo = 0;
+          const dmg = STATE.tier === 1 ? 20 : 25;
+          STATE.hp = Math.max(0, STATE.hp - dmg);
 
-          let damage = 15;
-          if (this.currentQ.isBoss) damage = 25;
-          if (isTimeout) damage = 20;
+          this.cameras.main.shake(260, 0.012);
+          this.cameras.main.flash(220, 200, 50, 50);
 
-          if (STATE.shield) {
-            damage = 0;
-            STATE.shield = false;
-            this.shieldGlow.setStrokeStyle(3, C.blue, 0);
-            this.shieldGlow.setFillStyle(C.blue, 0);
-
-            const shieldBreak = this.add
-              .text(W / 2, H / 2, "SHIELD BLOCKED!", {
-                fontSize: "24px",
-                fontFamily: "ui-sans-serif, system-ui, sans-serif",
-                fontStyle: "bold",
-                color: "#3b82f6",
-                stroke: "#000",
-                strokeThickness: 3,
-              })
-              .setOrigin(0.5)
-              .setDepth(50);
-            this.tweens.add({
-              targets: shieldBreak,
-              y: "-=60",
-              alpha: 0,
-              duration: 1000,
-              onComplete: () => shieldBreak.destroy(),
-            });
+          // diagnostic, NON-giveaway feedback: teach substitution/solving,
+          // never reveal the winning x.
+          const l = evalExpr(q.left, this.x),
+            r = evalExpr(q.right, this.x);
+          let msg;
+          if (isTimeout) {
+            msg = "Time! Slide x and watch which pan drops, then lock in.";
+          } else if (q.kind === "equal") {
+            const gap = Math.abs(l - r);
+            const dir =
+              l > r
+                ? "LEFT is still heavier — try a different x"
+                : "RIGHT is still heavier — try a different x";
+            msg = `Not level yet. At x = ${this.x}: LEFT = ${l}, RIGHT = ${r} (off by ${gap}). ${dir}. Solve ${q.left.label} = ${q.right.label}.`;
+          } else {
+            const wanted =
+              q.rel === ">"
+                ? "LEFT to drop (LEFT > RIGHT)"
+                : "RIGHT to drop (LEFT < RIGHT)";
+            msg = `At x = ${this.x}: LEFT = ${l}, RIGHT = ${r}. You needed ${wanted}. Substitute other x values until the beam tips that way.`;
           }
-
-          STATE.hp = Math.max(0, STATE.hp - damage);
-
-          // Screen shake (stronger)
-          this.cameras.main.shake(400, 0.03);
-
-          // Flash red
-          this.cameras.main.flash(300, 200, 50, 50);
-
-          // Player flinch
-          this.tweens.add({
-            targets: [
-              this.playerBody,
-              this.playerHead,
-              this.playerEyeL,
-              this.playerEyeR,
-            ],
-            x: "+=15",
-            duration: 50,
-            yoyo: true,
-            repeat: 3,
-          });
-
-          // Hit particles (red)
-          this._spawnParticles(W / 2, H / 2 + 60, C.red, 15);
-
-          // Show correct answer
-          const correctSymbol =
-            this.currentQ.answer === "<"
-              ? "LEFT < was correct"
-              : this.currentQ.answer === ">"
-                ? "RIGHT > was correct"
-                : "EQUAL = was correct";
-          const corrTxt = this.add
-            .text(
-              W / 2,
-              H / 2 + 20,
-              isTimeout
-                ? `TIME UP! ${correctSymbol}`
-                : `WRONG! ${correctSymbol}`,
-              {
-                fontSize: "20px",
-                fontFamily: "ui-sans-serif, system-ui, sans-serif",
-                fontStyle: "bold",
-                color: "#ef4444",
-                stroke: "#000",
-                strokeThickness: 3,
-              },
-            )
-            .setOrigin(0.5)
-            .setDepth(50);
-          this.tweens.add({
-            targets: corrTxt,
-            y: "-=40",
-            alpha: 0,
-            duration: 2000,
-            onComplete: () => corrTxt.destroy(),
-          });
-
-          // Damage text
-          if (damage > 0) {
-            const dmgTxt = this.add
-              .text(W / 2, H / 2 + 120, `-${damage} HP`, {
-                fontSize: "28px",
-                fontFamily: "ui-sans-serif, system-ui, sans-serif",
-                fontStyle: "bold",
-                color: "#ef4444",
-                stroke: "#000",
-                strokeThickness: 3,
-              })
-              .setOrigin(0.5)
-              .setDepth(50);
-            this.tweens.add({
-              targets: dmgTxt,
-              y: "+=40",
-              alpha: 0,
-              duration: 1000,
-              onComplete: () => dmgTxt.destroy(),
-            });
-          }
+          this.feedback.setColor("#fecaca").setText("❌ " + msg);
 
           this._updateHUD();
-
-          // Enemy retreats
-          this.time.delayedCall(1200, () => {
+          this.time.delayedCall(1500, () => {
             if (STATE.hp <= 0) {
               this.scene.start("Results");
               return;
             }
-            this.tweens.add({
-              targets: this.enemyContainer,
-              x: Math.random() < 0.5 ? -200 : W + 200,
-              duration: 400,
-              ease: "Power2",
-              onComplete: () => {
-                this.enemyContainer.removeAll(true);
-                this.enemyContainer.setPosition(W / 2, -100);
-                this.enemyActive = false;
-                this.time.delayedCall(600, () => this._spawnEnemy());
-              },
-            });
-          });
-        }
-
-        // ---- PARTICLES ----
-        _spawnParticles(x, y, color, count) {
-          for (let i = 0; i < count; i++) {
-            const p = this.add
-              .circle(x, y, Phaser.Math.Between(2, 5), color, 1)
-              .setDepth(60);
-            const angle = Math.random() * Math.PI * 2;
-            const speed = 100 + Math.random() * 200;
-            this.tweens.add({
-              targets: p,
-              x: x + Math.cos(angle) * speed,
-              y: y + Math.sin(angle) * speed,
-              alpha: 0,
-              scale: 0,
-              duration: 400 + Math.random() * 400,
-              ease: "Power2",
-              onComplete: () => p.destroy(),
-            });
-          }
-        }
-
-        // ---- POWER-UPS ----
-        _spawnPowerup() {
-          const types = ["heal", "shield", "doubleXP"];
-          const type = types[Phaser.Math.Between(0, types.length - 1)];
-          const x = Phaser.Math.Between(100, W - 100);
-          const y = Phaser.Math.Between(150, H - 150);
-
-          let color, label;
-          switch (type) {
-            case "heal":
-              color = C.green;
-              label = "+HP";
-              break;
-            case "shield":
-              color = C.blue;
-              label = "SHIELD";
-              break;
-            case "doubleXP":
-              color = C.gold;
-              label = "2x XP";
-              break;
-          }
-
-          const bg = this.add
-            .circle(x, y, 28, color, 0.8)
-            .setStrokeStyle(3, 0xffffff, 0.6)
-            .setDepth(40)
-            .setInteractive({ useHandCursor: true });
-          const txt = this.add
-            .text(x, y, label, {
-              fontSize: "11px",
-              fontFamily: "ui-sans-serif, system-ui, sans-serif",
-              fontStyle: "bold",
-              color: "#ffffff",
-            })
-            .setOrigin(0.5)
-            .setDepth(41);
-
-          // Pulse
-          this.tweens.add({
-            targets: [bg],
-            scale: 1.15,
-            duration: 400,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut",
-          });
-
-          // Float
-          this.tweens.add({
-            targets: [bg, txt],
-            y: y - 8,
-            duration: 600,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut",
-          });
-
-          // Click to collect
-          bg.on("pointerdown", () => {
-            sfx.powerup();
-            this._applyPowerup(type);
-            this._spawnParticles(x, y, color, 15);
-
-            const floatMsg = this.add
-              .text(
-                x,
-                y - 30,
-                type === "heal"
-                  ? "+25 HP"
-                  : type === "shield"
-                    ? "SHIELD ON!"
-                    : "2x XP!",
-                {
-                  fontSize: "20px",
-                  fontFamily: "ui-sans-serif, system-ui, sans-serif",
-                  fontStyle: "bold",
-                  color: "#ffffff",
-                  stroke: "#000",
-                  strokeThickness: 3,
-                },
-              )
-              .setOrigin(0.5)
-              .setDepth(50);
-            this.tweens.add({
-              targets: floatMsg,
-              y: "-=50",
-              alpha: 0,
-              duration: 1000,
-              onComplete: () => floatMsg.destroy(),
-            });
-
-            bg.destroy();
-            txt.destroy();
-          });
-
-          // Auto-destroy after 8 seconds
-          this.time.delayedCall(8000, () => {
-            if (bg.active) {
-              this.tweens.add({
-                targets: [bg, txt],
-                alpha: 0,
-                duration: 500,
-                onComplete: () => {
-                  bg.destroy();
-                  txt.destroy();
+            // keep the same goal type flowing; give a fresh round
+            this.canAnswer = true;
+            this.x = X_MIN;
+            this._placeKnob();
+            this._refreshFromX();
+            if (STATE.tier === 2) {
+              this.roundTimer = 22;
+              if (this.roundTimerEvent) this.roundTimerEvent.remove();
+              this.roundTimerEvent = this.time.addEvent({
+                delay: 1000,
+                repeat: 21,
+                callback: () => {
+                  this.roundTimer--;
+                  if (this.roundTimer <= 3 && this.roundTimer > 0) sfx.tick();
+                  if (this.roundTimer <= 0 && this.canAnswer)
+                    this._lockIn(true);
                 },
               });
             }
           });
         }
 
-        _applyPowerup(type) {
-          switch (type) {
-            case "heal":
-              STATE.hp = Math.min(STATE.maxHp, STATE.hp + 25);
-              break;
-            case "shield":
-              STATE.shield = true;
-              sfx.shieldUp();
-              this.shieldGlow.setStrokeStyle(3, C.blue, 0.6);
-              this.shieldGlow.setFillStyle(C.blue, 0.15);
-              break;
-            case "doubleXP":
-              STATE.doubleXP = true;
-              STATE.doubleXPRounds = 3;
-              break;
+        _showHint() {
+          if (!this.currentQ) return;
+          sfx.tick();
+          const q = this.currentQ;
+          let h;
+          if (q.kind === "equal") {
+            h = `💡 You want ${q.left.label} = ${q.right.label}. Move the bigger group of x's to one side: subtract the smaller ${q.varName}-term and the smaller number from both sides, then split evenly. Test your x — the beam should sit LEVEL.`;
+          } else {
+            h = `💡 Pick any x and substitute into BOTH expressions. The larger value drops its pan. Keep sliding until the beam tips the way the goal asks — there is a whole region of x that works.`;
           }
-          this._updateHUD();
+          this.feedback.setColor("#fde68a").setText(h);
         }
 
-        // ---- LEVEL CHECK ----
         _checkLevelUp() {
-          const xpNeeded = STATE.level * 500;
-          if (STATE.xp >= xpNeeded && STATE.level < 6) {
+          const need = STATE.level * 500;
+          const cap = STATE.tier === 2 ? 6 : 3; // Support stays in 1-3, Challenge 4-6
+          if (STATE.xp >= need && STATE.level < cap) {
             STATE.level++;
             STATE.xp = 0;
-            STATE.hp = Math.min(STATE.maxHp, STATE.hp + 20); // heal on level up
+            STATE.hp = Math.min(STATE.maxHp, STATE.hp + 15);
             this._showLevelBanner();
             return true;
           }
           return false;
         }
 
-        // ---- HUD UPDATE ----
         _updateHUD() {
-          // HP bar
-          const hpPct = STATE.hp / STATE.maxHp;
-          this.hpBar.width = 180 * hpPct;
-          this.hpBar.setFillStyle(
-            hpPct > 0.5 ? C.green : hpPct > 0.25 ? C.gold : C.red,
-          );
-          this.hpText.setText(`${STATE.hp}/${STATE.maxHp}`);
-
-          // Score
+          // Lives = HP in chunks of the per-miss damage.
+          const dmg = STATE.tier === 1 ? 20 : 25;
+          const lives = Math.max(0, Math.ceil(STATE.hp / dmg));
+          this.livesText.setText("❤".repeat(lives));
           this.scoreText.setText(`SCORE: ${STATE.score}`);
-
-          // Combo
           this.comboText.setText(
-            STATE.combo > 0 ? `COMBO: ${STATE.combo}x` : "",
+            STATE.combo > 1 ? `🔥 combo ×${STATE.combo}` : "",
           );
-
-          // Level
           this.levelText.setText(`LEVEL ${STATE.level}`);
+          const need = STATE.level * 500;
+          this.xpBar.width = Math.min(150, 150 * (STATE.xp / need));
+        }
 
-          // XP bar
-          const xpNeeded = STATE.level * 500;
-          this.xpBar.width = Math.min(180, 180 * (STATE.xp / xpNeeded));
-
-          // Status
-          const statuses = [];
-          if (STATE.shield) statuses.push("SHIELD");
-          if (STATE.doubleXP) statuses.push(`2x XP (${STATE.doubleXPRounds})`);
-          this.statusText.setText(statuses.join(" | "));
-
-          // Double XP countdown
-          if (STATE.doubleXP) {
-            STATE.doubleXPRounds--;
-            if (STATE.doubleXPRounds <= 0) STATE.doubleXP = false;
+        _burst(x, y, color, n) {
+          for (let i = 0; i < n; i++) {
+            const p = this.add
+              .circle(x, y, Phaser.Math.Between(2, 5), color, 1)
+              .setDepth(60);
+            const a = Math.random() * Math.PI * 2;
+            const sp = 80 + Math.random() * 160;
+            this.tweens.add({
+              targets: p,
+              x: x + Math.cos(a) * sp,
+              y: y + Math.sin(a) * sp,
+              alpha: 0,
+              scale: 0,
+              duration: 400 + Math.random() * 400,
+              onComplete: () => p.destroy(),
+            });
           }
         }
 
-        // ---- UPDATE LOOP ----
+        // ---- UPDATE LOOP: smooth the beam + redraw, drift particles ----
         update() {
-          // Background particles
           if (this._bgParticles) {
             this._bgParticles.forEach((p) => {
               p.obj.x += p.sx;
@@ -1769,32 +1457,41 @@
             });
           }
 
-          // Shield glow pulse
-          if (STATE.shield && this.shieldGlow) {
-            const t = this.time.now * 0.003;
-            this.shieldGlow.setAlpha(0.3 + Math.sin(t) * 0.15);
-          }
+          // ease the visual beam toward its target angle
+          this.beamAngleNow += (this.beamAngle - this.beamAngleNow) * 0.18;
+          this._renderBeam();
+        }
 
-          // Keyboard input
-          if (this.canAnswer && !this.keyLock) {
-            if (
-              Phaser.Input.Keyboard.JustDown(this.keys.left) ||
-              Phaser.Input.Keyboard.JustDown(this.keys.a)
-            ) {
-              this._answer("<");
-            } else if (
-              Phaser.Input.Keyboard.JustDown(this.keys.right) ||
-              Phaser.Input.Keyboard.JustDown(this.keys.d)
-            ) {
-              this._answer(">");
-            } else if (
-              Phaser.Input.Keyboard.JustDown(this.keys.down) ||
-              Phaser.Input.Keyboard.JustDown(this.keys.s) ||
-              Phaser.Input.Keyboard.JustDown(this.keys.space)
-            ) {
-              this._answer("=");
-            }
-          }
+        _renderBeam() {
+          const px = this.pivotX,
+            py = this.pivotY;
+          const ang = this.beamAngleNow;
+
+          // post
+          this.postGfx.clear();
+          this.postGfx.fillStyle(C.post, 1);
+          this.postGfx.fillTriangle(px - 34, 380, px + 34, 380, px, py + 4);
+          this.postGfx.fillStyle(0x64748b, 1);
+          this.postGfx.fillRect(px - 5, py, 10, 134);
+
+          // beam line
+          const lx = px - Math.cos(ang) * this.beamLen;
+          const ly = py - Math.sin(ang) * this.beamLen;
+          const rx = px + Math.cos(ang) * this.beamLen;
+          const ry = py + Math.sin(ang) * this.beamLen;
+          this.beamGfx.clear();
+          this.beamGfx.lineStyle(10, C.beam, 1);
+          this.beamGfx.lineBetween(lx, ly, rx, ry);
+          this.beamGfx.fillStyle(C.gold, 1);
+          this.beamGfx.fillCircle(px, py, 9);
+
+          // chains + pans hang straight down from each beam tip
+          this.beamGfx.lineStyle(2, 0x94a3b8, 0.8);
+          this.beamGfx.lineBetween(lx, ly, lx, ly + this.panDrop);
+          this.beamGfx.lineBetween(rx, ry, rx, ry + this.panDrop);
+
+          this.leftPan.setPosition(lx, ly + this.panDrop);
+          this.rightPan.setPosition(rx, ry + this.panDrop);
         }
       }
 
@@ -1811,7 +1508,8 @@
             cy = H / 2;
           this.cameras.main.setBackgroundColor(C.bg);
 
-          const won = STATE.hp > 0;
+          const goal = STATE.tier === 1 ? 10 : 12;
+          const won = STATE.totalCorrect >= goal;
           if (won) sfx.victory();
           else sfx.defeat();
 
@@ -1825,7 +1523,7 @@
               EduPulse.record({
                 activityTitle: document.title,
                 score: STATE.totalCorrect,
-                maxScore: _epAttempted,
+                maxScore: goal,
                 problemsCorrect: STATE.totalCorrect,
                 problemsAttempted: _epAttempted,
                 percent: _epPct,
@@ -1833,7 +1531,6 @@
               });
           } catch (e) {}
 
-          // Background particles
           for (let i = 0; i < 30; i++) {
             const p = this.add.circle(
               Phaser.Math.Between(0, W),
@@ -1851,15 +1548,13 @@
             });
           }
 
-          // Panel
           this.add
             .rectangle(cx, cy, 620, 440, C.panelBg, 0.95)
             .setStrokeStyle(3, won ? C.gold : C.red);
 
-          // Title
           this.add
-            .text(cx, cy - 180, won ? "VICTORY!" : "DEFEATED", {
-              fontSize: "48px",
+            .text(cx, cy - 180, won ? "BALANCED!" : "BEAM BROKEN", {
+              fontSize: "46px",
               fontFamily: "ui-sans-serif, system-ui, sans-serif",
               fontStyle: "bold",
               color: won ? "#f59e0b" : "#ef4444",
@@ -1871,36 +1566,34 @@
           this.add
             .text(
               cx,
-              cy - 130,
-              won ? "Great battle, warrior!" : "Keep training!",
+              cy - 132,
+              won
+                ? "You compared and solved like a true balancer!"
+                : "Keep substituting — you'll find the balance.",
               {
-                fontSize: "18px",
+                fontSize: "17px",
                 fontFamily: "ui-sans-serif, system-ui, sans-serif",
                 color: "#94a3b8",
               },
             )
             .setOrigin(0.5);
 
-          // Stats
+          const accuracy =
+            STATE.totalCorrect + STATE.totalWrong > 0
+              ? Math.round(
+                  (STATE.totalCorrect /
+                    (STATE.totalCorrect + STATE.totalWrong)) *
+                    100,
+                ) + "%"
+              : "0%";
           const stats = [
             ["Final Score", STATE.score.toLocaleString()],
             ["Level Reached", STATE.level],
-            ["Rounds", STATE.round],
-            ["Correct", STATE.totalCorrect],
-            ["Wrong", STATE.totalWrong],
-            [
-              "Accuracy",
-              STATE.totalCorrect + STATE.totalWrong > 0
-                ? Math.round(
-                    (STATE.totalCorrect /
-                      (STATE.totalCorrect + STATE.totalWrong)) *
-                      100,
-                  ) + "%"
-                : "0%",
-            ],
-            ["Max Combo", STATE.maxCombo + "x"],
+            ["Rounds Solved", `${STATE.totalCorrect}/${goal}`],
+            ["Misses", STATE.totalWrong],
+            ["Accuracy", accuracy],
+            ["Best Combo", STATE.maxCombo + "×"],
           ];
-
           stats.forEach(([label, value], i) => {
             const y = cy - 80 + i * 34;
             this.add.text(cx - 160, y, label, {
@@ -1918,12 +1611,10 @@
               .setOrigin(1, 0);
           });
 
-          // Divider
           const g = this.add.graphics();
           g.lineStyle(1, C.teal, 0.3);
           g.lineBetween(cx - 200, cy + 100, cx + 200, cy + 100);
 
-          // Buttons
           const playBtn = this.add
             .rectangle(cx - 100, cy + 150, 180, 50, C.teal)
             .setInteractive({ useHandCursor: true });
@@ -1940,14 +1631,14 @@
           playBtn.on("pointerdown", () => {
             sfx.select();
             resetState();
-            this.scene.start("CharSelect");
+            this.scene.start("Game");
           });
 
           const titleBtn = this.add
             .rectangle(cx + 100, cy + 150, 180, 50, 0x334155)
             .setInteractive({ useHandCursor: true });
           this.add
-            .text(cx + 100, cy + 150, "TITLE SCREEN", {
+            .text(cx + 100, cy + 150, "CHANGE LEVEL", {
               fontSize: "18px",
               fontFamily: "ui-sans-serif, system-ui, sans-serif",
               fontStyle: "bold",
@@ -1961,14 +1652,13 @@
             this.scene.start("Title");
           });
 
-          // Review button
           if (STATE.questionsAnswered.length > 0) {
             const reviewBtn = this.add
-              .rectangle(cx, cy + 200, 180, 36, 0x1e293b)
+              .rectangle(cx, cy + 200, 200, 36, 0x1e293b)
               .setStrokeStyle(1, C.teal)
               .setInteractive({ useHandCursor: true });
             this.add
-              .text(cx, cy + 200, "REVIEW ANSWERS", {
+              .text(cx, cy + 200, "REVIEW ROUNDS", {
                 fontSize: "14px",
                 fontFamily: "ui-sans-serif, system-ui, sans-serif",
                 fontStyle: "bold",
@@ -1981,22 +1671,20 @@
             });
           }
 
-          // Keyboard shortcuts
           this.input.keyboard.on("keydown-SPACE", () => {
             sfx.select();
             resetState();
-            this.scene.start("CharSelect");
+            this.scene.start("Game");
           });
           this.input.keyboard.on("keydown-ENTER", () => {
             sfx.select();
-            resetState();
-            this.scene.start("CharSelect");
+            this.scene.start("Title");
           });
         }
       }
 
       // ============================================================
-      //  REVIEW SCENE
+      //  REVIEW SCENE — paged summary of every round
       // ============================================================
       class ReviewScene extends Phaser.Scene {
         constructor() {
@@ -2011,16 +1699,15 @@
           this.items = STATE.questionsAnswered;
 
           this.add
-            .text(cx, 30, "ANSWER REVIEW", {
+            .text(cx, 30, "ROUND REVIEW", {
               fontSize: "28px",
               fontFamily: "ui-sans-serif, system-ui, sans-serif",
               fontStyle: "bold",
               color: "#14b8a6",
             })
             .setOrigin(0.5);
-
           this.add
-            .text(cx, 60, "Check your answers below", {
+            .text(cx, 60, "How each balance round played out", {
               fontSize: "14px",
               fontFamily: "ui-sans-serif, system-ui, sans-serif",
               color: "#94a3b8",
@@ -2030,7 +1717,6 @@
           this.contentGroup = this.add.group();
           this._renderPage();
 
-          // Nav buttons
           this.prevBtn = this.add
             .text(cx - 100, H - 40, "< PREV", {
               fontSize: "16px",
@@ -2063,7 +1749,6 @@
             }
           });
 
-          // Back
           const backBtn = this.add
             .text(80, H - 40, "BACK", {
               fontSize: "16px",
@@ -2077,7 +1762,6 @@
             sfx.select();
             this.scene.start("Results");
           });
-
           this.input.keyboard.on("keydown-ESC", () => {
             sfx.select();
             this.scene.start("Results");
@@ -2093,86 +1777,75 @@
           for (let i = start; i < end; i++) {
             const q = this.items[i];
             const y = 100 + (i - start) * 95;
-            const isCorrect = q.correct;
+            const ok = q.correct;
 
             const bg = this.add
-              .rectangle(
-                W / 2,
-                y + 20,
-                750,
-                80,
-                isCorrect ? 0x0f291a : 0x2a0f0f,
-                0.6,
-              )
-              .setStrokeStyle(2, isCorrect ? C.green : C.red, 0.5);
+              .rectangle(W / 2, y + 20, 770, 80, ok ? 0x0f291a : 0x2a0f0f, 0.6)
+              .setStrokeStyle(2, ok ? C.green : C.red, 0.5);
             this.contentGroup.add(bg);
 
-            const numTxt = this.add.text(120, y, `#${i + 1}`, {
-              ...s,
-              fontSize: "14px",
-              fontStyle: "bold",
-              color: "#64748b",
-            });
-            this.contentGroup.add(numTxt);
+            this.contentGroup.add(
+              this.add.text(120, y, `#${i + 1}${q.isBoss ? " ♚" : ""}`, {
+                ...s,
+                fontSize: "14px",
+                fontStyle: "bold",
+                color: "#64748b",
+              }),
+            );
 
-            const exprTxt = this.add.text(
-              160,
-              y,
-              `${q.leftLabel}  vs  ${q.rightLabel}`,
-              {
+            const goal =
+              q.kind === "equal"
+                ? `Solve  ${q.leftLabel}  =  ${q.rightLabel}`
+                : `Make  ${q.leftLabel}  ${q.rel}  ${q.rightLabel}`;
+            this.contentGroup.add(
+              this.add.text(160, y, goal, {
                 ...s,
                 fontSize: "16px",
                 fontStyle: "bold",
                 color: "#e2e8f0",
-              },
+              }),
             );
-            this.contentGroup.add(exprTxt);
 
-            const varTxt = this.add.text(
-              160,
-              y + 22,
-              `${q.varName} = ${q.varValue}  |  Left = ${q.leftVal}  |  Right = ${q.rightVal}`,
-              {
+            const setStr =
+              q.kind === "equal"
+                ? `balance at x = ${q.targetSet.join(", ")}`
+                : `x that works: ${q.targetSet.join(", ")}`;
+            this.contentGroup.add(
+              this.add.text(160, y + 24, setStr, {
                 ...s,
                 fontSize: "13px",
                 color: "#94a3b8",
-              },
+              }),
             );
-            this.contentGroup.add(varTxt);
 
-            const yourAns =
-              q.playerAnswer === "timeout" ? "TIME OUT" : q.playerAnswer;
-            const ansTxt = this.add.text(
-              160,
-              y + 44,
-              `Your answer: ${yourAns}  |  Correct: ${q.answer}`,
-              {
+            this.contentGroup.add(
+              this.add.text(160, y + 46, `You locked in x = ${q.chosenX}`, {
                 ...s,
                 fontSize: "14px",
-                color: isCorrect ? "#22c55e" : "#ef4444",
-              },
+                color: ok ? "#22c55e" : "#ef4444",
+              }),
             );
-            this.contentGroup.add(ansTxt);
 
-            const icon = this.add
-              .text(W - 120, y + 20, isCorrect ? "✔" : "✘", {
-                fontSize: "28px",
-                color: isCorrect ? "#22c55e" : "#ef4444",
-              })
-              .setOrigin(0.5);
-            this.contentGroup.add(icon);
+            this.contentGroup.add(
+              this.add
+                .text(W - 120, y + 20, ok ? "✔" : "✘", {
+                  fontSize: "28px",
+                  color: ok ? "#22c55e" : "#ef4444",
+                })
+                .setOrigin(0.5),
+            );
           }
 
-          // Page indicator
           const totalPages = Math.ceil(this.items.length / this.perPage);
-          const pageTxt = this.add
-            .text(W / 2, H - 70, `Page ${this.page + 1} of ${totalPages}`, {
-              fontSize: "13px",
-              fontFamily: "ui-sans-serif, system-ui, sans-serif",
-              color: "#64748b",
-            })
-            .setOrigin(0.5);
-          this.contentGroup.add(pageTxt);
+          this.contentGroup.add(
+            this.add
+              .text(W / 2, H - 70, `Page ${this.page + 1} of ${totalPages}`, {
+                fontSize: "13px",
+                fontFamily: "ui-sans-serif, system-ui, sans-serif",
+                color: "#64748b",
+              })
+              .setOrigin(0.5),
+          );
         }
       }
 
@@ -2189,14 +1862,7 @@
           mode: Phaser.Scale.FIT,
           autoCenter: Phaser.Scale.CENTER_BOTH,
         },
-        scene: [
-          BootScene,
-          TitleScene,
-          CharSelectScene,
-          GameScene,
-          ResultsScene,
-          ReviewScene,
-        ],
+        scene: [BootScene, TitleScene, GameScene, ResultsScene, ReviewScene],
         input: {
           activePointers: 3,
         },
@@ -2216,7 +1882,7 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
 </html>

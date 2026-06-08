@@ -13,9 +13,9 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
     <script>
@@ -30,7 +30,7 @@
       window.addEventListener("load", function () {
         if (typeof Phaser === "undefined") {
           document.body.innerHTML =
-            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
         }
       });
     </script>
@@ -38,12 +38,24 @@
       (() => {
         "use strict";
 
-        /* =========================================================
-   SPORTS ANALYTICS MANAGER
-   Mean / Median / Mode — manage a sports team, use statistics
-   to make lineup decisions and predict outcomes.
-   Phaser 3 single-file game.
-   ========================================================= */
+        /* =================================================================
+      SPORTS ANALYTICS MANAGER — Mean / Median / Mode (6.SP.B.5)
+      THE MATH IS THE MECHANIC. There are NO A/B/C/D choices.
+      Four "Build the Stat" round types, each read from the manipulation:
+        • MEAN  — distribute a fixed salary-cap of points across players
+                  (drag points between bars) until the live mean marker
+                  lands on the target. The student FEELS total ÷ count.
+        • MEDIAN — drag player tokens into a sorted rack, then drop the
+                  marker on the true middle. The game verifies sort+middle.
+        • MODE  — stack repeated stat-values; the tallest stack wins.
+                  Build the mode by stacking duplicates.
+        • BEST  — drag a star outlier in and out of the roster and WATCH
+                  the mean lurch while the median holds; then pick the
+                  measure that did NOT move (a 2-way "which-moved" judgment).
+      Level 1 (Support): small sets, mean marker + hints. Level 2
+      (Challenge): larger sets, outliers, BEST tasks.
+      Colourblind-safe: every colour cue is paired with a shape/label/icon.
+      ================================================================= */
 
         const SFX = {
           ctx: null,
@@ -64,12 +76,12 @@
               correct: { w: "sine", f: [520, 780], d: 0.18, v: 0.06 },
               wrong: { w: "sawtooth", f: [300, 180], d: 0.22, v: 0.05 },
               click: { w: "sine", f: [440, 480], d: 0.08, v: 0.04 },
+              snap: { w: "triangle", f: [380, 520], d: 0.09, v: 0.05 },
               combo: { w: "sine", f: [600, 900], d: 0.25, v: 0.06 },
               whoosh: { w: "sine", f: [200, 600], d: 0.15, v: 0.03 },
               levelup: { w: "sine", f: [440, 660, 880], d: 0.35, v: 0.06 },
               whistle: { w: "sine", f: [800, 1200], d: 0.15, v: 0.04 },
-              buzzer: { w: "square", f: [200, 100], d: 0.2, v: 0.04 },
-              crowd: { w: "triangle", f: [300, 500], d: 0.3, v: 0.03 },
+              lurch: { w: "sawtooth", f: [260, 420], d: 0.18, v: 0.04 },
             };
             const p = P[type] || P.click;
             o.type = p.w;
@@ -89,41 +101,27 @@
 
         const W = 960,
           H = 640;
-        function shuffle(a) {
-          const b = [...a];
-          for (let i = b.length - 1; i > 0; i--) {
-            const j = (Math.random() * i + 1) | 0;
-            [b[i], b[j]] = [b[j], b[i]];
-          }
-          return b;
-        }
-        function mean(arr) {
-          return arr.reduce((a, b) => a + b, 0) / arr.length;
-        }
-        function median(arr) {
-          const s = [...arr].sort((a, b) => a - b);
-          const m = Math.floor(s.length / 2);
-          return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
-        }
-        function mode(arr) {
-          const f = {};
-          arr.forEach((v) => (f[v] = (f[v] || 0) + 1));
-          const mx = Math.max(...Object.values(f));
-          const modes = Object.keys(f)
-            .filter((k) => f[k] === mx)
-            .map(Number);
-          return modes.length === arr.length ? null : modes;
-        }
+        const FONT = "Trebuchet MS";
+        // Colourblind-safe palette: cues never rely on hue alone.
+        const COL = {
+          bg: 0x14213d,
+          bgHi: 0x1a2744,
+          gold: 0xfcbf49,
+          goldCss: "#fcbf49",
+          cream: "#ffe3a3",
+          white: "#ffffff",
+          teal: 0x1b998b,
+          tealCss: "#1b998b",
+          orange: 0xf77f00,
+          green: 0x2a9d5c,
+          greenCss: "#2a9d5c",
+          red: 0xe63946,
+          redCss: "#fb7185",
+          bar: 0x2d6cb5,
+          barCss: "#5aa0e8",
+          slot: 0x223457,
+        };
 
-        const SPORTS = [
-          "Basketball",
-          "Soccer",
-          "Baseball",
-          "Track",
-          "Swimming",
-          "Volleyball",
-        ];
-        const SPORT_ICONS = ["🏀", "⚽", "⚾", "🏃", "🏊", "🏐"];
         const PLAYERS = [
           "Jordan",
           "Garcia",
@@ -133,559 +131,218 @@
           "Wilson",
           "Chen",
           "Brown",
-          "Martinez",
-          "Anderson",
-          "Thomas",
+          "Marsh",
           "Lee",
-          "Jackson",
-          "White",
-          "Harris",
+          "Reed",
+          "Cruz",
+          "Webb",
+          "Nash",
         ];
 
-        // Hard-coded question bank (20 questions) + procedural generation
-        const QUESTION_BANK = [
-          // Level 1: Basic mean/median/mode with sports context
-          {
-            level: 1,
-            type: "MEAN",
-            sport: 0,
-            setup: () => {
-              const d = [14, 18, 22, 26, 30];
-              return {
-                data: d,
-                players: shuffle(PLAYERS).slice(0, 5),
-                stat: "points per game",
-              };
-            },
-            q: "Your starting five scored these points last game. What is the mean score?",
-            solve: (d) => {
-              const m = mean(d.data);
-              return {
-                answer: m.toString(),
-                explain:
-                  "Add: " +
-                  d.data.join(" + ") +
-                  " = " +
-                  d.data.reduce((a, b) => a + b, 0) +
-                  ". Divide by " +
-                  d.data.length +
-                  ": " +
-                  m +
-                  ".",
-                choices: shuffle([
-                  m.toString(),
-                  (m + 2).toString(),
-                  (m - 3).toString(),
-                  median(d.data).toString(),
-                ]),
-              };
-            },
-            hint: "Mean = total divided by count.",
-          },
-          {
-            level: 1,
-            type: "MEDIAN",
-            sport: 0,
-            setup: () => {
-              const d = [8, 12, 15, 20, 25];
-              return {
-                data: d,
-                players: shuffle(PLAYERS).slice(0, 5),
-                stat: "assists this season",
-              };
-            },
-            q: "These are the assist totals for your guards. What is the median?",
-            solve: (d) => {
-              const m = median(d.data);
-              return {
-                answer: m.toString(),
-                explain:
-                  "Already sorted: " +
-                  [...d.data].sort((a, b) => a - b).join(", ") +
-                  ". Middle value = " +
-                  m +
-                  ".",
-                choices: shuffle([
-                  m.toString(),
-                  (m + 1).toString(),
-                  mean(d.data).toString(),
-                  (m - 2).toString(),
-                ]),
-              };
-            },
-            hint: "Median = middle value after sorting.",
-          },
-          {
-            level: 1,
-            type: "MODE",
-            sport: 1,
-            setup: () => {
-              const d = [2, 3, 3, 4, 5];
-              return {
-                data: d,
-                players: shuffle(PLAYERS).slice(0, 5),
-                stat: "goals scored",
-              };
-            },
-            q: "Your forwards scored these goals. What is the mode?",
-            solve: (d) => {
-              return {
-                answer: "3",
-                explain:
-                  "3 appears twice, more than any other value. Mode = 3.",
-                choices: shuffle(["3", "2", "4", "5"]),
-              };
-            },
-            hint: "Mode = value that appears most often.",
-          },
-          {
-            level: 1,
-            type: "MEAN",
-            sport: 2,
-            setup: () => {
-              const d = [1, 3, 2, 4, 0];
-              return {
-                data: d,
-                players: shuffle(PLAYERS).slice(0, 5),
-                stat: "hits per game",
-              };
-            },
-            q: "Your batters got these hits over 5 games. What is the mean hits per game?",
-            solve: (d) => {
-              const m = mean(d.data);
-              return {
-                answer: m.toString(),
-                explain:
-                  d.data.join(" + ") +
-                  " = " +
-                  d.data.reduce((a, b) => a + b, 0) +
-                  ". Divide by 5 = " +
-                  m +
-                  ".",
-                choices: shuffle([m.toString(), "3", "1", "4"]),
-              };
-            },
-            hint: "Add all values, divide by number of games.",
-          },
-          {
-            level: 1,
-            type: "MEDIAN",
-            sport: 3,
-            setup: () => {
-              const d = [58, 62, 55, 70, 65];
-              return {
-                data: d,
-                players: shuffle(PLAYERS).slice(0, 5),
-                stat: "100m time (seconds x10)",
-              };
-            },
-            q: "Runners posted these times. What is the median time?",
-            solve: (d) => {
-              const s = [...d.data].sort((a, b) => a - b);
-              const m = median(d.data);
-              return {
-                answer: m.toString(),
-                explain: "Sort: " + s.join(", ") + ". Middle = " + m + ".",
-                choices: shuffle([
-                  m.toString(),
-                  mean(d.data).toFixed(0),
-                  (m + 3).toString(),
-                  (m - 2).toString(),
-                ]),
-              };
-            },
-            hint: "Sort first, then find the middle.",
-          },
+        // ─── MATH HELPERS ───
+        const sum = (a) => a.reduce((x, y) => x + y, 0);
+        const meanOf = (a) => sum(a) / a.length;
+        const sortAsc = (a) => [...a].sort((x, y) => x - y);
+        function medianOf(a) {
+          const s = sortAsc(a);
+          const m = Math.floor(s.length / 2);
+          return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+        }
+        function modeOf(a) {
+          const f = {};
+          a.forEach((v) => (f[v] = (f[v] || 0) + 1));
+          const mx = Math.max(...Object.values(f));
+          const modes = Object.keys(f)
+            .filter((k) => f[k] === mx)
+            .map(Number);
+          return { value: modes[0], count: mx, modes };
+        }
+        const rnd = (n) => Math.floor(Math.random() * n);
+        const pick = (a) => a[rnd(a.length)];
+        function shuffle(a) {
+          const b = [...a];
+          for (let i = b.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [b[i], b[j]] = [b[j], b[i]];
+          }
+          return b;
+        }
 
-          // Level 2: Larger data, even counts, ties
-          {
-            level: 2,
-            type: "MEDIAN",
-            sport: 0,
-            setup: () => {
-              const d = [6, 9, 12, 14, 18, 22];
-              return {
-                data: d,
-                players: shuffle(PLAYERS).slice(0, 6),
-                stat: "rebounds",
-              };
-            },
-            q: "Six players had these rebound totals. What is the median?",
-            solve: (d) => {
-              const m = median(d.data);
-              return {
-                answer: m.toString(),
-                explain:
-                  "Sorted: " +
-                  [...d.data].sort((a, b) => a - b).join(", ") +
-                  ". Two middle values: 12 and 14. Average = " +
-                  m +
-                  ".",
-                choices: shuffle([
-                  m.toString(),
-                  "12",
-                  "14",
-                  mean(d.data).toFixed(0),
-                ]),
-              };
-            },
-            hint: "With even count, average the two middle values.",
-          },
-          {
-            level: 2,
-            type: "MODE",
-            sport: 1,
-            setup: () => {
-              const d = [1, 2, 2, 3, 3, 4];
-              return {
-                data: d,
-                players: shuffle(PLAYERS).slice(0, 6),
-                stat: "yellow cards",
-              };
-            },
-            q: "These are yellow card counts. What is the mode?",
-            solve: () => {
-              return {
-                answer: "2 and 3",
-                explain: "Both 2 and 3 appear twice. Two modes (bimodal).",
-                choices: shuffle(["2 and 3", "2", "3", "No mode"]),
-              };
-            },
-            hint: "If two values tie for most, both are modes.",
-          },
-          {
-            level: 2,
-            type: "BEST",
-            sport: 2,
-            setup: () => {
-              const d = [3, 4, 3, 4, 3, 25];
-              return {
-                data: d,
-                players: shuffle(PLAYERS).slice(0, 6),
-                stat: "home runs",
-              };
-            },
-            q: "One player hit 25 home runs while others hit 3-4. Which measure best represents the typical player?",
-            solve: () => {
-              return {
-                answer: "Median",
-                explain:
-                  "25 is an outlier that pulls the mean up. The median better shows the typical value.",
-                choices: shuffle(["Median", "Mean", "Mode", "Range"]),
-              };
-            },
-            hint: "Outliers affect the mean more than the median.",
-          },
-          {
-            level: 2,
-            type: "MEAN",
-            sport: 4,
-            setup: () => {
-              const d = [28, 32, 30, 35, 25, 30];
-              return {
-                data: d,
-                players: shuffle(PLAYERS).slice(0, 6),
-                stat: "lap times (sec)",
-              };
-            },
-            q: "Your swimmers posted these times. What is the mean lap time?",
-            solve: (d) => {
-              const m = mean(d.data);
-              return {
-                answer: m.toString(),
-                explain:
-                  d.data.join(" + ") +
-                  " = " +
-                  d.data.reduce((a, b) => a + b, 0) +
-                  ". Divide by 6 = " +
-                  m +
-                  ".",
-                choices: shuffle([m.toString(), "31", "29", "32"]),
-              };
-            },
-            hint: "Total divided by count.",
-          },
-          {
-            level: 2,
-            type: "ALL",
-            sport: 5,
-            setup: () => {
-              const d = [4, 6, 6, 8, 10];
-              return {
-                data: d,
-                players: shuffle(PLAYERS).slice(0, 5),
-                stat: "aces per match",
-              };
-            },
-            q: "For the data set 4, 6, 6, 8, 10 — which statement is true?",
-            solve: () => {
-              return {
-                answer: "Mean = 6.8, Median = 6, Mode = 6",
-                explain:
-                  "Mean = 34/5 = 6.8. Median = 6 (middle). Mode = 6 (appears twice).",
-                choices: shuffle([
-                  "Mean = 6.8, Median = 6, Mode = 6",
-                  "Mean = 6, Median = 6.8, Mode = 10",
-                  "Mean = 7, Median = 8, Mode = 6",
-                  "Mean = 6.8, Median = 8, Mode = 4",
-                ]),
-              };
-            },
-            hint: "Calculate all three: add/divide, sort/middle, count repeats.",
-          },
+        // ─── ROUND GENERATOR (solvability-verified) ───
+        // Returns null when a fresh attempt is unsolvable; callers retry.
+        function makeRound(tier, kind) {
+          if (kind === "MEAN") return makeMean(tier);
+          if (kind === "MEDIAN") return makeMedian(tier);
+          if (kind === "MODE") return makeMode(tier);
+          return makeBest(tier);
+        }
 
-          // Level 3: Word problems, real decisions
-          {
-            level: 3,
-            type: "MEAN",
-            sport: 0,
-            setup: () => {
-              const d = [14, 18, 22, 26, 30, 34];
-              return {
-                data: d,
-                players: shuffle(PLAYERS).slice(0, 6),
-                stat: "points",
-              };
-            },
-            q: "A basketball player scored 14, 18, 22, 26, 30, and 34 points in 6 games. What is the mean?",
-            solve: (d) => {
-              return {
-                answer: "24",
-                explain: "14+18+22+26+30+34 = 144. 144/6 = 24.",
-                choices: shuffle(["24", "22", "26", "28"]),
-              };
-            },
-            hint: "Add all 6 scores, divide by 6.",
-          },
-          {
-            level: 3,
-            type: "MEDIAN",
-            sport: 0,
-            setup: () => {
-              const d = [19, 4, 12, 16, 8, 20, 10, 14];
-              return {
-                data: d,
-                players: shuffle(PLAYERS).slice(0, 8),
-                stat: "points",
-              };
-            },
-            q: "Player scores: 19, 4, 12, 16, 8, 20, 10, 14. What is the median?",
-            solve: () => {
-              return {
-                answer: "13",
-                explain:
-                  "Sorted: 4, 8, 10, 12, 14, 16, 19, 20. Middle: 12 and 14. Average = 13.",
-                choices: shuffle(["13", "12", "14", "11"]),
-              };
-            },
-            hint: "Sort the 8 values, average the 4th and 5th.",
-          },
-          {
-            level: 3,
-            type: "MODE",
-            sport: 1,
-            setup: () => {
-              return {
-                data: [],
-                players: shuffle(PLAYERS).slice(0, 8),
-                stat: "goals",
-              };
-            },
-            q: "Survey: favorite fruits — apple, mango, grape, mango, apple, mango, pear, apple. What is the mode?",
-            solve: () => {
-              return {
-                answer: "Apple and Mango",
-                explain: "Apple = 3 times, Mango = 3 times. Both tie for most.",
-                choices: shuffle([
-                  "Apple and Mango",
-                  "Mango only",
-                  "Apple only",
-                  "No mode",
-                ]),
-              };
-            },
-            hint: "Count each. Two can tie for mode.",
-          },
-          {
-            level: 3,
-            type: "BEST",
-            sport: 0,
-            setup: () => {
-              const d = [180, 190, 200, 210, 720];
-              return {
-                data: d,
-                players: [
-                  "House A",
-                  "House B",
-                  "House C",
-                  "House D",
-                  "Mansion",
-                ],
-                stat: "price ($K)",
-              };
-            },
-            q: "Home prices (in thousands): 180, 190, 200, 210, 720. Which measure best represents the typical price?",
-            solve: () => {
-              return {
-                answer: "Median, because 720 is an outlier",
-                explain:
-                  "720 pulls the mean way up. Median = 200 better shows the typical price.",
-                choices: shuffle([
-                  "Median, because 720 is an outlier",
-                  "Mean, because it uses all values",
-                  "Mode, because one price repeats",
-                  "Range, because it gives the middle",
-                ]),
-              };
-            },
-            hint: "The mansion price is extreme — think about what that does to the mean.",
-          },
-          {
-            level: 3,
-            type: "MEDIAN",
-            sport: 2,
-            setup: () => {
-              const d = [6, 9, 12, 12, 15, 18];
-              return {
-                data: d,
-                players: shuffle(PLAYERS).slice(0, 6),
-                stat: "RBIs",
-              };
-            },
-            q: "Data: 6, 9, 12, 12, 15, 18. A student says the median is 12. Is that correct?",
-            solve: () => {
-              return {
-                answer: "Yes, both middle values are 12",
-                explain:
-                  "6 values. Middle: 12 and 12. Average = 12. Student is correct.",
-                choices: shuffle([
-                  "Yes, both middle values are 12",
-                  "No, the median is 10.5",
-                  "No, the mean is 12 not the median",
-                  "No, the median is 13.5",
-                ]),
-              };
-            },
-            hint: "With 6 values, average the 3rd and 4th.",
-          },
+        // MEAN: choose count + target so total = target*count is an integer
+        // that can be split across bars within [MIN..MAX] per player.
+        const MEAN_MIN = 0,
+          MEAN_MAX = 30;
+        function makeMean(tier) {
+          for (let tries = 0; tries < 60; tries++) {
+            const count = tier === 1 ? 3 + rnd(2) : 4 + rnd(3); // L1:3-4, L2:4-6
+            const target = (tier === 1 ? 6 : 8) + rnd(tier === 1 ? 9 : 13);
+            const total = target * count; // integer total to distribute
+            // feasible if total fits inside count bars of width MAX
+            if (total > MEAN_MAX * count) continue;
+            if (total < MEAN_MIN * count) continue;
+            // build a plausible starting layout (NOT equal to target — they must work)
+            const start = new Array(count).fill(0);
+            let left = total;
+            // seed an uneven start that still sums to total but whose mean
+            // marker visibly sits away from where bars need balancing
+            for (let i = 0; i < count; i++) {
+              const remainSlots = count - i - 1;
+              const lo = Math.max(MEAN_MIN, left - MEAN_MAX * remainSlots);
+              const hi = Math.min(MEAN_MAX, left);
+              start[i] = lo + rnd(hi - lo + 1);
+              left -= start[i];
+            }
+            start[count - 1] += left; // ensure exact total
+            if (start[count - 1] < MEAN_MIN || start[count - 1] > MEAN_MAX)
+              continue;
+            return {
+              kind: "MEAN",
+              tier,
+              count,
+              target,
+              total,
+              start,
+              players: shuffle(PLAYERS).slice(0, count),
+              stat: pick(["points", "rebounds", "assists", "goals"]),
+            };
+          }
+          return null;
+        }
 
-          // Level 4: Multi-step
-          {
-            level: 4,
-            type: "MEAN",
-            sport: 3,
-            setup: () => {
-              const d = [8.5, 9.0, 8.0, 9.5];
-              return {
-                data: d,
-                players: shuffle(PLAYERS).slice(0, 4),
-                stat: "mile time (min)",
-              };
-            },
-            q: "Mile times: 8.5, 9.0, 8.0, 9.5 minutes. What is the mean?",
-            solve: () => {
-              return {
-                answer: "8.75",
-                explain: "8.5+9.0+8.0+9.5 = 35. 35/4 = 8.75.",
-                choices: shuffle(["8.75", "8.5", "9", "9.25"]),
-              };
-            },
-            hint: "Add the four times, divide by 4.",
-          },
-          {
-            level: 4,
-            type: "ALL",
-            sport: 0,
-            setup: () => {
-              const d = [3, 5, 4, 2, 6];
-              return {
-                data: d,
-                players: shuffle(PLAYERS).slice(0, 5),
-                stat: "fouls",
-              };
-            },
-            q: "Fouls per game: 3, 5, 4, 2, 6. What is the mean?",
-            solve: () => {
-              return {
-                answer: "4",
-                explain: "3+5+4+2+6 = 20. 20/5 = 4.",
-                choices: shuffle(["4", "3", "5", "6"]),
-              };
-            },
-            hint: "Add all, divide by count.",
-          },
-          {
-            level: 4,
-            type: "BEST",
-            sport: 5,
-            setup: () => {
-              return { data: [], players: [], stat: "" };
-            },
-            q: "A coach wants the shoe size bought most often. Which measure should she use?",
-            solve: () => {
-              return {
-                answer: "Mode",
-                explain:
-                  '"Most often" = mode. The mode is the most frequent value.',
-                choices: shuffle(["Mode", "Mean", "Median", "Sum"]),
-              };
-            },
-            hint: '"Most often" is the key phrase.',
-          },
-          {
-            level: 4,
-            type: "MEDIAN",
-            sport: 0,
-            setup: () => {
-              const d = [88, 73, 91, 84, 76, 95, 82];
-              return {
-                data: d,
-                players: shuffle(PLAYERS).slice(0, 7),
-                stat: "game scores",
-              };
-            },
-            q: "Game scores: 88, 73, 91, 84, 76, 95, 82. What is the median?",
-            solve: () => {
-              return {
-                answer: "84",
-                explain:
-                  "Sorted: 73, 76, 82, 84, 88, 91, 95. Middle (4th) = 84.",
-                choices: shuffle(["84", "82", "86", "88"]),
-              };
-            },
-            hint: "Sort the 7 scores. The 4th value is the median.",
-          },
-          {
-            level: 4,
-            type: "ALL",
-            sport: 0,
-            setup: () => {
-              const d = [5, 8, 6, 9, 7, 10];
-              return {
-                data: d,
-                players: shuffle(PLAYERS).slice(0, 6),
-                stat: "minutes played",
-              };
-            },
-            q: "Data: 5, 8, 6, 9, 7, 10. Which is true about the mode?",
-            solve: () => {
-              return {
-                answer: "There is no mode",
-                explain:
-                  "Each number appears once. No value appears more than others.",
-                choices: shuffle([
-                  "There is no mode",
-                  "Mode is 5",
-                  "Mode is 10",
-                  "There are two modes",
-                ]),
-              };
-            },
-            hint: "Check if any number repeats more than others.",
-          },
-        ];
+        // MEDIAN: distinct-ish values, odd count (single middle) so the drop
+        // target is unambiguous. Values shuffled; student sorts via drag.
+        function makeMedian(tier) {
+          for (let tries = 0; tries < 60; tries++) {
+            const count = tier === 1 ? 5 : 7;
+            const vals = [];
+            let v = 4 + rnd(6);
+            for (let i = 0; i < count; i++) {
+              vals.push(v);
+              v += 2 + rnd(tier === 1 ? 4 : 6);
+            }
+            // verify strictly increasing => unique middle, no tie ambiguity
+            const s = sortAsc(vals);
+            let ok = true;
+            for (let i = 1; i < s.length; i++)
+              if (s[i] === s[i - 1]) ok = false;
+            if (!ok) continue;
+            return {
+              kind: "MEDIAN",
+              tier,
+              count,
+              answer: medianOf(vals),
+              values: vals,
+              players: shuffle(PLAYERS).slice(0, count),
+              stat: pick(["points", "saves", "tackles", "steals"]),
+            };
+          }
+          return null;
+        }
 
-        // ═══════════════════════════════════════════════════
+        // MODE: one value clearly repeats most (strict winner, no bimodal tie).
+        function makeMode(tier) {
+          for (let tries = 0; tries < 60; tries++) {
+            const lanes = tier === 1 ? 3 : 4; // distinct stat values to stack into
+            const base = 2 + rnd(7);
+            const laneVals = [];
+            for (let i = 0; i < lanes; i++) laneVals.push(base + i);
+            const modeTarget = laneVals[rnd(lanes)];
+            const modeCount = tier === 1 ? 3 : 3 + rnd(2); // tallest stack
+            const pieces = [];
+            laneVals.forEach((lv) => {
+              if (lv === modeTarget) {
+                for (let k = 0; k < modeCount; k++) pieces.push(lv);
+              } else {
+                // 1..modeCount-1 of each other => strict winner
+                const c = 1 + rnd(modeCount - 1);
+                for (let k = 0; k < c; k++) pieces.push(lv);
+              }
+            });
+            // confirm strict mode
+            const m = modeOf(pieces);
+            if (m.modes.length !== 1 || m.value !== modeTarget) continue;
+            if (pieces.length > 11) continue; // keep board clean
+            return {
+              kind: "MODE",
+              tier,
+              laneVals,
+              modeTarget,
+              modeCount,
+              pieces: shuffle(pieces),
+              stat: pick(["jersey #", "shoe size", "goals", "fouls"]),
+            };
+          }
+          return null;
+        }
+
+        // BEST: a clean roster + one extreme outlier. Removing the outlier
+        // must move the MEAN noticeably while the MEDIAN stays put.
+        function makeBest(tier) {
+          for (let tries = 0; tries < 80; tries++) {
+            const count = 5; // odd so median is a single value
+            const lo = 6 + rnd(6);
+            const core = [];
+            let v = lo;
+            for (let i = 0; i < count; i++) {
+              core.push(v);
+              v += 1 + rnd(3);
+            }
+            const med = medianOf(core);
+            const outlier = med + 40 + rnd(40); // far above
+            const withOut = [...core, outlier];
+            const meanNo = meanOf(core);
+            const meanYes = meanOf(withOut);
+            const medNo = medianOf(core);
+            const medYes = medianOf(withOut);
+            // require: mean lurches a lot, median barely moves
+            if (Math.abs(meanYes - meanNo) < 6) continue;
+            if (Math.abs(medYes - medNo) > 1.0) continue;
+            return {
+              kind: "BEST",
+              tier,
+              core,
+              outlier,
+              meanNo,
+              meanYes,
+              medNo,
+              medYes,
+              players: shuffle(PLAYERS).slice(0, count),
+              stat: pick(["points", "salary ($M)", "home runs"]),
+            };
+          }
+          return null;
+        }
+
+        function genRound(tier, kind) {
+          for (let i = 0; i < 30; i++) {
+            const r = makeRound(tier, kind);
+            if (r) return r;
+          }
+          // last-resort fallback that is always solvable
+          return (
+            makeMean(tier) || {
+              kind: "MEAN",
+              tier,
+              count: 3,
+              target: 10,
+              total: 30,
+              start: [4, 6, 20],
+              players: shuffle(PLAYERS).slice(0, 3),
+              stat: "points",
+            }
+          );
+        }
+
+        // ════════════════════════════════════════════════════════════════
         class BootScene extends Phaser.Scene {
           constructor() {
             super("Boot");
@@ -695,42 +352,21 @@
             g.fillStyle(0xffffff, 1);
             g.fillCircle(4, 4, 4);
             g.generateTexture("dot", 8, 8);
-            g.clear();
-            g.fillStyle(0xf77f00, 1);
-            g.fillRoundedRect(0, 0, 260, 54, 16);
-            g.generateTexture("btn_orange", 260, 54);
-            g.clear();
-            g.fillStyle(0x1b998b, 1);
-            g.fillRoundedRect(0, 0, 260, 54, 16);
-            g.generateTexture("btn_teal", 260, 54);
-            g.clear();
-            g.fillStyle(0x14213d, 1);
-            g.fillRoundedRect(0, 0, 260, 54, 16);
-            g.generateTexture("btn_dark", 260, 54);
-            g.clear();
-            g.fillStyle(0x2a9d5c, 1);
-            g.fillRoundedRect(0, 0, 260, 54, 16);
-            g.generateTexture("btn_green", 260, 54);
-            g.clear();
-            g.fillStyle(0xe63946, 1);
-            g.fillRoundedRect(0, 0, 260, 54, 16);
-            g.generateTexture("btn_red", 260, 54);
-            g.clear();
             g.destroy();
             this.scene.start("Title");
           }
         }
 
-        // ═══════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════
         class TitleScene extends Phaser.Scene {
           constructor() {
             super("Title");
           }
           create() {
             const cx = W / 2;
-            this.cameras.main.setBackgroundColor(0x14213d);
+            this.cameras.main.setBackgroundColor(COL.bg);
             const bg = this.add.graphics();
-            bg.fillGradientStyle(0x1a2744, 0x1a2744, 0x14213d, 0x14213d, 1);
+            bg.fillGradientStyle(COL.bgHi, COL.bgHi, COL.bg, COL.bg, 1);
             bg.fillRect(0, 0, W, H);
             this.add.particles(0, 0, "dot", {
               x: { min: 0, max: W },
@@ -741,636 +377,1575 @@
               lifespan: 3500,
               frequency: 200,
               blendMode: "ADD",
-              tint: [0xf77f00, 0xfcbf49, 0x1b998b],
+              tint: [COL.gold, COL.orange, COL.teal],
             });
             const icon = this.add
-              .text(cx, 110, "🏆", { fontSize: "72px" })
+              .text(cx, 92, "🏆", { fontSize: "64px" })
               .setOrigin(0.5);
             this.tweens.add({
               targets: icon,
-              y: 100,
+              y: 82,
               duration: 1500,
               yoyo: true,
               repeat: -1,
               ease: "Sine.easeInOut",
             });
             this.add
-              .text(cx, 195, "SPORTS ANALYTICS\nMANAGER", {
-                fontSize: "42px",
-                fontFamily: "Trebuchet MS",
+              .text(cx, 168, "SPORTS ANALYTICS MANAGER", {
+                fontSize: "34px",
+                fontFamily: FONT,
                 fontStyle: "bold",
-                color: "#fcbf49",
+                color: COL.goldCss,
                 align: "center",
-                lineSpacing: 4,
                 stroke: "#14213d",
                 strokeThickness: 4,
               })
               .setOrigin(0.5);
             this.add
-              .text(cx, 285, "Use mean, median, and mode to manage your team", {
+              .text(cx, 210, "Build the stat — don't just pick it.", {
                 fontSize: "16px",
-                fontFamily: "Trebuchet MS",
-                color: "#ffe3a3",
-                align: "center",
+                fontFamily: FONT,
+                color: COL.cream,
               })
               .setOrigin(0.5);
             this.add
-              .text(cx, 320, "Mean, Median, Mode — Statistics for Grade 6", {
-                fontSize: "13px",
-                fontFamily: "sans-serif",
-                fontStyle: "bold",
-                color: "#14213d",
-                backgroundColor: "#fcbf49",
-                padding: { x: 12, y: 6 },
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(cx, 370, "Pick Your Season Length", {
-                fontSize: "16px",
-                fontFamily: "sans-serif",
-                fontStyle: "bold",
-                color: "#fff",
-              })
-              .setOrigin(0.5);
-            [
-              {
-                l: "🧭 Preseason (10 questions)",
-                n: 10,
-                y: 415,
-                k: "btn_teal",
-              },
-              {
-                l: "🏀 Regular Season (15 questions)",
-                n: 15,
-                y: 475,
-                k: "btn_orange",
-              },
-              { l: "🏆 Playoffs (20 questions)", n: 20, y: 535, k: "btn_dark" },
-            ].forEach((m) => {
-              const btn = this.add
-                .image(cx, m.y, m.k)
-                .setInteractive({ useHandCursor: true })
-                .setScale(1, 0.9);
-              this.add
-                .text(cx, m.y, m.l, {
-                  fontSize: "17px",
-                  fontFamily: "Trebuchet MS",
+              .text(
+                cx,
+                244,
+                "Mean · Median · Mode — Grade 6 Statistics (6.SP.B.5)",
+                {
+                  fontSize: "12px",
+                  fontFamily: "sans-serif",
                   fontStyle: "bold",
-                  color: "#fff",
+                  color: "#14213d",
+                  backgroundColor: COL.goldCss,
+                  padding: { x: 12, y: 5 },
+                },
+              )
+              .setOrigin(0.5);
+            this.add
+              .text(
+                cx,
+                300,
+                "You manage a team. Drag points, sort players, and stack\nstats to hit each statistic — the game reads your build.",
+                {
+                  fontSize: "14px",
+                  fontFamily: FONT,
+                  color: COL.white,
+                  align: "center",
+                  lineSpacing: 5,
+                },
+              )
+              .setOrigin(0.5);
+
+            this.add
+              .text(cx, 360, "CHOOSE YOUR LEVEL", {
+                fontSize: "14px",
+                fontFamily: "sans-serif",
+                fontStyle: "bold",
+                color: COL.white,
+                letterSpacing: 3,
+              })
+              .setOrigin(0.5);
+
+            const tiers = [
+              {
+                t: 1,
+                label: "Level 1",
+                sub: "Support",
+                col: COL.teal,
+                desc: "Small sets · live mean marker · hints on · 5 lives",
+                x: cx - 200,
+              },
+              {
+                t: 2,
+                label: "Level 2",
+                sub: "Challenge",
+                col: COL.gold,
+                desc: "Bigger sets · outliers · best-measure tasks · 3 lives",
+                x: cx + 200,
+              },
+            ];
+            tiers.forEach((d) => {
+              const y = 460;
+              const card = this.add
+                .rectangle(d.x, y, 320, 140, COL.slot)
+                .setStrokeStyle(3, 0x35507f)
+                .setInteractive({ useHandCursor: true });
+              this.add
+                .text(d.x, y - 44, d.label, {
+                  fontSize: "28px",
+                  fontFamily: FONT,
+                  fontStyle: "bold",
+                  color: COL.white,
                 })
                 .setOrigin(0.5);
-              btn.on("pointerover", () => {
-                btn.setScale(1.05, 0.95);
+              this.add
+                .text(d.x, y - 14, d.sub, {
+                  fontSize: "15px",
+                  fontFamily: FONT,
+                  fontStyle: "bold",
+                  color: Phaser.Display.Color.IntegerToColor(d.col).rgba,
+                })
+                .setOrigin(0.5);
+              this.add
+                .text(d.x, y + 28, d.desc, {
+                  fontSize: "12px",
+                  fontFamily: "sans-serif",
+                  color: COL.cream,
+                  align: "center",
+                  wordWrap: { width: 290 },
+                  lineSpacing: 3,
+                })
+                .setOrigin(0.5);
+              card.on("pointerover", () => {
+                card.setStrokeStyle(3, d.col);
+                card.setScale(1.04);
                 SFX.play("click");
               });
-              btn.on("pointerout", () => btn.setScale(1, 0.9));
-              btn.on("pointerdown", () => {
+              card.on("pointerout", () => {
+                card.setStrokeStyle(3, 0x35507f);
+                card.setScale(1);
+              });
+              card.on("pointerdown", () => {
                 SFX.play("whistle");
-                this.cameras.main.fade(400);
-                this.time.delayedCall(400, () =>
-                  this.scene.start("Game", { totalQs: m.n }),
+                this.cameras.main.fade(380);
+                this.time.delayedCall(380, () =>
+                  this.scene.start("Game", { tier: d.t }),
                 );
               });
             });
+
+            this.add
+              .text(
+                cx,
+                575,
+                "👆 Touch: drag tiles & tap buttons   ⌨️ Keys: ◀ ▶ move · Enter submit · H hint",
+                {
+                  fontSize: "12px",
+                  fontFamily: "sans-serif",
+                  color: "#8fa6cc",
+                },
+              )
+              .setOrigin(0.5);
             this.cameras.main.fadeIn(500);
           }
         }
 
-        // ═══════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════
         class GameScene extends Phaser.Scene {
           constructor() {
             super("Game");
           }
           init(data) {
-            this.totalQs = data.totalQs || 15;
+            this.tier = data.tier || 1;
             this.score = 0;
-            this.combo = 0;
-            this.maxCombo = 0;
-            this.lives = 3;
-            this.qIdx = 0;
-            this.correct = 0;
-            this.wrong = 0;
-            this.answering = false;
-            this.quarter = 1;
-            this.currentQ = null;
-            this.qData = null;
-            // Build question list
-            const pool = shuffle(QUESTION_BANK);
-            this.questions = [];
-            while (this.questions.length < this.totalQs) {
-              this.questions.push(...shuffle(pool));
-            }
-            this.questions = this.questions.slice(0, this.totalQs);
+            this.streak = 0;
+            this.bestStreak = 0;
+            this.solved = 0;
+            this.attemptsOnRound = 0;
+            this.lives = this.tier === 1 ? 5 : 3;
+            this.locked = false;
+            // round plan: cycle the four mechanics; L2 weights BEST in.
+            this.goal = this.tier === 1 ? 8 : 10;
+            const seq =
+              this.tier === 1
+                ? [
+                    "MEAN",
+                    "MEDIAN",
+                    "MODE",
+                    "MEAN",
+                    "MEDIAN",
+                    "MODE",
+                    "MEAN",
+                    "MEDIAN",
+                  ]
+                : [
+                    "MEAN",
+                    "MEDIAN",
+                    "MODE",
+                    "BEST",
+                    "MEAN",
+                    "MEDIAN",
+                    "BEST",
+                    "MODE",
+                    "MEAN",
+                    "BEST",
+                  ];
+            this.plan = seq.slice(0, this.goal);
+            this.roundIx = 0;
           }
+
           create() {
-            this.cameras.main.setBackgroundColor(0x14213d);
+            this.cameras.main.setBackgroundColor(COL.bg);
             const bg = this.add.graphics();
-            bg.fillGradientStyle(0x1a2744, 0x1a2744, 0x14213d, 0x14213d, 1);
+            bg.fillGradientStyle(COL.bgHi, COL.bgHi, COL.bg, COL.bg, 1);
             bg.fillRect(0, 0, W, H);
-            // Court lines faint
-            const court = this.add.graphics();
-            court.lineStyle(1, 0xffffff, 0.04);
-            court.strokeCircle(W / 2, H / 2, 80);
-            court.strokeRect(80, 20, W - 160, H - 40);
-            court.lineBetween(W / 2, 20, W / 2, H - 20);
-            this.createHUD();
-            // Sport + scenario header
-            this.sportBg = this.add.graphics();
-            this.sportIcon = this.add
-              .text(100, 82, "", { fontSize: "28px" })
-              .setOrigin(0.5);
-            this.sportTitle = this.add.text(130, 75, "", {
-              fontSize: "18px",
-              fontFamily: "Trebuchet MS",
-              fontStyle: "bold",
-              color: "#fcbf49",
-            });
-            this.sportSub = this.add.text(130, 98, "", {
-              fontSize: "11px",
-              fontFamily: "sans-serif",
-              fontStyle: "bold",
-              color: "#ffe3a3",
-              letterSpacing: 2,
-            });
-            // Data display
-            this.dataBg = this.add.graphics();
-            this.dataChips = [];
-            this.dataLabel = this.add
-              .text(W / 2, 120, "PLAYER STATS", {
-                fontSize: "10px",
+
+            this.buildHUD();
+
+            // persistent layout regions
+            this.headerBg = this.add.graphics();
+            this.headerType = this.add
+              .text(W / 2, 96, "", {
+                fontSize: "11px",
                 fontFamily: "sans-serif",
                 fontStyle: "bold",
-                color: "#fcbf49",
+                color: COL.goldCss,
                 letterSpacing: 3,
               })
               .setOrigin(0.5);
-            // Question
-            this.qBg = this.add.graphics();
-            this.qType = this.add
-              .text(W / 2, 195, "", {
-                fontSize: "10px",
-                fontFamily: "sans-serif",
-                fontStyle: "bold",
-                color: "#fcbf49",
-                letterSpacing: 3,
-              })
-              .setOrigin(0.5);
-            this.qText = this.add
-              .text(W / 2, 230, "", {
+            this.taskText = this.add
+              .text(W / 2, 126, "", {
                 fontSize: "17px",
-                fontFamily: "Trebuchet MS",
+                fontFamily: FONT,
                 fontStyle: "bold",
-                color: "#fff",
+                color: COL.white,
                 align: "center",
-                wordWrap: { width: W - 180 },
-                lineSpacing: 5,
-              })
-              .setOrigin(0.5);
-            // 4 choice buttons
-            this.choiceBtns = [];
-            for (let i = 0; i < 4; i++) {
-              const x = i < 2 ? W / 2 - 195 : W / 2 + 195;
-              const y = i % 2 === 0 ? 310 : 380;
-              this.choiceBtns.push(this.makeChoice(x, y, i));
-            }
-            // Feedback
-            this.fbBg = this.add.graphics().setAlpha(0);
-            this.fbTitle = this.add
-              .text(W / 2, 440, "", {
-                fontSize: "20px",
-                fontFamily: "Trebuchet MS",
-                fontStyle: "bold",
-                color: "#fff",
-                align: "center",
-              })
-              .setOrigin(0.5)
-              .setAlpha(0);
-            this.fbBody = this.add
-              .text(W / 2, 475, "", {
-                fontSize: "13px",
-                fontFamily: "sans-serif",
-                color: "#ffe3a3",
-                align: "center",
-                wordWrap: { width: 600 },
+                wordWrap: { width: W - 140 },
                 lineSpacing: 4,
               })
-              .setOrigin(0.5)
-              .setAlpha(0);
-            // Progress
-            this.add
-              .graphics()
-              .fillStyle(0xffffff, 0.06)
-              .fillRoundedRect(80, 520, W - 160, 12, 6);
-            this.progFill = this.add.graphics();
-            this.progLabel = this.add
-              .text(W / 2, 548, "", {
-                fontSize: "12px",
-                fontFamily: "sans-serif",
+              .setOrigin(0.5);
+
+            // dynamic layer where each round draws its widgets
+            this.layer = this.add.container(0, 0);
+
+            // feedback + buttons row
+            this.fbBg = this.add.graphics();
+            this.feedback = this.add
+              .text(W / 2, 540, "", {
+                fontSize: "15px",
+                fontFamily: FONT,
                 fontStyle: "bold",
-                color: "#ffe3a3",
+                color: COL.white,
+                align: "center",
+                wordWrap: { width: W - 140 },
+                lineSpacing: 4,
               })
               .setOrigin(0.5);
-            // Next
-            this.nextBtn = this.add
-              .image(W / 2, 590, "btn_teal")
-              .setScale(0.7, 0.8)
-              .setInteractive({ useHandCursor: true })
-              .setAlpha(0);
-            this.nextTxt = this.add
-              .text(W / 2, 590, "Next Play →", {
-                fontSize: "14px",
-                fontFamily: "Trebuchet MS",
-                fontStyle: "bold",
-                color: "#fff",
-              })
-              .setOrigin(0.5)
-              .setAlpha(0);
-            this.nextBtn.on("pointerdown", () => this.advance());
-            // Particles
-            this.goodP = this.add.particles(W / 2, 345, "dot", {
-              speed: { min: 80, max: 250 },
+
+            this.submitBtn = this.makeBtn(
+              W / 2 + 120,
+              600,
+              200,
+              48,
+              "✓ Confirm",
+              COL.green,
+              () => this.onSubmit(),
+            );
+            this.hintBtn = this.makeBtn(
+              W / 2 - 120,
+              600,
+              180,
+              48,
+              "💡 Hint",
+              0x355080,
+              () => this.showHint(),
+            );
+
+            // keyboard
+            this.input.keyboard.on("keydown", (e) => {
+              const k = e.key;
+              if (k === "Enter") {
+                e.preventDefault?.();
+                this.onSubmit();
+              } else if (k.toLowerCase() === "h") this.showHint();
+              else if (k === "ArrowLeft") {
+                e.preventDefault?.();
+                this.keyNudge(-1);
+              } else if (k === "ArrowRight") {
+                e.preventDefault?.();
+                this.keyNudge(1);
+              } else if (k === "ArrowUp") {
+                e.preventDefault?.();
+                this.keyVert(1);
+              } else if (k === "ArrowDown") {
+                e.preventDefault?.();
+                this.keyVert(-1);
+              } else if (k === " ") {
+                e.preventDefault?.();
+                this.keySelectCycle();
+              }
+            });
+
+            this.goodP = this.add.particles(W / 2, 340, "dot", {
+              speed: { min: 80, max: 240 },
               scale: { start: 0.7, end: 0 },
               alpha: { start: 1, end: 0 },
               lifespan: 600,
-              tint: [0xfcbf49, 0xf77f00, 0x2a9d5c],
+              tint: [COL.gold, COL.orange, COL.green],
               blendMode: "ADD",
               emitting: false,
-              quantity: 18,
+              quantity: 16,
             });
-            this.badP = this.add.particles(W / 2, 345, "dot", {
-              speed: { min: 60, max: 180 },
-              scale: { start: 0.5, end: 0 },
-              alpha: { start: 0.7, end: 0 },
-              lifespan: 500,
-              tint: [0xe63946, 0xfb7185],
-              blendMode: "ADD",
-              emitting: false,
-              quantity: 10,
-            });
-            this.cameras.main.fadeIn(500);
-            this.loadQuestion();
+
+            this.cameras.main.fadeIn(400);
+            this.loadRound();
           }
-          createHUD() {
-            this.add.text(30, 15, "🏆 SCORE", {
+
+          // ───────── HUD ─────────
+          buildHUD() {
+            this.add.text(24, 14, "🏆 SCORE", {
               fontSize: "10px",
               fontFamily: "sans-serif",
               fontStyle: "bold",
-              color: "#fcbf49",
+              color: COL.goldCss,
               letterSpacing: 2,
             });
-            this.scoreTxt = this.add.text(30, 32, "0", {
-              fontSize: "24px",
-              fontFamily: "Trebuchet MS",
+            this.scoreTxt = this.add.text(24, 30, "0", {
+              fontSize: "22px",
+              fontFamily: FONT,
               fontStyle: "bold",
-              color: "#fff",
+              color: COL.white,
             });
-            this.add.text(170, 15, "🔥 STREAK", {
+            this.add.text(150, 14, "🔥 STREAK", {
               fontSize: "10px",
               fontFamily: "sans-serif",
               fontStyle: "bold",
               color: "#f77f00",
               letterSpacing: 2,
             });
-            this.comboTxt = this.add.text(170, 32, "0", {
-              fontSize: "24px",
-              fontFamily: "Trebuchet MS",
+            this.streakTxt = this.add.text(150, 30, "0", {
+              fontSize: "22px",
+              fontFamily: FONT,
               fontStyle: "bold",
               color: "#f77f00",
             });
-            this.add.text(W - 200, 15, "❤️ LIVES", {
+            this.add.text(W - 250, 14, "❤️ LIVES", {
               fontSize: "10px",
               fontFamily: "sans-serif",
               fontStyle: "bold",
-              color: "#fb7185",
+              color: COL.redCss,
               letterSpacing: 2,
             });
-            this.livesTxt = this.add.text(W - 200, 32, "", {
-              fontSize: "20px",
+            this.livesTxt = this.add.text(W - 250, 30, "", {
+              fontSize: "18px",
             });
-            this.add.text(W - 80, 15, "QTR", {
+            this.add.text(W - 120, 14, "ROUND", {
               fontSize: "10px",
               fontFamily: "sans-serif",
               fontStyle: "bold",
-              color: "#1b998b",
+              color: COL.tealCss,
               letterSpacing: 2,
             });
-            this.qtrTxt = this.add
-              .text(W - 60, 32, "1", {
-                fontSize: "24px",
-                fontFamily: "Trebuchet MS",
-                fontStyle: "bold",
-                color: "#1b998b",
-              })
-              .setOrigin(0.5, 0);
+            this.roundTxt = this.add.text(W - 120, 30, "", {
+              fontSize: "16px",
+              fontFamily: FONT,
+              fontStyle: "bold",
+              color: COL.tealCss,
+            });
           }
           updateHUD() {
-            this.scoreTxt.setText(this.score.toString());
-            this.comboTxt
-              .setText(this.combo.toString())
-              .setColor(this.combo >= 3 ? "#fcbf49" : "#f77f00");
+            this.scoreTxt.setText(this.score.toLocaleString());
+            this.streakTxt
+              .setText(this.streak.toString())
+              .setColor(this.streak >= 3 ? COL.goldCss : "#f77f00");
             let h = "";
-            for (let i = 0; i < 3; i++) h += i < this.lives ? "❤️" : "🖤";
+            const maxL = this.tier === 1 ? 5 : 3;
+            for (let i = 0; i < maxL; i++) h += i < this.lives ? "❤️" : "🖤";
             this.livesTxt.setText(h);
-            this.quarter = Math.min(
-              4,
-              Math.floor(this.qIdx / (this.totalQs / 4)) + 1,
-            );
-            this.qtrTxt.setText(this.quarter.toString());
-            const pct = this.qIdx / this.totalQs;
-            this.progFill.clear();
-            this.progFill.fillStyle(0xfcbf49, 1);
-            if (pct > 0)
-              this.progFill.fillRoundedRect(80, 520, (W - 160) * pct, 12, 6);
-            this.progLabel.setText(
-              "Question " + this.qIdx + " / " + this.totalQs,
-            );
+            this.roundTxt.setText(this.solved + " / " + this.goal);
           }
-          makeChoice(x, y, idx) {
-            const c = this.add.container(x, y);
-            const bg = this.add.graphics();
-            bg.fillStyle(0xffffff, 0.05);
-            bg.fillRoundedRect(-185, -30, 370, 60, 14);
-            bg.lineStyle(2, 0xfcbf49, 0.3);
-            bg.strokeRoundedRect(-185, -30, 370, 60, 14);
-            const letter = this.add
-              .text(-170, 0, ["A", "B", "C", "D"][idx], {
+
+          makeBtn(x, y, w, h, label, color, cb) {
+            const r = this.add
+              .rectangle(x, y, w, h, color)
+              .setStrokeStyle(2, 0x000000, 0.25)
+              .setInteractive({ useHandCursor: true });
+            const t = this.add
+              .text(x, y, label, {
                 fontSize: "16px",
-                fontFamily: "Courier New",
+                fontFamily: FONT,
                 fontStyle: "bold",
-                color: "#fcbf49",
+                color: COL.white,
               })
-              .setOrigin(0, 0.5);
-            const txt = this.add
-              .text(-145, 0, "", {
-                fontSize: "14px",
-                fontFamily: "Trebuchet MS",
-                fontStyle: "bold",
-                color: "#fff",
-                wordWrap: { width: 320 },
-                lineSpacing: 2,
-              })
-              .setOrigin(0, 0.5);
-            c.add([bg, letter, txt]);
-            c.setSize(370, 60).setInteractive({ useHandCursor: true });
-            c.on("pointerover", () =>
-              this.tweens.add({
-                targets: c,
-                scaleX: 1.03,
-                scaleY: 1.03,
-                duration: 80,
-              }),
-            );
-            c.on("pointerout", () =>
-              this.tweens.add({
-                targets: c,
-                scaleX: 1,
-                scaleY: 1,
-                duration: 80,
-              }),
-            );
-            c.on("pointerdown", () => {
-              if (!this.answering) this.checkAnswer(idx);
+              .setOrigin(0.5);
+            r.on("pointerover", () => r.setScale(1.05));
+            r.on("pointerout", () => r.setScale(1));
+            r.on("pointerdown", () => {
+              SFX.init();
+              cb();
             });
-            c._bg = bg;
-            c._txt = txt;
-            c._letter = letter;
-            return c;
+            r._t = t;
+            return r;
           }
-          loadQuestion() {
-            if (this.qIdx >= this.totalQs) {
+
+          flash(msg, css = COL.white, hold = 2600) {
+            this.feedback.setText(msg).setColor(css);
+            this.fbBg.clear();
+            const good = css === COL.greenCss;
+            this.fbBg.fillStyle(good ? COL.green : 0xffffff, good ? 0.1 : 0.04);
+            this.fbBg.fillRoundedRect(70, 518, W - 140, 44, 12);
+            this.tweens.killTweensOf(this.feedback);
+            this.feedback.setAlpha(1);
+            this.time.delayedCall(hold, () => {
+              this.tweens.add({
+                targets: this.feedback,
+                alpha: 0.0,
+                duration: 400,
+              });
+            });
+          }
+
+          // ───────── round lifecycle ─────────
+          loadRound() {
+            if (this.solved >= this.goal) {
               this.endGame();
               return;
             }
-            this.answering = false;
-            const qDef = this.questions[this.qIdx];
-            const setupData = qDef.setup();
-            this.qData = setupData;
-            const solved = qDef.solve(setupData);
-            this.currentQ = { ...qDef, ...solved, setupData };
-            const sport = SPORTS[qDef.sport] || "Sports";
-            const sportIcon = SPORT_ICONS[qDef.sport] || "🏆";
-            // Header
-            this.sportBg.clear();
-            this.sportBg.fillStyle(0xfcbf49, 0.08);
-            this.sportBg.fillRoundedRect(70, 64, W - 140, 48, 12);
-            this.sportIcon.setText(sportIcon);
-            this.sportTitle.setText(sport + " Analytics");
-            this.sportSub.setText((setupData.stat || "STATS").toUpperCase());
-            // Data chips
-            this.dataChips.forEach((c) => c.destroy());
-            this.dataChips = [];
-            this.dataBg.clear();
-            if (setupData.data && setupData.data.length > 0) {
-              this.dataBg.fillStyle(0xfcbf49, 0.06);
-              this.dataBg.fillRoundedRect(80, 132, W - 160, 46, 12);
-              this.dataLabel.setAlpha(1);
-              const startX = W / 2 - ((setupData.data.length - 1) * 42) / 2;
-              setupData.data.forEach((v, i) => {
-                const chip = this.add
-                  .text(startX + i * 42, 155, v.toString(), {
-                    fontSize: "18px",
-                    fontFamily: "Courier New",
-                    fontStyle: "bold",
-                    color: "#fcbf49",
-                    backgroundColor: "rgba(252,191,73,0.12)",
-                    padding: { x: 6, y: 3 },
-                  })
-                  .setOrigin(0.5);
-                this.dataChips.push(chip);
-              });
-            } else {
-              this.dataLabel.setAlpha(0);
-            }
-            // Question
-            this.qBg.clear();
-            this.qBg.fillStyle(0xffffff, 0.03);
-            this.qBg.fillRoundedRect(80, 185, W - 160, 70, 14);
-            this.qType.setText(this.currentQ.type);
-            this.qText.setText(this.currentQ.q).setAlpha(0);
-            this.tweens.add({ targets: this.qText, alpha: 1, duration: 300 });
-            // Choices
-            this.currentQ.choices.forEach((ch, i) => {
-              if (i < 4) {
-                const btn = this.choiceBtns[i];
-                btn._txt.setText(ch);
-                btn._bg.clear();
-                btn._bg.fillStyle(0xffffff, 0.05);
-                btn._bg.fillRoundedRect(-185, -30, 370, 60, 14);
-                btn._bg.lineStyle(2, 0xfcbf49, 0.3);
-                btn._bg.strokeRoundedRect(-185, -30, 370, 60, 14);
-                btn.setAlpha(1).setInteractive().setScale(1);
-              }
-            });
-            this.fbBg.setAlpha(0);
-            this.fbTitle.setAlpha(0);
-            this.fbBody.setAlpha(0);
-            this.nextBtn.setAlpha(0).disableInteractive();
-            this.nextTxt.setAlpha(0);
+            this.locked = false;
+            this.attemptsOnRound = 0;
+            this.layer.removeAll(true);
+            this.input.off("dragstart");
+            this.input.off("drag");
+            this.input.off("dragend");
+            this.feedback.setText("");
+            this.fbBg.clear();
+            this.submitBtn.setAlpha(1);
+            this.submitBtn._t.setAlpha(1);
+
+            const kind = this.plan[this.roundIx];
+            this.round = genRound(this.tier, kind);
+            this.headerType.setText(
+              this.round.stat
+                ? this.round.kind + " · " + this.round.stat.toUpperCase()
+                : this.round.kind,
+            );
+            this.headerBg.clear();
+            this.headerBg.fillStyle(COL.gold, 0.06);
+            this.headerBg.fillRoundedRect(70, 84, W - 140, 60, 12);
+
+            if (kind === "MEAN") this.buildMean();
+            else if (kind === "MEDIAN") this.buildMedian();
+            else if (kind === "MODE") this.buildMode();
+            else this.buildBest();
+
             this.updateHUD();
           }
-          checkAnswer(idx) {
-            if (this.answering) return;
-            this.answering = true;
-            const q = this.currentQ;
-            const selected = q.choices[idx];
-            const isCorrect = selected === q.answer;
-            this.qIdx++;
-            this.choiceBtns.forEach((b, i) => {
-              b.disableInteractive();
-              if (q.choices[i] === q.answer) {
-                b._bg.clear();
-                b._bg.fillStyle(0x2a9d5c, 0.2);
-                b._bg.fillRoundedRect(-185, -30, 370, 60, 14);
-                b._bg.lineStyle(2, 0x2a9d5c, 0.8);
-                b._bg.strokeRoundedRect(-185, -30, 370, 60, 14);
-              } else if (i === idx && !isCorrect) {
-                b._bg.clear();
-                b._bg.fillStyle(0xe63946, 0.15);
-                b._bg.fillRoundedRect(-185, -30, 370, 60, 14);
-                b._bg.lineStyle(2, 0xe63946, 0.6);
-                b._bg.strokeRoundedRect(-185, -30, 370, 60, 14);
-              } else {
-                b.setAlpha(0.35);
-              }
+
+          resolveCorrect(msg) {
+            if (this.locked) return;
+            this.locked = true;
+            SFX.play("correct");
+            this.solved++;
+            this.streak++;
+            this.bestStreak = Math.max(this.bestStreak, this.streak);
+            const firstTry = this.attemptsOnRound === 0 ? 60 : 0;
+            const combo = this.streak >= 3 ? 2 : 1;
+            const pts = (100 + firstTry + this.streak * 10) * combo;
+            this.score += pts;
+            this.goodP.explode(16, W / 2, 330);
+            if (this.streak >= 3) {
+              SFX.play("combo");
+              this.cameras.main.shake(90, 0.004);
+            }
+            this.flash(
+              "✅ " + msg + "   +" + pts + (combo > 1 ? " 🔥x2" : ""),
+              COL.greenCss,
+              1400,
+            );
+            this.updateHUD();
+            this.time.delayedCall(1500, () => {
+              this.roundIx++;
+              this.loadRound();
             });
-            if (isCorrect) {
-              SFX.play("correct");
-              this.combo++;
-              this.maxCombo = Math.max(this.maxCombo, this.combo);
-              this.correct++;
-              const bonus = this.combo >= 5 ? 60 : this.combo >= 3 ? 30 : 0;
-              const pts = 120 + bonus;
-              this.score += pts;
-              this.goodP.explode(18, W / 2, 345);
-              if (this.combo >= 3) {
-                SFX.play("combo");
-                this.cameras.main.shake(100, 0.005);
-              }
-              this.showFB(
-                true,
-                this.combo >= 5
-                  ? "🔥 ON FIRE! +" + pts
-                  : this.combo >= 3
-                    ? "💥 STREAK! +" + pts
-                    : "✅ Correct! +" + pts,
-                q.explain,
-              );
-              const pop = this.add
-                .text(W / 2, 290, "+" + pts, {
-                  fontSize: "26px",
-                  fontFamily: "Trebuchet MS",
-                  fontStyle: "bold",
-                  color: "#fcbf49",
-                })
-                .setOrigin(0.5);
-              this.tweens.add({
-                targets: pop,
-                y: 250,
-                alpha: 0,
-                duration: 800,
-                onComplete: () => pop.destroy(),
-              });
-            } else {
-              SFX.play("wrong");
-              this.combo = 0;
+          }
+
+          resolveWrong(msg) {
+            if (this.locked) return;
+            SFX.play("wrong");
+            this.attemptsOnRound++;
+            this.streak = 0;
+            this.cameras.main.shake(140, 0.006);
+            this.flash("❌ " + msg, COL.redCss, 3200);
+            // a life is lost only after a couple of nudged tries (gentle on L1)
+            const tol = this.tier === 1 ? 3 : 2;
+            if (this.attemptsOnRound >= tol) {
               this.lives--;
-              this.wrong++;
-              this.badP.explode(10, W / 2, 345);
-              this.cameras.main.shake(200, 0.012);
-              this.showFB(
-                false,
-                "❌ Not quite!",
-                q.explain + (q.hint ? "\n\n💡 Hint: " + q.hint : ""),
-              );
+              this.attemptsOnRound = 0;
               if (this.lives <= 0) {
-                this.time.delayedCall(1800, () => this.endGame());
+                this.locked = true;
+                this.updateHUD();
+                this.time.delayedCall(900, () => this.endGame());
                 return;
               }
             }
             this.updateHUD();
-            // Quarter transitions
-            const newQ = Math.min(
-              4,
-              Math.floor(this.qIdx / (this.totalQs / 4)) + 1,
+          }
+
+          // dispatched by the active round
+          onSubmit() {
+            if (this._submit && !this.locked) this._submit();
+          }
+          showHint() {
+            if (this._hint) this._hint();
+          }
+          keyNudge(d) {
+            if (this._keyNudge) this._keyNudge(d);
+          }
+          keyVert(d) {
+            if (this._keyVert) this._keyVert(d);
+          }
+          keySelectCycle() {
+            if (this._keyCycle) this._keyCycle();
+          }
+
+          // ═══════════════════════════════════════════════════════════
+          //  MEAN — salary-cap balancing. Drag points between bars; a live
+          //  mean marker slides. Hit the target average to confirm.
+          // ═══════════════════════════════════════════════════════════
+          buildMean() {
+            const r = this.round;
+            this.taskText.setText(
+              "SALARY CAP: you have " +
+                r.total +
+                " points to spread across " +
+                r.count +
+                " players.\nDrag points so every player's AVERAGE equals " +
+                r.target +
+                " (total ÷ players).",
             );
-            if (newQ > this.quarter && this.qIdx < this.totalQs) {
-              SFX.play("whistle");
-              const b = this.add
-                .text(W / 2, H / 2, "🏀 QUARTER " + newQ + "!", {
-                  fontSize: "32px",
-                  fontFamily: "Trebuchet MS",
+
+            this.meanVals = [...r.start]; // editable distribution (always sums to total)
+            this.meanSel = 0;
+
+            const n = r.count;
+            const gap = Math.min(150, (W - 200) / n);
+            const startX = W / 2 - ((n - 1) * gap) / 2;
+            const baseY = 470; // bar floor
+            const topY = 200; // value 30 ceiling
+            const pxToVal = (v) => baseY - (v / MEAN_MAX) * (baseY - topY);
+
+            this.meanBarX = [];
+            this.meanBars = [];
+            this.meanLabels = [];
+            const self = this;
+
+            for (let i = 0; i < n; i++) {
+              const x = startX + i * gap;
+              this.meanBarX.push(x);
+              // track outline
+              const track = this.add.graphics();
+              track.fillStyle(COL.slot, 1);
+              track.fillRoundedRect(x - 26, topY, 52, baseY - topY, 8);
+              track.lineStyle(2, 0x35507f, 1);
+              track.strokeRoundedRect(x - 26, topY, 52, baseY - topY, 8);
+              this.layer.add(track);
+
+              // draggable fill (the player's points)
+              const fill = this.add
+                .rectangle(x, baseY, 44, 1, COL.bar)
+                .setOrigin(0.5, 1)
+                .setStrokeStyle(2, 0x9ccaff, 0.7);
+              fill.setInteractive({ useHandCursor: true, draggable: true });
+              fill._i = i;
+              this.input.setDraggable(fill);
+              this.layer.add(fill);
+
+              // value chip + name
+              const valLbl = this.add
+                .text(x, baseY + 12, "", {
+                  fontSize: "20px",
+                  fontFamily: "Courier New",
                   fontStyle: "bold",
-                  color: "#fcbf49",
-                  stroke: "#14213d",
-                  strokeThickness: 5,
+                  color: COL.goldCss,
                 })
-                .setOrigin(0.5)
-                .setAlpha(0);
+                .setOrigin(0.5, 0);
+              const nameLbl = this.add
+                .text(x, baseY + 40, r.players[i], {
+                  fontSize: "11px",
+                  fontFamily: "sans-serif",
+                  color: COL.cream,
+                })
+                .setOrigin(0.5, 0);
+              this.layer.add([valLbl, nameLbl]);
+              this.meanBars.push(fill);
+              this.meanLabels.push(valLbl);
+            }
+
+            // mean marker line + flag (slides as they drag)
+            this.meanMarker = this.add.graphics();
+            this.meanFlag = this.add
+              .text(0, 0, "", {
+                fontSize: "13px",
+                fontFamily: FONT,
+                fontStyle: "bold",
+                color: "#14213d",
+                backgroundColor: COL.tealCss,
+                padding: { x: 6, y: 3 },
+              })
+              .setOrigin(1, 0.5);
+            this.layer.add([this.meanMarker, this.meanFlag]);
+
+            // target line (the goal) — dashed, labelled with shape, not just colour
+            this.targetLine = this.add.graphics();
+            this.layer.add(this.targetLine);
+            this.targetLbl = this.add
+              .text(
+                W / 2 + ((n - 1) * gap) / 2 + 60,
+                pxToVal(r.target),
+                "🎯 TARGET\nmean " + r.target,
+                {
+                  fontSize: "12px",
+                  fontFamily: FONT,
+                  fontStyle: "bold",
+                  color: COL.goldCss,
+                  align: "left",
+                },
+              )
+              .setOrigin(0, 0.5);
+            this.layer.add(this.targetLbl);
+
+            const redraw = () => {
+              for (let i = 0; i < n; i++) {
+                const v = this.meanVals[i];
+                const h = Math.max(1, (v / MEAN_MAX) * (baseY - topY));
+                this.meanBars[i].height = h;
+                this.meanBars[i].y = baseY;
+                const selected = i === this.meanSel;
+                this.meanBars[i].setStrokeStyle(
+                  selected ? 3 : 2,
+                  selected ? COL.gold : 0x9ccaff,
+                  selected ? 1 : 0.7,
+                );
+                this.meanLabels[i].setText(v.toString());
+              }
+              // mean marker
+              const m = meanOf(this.meanVals);
+              const my = pxToVal(m);
+              this.meanMarker.clear();
+              this.meanMarker.lineStyle(3, COL.teal, 1);
+              this.meanMarker.beginPath();
+              this.meanMarker.moveTo(startX - 50, my);
+              this.meanMarker.lineTo(startX + (n - 1) * gap + 50, my);
+              this.meanMarker.strokePath();
+              this.meanFlag.setText(
+                "mean " + (Number.isInteger(m) ? m : m.toFixed(1)),
+              );
+              this.meanFlag.setPosition(startX - 56, my);
+              // target dashed line
+              const ty = pxToVal(r.target);
+              this.targetLine.clear();
+              this.targetLine.lineStyle(3, COL.gold, 0.9);
+              for (
+                let dx = startX - 40;
+                dx < startX + (n - 1) * gap + 40;
+                dx += 16
+              ) {
+                this.targetLine.beginPath();
+                this.targetLine.moveTo(dx, ty);
+                this.targetLine.lineTo(dx + 9, ty);
+                this.targetLine.strokePath();
+              }
+            };
+            this.meanRedraw = redraw;
+            redraw();
+
+            // dragging a bar moves points between it and the others to keep
+            // the TOTAL constant (a true salary cap: give to one, take from rest).
+            this.input.on("dragstart", (p, obj) => {
+              if (self.locked || obj._i === undefined) return;
+              self.meanSel = obj._i;
+              self._dragStartVal = self.meanVals[obj._i];
+              self._dragStartY = p.y;
+              SFX.play("click");
+              redraw();
+            });
+            this.input.on("drag", (p, obj) => {
+              if (self.locked || obj._i === undefined) return;
+              const i = obj._i;
+              const dPix = self._dragStartY - p.y; // up = increase
+              let want = Math.round(
+                self._dragStartVal + (dPix / (baseY - topY)) * MEAN_MAX,
+              );
+              want = Phaser.Math.Clamp(want, MEAN_MIN, MEAN_MAX);
+              self.setMeanValue(i, want);
+              redraw();
+            });
+            this.input.on("dragend", () => {
+              if (!self.locked) SFX.play("snap");
+            });
+
+            this._keyNudge = (d) => {
+              this.meanSel = (this.meanSel + d + n) % n;
+              redraw();
+            };
+            this._keyVert = (d) => {
+              this.setMeanValue(
+                this.meanSel,
+                Phaser.Math.Clamp(
+                  this.meanVals[this.meanSel] + d,
+                  MEAN_MIN,
+                  MEAN_MAX,
+                ),
+              );
+              SFX.play("click");
+              redraw();
+            };
+            this._keyCycle = () => {
+              this._keyNudge(1);
+            };
+
+            this._submit = () => {
+              const m = meanOf(this.meanVals);
+              if (sum(this.meanVals) !== r.total) {
+                // safety: redistribution always keeps total, but guard anyway
+                this.resolveWrong(
+                  "Points must total " +
+                    r.total +
+                    " (you have " +
+                    sum(this.meanVals) +
+                    ").",
+                );
+                return;
+              }
+              if (m === r.target) {
+                this.meanBars.forEach((b) => b.setFillStyle(COL.green));
+                this.resolveCorrect(
+                  "Mean = " +
+                    r.total +
+                    " ÷ " +
+                    r.count +
+                    " = " +
+                    r.target +
+                    "!",
+                );
+              } else if (m > r.target) {
+                this.resolveWrong(
+                  "Your mean is above the target line. The total is right — give some points to lower-paid players so the average drops to " +
+                    r.target +
+                    ".",
+                );
+              } else {
+                this.resolveWrong(
+                  "Your mean is below the target line. Move points UP into players until the average reaches " +
+                    r.target +
+                    ".",
+                );
+              }
+            };
+            this._hint = () => {
+              SFX.play("click");
+              this.flash(
+                "💡 Target mean " +
+                  r.target +
+                  " means each of the " +
+                  r.count +
+                  " players is worth " +
+                  r.target +
+                  " on average. The total " +
+                  r.total +
+                  " never changes — you're just sharing it so the marker meets the 🎯 line.",
+                COL.cream,
+                4200,
+              );
+            };
+          }
+          // give `want` to bar i, pulling the difference from/to the others
+          // so the grand total stays fixed (salary cap conservation).
+          setMeanValue(i, want) {
+            const cur = this.meanVals[i];
+            let diff = want - cur; // >0 means bar i needs more
+            if (diff === 0) return;
+            const n = this.meanVals.length;
+            if (diff > 0) {
+              // take `diff` from other bars (highest first)
+              let need = diff;
+              const order = [...Array(n).keys()]
+                .filter((k) => k !== i)
+                .sort((a, b) => this.meanVals[b] - this.meanVals[a]);
+              for (const k of order) {
+                if (need <= 0) break;
+                const take = Math.min(this.meanVals[k] - MEAN_MIN, need);
+                this.meanVals[k] -= take;
+                need -= take;
+              }
+              this.meanVals[i] += diff - need; // only what we could actually pull
+            } else {
+              // give `-diff` to other bars (lowest first)
+              let give = -diff;
+              const order = [...Array(n).keys()]
+                .filter((k) => k !== i)
+                .sort((a, b) => this.meanVals[a] - this.meanVals[b]);
+              for (const k of order) {
+                if (give <= 0) break;
+                const room = Math.min(MEAN_MAX - this.meanVals[k], give);
+                this.meanVals[k] += room;
+                give -= room;
+              }
+              this.meanVals[i] -= -diff - give;
+            }
+          }
+
+          // ═══════════════════════════════════════════════════════════
+          //  MEDIAN — drag tokens into a sorted rack, drop the marker on
+          //  the middle slot. Game verifies sort + middle position.
+          // ═══════════════════════════════════════════════════════════
+          buildMedian() {
+            const r = this.round;
+            const n = r.count;
+            const mid = Math.floor(n / 2);
+            this.taskText.setText(
+              "Drag the " +
+                n +
+                " players into order, SMALLEST to LARGEST.\nThen the middle player is the MEDIAN. Confirm when sorted.",
+            );
+
+            const chipW = Math.min(96, (W - 200) / n);
+            const slotY = 320;
+            const startX = W / 2 - ((n - 1) * chipW) / 2;
+            const slotX = [];
+            for (let i = 0; i < n; i++) slotX.push(startX + i * chipW);
+
+            // slot backgrounds + middle marker
+            for (let i = 0; i < n; i++) {
+              const isMid = i === mid;
+              const slot = this.add
+                .rectangle(slotX[i], slotY, chipW - 10, 90, COL.slot)
+                .setStrokeStyle(isMid ? 3 : 2, isMid ? COL.gold : 0x35507f);
+              this.layer.add(slot);
+              const pos = this.add
+                .text(
+                  slotX[i],
+                  slotY + 60,
+                  isMid ? "▲ MIDDLE" : "pos " + (i + 1),
+                  {
+                    fontSize: isMid ? "12px" : "10px",
+                    fontFamily: "sans-serif",
+                    fontStyle: "bold",
+                    color: isMid ? COL.goldCss : "#7e95bd",
+                  },
+                )
+                .setOrigin(0.5);
+              this.layer.add(pos);
+            }
+
+            const shown = shuffle(r.values);
+            this.medSlots = new Array(n).fill(null);
+            const self = this;
+            shown.forEach((val, i) => {
+              const cont = this.add.container(slotX[i], slotY);
+              const bg = this.add
+                .rectangle(0, 0, chipW - 14, 78, COL.bar)
+                .setStrokeStyle(2, 0x9ccaff);
+              const t = this.add
+                .text(0, -8, val.toString(), {
+                  fontSize: "26px",
+                  fontFamily: "Courier New",
+                  fontStyle: "bold",
+                  color: COL.white,
+                })
+                .setOrigin(0.5);
+              const nm = this.add
+                .text(0, 26, r.players[i].slice(0, 6), {
+                  fontSize: "10px",
+                  fontFamily: "sans-serif",
+                  color: COL.cream,
+                })
+                .setOrigin(0.5);
+              cont.add([bg, t, nm]);
+              cont.setSize(chipW - 14, 78);
+              cont.value = val;
+              cont.slot = i;
+              cont._bg = bg;
+              cont.setInteractive(
+                new Phaser.Geom.Rectangle(
+                  -(chipW - 14) / 2,
+                  -39,
+                  chipW - 14,
+                  78,
+                ),
+                Phaser.Geom.Rectangle.Contains,
+              );
+              this.input.setDraggable(cont);
+              this.medSlots[i] = cont;
+              this.layer.add(cont);
+            });
+
+            this.input.on("dragstart", (p, obj) => {
+              if (self.locked || obj.value === undefined) return;
+              obj.setDepth(20);
+              obj._bg.setStrokeStyle(3, COL.gold);
+              SFX.play("click");
+            });
+            this.input.on("drag", (p, obj, dx, dy) => {
+              if (self.locked || obj.value === undefined) return;
+              obj.x = dx;
+              obj.y = dy;
+            });
+            this.input.on("dragend", (p, obj) => {
+              if (self.locked || obj.value === undefined) return;
+              obj.setDepth(1);
+              obj._bg.setStrokeStyle(2, 0x9ccaff);
+              let best = 0,
+                bd = 1e9;
+              for (let i = 0; i < n; i++) {
+                const d = Math.abs(obj.x - slotX[i]);
+                if (d < bd) {
+                  bd = d;
+                  best = i;
+                }
+              }
+              const from = obj.slot;
+              if (best !== from) {
+                const other = self.medSlots[best];
+                self.medSlots[best] = obj;
+                self.medSlots[from] = other;
+                obj.slot = best;
+                if (other) {
+                  other.slot = from;
+                  self.tweens.add({
+                    targets: other,
+                    x: slotX[from],
+                    y: slotY,
+                    duration: 160,
+                    ease: "Quad.Out",
+                  });
+                }
+                SFX.play("snap");
+              }
+              self.tweens.add({
+                targets: obj,
+                x: slotX[best],
+                y: slotY,
+                duration: 160,
+                ease: "Quad.Out",
+              });
+            });
+
+            // keyboard: cycle a selection, swap with left/right neighbour
+            this.medSel = 0;
+            const markSel = () => {
+              this.medSlots.forEach((c, i) =>
+                c._bg.setStrokeStyle(
+                  i === this.medSel ? 3 : 2,
+                  i === this.medSel ? COL.gold : 0x9ccaff,
+                ),
+              );
+            };
+            markSel();
+            this._keyCycle = () => {
+              this.medSel = (this.medSel + 1) % n;
+              markSel();
+              SFX.play("click");
+            };
+            const swap = (j) => {
+              if (j < 0 || j >= n) return;
+              const a = this.medSlots[this.medSel],
+                b = this.medSlots[j];
+              this.medSlots[this.medSel] = b;
+              this.medSlots[j] = a;
+              a.slot = j;
+              b.slot = this.medSel;
+              this.tweens.add({
+                targets: a,
+                x: slotX[j],
+                y: slotY,
+                duration: 150,
+              });
               this.tweens.add({
                 targets: b,
-                alpha: 1,
-                scaleX: 1.2,
-                scaleY: 1.2,
-                duration: 400,
-                yoyo: true,
-                hold: 500,
-                onComplete: () => b.destroy(),
+                x: slotX[this.medSel],
+                y: slotY,
+                duration: 150,
               });
+              this.medSel = j;
+              markSel();
+              SFX.play("snap");
+            };
+            this._keyNudge = (d) => swap(this.medSel + d);
+
+            this._submit = () => {
+              const seq = this.medSlots.map((c) => c.value);
+              const sortedOK = seq.every((v, i) => i === 0 || seq[i - 1] <= v);
+              if (!sortedOK) {
+                // find first out-of-order pair for a teaching nudge
+                let bad = 1;
+                for (let i = 1; i < seq.length; i++)
+                  if (seq[i - 1] > seq[i]) {
+                    bad = i;
+                    break;
+                  }
+                this.resolveWrong(
+                  "Not sorted yet — " +
+                    seq[bad - 1] +
+                    " comes after " +
+                    seq[bad] +
+                    ". Median needs the data in order first.",
+                );
+                return;
+              }
+              const hi = this.medSlots[mid];
+              hi._bg.setStrokeStyle(4, COL.green);
+              hi._bg.setFillStyle(COL.green);
+              this.tweens.add({
+                targets: hi,
+                scale: 1.15,
+                duration: 200,
+                yoyo: true,
+              });
+              this.resolveCorrect(
+                "Sorted! The middle player's " +
+                  r.stat +
+                  " = " +
+                  r.answer +
+                  " is the median.",
+              );
+            };
+            this._hint = () => {
+              SFX.play("click");
+              this.flash(
+                "💡 Line them up small→large. With " +
+                  n +
+                  " players the MIDDLE one (position " +
+                  (mid + 1) +
+                  ") is the median — equal players on each side.",
+                COL.cream,
+                4000,
+              );
+            };
+          }
+
+          // ═══════════════════════════════════════════════════════════
+          //  MODE — stack repeated stat values. Drag each player piece onto
+          //  the lane that matches its value; the tallest stack is the mode.
+          // ═══════════════════════════════════════════════════════════
+          buildMode() {
+            const r = this.round;
+            const lanes = r.laneVals.length;
+            this.taskText.setText(
+              "Drag each player into the column for their " +
+                r.stat +
+                ".\nThe TALLEST stack is the MODE — the value that repeats most.",
+            );
+
+            const laneGap = Math.min(150, (W - 200) / lanes);
+            const startX = W / 2 - ((lanes - 1) * laneGap) / 2;
+            const floorY = 460;
+            const cellH = 30;
+            this.modeLaneX = [];
+            this.modeStacks = r.laneVals.map(() => []);
+
+            for (let i = 0; i < lanes; i++) {
+              const x = startX + i * laneGap;
+              this.modeLaneX.push(x);
+              const col = this.add
+                .rectangle(x, 330, 96, 280, COL.slot)
+                .setStrokeStyle(2, 0x35507f);
+              this.layer.add(col);
+              const lbl = this.add
+                .text(x, floorY + 14, r.laneVals[i].toString(), {
+                  fontSize: "22px",
+                  fontFamily: "Courier New",
+                  fontStyle: "bold",
+                  color: COL.goldCss,
+                })
+                .setOrigin(0.5, 0);
+              const sub = this.add
+                .text(x, floorY + 44, r.stat, {
+                  fontSize: "10px",
+                  fontFamily: "sans-serif",
+                  color: COL.cream,
+                })
+                .setOrigin(0.5, 0);
+              this.layer.add([lbl, sub]);
             }
-            this.time.delayedCall(600, () => {
-              this.nextBtn.setAlpha(1).setInteractive();
-              this.nextTxt.setAlpha(1);
+
+            // tray of unplaced player pieces along the bottom-left staging row
+            this.modePieces = [];
+            const self = this;
+            const trayY = 540;
+            r.pieces.forEach((val, i) => {
+              const tx = 120 + (i % 6) * 64;
+              const ty = trayY + Math.floor(i / 6) * 0; // single row staging
+              const cont = this.add.container(tx, 540 + 0);
+              const bg = this.add
+                .rectangle(0, 0, 54, 26, COL.bar)
+                .setStrokeStyle(2, 0x9ccaff);
+              const t = this.add
+                .text(0, 0, val.toString(), {
+                  fontSize: "16px",
+                  fontFamily: "Courier New",
+                  fontStyle: "bold",
+                  color: COL.white,
+                })
+                .setOrigin(0.5);
+              cont.add([bg, t]);
+              cont.setSize(54, 26);
+              cont.value = val;
+              cont.lane = -1; // -1 = in tray
+              cont._bg = bg;
+              cont._home = { x: tx, y: 540 };
+              cont.setInteractive(
+                new Phaser.Geom.Rectangle(-27, -13, 54, 26),
+                Phaser.Geom.Rectangle.Contains,
+              );
+              this.input.setDraggable(cont);
+              this.modePieces.push(cont);
+              this.layer.add(cont);
             });
+
+            const restack = (lane) => {
+              const stack = this.modeStacks[lane];
+              stack.forEach((piece, k) => {
+                const y = floorY - 6 - k * cellH - cellH / 2;
+                this.tweens.add({
+                  targets: piece,
+                  x: this.modeLaneX[lane],
+                  y,
+                  duration: 150,
+                  ease: "Quad.Out",
+                });
+              });
+            };
+
+            this.input.on("dragstart", (p, obj) => {
+              if (self.locked || obj.value === undefined) return;
+              obj.setDepth(20);
+              obj._bg.setStrokeStyle(3, COL.gold);
+              SFX.play("click");
+              if (obj.lane >= 0) {
+                const s = self.modeStacks[obj.lane];
+                const ix = s.indexOf(obj);
+                if (ix >= 0) s.splice(ix, 1);
+                restack(obj.lane);
+                obj.lane = -1;
+              }
+            });
+            this.input.on("drag", (p, obj, dx, dy) => {
+              if (self.locked || obj.value === undefined) return;
+              obj.x = dx;
+              obj.y = dy;
+            });
+            this.input.on("dragend", (p, obj) => {
+              if (self.locked || obj.value === undefined) return;
+              obj.setDepth(1);
+              obj._bg.setStrokeStyle(2, 0x9ccaff);
+              // nearest lane if close enough horizontally and above the floor
+              let best = -1,
+                bd = 70;
+              for (let i = 0; i < lanes; i++) {
+                const d = Math.abs(obj.x - self.modeLaneX[i]);
+                if (d < bd && obj.y < floorY + 10) {
+                  bd = d;
+                  best = i;
+                }
+              }
+              if (best >= 0) {
+                self.modeStacks[best].push(obj);
+                obj.lane = best;
+                restack(best);
+                SFX.play("snap");
+              } else {
+                // return to tray home
+                self.tweens.add({
+                  targets: obj,
+                  x: obj._home.x,
+                  y: obj._home.y,
+                  duration: 160,
+                });
+                obj.lane = -1;
+              }
+            });
+
+            this._keyCycle = () => {};
+            this._keyNudge = () => {};
+
+            this._submit = () => {
+              // all pieces must be placed
+              const unplaced = this.modePieces.filter((p) => p.lane < 0).length;
+              if (unplaced > 0) {
+                this.resolveWrong(
+                  "Place all players first — " +
+                    unplaced +
+                    " still in the tray. Every player belongs in a column.",
+                );
+                return;
+              }
+              // verify each lane holds only its own value (sorted correctly)
+              let mis = 0;
+              this.modeStacks.forEach((stack, lane) => {
+                stack.forEach((pc) => {
+                  if (pc.value !== r.laneVals[lane]) mis++;
+                });
+              });
+              if (mis > 0) {
+                this.resolveWrong(
+                  "Some players are in the wrong column. Each piece must sit under its own " +
+                    r.stat +
+                    " value.",
+                );
+                return;
+              }
+              // tallest stack = mode
+              const heights = this.modeStacks.map((s) => s.length);
+              const tallest = Math.max(...heights);
+              const winners = heights.filter((h) => h === tallest).length;
+              const tallLane = heights.indexOf(tallest);
+              if (winners !== 1 || r.laneVals[tallLane] !== r.modeTarget) {
+                this.resolveWrong(
+                  "Check your sorting — the mode is whichever value forms the single tallest stack.",
+                );
+                return;
+              }
+              // celebrate the winning column
+              this.modeStacks[tallLane].forEach((pc) =>
+                pc._bg.setFillStyle(COL.green),
+              );
+              this.resolveCorrect(
+                "Tallest stack wins! Mode = " +
+                  r.modeTarget +
+                  " (it appears " +
+                  tallest +
+                  " times).",
+              );
+            };
+            this._hint = () => {
+              SFX.play("click");
+              this.flash(
+                "💡 Sort every player into the column that matches their " +
+                  r.stat +
+                  ". Whichever column ends up TALLEST is the mode — the most common value.",
+                COL.cream,
+                4000,
+              );
+            };
           }
-          showFB(good, title, body) {
-            this.fbBg.clear();
-            this.fbBg.fillStyle(good ? 0x2a9d5c : 0xe63946, 0.1);
-            this.fbBg.fillRoundedRect(80, 420, W - 160, 95, 14);
-            this.fbBg.lineStyle(2, good ? 0x2a9d5c : 0xe63946, 0.4);
-            this.fbBg.strokeRoundedRect(80, 420, W - 160, 95, 14);
-            this.fbBg.setAlpha(1);
-            this.fbTitle
-              .setText(title)
-              .setAlpha(1)
-              .setColor(good ? "#2a9d5c" : "#fb7185");
-            this.fbBody.setText(body).setAlpha(1);
+
+          // ═══════════════════════════════════════════════════════════
+          //  BEST MEASURE — drag the star outlier in/out and WATCH the mean
+          //  lurch while the median holds. Then pick the measure that stayed
+          //  stable (a 2-way which-moved judgment, read from the toggle).
+          // ═══════════════════════════════════════════════════════════
+          buildBest() {
+            const r = this.round;
+            this.taskText.setText(
+              "A superstar with a HUGE " +
+                r.stat +
+                " can join the roster.\nDrag the ⭐ in and out. Watch which measure LURCHES — then pick the\nmeasure that best describes a TYPICAL player.",
+            );
+
+            this.bestIn = false; // outlier currently out of roster
+            this.bestChoice = null;
+
+            // number line across the middle
+            const lineY = 300;
+            const minV = 0;
+            const maxV = Math.ceil((r.outlier + 5) / 10) * 10;
+            const lx0 = 120,
+              lx1 = W - 120;
+            const vToX = (v) =>
+              lx0 + ((v - minV) / (maxV - minV)) * (lx1 - lx0);
+
+            const axis = this.add.graphics();
+            axis.lineStyle(2, 0x35507f, 1);
+            axis.beginPath();
+            axis.moveTo(lx0, lineY);
+            axis.lineTo(lx1, lineY);
+            axis.strokePath();
+            for (
+              let v = 0;
+              v <= maxV;
+              v += Math.max(10, Math.round(maxV / 6 / 10) * 10)
+            ) {
+              const x = vToX(v);
+              axis.lineStyle(1, 0x35507f, 0.8);
+              axis.beginPath();
+              axis.moveTo(x, lineY - 5);
+              axis.lineTo(x, lineY + 5);
+              axis.strokePath();
+              const tk = this.add
+                .text(x, lineY + 10, v.toString(), {
+                  fontSize: "10px",
+                  fontFamily: "sans-serif",
+                  color: "#7e95bd",
+                })
+                .setOrigin(0.5, 0);
+              this.layer.add(tk);
+            }
+            this.layer.add(axis);
+
+            // core player dots (circles)
+            r.core.forEach((v) => {
+              const dot = this.add
+                .circle(vToX(v), lineY, 9, COL.bar)
+                .setStrokeStyle(2, 0x9ccaff);
+              this.layer.add(dot);
+            });
+
+            // mean marker (triangle ▲ shape) and median marker (diamond ◆) —
+            // distinct shapes so it's not colour-only.
+            this.meanTri = this.add
+              .text(0, lineY - 50, "▲", {
+                fontSize: "26px",
+                color: COL.orange === COL.orange ? "#f77f00" : "#f77f00",
+              })
+              .setOrigin(0.5);
+            this.meanTriLbl = this.add
+              .text(0, lineY - 76, "MEAN", {
+                fontSize: "11px",
+                fontFamily: "sans-serif",
+                fontStyle: "bold",
+                color: "#f9a03f",
+              })
+              .setOrigin(0.5);
+            this.medDia = this.add
+              .text(0, lineY + 50, "◆", {
+                fontSize: "24px",
+                color: COL.tealCss,
+              })
+              .setOrigin(0.5);
+            this.medDiaLbl = this.add
+              .text(0, lineY + 74, "MEDIAN", {
+                fontSize: "11px",
+                fontFamily: "sans-serif",
+                fontStyle: "bold",
+                color: COL.tealCss,
+              })
+              .setOrigin(0.5);
+            this.layer.add([
+              this.meanTri,
+              this.meanTriLbl,
+              this.medDia,
+              this.medDiaLbl,
+            ]);
+
+            // draggable outlier star, parked off the line in a "bench" zone
+            const benchX = lx1 - 10,
+              benchY = lineY - 120;
+            this.starHome = { x: benchX, y: benchY };
+            this.star = this.add.container(benchX, benchY);
+            const sbg = this.add.circle(0, 0, 16, 0xffffff, 0.0);
+            const sIcon = this.add
+              .text(0, 0, "⭐", { fontSize: "30px" })
+              .setOrigin(0.5);
+            const sVal = this.add
+              .text(0, 24, r.outlier.toString(), {
+                fontSize: "12px",
+                fontFamily: "Courier New",
+                fontStyle: "bold",
+                color: COL.goldCss,
+              })
+              .setOrigin(0.5);
+            this.star.add([sbg, sIcon, sVal]);
+            this.star.setSize(40, 40);
+            this.star.setInteractive(
+              new Phaser.Geom.Rectangle(-20, -20, 40, 40),
+              Phaser.Geom.Rectangle.Contains,
+            );
+            this.input.setDraggable(this.star);
+            this.layer.add(this.star);
+
+            const benchLbl = this.add
+              .text(benchX, benchY - 36, "BENCH\n(drag onto line)", {
+                fontSize: "10px",
+                fontFamily: "sans-serif",
+                color: "#7e95bd",
+                align: "center",
+              })
+              .setOrigin(0.5);
+            this.layer.add(benchLbl);
+
+            const drawMarkers = () => {
+              const mean = this.bestIn ? r.meanYes : r.meanNo;
+              const med = this.bestIn ? r.medYes : r.medNo;
+              this.meanTri.x = vToX(mean);
+              this.meanTriLbl.x = vToX(mean);
+              this.medDia.x = vToX(med);
+              this.medDiaLbl.x = vToX(med);
+            };
+            this.bestDraw = drawMarkers;
+            drawMarkers();
+
+            const setIn = (inRoster) => {
+              if (this.bestIn === inRoster) return;
+              const prevMean = this.bestIn ? r.meanYes : r.meanNo;
+              this.bestIn = inRoster;
+              SFX.play(inRoster ? "lurch" : "snap");
+              const mean = inRoster ? r.meanYes : r.meanNo;
+              this.tweens.add({
+                targets: [this.meanTri, this.meanTriLbl],
+                x: vToX(mean),
+                duration: 450,
+                ease: "Back.Out",
+              });
+              // median nudges only slightly
+              const med = inRoster ? r.medYes : r.medNo;
+              this.tweens.add({
+                targets: [this.medDia, this.medDiaLbl],
+                x: vToX(med),
+                duration: 450,
+              });
+            };
+
+            const self = this;
+            this.input.on("dragstart", (p, obj) => {
+              if (self.locked || obj !== self.star) return;
+              obj.setDepth(20);
+              SFX.play("click");
+            });
+            this.input.on("drag", (p, obj, dx, dy) => {
+              if (self.locked || obj !== self.star) return;
+              obj.x = dx;
+              obj.y = dy;
+            });
+            this.input.on("dragend", (p, obj) => {
+              if (self.locked || obj !== self.star) return;
+              obj.setDepth(1);
+              // dropped on the line? => in roster, else bench
+              const onLine = Math.abs(obj.y - lineY) < 70;
+              if (onLine) {
+                this.tweens.add({
+                  targets: obj,
+                  x: vToX(r.outlier),
+                  y: lineY - 28,
+                  duration: 180,
+                });
+                setIn(true);
+              } else {
+                this.tweens.add({
+                  targets: obj,
+                  x: self.starHome.x,
+                  y: self.starHome.y,
+                  duration: 180,
+                });
+                setIn(false);
+              }
+            });
+
+            // keyboard: arrows toggle the star in/out
+            this._keyVert = (d) => {
+              if (d > 0) {
+                this.tweens.add({
+                  targets: this.star,
+                  x: vToX(r.outlier),
+                  y: lineY - 28,
+                  duration: 180,
+                });
+                setIn(true);
+              } else {
+                this.tweens.add({
+                  targets: this.star,
+                  x: this.starHome.x,
+                  y: this.starHome.y,
+                  duration: 180,
+                });
+                setIn(false);
+              }
+            };
+
+            // the 2-way which-measure judgment (the only "pick", and it is
+            // read from what the student saw move — not letter recall)
+            const choiceY = 470;
+            const mk = (cx, key, icon, label) => {
+              const card = this.add
+                .rectangle(cx, choiceY, 250, 64, COL.slot)
+                .setStrokeStyle(2, 0x35507f)
+                .setInteractive({ useHandCursor: true });
+              const t = this.add
+                .text(cx, choiceY, icon + "  " + label, {
+                  fontSize: "16px",
+                  fontFamily: FONT,
+                  fontStyle: "bold",
+                  color: COL.white,
+                })
+                .setOrigin(0.5);
+              this.layer.add([card, t]);
+              card.on("pointerover", () => card.setScale(1.04));
+              card.on("pointerout", () => card.setScale(1));
+              card.on("pointerdown", () => {
+                if (self.locked) return;
+                self.bestChoice = key;
+                self.bestCards.forEach((c) =>
+                  c.card.setStrokeStyle(2, 0x35507f),
+                );
+                card.setStrokeStyle(3, COL.gold);
+                SFX.play("click");
+              });
+              return { card, key };
+            };
+            const promptLbl = this.add
+              .text(
+                W / 2,
+                choiceY - 52,
+                "Which measure best describes a TYPICAL player?",
+                {
+                  fontSize: "13px",
+                  fontFamily: "sans-serif",
+                  fontStyle: "bold",
+                  color: COL.cream,
+                },
+              )
+              .setOrigin(0.5);
+            this.layer.add(promptLbl);
+            this.bestCards = [
+              mk(W / 2 - 140, "MEAN", "▲", "Mean"),
+              mk(W / 2 + 140, "MEDIAN", "◆", "Median"),
+            ];
+
+            this._submit = () => {
+              if (!this.bestIn) {
+                this.resolveWrong(
+                  "First drag the ⭐ onto the line and watch what happens to each marker.",
+                );
+                return;
+              }
+              if (!this.bestChoice) {
+                this.resolveWrong(
+                  "Now choose: which marker barely moved when the star joined?",
+                );
+                return;
+              }
+              if (this.bestChoice === "MEDIAN") {
+                this.resolveCorrect(
+                  "Right — the ▲ mean lurched toward the star, but the ◆ median held steady. Median best shows a typical player when there's an outlier.",
+                );
+              } else {
+                this.resolveWrong(
+                  "Look again: the ▲ mean jumped a long way when the star joined — one extreme value dragged it up. The marker that stayed put is the better typical measure.",
+                );
+              }
+            };
+            this._hint = () => {
+              SFX.play("click");
+              this.flash(
+                "💡 Drag the star ON, then OFF. The ▲ mean swings wildly because it adds in that one huge number. The ◆ median only cares about the middle, so it barely moves — that's why it's 'typical'.",
+                COL.cream,
+                4600,
+              );
+            };
           }
-          advance() {
-            SFX.play("click");
-            if (this.lives <= 0 || this.qIdx >= this.totalQs) this.endGame();
-            else this.loadQuestion();
-          }
+
           endGame() {
             this.cameras.main.fade(500);
             this.time.delayedCall(500, () =>
               this.scene.start("Results", {
+                tier: this.tier,
                 score: this.score,
-                correct: this.correct,
-                wrong: this.wrong,
-                total: this.totalQs,
-                combo: this.maxCombo,
-                lives: this.lives,
+                solved: this.solved,
+                goal: this.goal,
+                bestStreak: this.bestStreak,
               }),
             );
           }
         }
 
-        // ═══════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════
         class ResultsScene extends Phaser.Scene {
           constructor() {
             super("Results");
           }
-          init(data) {
-            this.d = data;
+          init(d) {
+            this.d = d;
           }
           create() {
             const d = this.d,
               cx = W / 2;
-            this.cameras.main.setBackgroundColor(0x14213d);
+            this.cameras.main.setBackgroundColor(COL.bg);
             const bg = this.add.graphics();
-            bg.fillGradientStyle(0x1a2744, 0x1a2744, 0x14213d, 0x14213d, 1);
+            bg.fillGradientStyle(COL.bgHi, COL.bgHi, COL.bg, COL.bg, 1);
             bg.fillRect(0, 0, W, H);
-            const pct = Math.round((d.correct / d.total) * 100);
+            const pct = d.goal > 0 ? Math.round((d.solved / d.goal) * 100) : 0;
             if (pct >= 70)
               this.add.particles(W / 2, -10, "dot", {
                 x: { min: -W / 2, max: W / 2 },
@@ -1378,15 +1953,16 @@
                 angle: { min: 80, max: 100 },
                 scale: { start: 0.5, end: 0 },
                 lifespan: 3000,
-                tint: [0xfcbf49, 0xf77f00, 0x2a9d5c, 0x1b998b],
+                tint: [COL.gold, COL.orange, COL.green, COL.teal],
                 frequency: 100,
                 quantity: 3,
                 blendMode: "ADD",
               });
+
             let rank = "Bench Player",
               emoji = "🧭";
             if (pct >= 90) {
-              rank = "MVP";
+              rank = "MVP Analyst";
               emoji = "🏆";
             } else if (pct >= 75) {
               rank = "All-Star";
@@ -1398,135 +1974,168 @@
               rank = "6th Man";
               emoji = "🔄";
             }
-            this.add.text(cx, 50, emoji, { fontSize: "60px" }).setOrigin(0.5);
+
+            this.add.text(cx, 56, emoji, { fontSize: "60px" }).setOrigin(0.5);
             this.add
-              .text(cx, 110, "SEASON OVER", {
-                fontSize: "36px",
-                fontFamily: "Trebuchet MS",
+              .text(cx, 116, "SEASON OVER", {
+                fontSize: "34px",
+                fontFamily: FONT,
                 fontStyle: "bold",
-                color: "#fcbf49",
+                color: COL.goldCss,
                 stroke: "#14213d",
                 strokeThickness: 4,
               })
               .setOrigin(0.5);
             this.add
-              .text(cx, 150, rank, {
-                fontSize: "20px",
-                fontFamily: "Trebuchet MS",
+              .text(cx, 156, rank + "  ·  Level " + d.tier, {
+                fontSize: "18px",
+                fontFamily: FONT,
                 fontStyle: "bold",
-                color: "#ffe3a3",
+                color: COL.cream,
               })
               .setOrigin(0.5);
             this.add
-              .text(cx, 195, d.score.toString(), {
-                fontSize: "52px",
-                fontFamily: "Trebuchet MS",
+              .text(cx, 206, d.score.toLocaleString(), {
+                fontSize: "50px",
+                fontFamily: FONT,
                 fontStyle: "bold",
-                color: "#fff",
+                color: COL.white,
               })
               .setOrigin(0.5);
             this.add
-              .text(cx, 232, "POINTS", {
+              .text(cx, 242, "POINTS", {
                 fontSize: "11px",
                 fontFamily: "sans-serif",
                 fontStyle: "bold",
-                color: "#ffe3a3",
+                color: COL.cream,
                 letterSpacing: 3,
               })
               .setOrigin(0.5);
+
             [
-              { l: "Correct", v: d.correct + "/" + d.total, x: cx - 200 },
+              { l: "Stats Built", v: d.solved + "/" + d.goal, x: cx - 190 },
               { l: "Accuracy", v: pct + "%", x: cx },
-              { l: "Best Streak", v: d.combo + "x", x: cx + 200 },
+              { l: "Best Streak", v: d.bestStreak + "x", x: cx + 190 },
             ].forEach((s) => {
               const g = this.add.graphics();
               g.fillStyle(0xffffff, 0.05);
-              g.fillRoundedRect(s.x - 75, 255, 150, 70, 14);
+              g.fillRoundedRect(s.x - 75, 270, 150, 70, 14);
               this.add
-                .text(s.x, 278, s.v, {
+                .text(s.x, 292, s.v, {
                   fontSize: "24px",
-                  fontFamily: "Trebuchet MS",
+                  fontFamily: FONT,
                   fontStyle: "bold",
-                  color: "#fff",
+                  color: COL.white,
                 })
                 .setOrigin(0.5);
               this.add
-                .text(s.x, 308, s.l, {
+                .text(s.x, 322, s.l, {
                   fontSize: "10px",
                   fontFamily: "sans-serif",
                   fontStyle: "bold",
-                  color: "#ffe3a3",
+                  color: COL.cream,
                   letterSpacing: 2,
                 })
                 .setOrigin(0.5);
             });
-            const sc =
+
+            const stars =
               pct >= 90 ? 5 : pct >= 75 ? 4 : pct >= 60 ? 3 : pct >= 40 ? 2 : 1;
             try {
               window.EduPulse &&
                 EduPulse.record({
                   activityTitle: document.title,
-                  score: d.correct,
-                  maxScore: d.total,
-                  stars: sc,
-                  problemsCorrect: d.correct,
-                  problemsAttempted: d.total,
+                  score: d.solved,
+                  maxScore: d.goal,
+                  stars,
+                  problemsCorrect: d.solved,
+                  problemsAttempted: d.goal,
+                  standard: "6.SP.B.5",
                 });
             } catch (e) {}
             let ss = "";
-            for (let i = 0; i < 5; i++) ss += i < sc ? "⭐" : "☆";
-            this.add.text(cx, 355, ss, { fontSize: "30px" }).setOrigin(0.5);
+            for (let i = 0; i < 5; i++) ss += i < stars ? "⭐" : "☆";
+            this.add.text(cx, 365, ss, { fontSize: "28px" }).setOrigin(0.5);
+
             const g2 = this.add.graphics();
-            g2.fillStyle(0xfcbf49, 0.08);
-            g2.fillRoundedRect(80, 385, W - 160, 120, 18);
-            g2.lineStyle(2, 0xfcbf49, 0.3);
-            g2.strokeRoundedRect(80, 385, W - 160, 120, 18);
+            g2.fillStyle(COL.gold, 0.08);
+            g2.fillRoundedRect(80, 400, W - 160, 110, 18);
+            g2.lineStyle(2, COL.gold, 0.3);
+            g2.strokeRoundedRect(80, 400, W - 160, 110, 18);
             this.add
-              .text(cx, 405, "💡 KEY STATS PLAYBOOK", {
+              .text(cx, 420, "💡 STATS PLAYBOOK", {
                 fontSize: "12px",
                 fontFamily: "sans-serif",
                 fontStyle: "bold",
-                color: "#fcbf49",
+                color: COL.goldCss,
                 letterSpacing: 2,
               })
               .setOrigin(0.5);
             this.add
               .text(
                 cx,
-                455,
-                "Mean = add all values, divide by count (the average).\nMedian = sort the data, find the middle value.\nMode = the value that appears most often.\nOutliers pull the mean — use median when data has extremes.",
+                466,
+                "MEAN = share the total evenly across players (total ÷ count).\n" +
+                  "MEDIAN = sort the players; the middle one is typical.\n" +
+                  "MODE = the value that stacks up most often.\n" +
+                  "OUTLIER? The mean lurches — the median holds, so it's more typical.",
                 {
-                  fontSize: "13px",
-                  fontFamily: "Trebuchet MS",
-                  color: "#ffe3a3",
+                  fontSize: "12.5px",
+                  fontFamily: FONT,
+                  color: COL.cream,
                   align: "center",
-                  lineSpacing: 5,
+                  lineSpacing: 4,
                 },
               )
               .setOrigin(0.5);
-            const btn = this.add
-              .image(cx, 555, "btn_orange")
-              .setScale(0.85)
+
+            const again = this.add
+              .rectangle(cx - 130, 565, 230, 50, COL.orange)
               .setInteractive({ useHandCursor: true });
             this.add
-              .text(cx, 555, "🔄 New Season", {
-                fontSize: "17px",
-                fontFamily: "Trebuchet MS",
+              .text(cx - 130, 565, "🔄 New Season", {
+                fontSize: "16px",
+                fontFamily: FONT,
                 fontStyle: "bold",
-                color: "#fff",
+                color: COL.white,
               })
               .setOrigin(0.5);
-            btn.on("pointerdown", () => {
+            again.on("pointerover", () => again.setScale(1.05));
+            again.on("pointerout", () => again.setScale(1));
+            again.on("pointerdown", () => {
               SFX.play("whoosh");
-              this.cameras.main.fade(400);
-              this.time.delayedCall(400, () => this.scene.start("Title"));
+              this.cameras.main.fade(380);
+              this.time.delayedCall(380, () =>
+                this.scene.start("Game", { tier: d.tier }),
+              );
             });
+
+            const menu = this.add
+              .rectangle(cx + 130, 565, 230, 50, COL.slot)
+              .setStrokeStyle(2, 0x35507f)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(cx + 130, 565, "🎚️ Change Level", {
+                fontSize: "16px",
+                fontFamily: FONT,
+                fontStyle: "bold",
+                color: COL.white,
+              })
+              .setOrigin(0.5);
+            menu.on("pointerover", () => menu.setScale(1.05));
+            menu.on("pointerout", () => menu.setScale(1));
+            menu.on("pointerdown", () => {
+              SFX.play("click");
+              this.cameras.main.fade(380);
+              this.time.delayedCall(380, () => this.scene.start("Title"));
+            });
+
             this.cameras.main.fadeIn(600);
             if (pct >= 70) SFX.play("levelup");
           }
         }
 
-        // ═══════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════
         new Phaser.Game({
           type: Phaser.AUTO,
           width: W,
@@ -1546,7 +2155,7 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
 </html>

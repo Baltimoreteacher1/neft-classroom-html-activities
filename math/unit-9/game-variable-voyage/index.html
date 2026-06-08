@@ -31,6 +31,7 @@
         --radius: 14px;
         --shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
         --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+        --mono: "Cambria Math", "Consolas", "Courier New", monospace;
       }
       *,
       *::before,
@@ -54,6 +55,21 @@
       select,
       textarea {
         font-family: inherit;
+      }
+      :focus-visible {
+        outline: 3px solid var(--gold-glow);
+        outline-offset: 2px;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
       }
 
       /* ── Starfield ── */
@@ -208,7 +224,7 @@
         font-size: 16px;
         color: var(--muted);
         margin: 0;
-        max-width: 400px;
+        max-width: 440px;
       }
       .standard-badge {
         display: inline-block;
@@ -221,6 +237,33 @@
         font-weight: 700;
         letter-spacing: 0.03em;
         color: var(--teal-glow);
+      }
+
+      /* How to play card */
+      .howto {
+        background: var(--card);
+        border: 1px solid var(--card-border);
+        border-radius: var(--radius);
+        padding: 16px 18px;
+        max-width: 460px;
+        text-align: left;
+        font-size: 14px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      .howto b {
+        color: var(--ink);
+      }
+      .howto .demo-chip {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 2px 9px;
+        margin: 0 2px;
+        font-family: var(--mono);
+        font-weight: 700;
+        color: var(--gold-glow);
       }
 
       /* Level Toggle */
@@ -263,9 +306,15 @@
       .level-btn:hover:not(.active) {
         color: var(--ink);
       }
+      .level-desc {
+        font-size: 13px;
+        color: var(--muted);
+        max-width: 460px;
+        min-height: 20px;
+      }
 
       .start-btn {
-        margin-top: 12px;
+        margin-top: 4px;
         border: none;
         border-radius: 12px;
         padding: 14px 40px;
@@ -346,21 +395,6 @@
         font-weight: 700;
         color: var(--gold-glow);
       }
-      .hud-timer {
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--ink);
-        font-variant-numeric: tabular-nums;
-      }
-      .hud-timer.warning {
-        color: var(--coral);
-        animation: pulse 0.5s infinite;
-      }
-      @keyframes pulse {
-        50% {
-          opacity: 0.5;
-        }
-      }
       .hud-planet-label {
         font-size: 13px;
         font-weight: 700;
@@ -387,7 +421,7 @@
         position: absolute;
         left: 30px;
         right: 30px;
-        top: 50%;
+        top: 22px;
         height: 3px;
         background: rgba(255, 255, 255, 0.08);
         border-radius: 2px;
@@ -426,23 +460,6 @@
         border-color: var(--green);
         color: var(--green);
         background: rgba(45, 135, 75, 0.15);
-      }
-      .map-node.failed {
-        border-color: var(--coral);
-        color: var(--coral);
-        background: rgba(196, 90, 60, 0.15);
-      }
-      .map-label {
-        position: absolute;
-        top: 48px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 10px;
-        font-weight: 700;
-        color: var(--faint);
-        white-space: nowrap;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
       }
 
       /* Planet content area */
@@ -506,11 +523,11 @@
       /* Planet Header */
       .planet-header {
         text-align: center;
-        margin-bottom: 24px;
+        margin-bottom: 22px;
       }
       .planet-orb {
-        width: 80px;
-        height: 80px;
+        width: 76px;
+        height: 76px;
         border-radius: 50%;
         margin: 0 auto 12px;
         display: grid;
@@ -537,10 +554,6 @@
         );
         box-shadow: 0 0 30px rgba(212, 149, 42, 0.4);
       }
-      .planet-orb.p5 {
-        background: radial-gradient(circle at 35% 35%, #fb7185, var(--coral));
-        box-shadow: 0 0 30px rgba(196, 90, 60, 0.4);
-      }
       .planet-name {
         font-size: 22px;
         font-weight: 800;
@@ -552,7 +565,7 @@
         margin: 0;
       }
 
-      /* Question cards (game version) */
+      /* ── Machine card ── */
       .g-card {
         background: var(--card);
         border: 1px solid var(--card-border);
@@ -562,11 +575,8 @@
         box-shadow: var(--shadow);
         transition: border-color 0.3s;
       }
-      .g-card.correct {
+      .g-card.solved {
         border-color: var(--green);
-      }
-      .g-card.incorrect {
-        border-color: var(--coral);
       }
       .g-num {
         font-size: 12px;
@@ -580,18 +590,281 @@
         font-size: 16px;
         font-weight: 600;
         color: var(--ink);
-        margin-bottom: 14px;
+        margin-bottom: 8px;
         line-height: 1.45;
       }
       .g-prompt strong {
         color: var(--gold-glow);
       }
-      .g-prompt .math {
-        font-family: "Cambria Math", "Times New Roman", serif;
-        font-style: italic;
+      .g-task {
+        font-size: 14px;
+        color: var(--muted);
+        margin-bottom: 16px;
       }
 
-      /* Hint (Level 1 only) */
+      /* value tile to drag (substitution) */
+      .value-dock {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      .value-dock-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+      .value-tile {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 16px;
+        font-family: var(--mono);
+        font-size: 20px;
+        font-weight: 800;
+        color: #06231f;
+        background: linear-gradient(135deg, var(--gold-glow), var(--gold));
+        border: none;
+        border-radius: 10px;
+        cursor: grab;
+        box-shadow: 0 0 14px rgba(255, 214, 102, 0.4);
+        touch-action: none;
+        user-select: none;
+        transition:
+          transform 0.15s,
+          opacity 0.2s;
+      }
+      .value-tile:active {
+        cursor: grabbing;
+      }
+      .value-tile.dragging {
+        opacity: 0.5;
+      }
+      .value-tile.armed {
+        outline: 3px solid #fff;
+        transform: scale(1.06);
+      }
+      .value-tile.depleted {
+        opacity: 0.35;
+        cursor: default;
+        box-shadow: none;
+        filter: grayscale(0.6);
+      }
+
+      /* the expression assembly line */
+      .machine {
+        display: flex;
+        align-items: stretch;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 18px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px dashed var(--line);
+        border-radius: 12px;
+        margin-bottom: 14px;
+        min-height: 86px;
+        align-content: center;
+      }
+      .tok {
+        min-width: 52px;
+        padding: 0 14px;
+        height: 56px;
+        display: grid;
+        place-items: center;
+        font-family: var(--mono);
+        font-size: 24px;
+        font-weight: 800;
+        border-radius: 10px;
+      }
+      .tok-num {
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid var(--line);
+        color: var(--ink);
+      }
+      /* var slot — drop target */
+      .tok-slot {
+        background: rgba(20, 212, 194, 0.08);
+        border: 2px dashed var(--teal-glow);
+        color: var(--teal-glow);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .tok-slot.over,
+      .tok-slot.armed {
+        background: rgba(20, 212, 194, 0.22);
+        box-shadow: 0 0 14px rgba(20, 212, 194, 0.5);
+        transform: scale(1.05);
+      }
+      .tok-slot.filled {
+        background: linear-gradient(135deg, var(--gold-glow), var(--gold));
+        border: none;
+        color: #06231f;
+        cursor: default;
+        animation: pop 0.25s ease;
+      }
+      @keyframes pop {
+        0% {
+          transform: scale(1.25);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      /* operation node — tap to resolve */
+      .tok-op {
+        background: rgba(26, 111, 181, 0.18);
+        border: 2px solid var(--blue);
+        color: #bfe0ff;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.15s;
+      }
+      .tok-op.ready {
+        border-color: var(--teal-glow);
+        color: #fff;
+        background: rgba(20, 212, 194, 0.25);
+        box-shadow: 0 0 14px rgba(20, 212, 194, 0.5);
+        animation: opPulse 1.6s ease-in-out infinite;
+      }
+      @keyframes opPulse {
+        0%,
+        100% {
+          box-shadow: 0 0 10px rgba(20, 212, 194, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 20px rgba(20, 212, 194, 0.7);
+        }
+      }
+      .tok-op.blocked {
+        animation: blockShake 0.4s ease;
+        border-color: var(--coral);
+      }
+      @keyframes blockShake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-5px);
+        }
+        75% {
+          transform: translateX(5px);
+        }
+      }
+      .tok-result {
+        animation: pop 0.3s ease;
+        background: rgba(45, 135, 75, 0.25);
+        border: 1px solid var(--green);
+        color: #8ef0b3;
+      }
+      .machine-equals {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--mono);
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--muted);
+      }
+      .machine-equals .final {
+        color: var(--gold-glow);
+        font-size: 28px;
+      }
+
+      /* ── Build track (Level 2) ── */
+      .build-track {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 18px;
+        min-height: 86px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 2px dashed var(--teal);
+        border-radius: 12px;
+        margin-bottom: 12px;
+        align-content: center;
+      }
+      .build-track.over {
+        background: rgba(20, 212, 194, 0.12);
+        border-color: var(--teal-glow);
+      }
+      .build-placeholder {
+        color: var(--faint);
+        font-size: 14px;
+        font-style: italic;
+      }
+      .palette-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .palette {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+      .block {
+        min-width: 50px;
+        padding: 0 14px;
+        height: 50px;
+        display: grid;
+        place-items: center;
+        font-family: var(--mono);
+        font-size: 22px;
+        font-weight: 800;
+        border-radius: 10px;
+        cursor: grab;
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid var(--line);
+        color: var(--ink);
+        touch-action: none;
+        user-select: none;
+        transition: all 0.15s;
+      }
+      .block.op {
+        background: rgba(26, 111, 181, 0.2);
+        border-color: var(--blue);
+        color: #bfe0ff;
+      }
+      .block.var {
+        background: rgba(20, 212, 194, 0.15);
+        border-color: var(--teal-glow);
+        color: var(--teal-glow);
+      }
+      .block:active {
+        cursor: grabbing;
+      }
+      .block.dragging {
+        opacity: 0.5;
+      }
+      .block.armed {
+        outline: 3px solid #fff;
+        transform: scale(1.06);
+      }
+      .placed {
+        position: relative;
+        cursor: pointer;
+      }
+      .placed:hover::after {
+        content: "✕";
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        background: var(--coral);
+        color: #fff;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+      }
+
+      /* Hint (Level 0/1 only) */
       .hint-btn {
         border: 1px solid rgba(14, 138, 125, 0.3);
         background: rgba(14, 138, 125, 0.1);
@@ -662,138 +935,37 @@
         margin: 2px;
       }
 
-      /* MC Options (space theme) */
-      .mc-options {
-        display: grid;
-        gap: 8px;
-      }
-      .mc-btn {
+      /* action row */
+      .machine-actions {
         display: flex;
-        align-items: flex-start;
-        gap: 10px;
-        background: rgba(255, 255, 255, 0.04);
-        border: 2px solid rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        padding: 12px 14px;
-        cursor: pointer;
-        transition: all 0.15s;
-        text-align: left;
-        font-size: 15px;
-        color: var(--ink);
-        line-height: 1.4;
-      }
-      .mc-btn:hover {
-        border-color: var(--teal);
-        background: rgba(14, 138, 125, 0.1);
-      }
-      .mc-btn .letter {
-        width: 26px;
-        height: 26px;
-        border-radius: 8px;
-        background: rgba(255, 255, 255, 0.08);
-        display: grid;
-        place-items: center;
-        font-weight: 800;
-        font-size: 13px;
-        color: var(--muted);
-        flex-shrink: 0;
-        transition: all 0.15s;
-      }
-      .mc-btn:hover .letter {
-        background: var(--teal);
-        color: #fff;
-      }
-      .mc-btn.selected {
-        border-color: var(--teal);
-        background: rgba(14, 138, 125, 0.15);
-      }
-      .mc-btn.selected .letter {
-        background: var(--teal);
-        color: #fff;
-      }
-      .mc-btn.is-correct {
-        border-color: var(--green);
-        background: rgba(45, 135, 75, 0.15);
-      }
-      .mc-btn.is-correct .letter {
-        background: var(--green);
-        color: #fff;
-      }
-      .mc-btn.is-wrong {
-        border-color: var(--coral);
-        background: rgba(196, 90, 60, 0.15);
-      }
-      .mc-btn.is-wrong .letter {
-        background: var(--coral);
-        color: #fff;
-      }
-      .mc-btn.locked {
-        pointer-events: none;
-      }
-
-      /* Fill input */
-      .fill-row {
-        display: flex;
-        align-items: center;
         gap: 8px;
         flex-wrap: wrap;
+        margin-bottom: 4px;
       }
-      .fill-input {
-        width: 120px;
-        border: 2px solid rgba(255, 255, 255, 0.15);
-        border-radius: 8px;
-        padding: 8px 10px;
-        font-size: 16px;
-        text-align: center;
-        font-weight: 600;
-        background: rgba(255, 255, 255, 0.05);
-        color: var(--ink);
-        outline: none;
-        transition: border-color 0.15s;
-      }
-      .fill-input:focus {
-        border-color: var(--teal);
-        box-shadow: 0 0 0 3px rgba(14, 212, 194, 0.15);
-      }
-      .fill-input.is-correct {
-        border-color: var(--green);
-        background: rgba(45, 135, 75, 0.12);
-      }
-      .fill-input.is-wrong {
-        border-color: var(--coral);
-        background: rgba(196, 90, 60, 0.12);
-      }
-      .fill-text {
-        font-size: 16px;
-        color: var(--ink);
-      }
-
-      /* Check button */
-      .check-btn {
-        margin-top: 12px;
+      .m-btn {
         border: none;
         border-radius: 10px;
-        padding: 10px 24px;
+        padding: 10px 20px;
         font-size: 14px;
         font-weight: 700;
-        background: linear-gradient(135deg, var(--teal), var(--blue));
-        color: #fff;
         cursor: pointer;
         transition: all 0.15s;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
       }
-      .check-btn:hover {
+      .m-btn.primary {
+        background: linear-gradient(135deg, var(--teal), var(--blue));
+        color: #fff;
+      }
+      .m-btn.primary:hover {
         transform: translateY(-1px);
         box-shadow: 0 0 12px rgba(14, 138, 125, 0.3);
       }
-      .check-btn:active {
-        transform: scale(0.98);
+      .m-btn.ghost {
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--muted);
+        border: 1px solid var(--line);
       }
-      .check-btn:disabled {
-        background: rgba(255, 255, 255, 0.08);
-        color: var(--faint);
+      .m-btn:disabled {
+        opacity: 0.4;
         cursor: default;
         transform: none;
         box-shadow: none;
@@ -821,10 +993,8 @@
         color: #fca5a5;
         border: 1px solid rgba(196, 90, 60, 0.25);
       }
-      .g-card.correct .g-status {
-        display: flex;
-      }
-      .g-card.incorrect .g-status-wrong {
+      .g-status.shown,
+      .g-status-wrong.shown {
         display: flex;
       }
       .fb-icon {
@@ -859,51 +1029,6 @@
       .next-planet-btn:hover {
         transform: translateY(-2px);
         box-shadow: 0 0 24px rgba(14, 138, 125, 0.5);
-      }
-
-      /* SVG Graph styles */
-      .graph-wrap {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 16px;
-        margin-bottom: 14px;
-        overflow-x: auto;
-      }
-      .graph-wrap svg {
-        width: 100%;
-        max-width: 360px;
-        height: auto;
-        display: block;
-        margin: 0 auto;
-      }
-      .graph-wrap svg text {
-        font-family: var(--font);
-      }
-
-      /* Table */
-      .data-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 14px;
-        font-size: 15px;
-      }
-      .data-table th {
-        background: rgba(14, 138, 125, 0.15);
-        color: var(--teal-glow);
-        padding: 10px 14px;
-        text-align: center;
-        font-weight: 700;
-        border: 1px solid var(--line);
-      }
-      .data-table td {
-        padding: 10px 14px;
-        text-align: center;
-        border: 1px solid var(--line);
-        color: var(--ink);
-      }
-      .data-table tr:nth-child(even) td {
-        background: rgba(255, 255, 255, 0.02);
       }
 
       /* ── Game Over / Victory ── */
@@ -1027,6 +1152,12 @@
         .g-card {
           padding: 16px;
         }
+        .tok {
+          height: 48px;
+          font-size: 20px;
+          min-width: 44px;
+          padding: 0 10px;
+        }
         .end-stats {
           grid-template-columns: repeat(3, 1fr);
           gap: 10px;
@@ -1035,9 +1166,6 @@
           width: 36px;
           height: 36px;
           font-size: 13px;
-        }
-        .map-label {
-          font-size: 8px;
         }
       }
 
@@ -1055,16 +1183,16 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body class="level-1">
     <!-- Starfield background -->
-    <div class="starfield" id="starfield"></div>
+    <div class="starfield" id="starfield" aria-hidden="true"></div>
 
     <!-- ═══════════ TITLE SCREEN ═══════════ -->
     <div class="screen active" id="titleScreen">
-      <div class="title-rocket">
+      <div class="title-rocket" aria-hidden="true">
         <div class="rocket-nose"></div>
         <div class="rocket-body"></div>
         <div class="rocket-window"></div>
@@ -1074,21 +1202,59 @@
       </div>
       <h1 class="game-title">Variable Voyage</h1>
       <p class="game-subtitle">
-        Navigate the galaxy by solving two-variable relationship problems. Power
-        your spaceship to each planet!
+        Pilot the Substitution Machine across the galaxy. Drop the fuel value
+        into every slot, then fire the operations in the right order to compute
+        each expression.
       </p>
-      <span class="standard-badge">6.EE.C.9 &middot; Unit 9 Review Game</span>
+      <span class="standard-badge"
+        >6.EE.A.2 &middot; Evaluate &amp; Write Expressions</span
+      >
+
+      <div class="howto">
+        <b>How the machine works:</b> Each expression like
+        <span class="demo-chip">5 + 8 &times; n</span> appears as parts on a
+        track. <b>Drag the fuel tile</b> (for example
+        <span class="demo-chip">n = 6</span>) into every
+        <span class="demo-chip">n</span> slot. Then
+        <b>tap the operation nodes</b>. Only the operation that goes next in
+        order will fire &mdash; an out-of-order tap is blocked. Each one
+        collapses to its answer until a single value is left.
+      </div>
+
       <div class="level-bar">
         <span class="level-label">Difficulty</span>
-        <div class="level-toggle">
-          <button class="level-btn" data-level="0">Level 0 (Guided)</button>
-          <button class="level-btn active" data-level="1">
-            Level 1 (Hints)
+        <div class="level-toggle" role="radiogroup" aria-label="Difficulty">
+          <button
+            class="level-btn"
+            data-level="0"
+            role="radio"
+            aria-checked="false"
+          >
+            Level 0 (Guided)
           </button>
-          <button class="level-btn" data-level="2">Level 2 (No Hints)</button>
+          <button
+            class="level-btn active"
+            data-level="1"
+            role="radio"
+            aria-checked="true"
+          >
+            Level 1 (Two Steps)
+          </button>
+          <button
+            class="level-btn"
+            data-level="2"
+            role="radio"
+            aria-checked="false"
+          >
+            Level 2 (Build It)
+          </button>
         </div>
         <span class="level0-tag">🟠 Guided: hints stay on</span>
       </div>
+      <p class="level-desc" id="levelDesc">
+        Level 1: two operations &mdash; the machine enforces order of
+        operations. Hints available.
+      </p>
       <button class="start-btn" id="startBtn">Launch Mission</button>
     </div>
 
@@ -1111,38 +1277,28 @@
             <div class="fuel-cell" data-idx="2">&#9650;</div>
           </div>
           <span class="hud-planet-label" id="hudPlanet">Planet 1</span>
-          <span class="hud-timer" id="hudTimer">60s</span>
-          <span class="hud-score" id="hudScore">&#9733; 0 pts</span>
+          <span class="hud-score" id="hudScore" aria-live="polite"
+            >&#9733; 0 pts</span
+          >
         </div>
       </div>
 
       <div class="space-map">
-        <div class="map-track">
-          <div class="map-node active" data-planet="0" id="mapNode0">
-            1<span class="map-label">Variable<br />Station</span>
-          </div>
-          <div class="map-node" data-planet="1" id="mapNode1">
-            2<span class="map-label">Table<br />Nebula</span>
-          </div>
-          <div class="map-node" data-planet="2" id="mapNode2">
-            3<span class="map-label">Graph<br />Galaxy</span>
-          </div>
-          <div class="map-node" data-planet="3" id="mapNode3">
-            4<span class="map-label">Equation<br />Orbit</span>
-          </div>
-          <div class="map-node" data-planet="4" id="mapNode4">
-            &#9733;<span class="map-label">Mission<br />Control</span>
-          </div>
+        <div class="map-track" aria-hidden="true">
+          <div class="map-node active" data-planet="0" id="mapNode0">1</div>
+          <div class="map-node" data-planet="1" id="mapNode1">2</div>
+          <div class="map-node" data-planet="2" id="mapNode2">3</div>
+          <div class="map-node" data-planet="3" id="mapNode3">&#9733;</div>
         </div>
       </div>
 
-      <div class="planet-area" id="planetArea">
+      <div class="planet-area" id="planetArea" aria-live="polite">
         <!-- Dynamically filled -->
       </div>
     </div>
 
     <!-- ═══════════ TRAVEL OVERLAY ═══════════ -->
-    <div class="travel-overlay" id="travelOverlay">
+    <div class="travel-overlay" id="travelOverlay" aria-hidden="true">
       <div class="travel-rocket">
         <div
           class="rocket-nose"
@@ -1181,301 +1337,345 @@
 
     <script>
       (function () {
-        /* ═══════════ GAME DATA ═══════════ */
-        const PLANETS = [
+        "use strict";
+        /* ════════════════════════════════════════════════════════════════
+         *  VARIABLE VOYAGE — Substitution Machine (6.EE.A.2)
+         *  The MATH IS THE MECHANIC. The student substitutes a value into
+         *  every variable slot by dragging a tile, then fires operation
+         *  nodes. An out-of-order tap is physically blocked (PEMDAS is the
+         *  rule of the wires). Each resolved node collapses to its numeric
+         *  result, so the final value EMERGES from the student's actions —
+         *  it is never typed and never chosen from A/B/C/D.
+         *  Level 2 swaps to "build the expression": snap number/operation
+         *  blocks together; the machine runs TEST VALUES to confirm the
+         *  built expression behaves like the scenario (not string-matched).
+         * ════════════════════════════════════════════════════════════════ */
+
+        /* ─── token / math engine (verified by node sim) ─── */
+        function precedence(op) {
+          return op === "×" ? 2 : 1;
+        }
+        function applyOp(a, op, b) {
+          if (op === "+") return a + b;
+          if (op === "−") return a - b;
+          return a * b; // ×
+        }
+        // The op that MUST resolve next: highest precedence, ties left-to-right.
+        function nextOpIndex(tokens) {
+          var ops = [];
+          for (var i = 0; i < tokens.length; i++)
+            if (tokens[i].t === "op") ops.push(i);
+          if (!ops.length) return -1;
+          ops.sort(function (a, b) {
+            var pa = precedence(tokens[a].op),
+              pb = precedence(tokens[b].op);
+            if (pa !== pb) return pb - pa;
+            return a - b;
+          });
+          return ops[0];
+        }
+        // True value of a fully-substituted token list (vars already numeric).
+        function evaluate(tokens) {
+          var work = tokens.map(function (t) {
+            return t.t === "var"
+              ? { t: "num", v: t.v }
+              : { t: t.t, v: t.v, op: t.op };
+          });
+          // multiplication pass
+          var arr = [];
+          for (var i = 0; i < work.length; i++) {
+            var tk = work[i];
+            if (tk.t === "op" && tk.op === "×") {
+              var prev = arr.pop();
+              var nx = work[++i];
+              arr.push({ t: "num", v: prev.v * nx.v });
+            } else arr.push(tk);
+          }
+          var val = arr[0].v;
+          for (var j = 1; j < arr.length; j += 2)
+            val = applyOp(val, arr[j].op, arr[j + 1].v);
+          return val;
+        }
+        // Build validator: does the built token list behave like rule f(n)
+        // across a sweep of test values? (equivalence, not string match)
+        function behavesLike(tokens, f) {
+          if (!tokens.length) return false;
+          for (var v = 0; v <= 12; v++) {
+            var subbed = tokens.map(function (t) {
+              return t.t === "var" ? { t: "num", v: v } : t;
+            });
+            // reject malformed sequences (e.g. two ops in a row)
+            if (!wellFormed(subbed)) return false;
+            if (evaluate(subbed) !== f(v)) return false;
+          }
+          return true;
+        }
+        // expression is well-formed: num/(num op num op ...) alternating, has a var.
+        function wellFormed(tokens) {
+          if (!tokens.length) return false;
+          for (var i = 0; i < tokens.length; i++) {
+            var expectOp = i % 2 === 1;
+            if (expectOp && tokens[i].t !== "op") return false;
+            if (!expectOp && tokens[i].t === "op") return false;
+          }
+          return tokens.length % 2 === 1; // must end on a value
+        }
+
+        /* ─── round generators ─── */
+        var rnd = function (n) {
+          return Math.floor(Math.random() * n);
+        };
+        var pick = function (a) {
+          return a[rnd(a.length)];
+        };
+
+        // EVALUATE round: returns {nVal, tokens:[{t,v|op,name}], label, hint}
+        function makeEvalRound(level) {
+          var nVal = 2 + rnd(9); // 2..10
+          var coef = 2 + rnd(8); // 2..9
+          var addend = 1 + rnd(11); // 1..11
+          var ops, tokens, label, hint;
+          if (level === 0) {
+            // single operation, var in one slot, no precedence to manage
+            var single = pick(["+", "×"]);
+            // forms: coef × n  OR  addend + n
+            if (single === "×") {
+              tokens = [num(coef), op("×"), vr()];
+              label = coef + " × n";
+            } else {
+              tokens = [num(addend), op("+"), vr()];
+              label = addend + " + n";
+            }
+            hint =
+              "<strong>Substitute</strong> means replace the letter " +
+              "<span class='vocab'>n</span> with its value (" +
+              nVal +
+              "), then do the one operation. Drag the fuel tile onto the " +
+              "<span class='vocab'>n</span> slot, then tap the operation.";
+          } else {
+            // two operations, multiplication present so order matters
+            // forms (× always present so PEMDAS is felt):
+            //   a + b × n  |  b × n + a  |  a + n × b  |  n × b − a
+            var form = rnd(4);
+            if (form === 0) {
+              tokens = [num(addend), op("+"), num(coef), op("×"), vr()];
+              label = addend + " + " + coef + " × n";
+            } else if (form === 1) {
+              tokens = [num(coef), op("×"), vr(), op("+"), num(addend)];
+              label = coef + " × n + " + addend;
+            } else if (form === 2) {
+              tokens = [num(addend), op("+"), vr(), op("×"), num(coef)];
+              label = addend + " + n × " + coef;
+            } else {
+              // ensure non-negative result: n×coef ≥ addend mostly true; clamp addend
+              addend = 1 + rnd(Math.max(1, coef * 2 - 1));
+              tokens = [vr(), op("×"), num(coef), op("−"), num(addend)];
+              label = "n × " + coef + " − " + addend;
+            }
+            hint =
+              "Order of operations: do <span class='vocab'>×</span> " +
+              "(multiply) before <span class='vocab'>+</span> or " +
+              "<span class='vocab'>−</span>. Substitute n = " +
+              nVal +
+              " into every slot first. The machine only lets you fire the " +
+              "multiply node until it is done.";
+          }
+          return {
+            kind: "eval",
+            nVal: nVal,
+            tokens: tokens,
+            label: label,
+            hint: hint,
+          };
+          function num(v) {
+            return { t: "num", v: v };
+          }
+          function op(o) {
+            return { t: "op", op: o };
+          }
+          function vr() {
+            return { t: "var", name: "n", v: nVal };
+          }
+        }
+
+        // BUILD round (Level 2): real rate scenario -> build f(n)=coef*n+fee
+        function makeBuildRound() {
+          var scenarios = [
+            {
+              coef: 4,
+              fee: 6,
+              story:
+                "A water park charges a <strong>$6</strong> entry fee plus " +
+                "<strong>$4</strong> per ride. Build the expression for the " +
+                "total cost of <strong>n</strong> rides.",
+            },
+            {
+              coef: 2,
+              fee: 4,
+              story:
+                "A taxi charges a <strong>$4</strong> flat fee plus " +
+                "<strong>$2</strong> per mile. Build the expression for the " +
+                "cost of driving <strong>n</strong> miles.",
+            },
+            {
+              coef: 8,
+              fee: 5,
+              story:
+                "Carnival tickets cost <strong>$8</strong> each with a " +
+                "<strong>$5</strong> entry fee. Build the expression for the " +
+                "total cost of <strong>n</strong> tickets.",
+            },
+            {
+              coef: 3,
+              fee: 7,
+              story:
+                "A skating rink charges <strong>$7</strong> for skates plus " +
+                "<strong>$3</strong> per hour. Build the expression for the " +
+                "cost of skating <strong>n</strong> hours.",
+            },
+            {
+              coef: 5,
+              fee: 0,
+              story:
+                "A bakery sells cookies for <strong>$5</strong> each (no fee). " +
+                "Build the expression for the cost of <strong>n</strong> cookies.",
+            },
+          ];
+          var s = pick(scenarios);
+          var f = (function (coef, fee) {
+            return function (n) {
+              return coef * n + fee;
+            };
+          })(s.coef, s.fee);
+          // palette: the needed blocks plus a couple distractors
+          var blocks = [
+            { t: "num", v: s.coef },
+            { t: "op", op: "×" },
+            { t: "var", name: "n" },
+            { t: "op", op: "+" },
+          ];
+          if (s.fee > 0) blocks.push({ t: "num", v: s.fee });
+          // distractors
+          blocks.push({ t: "op", op: "−" });
+          blocks.push({ t: "num", v: s.coef + s.fee + 1 });
+          var hint =
+            "Cost = (price each) × n + (fee). The <span class='vocab'>rate</span> " +
+            "(price per item) multiplies n; the fee is added on its own. Drag " +
+            "blocks into the track. The machine will test several values of n to " +
+            "check your expression really works.";
+          return {
+            kind: "build",
+            f: f,
+            coef: s.coef,
+            fee: s.fee,
+            story: s.story,
+            blocks: shuffle(blocks),
+            hint: hint,
+          };
+        }
+        function shuffle(a) {
+          a = a.slice();
+          for (var i = a.length - 1; i > 0; i--) {
+            var j = rnd(i + 1);
+            var tmp = a[i];
+            a[i] = a[j];
+            a[j] = tmp;
+          }
+          return a;
+        }
+
+        /* ─── planet definitions (rounds generated per play) ─── */
+        var PLANETS = [
           {
             name: "Variable Station",
-            desc: "Identify independent and dependent variables",
-            orbClass: "p1",
-            time: 60,
-            questions: [
-              {
-                num: "Mission 1-1",
-                prompt:
-                  "A store sells lemonade. The more cups sold, the more money earned.<br><br>Which is the <strong>independent variable</strong> and which is the <strong>dependent variable</strong>?",
-                hint: "<strong>Vocabulary:</strong> The <span class='vocab'>independent variable</span> is the one you control or that changes on its own. The <span class='vocab'>dependent variable</span> depends on it (changes because of it).",
-                type: "mc",
-                options: [
-                  {
-                    letter: "A",
-                    text: "Independent: money earned; Dependent: cups sold",
-                    val: "a",
-                  },
-                  {
-                    letter: "B",
-                    text: "Independent: cups sold; Dependent: money earned",
-                    val: "b",
-                  },
-                  {
-                    letter: "C",
-                    text: "Both are independent variables",
-                    val: "c",
-                  },
-                  {
-                    letter: "D",
-                    text: "Both are dependent variables",
-                    val: "d",
-                  },
-                ],
-                answer: "b",
-                correct:
-                  "Correct! The number of cups sold is what changes first (independent). The money earned depends on how many cups are sold (dependent).",
-                wrong:
-                  "Not quite. Think: which changes first? You decide how many cups to sell (independent), and the money earned depends on that (dependent). The answer is <strong>B</strong>.",
-              },
-              {
-                num: "Mission 1-2",
-                prompt:
-                  "Marcus tracks how many hours he studies and his test score.<br><br>Which variable is <strong>dependent</strong>?",
-                hint: '<strong>Strategy:</strong> Ask yourself: "Which one changes BECAUSE of the other?" The test score changes because of how many hours he studies.',
-                type: "mc",
-                options: [
-                  { letter: "A", text: "Hours studied", val: "a" },
-                  { letter: "B", text: "Test score", val: "b" },
-                  {
-                    letter: "C",
-                    text: "Neither — they are unrelated",
-                    val: "c",
-                  },
-                  { letter: "D", text: "Both are dependent", val: "d" },
-                ],
-                answer: "b",
-                correct:
-                  "Yes! The test score depends on hours studied. Test score is the dependent variable.",
-                wrong:
-                  "The test score changes based on hours studied, so the test score is <strong>dependent</strong>. The answer is <strong>B</strong>.",
-              },
-            ],
+            desc: "Warm up the substitution engine",
+            orb: "p1",
           },
           {
-            name: "Table Nebula",
-            desc: "Read tables, find patterns, predict values",
-            orbClass: "p2",
-            time: 60,
-            questions: [
-              {
-                num: "Mission 2-1",
-                prompt:
-                  "A bakery charges $3 per cookie.<br><br><table class='data-table'><tr><th>Cookies (x)</th><th>Cost (y)</th></tr><tr><td>1</td><td>$3</td></tr><tr><td>2</td><td>$6</td></tr><tr><td>3</td><td>$9</td></tr><tr><td>5</td><td>?</td></tr></table>What is the cost when <strong>x = 5</strong>?",
-                hint: "<strong>Pattern:</strong> Look at how the cost changes. Each cookie adds $3. So for 5 cookies: 5 &times; $3 = ?",
-                type: "mc",
-                options: [
-                  { letter: "A", text: "$12", val: "a" },
-                  { letter: "B", text: "$15", val: "b" },
-                  { letter: "C", text: "$18", val: "c" },
-                  { letter: "D", text: "$8", val: "d" },
-                ],
-                answer: "b",
-                correct:
-                  "Correct! The pattern is y = 3x. When x = 5: y = 3 &times; 5 = $15.",
-                wrong:
-                  "The pattern is y = 3x (cost = $3 per cookie). For 5 cookies: 3 &times; 5 = $15. The answer is <strong>B</strong>.",
-              },
-              {
-                num: "Mission 2-2",
-                prompt:
-                  "A plant grows 2 inches every week.<br><br><table class='data-table'><tr><th>Weeks (x)</th><th>Height in inches (y)</th></tr><tr><td>0</td><td>4</td></tr><tr><td>1</td><td>6</td></tr><tr><td>2</td><td>8</td></tr><tr><td>3</td><td>10</td></tr></table>What will the height be at <strong>week 5</strong>?",
-                hint: "<strong>Strategy:</strong> The plant starts at 4 inches and grows 2 inches each week. Pattern: y = 2x + 4. Plug in x = 5.",
-                type: "mc",
-                options: [
-                  { letter: "A", text: "12 inches", val: "a" },
-                  { letter: "B", text: "10 inches", val: "b" },
-                  { letter: "C", text: "14 inches", val: "c" },
-                  { letter: "D", text: "16 inches", val: "d" },
-                ],
-                answer: "c",
-                correct:
-                  "Correct! The rule is y = 2x + 4. When x = 5: y = 2(5) + 4 = 14 inches.",
-                wrong:
-                  "The plant starts at 4 and grows 2 per week: y = 2x + 4. At week 5: 2(5) + 4 = 14. The answer is <strong>C</strong>.",
-              },
-            ],
+            name: "Coefficient Nebula",
+            desc: "Substitute and evaluate",
+            orb: "p2",
           },
           {
-            name: "Graph Galaxy",
-            desc: "Interpret graphs and match to descriptions",
-            orbClass: "p3",
-            time: 60,
-            questions: [
-              {
-                num: "Mission 3-1",
-                prompt:
-                  "<div class='graph-wrap'><svg viewBox='0 0 320 220' xmlns='http://www.w3.org/2000/svg'><rect x='50' y='10' width='260' height='180' fill='rgba(255,255,255,0.03)' stroke='rgba(255,255,255,0.1)' rx='4'/><line x1='50' y1='190' x2='310' y2='190' stroke='rgba(255,255,255,0.3)' stroke-width='1'/><line x1='50' y1='190' x2='50' y2='10' stroke='rgba(255,255,255,0.3)' stroke-width='1'/><text x='180' y='215' fill='#8a97a5' font-size='12' text-anchor='middle'>Time (hours)</text><text x='15' y='105' fill='#8a97a5' font-size='12' text-anchor='middle' transform='rotate(-90,15,105)'>Distance (miles)</text><line x1='50' y1='190' x2='115' y2='150' stroke='#14d4c2' stroke-width='3' stroke-linecap='round'/><line x1='115' y1='150' x2='180' y2='110' stroke='#14d4c2' stroke-width='3' stroke-linecap='round'/><line x1='180' y1='110' x2='245' y2='70' stroke='#14d4c2' stroke-width='3' stroke-linecap='round'/><line x1='245' y1='70' x2='310' y2='30' stroke='#14d4c2' stroke-width='3' stroke-linecap='round'/><circle cx='50' cy='190' r='5' fill='#14d4c2'/><circle cx='115' cy='150' r='5' fill='#14d4c2'/><circle cx='180' cy='110' r='5' fill='#14d4c2'/><circle cx='245' cy='70' r='5' fill='#14d4c2'/><circle cx='310' cy='30' r='5' fill='#14d4c2'/><text x='50' y='205' fill='#8a97a5' font-size='11' text-anchor='middle'>0</text><text x='115' y='205' fill='#8a97a5' font-size='11' text-anchor='middle'>1</text><text x='180' y='205' fill='#8a97a5' font-size='11' text-anchor='middle'>2</text><text x='245' y='205' fill='#8a97a5' font-size='11' text-anchor='middle'>3</text><text x='310' y='205' fill='#8a97a5' font-size='11' text-anchor='middle'>4</text><text x='44' y='193' fill='#8a97a5' font-size='11' text-anchor='end'>0</text><text x='44' y='153' fill='#8a97a5' font-size='11' text-anchor='end'>20</text><text x='44' y='113' fill='#8a97a5' font-size='11' text-anchor='end'>40</text><text x='44' y='73' fill='#8a97a5' font-size='11' text-anchor='end'>60</text><text x='44' y='33' fill='#8a97a5' font-size='11' text-anchor='end'>80</text></svg></div>Based on this graph, which description best matches the relationship?",
-                hint: "<strong>Reading graphs:</strong> Look at the pattern of the points. As time increases, distance increases. Find the rate: from 0 to 1 hour, distance goes from 0 to 20 miles. That's 20 miles per hour.",
-                type: "mc",
-                options: [
-                  {
-                    letter: "A",
-                    text: "A car travels 20 miles every hour",
-                    val: "a",
-                  },
-                  {
-                    letter: "B",
-                    text: "A car travels 40 miles every hour",
-                    val: "b",
-                  },
-                  { letter: "C", text: "A car slows down over time", val: "c" },
-                  {
-                    letter: "D",
-                    text: "Distance stays the same each hour",
-                    val: "d",
-                  },
-                ],
-                answer: "a",
-                correct:
-                  "Correct! The graph shows a steady increase of 20 miles per hour. The line goes up at a constant rate.",
-                wrong:
-                  "Look at the points: (0,0), (1,20), (2,40), (3,60), (4,80). Each hour adds 20 miles. The answer is <strong>A</strong>.",
-              },
-              {
-                num: "Mission 3-2",
-                prompt:
-                  "<div class='graph-wrap'><svg viewBox='0 0 320 220' xmlns='http://www.w3.org/2000/svg'><rect x='50' y='10' width='260' height='180' fill='rgba(255,255,255,0.03)' stroke='rgba(255,255,255,0.1)' rx='4'/><line x1='50' y1='190' x2='310' y2='190' stroke='rgba(255,255,255,0.3)' stroke-width='1'/><line x1='50' y1='190' x2='50' y2='10' stroke='rgba(255,255,255,0.3)' stroke-width='1'/><text x='180' y='215' fill='#8a97a5' font-size='12' text-anchor='middle'>Tickets (x)</text><text x='15' y='105' fill='#8a97a5' font-size='12' text-anchor='middle' transform='rotate(-90,15,105)'>Total Cost ($)</text><circle cx='50' cy='170' r='5' fill='#ffd666'/><circle cx='115' cy='138' r='5' fill='#ffd666'/><circle cx='180' cy='106' r='5' fill='#ffd666'/><circle cx='245' cy='74' r='5' fill='#ffd666'/><circle cx='310' cy='42' r='5' fill='#ffd666'/><line x1='50' y1='170' x2='115' y2='138' stroke='#ffd666' stroke-width='3' stroke-linecap='round'/><line x1='115' y1='138' x2='180' y2='106' stroke='#ffd666' stroke-width='3' stroke-linecap='round'/><line x1='180' y1='106' x2='245' y2='74' stroke='#ffd666' stroke-width='3' stroke-linecap='round'/><line x1='245' y1='74' x2='310' y2='42' stroke='#ffd666' stroke-width='3' stroke-linecap='round'/><text x='50' y='205' fill='#8a97a5' font-size='11' text-anchor='middle'>0</text><text x='115' y='205' fill='#8a97a5' font-size='11' text-anchor='middle'>1</text><text x='180' y='205' fill='#8a97a5' font-size='11' text-anchor='middle'>2</text><text x='245' y='205' fill='#8a97a5' font-size='11' text-anchor='middle'>3</text><text x='310' y='205' fill='#8a97a5' font-size='11' text-anchor='middle'>4</text><text x='44' y='193' fill='#8a97a5' font-size='11' text-anchor='end'>0</text><text x='44' y='173' fill='#8a97a5' font-size='11' text-anchor='end'>5</text><text x='44' y='141' fill='#8a97a5' font-size='11' text-anchor='end'>13</text><text x='44' y='109' fill='#8a97a5' font-size='11' text-anchor='end'>21</text><text x='44' y='77' fill='#8a97a5' font-size='11' text-anchor='end'>29</text><text x='44' y='45' fill='#8a97a5' font-size='11' text-anchor='end'>37</text></svg></div>The graph shows the cost of carnival tickets. There is a $5 entry fee plus $8 per ticket. How much do <strong>6 tickets</strong> cost in total?",
-                hint: "<strong>Strategy:</strong> The rule is: Total Cost = $5 + $8 &times; (number of tickets). Plug in 6 for the number of tickets.",
-                type: "mc",
-                options: [
-                  { letter: "A", text: "$48", val: "a" },
-                  { letter: "B", text: "$53", val: "b" },
-                  { letter: "C", text: "$40", val: "c" },
-                  { letter: "D", text: "$56", val: "d" },
-                ],
-                answer: "b",
-                correct: "Correct! Total = $5 + $8 &times; 6 = $5 + $48 = $53.",
-                wrong:
-                  "The pattern is y = 5 + 8x. For 6 tickets: 5 + 8(6) = 5 + 48 = $53. The answer is <strong>B</strong>.",
-              },
-            ],
-          },
-          {
-            name: "Equation Orbit",
-            desc: "Write equations from tables and descriptions",
-            orbClass: "p4",
-            time: 60,
-            questions: [
-              {
-                num: "Mission 4-1",
-                prompt:
-                  "A gym charges $10 per month for a membership.<br><br><table class='data-table'><tr><th>Months (x)</th><th>Total Cost (y)</th></tr><tr><td>1</td><td>$10</td></tr><tr><td>2</td><td>$20</td></tr><tr><td>3</td><td>$30</td></tr><tr><td>4</td><td>$40</td></tr></table>Which equation represents this relationship?",
-                hint: "<strong>Tip:</strong> Look at how x and y relate. When x = 1, y = 10. When x = 2, y = 20. What do you multiply x by each time to get y?",
-                type: "mc",
-                options: [
-                  { letter: "A", text: "y = x + 10", val: "a" },
-                  { letter: "B", text: "y = 10x", val: "b" },
-                  { letter: "C", text: "y = x &times; x", val: "c" },
-                  { letter: "D", text: "y = 10 + x", val: "d" },
-                ],
-                answer: "b",
-                correct:
-                  "Correct! Each month costs $10, so the total is y = 10x. Multiply the number of months by 10.",
-                wrong:
-                  "Each month adds $10. The rule: y = 10 &times; x, or y = 10x. The answer is <strong>B</strong>.",
-              },
-              {
-                num: "Mission 4-2",
-                prompt:
-                  "A taxi charges a $4 flat fee plus $2 per mile.<br><br>Write the equation for the total cost <strong>y</strong> in terms of miles <strong>x</strong>.",
-                hint: "<strong>Pattern:</strong> Start with the flat fee ($4) and add $2 for each mile. The equation has two parts: a starting number + a rate times x.",
-                type: "fill",
-                fillParts: [
-                  {
-                    before: "y = ",
-                    inputWidth: "60px",
-                    answer: "2",
-                    after: "x + ",
-                    id: "f41",
-                  },
-                  {
-                    before: "",
-                    inputWidth: "60px",
-                    answer: "4",
-                    after: "",
-                    id: "f42",
-                  },
-                ],
-                correct:
-                  "Correct! y = 2x + 4. The taxi charges $2 per mile (2x) plus a $4 flat fee.",
-                wrong:
-                  "The flat fee is $4 and the rate is $2/mile. So y = 2x + 4. Fill in 2 for the rate and 4 for the flat fee.",
-              },
-            ],
+            name: "Order Galaxy",
+            desc: "Honor the order of operations",
+            orb: "p3",
           },
           {
             name: "Mission Control",
-            desc: "Final multi-step real-world challenge",
-            orbClass: "p5",
-            time: 90,
-            questions: [
-              {
-                num: "Final Mission",
-                prompt:
-                  "A water park charges a $6 entrance fee plus $4 per ride.<br><br><table class='data-table'><tr><th>Rides (x)</th><th>Total Cost (y)</th></tr><tr><td>0</td><td>$6</td></tr><tr><td>1</td><td>$10</td></tr><tr><td>2</td><td>$14</td></tr><tr><td>3</td><td>$18</td></tr></table><strong>Part A:</strong> What is the equation for this relationship?",
-                hint: "<strong>Strategy:</strong> Find the starting value (when x = 0, y = 6) and the rate of change ($4 per ride). Put them together: y = (rate)x + (start).",
-                type: "mc",
-                options: [
-                  { letter: "A", text: "y = 6x + 4", val: "a" },
-                  { letter: "B", text: "y = 4x + 6", val: "b" },
-                  { letter: "C", text: "y = 10x", val: "c" },
-                  { letter: "D", text: "y = 4x", val: "d" },
-                ],
-                answer: "b",
-                correct:
-                  "Part A correct! y = 4x + 6. The entrance fee is $6 (starting value) and each ride costs $4 (rate).",
-                wrong:
-                  "When x = 0, y = 6 (that's the entrance fee). Each ride adds $4. So y = 4x + 6. The answer is <strong>B</strong>.",
-              },
-              {
-                num: "Final Mission (continued)",
-                prompt:
-                  "<strong>Part B:</strong> Using the equation y = 4x + 6, how much would <strong>7 rides</strong> cost?<br><br><strong>Part C:</strong> Sara has $30. How many rides can she go on?",
-                hint: "<strong>Part B:</strong> Plug in x = 7 into y = 4x + 6.<br><strong>Part C:</strong> Set y = 30 and solve: 30 = 4x + 6. Subtract 6 from both sides, then divide by 4.",
-                type: "twofill",
-                fills: [
-                  {
-                    label: "Part B: Cost for 7 rides = $",
-                    answer: "34",
-                    id: "fb1",
-                  },
-                  {
-                    label: "Part C: Number of rides Sara can take =",
-                    answer: "6",
-                    id: "fb2",
-                  },
-                ],
-                correct:
-                  "Mission Complete! Part B: y = 4(7) + 6 = 28 + 6 = $34. Part C: 30 = 4x + 6, so 24 = 4x, x = 6 rides.",
-                wrong:
-                  "Part B: y = 4(7) + 6 = 28 + 6 = <strong>$34</strong>. Part C: 30 = 4x + 6 &rarr; 24 = 4x &rarr; x = <strong>6 rides</strong>.",
-              },
-            ],
+            desc: "Final expression challenge",
+            orb: "p4",
           },
         ];
+        var ROUNDS_PER_PLANET = 2;
 
-        /* ═══════════ STATE ═══════════ */
-        let fuel = 3;
-        let score = 0;
-        let currentPlanet = 0;
-        let currentQuestion = 0;
-        let planetTimer = null;
-        let timeLeft = 0;
-        let planetStartTime = 0;
-        let totalBonusStars = 0;
-        let planetPerfect = true;
-        let questionsAnswered = 0;
-        let totalCorrect = 0;
-        let gameOver = false;
+        /* ─── state ─── */
+        var level = 1;
+        var fuel = 3;
+        var score = 0;
+        var currentPlanet = 0;
+        var planetPerfect = true;
+        var totalSolved = 0;
+        var totalRounds = PLANETS.length * ROUNDS_PER_PLANET;
+        var gameOver = false;
+        var sfx = makeAudio();
 
-        /* ═══════════ INIT ═══════════ */
-        function initStarfield() {
-          const sf = document.getElementById("starfield");
-          sf.innerHTML = "";
-          const count = Math.min(
+        /* ─── audio ─── */
+        function makeAudio() {
+          var Ctx = window.AudioContext || window.webkitAudioContext;
+          var ctx = null;
+          function ensure() {
+            if (!ctx && Ctx) ctx = new Ctx();
+            if (ctx && ctx.state === "suspended") ctx.resume();
+          }
+          function beep(f, d, type, vol) {
+            if (!ctx) return;
+            var o = ctx.createOscillator(),
+              g = ctx.createGain();
+            o.connect(g);
+            g.connect(ctx.destination);
+            o.frequency.value = f;
+            o.type = type || "sine";
+            g.gain.setValueAtTime(vol || 0.14, ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + d);
+            o.start();
+            o.stop(ctx.currentTime + d);
+          }
+          return {
+            ensure: ensure,
+            snap: function () {
+              beep(520, 0.07, "sine", 0.12);
+            },
+            fire: function () {
+              beep(660, 0.08);
+              setTimeout(function () {
+                beep(880, 0.1);
+              }, 60);
+            },
+            block: function () {
+              beep(150, 0.18, "square", 0.1);
+            },
+            win: function () {
+              [523, 659, 784, 1047].forEach(function (f, i) {
+                setTimeout(function () {
+                  beep(f, 0.13);
+                }, i * 80);
+              });
+            },
+          };
+        }
+
+        /* ─── starfield ─── */
+        (function initStarfield() {
+          var sf = document.getElementById("starfield");
+          var count = Math.min(
             120,
             Math.floor((window.innerWidth * window.innerHeight) / 5000),
           );
-          for (let i = 0; i < count; i++) {
-            const s = document.createElement("div");
+          for (var i = 0; i < count; i++) {
+            var s = document.createElement("div");
             s.className = "star";
-            const size = Math.random() * 3 + 1;
+            var size = Math.random() * 3 + 1;
             s.style.width = size + "px";
             s.style.height = size + "px";
             s.style.left = Math.random() * 100 + "%";
@@ -1488,24 +1688,30 @@
             s.style.animationDelay = Math.random() * 3 + "s";
             sf.appendChild(s);
           }
-        }
-        initStarfield();
+        })();
 
-        /* ═══════════ LEVEL TOGGLE ═══════════ */
+        /* ─── level toggle ─── */
+        var LEVEL_DESC = {
+          0: "Level 0: one operation, drag the value into a single slot. Steps are pre-ordered. Hints always on.",
+          1: "Level 1: two operations — the machine enforces order of operations. Hints available.",
+          2: "Level 2: build the expression from blocks for a real rate scenario. The machine tests it.",
+        };
         document.querySelectorAll(".level-btn").forEach(function (btn) {
           btn.addEventListener("click", function () {
             document.querySelectorAll(".level-btn").forEach(function (b) {
               b.classList.remove("active");
+              b.setAttribute("aria-checked", "false");
             });
             btn.classList.add("active");
+            btn.setAttribute("aria-checked", "true");
+            level = parseInt(btn.dataset.level, 10);
             document.body.className =
-              btn.dataset.level === "0"
-                ? "level-0 level-1"
-                : "level-" + btn.dataset.level;
+              level === 0 ? "level-0 level-1" : "level-" + level;
+            document.getElementById("levelDesc").innerHTML = LEVEL_DESC[level];
           });
         });
 
-        /* ═══════════ SCREENS ═══════════ */
+        /* ─── screens ─── */
         function showScreen(id) {
           document.querySelectorAll(".screen").forEach(function (s) {
             s.classList.remove("active");
@@ -1516,39 +1722,31 @@
         document
           .getElementById("startBtn")
           .addEventListener("click", function () {
+            sfx.ensure();
             fuel = 3;
             score = 0;
             currentPlanet = 0;
-            currentQuestion = 0;
-            totalBonusStars = 0;
-            questionsAnswered = 0;
-            totalCorrect = 0;
+            totalSolved = 0;
             gameOver = false;
-            updateFuelDisplay();
-            updateScoreDisplay();
-            resetMapNodes();
+            updateFuel();
+            updateScore();
+            resetMap();
             showScreen("gameScreen");
             loadPlanet(0);
           });
-
         document
           .getElementById("playAgainBtn")
           .addEventListener("click", function () {
             showScreen("titleScreen");
           });
 
-        /* ═══════════ HUD ═══════════ */
-        function updateFuelDisplay() {
+        /* ─── HUD ─── */
+        function updateFuel() {
           var cells = document.querySelectorAll("#fuelCells .fuel-cell");
           cells.forEach(function (c, i) {
-            if (i < fuel) {
-              c.classList.remove("empty");
-            } else {
-              c.classList.add("empty");
-            }
+            c.classList.toggle("empty", i >= fuel);
           });
         }
-
         function loseFuel() {
           fuel--;
           var cells = document.querySelectorAll("#fuelCells .fuel-cell");
@@ -1558,451 +1756,765 @@
               cells[fuel].classList.remove("lost");
             }, 500);
           }
-          updateFuelDisplay();
+          updateFuel();
           if (fuel <= 0) {
             gameOver = true;
-            clearInterval(planetTimer);
             setTimeout(function () {
               showEndScreen(false);
             }, 800);
           }
         }
-
-        function updateScoreDisplay() {
+        function updateScore() {
           document.getElementById("hudScore").innerHTML =
             "&#9733; " + score + " pts";
         }
 
-        /* ═══════════ TIMER ═══════════ */
-        function startTimer(seconds) {
-          timeLeft = seconds;
-          planetStartTime = seconds;
-          updateTimerDisplay();
-          clearInterval(planetTimer);
-          planetTimer = setInterval(function () {
-            timeLeft--;
-            updateTimerDisplay();
-            if (timeLeft <= 0) {
-              clearInterval(planetTimer);
-              timeExpired();
-            }
-          }, 1000);
-        }
-
-        function updateTimerDisplay() {
-          var el = document.getElementById("hudTimer");
-          el.textContent = timeLeft + "s";
-          if (timeLeft <= 10) {
-            el.classList.add("warning");
-          } else {
-            el.classList.remove("warning");
-          }
-        }
-
-        function timeExpired() {
-          // Lock all unanswered questions on current planet
-          var cards = document.querySelectorAll(
-            "#planetArea .g-card:not(.correct):not(.incorrect)",
-          );
-          cards.forEach(function (card) {
-            card.classList.add("incorrect");
-            card.querySelectorAll(".mc-btn").forEach(function (b) {
-              b.classList.add("locked");
-            });
-            card.querySelectorAll(".fill-input").forEach(function (i) {
-              i.readOnly = true;
-            });
-            card.querySelectorAll(".check-btn").forEach(function (b) {
-              b.disabled = true;
-            });
-            questionsAnswered++;
-            loseFuel();
-            planetPerfect = false;
-            if (gameOver) return;
-          });
-          if (!gameOver) {
-            showNextButton();
-          }
-        }
-
-        /* ═══════════ MAP ═══════════ */
-        function resetMapNodes() {
-          for (var i = 0; i < 5; i++) {
+        /* ─── map ─── */
+        function resetMap() {
+          for (var i = 0; i < PLANETS.length; i++) {
             var node = document.getElementById("mapNode" + i);
-            node.classList.remove("active", "complete", "failed");
+            node.classList.remove("active", "complete");
             if (i === 0) node.classList.add("active");
           }
         }
 
-        function updateMapNode(idx, status) {
-          var node = document.getElementById("mapNode" + idx);
-          node.classList.remove("active");
-          node.classList.add(status);
-        }
-
-        /* ═══════════ LOAD PLANET ═══════════ */
+        /* ─── load planet ─── */
         function loadPlanet(idx) {
           currentPlanet = idx;
-          currentQuestion = 0;
           planetPerfect = true;
-          var planet = PLANETS[idx];
-
-          // Update HUD
-          document.getElementById("hudPlanet").textContent = planet.name;
-
-          // Update map
-          for (var i = 0; i < 5; i++) {
+          var p = PLANETS[idx];
+          document.getElementById("hudPlanet").textContent = p.name;
+          for (var i = 0; i < PLANETS.length; i++) {
             var node = document.getElementById("mapNode" + i);
-            if (i === idx) {
-              node.classList.add("active");
-            } else if (i > idx) {
-              node.classList.remove("active");
+            if (i === idx) node.classList.add("active");
+            else if (i > idx) node.classList.remove("active");
+          }
+
+          var area = document.getElementById("planetArea");
+          area.innerHTML = "";
+          var header = document.createElement("div");
+          header.className = "planet-header";
+          header.innerHTML =
+            '<div class="planet-orb ' +
+            p.orb +
+            '" aria-hidden="true"></div><h2 class="planet-name">' +
+            p.name +
+            '</h2><p class="planet-desc">' +
+            p.desc +
+            "</p>";
+          area.appendChild(header);
+
+          for (var r = 0; r < ROUNDS_PER_PLANET; r++) {
+            var round = level === 2 ? makeBuildRound() : makeEvalRound(level);
+            area.appendChild(
+              round.kind === "build"
+                ? buildBuildCard(round, idx, r)
+                : buildEvalCard(round, idx, r),
+            );
+          }
+
+          var action = document.createElement("div");
+          action.className = "planet-action";
+          var nbtn = document.createElement("button");
+          nbtn.className = "next-planet-btn";
+          nbtn.id = "nextPlanetBtn";
+          nbtn.textContent =
+            idx < PLANETS.length - 1
+              ? "Travel to Next Planet ▶"
+              : "Complete Mission ▶";
+          nbtn.addEventListener("click", onNextPlanet);
+          action.appendChild(nbtn);
+          area.appendChild(action);
+
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        /* ════════════════════════════════════════════════════════════════
+         *  EVALUATE CARD — substitution + order-of-operations machine
+         * ════════════════════════════════════════════════════════════════ */
+        function buildEvalCard(round, pi, ri) {
+          var card = document.createElement("article");
+          card.className = "g-card";
+
+          // working copy of tokens; var slots start UNFILLED
+          var slots = round.tokens.map(function (t) {
+            return t.t === "var" ? { t: "var", name: t.name, v: null } : t;
+          });
+          var nVal = round.nVal;
+
+          card.appendChild(
+            el("div", "g-num", "Mission " + (pi + 1) + "-" + (ri + 1)),
+          );
+          card.appendChild(
+            el(
+              "div",
+              "g-prompt",
+              "Evaluate <strong>" +
+                round.label +
+                "</strong> when <strong>n = " +
+                nVal +
+                "</strong>.",
+            ),
+          );
+          card.appendChild(
+            el(
+              "div",
+              "g-task",
+              "Drag the fuel tile into every n slot, then fire the operations in order.",
+            ),
+          );
+
+          // hint
+          appendHint(card, round.hint, pi, ri);
+
+          // value dock
+          var dock = document.createElement("div");
+          dock.className = "value-dock";
+          dock.appendChild(el("span", "value-dock-label", "Fuel value:"));
+          var tile = document.createElement("button");
+          tile.className = "value-tile";
+          tile.type = "button";
+          tile.setAttribute("draggable", "true");
+          tile.innerHTML = "n = " + nVal;
+          tile.setAttribute(
+            "aria-label",
+            "Fuel value n equals " +
+              nVal +
+              ". Activate, then choose a slot to fill it.",
+          );
+          dock.appendChild(tile);
+          card.appendChild(dock);
+
+          // machine track
+          var machine = document.createElement("div");
+          machine.className = "machine";
+          machine.setAttribute("role", "group");
+          machine.setAttribute("aria-label", "Expression machine");
+          card.appendChild(machine);
+
+          // equals readout
+          var equals = document.createElement("div");
+          equals.className = "machine-equals";
+          equals.innerHTML = '= <span class="final" id="">?</span>';
+          var finalEl = equals.querySelector(".final");
+
+          // status messages
+          var ok = el("div", "g-status", "");
+          ok.innerHTML = '<span class="fb-icon">✓</span><span></span>';
+          var bad = el("div", "g-status-wrong", "");
+          bad.innerHTML = '<span class="fb-icon">✦</span><span></span>';
+          var okMsg = ok.querySelector("span:last-child");
+          var badMsg = bad.querySelector("span:last-child");
+
+          // ── keyboard substitution: arm tile, then activate a slot ──
+          var armed = false;
+          tile.addEventListener("click", function () {
+            if (tile.classList.contains("depleted")) return;
+            armed = !armed;
+            tile.classList.toggle("armed", armed);
+            machine
+              .querySelectorAll(".tok-slot:not(.filled)")
+              .forEach(function (s) {
+                s.classList.toggle("armed", armed);
+              });
+          });
+          // native drag
+          tile.addEventListener("dragstart", function (e) {
+            if (tile.classList.contains("depleted")) {
+              e.preventDefault();
+              return;
+            }
+            tile.classList.add("dragging");
+            e.dataTransfer.setData("text/plain", "n");
+            e.dataTransfer.effectAllowed = "copy";
+          });
+          tile.addEventListener("dragend", function () {
+            tile.classList.remove("dragging");
+          });
+          // touch drag (pointer-based)
+          enableTouchDrag(tile, function (target) {
+            if (
+              target &&
+              target.classList &&
+              target.classList.contains("tok-slot") &&
+              !target.classList.contains("filled")
+            )
+              fillSlot(parseInt(target.dataset.si, 10));
+          });
+
+          function render() {
+            machine.innerHTML = "";
+            var nextOp = nextOpIndex(slots);
+            slots.forEach(function (tk, i) {
+              var node;
+              if (tk.t === "num") {
+                node = el("div", "tok tok-num", String(tk.v));
+              } else if (tk.t === "var") {
+                node = document.createElement("div");
+                node.className =
+                  "tok tok-slot" + (tk.v !== null ? " filled" : "");
+                node.dataset.si = i;
+                node.textContent = tk.v !== null ? String(tk.v) : "n";
+                if (tk.v === null) {
+                  node.setAttribute("role", "button");
+                  node.setAttribute("tabindex", "0");
+                  node.setAttribute(
+                    "aria-label",
+                    "Empty n slot. Drop or place fuel value here.",
+                  );
+                  node.addEventListener("dragover", function (e) {
+                    e.preventDefault();
+                    node.classList.add("over");
+                  });
+                  node.addEventListener("dragleave", function () {
+                    node.classList.remove("over");
+                  });
+                  node.addEventListener("drop", function (e) {
+                    e.preventDefault();
+                    fillSlot(i);
+                  });
+                  node.addEventListener("click", function () {
+                    if (armed) fillSlot(i);
+                  });
+                  node.addEventListener("keydown", function (e) {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      fillSlot(i);
+                    }
+                  });
+                }
+              } else {
+                // op node
+                node = document.createElement("div");
+                var ready = i === nextOp && allSlotsFilled();
+                node.className = "tok tok-op" + (ready ? " ready" : "");
+                node.textContent = tk.op;
+                node.dataset.oi = i;
+                node.setAttribute("role", "button");
+                node.setAttribute("tabindex", "0");
+                node.setAttribute(
+                  "aria-label",
+                  "Operation " +
+                    tk.op +
+                    (ready ? ". Ready to fire." : ". Not next in order yet."),
+                );
+                node.addEventListener("click", function () {
+                  fireOp(i);
+                });
+                node.addEventListener("keydown", function (e) {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    fireOp(i);
+                  }
+                });
+              }
+              machine.appendChild(node);
+            });
+            // value readout: if fully reduced, show the value
+            if (slots.length === 1 && slots[0].t === "num") {
+              finalEl.textContent = String(slots[0].v);
+              if (!machine.contains(equals)) card.insertBefore(equals, ok);
+            } else {
+              if (!machine.parentNode) return;
+              if (!card.contains(equals)) {
+                card.insertBefore(equals, ok);
+              }
+              finalEl.textContent = allSlotsFilled() ? "…" : "?";
             }
           }
 
-          // Build planet HTML
-          var html = '<div class="planet-header">';
-          html += '<div class="planet-orb ' + planet.orbClass + '"></div>';
-          html += '<h2 class="planet-name">' + planet.name + "</h2>";
-          html += '<p class="planet-desc">' + planet.desc + "</p>";
-          html += "</div>";
+          function allSlotsFilled() {
+            return slots.every(function (t) {
+              return t.t !== "var" || t.v !== null;
+            });
+          }
+          function anySlotLeft() {
+            return slots.some(function (t) {
+              return t.t === "var" && t.v === null;
+            });
+          }
 
-          planet.questions.forEach(function (q, qi) {
-            html += buildQuestionHTML(q, qi, idx);
+          function fillSlot(i) {
+            if (slots[i].t !== "var" || slots[i].v !== null) return;
+            slots[i] = { t: "var", name: "n", v: nVal };
+            sfx.snap();
+            armed = false;
+            tile.classList.remove("armed");
+            if (!anySlotLeft()) {
+              tile.classList.add("depleted");
+              tile.setAttribute("draggable", "false");
+            }
+            render();
+          }
+
+          function fireOp(i) {
+            if (slots[i] === undefined || slots[i].t !== "op") return;
+            if (!allSlotsFilled()) {
+              flashBlock(i, "Fill every n slot with the fuel value first.");
+              return;
+            }
+            var must = nextOpIndex(slots);
+            if (i !== must) {
+              // physically blocked — wrong order
+              planetPerfect = false;
+              var mustOp = slots[must].op;
+              flashBlock(
+                i,
+                "Order of operations blocks that wire. " +
+                  (precedence(mustOp) === 2
+                    ? "Multiply (×) must fire before + or −."
+                    : "Fire the left operation first.") +
+                  " The glowing node is the one that goes next.",
+              );
+              return;
+            }
+            // resolve: collapse a op b -> result
+            var a = slots[i - 1].v,
+              b = slots[i + 1].v;
+            var res = applyOp(a, slots[i].op, b);
+            slots.splice(i - 1, 3, { t: "num", v: res });
+            sfx.fire();
+            render();
+            // flash the new result node
+            var rnodes = machine.querySelectorAll(".tok-num");
+            // highlight last-created by re-rendering with tok-result briefly
+            highlightResult(res);
+            if (slots.length === 1 && slots[0].t === "num") finishEval();
+          }
+
+          function highlightResult(res) {
+            var nums = machine.querySelectorAll(".tok-num");
+            nums.forEach(function (nm) {
+              if (nm.textContent === String(res)) {
+                nm.classList.add("tok-result");
+                setTimeout(function () {
+                  nm.classList.remove("tok-result");
+                }, 600);
+              }
+            });
+          }
+
+          function flashBlock(i, msg) {
+            var node = machine.querySelector('.tok-op[data-oi="' + i + '"]');
+            if (node) {
+              node.classList.remove("blocked");
+              void node.offsetWidth;
+              node.classList.add("blocked");
+            }
+            sfx.block();
+            badMsg.innerHTML = msg;
+            bad.classList.add("shown");
+            ok.classList.remove("shown");
+          }
+
+          function finishEval() {
+            card.classList.add("solved");
+            bad.classList.remove("shown");
+            var truth = evaluate(round.tokens); // independent check
+            okMsg.innerHTML =
+              "Solved! Substituting n = " +
+              nVal +
+              " gives <strong>" +
+              slots[0].v +
+              "</strong>. The value came straight from your operations.";
+            ok.classList.add("shown");
+            var pts = 100 + (planetPerfect ? 50 : 0);
+            score += pts;
+            updateScore();
+            totalSolved++;
+            sfx.win();
+            checkPlanetComplete();
+          }
+
+          card.appendChild(equals);
+          card.appendChild(ok);
+          card.appendChild(bad);
+          render();
+          return card;
+        }
+
+        /* ════════════════════════════════════════════════════════════════
+         *  BUILD CARD (Level 2) — snap blocks; validated by test values
+         * ════════════════════════════════════════════════════════════════ */
+        function buildBuildCard(round, pi, ri) {
+          var card = document.createElement("article");
+          card.className = "g-card";
+          card.appendChild(
+            el("div", "g-num", "Mission " + (pi + 1) + "-" + (ri + 1)),
+          );
+          card.appendChild(el("div", "g-prompt", round.story));
+          card.appendChild(
+            el(
+              "div",
+              "g-task",
+              "Snap blocks into the track to build the cost expression in terms of n.",
+            ),
+          );
+          appendHint(card, round.hint, pi, ri);
+
+          // build track
+          card.appendChild(el("div", "palette-label", "Expression track:"));
+          var track = document.createElement("div");
+          track.className = "build-track";
+          track.setAttribute("role", "list");
+          track.setAttribute(
+            "aria-label",
+            "Expression track. Tap a block to add it here.",
+          );
+          var placeholder = el(
+            "span",
+            "build-placeholder",
+            "Drop blocks here →",
+          );
+          track.appendChild(placeholder);
+          card.appendChild(track);
+
+          // palette
+          card.appendChild(el("div", "palette-label", "Blocks:"));
+          var palette = document.createElement("div");
+          palette.className = "palette";
+          card.appendChild(palette);
+
+          var placed = []; // array of token objects in track order
+
+          round.blocks.forEach(function (blk, bi) {
+            var b = document.createElement("button");
+            b.type = "button";
+            b.className =
+              "block" +
+              (blk.t === "op" ? " op" : blk.t === "var" ? " var" : "");
+            b.setAttribute("draggable", "true");
+            b.textContent =
+              blk.t === "op"
+                ? blk.op
+                : blk.t === "var"
+                  ? blk.name
+                  : String(blk.v);
+            b.dataset.bi = bi;
+            b.setAttribute(
+              "aria-label",
+              "Block " + b.textContent + ". Activate to add to the track.",
+            );
+            var token =
+              blk.t === "op"
+                ? { t: "op", op: blk.op }
+                : blk.t === "var"
+                  ? { t: "var", name: "n" }
+                  : { t: "num", v: blk.v };
+            b.addEventListener("click", function () {
+              addToTrack(token, b.textContent, b.className);
+            });
+            b.addEventListener("dragstart", function (e) {
+              b.classList.add("dragging");
+              e.dataTransfer.setData(
+                "application/json",
+                JSON.stringify({
+                  token: token,
+                  text: b.textContent,
+                  cls: b.className,
+                }),
+              );
+            });
+            b.addEventListener("dragend", function () {
+              b.classList.remove("dragging");
+            });
+            enableTouchDrag(b, function (target) {
+              if (target && (target === track || track.contains(target)))
+                addToTrack(token, b.textContent, b.className);
+            });
+            palette.appendChild(b);
           });
 
-          html +=
-            '<div class="planet-action"><button class="next-planet-btn" id="nextPlanetBtn">';
-          if (idx < 4) {
-            html += "Travel to Next Planet &#9654;";
-          } else {
-            html += "Complete Mission &#9654;";
-          }
-          html += "</button></div>";
+          track.addEventListener("dragover", function (e) {
+            e.preventDefault();
+            track.classList.add("over");
+          });
+          track.addEventListener("dragleave", function () {
+            track.classList.remove("over");
+          });
+          track.addEventListener("drop", function (e) {
+            e.preventDefault();
+            track.classList.remove("over");
+            try {
+              var d = JSON.parse(e.dataTransfer.getData("application/json"));
+              addToTrack(d.token, d.text, d.cls);
+            } catch (err) {}
+          });
 
-          document.getElementById("planetArea").innerHTML = html;
-          window.scrollTo({ top: 0, behavior: "smooth" });
-
-          // Wire events
-          wireQuestionEvents(idx);
-
-          // Start timer
-          startTimer(planet.time);
-        }
-
-        /* ═══════════ BUILD QUESTION HTML ═══════════ */
-        function buildQuestionHTML(q, qi, pi) {
-          var id = "q-" + pi + "-" + qi;
-          var html = '<article class="g-card" data-qid="' + id + '">';
-          html += '<div class="g-num">' + q.num + "</div>";
-          html += '<div class="g-prompt">' + q.prompt + "</div>";
-
-          // Hint button
-          html +=
-            '<button class="hint-btn" data-target="hint-' +
-            id +
-            '">&#128161; Mission Briefing</button>';
-          html +=
-            '<div class="hint-box" id="hint-' + id + '">' + q.hint + "</div>";
-
-          if (q.type === "mc") {
-            html += '<div class="mc-options" data-qid="' + id + '">';
-            q.options.forEach(function (opt) {
-              html += '<button class="mc-btn" data-val="' + opt.val + '">';
-              html += '<span class="letter">' + opt.letter + "</span>";
-              html += "<span>" + opt.text + "</span>";
-              html += "</button>";
+          function addToTrack(token, text, cls) {
+            placed.push(token);
+            if (placeholder.parentNode) track.removeChild(placeholder);
+            var chip = document.createElement("span");
+            chip.className = (cls || "block").replace("block", "block placed");
+            chip.textContent = text;
+            chip.setAttribute("role", "listitem");
+            chip.title = "Tap to remove";
+            var myIndex = placed.length - 1;
+            chip.addEventListener("click", function () {
+              var pos = Array.prototype.indexOf.call(track.children, chip);
+              placed.splice(pos, 1);
+              track.removeChild(chip);
+              if (!placed.length) track.appendChild(placeholder);
             });
-            html += "</div>";
-            html +=
-              '<button class="check-btn" data-qid="' +
-              id +
-              '" disabled>Check Answer</button>';
-          } else if (q.type === "fill") {
-            html += '<div class="fill-row">';
-            q.fillParts.forEach(function (fp) {
-              html += '<span class="fill-text">' + fp.before + "</span>";
-              html +=
-                '<input class="fill-input" data-answer="' +
-                fp.answer +
-                '" id="' +
-                fp.id +
-                '" style="width:' +
-                fp.inputWidth +
-                '" placeholder="?" aria-label="fill in">';
-              html += '<span class="fill-text">' + fp.after + "</span>";
-            });
-            html += "</div>";
-            html +=
-              '<button class="check-btn" data-qid="' +
-              id +
-              '">Check Answer</button>';
-          } else if (q.type === "twofill") {
-            q.fills.forEach(function (f) {
-              html += '<div class="fill-row" style="margin-bottom:10px">';
-              html += '<span class="fill-text">' + f.label + "</span>";
-              html +=
-                '<input class="fill-input" data-answer="' +
-                f.answer +
-                '" id="' +
-                f.id +
-                '" style="width:80px" placeholder="?" aria-label="fill in">';
-              html += "</div>";
-            });
-            html +=
-              '<button class="check-btn" data-qid="' +
-              id +
-              '">Check Answer</button>';
+            track.appendChild(chip);
+            sfx.snap();
           }
 
-          html +=
-            '<div class="g-status"><span class="fb-icon">&#10003;</span><span>' +
-            q.correct +
-            "</span></div>";
-          html +=
-            '<div class="g-status-wrong"><span class="fb-icon">&#10007;</span><span>' +
-            q.wrong +
-            "</span></div>";
-          html += "</article>";
-          return html;
-        }
+          // actions
+          var actions = document.createElement("div");
+          actions.className = "machine-actions";
+          var runBtn = document.createElement("button");
+          runBtn.className = "m-btn primary";
+          runBtn.textContent = "▶ Run test values";
+          var clearBtn = document.createElement("button");
+          clearBtn.className = "m-btn ghost";
+          clearBtn.textContent = "Clear track";
+          actions.appendChild(runBtn);
+          actions.appendChild(clearBtn);
+          card.appendChild(actions);
 
-        /* ═══════════ WIRE EVENTS ═══════════ */
-        function wireQuestionEvents(planetIdx) {
-          var planet = PLANETS[planetIdx];
+          var ok = el("div", "g-status", "");
+          ok.innerHTML = '<span class="fb-icon">✓</span><span></span>';
+          var bad = el("div", "g-status-wrong", "");
+          bad.innerHTML = '<span class="fb-icon">✦</span><span></span>';
+          var okMsg = ok.querySelector("span:last-child");
+          var badMsg = bad.querySelector("span:last-child");
+          card.appendChild(ok);
+          card.appendChild(bad);
 
-          // Hint buttons
-          document
-            .querySelectorAll("#planetArea .hint-btn")
-            .forEach(function (btn) {
-              btn.addEventListener("click", function () {
-                var target = document.getElementById(btn.dataset.target);
-                target.classList.toggle("shown");
-                btn.textContent = target.classList.contains("shown")
-                  ? "Hide Briefing"
-                  : "💡 Mission Briefing";
-              });
-            });
+          clearBtn.addEventListener("click", function () {
+            placed.length = 0;
+            track.innerHTML = "";
+            track.appendChild(placeholder);
+            bad.classList.remove("shown");
+          });
 
-          // MC selections
-          document
-            .querySelectorAll("#planetArea .mc-options")
-            .forEach(function (group) {
-              var qid = group.dataset.qid;
-              var checkBtn = document.querySelector(
-                '.check-btn[data-qid="' + qid + '"]',
+          runBtn.addEventListener("click", function () {
+            if (card.classList.contains("solved")) return;
+            if (!wellFormed(injectVar(placed))) {
+              showBad(
+                "That is not a complete expression yet. Use a value, an operation, " +
+                  "another value, and include the variable <span class='vocab'>n</span>.",
               );
-              var btns = group.querySelectorAll(".mc-btn");
+              return;
+            }
+            if (!hasVar(placed)) {
+              showBad("Your expression needs the variable n in it.");
+              return;
+            }
+            if (behavesLike(injectVar(placed), round.f)) {
+              card.classList.add("solved");
+              bad.classList.remove("shown");
+              var t1 = round.f(1),
+                t3 = round.f(3);
+              okMsg.innerHTML =
+                "Verified! The machine ran several values of n and your expression " +
+                "matched every time — for example n = 1 → " +
+                t1 +
+                " and n = 3 → " +
+                t3 +
+                ".";
+              ok.classList.add("shown");
+              score += 100 + (planetPerfect ? 50 : 0);
+              updateScore();
+              totalSolved++;
+              sfx.win();
+              checkPlanetComplete();
+            } else {
+              planetPerfect = false;
+              // diagnostic, non-giveaway: show one failing test value
+              var fail = firstFailing(injectVar(placed), round.f);
+              sfx.block();
+              showBad(
+                "The machine tested n = " +
+                  fail.n +
+                  ". Your expression gave " +
+                  fail.got +
+                  ", but the real cost should be " +
+                  fail.want +
+                  ". Check which number multiplies n (the rate) and which is added (the fee).",
+              );
+            }
+          });
 
-              btns.forEach(function (btn) {
-                btn.addEventListener("click", function () {
-                  if (btn.classList.contains("locked")) return;
-                  btns.forEach(function (b) {
-                    b.classList.remove("selected");
-                  });
-                  btn.classList.add("selected");
-                  if (checkBtn) checkBtn.disabled = false;
-                });
+          function showBad(html) {
+            badMsg.innerHTML = html;
+            bad.classList.add("shown");
+            ok.classList.remove("shown");
+          }
+          function injectVar(tokens) {
+            return tokens.map(function (t) {
+              return t.t === "var" ? { t: "var", v: null, name: "n" } : t;
+            });
+          }
+          function hasVar(tokens) {
+            return tokens.some(function (t) {
+              return t.t === "var";
+            });
+          }
+          function firstFailing(tokens, f) {
+            for (var v = 0; v <= 12; v++) {
+              var subbed = tokens.map(function (t) {
+                return t.t === "var" ? { t: "num", v: v } : t;
               });
-            });
+              if (!wellFormed(subbed)) continue;
+              var got = evaluate(subbed);
+              if (got !== f(v)) return { n: v, got: got, want: f(v) };
+            }
+            return { n: 1, got: "?", want: f(1) };
+          }
 
-          // Check buttons
-          document
-            .querySelectorAll("#planetArea .check-btn")
-            .forEach(function (checkBtn) {
-              checkBtn.addEventListener("click", function () {
-                if (checkBtn.disabled) return;
-                var qid = checkBtn.dataset.qid;
-                var card = document.querySelector(
-                  '.g-card[data-qid="' + qid + '"]',
-                );
-                if (
-                  card.classList.contains("correct") ||
-                  card.classList.contains("incorrect")
-                )
-                  return;
+          return card;
+        }
 
-                // Parse planet/question index from qid
-                var parts = qid.split("-");
-                var pi = parseInt(parts[1]);
-                var qi = parseInt(parts[2]);
-                var qData = PLANETS[pi].questions[qi];
+        /* ─── shared card helpers ─── */
+        function appendHint(card, hintHTML, pi, ri) {
+          var id = "hint-" + pi + "-" + ri;
+          var hb = document.createElement("button");
+          hb.className = "hint-btn";
+          hb.type = "button";
+          hb.innerHTML = "💡 Mission Briefing";
+          hb.setAttribute("aria-controls", id);
+          hb.setAttribute("aria-expanded", "false");
+          var box = document.createElement("div");
+          box.className = "hint-box";
+          box.id = id;
+          box.innerHTML = hintHTML;
+          hb.addEventListener("click", function () {
+            var shown = box.classList.toggle("shown");
+            hb.setAttribute("aria-expanded", shown ? "true" : "false");
+            hb.innerHTML = shown ? "Hide Briefing" : "💡 Mission Briefing";
+          });
+          card.appendChild(hb);
+          card.appendChild(box);
+        }
 
-                var isCorrect = false;
+        function el(tag, cls, html) {
+          var n = document.createElement(tag);
+          n.className = cls;
+          if (html != null) n.innerHTML = html;
+          return n;
+        }
 
-                if (qData.type === "mc") {
-                  var selected = card.querySelector(".mc-btn.selected");
-                  if (!selected) return;
-                  isCorrect = selected.dataset.val === qData.answer;
-                  var allBtns = card.querySelectorAll(".mc-btn");
-                  allBtns.forEach(function (b) {
-                    b.classList.add("locked");
-                    if (b.dataset.val === qData.answer)
-                      b.classList.add("is-correct");
-                  });
-                  if (!isCorrect) selected.classList.add("is-wrong");
-                } else if (qData.type === "fill") {
-                  var inputs = card.querySelectorAll(".fill-input");
-                  isCorrect = true;
-                  inputs.forEach(function (inp) {
-                    var val = inp.value.trim();
-                    if (val === inp.dataset.answer) {
-                      inp.classList.add("is-correct");
-                    } else {
-                      inp.classList.add("is-wrong");
-                      isCorrect = false;
-                    }
-                    inp.readOnly = true;
-                  });
-                } else if (qData.type === "twofill") {
-                  var inputs = card.querySelectorAll(".fill-input");
-                  isCorrect = true;
-                  inputs.forEach(function (inp) {
-                    var val = inp.value.trim();
-                    if (val === inp.dataset.answer) {
-                      inp.classList.add("is-correct");
-                    } else {
-                      inp.classList.add("is-wrong");
-                      isCorrect = false;
-                    }
-                    inp.readOnly = true;
-                  });
-                }
-
-                questionsAnswered++;
-                checkBtn.disabled = true;
-
-                if (isCorrect) {
-                  card.classList.add("correct");
-                  totalCorrect++;
-                  // Base points
-                  var pts = 100;
-                  // Time bonus
-                  var bonus = Math.floor(timeLeft * 2);
-                  pts += bonus;
-                  score += pts;
-                } else {
-                  card.classList.add("incorrect");
-                  planetPerfect = false;
-                  loseFuel();
-                  if (gameOver) return;
-                }
-
-                updateScoreDisplay();
-                checkPlanetComplete(planetIdx);
-              });
-            });
-
-          // Next planet button
-          var nextBtn = document.getElementById("nextPlanetBtn");
-          if (nextBtn) {
-            nextBtn.addEventListener("click", function () {
-              clearInterval(planetTimer);
-
-              // Planet completion bonus
-              if (planetPerfect) {
-                score += 200;
-                totalBonusStars++;
-                updateScoreDisplay();
-              }
-
-              var status = planetPerfect ? "complete" : "failed";
-              updateMapNode(currentPlanet, status);
-
-              if (currentPlanet < 4) {
-                // Travel animation
-                var overlay = document.getElementById("travelOverlay");
-                document.getElementById("travelText").textContent =
-                  "Traveling to " + PLANETS[currentPlanet + 1].name + "...";
-                overlay.classList.add("active");
-                setTimeout(function () {
-                  overlay.classList.remove("active");
-                  loadPlanet(currentPlanet + 1);
-                }, 1500);
-              } else {
-                // Game complete
-                updateMapNode(currentPlanet, status);
-                showEndScreen(true);
-              }
-            });
+        /* ─── pointer-based touch drag (mobile) ─── */
+        function enableTouchDrag(handle, onDrop) {
+          var ghost = null;
+          handle.addEventListener(
+            "pointerdown",
+            function (e) {
+              if (e.pointerType === "mouse") return; // mouse uses native DnD
+              if (handle.classList.contains("depleted")) return;
+              e.preventDefault();
+              ghost = handle.cloneNode(true);
+              ghost.style.position = "fixed";
+              ghost.style.pointerEvents = "none";
+              ghost.style.opacity = "0.85";
+              ghost.style.zIndex = "200";
+              ghost.style.transform = "scale(1.05)";
+              document.body.appendChild(ghost);
+              move(e);
+              handle.setPointerCapture(e.pointerId);
+            },
+            { passive: false },
+          );
+          handle.addEventListener("pointermove", function (e) {
+            if (!ghost) return;
+            move(e);
+          });
+          handle.addEventListener("pointerup", function (e) {
+            if (!ghost) return;
+            ghost.style.display = "none";
+            var target = document.elementFromPoint(e.clientX, e.clientY);
+            ghost.remove();
+            ghost = null;
+            onDrop(target);
+          });
+          handle.addEventListener("pointercancel", function () {
+            if (ghost) {
+              ghost.remove();
+              ghost = null;
+            }
+          });
+          function move(e) {
+            ghost.style.left = e.clientX - 26 + "px";
+            ghost.style.top = e.clientY - 26 + "px";
           }
         }
 
-        function checkPlanetComplete(planetIdx) {
-          var planet = PLANETS[planetIdx];
+        /* ─── planet completion / navigation ─── */
+        function checkPlanetComplete() {
+          if (gameOver) return;
           var cards = document.querySelectorAll("#planetArea .g-card");
           var allDone = true;
           cards.forEach(function (c) {
-            if (
-              !c.classList.contains("correct") &&
-              !c.classList.contains("incorrect")
-            ) {
-              allDone = false;
-            }
+            if (!c.classList.contains("solved")) allDone = false;
           });
           if (allDone) {
-            clearInterval(planetTimer);
-            showNextButton();
+            var btn = document.getElementById("nextPlanetBtn");
+            if (btn) btn.classList.add("visible");
           }
         }
 
-        function showNextButton() {
-          var btn = document.getElementById("nextPlanetBtn");
-          if (btn) btn.classList.add("visible");
+        function onNextPlanet() {
+          if (planetPerfect) score += 200;
+          updateScore();
+          var node = document.getElementById("mapNode" + currentPlanet);
+          node.classList.remove("active");
+          node.classList.add("complete");
+          if (currentPlanet < PLANETS.length - 1) {
+            var overlay = document.getElementById("travelOverlay");
+            document.getElementById("travelText").textContent =
+              "Traveling to " + PLANETS[currentPlanet + 1].name + "...";
+            overlay.classList.add("active");
+            setTimeout(function () {
+              overlay.classList.remove("active");
+              loadPlanet(currentPlanet + 1);
+            }, 1500);
+          } else {
+            showEndScreen(true);
+          }
         }
 
-        /* ═══════════ END SCREEN ═══════════ */
+        /* ─── end screen ─── */
         function showEndScreen(won) {
-          clearInterval(planetTimer);
           showScreen("endScreen");
-
           var title = document.getElementById("endTitle");
           var subtitle = document.getElementById("endSubtitle");
-
           if (won) {
             title.className = "end-title victory";
             title.textContent = "Mission Complete!";
             subtitle.textContent =
-              "You navigated the galaxy and mastered two-variable relationships!";
+              "You ran the Substitution Machine across the galaxy and evaluated every expression!";
             launchConfetti();
           } else {
             title.className = "end-title defeat";
-            title.textContent = "Mission Failed";
+            title.textContent = "Out of Fuel";
             subtitle.textContent =
-              "You ran out of fuel! Review the concepts and try again.";
+              "Review substitution and order of operations, then relaunch.";
           }
 
-          // Stars (1 for completing, 1 for >60% correct, 1 for any perfect planets)
+          var pct = totalRounds ? totalSolved / totalRounds : 0;
           var starsEarned = 0;
-          if (won) starsEarned++;
-          if (totalCorrect > 0 && totalCorrect / questionsAnswered >= 0.6)
-            starsEarned++;
-          if (totalBonusStars > 0) starsEarned++;
-
+          if (totalSolved > 0) starsEarned++;
+          if (pct >= 0.6) starsEarned++;
+          if (won && pct >= 0.9) starsEarned++;
           var starHTML = "";
-          for (var i = 0; i < 3; i++) {
+          for (var i = 0; i < 3; i++)
             starHTML +=
               '<span class="star-icon ' +
               (i < starsEarned ? "earned" : "") +
               '">&#9733;</span>';
-          }
           document.getElementById("starDisplay").innerHTML = starHTML;
-
-          // Stats
-          var totalQ = 0;
-          PLANETS.forEach(function (p) {
-            totalQ += p.questions.length;
-          });
 
           document.getElementById("endStats").innerHTML =
             '<div class="end-stat"><div class="end-stat-val">' +
             score +
             '</div><div class="end-stat-label">Points</div></div>' +
             '<div class="end-stat"><div class="end-stat-val">' +
-            totalCorrect +
+            totalSolved +
             "/" +
-            totalQ +
-            '</div><div class="end-stat-label">Correct</div></div>' +
+            totalRounds +
+            '</div><div class="end-stat-label">Solved</div></div>' +
             '<div class="end-stat"><div class="end-stat-val">' +
             starsEarned +
             '/3</div><div class="end-stat-label">Stars</div></div>';
@@ -2011,12 +2523,12 @@
             window.EduPulse &&
               EduPulse.record({
                 activityTitle: document.title,
-                score: totalCorrect,
-                maxScore: totalQ,
+                score: totalSolved,
+                maxScore: totalRounds,
                 stars: starsEarned,
-                problemsCorrect: totalCorrect,
-                problemsAttempted: totalQ,
-                standard: "6.EE.C.9",
+                problemsCorrect: totalSolved,
+                problemsAttempted: totalRounds,
+                standard: "6.EE.A.2",
               });
           } catch (e) {}
         }
@@ -2057,7 +2569,7 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
 </html>

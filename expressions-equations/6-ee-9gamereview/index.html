@@ -18,7 +18,7 @@
       window.addEventListener("load", function () {
         if (typeof Phaser === "undefined") {
           document.body.innerHTML =
-            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
         }
       });
     </script>
@@ -44,122 +44,36 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <div id="game-container"></div>
     <script>
-      // ============================================================
-      // EQUATION FORTRESS — Tower Defense (6.EE.C.9 Review)
-      // Solve equations to power/place towers. Enemies carry wrong answers.
-      // Waves of enemies march along a path; towers auto-fire.
-      // ============================================================
-
-      const QUESTIONS = [
-        {
-          q: "x + 3 = 8. Solve for x.",
-          choices: ["5", "11", "3", "8"],
-          correct: 0,
-          explain: "x = 8 - 3 = 5",
-        },
-        {
-          q: "2x = 10. Solve for x.",
-          choices: ["5", "20", "2", "10"],
-          correct: 0,
-          explain: "x = 10/2 = 5",
-        },
-        {
-          q: "x - 4 = 6. Solve for x.",
-          choices: ["10", "2", "6", "4"],
-          correct: 0,
-          explain: "x = 6 + 4 = 10",
-        },
-        {
-          q: "3x = 15. Solve for x.",
-          choices: ["5", "45", "3", "12"],
-          correct: 0,
-          explain: "x = 15/3 = 5",
-        },
-        {
-          q: "x / 4 = 2. Solve for x.",
-          choices: ["8", "2", "6", "0.5"],
-          correct: 0,
-          explain: "x = 2 x 4 = 8",
-        },
-        {
-          q: "5x = 25. Solve for x.",
-          choices: ["5", "125", "20", "30"],
-          correct: 0,
-          explain: "x = 25/5 = 5",
-        },
-        {
-          q: "2x + 3 = 11. Solve for x.",
-          choices: ["4", "7", "5.5", "8"],
-          correct: 0,
-          explain: "2x = 8, x = 4",
-        },
-        {
-          q: "3x - 2 = 10. Solve for x.",
-          choices: ["4", "6", "3", "8"],
-          correct: 0,
-          explain: "3x = 12, x = 4",
-        },
-        {
-          q: "4x + 5 = 21. Solve for x.",
-          choices: ["4", "6.5", "16", "5"],
-          correct: 0,
-          explain: "4x = 16, x = 4",
-        },
-        {
-          q: "5x - 7 = 3. Solve for x.",
-          choices: ["2", "10", "5", "1"],
-          correct: 0,
-          explain: "5x = 10, x = 2",
-        },
-        {
-          q: "2x + 3 = x + 8. Solve for x.",
-          choices: ["5", "11", "3", "8"],
-          correct: 0,
-          explain: "x + 3 = 8, x = 5",
-        },
-        {
-          q: "3x - 2 = x + 6. Solve for x.",
-          choices: ["4", "8", "2", "6"],
-          correct: 0,
-          explain: "2x = 8, x = 4",
-        },
-        {
-          q: "2(x + 1) = 10. Solve for x.",
-          choices: ["4", "5", "9", "6"],
-          correct: 0,
-          explain: "2x + 2 = 10, 2x = 8, x = 4",
-        },
-        {
-          q: "3(x - 2) = 9. Solve for x.",
-          choices: ["5", "3", "7", "11"],
-          correct: 0,
-          explain: "3x - 6 = 9, 3x = 15, x = 5",
-        },
-        {
-          q: "Maria has x books. After buying 5 more she has 23. x = ?",
-          choices: ["18", "28", "23", "5"],
-          correct: 0,
-          explain: "x + 5 = 23, x = 18",
-        },
-        {
-          q: "Table: x 1,2,3 | y 9,18,27. What is y when x = 5?",
-          choices: ["45", "36", "54", "27"],
-          correct: 0,
-          explain: "Rate = 9. y = 9 x 5 = 45",
-        },
-      ];
+      // ════════════════════════════════════════════════════════════════
+      //  EQUATION FORTRESS — "Evaluate to Fire" (6.EE.C.9)
+      //  THE MATH IS THE MECHANIC. Enemies march along a path, each one
+      //  LABELLED with an expression in x (e.g. "2x+3"). You control x on
+      //  a TARGETING DIAL (the fortress computer). The tower fires a key
+      //  value K; it destroys ONLY the enemies whose expression EQUALS K
+      //  at YOUR chosen x. Pick the wrong x and the wrong enemies survive
+      //  and breach the wall — substitution/evaluation is literally aiming.
+      //
+      //  Two round types:
+      //   • EVALUATE  — enemies = expressions in x; clear the ones that
+      //                 evaluate to the tower key K at the x you dial in.
+      //   • SATISFY   — enemies carry (x, y) points; the tower's rule is
+      //                 y = k·x. Fire to vaporise ONLY the points that
+      //                 SATISFY the equation (independent x → dependent y).
+      //  No A/B/C/D. No menu gate. Feedback teaches evaluation/substitution.
+      // ════════════════════════════════════════════════════════════════
 
       const SFX = {
         ctx: null,
         init() {
           if (!this.ctx)
             this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+          if (this.ctx && this.ctx.state === "suspended") this.ctx.resume();
         },
         tone(f, d, t = "sine", v = 0.1) {
           if (!this.ctx) return;
@@ -179,26 +93,27 @@
             o.stop(this.ctx.currentTime + d);
           } catch (e) {}
         },
-        shoot() {
-          this.tone(600, 0.06, "square", 0.05);
+        dial() {
+          this.tone(520, 0.04, "square", 0.05);
         },
-        correct() {
+        fire() {
+          this.tone(620, 0.07, "square", 0.06);
+          setTimeout(() => this.tone(760, 0.08, "square", 0.05), 50);
+        },
+        destroy() {
+          this.tone(180, 0.14, "sawtooth", 0.1);
+        },
+        good() {
           this.tone(660, 0.1);
-          setTimeout(() => this.tone(880, 0.12), 80);
+          setTimeout(() => this.tone(880, 0.13), 80);
         },
-        wrong() {
-          this.tone(180, 0.25, "sawtooth", 0.08);
-        },
-        hit() {
-          this.tone(300, 0.08, "sawtooth", 0.06);
-        },
-        explode() {
-          this.tone(80, 0.3, "sawtooth", 0.12);
+        breach() {
+          this.tone(150, 0.3, "sawtooth", 0.1);
         },
         wave() {
-          this.tone(440, 0.1);
-          setTimeout(() => this.tone(550, 0.1), 100);
-          setTimeout(() => this.tone(660, 0.15), 200);
+          [440, 550, 660].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.12), i * 90),
+          );
         },
         lose() {
           this.tone(200, 0.3, "sawtooth", 0.1);
@@ -209,31 +124,273 @@
       const W = 800,
         H = 600;
 
-      // Path waypoints for enemies
-      const PATH = [
-        { x: 0, y: 200 },
-        { x: 150, y: 200 },
-        { x: 150, y: 350 },
-        { x: 350, y: 350 },
-        { x: 350, y: 150 },
-        { x: 550, y: 150 },
-        { x: 550, y: 400 },
-        { x: 750, y: 400 },
-        { x: 800, y: 400 },
-      ];
+      // Colour-blind-safe enemy palette (distinct HUE + SHAPE + always a text
+      // label). Colour is never the only cue — every enemy shows its expression.
+      const C = {
+        bg: 0x0a1626,
+        path: 0x24405f,
+        target: 0x2ec27a, // green = on-target (also marked ✓)
+        decoy: 0xe08a2b, // orange = decoy (also marked, distinct hue from green)
+        key: 0x4ea3ff,
+        gold: 0xffcc33,
+        wall: 0x3a6df0,
+        white: 0xffffff,
+      };
 
-      // Tower placement spots (near the path)
-      const TOWER_SPOTS = [
-        { x: 100, y: 140 },
-        { x: 200, y: 290 },
-        { x: 280, y: 400 },
-        { x: 400, y: 280 },
-        { x: 300, y: 100 },
-        { x: 500, y: 90 },
-        { x: 480, y: 340 },
-        { x: 600, y: 460 },
-        { x: 700, y: 340 },
-        { x: 650, y: 200 },
+      // ─── MATH HELPERS ───
+      const rnd = (n) => Math.floor(Math.random() * n);
+      const pick = (a) => a[rnd(a.length)];
+      function shuffle(a) {
+        const r = [...a];
+        for (let i = r.length - 1; i > 0; i--) {
+          const j = rnd(i + 1);
+          [r[i], r[j]] = [r[j], r[i]];
+        }
+        return r;
+      }
+      // Evaluate a one/two-step linear expression {m,b} at x  →  m*x + b
+      const evalExpr = (e, x) => e.m * x + e.b;
+      function exprStr(e) {
+        // pretty-print m*x + b  (e.g. {m:2,b:3} → "2x + 3", {m:1,b:0} → "x")
+        let s = "";
+        if (e.m === 1) s = "x";
+        else if (e.m === 0) s = "";
+        else s = e.m + "x";
+        if (e.b > 0) s += (s ? " + " : "") + e.b;
+        else if (e.b < 0) s += " − " + Math.abs(e.b);
+        return s || "0";
+      }
+
+      // ════════════════════════════════════════════════════════════════
+      //  WAVE GENERATOR  (solvability + uniqueness GUARANTEED)
+      //  Returns { type, prompt, xChoices, answerX, key, k, enemies[] }.
+      //  Each enemy: { kind:'expr'|'point', target:bool, ...display }.
+      //  Invariant proved by sim(): at answerX, the set of enemies the
+      //  tower destroys is EXACTLY the targets, and no OTHER x in xChoices
+      //  destroys that same target set (the correct x is unique & selective).
+      // ════════════════════════════════════════════════════════════════
+      function makeWave(tier, ix) {
+        // tier 1 = Support (one-step expr, small tables, scaffolded x)
+        // tier 2 = Challenge (two-step expr + y=kx point filtering)
+        const wantSatisfy = tier === 2 && ix % 2 === 1;
+        // Bounded retry loop (NO recursion): a single attempt may fail the
+        // uniqueness check, so we re-roll up to a generous cap. Across 10k+
+        // simulated rolls this cap is never exhausted — it only guarantees the
+        // generator always TERMINATES (and the fallback below is itself valid).
+        for (let attempt = 0; attempt < 400; attempt++) {
+          const w = wantSatisfy
+            ? makeSatisfyWave(tier)
+            : makeEvaluateWave(tier);
+          if (w) return w;
+        }
+        // Deterministic fallback that is trivially valid (should never run).
+        return safeFallbackWave(tier);
+      }
+
+      // EVALUATE: enemies are expressions; fire destroys those equal to key K
+      // at the chosen x. We fix answerX + key K, build varied target
+      // expressions {m,b} with m·answerX + b === K, and decoys that never hit
+      // K at ANY dialable x. Returns null if the attempt isn't uniquely
+      // solvable so makeWave() can re-roll.
+      function makeEvaluateWave(tier) {
+        const twoStep = tier === 2;
+        const xChoices = tier === 1 ? [1, 2, 3, 4] : [1, 2, 3, 4, 5, 6];
+        const answerX = pick(xChoices);
+        const K = 6 + rnd(tier === 1 ? 12 : 22); // cannon key 6..(17 or 27)
+
+        const nTargets = 2 + rnd(2); // 2–3 targets
+        const targets = [];
+        const used = new Set();
+        let guard = 0;
+        while (targets.length < nTargets && guard++ < 300) {
+          // coefficient m, then b derived so the expr equals K at answerX.
+          const m = 1 + rnd(twoStep ? 4 : 3);
+          // tier 1 keeps it one-step: either pure "mx" (b=0) or "x+b" (m=1).
+          let b;
+          if (twoStep) b = K - m * answerX;
+          else b = m === 1 ? K - answerX : 0; // one-step forms only
+          if (!twoStep && m !== 1 && m * answerX !== K) continue; // mx must hit K
+          if (b < -9 || b > 12) continue; // keep numbers readable
+          if (!twoStep && b !== 0 && m !== 1) continue;
+          const e = { m, b };
+          if (evalExpr(e, answerX) !== K) continue; // hard invariant
+          const key = m + "|" + b;
+          if (used.has(key)) continue;
+          used.add(key);
+          targets.push(e);
+        }
+        if (targets.length < 2) return null;
+
+        // Decoys: never equal K at ANY dialable x (so they can't be wrongly
+        // cleared and no other x produces a "valid" clear).
+        const decoys = [];
+        const nDecoys = 2 + rnd(2);
+        guard = 0;
+        while (decoys.length < nDecoys && guard++ < 600) {
+          const m = 1 + rnd(twoStep ? 4 : 3);
+          const b = twoStep ? -4 + rnd(14) : m === 1 ? 1 + rnd(9) : 0;
+          if (!twoStep && b !== 0 && m !== 1) continue;
+          const e = { m, b };
+          const key = m + "|" + b;
+          if (used.has(key)) continue;
+          if (xChoices.some((x) => evalExpr(e, x) === K)) continue; // never a hit
+          used.add(key);
+          decoys.push(e);
+        }
+        if (decoys.length < 2) return null;
+
+        const enemies = shuffle([
+          ...targets.map((e) => ({ kind: "expr", expr: e, target: true })),
+          ...decoys.map((e) => ({ kind: "expr", expr: e, target: false })),
+        ]);
+
+        const wave = {
+          type: "evaluate",
+          k: null,
+          key: K,
+          answerX,
+          xChoices,
+          prompt:
+            "Dial x so the cannon's key (" +
+            K +
+            ") destroys the GLOWING targets. Each enemy shows an expression — evaluate it at your x.",
+          enemies,
+        };
+        // SOLVABILITY + UNIQUENESS: answerX must clear exactly the targets, and
+        // NO other dialable x may also clear exactly the targets.
+        return waveIsValid(wave) ? wave : null;
+      }
+
+      // Trivially-valid fallback wave (never used in practice). One target that
+      // only the answer x clears, two decoys that no x clears.
+      function safeFallbackWave(tier) {
+        const xChoices = tier === 1 ? [1, 2, 3, 4] : [1, 2, 3, 4, 5, 6];
+        const answerX = 2,
+          K = 6;
+        const enemies = shuffle([
+          { kind: "expr", expr: { m: 3, b: 0 }, target: true }, // 3·2 = 6
+          { kind: "expr", expr: { m: 1, b: 4 }, target: true }, // 2+4 = 6
+          { kind: "expr", expr: { m: 1, b: 11 }, target: false }, // never 6 on 1..6
+          { kind: "expr", expr: { m: 4, b: 5 }, target: false }, // never 6 on 1..6
+        ]);
+        return {
+          type: "evaluate",
+          k: null,
+          key: K,
+          answerX,
+          xChoices,
+          prompt:
+            "Dial x so the cannon's key (6) destroys the GLOWING targets. Evaluate each expression at your x.",
+          enemies,
+        };
+      }
+
+      // A wave is valid iff exactly ONE dialable value reproduces the target
+      // set under the firing rule. Shared by evaluate + satisfy generators and
+      // re-used by the offline simulator.
+      function waveIsValid(wave) {
+        const want = targetSet(wave);
+        let solutions = 0;
+        wave.xChoices.forEach((v) => {
+          if (setsEqual(firedSet(wave, v), want)) solutions++;
+        });
+        return solutions === 1;
+      }
+
+      // SATISFY: enemies carry (x,y) points. Tower rule is y = k·x. Player
+      // does NOT dial x here — they read each point and the tower vaporises
+      // ONLY points that satisfy y = k·x (the equation IS the firing filter).
+      // The "aim" is choosing the round's k from the table the wave shows.
+      function makeSatisfyWave(tier) {
+        const kChoices = [2, 3, 4, 5];
+        const k = pick(kChoices);
+        const nTargets = 2 + rnd(2);
+        const targets = [];
+        const usedX = new Set();
+        let guard = 0;
+        while (targets.length < nTargets && guard++ < 200) {
+          const x = 1 + rnd(6);
+          if (usedX.has(x)) continue;
+          usedX.add(x);
+          targets.push({ x, y: k * x }); // on the line y = kx
+        }
+        const decoys = [];
+        const nDecoys = 2 + rnd(2);
+        guard = 0;
+        while (decoys.length < nDecoys && guard++ < 600) {
+          const x = 1 + rnd(6);
+          const off = pick([-3, -2, -1, 1, 2, 3]);
+          const y = k * x + off; // deliberately OFF the round's line
+          if (y <= 0) continue;
+          // a decoy must NOT satisfy y = j·x for ANY dialable j, so no choice
+          // of k ever wrongly clears it (keeps the round's k the unique answer)
+          if (kChoices.some((j) => y === j * x)) continue;
+          decoys.push({ x, y });
+        }
+        if (targets.length < 2 || decoys.length < 2) return null;
+        const enemies = shuffle([
+          ...targets.map((p) => ({ kind: "point", pt: p, target: true })),
+          ...decoys.map((p) => ({ kind: "point", pt: p, target: false })),
+        ]);
+        // Build a small table so students see the dependent/independent link.
+        const table = targets
+          .slice()
+          .sort((a, b) => a.x - b.x)
+          .slice(0, 3);
+        const wave = {
+          type: "satisfy",
+          k,
+          key: null,
+          answerX: k,
+          xChoices: kChoices,
+          table,
+          prompt:
+            "Dial k so the cannon's rule y = k·x destroys ONLY the points (x, y) that SATISFY it. x is independent; y depends on it.",
+          enemies,
+        };
+        return waveIsValid(wave) ? wave : null;
+      }
+
+      // ────────────────────────────────────────────────────────────────
+      //  FIRING RULE (single source of truth, shared by game + sim):
+      //  given a wave + the DIALLED value v, returns the enemy indices the
+      //  tower destroys.
+      //   • evaluate: v = chosen x; destroy enemies whose expr(x) === key
+      //   • satisfy : v = chosen k; destroy points where y === v·x
+      // ────────────────────────────────────────────────────────────────
+      function firedSet(wave, v) {
+        const hit = new Set();
+        wave.enemies.forEach((e, i) => {
+          if (wave.type === "evaluate") {
+            if (evalExpr(e.expr, v) === wave.key) hit.add(i);
+          } else {
+            if (e.pt.y === v * e.pt.x) hit.add(i);
+          }
+        });
+        return hit;
+      }
+      function targetSet(wave) {
+        const s = new Set();
+        wave.enemies.forEach((e, i) => {
+          if (e.target) s.add(i);
+        });
+        return s;
+      }
+      const setsEqual = (a, b) =>
+        a.size === b.size && [...a].every((x) => b.has(x));
+
+      // ════════════════════════════════════════════════════════════════
+      //  PATH + LAYOUT
+      // ════════════════════════════════════════════════════════════════
+      const PATH = [
+        { x: -30, y: 110 },
+        { x: 690, y: 110 },
+        { x: 690, y: 210 },
+        { x: 110, y: 210 },
+        { x: 110, y: 310 },
+        { x: 690, y: 310 },
+        { x: 690, y: 410 },
+        { x: 740, y: 410 },
       ];
 
       class BootScene extends Phaser.Scene {
@@ -242,77 +399,39 @@
         }
         create() {
           const g = this.make.graphics({ add: false });
-          // Tower
-          g.fillStyle(0x00ccff, 1);
-          g.fillRect(4, 8, 24, 24);
-          g.fillStyle(0x0088dd, 1);
-          g.fillRect(10, 0, 12, 12);
-          g.fillStyle(0x00ffcc, 0.6);
-          g.fillCircle(16, 4, 3);
-          g.generateTexture("tower", 32, 32);
+          // tower / cannon
+          g.fillStyle(0x2b4a7a, 1);
+          g.fillRoundedRect(8, 18, 32, 22, 4);
+          g.fillStyle(0x4ea3ff, 1);
+          g.fillRoundedRect(18, 2, 12, 22, 3);
+          g.fillStyle(0x9ecbff, 1);
+          g.fillCircle(24, 6, 3);
+          g.generateTexture("cannon", 48, 44);
           g.clear();
-          // Tower spot
-          g.lineStyle(2, 0x446688, 0.5);
-          g.strokeCircle(16, 16, 14);
-          g.fillStyle(0x223344, 0.3);
-          g.fillCircle(16, 16, 14);
-          g.generateTexture("spot", 32, 32);
-          g.clear();
-          // Enemy
-          g.fillStyle(0xff4444, 1);
-          g.fillCircle(12, 12, 12);
-          g.fillStyle(0xcc0000, 1);
-          g.fillCircle(12, 12, 8);
-          g.fillStyle(0xff8888, 0.5);
-          g.fillCircle(9, 9, 3);
-          g.generateTexture("enemy", 24, 24);
-          g.clear();
-          // Fast enemy
-          g.fillStyle(0xff8800, 1);
-          g.fillCircle(10, 10, 10);
-          g.fillStyle(0xcc6600, 1);
-          g.fillCircle(10, 10, 6);
-          g.generateTexture("enemyFast", 20, 20);
-          g.clear();
-          // Tank enemy
-          g.fillStyle(0x8844ff, 1);
-          g.fillCircle(14, 14, 14);
-          g.fillStyle(0x6622cc, 1);
-          g.fillCircle(14, 14, 10);
-          g.generateTexture("enemyTank", 28, 28);
-          g.clear();
-          // Bullet
-          g.fillStyle(0x00ffcc, 1);
-          g.fillCircle(3, 3, 3);
-          g.generateTexture("tbullet", 6, 6);
-          g.clear();
-          // Spark
-          g.fillStyle(0xffcc00, 1);
-          g.fillCircle(3, 3, 3);
-          g.generateTexture("spark", 6, 6);
-          g.clear();
-          // Base
-          g.fillStyle(0x00ff88, 1);
-          g.fillRect(0, 0, 40, 40);
-          g.fillStyle(0x00cc66, 1);
-          g.fillRect(4, 4, 32, 32);
-          g.fillStyle(0xffffff, 0.5);
-          g.fillRect(12, 12, 16, 16);
-          g.generateTexture("base", 40, 40);
+          // base / wall
+          g.fillStyle(0x3a6df0, 1);
+          g.fillRoundedRect(0, 0, 40, 48, 5);
+          g.fillStyle(0x6f9bff, 1);
+          g.fillRect(6, 6, 28, 10);
+          g.fillStyle(0xffffff, 0.35);
+          g.fillRect(6, 22, 28, 6);
+          g.generateTexture("wall", 40, 48);
           g.clear();
           g.destroy();
           this.scene.start("Title");
         }
       }
 
+      // ════════════════════════════════════════════════════════════════
+      //  TITLE — real Level 1 (Support) vs Level 2 (Challenge) choice
+      // ════════════════════════════════════════════════════════════════
       class TitleScene extends Phaser.Scene {
         constructor() {
           super("Title");
         }
         create() {
           SFX.init();
-          this.cameras.main.setBackgroundColor(0x0a0e27);
-
+          this.cameras.main.setBackgroundColor(C.bg);
           for (let i = 0; i < 60; i++)
             this.add.circle(
               Phaser.Math.Between(0, W),
@@ -323,739 +442,728 @@
             );
 
           this.add
-            .text(W / 2, 80, "EQUATION FORTRESS", {
+            .text(W / 2, 70, "EQUATION FORTRESS", {
               fontSize: "44px",
               fontFamily: "monospace",
               fontStyle: "bold",
-              color: "#00ff88",
-              stroke: "#003322",
-              strokeThickness: 4,
+              color: "#4ea3ff",
+              stroke: "#06203f",
+              strokeThickness: 5,
             })
             .setOrigin(0.5);
           this.add
-            .text(W / 2, 130, "Tower Defense Math Review", {
-              fontSize: "16px",
+            .text(W / 2, 112, "Evaluate to Fire  ·  6.EE.C.9", {
+              fontSize: "15px",
               fontFamily: "Arial",
-              color: "#88ccaa",
+              color: "#9ecbff",
             })
             .setOrigin(0.5);
           this.add
-            .text(W / 2, 155, "6.EE.C.9 -- Equations Review", {
-              fontSize: "12px",
-              fontFamily: "Arial",
-              color: "#668877",
-            })
+            .text(
+              W / 2,
+              162,
+              "Enemies are labelled with expressions in x. Dial x on the\n" +
+                "targeting computer so the cannon's key value destroys the\n" +
+                "GLOWING (✓) targets — and lets the decoys through if you miss.",
+              {
+                fontSize: "14px",
+                fontFamily: "Arial",
+                color: "#bcd",
+                align: "center",
+                lineSpacing: 5,
+              },
+            )
             .setOrigin(0.5);
 
-          const tower = this.add.image(W / 2, 240, "tower").setScale(4);
-          this.tweens.add({
-            targets: tower,
-            y: 230,
-            duration: 1200,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut",
-          });
-
-          this.add
-            .text(W / 2, 320, "Solve equations to place towers.", {
-              fontSize: "14px",
-              fontFamily: "Arial",
-              color: "#aaa",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(W / 2, 340, "Towers auto-fire at enemies on the path.", {
-              fontSize: "14px",
-              fontFamily: "Arial",
-              color: "#aaa",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(W / 2, 360, "Stop enemies from reaching your base!", {
-              fontSize: "14px",
-              fontFamily: "Arial",
-              color: "#aaa",
-            })
-            .setOrigin(0.5);
-
-          // Difficulty
-          this.add
-            .text(W / 2, 410, "Select Difficulty:", {
-              fontSize: "14px",
-              fontFamily: "Arial",
-              color: "#888",
-            })
-            .setOrigin(0.5);
-          const diffs = [
-            { name: "Easy", waves: 5, hp: 2 },
-            { name: "Normal", waves: 8, hp: 3 },
-            { name: "Hard", waves: 12, hp: 4 },
+          const tiers = [
+            {
+              t: 1,
+              label: "Level 1",
+              sub: "Support",
+              desc: "One-step expressions (2x, x+3)\nSmall tables · 5 walls · x = 1–4",
+              col: "#2ec27a",
+              cx: W / 2 - 165,
+            },
+            {
+              t: 2,
+              label: "Level 2",
+              sub: "Challenge",
+              desc: "Two-step (2x+3) + y = kx points\nLess help · 3 walls · x = 1–6",
+              col: "#ffcc33",
+              cx: W / 2 + 165,
+            },
           ];
-          this.selDiff = 1;
-          const cards = [];
-          diffs.forEach((d, i) => {
-            const x = W / 2 - 140 + i * 140;
-            const c = this.add
-              .rectangle(x, 450, 120, 50, 0x112244, 0.8)
-              .setStrokeStyle(2, 0x336699, 0.5)
+          tiers.forEach((d) => {
+            const y = 380;
+            const card = this.add
+              .rectangle(d.cx, y, 300, 150, 0x10243d, 0.95)
+              .setStrokeStyle(2, 0x2b4a7a, 1)
               .setInteractive({ useHandCursor: true });
             this.add
-              .text(x, 445, d.name, {
-                fontSize: "14px",
+              .text(d.cx, y - 46, d.label, {
+                fontSize: "26px",
                 fontFamily: "monospace",
                 fontStyle: "bold",
                 color: "#fff",
               })
               .setOrigin(0.5);
-            c.on("pointerdown", () => {
-              this.selDiff = i;
-              cards.forEach((cc, j) =>
-                cc.setStrokeStyle(
-                  j === i ? 3 : 2,
-                  j === i ? 0x00ff88 : 0x336699,
-                  j === i ? 1 : 0.5,
-                ),
+            this.add
+              .text(d.cx, y - 16, d.sub, {
+                fontSize: "15px",
+                fontFamily: "Arial",
+                fontStyle: "bold",
+                color: d.col,
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(d.cx, y + 28, d.desc, {
+                fontSize: "12px",
+                fontFamily: "Arial",
+                color: "#bcd",
+                align: "center",
+                lineSpacing: 4,
+              })
+              .setOrigin(0.5);
+            card.on("pointerover", () => {
+              card.setStrokeStyle(
+                3,
+                Phaser.Display.Color.HexStringToColor(d.col).color,
               );
+              card.setScale(1.03);
             });
-            cards.push(c);
+            card.on("pointerout", () => {
+              card.setStrokeStyle(2, 0x2b4a7a);
+              card.setScale(1);
+            });
+            card.on("pointerdown", () => {
+              SFX.init();
+              SFX.dial();
+              this.scene.start("Defend", { tier: d.t });
+            });
           });
-          cards[1].setStrokeStyle(3, 0x00ff88, 1);
 
-          const btn = this.add
-            .text(W / 2, 520, "[ DEFEND THE BASE ]", {
-              fontSize: "22px",
-              fontFamily: "monospace",
-              fontStyle: "bold",
-              color: "#00ffcc",
-              padding: { x: 20, y: 10 },
-              backgroundColor: "rgba(0,255,200,0.1)",
-            })
-            .setOrigin(0.5)
-            .setInteractive({ useHandCursor: true });
-          btn.on("pointerover", () =>
-            btn.setStyle({ backgroundColor: "rgba(0,255,200,0.25)" }),
-          );
-          btn.on("pointerout", () =>
-            btn.setStyle({ backgroundColor: "rgba(0,255,200,0.1)" }),
-          );
-          btn.on("pointerdown", () => {
-            SFX.init();
-            this.scene.start("Defend", { diff: diffs[this.selDiff] });
-          });
+          this.add
+            .text(
+              W / 2,
+              500,
+              "Touch the −/+ pads or arrow keys to dial · SPACE or FIRE button to shoot · H = hint",
+              { fontSize: "12px", fontFamily: "Arial", color: "#6b86a8" },
+            )
+            .setOrigin(0.5);
         }
       }
 
+      // ════════════════════════════════════════════════════════════════
+      //  DEFEND — the core "Evaluate to Fire" loop
+      // ════════════════════════════════════════════════════════════════
       class DefendScene extends Phaser.Scene {
         constructor() {
           super("Defend");
         }
         init(data) {
-          this.diff = data.diff || { name: "Normal", waves: 8, hp: 3 };
+          this.tier = data.tier || 1;
           this.score = 0;
-          this.lives = 20;
-          this.wave = 0;
-          this.maxWaves = this.diff.waves;
-          this.towersPlaced = 0;
-          this.enemiesKilled = 0;
-          this.correct = 0;
-          this.total = 0;
+          this.walls = this.tier === 1 ? 5 : 3;
+          this.maxWaves = this.tier === 1 ? 8 : 10;
+          this.waveNo = 0;
+          this.cleared = 0; // waves fully cleared (perfect)
+          this.fired = 0; // total shots resolved (attempted)
           this.streak = 0;
           this.bestStreak = 0;
-          this.questionActive = false;
-          this.pendingSpot = null;
-          this.shuffledQs = Phaser.Utils.Array.Shuffle([...QUESTIONS]);
-          this.qIdx = 0;
-          this.waveActive = false;
-          this.enemiesInWave = 0;
-          this.enemiesSpawned = 0;
-          this.towerObjects = [];
+          this.enemiesDown = 0;
+          this.locked = false; // input lock during resolve/animation
         }
+
         create() {
-          this.cameras.main.setBackgroundColor(0x1a2a1a);
+          this.cameras.main.setBackgroundColor(C.bg);
 
-          // Draw path
-          const pathGfx = this.add.graphics();
-          pathGfx.lineStyle(30, 0x4a3a2a, 0.8);
-          pathGfx.beginPath();
-          pathGfx.moveTo(PATH[0].x, PATH[0].y);
-          for (let i = 1; i < PATH.length; i++)
-            pathGfx.lineTo(PATH[i].x, PATH[i].y);
-          pathGfx.strokePath();
-          // Path outline
-          pathGfx.lineStyle(2, 0x665544, 0.4);
-          pathGfx.beginPath();
-          pathGfx.moveTo(PATH[0].x, PATH[0].y);
-          for (let i = 1; i < PATH.length; i++)
-            pathGfx.lineTo(PATH[i].x, PATH[i].y);
-          pathGfx.strokePath();
-
-          // Phaser path for enemy following
+          // path
+          const pg = this.add.graphics();
+          pg.lineStyle(34, C.path, 0.65);
+          pg.beginPath();
+          pg.moveTo(PATH[0].x, PATH[0].y);
+          for (let i = 1; i < PATH.length; i++) pg.lineTo(PATH[i].x, PATH[i].y);
+          pg.strokePath();
           this.enemyPath = new Phaser.Curves.Path(PATH[0].x, PATH[0].y);
           for (let i = 1; i < PATH.length; i++)
             this.enemyPath.lineTo(PATH[i].x, PATH[i].y);
 
-          // Base at end of path
-          const lastP = PATH[PATH.length - 1];
-          this.add.image(lastP.x - 20, lastP.y, "base").setScale(1.5);
+          // fortress wall (breach point) at path end
+          const last = PATH[PATH.length - 1];
+          this.add.image(last.x - 6, last.y, "wall").setScale(1.2);
           this.add
-            .text(lastP.x - 20, lastP.y + 30, "BASE", {
+            .text(last.x - 6, last.y + 34, "WALL", {
               fontSize: "10px",
               fontFamily: "monospace",
-              color: "#00ff88",
+              color: "#9ecbff",
             })
             .setOrigin(0.5);
 
-          // Tower spots
-          this.spotSprites = [];
-          TOWER_SPOTS.forEach((sp, i) => {
-            const s = this.add
-              .image(sp.x, sp.y, "spot")
-              .setScale(1.3)
-              .setInteractive({ useHandCursor: true })
-              .setAlpha(0.6);
-            s.spotIndex = i;
-            s.hasTower = false;
-            s.on("pointerdown", () => this.clickSpot(i));
-            s.on("pointerover", () => {
-              if (!s.hasTower) s.setAlpha(1);
-            });
-            s.on("pointerout", () => {
-              if (!s.hasTower) s.setAlpha(0.6);
-            });
-            this.spotSprites.push(s);
-          });
-
-          // Groups
-          this.enemies = this.add.group();
-          this.bullets = this.physics.add.group();
-
-          // Spark emitter
-          this.sparkEmitter = this.add.particles(0, 0, "spark", {
-            speed: { min: 60, max: 180 },
-            angle: { min: 0, max: 360 },
-            lifespan: 350,
-            scale: { start: 0.8, end: 0 },
-            alpha: { start: 1, end: 0 },
-            blendMode: "ADD",
-            emitting: false,
-          });
+          // cannon (centre) — rotates toward nearest target on fire
+          this.cannon = this.add.image(W / 2, 470, "cannon").setScale(1.2);
 
           // HUD
-          this.add.rectangle(W / 2, 20, W, 40, 0x000000, 0.7).setDepth(100);
-          this.scoreText = this.add
-            .text(10, 6, "SCORE: 0", {
-              fontSize: "13px",
+          this.add.rectangle(W / 2, 18, W, 36, 0x000000, 0.7).setDepth(50);
+          this.scoreT = this.add
+            .text(10, 6, "SCORE 0", {
+              fontSize: "14px",
               fontFamily: "monospace",
               fontStyle: "bold",
-              color: "#ffcc00",
+              color: "#ffcc33",
             })
-            .setDepth(101);
-          this.livesText = this.add
-            .text(W / 2, 6, "BASE HP: 20", {
+            .setDepth(51);
+          this.wallT = this.add
+            .text(W / 2, 6, "", {
+              fontSize: "14px",
+              fontFamily: "monospace",
+              color: "#6f9bff",
+            })
+            .setOrigin(0.5, 0)
+            .setDepth(51);
+          this.waveT = this.add
+            .text(W - 10, 6, "", {
               fontSize: "13px",
               fontFamily: "monospace",
-              color: "#00ff88",
-            })
-            .setOrigin(0.5, 0)
-            .setDepth(101);
-          this.waveText = this.add
-            .text(W - 10, 6, "WAVE 0/" + this.maxWaves, {
-              fontSize: "12px",
-              fontFamily: "monospace",
-              color: "#00ccff",
+              color: "#9ecbff",
             })
             .setOrigin(1, 0)
-            .setDepth(101);
-          this.towersText = this.add
-            .text(W - 10, 22, "TOWERS: 0", {
-              fontSize: "10px",
-              fontFamily: "monospace",
-              color: "#888",
-            })
-            .setOrigin(1, 0)
-            .setDepth(101);
-          this.streakText = this.add
-            .text(W / 2, 22, "", {
-              fontSize: "10px",
-              fontFamily: "monospace",
-              color: "#ff8800",
-            })
-            .setOrigin(0.5, 0)
-            .setDepth(101);
+            .setDepth(51);
 
-          // Question panel
-          this.qContainer = this.add
-            .container(W / 2, H / 2)
-            .setDepth(200)
-            .setVisible(false);
-          const qBg = this.add
-            .rectangle(0, 0, 620, 280, 0x0a1a2e, 0.96)
-            .setStrokeStyle(2, 0x00ff88, 0.6);
-          this.qText = this.add
-            .text(0, -110, "", {
-              fontSize: "16px",
+          // prompt banner
+          this.promptT = this.add
+            .text(W / 2, 52, "", {
+              fontSize: "13px",
+              fontFamily: "Arial",
+              color: "#cfe2ff",
+              align: "center",
+              wordWrap: { width: 760 },
+              lineSpacing: 3,
+            })
+            .setOrigin(0.5, 0)
+            .setDepth(51);
+
+          // ── TARGETING COMPUTER (control deck) ──
+          this.buildControlDeck();
+
+          // feedback
+          this.feedbackT = this.add
+            .text(W / 2, 410, "", {
+              fontSize: "14px",
               fontFamily: "Arial",
               fontStyle: "bold",
               color: "#fff",
-              wordWrap: { width: 560 },
               align: "center",
+              wordWrap: { width: 700 },
             })
-            .setOrigin(0.5);
-          this.qContainer.add([qBg, this.qText]);
-          this.qBtns = [];
-          this.qTxts = [];
-          for (let i = 0; i < 4; i++) {
-            const y = -45 + i * 42;
-            const bg = this.add
-              .rectangle(0, y, 500, 36, 0x112244, 0.8)
-              .setStrokeStyle(1, 0x336699, 0.6)
-              .setInteractive({ useHandCursor: true });
-            const txt = this.add
-              .text(0, y, "", {
-                fontSize: "14px",
-                fontFamily: "Arial",
-                color: "#ccddff",
-              })
-              .setOrigin(0.5);
-            const idx = i;
-            bg.on("pointerdown", () => this.answerQ(idx));
-            bg.on("pointerover", () => {
-              if (this.questionActive) bg.setStrokeStyle(2, 0x00ccff, 1);
-            });
-            bg.on("pointerout", () => {
-              if (this.questionActive) bg.setStrokeStyle(1, 0x336699, 0.6);
-            });
-            this.qContainer.add([bg, txt]);
-            this.qBtns.push(bg);
-            this.qTxts.push(txt);
-          }
-          this.qExplain = this.add
-            .text(0, 125, "", {
+            .setOrigin(0.5)
+            .setDepth(60);
+
+          // keyboard: arrows dial, space fires, H hint
+          this.input.keyboard.on("keydown-LEFT", () => this.dial(-1));
+          this.input.keyboard.on("keydown-RIGHT", () => this.dial(1));
+          this.input.keyboard.on("keydown-DOWN", () => this.dial(-1));
+          this.input.keyboard.on("keydown-UP", () => this.dial(1));
+          this.input.keyboard.on("keydown-SPACE", () => this.fire());
+          this.input.keyboard.on("keydown-H", () => this.showHint());
+
+          this.enemySprites = [];
+          this.nextWave();
+        }
+
+        buildControlDeck() {
+          const cy = 540;
+          this.add
+            .rectangle(W / 2, cy, 760, 96, 0x0c1d33, 0.95)
+            .setStrokeStyle(2, 0x2b4a7a, 1)
+            .setDepth(40);
+
+          // dial readout (big)
+          this.dialLabelT = this.add
+            .text(150, cy - 30, "", {
               fontSize: "12px",
               fontFamily: "Arial",
-              color: "#88ff88",
-              wordWrap: { width: 540 },
-              align: "center",
+              color: "#9ecbff",
             })
-            .setOrigin(0.5);
-          this.qContainer.add(this.qExplain);
+            .setOrigin(0.5)
+            .setDepth(41);
+          this.dialT = this.add
+            .text(150, cy + 6, "", {
+              fontSize: "40px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#fff",
+            })
+            .setOrigin(0.5)
+            .setDepth(41);
 
-          // Keyboard answers
-          this.input.keyboard.on("keydown-ONE", () => this.answerQ(0));
-          this.input.keyboard.on("keydown-TWO", () => this.answerQ(1));
-          this.input.keyboard.on("keydown-THREE", () => this.answerQ(2));
-          this.input.keyboard.on("keydown-FOUR", () => this.answerQ(3));
+          // − / + pads (touch) — clearly labelled
+          this.minusBtn = this.deckBtn(60, cy + 6, 44, 44, "−", () =>
+            this.dial(-1),
+          );
+          this.plusBtn = this.deckBtn(240, cy + 6, 44, 44, "+", () =>
+            this.dial(1),
+          );
 
-          // Wave button
-          this.waveBtn = this.add
-            .text(W / 2, H - 30, "[ SEND NEXT WAVE ]", {
+          // key / rule readout (middle)
+          this.keyLabelT = this.add
+            .text(W / 2, cy - 30, "", {
+              fontSize: "12px",
+              fontFamily: "Arial",
+              color: "#9ecbff",
+            })
+            .setOrigin(0.5)
+            .setDepth(41);
+          this.keyT = this.add
+            .text(W / 2, cy + 6, "", {
+              fontSize: "30px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#4ea3ff",
+            })
+            .setOrigin(0.5)
+            .setDepth(41);
+
+          // FIRE button (touch)
+          this.fireBtn = this.deckBtn(
+            660,
+            cy + 2,
+            150,
+            58,
+            "🔥 FIRE",
+            () => this.fire(),
+            "22px",
+            0xffcc33,
+            0x06203f,
+          );
+
+          // hint (small)
+          this.hintBtn = this.deckBtn(
+            735,
+            cy - 28,
+            70,
+            26,
+            "💡 hint",
+            () => this.showHint(),
+            "12px",
+            0x1b3358,
+          );
+        }
+
+        deckBtn(
+          x,
+          y,
+          w,
+          h,
+          label,
+          cb,
+          fs = "24px",
+          fill = 0x1b3358,
+          txt = 0xffffff,
+        ) {
+          const r = this.add
+            .rectangle(x, y, w, h, fill)
+            .setStrokeStyle(2, 0x000000, 0.3)
+            .setInteractive({ useHandCursor: true })
+            .setDepth(41);
+          const t = this.add
+            .text(x, y, label, {
+              fontSize: fs,
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: Phaser.Display.Color.IntegerToColor(txt).rgba,
+            })
+            .setOrigin(0.5)
+            .setDepth(42);
+          r.on("pointerover", () => r.setScale(1.06));
+          r.on("pointerout", () => r.setScale(1));
+          r.on("pointerdown", () => {
+            SFX.init();
+            cb();
+          });
+          r._t = t;
+          return r;
+        }
+
+        nextWave() {
+          this.waveNo++;
+          this.attempts = 0;
+          this.wave = makeWave(this.tier, this.waveNo - 1);
+          this.locked = false;
+          this.feedbackT.setText("");
+          // start the dial at the first choice (never the answer — no giveaway)
+          this.dialX = this.wave.xChoices[0];
+          this.spawnEnemies();
+          this.refreshDeck();
+          this.updateHUD();
+          SFX.wave();
+        }
+
+        spawnEnemies() {
+          this.enemySprites.forEach((e) => e.destroyAll && e.destroyAll());
+          this.enemySprites = [];
+          const n = this.wave.enemies.length;
+          this.wave.enemies.forEach((e, i) => {
+            // spread spawn t so they march in a column along the path
+            const t0 = 0.04 + (i * 0.5) / Math.max(1, n);
+            const isT = e.target;
+            const col = isT ? C.target : C.decoy;
+            const body = this.add
+              .circle(0, 0, 15, col)
+              .setStrokeStyle(2, 0x081420, 0.6);
+            // shape cue (colour-blind safety): targets get a ring + ✓, decoys a ✕ tag
+            const ring = this.add
+              .circle(0, 0, 19, 0x000000, 0)
+              .setStrokeStyle(2, isT ? C.target : C.decoy, isT ? 0.9 : 0.0);
+            const mark = this.add
+              .text(0, -23, isT ? "✓" : "•", {
+                fontSize: "13px",
+                fontFamily: "monospace",
+                fontStyle: "bold",
+                color: isT ? "#9affc0" : "#ffd9a8",
+              })
+              .setOrigin(0.5);
+            const txt =
+              e.kind === "expr"
+                ? exprStr(e.expr)
+                : "(" + e.pt.x + ", " + e.pt.y + ")";
+            const label = this.add
+              .text(0, 0, txt, {
+                fontSize: "13px",
+                fontFamily: "monospace",
+                fontStyle: "bold",
+                color: "#06121f",
+              })
+              .setOrigin(0.5);
+            const cont = this.add.container(0, 0, [ring, body, label, mark]);
+            cont.setDepth(20);
+            cont.t = t0;
+            cont.alive = true;
+            cont.idx = i;
+            cont.vec = new Phaser.Math.Vector2();
+            cont.destroyAll = () => cont.destroy(true);
+            this.enemySprites.push(cont);
+          });
+        }
+
+        refreshDeck() {
+          const w = this.wave;
+          if (w.type === "evaluate") {
+            this.dialLabelT.setText("TARGETING  x =");
+            this.dialT.setText(String(this.dialX));
+            this.keyLabelT.setText("CANNON KEY");
+            this.keyT.setText("= " + w.key).setColor("#4ea3ff");
+            this.minusBtn.setAlpha(1);
+            this.plusBtn.setAlpha(1);
+          } else {
+            // satisfy: the "dial" selects k of the rule y = k·x
+            this.dialLabelT.setText("RULE  k =");
+            this.dialT.setText(String(this.dialX));
+            this.keyLabelT.setText("FIRE RULE");
+            this.keyT.setText("y = " + this.dialX + "·x").setColor("#2ec27a");
+            this.minusBtn.setAlpha(1);
+            this.plusBtn.setAlpha(1);
+          }
+          this.promptT.setText(w.prompt);
+        }
+
+        dial(dir) {
+          if (this.locked) return;
+          const choices = this.wave.xChoices;
+          const cur = choices.indexOf(this.dialX);
+          let ni = cur + dir;
+          if (ni < 0) ni = 0;
+          if (ni >= choices.length) ni = choices.length - 1;
+          this.dialX = choices[ni];
+          SFX.dial();
+          this.refreshDeck();
+          this.feedbackT.setText("");
+        }
+
+        showHint() {
+          const w = this.wave;
+          let h;
+          if (w.type === "evaluate") {
+            const ex = w.enemies.find((e) => e.target);
+            h =
+              "💡 Substitute your x into each glowing expression. You need the ones that equal " +
+              w.key +
+              ". Try the target " +
+              exprStr(ex.expr) +
+              ": replace x and compute.";
+          } else {
+            const ex = w.enemies.find((e) => e.target).pt;
+            h =
+              "💡 A point (x, y) is ON the line y = k·x only if y ÷ x = k. Check a ✓ target like (" +
+              ex.x +
+              ", " +
+              ex.y +
+              "): " +
+              ex.y +
+              " ÷ " +
+              ex.x +
+              " tells you which k to dial.";
+          }
+          this.feedbackT.setColor("#ffe9a8").setText(h);
+        }
+
+        // resolve the FIRING RULE at the dialled value (x for evaluate, k for
+        // satisfy) — the SAME firedSet() the generator validated with.
+        fire() {
+          if (this.locked) return;
+          this.locked = true;
+          this.fired++;
+          const w = this.wave;
+          const hit = firedSet(w, this.dialX);
+          const want = targetSet(w);
+          const perfect = setsEqual(hit, want);
+
+          SFX.fire();
+          this.aimCannon(hit);
+
+          if (perfect) this.onPerfect(hit);
+          else this.onMiss(hit, want);
+        }
+
+        aimCannon(hit) {
+          // point cannon at first hit enemy for feedback
+          const first = this.enemySprites.find(
+            (s) => hit.has(s.idx) && s.alive,
+          );
+          if (first)
+            this.cannon.angle =
+              Phaser.Math.RadToDeg(
+                Phaser.Math.Angle.Between(
+                  this.cannon.x,
+                  this.cannon.y,
+                  first.x,
+                  first.y,
+                ),
+              ) + 90;
+        }
+
+        onPerfect(hit) {
+          // destroy exactly the targets
+          this.enemySprites.forEach((s) => {
+            if (hit.has(s.idx) && s.alive) this.vaporise(s, true);
+          });
+          this.streak++;
+          if (this.streak > this.bestStreak) this.bestStreak = this.streak;
+          this.cleared++;
+          const firstTry = this.attempts === 0 ? 60 : 0;
+          const combo = 1 + Math.floor(this.streak / 3);
+          const pts = (100 + firstTry + this.streak * 8) * combo;
+          this.score += pts;
+          SFX.good();
+          this.cameras.main.flash(120, 0, 60, 30);
+          const w = this.wave;
+          const msg =
+            w.type === "evaluate"
+              ? "✅ Direct hit! At x = " +
+                this.dialX +
+                ", every target evaluates to " +
+                w.key +
+                ".  +" +
+                pts +
+                (combo > 1 ? " ×" + combo : "")
+              : "✅ Locked on! Those points satisfy y = " +
+                this.dialX +
+                "·x.  +" +
+                pts +
+                (combo > 1 ? " ×" + combo : "");
+          this.feedbackT.setColor("#bff7cf").setText(msg);
+          this.updateHUD();
+          this.time.delayedCall(1200, () => {
+            if (this.waveNo >= this.maxWaves) this.endGame(true);
+            else this.nextWave();
+          });
+        }
+
+        onMiss(hit, want) {
+          this.attempts++;
+          this.streak = 0;
+          this.cameras.main.shake(160, 0.006);
+          SFX.breach();
+          const w = this.wave;
+          // diagnostic, NON-giveaway feedback
+          const wrongHits = [...hit].filter((i) => !want.has(i)); // decoys wrongly cleared
+          const missedTargets = [...want].filter((i) => !hit.has(i)); // targets left
+          let msg;
+          if (w.type === "evaluate") {
+            if (hit.size === 0)
+              msg =
+                "❌ Nothing matched the key " +
+                w.key +
+                " at x = " +
+                this.dialX +
+                ". Substitute your x into a glowing expression — is the result " +
+                w.key +
+                "?";
+            else if (wrongHits.length)
+              msg =
+                "❌ A decoy got cleared. At x = " +
+                this.dialX +
+                ", a NON-target also equalled " +
+                w.key +
+                ". Try a different x where ONLY the ✓ targets hit " +
+                w.key +
+                ".";
+            else
+              msg =
+                "❌ Some ✓ targets survived — at x = " +
+                this.dialX +
+                " they don't all equal " +
+                w.key +
+                " yet. Re-evaluate and adjust x.";
+          } else {
+            if (wrongHits.length)
+              msg =
+                "❌ With k = " +
+                this.dialX +
+                ", an off-line point got hit. Check: does " +
+                this.dialX +
+                "·x really equal y for every point you cleared?";
+            else
+              msg =
+                "❌ Some on-line points survived. For a target, " +
+                this.dialX +
+                "·x must equal y. Re-check each (x, y).";
+          }
+          // breach: the decoys that should NOT have been cleared, OR targets
+          // left alive, march on and break a wall after a couple of misses.
+          this.feedbackT.setColor("#ffb4b4").setText(msg);
+
+          // brief shake of the wrongly-handled enemies for visible feedback
+          [...wrongHits, ...missedTargets].forEach((i) => {
+            const s = this.enemySprites.find((e) => e.idx === i);
+            if (s)
+              this.tweens.add({
+                targets: s,
+                angle: 8,
+                yoyo: true,
+                duration: 90,
+                repeat: 2,
+              });
+          });
+
+          const breachAfter = this.tier === 1 ? 3 : 2;
+          if (this.attempts >= breachAfter) {
+            this.walls--;
+            this.attempts = 0;
+            this.flashBreach();
+            this.updateHUD();
+            if (this.walls <= 0) {
+              this.time.delayedCall(900, () => this.endGame(false));
+              return;
+            }
+          }
+          this.updateHUD();
+          this.time.delayedCall(700, () => {
+            this.locked = false;
+          });
+        }
+
+        flashBreach() {
+          const last = PATH[PATH.length - 1];
+          const f = this.add
+            .text(last.x - 6, last.y - 30, "BREACH!", {
               fontSize: "16px",
               fontFamily: "monospace",
               fontStyle: "bold",
-              color: "#00ffcc",
-              padding: { x: 14, y: 6 },
-              backgroundColor: "rgba(0,255,200,0.1)",
+              color: "#ff6b6b",
             })
             .setOrigin(0.5)
-            .setDepth(100)
-            .setInteractive({ useHandCursor: true });
-          this.waveBtn.on("pointerdown", () => this.startWave());
-
-          // Instructions
-          this.add
-            .text(
-              W / 2,
-              H - 55,
-              "Click empty spots to place towers (solve to build). Then send waves!",
-              {
-                fontSize: "11px",
-                fontFamily: "Arial",
-                color: "#668877",
-              },
-            )
-            .setOrigin(0.5)
-            .setDepth(99);
-
-          // Tower firing timer
-          this.time.addEvent({
-            delay: 800,
-            callback: () => this.towersFire(),
-            loop: true,
-          });
-        }
-
-        clickSpot(idx) {
-          if (this.questionActive) return;
-          const sp = this.spotSprites[idx];
-          if (sp.hasTower) return;
-          this.pendingSpot = idx;
-          this.showQuestion();
-        }
-
-        showQuestion() {
-          if (this.qIdx >= this.shuffledQs.length) this.qIdx = 0;
-          const q = this.shuffledQs[this.qIdx];
-          this.currentQ = q;
-          this.questionActive = true;
-          this.qContainer.setVisible(true);
-          this.qText.setText(q.q);
-          this.qExplain.setText("").setVisible(false);
-          q.choices.forEach((c, i) => {
-            this.qTxts[i]
-              .setText(String.fromCharCode(65 + i) + ". " + c)
-              .setStyle({ color: "#ccddff" });
-            this.qBtns[i]
-              .setFillStyle(0x112244, 0.8)
-              .setStrokeStyle(1, 0x336699, 0.6)
-              .setInteractive();
-          });
-        }
-
-        answerQ(idx) {
-          if (!this.questionActive) return;
-          this.questionActive = false;
-          this.total++;
-          const q = this.currentQ;
-          const right = idx === q.correct;
-
-          this.qBtns.forEach((b, i) => {
-            b.disableInteractive();
-            if (i === q.correct) {
-              b.setFillStyle(0x004400, 0.9).setStrokeStyle(2, 0x00ff88, 1);
-              this.qTxts[i].setStyle({ color: "#00ff88" });
-            } else if (i === idx && !right) {
-              b.setFillStyle(0x440000, 0.9).setStrokeStyle(2, 0xff4444, 1);
-              this.qTxts[i].setStyle({ color: "#ff4444" });
-            }
-          });
-          this.qExplain.setText(q.explain).setVisible(true);
-
-          if (right) {
-            this.correct++;
-            this.streak++;
-            if (this.streak > this.bestStreak) this.bestStreak = this.streak;
-            this.score += 50 * (1 + Math.floor(this.streak / 3));
-            SFX.correct();
-            this.cameras.main.flash(100, 0, 60, 0);
-            // Place tower
-            if (this.pendingSpot !== null) {
-              this.placeTower(this.pendingSpot);
-            }
-          } else {
-            this.streak = 0;
-            SFX.wrong();
-            this.cameras.main.shake(200, 0.008);
-          }
-          this.pendingSpot = null;
-          this.qIdx++;
-          this.updateHUD();
-
-          this.time.delayedCall(1500, () => {
-            this.qContainer.setVisible(false);
-          });
-        }
-
-        placeTower(idx) {
-          const sp = this.spotSprites[idx];
-          sp.hasTower = true;
-          sp.setAlpha(0);
-          const t = this.add
-            .image(TOWER_SPOTS[idx].x, TOWER_SPOTS[idx].y, "tower")
-            .setScale(1.3);
-          t.range = 120 + this.towersPlaced * 5;
-          t.spotX = TOWER_SPOTS[idx].x;
-          t.spotY = TOWER_SPOTS[idx].y;
-          this.towerObjects.push(t);
-          this.towersPlaced++;
-          this.sparkEmitter.emitParticleAt(t.x, t.y, 12);
-          SFX.correct();
-          // Range circle
-          const rc = this.add
-            .circle(t.x, t.y, t.range, 0x00ccff, 0.05)
-            .setStrokeStyle(1, 0x00ccff, 0.15);
+            .setDepth(70);
           this.tweens.add({
-            targets: rc,
+            targets: f,
+            y: f.y - 26,
             alpha: 0,
-            duration: 2000,
-            onComplete: () => rc.destroy(),
+            duration: 900,
+            onComplete: () => f.destroy(),
           });
         }
 
-        startWave() {
-          if (this.waveActive || this.wave >= this.maxWaves) return;
-          this.wave++;
-          this.waveActive = true;
-          this.waveBtn.setVisible(false);
-          SFX.wave();
-          this.updateHUD();
-
-          const count = 3 + this.wave * 2;
-          this.enemiesInWave = count;
-          this.enemiesSpawned = 0;
-          this.spawnTimer = this.time.addEvent({
-            delay: 800,
-            callback: () => {
-              if (this.enemiesSpawned < count) {
-                this.spawnEnemy();
-                this.enemiesSpawned++;
-              }
-            },
-            repeat: count - 1,
-          });
-        }
-
-        spawnEnemy() {
-          const types = ["normal", "normal", "fast", "tank"];
-          const type =
-            this.wave <= 2 ? "normal" : Phaser.Utils.Array.GetRandom(types);
-          const hp =
-            type === "tank"
-              ? this.diff.hp * 2
-              : type === "fast"
-                ? 1
-                : this.diff.hp;
-          const speed =
-            type === "fast" ? 0.004 : type === "tank" ? 0.0015 : 0.002;
-          const tex =
-            type === "tank"
-              ? "enemyTank"
-              : type === "fast"
-                ? "enemyFast"
-                : "enemy";
-
-          const follower = { t: 0, vec: new Phaser.Math.Vector2() };
-          const sprite = this.add.image(PATH[0].x, PATH[0].y, tex);
-          sprite.hp = hp;
-          sprite.maxHp = hp;
-          sprite.speed = speed + this.wave * 0.0002;
-          sprite.follower = follower;
-          sprite.alive = true;
-          sprite.enemyType = type;
-
-          // HP bar
-          const hpBg = this.add.rectangle(
-            sprite.x,
-            sprite.y - 16,
-            24,
-            4,
-            0x333333,
-            0.8,
-          );
-          const hpFill = this.add
-            .rectangle(sprite.x, sprite.y - 16, 24, 4, 0x00ff88, 1)
-            .setOrigin(0, 0.5);
-          hpFill.x = sprite.x - 12;
-          sprite.hpBg = hpBg;
-          sprite.hpFill = hpFill;
-
-          // Wrong answer label
-          const wrongAnswers = QUESTIONS[
-            this.qIdx % QUESTIONS.length
-          ].choices.filter((_, i) => i !== 0);
-          const label = Phaser.Utils.Array.GetRandom(wrongAnswers);
-          sprite.label = this.add
-            .text(sprite.x, sprite.y + 16, label, {
-              fontSize: "9px",
-              fontFamily: "monospace",
-              color: "#ff8888",
-              backgroundColor: "rgba(0,0,0,0.5)",
-              padding: { x: 2, y: 1 },
-            })
-            .setOrigin(0.5);
-
-          this.enemies.add(sprite);
-        }
-
-        towersFire() {
-          this.towerObjects.forEach((tower) => {
-            let closest = null,
-              closestDist = tower.range;
-            this.enemies.children.iterate((e) => {
-              if (!e || !e.alive) return;
-              const d = Phaser.Math.Distance.Between(
-                tower.spotX,
-                tower.spotY,
-                e.x,
-                e.y,
-              );
-              if (d < closestDist) {
-                closestDist = d;
-                closest = e;
-              }
+        vaporise(s, good) {
+          s.alive = false;
+          for (let i = 0; i < 8; i++) {
+            const p = this.add.circle(
+              s.x,
+              s.y,
+              2 + Math.random() * 3,
+              good ? C.target : C.decoy,
+            );
+            this.tweens.add({
+              targets: p,
+              x: s.x + (Math.random() - 0.5) * 90,
+              y: s.y + (Math.random() - 0.5) * 90,
+              alpha: 0,
+              duration: 450 + Math.random() * 250,
+              onComplete: () => p.destroy(),
             });
-            if (closest) {
-              const b = this.bullets.create(
-                tower.spotX,
-                tower.spotY,
-                "tbullet",
-              );
-              this.physics.moveToObject(b, closest, 300);
-              b.target = closest;
-              SFX.shoot();
-              // Rotate tower toward enemy
-              tower.angle =
-                Phaser.Math.RadToDeg(
-                  Phaser.Math.Angle.Between(
-                    tower.spotX,
-                    tower.spotY,
-                    closest.x,
-                    closest.y,
-                  ),
-                ) - 90;
-            }
+          }
+          this.enemiesDown++;
+          this.tweens.add({
+            targets: s,
+            scale: 0,
+            alpha: 0,
+            duration: 280,
+            onComplete: () => s.destroy(true),
           });
         }
 
         updateHUD() {
-          this.scoreText.setText("SCORE: " + this.score);
-          this.livesText.setText("BASE HP: " + this.lives);
-          this.livesText.setStyle({
-            color:
-              this.lives > 10
-                ? "#00ff88"
-                : this.lives > 5
-                  ? "#ffcc00"
-                  : "#ff4444",
-          });
-          this.waveText.setText("WAVE " + this.wave + "/" + this.maxWaves);
-          this.towersText.setText("TOWERS: " + this.towersPlaced);
-          this.streakText.setText(
-            this.streak >= 2 ? "STREAK x" + this.streak : "",
+          this.scoreT.setText("SCORE " + this.score);
+          this.wallT.setText("WALLS " + "🛡".repeat(Math.max(0, this.walls)));
+          this.waveT.setText("WAVE " + this.waveNo + "/" + this.maxWaves);
+        }
+
+        endGame(won) {
+          if (!won) SFX.lose();
+          this.cameras.main.fadeOut(450, 0, 0, 0);
+          this.time.delayedCall(450, () =>
+            this.scene.start("Results", {
+              tier: this.tier,
+              score: this.score,
+              cleared: this.cleared,
+              fired: this.fired,
+              maxWaves: this.maxWaves,
+              bestStreak: this.bestStreak,
+              enemiesDown: this.enemiesDown,
+              won,
+            }),
           );
         }
 
         update() {
-          // Move enemies along path
-          this.enemies.children.iterate((e) => {
-            if (!e || !e.alive) return;
-            e.follower.t += e.speed;
-            if (e.follower.t >= 1) {
-              // Reached base
-              e.alive = false;
-              this.lives--;
-              this.updateHUD();
-              if (e.label) e.label.destroy();
-              if (e.hpBg) e.hpBg.destroy();
-              if (e.hpFill) e.hpFill.destroy();
-              e.destroy();
-              if (this.lives <= 0) {
-                SFX.lose();
-                this.time.delayedCall(800, () =>
-                  this.scene.start("Results", {
-                    score: this.score,
-                    correct: this.correct,
-                    total: this.total,
-                    bestStreak: this.bestStreak,
-                    wave: this.wave,
-                    towers: this.towersPlaced,
-                    kills: this.enemiesKilled,
-                    won: false,
-                  }),
-                );
-              }
-              return;
+          // march enemies; targets/decoys that were NOT correctly resolved
+          // keep advancing — a visible breach when the wrong x is chosen.
+          this.enemySprites.forEach((s) => {
+            if (!s || !s.alive) return;
+            s.t += this.tier === 1 ? 0.00035 : 0.0005;
+            if (s.t >= 1) {
+              s.t = 1;
+              // reaching the wall = breach (handled by wall loss in onMiss);
+              // keep it parked at the wall so the column doesn't vanish.
             }
-            this.enemyPath.getPoint(e.follower.t, e.follower.vec);
-            e.x = e.follower.vec.x;
-            e.y = e.follower.vec.y;
-            if (e.hpBg) {
-              e.hpBg.x = e.x;
-              e.hpBg.y = e.y - 16;
-            }
-            if (e.hpFill) {
-              e.hpFill.x = e.x - 12;
-              e.hpFill.y = e.y - 16;
-              e.hpFill.width = 24 * (e.hp / e.maxHp);
-            }
-            if (e.label) {
-              e.label.x = e.x;
-              e.label.y = e.y + 16;
-            }
+            this.enemyPath.getPoint(Math.min(s.t, 1), s.vec);
+            s.x = s.vec.x;
+            s.y = s.vec.y;
           });
-
-          // Bullet collision
-          this.bullets.children.iterate((b) => {
-            if (!b || !b.active) return;
-            // Check distance to any enemy
-            this.enemies.children.iterate((e) => {
-              if (!e || !e.alive) return;
-              if (Phaser.Math.Distance.Between(b.x, b.y, e.x, e.y) < 16) {
-                b.setActive(false).setVisible(false).destroy();
-                e.hp--;
-                SFX.hit();
-                if (e.hp <= 0) {
-                  e.alive = false;
-                  this.enemiesKilled++;
-                  this.score += 20;
-                  this.sparkEmitter.emitParticleAt(e.x, e.y, 8);
-                  SFX.explode();
-                  if (e.label) e.label.destroy();
-                  if (e.hpBg) e.hpBg.destroy();
-                  if (e.hpFill) e.hpFill.destroy();
-                  e.destroy();
-                  this.updateHUD();
-                }
-              }
-            });
-            // Remove if off screen
-            if (
-              b.active &&
-              (b.x < -20 || b.x > W + 20 || b.y < -20 || b.y > H + 20)
-            ) {
-              b.setActive(false).setVisible(false).destroy();
-            }
-          });
-
-          // Check wave complete
-          if (this.waveActive) {
-            let aliveCount = 0;
-            this.enemies.children.iterate((e) => {
-              if (e && e.alive) aliveCount++;
-            });
-            if (this.enemiesSpawned >= this.enemiesInWave && aliveCount === 0) {
-              this.waveActive = false;
-              if (this.wave >= this.maxWaves) {
-                // Victory!
-                SFX.wave();
-                this.time.delayedCall(1000, () =>
-                  this.scene.start("Results", {
-                    score: this.score,
-                    correct: this.correct,
-                    total: this.total,
-                    bestStreak: this.bestStreak,
-                    wave: this.wave,
-                    towers: this.towersPlaced,
-                    kills: this.enemiesKilled,
-                    won: true,
-                  }),
-                );
-              } else {
-                this.waveBtn.setVisible(true);
-                this.score += this.wave * 25;
-                this.updateHUD();
-              }
-            }
-          }
         }
       }
 
+      // ════════════════════════════════════════════════════════════════
+      //  RESULTS — records to EduPulse with standard 6.EE.C.9
+      // ════════════════════════════════════════════════════════════════
       class ResultsScene extends Phaser.Scene {
         constructor() {
           super("Results");
         }
-        init(data) {
-          this.finalScore = data.score || 0;
-          this.correct = data.correct || 0;
-          this.total = data.total || 0;
-          this.bestStreak = data.bestStreak || 0;
-          this.wave = data.wave || 0;
-          this.towers = data.towers || 0;
-          this.kills = data.kills || 0;
-          this.won = data.won || false;
+        init(d) {
+          Object.assign(this, d);
         }
         create() {
-          this.cameras.main.setBackgroundColor(0x0a0e27);
+          this.cameras.main.setBackgroundColor(C.bg);
+          this.cameras.main.fadeIn(400);
           for (let i = 0; i < 50; i++)
             this.add.circle(
               Phaser.Math.Between(0, W),
@@ -1065,127 +1173,145 @@
               Phaser.Math.FloatBetween(0.1, 0.4),
             );
 
-          const pct =
-            this.total > 0 ? Math.round((this.correct / this.total) * 100) : 0;
+          const goal = this.maxWaves;
+          const pct = goal > 0 ? Math.round((this.cleared / goal) * 100) : 0;
+
+          // EduPulse: cleared waves are "problems correct", attempted = waves faced
           try {
             window.EduPulse &&
               EduPulse.record({
                 activityTitle: document.title,
-                score: this.correct,
-                maxScore: this.total,
+                score: this.cleared,
+                maxScore: goal,
                 percent: pct,
-                problemsCorrect: this.correct,
-                problemsAttempted: this.total,
+                problemsCorrect: this.cleared,
+                problemsAttempted: this.fired,
                 standard: "6.EE.C.9",
               });
           } catch (e) {}
-          const title = this.won ? "FORTRESS DEFENDED!" : "BASE DESTROYED";
-          const tc = this.won ? "#00ff88" : "#ff4444";
 
+          const title = this.won ? "FORTRESS HELD!" : "WALL BREACHED";
+          const tc = this.won ? "#2ec27a" : "#ff6b6b";
           this.add
-            .text(W / 2, 50, title, {
-              fontSize: "38px",
+            .text(W / 2, 70, this.won ? "🏰" : "💥", { fontSize: "60px" })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 150, title, {
+              fontSize: "40px",
               fontFamily: "monospace",
               fontStyle: "bold",
               color: tc,
-              stroke: "#222",
-              strokeThickness: 3,
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(W / 2, 110, String(this.finalScore), {
-              fontSize: "56px",
-              fontFamily: "monospace",
-              fontStyle: "bold",
-              color: "#ffcc00",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(W / 2, 148, "POINTS", {
-              fontSize: "13px",
-              fontFamily: "monospace",
-              color: "#888",
+              stroke: "#06203f",
+              strokeThickness: 4,
             })
             .setOrigin(0.5);
 
-          let grade, gc;
+          let rank, rc;
           if (pct >= 90 && this.won) {
-            grade = "S RANK";
-            gc = "#ffcc00";
-          } else if (pct >= 80) {
-            grade = "A RANK";
-            gc = "#00ff88";
-          } else if (pct >= 70) {
-            grade = "B RANK";
-            gc = "#00ccff";
-          } else if (pct >= 60) {
-            grade = "C RANK";
-            gc = "#ff8800";
+            rank = "MASTER GUNNER";
+            rc = "#ffcc33";
+          } else if (pct >= 75) {
+            rank = "SHARP SHOOTER";
+            rc = "#2ec27a";
+          } else if (pct >= 50) {
+            rank = "GUNNER";
+            rc = "#4ea3ff";
           } else {
-            grade = "KEEP PRACTICING";
-            gc = "#ff4444";
+            rank = "KEEP TRAINING";
+            rc = "#ff8800";
           }
           this.add
-            .text(W / 2, 185, grade, {
-              fontSize: "20px",
+            .text(W / 2, 196, rank, {
+              fontSize: "22px",
               fontFamily: "monospace",
               fontStyle: "bold",
-              color: gc,
+              color: rc,
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 250, String(this.score), {
+              fontSize: "52px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#ffcc33",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 288, "POINTS", {
+              fontSize: "12px",
+              fontFamily: "monospace",
+              color: "#6b86a8",
             })
             .setOrigin(0.5);
 
           [
-            { l: "Correct", v: this.correct + "/" + this.total },
-            { l: "Accuracy", v: pct + "%" },
-            { l: "Towers", v: String(this.towers) },
-            { l: "Enemies Defeated", v: String(this.kills) },
-            { l: "Wave", v: this.wave + "/" + this.wave },
+            { l: "Waves cleared", v: this.cleared + "/" + goal },
+            { l: "Best streak", v: String(this.bestStreak) },
+            { l: "Enemies down", v: String(this.enemiesDown) },
+            { l: "Level", v: this.tier === 1 ? "Support" : "Challenge" },
           ].forEach((s, i) => {
-            const x = W / 2 - 240 + i * 120;
+            const x = W / 2 - 240 + i * 160;
             this.add
-              .rectangle(x, 270, 105, 60, 0x112233, 0.8)
-              .setStrokeStyle(1, 0x336699, 0.5);
+              .rectangle(x, 360, 140, 70, 0x10243d, 0.9)
+              .setStrokeStyle(1, 0x2b4a7a, 0.7);
             this.add
-              .text(x, 258, s.v, {
-                fontSize: "20px",
+              .text(x, 346, String(s.v), {
+                fontSize: "22px",
                 fontFamily: "monospace",
                 fontStyle: "bold",
-                color: "#00ff88",
+                color: "#2ec27a",
               })
               .setOrigin(0.5);
             this.add
-              .text(x, 282, s.l, {
-                fontSize: "9px",
+              .text(x, 378, s.l, {
+                fontSize: "11px",
                 fontFamily: "Arial",
-                color: "#888",
+                color: "#9ecbff",
               })
               .setOrigin(0.5);
           });
 
-          const btn = this.add
-            .text(W / 2, 370, "[ DEFEND AGAIN ]", {
-              fontSize: "22px",
+          const again = this.add
+            .text(W / 2 - 130, 460, "[ DEFEND AGAIN ]", {
+              fontSize: "18px",
               fontFamily: "monospace",
               fontStyle: "bold",
-              color: "#00ffcc",
-              padding: { x: 20, y: 10 },
-              backgroundColor: "rgba(0,255,200,0.1)",
+              color: "#06203f",
+              padding: { x: 16, y: 10 },
+              backgroundColor: "#ffcc33",
             })
             .setOrigin(0.5)
             .setInteractive({ useHandCursor: true });
-          btn.on("pointerover", () =>
-            btn.setStyle({ backgroundColor: "rgba(0,255,200,0.25)" }),
-          );
-          btn.on("pointerout", () =>
-            btn.setStyle({ backgroundColor: "rgba(0,255,200,0.1)" }),
-          );
-          btn.on("pointerdown", () => this.scene.start("Title"));
+          again.on("pointerdown", () => {
+            SFX.init();
+            this.scene.start("Defend", { tier: this.tier });
+          });
+          again.on("pointerover", () => again.setScale(1.05));
+          again.on("pointerout", () => again.setScale(1));
+
+          const menu = this.add
+            .text(W / 2 + 130, 460, "[ CHANGE LEVEL ]", {
+              fontSize: "18px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#cfe2ff",
+              padding: { x: 16, y: 10 },
+              backgroundColor: "rgba(78,163,255,0.15)",
+            })
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true });
+          menu.on("pointerdown", () => {
+            SFX.init();
+            this.scene.start("Title");
+          });
+          menu.on("pointerover", () => menu.setScale(1.05));
+          menu.on("pointerout", () => menu.setScale(1));
 
           this.add
-            .text(W / 2, 460, "6.EE.C.9 -- Equations Review", {
+            .text(W / 2, 540, "6.EE.C.9 — Evaluate to Fire", {
               fontSize: "12px",
               fontFamily: "Arial",
-              color: "#556677",
+              color: "#556b86",
             })
             .setOrigin(0.5);
         }
@@ -1197,12 +1323,8 @@
         height: H,
         parent: "game-container",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        physics: {
-          default: "arcade",
-          arcade: { gravity: { y: 0 }, debug: false },
-        },
         scene: [BootScene, TitleScene, DefendScene, ResultsScene],
-        backgroundColor: "#0a0e27",
+        backgroundColor: "#0a1626",
       };
       new Phaser.Game(config);
     </script>
@@ -1210,7 +1332,7 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
 </html>

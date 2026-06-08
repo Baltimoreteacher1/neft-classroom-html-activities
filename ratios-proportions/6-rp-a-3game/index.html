@@ -18,7 +18,7 @@
       window.addEventListener("load", function () {
         if (typeof Phaser === "undefined") {
           document.body.innerHTML =
-            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
         }
       });
     </script>
@@ -38,22 +38,34 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <div id="game-container"></div>
     <script>
       (() => {
+        // ════════════════════════════════════════════════════════════════
+        //  SHOPPING MALL TYCOON — "PRICE IT RIGHT" stall, for 6.RP.A.3
+        //  The MATH IS THE MECHANIC. You run a stall with a PRICE slider and
+        //  a "% OFF / % TAX" dial. As you drag them, a live readout computes
+        //  the exact sale price / total / unit-rate and shopper-sprites buy
+        //  or walk away. Each round gives a target ("mark this $40 item down
+        //  to $30 — what % off?", "add 6% tax to reach $42.40", "hit today's
+        //  profit goal"). You drive the controls until the LIVE readout hits
+        //  the target — reaching it = the math is correct, enforced by the
+        //  meter, not by clicking A/B/C/D. All arithmetic is exact (cents).
+        // ════════════════════════════════════════════════════════════════
+
         const W = 1024,
           H = 768;
 
-        // Audio
+        // ─── AUDIO ───
         const AC = window.AudioContext || window.webkitAudioContext;
         let actx = null;
         function au() {
-          if (!actx) actx = new AC();
-          if (actx.state === "suspended") actx.resume();
+          if (!actx && AC) actx = new AC();
+          if (actx && actx.state === "suspended") actx.resume();
         }
         function bip(f, d, t = "sine", v = 0.14) {
           if (!actx) return;
@@ -68,41 +80,58 @@
           o.start();
           o.stop(actx.currentTime + d);
         }
-        function sfxOk() {
+        const sfxTick = () => bip(520 + Math.random() * 40, 0.03, "sine", 0.05);
+        const sfxLock = () => {
           bip(523, 0.08);
           setTimeout(() => bip(659, 0.08), 80);
-          setTimeout(() => bip(784, 0.15), 160);
-        }
-        function sfxNo() {
-          bip(180, 0.25, "square", 0.1);
-        }
-        function sfxCl() {
-          bip(440, 0.05, "sine", 0.08);
-        }
-        function sfxLv() {
+          setTimeout(() => bip(880, 0.16), 160);
+        };
+        const sfxNo = () => bip(180, 0.22, "square", 0.09);
+        const sfxCl = () => bip(440, 0.05, "sine", 0.08);
+        const sfxLv = () =>
           [523, 659, 784, 1047].forEach((f, i) =>
             setTimeout(() => bip(f, 0.12), i * 90),
           );
-        }
-        function sfxCoin() {
+        const sfxCoin = () => {
           bip(1200, 0.06, "triangle", 0.1);
           setTimeout(() => bip(1400, 0.06, "triangle", 0.08), 60);
-        }
+        };
 
+        // ─── PALETTE (colourblind-safe: every state also has text + shape) ───
         const COL = {
           bg: 0x0a0608,
           panel: 0x1e1018,
+          panelHi: 0x2a1824,
           gold: 0xd4a017,
           ruby: 0xc0392b,
-          emerald: 0x1a6b3c,
-          sapphire: 0x1a3a6b,
-          amethyst: 0x6b2d8b,
+          emerald: 0x1a8b4c,
+          sky: 0x2f80d6,
           parch: 0xf5e6c8,
           dim: 0x9a8070,
           white: 0xffffff,
           dark: 0x130c10,
+          track: 0x2a2030,
+        };
+        const CSS = {
+          gold: "#d4a017",
+          parch: "#f5e6c8",
+          dim: "#9a8070",
+          ok: "#36d17a",
+          near: "#d4a017",
+          bad: "#e07a6b",
         };
 
+        // ─── MONEY HELPERS — all math in integer cents, exact ───
+        const cents = (dollars) => Math.round(dollars * 100);
+        const money = (c) => "$" + (c / 100).toFixed(2);
+        // Standard rounding to the nearest cent (round half up).
+        const roundCents = (x) => Math.round(x);
+        // Percent of an amount, in cents. amtC integer cents, pct integer percent.
+        const pctOfCents = (amtC, pct) => roundCents((amtC * pct) / 100);
+        const salePriceCents = (amtC, pct) => amtC - pctOfCents(amtC, pct);
+        const totalWithTaxCents = (amtC, pct) => amtC + pctOfCents(amtC, pct);
+        const rndInt = (n) => Math.floor(Math.random() * n);
+        const pick = (a) => a[rndInt(a.length)];
         function shuffle(a) {
           const b = [...a];
           for (let i = b.length - 1; i > 0; i--) {
@@ -112,244 +141,229 @@
           return b;
         }
 
-        // Question generators for 6.RP.A.3
-        function genQuestions() {
-          const qs = [];
+        // ════════════════════════════════════════════════════════════════
+        //  ROUND GENERATOR — every round is solvable by some control value,
+        //  and the target is computed with the SAME exact-cent math the
+        //  controls use, so "reachable" is guaranteed.
+        //
+        //  Round shapes:
+        //   • "discount" : list price fixed; dial = % OFF. Hit target sale price.
+        //   • "tax"      : price fixed; dial = % TAX. Hit target total-with-tax.
+        //   • "markPrice": dial fixed % OFF; SLIDER sets list price. Hit sale target.
+        //   • "combo"    : (L2) price fixed; apply discount THEN tax via two dials
+        //                  to reach a target total.
+        //   • "profit"   : SLIDER sets unit price; demand falls as price rises;
+        //                  hit a profit goal (price-cost)×demand. Unit-rate sense.
+        // ════════════════════════════════════════════════════════════════
 
-          // Equivalent ratios
-          function eqRatio() {
-            const a = 2 + Math.floor(Math.random() * 6),
-              b = 2 + Math.floor(Math.random() * 6);
-            const m = 2 + Math.floor(Math.random() * 4);
-            const correct = `${a * m}:${b * m}`;
-            const wrong = [
-              `${a * m}:${b * (m + 1)}`,
-              `${a * (m - 1)}:${b * m}`,
-              `${a + m}:${b + m}`,
-            ];
+        // Level 1 percents are the friendly benchmarks; Level 2 is arbitrary.
+        const L1_PCTS = [10, 20, 25, 50];
+        const L2_PCTS = [5, 6, 8, 12, 15, 18, 24, 30, 35, 40, 45, 60];
+
+        function genRound(tier, idx) {
+          const lvl1 = tier === 1;
+          const pctPool = lvl1 ? L1_PCTS : L2_PCTS;
+
+          // Choose a round type. L1 avoids combo; rotates the core 4.
+          let type;
+          if (lvl1) type = ["discount", "markPrice", "tax", "profit"][idx % 4];
+          else type = pick(["discount", "tax", "markPrice", "combo", "profit"]);
+
+          if (type === "discount") {
+            // List price is a clean whole-dollar amount; pick a percent that
+            // yields a clean sale price the slider/dial can land on exactly.
+            const listC = cents(
+              pick(
+                lvl1 ? [20, 40, 60, 80, 100] : [25, 36, 45, 50, 72, 90, 120],
+              ),
+            );
+            const pct = pick(pctPool);
+            const targetC = salePriceCents(listC, pct);
             return {
-              zone: "RATIOS",
-              icon: "\u{2696}",
-              text: `A store mixes gift bags with ${a} chocolates and ${b} candies. Which ratio is equivalent to ${a}:${b}?`,
-              correct,
-              choices: shuffle([correct, ...wrong]),
-              hint: `Multiply both by ${m}`,
-              explain: `${a}×${m}=${a * m}, ${b}×${m}=${b * m} → ${correct}`,
+              type,
+              pct,
+              listC,
+              targetC,
+              dialMax: lvl1 ? 60 : 90,
+              dialStep: 1,
+              prompt: `This item lists at ${money(listC)}. Set the % OFF dial so the SALE PRICE shown is ${money(targetC)}.`,
+              targetLabel: `Sale price = ${money(targetC)}`,
+              scaffold: `Sale price = list − (list × %off). Try: ${money(listC)} − (${money(listC)} × ?%).`,
+              ratioHint: `${money(targetC)} of ${money(listC)} stays on the tag — what % comes OFF?`,
             };
           }
 
-          // Simplify ratio
-          function simpRatio() {
-            const g = 2 + Math.floor(Math.random() * 4);
-            const a = (1 + Math.floor(Math.random() * 5)) * g,
-              b = (1 + Math.floor(Math.random() * 5)) * g;
-            if (a === b) return simpRatio();
-            const correct = `${a / g}:${b / g}`;
-            const wrong = [
-              `${a}:${b}`,
-              `${b / g}:${a / g}`,
-              `${a / g + 1}:${b / g}`,
-            ];
+          if (type === "tax") {
+            const priceC = cents(
+              pick(lvl1 ? [20, 30, 40, 50, 60] : [24, 36, 45, 58, 64, 85]),
+            );
+            const pct = pick(lvl1 ? [10, 20, 25] : [5, 6, 8, 12]);
+            const targetC = totalWithTaxCents(priceC, pct);
             return {
-              zone: "RATIOS",
-              icon: "\u{2696}",
-              text: `A sale sign shows ${a} red tags to ${b} blue tags. Simplify the ratio.`,
-              correct,
-              choices: shuffle([correct, ...wrong]),
-              hint: `GCF of ${a} and ${b} is ${g}`,
-              explain: `${a}÷${g}=${a / g}, ${b}÷${g}=${b / g} → ${correct}`,
+              type,
+              pct,
+              priceC,
+              targetC,
+              dialMax: lvl1 ? 30 : 20,
+              dialStep: 1,
+              prompt: `Price is ${money(priceC)}. Set the % TAX dial so the TOTAL WITH TAX shown is ${money(targetC)}.`,
+              targetLabel: `Total = ${money(targetC)}`,
+              scaffold: `Total = price + (price × tax%). Try: ${money(priceC)} + (${money(priceC)} × ?%).`,
+              ratioHint: `The total is more than the price. How much extra is ${money(targetC - priceC)} out of ${money(priceC)}?`,
             };
           }
 
-          // Unit rate / best buy
-          function bestBuy() {
-            const pA = 2 + Math.floor(Math.random() * 6),
-              cA = 150 + Math.floor(Math.random() * 20) * 25;
-            const pB = pA + 2 + Math.floor(Math.random() * 4),
-              cB = (cA * pB) / pA + Math.floor(Math.random() * 50) - 25;
-            const unitA = +(cA / pA / 100).toFixed(2),
-              unitB = +(cB / pB / 100).toFixed(2);
-            const better = unitA <= unitB ? "Pack A" : "Pack B";
-            const betterUnit = unitA <= unitB ? unitA : unitB;
-            const wrong = [
-              unitA <= unitB ? "Pack B" : "Pack A",
-              `They cost the same`,
-              `Not enough info`,
-            ];
+          if (type === "markPrice") {
+            // Dial is FIXED at a percent; the SLIDER chooses the list price so
+            // the sale price hits the target. The list price IS the answer the
+            // slider must land on, so we choose a whole-dollar list price (a
+            // value the $1-step slider can hit exactly) and DERIVE the target
+            // sale price from it with exact cent math. Guarantees reachability.
+            const pct = pick(lvl1 ? [10, 20, 25, 50] : [10, 20, 25, 40, 60]);
+            const listDollars = pick(
+              lvl1 ? [10, 16, 20, 24, 40] : [15, 28, 35, 45, 60, 80],
+            );
+            const listC = cents(listDollars);
+            const targetC = salePriceCents(listC, pct);
             return {
-              zone: "UNIT RATES",
-              icon: "\u{1F6D2}",
-              text: `Pack A: ${pA} items for $${(cA / 100).toFixed(2)}. Pack B: ${pB} items for $${(cB / 100).toFixed(2)}. Which is the better buy?`,
-              correct: better,
-              choices: shuffle([better, ...wrong]),
-              hint: `Find unit price: divide total cost by number of items`,
-              explain: `A: $${unitA}/item. B: $${unitB}/item. ${better} wins at $${betterUnit}/item`,
+              type,
+              pct,
+              listC,
+              targetC,
+              sliderMaxC: cents(lvl1 ? 100 : 160),
+              sliderStepC: 100, // $1.00 steps
+              prompt: `Everything is ${pct}% OFF today. Slide the LIST PRICE so the SALE PRICE shown is ${money(targetC)}.`,
+              targetLabel: `Sale price = ${money(targetC)}`,
+              scaffold: `After ${pct}% off you keep ${100 - pct}% of the list price. What list × ${100 - pct}% = ${money(targetC)}?`,
+              ratioHint: `${money(targetC)} is ${100 - pct}% of the list price. Scale up to 100%.`,
             };
           }
 
-          // Percent of a number
-          function pctOf() {
-            const whole = [40, 50, 60, 80, 100, 120, 150, 200, 250, 300][
-              Math.floor(Math.random() * 10)
-            ];
-            const pct = [10, 15, 20, 25, 30, 40, 50, 60, 75][
-              Math.floor(Math.random() * 9)
-            ];
-            const ans = (whole * pct) / 100;
-            const correct = String(ans);
-            const wrong = [
-              String(whole - ans),
-              String(Math.round(ans * 1.5)),
-              String(Math.round(ans * 0.5)),
-            ];
+          if (type === "combo") {
+            // L2 only: apply % OFF then % TAX to reach an exact total.
+            const priceC = cents(pick([40, 50, 60, 80, 100]));
+            const offPct = pick([10, 20, 25]);
+            const taxPct = pick([5, 6, 8, 10]);
+            const afterOffC = salePriceCents(priceC, offPct);
+            const targetC = totalWithTaxCents(afterOffC, taxPct);
             return {
-              zone: "PERCENTS",
-              icon: "\u{1F4B0}",
-              text: `A $${whole} jacket is ${pct}% off. How much is the discount?`,
-              correct: "$" + correct,
-              choices: shuffle(["$" + correct, ...wrong.map((w) => "$" + w)]),
-              hint: `${pct}% of ${whole} = ${whole} × ${pct}/100`,
-              explain: `${whole} × ${pct / 100} = $${ans} discount`,
+              type,
+              offPct,
+              taxPct,
+              priceC,
+              targetC,
+              dialMax: 60,
+              dial2Max: 15,
+              dialStep: 1,
+              prompt: `Price ${money(priceC)}. Take the discount FIRST, then add tax. Set BOTH dials so the FINAL TOTAL shown is ${money(targetC)}.`,
+              targetLabel: `Final total = ${money(targetC)}`,
+              scaffold: `Step 1: discount → sale price. Step 2: tax on the sale price. Match ${money(targetC)}.`,
+              ratioHint: `Discount shrinks the price; tax grows the smaller price. Two steps, in order.`,
             };
           }
 
-          // Sale price after discount
-          function salePrice() {
-            const price = [40, 50, 60, 80, 100, 120][
-              Math.floor(Math.random() * 6)
-            ];
-            const pct = [10, 15, 20, 25, 30][Math.floor(Math.random() * 5)];
-            const disc = (price * pct) / 100;
-            const sale = price - disc;
-            const correct = "$" + sale;
-            const wrong = [
-              "$" + (price - disc * 2),
-              "$" + (sale + disc / 2),
-              "$" + disc,
-            ];
-            return {
-              zone: "PERCENTS",
-              icon: "\u{1F3F7}",
-              text: `Shoes cost $${price}. The mall has a ${pct}% sale. What is the sale price?`,
-              correct,
-              choices: shuffle([correct, ...wrong]),
-              hint: `Discount = $${price} × ${pct}% = $${disc}. Then subtract.`,
-              explain: `$${price} − $${disc} = ${correct}`,
-            };
-          }
-
-          // Tax calculation
-          function taxCalc() {
-            const price = [20, 30, 40, 50, 60, 80][
-              Math.floor(Math.random() * 6)
-            ];
-            const taxPct = [5, 6, 7, 8, 10][Math.floor(Math.random() * 5)];
-            const tax = +((price * taxPct) / 100).toFixed(2);
-            const total = +(price + tax).toFixed(2);
-            const correct = "$" + total.toFixed(2);
-            const wrong = [
-              "$" + (price - tax).toFixed(2),
-              "$" + tax.toFixed(2),
-              "$" + (total + tax).toFixed(2),
-            ];
-            return {
-              zone: "PERCENTS",
-              icon: "\u{1F4B3}",
-              text: `An item costs $${price}. Tax is ${taxPct}%. What is the total with tax?`,
-              correct,
-              choices: shuffle([correct, ...wrong]),
-              hint: `Tax = $${price} × ${taxPct}% = $${tax}. Add to price.`,
-              explain: `$${price} + $${tax} = ${correct}`,
-            };
-          }
-
-          // Proportion / scaling
-          function proportion() {
-            const a = 2 + Math.floor(Math.random() * 5),
-              b = 3 + Math.floor(Math.random() * 6);
-            const m = 2 + Math.floor(Math.random() * 5);
-            const scaled = b * m;
-            const ans = a * m;
-            const correct = String(ans);
-            const wrong = [String(ans + a), String(ans - a), String(a + m)];
-            return {
-              zone: "PROPORTIONS",
-              icon: "\u{1F4CA}",
-              text: `A store sells ${a} shirts for every ${b} customers. If ${scaled} customers come, how many shirts are sold?`,
-              correct,
-              choices: shuffle([correct, ...wrong]),
-              hint: `${scaled} ÷ ${b} = ${m}. Multiply ${a} × ${m}`,
-              explain: `${scaled}÷${b}=${m} groups. ${a}×${m}=${ans} shirts`,
-            };
-          }
-
-          // Map/conversion scale
-          function mapScale() {
-            const scale = 5 + Math.floor(Math.random() * 10) * 5;
-            const inches = 2 + Math.floor(Math.random() * 8);
-            const real = scale * inches;
-            const correct = real + " miles";
-            const wrong = [
-              real + scale + " miles",
-              real - scale + " miles",
-              inches + " miles",
-            ];
-            return {
-              zone: "PROPORTIONS",
-              icon: "\u{1F5FA}",
-              text: `A mall map: 1 inch = ${scale} miles. Two stores are ${inches} inches apart. Real distance?`,
-              correct,
-              choices: shuffle([correct, ...wrong]),
-              hint: `${inches} inches × ${scale} miles/inch`,
-              explain: `${inches} × ${scale} = ${real} miles`,
-            };
-          }
-
-          const gens = [
-            eqRatio,
-            simpRatio,
-            bestBuy,
-            pctOf,
-            salePrice,
-            taxCalc,
-            proportion,
-            mapScale,
-          ];
-          for (let i = 0; i < 24; i++) qs.push(gens[i % gens.length]());
-          return shuffle(qs);
+          // type === "profit": unit-rate reasoning. demand = base - slope*price.
+          // profit = (price - cost) * demand, all in cents-per-unit × whole units.
+          const costC = cents(pick(lvl1 ? [3, 4, 5] : [4, 6, 7]));
+          const slope = lvl1 ? 1 : pick([1, 2]); // shoppers lost per $1 over cost-ish
+          const baseDemand = lvl1 ? 20 : pick([24, 30]);
+          // Pick a target priceC (whole dollar) inside range, then derive goal.
+          const bestPriceDollars = lvl1
+            ? pick([8, 10, 12])
+            : pick([10, 12, 14, 16]);
+          const priceC = cents(bestPriceDollars);
+          const demandAt = (pc) =>
+            Math.max(0, baseDemand - slope * Math.round((pc - costC) / 100));
+          const profitGoalC = (priceC - costC) * demandAt(priceC);
+          return {
+            type: "profit",
+            costC,
+            slope,
+            baseDemand,
+            profitGoalC,
+            sliderMaxC: cents(lvl1 ? 20 : 24),
+            sliderStepC: 100,
+            prompt: `Each unit costs YOU ${money(costC)}. Raise the price for more profit per unit — but high prices scare shoppers away. Slide the PRICE to hit today's profit goal of ${money(profitGoalC)}.`,
+            targetLabel: `Profit goal = ${money(profitGoalC)}`,
+            scaffold: `Profit = (price − cost) × shoppers. Find the price where they multiply to the goal.`,
+            ratioHint: `Profit per unit grows as price rises, but shoppers drop. Look for the balance point.`,
+          };
         }
 
-        // ─── TITLE SCENE ───
+        // Compute the live readout value (in cents) for a round given control state.
+        // Returns { value, label, demand? } — value compared to round.targetC/goal.
+        function evalRound(r, st) {
+          if (r.type === "discount")
+            return {
+              value: salePriceCents(r.listC, st.dial),
+              label: "SALE PRICE",
+              target: r.targetC,
+            };
+          if (r.type === "tax")
+            return {
+              value: totalWithTaxCents(r.priceC, st.dial),
+              label: "TOTAL WITH TAX",
+              target: r.targetC,
+            };
+          if (r.type === "markPrice")
+            return {
+              value: salePriceCents(st.listC, r.pct),
+              label: "SALE PRICE",
+              target: r.targetC,
+            };
+          if (r.type === "combo") {
+            const after = salePriceCents(r.priceC, st.dial);
+            return {
+              value: totalWithTaxCents(after, st.dial2),
+              label: "FINAL TOTAL",
+              target: r.targetC,
+              mid: after,
+            };
+          }
+          // profit
+          const demand = Math.max(
+            0,
+            r.baseDemand - r.slope * Math.round((st.listC - r.costC) / 100),
+          );
+          const profit = (st.listC - r.costC) * demand;
+          return {
+            value: profit,
+            label: "PROFIT",
+            target: r.profitGoalC,
+            demand,
+          };
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        //  TITLE SCENE — real Level 1 (Support) vs Level 2 (Challenge) pick.
+        // ════════════════════════════════════════════════════════════════
         class TitleScene extends Phaser.Scene {
           constructor() {
             super("TitleScene");
           }
           create() {
             this.cameras.main.setBackgroundColor(COL.bg).fadeIn(500);
-
-            // Subtle texture
             const gfx = this.add.graphics();
             gfx.lineStyle(1, COL.gold, 0.02);
             for (let x = 0; x < W; x += 60) gfx.lineBetween(x, 0, x, H);
             for (let y = 0; y < H; y += 60) gfx.lineBetween(0, y, W, y);
 
             this.add
-              .text(W / 2, 100, "\u{1F3EC}", { fontSize: "72px" })
+              .text(W / 2, 96, "\u{1F3EC}", { fontSize: "70px" })
               .setOrigin(0.5);
             const title = this.add
-              .text(W / 2, 185, "SHOPPING MALL\nTYCOON", {
-                fontSize: "52px",
+              .text(W / 2, 176, "SHOPPING MALL TYCOON", {
+                fontSize: "46px",
                 fontFamily: "Arial Black",
-                color: "#d4a017",
+                color: CSS.gold,
                 stroke: "#000",
                 strokeThickness: 5,
                 align: "center",
-                lineSpacing: 4,
               })
               .setOrigin(0.5);
             this.tweens.add({
               targets: title,
-              y: 180,
+              y: 172,
               duration: 2500,
               yoyo: true,
               repeat: -1,
@@ -357,187 +371,206 @@
             });
 
             this.add
-              .text(W / 2, 275, "6.RP.A.3 — Ratio & Rate Reasoning", {
-                fontSize: "16px",
-                color: "#9a8070",
-              })
+              .text(
+                W / 2,
+                224,
+                "6.RP.A.3 — Percent, Tax, Discount & Unit-Rate Reasoning",
+                { fontSize: "16px", color: CSS.dim },
+              )
               .setOrigin(0.5);
             this.add
               .text(
                 W / 2,
-                300,
-                "Run your store: discounts, percentages, tax, and proportions!",
+                268,
+                "Run a price-it-right stall. Drag the PRICE slider and the % dial until the\nlive readout hits the target. The math runs the meter — no multiple choice.",
                 {
-                  fontSize: "14px",
-                  color: "#6b5b50",
+                  fontSize: "15px",
+                  color: "#cdbfa8",
+                  align: "center",
+                  lineSpacing: 6,
                 },
               )
               .setOrigin(0.5);
 
-            // Store type selection
-            const stores = [
-              { name: "Boutique", icon: "\u{1F457}", desc: "Fashion & style" },
+            // little demo gauge
+            this.drawDemo(W / 2, 372);
+
+            const tiers = [
               {
-                name: "Electronics",
-                icon: "\u{1F4F1}",
-                desc: "Gadgets & gear",
+                t: 1,
+                label: "Level 1",
+                sub: "Support",
+                desc: "Friendly percents (10/20/25/50%) · formula scaffold shown · 5 chances",
+                col: COL.emerald,
+                cssCol: CSS.ok,
               },
-              { name: "Bakery", icon: "\u{1F370}", desc: "Sweets & treats" },
-              { name: "Sports", icon: "\u{26BD}", desc: "Athletic gear" },
+              {
+                t: 2,
+                label: "Level 2",
+                sub: "Challenge",
+                desc: "Any percent · discount + tax combined · less help · 3 chances",
+                col: COL.gold,
+                cssCol: CSS.gold,
+              },
             ];
-            this.sel = 0;
-            this.cards = [];
-            stores.forEach((s, i) => {
-              const x = 162 + i * 225,
-                y = 430;
+            tiers.forEach((d, i) => {
+              const x = W / 2 + (i === 0 ? -210 : 210),
+                y = 540;
               const card = this.add
-                .rectangle(x, y, 190, 160, COL.panel)
-                .setStrokeStyle(3, i === 0 ? COL.gold : 0x3a2030)
+                .rectangle(x, y, 360, 150, COL.panel)
+                .setStrokeStyle(3, COL.track)
                 .setInteractive({ useHandCursor: true });
               this.add
-                .text(x, y - 40, s.icon, { fontSize: "42px" })
+                .text(x, y - 46, d.label, {
+                  fontSize: "30px",
+                  fontFamily: "Arial Black",
+                  color: "#fff",
+                })
                 .setOrigin(0.5);
               this.add
-                .text(x, y + 10, s.name, {
+                .text(x, y - 14, d.sub, {
                   fontSize: "16px",
-                  color: "#f5e6c8",
+                  color: d.cssCol,
                   fontStyle: "bold",
                 })
                 .setOrigin(0.5);
               this.add
-                .text(x, y + 34, s.desc, { fontSize: "12px", color: "#9a8070" })
+                .text(x, y + 30, d.desc, {
+                  fontSize: "13px",
+                  color: "#cdbfa8",
+                  align: "center",
+                  wordWrap: { width: 330 },
+                  lineSpacing: 3,
+                })
                 .setOrigin(0.5);
+              card.on("pointerover", () => {
+                card.setStrokeStyle(3, d.col);
+                card.setScale(1.03);
+              });
+              card.on("pointerout", () => {
+                card.setStrokeStyle(3, COL.track);
+                card.setScale(1);
+              });
               card.on("pointerdown", () => {
                 au();
                 sfxCl();
-                this.sel = i;
-                this.cards.forEach((c, j) =>
-                  c.setStrokeStyle(3, j === i ? COL.gold : 0x3a2030),
+                this.cameras.main.fadeOut(350);
+                this.time.delayedCall(350, () =>
+                  this.scene.start("GameScene", { tier: d.t }),
                 );
               });
-              this.cards.push(card);
             });
 
-            const btn = this.add
-              .rectangle(W / 2, 580, 280, 56, COL.gold)
-              .setInteractive({ useHandCursor: true });
             this.add
-              .text(W / 2, 580, "OPEN STORE", {
-                fontSize: "22px",
-                fontFamily: "Arial Black",
-                color: "#0a0608",
-              })
+              .text(
+                W / 2,
+                672,
+                "Drag the slider/dial, or use ← → to nudge · ↑ ↓ switch control · Enter = Sell · H = hint",
+                { fontSize: "12.5px", color: "#6f5f50" },
+              )
               .setOrigin(0.5);
-            btn.on("pointerdown", () => {
-              au();
-              sfxCl();
-              this.cameras.main.fadeOut(400);
-              this.time.delayedCall(400, () =>
-                this.scene.start("GameScene", { store: stores[this.sel] }),
-              );
-            });
-            btn.on("pointerover", () => btn.setScale(1.05));
-            btn.on("pointerout", () => btn.setScale(1));
-
-            // Features
-            const feats = [
-              "5 Zones",
-              "3 Life Crystals",
-              "\u{1F525} Streak Bonus",
-              "\u{1F3C6} Tycoon Rank",
-            ];
-            feats.forEach((f, i) => {
-              this.add
-                .text(112 + i * 240, 660, f, {
-                  fontSize: "12px",
-                  color: "#6b5b50",
-                  backgroundColor: "#1e1018",
-                  padding: { x: 10, y: 5 },
-                })
-                .setOrigin(0.5);
-            });
+          }
+          drawDemo(cx, cy) {
+            // mini "readout climbing to target" gauge
+            this.add
+              .rectangle(cx, cy, 460, 70, COL.panel)
+              .setStrokeStyle(2, COL.track);
+            this.add
+              .text(cx - 210, cy - 16, "% OFF", {
+                fontSize: "13px",
+                color: CSS.dim,
+              })
+              .setOrigin(0, 0.5);
+            const track = this.add
+              .rectangle(cx - 60, cy - 16, 120, 8, COL.track)
+              .setOrigin(0, 0.5);
+            this.add
+              .rectangle(cx - 60, cy - 16, 60, 8, COL.gold)
+              .setOrigin(0, 0.5);
+            this.add.circle(cx, cy - 16, 9, COL.gold);
+            this.add
+              .text(cx - 210, cy + 16, "READOUT", {
+                fontSize: "13px",
+                color: CSS.dim,
+              })
+              .setOrigin(0, 0.5);
+            this.add
+              .text(cx - 60, cy + 16, "$30.00", {
+                fontSize: "20px",
+                fontFamily: "Arial Black",
+                color: CSS.ok,
+              })
+              .setOrigin(0, 0.5);
+            this.add
+              .text(cx + 110, cy + 16, "= target ✓", {
+                fontSize: "14px",
+                color: CSS.ok,
+              })
+              .setOrigin(0, 0.5);
           }
         }
 
-        // ─── GAME SCENE ───
+        // ════════════════════════════════════════════════════════════════
+        //  GAME SCENE — the stall.
+        // ════════════════════════════════════════════════════════════════
         class GameScene extends Phaser.Scene {
           constructor() {
             super("GameScene");
           }
           init(d) {
-            this.store = d.store;
+            this.tier = d.tier || 1;
           }
 
           create() {
             this.cameras.main.setBackgroundColor(COL.bg).fadeIn(400);
 
-            this.questions = genQuestions();
-            this.qIdx = 0;
+            this.lives = this.tier === 1 ? 5 : 3;
+            this.goal = this.tier === 1 ? 8 : 10;
+            this.gold = 0;
             this.score = 0;
             this.streak = 0;
             this.bestStreak = 0;
             this.correct = 0;
-            this.total = 0;
-            this.lives = 3;
-            this.answered = false;
+            this.served = 0;
             this.attempts = 0;
-            this.gold = 0;
             this.level = 1;
-            this.timeLeft = 35;
-            this.customersServed = 0;
+            this.roundIx = 0;
+            this.locked = false; // true once a round is solved, until next loads
 
-            // BG
+            // backdrop
             this.add.rectangle(W / 2, H / 2, W, H, COL.dark);
             const gfx = this.add.graphics();
             gfx.lineStyle(1, COL.gold, 0.015);
             for (let x = 0; x < W; x += 50) gfx.lineBetween(x, 0, x, H);
             for (let y = 0; y < H; y += 50) gfx.lineBetween(0, y, W, y);
+            this.add.rectangle(W / 2, 712, W, 112, 0x180e14); // stall counter
 
             // HUD
-            this.add.rectangle(W / 2, 28, W, 56, COL.bg, 0.96);
-            this.add.rectangle(W / 2, 56, W, 2, COL.gold, 0.2);
-            this.hudGold = this.add.text(30, 10, "\u{1F4B0} 0 Gold", {
+            this.add.rectangle(W / 2, 26, W, 52, COL.bg, 0.96);
+            this.add.rectangle(W / 2, 52, W, 2, COL.gold, 0.2);
+            this.hudGold = this.add.text(24, 10, "\u{1F4B0} 0 Gold", {
               fontSize: "16px",
               fontFamily: "Arial Black",
-              color: "#d4a017",
+              color: CSS.gold,
             });
-            this.hudZone = this.add
-              .text(W / 2, 10, "", {
-                fontSize: "11px",
-                color: "#9a8070",
-                letterSpacing: 2,
+            this.hudLevel = this.add
+              .text(W / 2, 8, "Level " + this.tier + " · Round 1", {
+                fontSize: "13px",
+                color: CSS.dim,
               })
               .setOrigin(0.5, 0);
-            this.hudHP = this.add.text(W - 160, 8, "", {
-              fontSize: "14px",
-              color: "#c0392b",
-            });
+            this.hudServed = this.add
+              .text(W / 2, 28, "", { fontSize: "12px", color: CSS.gold })
+              .setOrigin(0.5, 0);
+            this.hudHP = this.add
+              .text(W - 24, 10, "", { fontSize: "16px" })
+              .setOrigin(1, 0);
             this.hudStreak = this.add
-              .text(W / 2, 32, "", { fontSize: "13px", color: "#d4a017" })
-              .setOrigin(0.5, 0);
-            this.hudTimer = this.add.text(W - 60, 14, "35s", {
-              fontSize: "14px",
-              color: "#d4a017",
-            });
-            this.hudQ = this.add.text(200, 14, "", {
-              fontSize: "12px",
-              color: "#6b5b50",
-            });
+              .text(W - 24, 34, "", { fontSize: "12px", color: CSS.gold })
+              .setOrigin(1, 0);
 
-            // Store front
-            this.add
-              .text(W / 2, 85, this.store.icon, { fontSize: "48px" })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 120, this.store.name.toUpperCase() + " STORE", {
-                fontSize: "16px",
-                fontFamily: "Arial Black",
-                color: "#d4a017",
-              })
-              .setOrigin(0.5);
-
-            // Customer queue
-            this.custEmoji = [
+            // Shopper sprite (reacts to the live readout)
+            this.shopperEmoji = [
               "\u{1F466}",
               "\u{1F467}",
               "\u{1F468}",
@@ -547,29 +580,34 @@
               "\u{1F9D1}",
               "\u{1F471}",
             ];
-            this.custSprite = this.add
-              .text(100, 85, "", { fontSize: "36px" })
-              .setOrigin(0.5)
-              .setAlpha(0);
+            this.shopper = this.add
+              .text(96, 110, "\u{1F9CD}", { fontSize: "54px" })
+              .setOrigin(0.5);
+            this.shopperBubble = this.add
+              .text(96, 162, "", {
+                fontSize: "12px",
+                color: CSS.parch,
+                align: "center",
+                wordWrap: { width: 150 },
+              })
+              .setOrigin(0.5, 0);
 
-            // Question area
-            this.qCard = this.add
-              .rectangle(W / 2, 340, 720, 260, COL.panel)
+            // ── PROMPT / TASK card (top) ──
+            this.add
+              .rectangle(W / 2, 110, 700, 116, COL.panel)
               .setStrokeStyle(1, 0x3a2030);
-            // gradient top line
-            this.add.rectangle(W / 2, 211, 720, 3, COL.gold, 0.3);
-
-            this.qZone = this.add
-              .text(W / 2, 225, "", {
-                fontSize: "11px",
-                color: "#d4a017",
+            this.add.rectangle(W / 2, 56 + 0, 700, 2, COL.gold, 0.25);
+            this.taskZone = this.add
+              .text(W / 2, 68, "", {
+                fontSize: "12px",
+                color: CSS.gold,
                 letterSpacing: 2,
               })
               .setOrigin(0.5);
-            this.qText = this.add
-              .text(W / 2, 275, "", {
-                fontSize: "17px",
-                color: "#f5e6c8",
+            this.taskText = this.add
+              .text(W / 2, 110, "", {
+                fontSize: "16px",
+                color: CSS.parch,
                 fontStyle: "bold",
                 wordWrap: { width: 660 },
                 align: "center",
@@ -577,272 +615,784 @@
               })
               .setOrigin(0.5);
 
-            // Choices
-            this.btns = [];
-            this.btnTxts = [];
-            for (let i = 0; i < 4; i++) {
-              const col = i % 2,
-                row = Math.floor(i / 2);
-              const x = W / 2 - 170 + col * 340,
-                y = 350 + row * 58;
-              const btn = this.add
-                .rectangle(x, y, 320, 48, 0x1e1018)
-                .setStrokeStyle(2, 0x3a2030)
-                .setInteractive({ useHandCursor: true });
-              const txt = this.add
-                .text(x, y, "", {
-                  fontSize: "15px",
-                  color: "#f5e6c8",
-                  fontStyle: "bold",
-                })
-                .setOrigin(0.5);
-              btn.on("pointerdown", () => this.pick(i));
-              btn.on("pointerover", () => {
-                if (!this.answered) btn.setStrokeStyle(2, COL.gold);
-              });
-              btn.on("pointerout", () => {
-                if (!this.answered) btn.setStrokeStyle(2, 0x3a2030);
-              });
-              this.btns.push(btn);
-              this.btnTxts.push(txt);
-            }
-
-            // Hint
-            this.hintBg = this.add
-              .rectangle(W / 2, 498, 600, 36, 0x2a2000, 0.8)
-              .setAlpha(0);
-            this.hintTxt = this.add
-              .text(W / 2, 498, "", { fontSize: "13px", color: "#d4a017" })
-              .setOrigin(0.5)
-              .setAlpha(0);
-
-            // Feedback
-            this.fbBg = this.add
-              .rectangle(W / 2, 545, 720, 44, COL.panel)
-              .setAlpha(0);
-            this.fbTxt = this.add
-              .text(W / 2, 545, "", {
-                fontSize: "14px",
-                color: "#f5e6c8",
-                wordWrap: { width: 680 },
-                align: "center",
+            // ── LIVE READOUT (center, big) — this is the "meter" the math drives ──
+            this.readoutBox = this.add
+              .rectangle(W / 2, 268, 460, 132, COL.panelHi)
+              .setStrokeStyle(4, COL.track);
+            this.readoutLabel = this.add
+              .text(W / 2, 222, "", {
+                fontSize: "13px",
+                color: CSS.dim,
+                letterSpacing: 2,
               })
-              .setOrigin(0.5)
-              .setAlpha(0);
-
-            // Next
-            this.nxtBtn = this.add
-              .rectangle(W / 2, 610, 220, 46, COL.gold)
-              .setInteractive({ useHandCursor: true })
-              .setAlpha(0);
-            this.nxtTxt = this.add
-              .text(W / 2, 610, "NEXT CUSTOMER >", {
-                fontSize: "14px",
+              .setOrigin(0.5);
+            this.readoutVal = this.add
+              .text(W / 2, 266, "", {
+                fontSize: "52px",
                 fontFamily: "Arial Black",
-                color: "#0a0608",
+                color: "#fff",
               })
+              .setOrigin(0.5);
+            this.readoutTarget = this.add
+              .text(W / 2, 314, "", { fontSize: "15px", color: CSS.dim })
+              .setOrigin(0.5);
+            // demand meter (shown for profit rounds)
+            this.demandLabel = this.add
+              .text(W / 2 + 250, 222, "", { fontSize: "12px", color: CSS.dim })
               .setOrigin(0.5)
               .setAlpha(0);
-            this.nxtBtn.on("pointerdown", () => {
-              if (this.answered) this.nextQ();
-            });
+            this.demandGfx = this.add.graphics();
 
-            // Timer
-            this.timerEvt = this.time.addEvent({
-              delay: 1000,
-              callback: this.tick,
-              callbackScope: this,
-              loop: true,
-            });
+            // ── CONTROLS ──
+            // Slider (list/price) and Dial (percent). Built as draggable bars.
+            this.controls = []; // {kind:'slider'|'dial', ...}
+            this.activeCtrl = 0;
 
-            // Keys
+            // Slider control widget (price / list price)
+            this.sliderY = 470;
+            this.sliderX0 = 240;
+            this.sliderX1 = 784;
+            this.sliderTrack = this.add
+              .rectangle(
+                (this.sliderX0 + this.sliderX1) / 2,
+                this.sliderY,
+                this.sliderX1 - this.sliderX0,
+                12,
+                COL.track,
+              )
+              .setStrokeStyle(2, 0x000000, 0.3);
+            this.sliderFill = this.add
+              .rectangle(this.sliderX0, this.sliderY, 0, 12, COL.sky)
+              .setOrigin(0, 0.5);
+            this.sliderKnob = this.add
+              .circle(this.sliderX0, this.sliderY, 18, COL.sky)
+              .setStrokeStyle(3, COL.white, 0.85)
+              .setInteractive({ useHandCursor: true, draggable: true });
+            this.sliderTitle = this.add
+              .text(this.sliderX0, this.sliderY - 42, "", {
+                fontSize: "15px",
+                fontFamily: "Arial Black",
+                color: CSS.parch,
+              })
+              .setOrigin(0, 0.5);
+            this.sliderReadout = this.add
+              .text(this.sliderX1, this.sliderY - 42, "", {
+                fontSize: "20px",
+                fontFamily: "Arial Black",
+                color: "#fff",
+              })
+              .setOrigin(1, 0.5);
+            this.input.setDraggable(this.sliderKnob);
+
+            // Dial control (percent) — horizontal bar styled as a dial track
+            this.dialY = 560;
+            this.dialTrack = this.add
+              .rectangle(
+                (this.sliderX0 + this.sliderX1) / 2,
+                this.dialY,
+                this.sliderX1 - this.sliderX0,
+                12,
+                COL.track,
+              )
+              .setStrokeStyle(2, 0x000000, 0.3);
+            this.dialFill = this.add
+              .rectangle(this.sliderX0, this.dialY, 0, 12, COL.gold)
+              .setOrigin(0, 0.5);
+            this.dialKnob = this.add
+              .circle(this.sliderX0, this.dialY, 18, COL.gold)
+              .setStrokeStyle(3, COL.white, 0.85)
+              .setInteractive({ useHandCursor: true, draggable: true });
+            this.dialTitle = this.add
+              .text(this.sliderX0, this.dialY - 42, "", {
+                fontSize: "15px",
+                fontFamily: "Arial Black",
+                color: CSS.parch,
+              })
+              .setOrigin(0, 0.5);
+            this.dialReadout = this.add
+              .text(this.sliderX1, this.dialY - 42, "", {
+                fontSize: "20px",
+                fontFamily: "Arial Black",
+                color: "#fff",
+              })
+              .setOrigin(1, 0.5);
+            this.input.setDraggable(this.dialKnob);
+
+            // Second dial (combo rounds only)
+            this.dial2Y = 560; // overlaps; combo lays them out compactly
+            this.dial2Track = this.add
+              .rectangle(
+                (this.sliderX0 + this.sliderX1) / 2,
+                this.dial2Y,
+                this.sliderX1 - this.sliderX0,
+                12,
+                COL.track,
+              )
+              .setStrokeStyle(2, 0x000000, 0.3)
+              .setVisible(false);
+            this.dial2Fill = this.add
+              .rectangle(this.sliderX0, this.dial2Y, 0, 12, COL.ruby)
+              .setOrigin(0, 0.5)
+              .setVisible(false);
+            this.dial2Knob = this.add
+              .circle(this.sliderX0, this.dial2Y, 18, COL.ruby)
+              .setStrokeStyle(3, COL.white, 0.85)
+              .setInteractive({ useHandCursor: true, draggable: true })
+              .setVisible(false);
+            this.dial2Title = this.add
+              .text(this.sliderX0, this.dial2Y - 42, "", {
+                fontSize: "15px",
+                fontFamily: "Arial Black",
+                color: CSS.parch,
+              })
+              .setOrigin(0, 0.5)
+              .setVisible(false);
+            this.dial2Readout = this.add
+              .text(this.sliderX1, this.dial2Y - 42, "", {
+                fontSize: "20px",
+                fontFamily: "Arial Black",
+                color: "#fff",
+              })
+              .setOrigin(1, 0.5)
+              .setVisible(false);
+            this.input.setDraggable(this.dial2Knob);
+
+            // drag handlers
+            this.input.on("drag", (pointer, obj, dragX) => {
+              if (this.locked) return;
+              const fx = Phaser.Math.Clamp(
+                (dragX - this.sliderX0) / (this.sliderX1 - this.sliderX0),
+                0,
+                1,
+              );
+              if (obj === this.sliderKnob) this.setControl("slider", fx);
+              else if (obj === this.dialKnob) this.setControl("dial", fx);
+              else if (obj === this.dial2Knob) this.setControl("dial2", fx);
+            });
+            // tap on a track to jump
+            [this.sliderTrack, this.dialTrack, this.dial2Track].forEach(
+              (t, n) => {
+                t.setInteractive({ useHandCursor: true });
+                t.on("pointerdown", (p) => {
+                  if (this.locked) return;
+                  au();
+                  const fx = Phaser.Math.Clamp(
+                    (p.x - this.sliderX0) / (this.sliderX1 - this.sliderX0),
+                    0,
+                    1,
+                  );
+                  this.setControl(["slider", "dial", "dial2"][n], fx);
+                });
+              },
+            );
+
+            // ── Scaffold / hint line (Level 1 always shows the formula) ──
+            this.scaffoldTxt = this.add
+              .text(W / 2, 622, "", {
+                fontSize: "13px",
+                color: CSS.gold,
+                align: "center",
+                wordWrap: { width: 760 },
+              })
+              .setOrigin(0.5);
+
+            // ── Feedback ──
+            this.fbTxt = this.add
+              .text(W / 2, 654, "", {
+                fontSize: "15px",
+                color: "#fff",
+                fontStyle: "bold",
+                align: "center",
+                wordWrap: { width: 780 },
+              })
+              .setOrigin(0.5);
+
+            // ── Action buttons ──
+            this.sellBtn = this.makeBtn(
+              W / 2,
+              706,
+              240,
+              52,
+              "\u{1F4B5} SELL",
+              COL.gold,
+              () => this.sell(),
+              "22px",
+              "#0a0608",
+            );
+            this.hintBtn = this.makeBtn(
+              W / 2 + 250,
+              706,
+              160,
+              46,
+              "\u{1F4A1} Hint",
+              COL.panel,
+              () => this.showHint(),
+              "16px",
+              CSS.parch,
+            );
+            this.nextBtn = this.makeBtn(
+              W / 2,
+              706,
+              240,
+              52,
+              "NEXT CUSTOMER ›",
+              COL.emerald,
+              () => this.nextRound(),
+              "18px",
+              "#fff",
+            );
+            this.nextBtn.setVisible(false);
+
+            // keyboard
             this.input.keyboard.on("keydown", (e) => {
-              if (e.key === "1" || e.key === "a") this.pick(0);
-              if (e.key === "2" || e.key === "b") this.pick(1);
-              if (e.key === "3" || e.key === "c") this.pick(2);
-              if (e.key === "4" || e.key === "d") this.pick(3);
-              if (e.key === "Enter" && this.answered) this.nextQ();
+              if (this.locked) {
+                if (e.key === "Enter") this.nextRound();
+                return;
+              }
+              const k = e.key;
+              if (k === "ArrowUp" || k === "ArrowDown") {
+                e.preventDefault?.();
+                this.cycleCtrl(k === "ArrowDown" ? 1 : -1);
+              } else if (k === "ArrowLeft") {
+                e.preventDefault?.();
+                this.nudge(-1);
+              } else if (k === "ArrowRight") {
+                e.preventDefault?.();
+                this.nudge(1);
+              } else if (k === "Enter") {
+                e.preventDefault?.();
+                this.sell();
+              } else if (k.toLowerCase() === "h") this.showHint();
             });
 
-            this.loadQ();
+            this.loadRound();
           }
 
-          tick() {
-            if (this.answered || this.timeLeft <= 0) return;
-            this.timeLeft--;
-            this.hudTimer.setText(this.timeLeft + "s");
-            if (this.timeLeft <= 5 && this.timeLeft > 0) {
-              bip(300, 0.04, "square", 0.03);
-              this.hudTimer.setColor("#ff4444");
-            }
-            if (this.timeLeft <= 0) {
-              this.answered = true;
-              sfxNo();
-              this.streak = 0;
-              this.lives--;
-              this.showFB(false);
-              this.cameras.main.shake(200, 0.01);
-              this.updateHUD();
-              if (this.lives <= 0)
-                this.time.delayedCall(1500, () => this.endGame());
-            }
+          makeBtn(x, y, w, h, color, cb, fs = "18px", txt = "#fff") {
+            const r = this.add
+              .rectangle(x, y, w, h, color)
+              .setStrokeStyle(2, 0x000000, 0.25)
+              .setInteractive({ useHandCursor: true });
+            const t = this.add
+              .text(x, y, "", {
+                fontSize: fs,
+                fontFamily: "Arial Black",
+                color: txt,
+              })
+              .setOrigin(0.5);
+            r._t = t;
+            r.on("pointerover", () => r.setScale(1.05));
+            r.on("pointerout", () => r.setScale(1));
+            r.on("pointerdown", () => {
+              au();
+              cb();
+            });
+            // label set by caller indirectly
+            r.setLabel = (s) => t.setText(s);
+            return Object.assign(r, { setLabelText: (s) => t.setText(s) });
           }
 
-          loadQ() {
-            if (this.qIdx >= this.questions.length)
-              this.questions.push(...genQuestions());
-            const q = this.questions[this.qIdx];
-            this.answered = false;
+          loadRound() {
+            this.round = genRound(this.tier, this.roundIx);
+            const r = this.round;
+            this.locked = false;
             this.attempts = 0;
-            this.timeLeft = 35;
-            this.hudTimer.setColor("#d4a017");
+            this.activeCtrl = 0;
+            this.fbTxt.setText("");
+            this.nextBtn.setVisible(false);
+            this.sellBtn.setVisible(true);
+            this.hintBtn.setVisible(true);
+            this.sellBtn.setLabelText("\u{1F4B5} SELL");
+            this.hintBtn.setLabelText("\u{1F4A1} Hint");
+            this.nextBtn.setLabelText("NEXT CUSTOMER ›");
 
-            // Customer walks in
-            const ce =
-              this.custEmoji[Math.floor(Math.random() * this.custEmoji.length)];
-            this.custSprite.setText(ce).setX(-30);
+            // shopper walks in
+            this.shopper.setText(pick(this.shopperEmoji)).setX(-30);
             this.tweens.add({
-              targets: this.custSprite,
-              x: 100,
-              alpha: 1,
+              targets: this.shopper,
+              x: 96,
               duration: 400,
               ease: "Back.easeOut",
             });
 
-            this.qZone.setText(q.icon + " " + q.zone);
-            this.qText.setText(q.text);
+            this.taskZone.setText(this.zoneFor(r.type));
+            this.taskText.setText(r.prompt);
 
-            q.choices.forEach((c, i) => {
-              this.btnTxts[i].setText(String.fromCharCode(65 + i) + ". " + c);
-              this.btns[i].fillColor = 0x1e1018;
-              this.btns[i].setStrokeStyle(2, 0x3a2030);
-              this.btns[i].setAlpha(1);
-              this.btnTxts[i].setAlpha(1);
-              this.btns[i].setInteractive();
-            });
+            // control state in canonical units
+            // slider holds a price in cents (st.listC); dial/dial2 hold percents.
+            this.st = { listC: 0, dial: 0, dial2: 0 };
 
-            this.hintBg.setAlpha(0);
-            this.hintTxt.setAlpha(0);
-            this.fbBg.setAlpha(0);
-            this.fbTxt.setAlpha(0);
-            this.nxtBtn.setAlpha(0);
-            this.nxtTxt.setAlpha(0);
+            // Configure which controls are live for this round type.
+            this.cfg = this.controlConfig(r);
+
+            // initialize control positions to their minimums
+            this.st.listC = this.cfg.slider ? this.cfg.slider.minC : 0;
+            this.st.dial = this.cfg.dial ? this.cfg.dial.min : 0;
+            this.st.dial2 = this.cfg.dial2 ? this.cfg.dial2.min : 0;
+
+            this.applyControlVisibility();
+            this.refresh();
+
+            // scaffold: L1 always shows it; L2 hidden until hint
+            this.scaffoldTxt.setText(this.tier === 1 ? r.scaffold : "");
             this.updateHUD();
           }
 
-          pick(i) {
-            if (this.answered) return;
-            au();
-            const q = this.questions[this.qIdx];
-            const chosen = q.choices[i];
+          zoneFor(t) {
+            return (
+              {
+                discount: "\u{1F3F7}️ DISCOUNT",
+                tax: "\u{1F4B3} TAX",
+                markPrice: "\u{1F4B2} SET THE PRICE",
+                combo: "\u{1F9FE} DISCOUNT + TAX",
+                profit: "\u{1F4C8} PROFIT & DEMAND",
+              }[t] || ""
+            );
+          }
 
-            if (chosen === q.correct) {
-              this.answered = true;
-              sfxOk();
-              sfxCoin();
-              this.correct++;
-              this.total++;
-              this.streak++;
-              this.customersServed++;
-              if (this.streak > this.bestStreak) this.bestStreak = this.streak;
-              const combo = Math.min(5, 1 + Math.floor(this.streak / 3));
-              const bonus = this.streak >= 2 ? 40 : 0;
-              const earned =
-                (100 + bonus + (this.attempts === 0 ? 50 : 0)) * combo;
-              this.gold += earned;
-              this.score += earned;
-              if (this.correct % 5 === 0) {
-                this.level++;
-                sfxLv();
-              }
+          // Define control ranges + which controls are active per round type.
+          controlConfig(r) {
+            const cfg = { slider: null, dial: null, dial2: null };
+            if (r.type === "discount") {
+              cfg.dial = {
+                title: "% OFF dial",
+                min: 0,
+                max: r.dialMax,
+                step: r.dialStep,
+                suffix: "%",
+              };
+            } else if (r.type === "tax") {
+              cfg.dial = {
+                title: "% TAX dial",
+                min: 0,
+                max: r.dialMax,
+                step: r.dialStep,
+                suffix: "%",
+              };
+            } else if (r.type === "markPrice") {
+              cfg.slider = {
+                title: "LIST PRICE slider",
+                minC: 0,
+                maxC: r.sliderMaxC,
+                stepC: r.sliderStepC,
+                money: true,
+              };
+            } else if (r.type === "combo") {
+              cfg.dial = {
+                title: "% OFF dial",
+                min: 0,
+                max: r.dialMax,
+                step: r.dialStep,
+                suffix: "%",
+              };
+              cfg.dial2 = {
+                title: "% TAX dial",
+                min: 0,
+                max: r.dial2Max,
+                step: r.dialStep,
+                suffix: "%",
+              };
+            } else if (r.type === "profit") {
+              cfg.slider = {
+                title: "PRICE slider",
+                minC: r.costC,
+                maxC: r.sliderMaxC,
+                stepC: r.sliderStepC,
+                money: true,
+              };
+            }
+            // active control order for keyboard cycling
+            cfg.order = [];
+            if (cfg.slider) cfg.order.push("slider");
+            if (cfg.dial) cfg.order.push("dial");
+            if (cfg.dial2) cfg.order.push("dial2");
+            return cfg;
+          }
 
-              this.btns[i].fillColor = COL.emerald;
-              this.showFB(true);
-              this.spawnParts(this.btns[i].x, this.btns[i].y, true);
-              this.showPts(earned);
+          applyControlVisibility() {
+            const has = (k) => !!this.cfg[k];
+            const showSlider = has("slider");
+            this.sliderTrack.setVisible(showSlider);
+            this.sliderFill.setVisible(showSlider);
+            this.sliderKnob.setVisible(showSlider);
+            this.sliderTitle.setVisible(showSlider);
+            this.sliderReadout.setVisible(showSlider);
 
-              // Customer leaves happy
-              this.tweens.add({
-                targets: this.custSprite,
-                x: W + 50,
-                alpha: 0,
-                duration: 600,
-                delay: 300,
-                ease: "Power2",
-              });
+            const showDial = has("dial");
+            this.dialTrack.setVisible(showDial);
+            this.dialFill.setVisible(showDial);
+            this.dialKnob.setVisible(showDial);
+            this.dialTitle.setVisible(showDial);
+            this.dialReadout.setVisible(showDial);
+
+            const showDial2 = has("dial2");
+            this.dial2Track.setVisible(showDial2);
+            this.dial2Fill.setVisible(showDial2);
+            this.dial2Knob.setVisible(showDial2);
+            this.dial2Title.setVisible(showDial2);
+            this.dial2Readout.setVisible(showDial2);
+
+            // Layout: if only a dial (no slider), raise it to the slider row for balance.
+            const dialRowY = showSlider ? this.dialY : this.sliderY;
+            this.placeDial(dialRowY, showDial2);
+
+            if (this.cfg.slider)
+              this.sliderTitle.setText(this.cfg.slider.title);
+            if (this.cfg.dial) this.dialTitle.setText(this.cfg.dial.title);
+            if (this.cfg.dial2) this.dial2Title.setText(this.cfg.dial2.title);
+          }
+
+          placeDial(y, showDial2) {
+            [this.dialTrack, this.dialFill].forEach((o) => (o.y = y));
+            this.dialKnob.y = y;
+            this.dialTitle.y = y - 42;
+            this.dialReadout.y = y - 42;
+            if (showDial2) {
+              const y2 = y + 90;
+              [this.dial2Track, this.dial2Fill].forEach((o) => (o.y = y2));
+              this.dial2Knob.y = y2;
+              this.dial2Title.y = y2 - 42;
+              this.dial2Readout.y = y2 - 42;
+            }
+            this._dialRowY = y;
+          }
+
+          // Set a control from a 0..1 fraction (drag/track-tap), snapping to step.
+          setControl(kind, fx) {
+            const c = this.cfg[kind === "slider" ? "slider" : kind];
+            if (!c) return;
+            if (kind === "slider") {
+              const span = c.maxC - c.minC;
+              let v = c.minC + Math.round((fx * span) / c.stepC) * c.stepC;
+              v = Phaser.Math.Clamp(v, c.minC, c.maxC);
+              this.st.listC = v;
+            } else if (kind === "dial") {
+              let v =
+                c.min + Math.round((fx * (c.max - c.min)) / c.step) * c.step;
+              this.st.dial = Phaser.Math.Clamp(v, c.min, c.max);
+            } else if (kind === "dial2") {
+              let v =
+                c.min + Math.round((fx * (c.max - c.min)) / c.step) * c.step;
+              this.st.dial2 = Phaser.Math.Clamp(v, c.min, c.max);
+            }
+            sfxTick();
+            this.refresh();
+          }
+
+          cycleCtrl(dir) {
+            const ord = this.cfg.order;
+            if (ord.length <= 1) return;
+            this.activeCtrl = (this.activeCtrl + dir + ord.length) % ord.length;
+            sfxCl();
+            this.refresh();
+          }
+
+          nudge(dir) {
+            const ord = this.cfg.order;
+            const kind = ord[this.activeCtrl] || ord[0];
+            if (!kind) return;
+            if (kind === "slider") {
+              const c = this.cfg.slider;
+              this.st.listC = Phaser.Math.Clamp(
+                this.st.listC + dir * c.stepC,
+                c.minC,
+                c.maxC,
+              );
+            } else if (kind === "dial") {
+              const c = this.cfg.dial;
+              this.st.dial = Phaser.Math.Clamp(
+                this.st.dial + dir * c.step,
+                c.min,
+                c.max,
+              );
+            } else if (kind === "dial2") {
+              const c = this.cfg.dial2;
+              this.st.dial2 = Phaser.Math.Clamp(
+                this.st.dial2 + dir * c.step,
+                c.min,
+                c.max,
+              );
+            }
+            sfxTick();
+            this.refresh();
+          }
+
+          // Recompute knob positions, readouts, the live meter, and shopper mood.
+          refresh() {
+            const r = this.round,
+              cfg = this.cfg;
+            const fracSlider = cfg.slider
+              ? (this.st.listC - cfg.slider.minC) /
+                (cfg.slider.maxC - cfg.slider.minC)
+              : 0;
+            const fracDial = cfg.dial
+              ? (this.st.dial - cfg.dial.min) /
+                (cfg.dial.max - cfg.dial.min || 1)
+              : 0;
+            const fracDial2 = cfg.dial2
+              ? (this.st.dial2 - cfg.dial2.min) /
+                (cfg.dial2.max - cfg.dial2.min || 1)
+              : 0;
+            const px = (f) =>
+              this.sliderX0 + f * (this.sliderX1 - this.sliderX0);
+
+            if (cfg.slider) {
+              this.sliderKnob.x = px(fracSlider);
+              this.sliderFill.width = this.sliderKnob.x - this.sliderX0;
+              this.sliderReadout.setText(money(this.st.listC));
+              this.highlightCtrl("slider");
+            }
+            if (cfg.dial) {
+              this.dialKnob.x = px(fracDial);
+              this.dialFill.width = this.dialKnob.x - this.sliderX0;
+              this.dialReadout.setText(this.st.dial + "%");
+              this.highlightCtrl("dial");
+            }
+            if (cfg.dial2) {
+              this.dial2Knob.x = px(fracDial2);
+              this.dial2Fill.width = this.dial2Knob.x - this.sliderX0;
+              this.dial2Readout.setText(this.st.dial2 + "%");
+              this.highlightCtrl("dial2");
+            }
+
+            // LIVE READOUT — the math drives this in real time.
+            const ev = evalRound(r, this.st);
+            this.readoutLabel.setText(ev.label);
+            this.readoutVal.setText(money(ev.value));
+            const tgt = r.type === "profit" ? r.profitGoalC : r.targetC;
+            const diff = ev.value - tgt;
+            const hit = diff === 0;
+            const near = Math.abs(diff) <= (r.type === "profit" ? 100 : 50); // within $1 / 50¢
+            const col = hit ? COL.emerald : near ? COL.gold : COL.track;
+            this.readoutBox.setStrokeStyle(4, col);
+            this.readoutVal.setColor(hit ? CSS.ok : near ? CSS.near : "#fff");
+            this.readoutTarget.setText(
+              hit
+                ? "✓ matches the target"
+                : r.targetLabel +
+                    (diff > 0 ? "  (readout is HIGH)" : "  (readout is LOW)"),
+            );
+            this.readoutTarget.setColor(hit ? CSS.ok : CSS.dim);
+
+            // demand meter / shopper mood for profit rounds
+            if (r.type === "profit") {
+              this.demandLabel.setAlpha(1).setText("SHOPPERS: " + ev.demand);
+              this.drawDemand(ev.demand, r.baseDemand);
+              this.shopperBubble.setText(
+                ev.demand <= 2
+                  ? "Too pricey!"
+                  : ev.demand >= r.baseDemand - 2
+                    ? "Great deal!"
+                    : "Hmm...",
+              );
             } else {
-              sfxNo();
-              this.attempts++;
-              this.btns[i].fillColor = COL.ruby;
-              this.btns[i].setAlpha(0.4);
-              this.btns[i].disableInteractive();
-              this.cameras.main.shake(120, 0.006);
+              this.demandLabel.setAlpha(0);
+              this.demandGfx.clear();
+              this.shopperBubble.setText(
+                hit
+                  ? "I'll take it!"
+                  : near
+                    ? "Almost..."
+                    : diff > 0
+                      ? "That's too high."
+                      : "Could go higher.",
+              );
+            }
+          }
 
-              if (this.attempts >= 2) {
-                this.answered = true;
-                this.total++;
-                this.streak = 0;
-                this.lives--;
-                q.choices.forEach((c, j) => {
-                  if (c === q.correct) this.btns[j].fillColor = COL.emerald;
-                });
-                this.showFB(false);
-                if (this.lives <= 0)
-                  this.time.delayedCall(1500, () => this.endGame());
-              } else {
-                this.hintBg.setAlpha(0.8);
-                this.hintTxt.setText("\u{1F4A1} " + q.hint).setAlpha(1);
+          drawDemand(d, base) {
+            const g = this.demandGfx;
+            g.clear();
+            const x = W / 2 + 200,
+              y = 248,
+              w = 100,
+              h = 14;
+            g.fillStyle(COL.track, 1).fillRoundedRect(x, y, w, h, 6);
+            const frac = base ? Phaser.Math.Clamp(d / base, 0, 1) : 0;
+            g.fillStyle(
+              d <= 2 ? COL.ruby : d >= base - 2 ? COL.emerald : COL.gold,
+              1,
+            );
+            g.fillRoundedRect(x, y, Math.max(2, w * frac), h, 6);
+          }
+
+          highlightCtrl(kind) {
+            const ord = this.cfg.order;
+            const activeKind = ord[this.activeCtrl] || ord[0];
+            const isActive = kind === activeKind;
+            const knob =
+              kind === "slider"
+                ? this.sliderKnob
+                : kind === "dial"
+                  ? this.dialKnob
+                  : this.dial2Knob;
+            knob.setStrokeStyle(
+              isActive ? 4 : 3,
+              isActive ? COL.white : COL.white,
+              isActive ? 1 : 0.55,
+            );
+            knob.setScale(isActive ? 1.12 : 1);
+          }
+
+          sell() {
+            if (this.locked) return;
+            const r = this.round;
+            const ev = evalRound(r, this.st);
+            const tgt = r.type === "profit" ? r.profitGoalC : r.targetC;
+
+            if (ev.value === tgt) {
+              this.onCorrect(ev);
+              return;
+            }
+
+            // ── diagnostic, method-teaching feedback (no giveaway) ──
+            sfxNo();
+            this.attempts++;
+            this.streak = 0;
+            this.cameras.main.shake(120, 0.005);
+            const diff = ev.value - tgt;
+            let msg;
+            if (r.type === "profit") {
+              msg =
+                diff > 0
+                  ? "Profit is OVER the goal. A higher price earns more per unit but loses shoppers — find the balance."
+                  : "Profit is UNDER the goal. Multiply (price − cost) by the shoppers you still keep.";
+            } else if (diff > 0) {
+              msg =
+                "The readout is too HIGH. " +
+                (r.type === "discount"
+                  ? "A bigger % off lowers the sale price."
+                  : r.type === "tax"
+                    ? "A smaller tax % means a smaller total."
+                    : "Try a lower setting.");
+            } else {
+              msg =
+                "The readout is too LOW. " +
+                (r.type === "discount"
+                  ? "A smaller % off keeps the price higher."
+                  : r.type === "tax"
+                    ? "A bigger tax % means a bigger total."
+                    : "Try a higher setting.");
+            }
+            this.fbTxt.setText("❌ " + msg).setColor(CSS.bad);
+            // reveal the scaffold after a miss on L2 too
+            if (this.tier === 2) this.scaffoldTxt.setText(r.scaffold);
+
+            if (this.attempts >= (this.tier === 1 ? 4 : 3)) {
+              this.lives--;
+              this.attempts = 0;
+              this.fbTxt
+                .setText("❌ " + msg + "  (Lost a chance — keep adjusting.)")
+                .setColor(CSS.bad);
+              if (this.lives <= 0) {
+                this.updateHUD();
+                this.time.delayedCall(1100, () => this.endGame());
+                return;
               }
             }
             this.updateHUD();
           }
 
-          showFB(ok) {
-            const q = this.questions[this.qIdx];
-            this.fbBg.setAlpha(0.95);
-            this.fbBg.fillColor = ok ? 0x0a200a : 0x200a0a;
-            this.fbTxt.setText((ok ? "✅ " : "❌ ") + q.explain).setAlpha(1);
-            this.nxtBtn.setAlpha(1);
-            this.nxtTxt.setAlpha(1);
-            this.nxtTxt.setText(
-              this.lives <= 0 ? "SEE RESULTS" : "NEXT CUSTOMER >",
-            );
+          onCorrect(ev) {
+            this.locked = true;
+            sfxLock();
+            sfxCoin();
+            this.correct++;
+            this.served++;
+            this.streak++;
+            if (this.streak > this.bestStreak) this.bestStreak = this.streak;
+            const combo = Math.min(5, 1 + Math.floor(this.streak / 3));
+            const first = this.attempts === 0 ? 50 : 0;
+            const earned = (100 + first + this.streak * 8) * combo;
+            this.gold += earned;
+            this.score += earned;
+
+            this.readoutBox.setStrokeStyle(4, COL.emerald);
+            this.fbTxt
+              .setText(
+                `✅ Sold! ${this.solutionRecap()}  +${earned} Gold${combo > 1 ? " ×" + combo : ""}`,
+              )
+              .setColor(CSS.ok);
+            this.popReward();
+            this.shopperBubble.setText("Thank you!");
+            this.tweens.add({
+              targets: this.shopper,
+              x: W + 60,
+              duration: 600,
+              delay: 250,
+              ease: "Power2",
+            });
+
+            if (this.correct % 4 === 0) {
+              this.level++;
+              sfxLv();
+            }
+            this.updateHUD();
+
+            this.sellBtn.setVisible(false);
+            this.hintBtn.setVisible(false);
+            const done = this.served >= this.goal;
+            this.nextBtn
+              .setLabelText(done ? "SEE RESULTS ›" : "NEXT CUSTOMER ›")
+              .setVisible(true);
           }
 
-          showPts(p) {
+          // Recap the METHOD, shown only after the player already solved it (not a giveaway).
+          solutionRecap() {
+            const r = this.round;
+            if (r.type === "discount")
+              return `${this.st.dial}% off ${money(r.listC)} = ${money(r.targetC)}.`;
+            if (r.type === "tax")
+              return `${money(r.priceC)} + ${this.st.dial}% tax = ${money(r.targetC)}.`;
+            if (r.type === "markPrice")
+              return `${money(this.st.listC)} at ${r.pct}% off = ${money(r.targetC)}.`;
+            if (r.type === "combo")
+              return `${money(r.priceC)} → ${this.st.dial}% off → +${this.st.dial2}% tax = ${money(r.targetC)}.`;
+            return `Price ${money(this.st.listC)} hit the profit goal.`;
+          }
+
+          nextRound() {
+            if (!this.locked) return;
+            sfxCl();
+            if (this.served >= this.goal) {
+              this.endGame();
+              return;
+            }
+            this.roundIx++;
+            this.loadRound();
+          }
+
+          showHint() {
+            if (this.locked) return;
+            sfxCl();
+            const r = this.round;
+            // Method hint, never the answer value.
+            this.scaffoldTxt.setText(r.scaffold);
+            this.fbTxt.setText("\u{1F4A1} " + r.ratioHint).setColor(CSS.gold);
+          }
+
+          popReward() {
             const t = this.add
-              .text(W / 2, 190, "+" + p + " \u{1F4B0}", {
-                fontSize: "22px",
-                fontFamily: "Arial Black",
-                color: "#d4a017",
-                stroke: "#000",
-                strokeThickness: 3,
-              })
+              .text(W / 2, 200, "\u{1F4B0}", { fontSize: "44px" })
               .setOrigin(0.5);
             this.tweens.add({
               targets: t,
               y: 150,
               alpha: 0,
-              duration: 1000,
+              duration: 900,
               onComplete: () => t.destroy(),
             });
-          }
-
-          spawnParts(x, y, ok) {
-            const colors = ok
-              ? [COL.gold, COL.emerald, COL.parch, COL.white]
-              : [COL.ruby, 0xff6b6b];
-            for (let i = 0; i < 14; i++) {
+            for (let i = 0; i < 16; i++) {
               const p = this.add.circle(
-                x,
-                y,
+                W / 2,
+                268,
                 2 + Math.random() * 3,
-                colors[Math.floor(Math.random() * colors.length)],
+                [COL.gold, COL.emerald, COL.parch, COL.sky][rndInt(4)],
               );
               this.tweens.add({
                 targets: p,
-                x: x + (Math.random() - 0.5) * 280,
-                y: y + (Math.random() - 0.5) * 180,
+                x: W / 2 + (Math.random() - 0.5) * 300,
+                y: 268 + (Math.random() - 0.5) * 180,
                 alpha: 0,
                 scale: 0,
                 duration: 500 + Math.random() * 400,
@@ -851,52 +1401,43 @@
             }
           }
 
-          nextQ() {
-            if (!this.answered) return;
-            sfxCl();
-            if (this.lives <= 0) {
-              this.endGame();
-              return;
-            }
-            this.custSprite.setAlpha(0);
-            this.qIdx++;
-            this.loadQ();
-          }
-
           updateHUD() {
-            this.hudGold.setText("\u{1F4B0} " + this.gold + " Gold");
-            this.hudHP.setText("");
-            for (let i = 0; i < 3; i++) {
-              this.hudHP.text += i < this.lives ? "❤️" : "🖤";
-            }
-            this.hudStreak.setText(
-              this.streak >= 2 ? "\u{1F525} " + this.streak + "× Streak!" : "",
+            this.hudGold.setText(
+              "\u{1F4B0} " + this.gold.toLocaleString() + " Gold",
             );
-            this.hudTimer.setText(this.timeLeft + "s");
-            this.hudQ.setText(
-              "Customer " + (this.qIdx + 1) + " | Lv " + this.level,
+            this.hudLevel.setText(
+              "Level " + this.tier + " · Round " + (this.roundIx + 1),
+            );
+            this.hudServed.setText("Served " + this.served + "/" + this.goal);
+            let hp = "";
+            for (let i = 0; i < (this.tier === 1 ? 5 : 3); i++)
+              hp += i < this.lives ? "❤️" : "\u{1F5A4}";
+            this.hudHP.setText(hp);
+            this.hudStreak.setText(
+              this.streak >= 3 ? "\u{1F525} streak " + this.streak : "",
             );
           }
 
           endGame() {
-            this.timerEvt.remove();
             this.cameras.main.fadeOut(500);
             this.time.delayedCall(500, () =>
               this.scene.start("ResultScene", {
+                tier: this.tier,
+                goal: this.goal,
                 score: this.score,
                 gold: this.gold,
                 correct: this.correct,
-                total: this.total,
+                served: this.served,
                 bestStreak: this.bestStreak,
                 level: this.level,
-                served: this.customersServed,
-                store: this.store,
               }),
             );
           }
         }
 
-        // ─── RESULT SCENE ───
+        // ════════════════════════════════════════════════════════════════
+        //  RESULT SCENE
+        // ════════════════════════════════════════════════════════════════
         class ResultScene extends Phaser.Scene {
           constructor() {
             super("ResultScene");
@@ -906,19 +1447,17 @@
           }
           create() {
             this.cameras.main.setBackgroundColor(COL.bg).fadeIn(500);
-            const pct =
-              this.total > 0
-                ? Math.round((this.correct / this.total) * 100)
-                : 0;
+            const goal = this.goal || 1;
+            const pct = goal > 0 ? Math.round((this.correct / goal) * 100) : 0;
 
             try {
               window.EduPulse &&
                 EduPulse.record({
                   activityTitle: document.title,
                   score: this.correct,
-                  maxScore: this.total,
+                  maxScore: goal,
                   problemsCorrect: this.correct,
-                  problemsAttempted: this.total,
+                  problemsAttempted: this.served,
                   standard: "6.RP.A.3",
                 });
             } catch (e) {}
@@ -927,104 +1466,118 @@
             if (pct >= 90) {
               rank = "MALL MOGUL";
               emoji = "\u{1F451}";
-            } else if (pct >= 80) {
+            } else if (pct >= 75) {
               rank = "STORE MANAGER";
               emoji = "\u{1F3C6}";
-            } else if (pct >= 70) {
+            } else if (pct >= 50) {
               rank = "SENIOR CLERK";
               emoji = "⭐";
-            } else if (pct >= 60) {
-              rank = "CASHIER";
-              emoji = "\u{1F4AA}";
             } else {
-              rank = "TRAINEE";
+              rank = "TRAINEE — KEEP PRACTICING";
               emoji = "\u{1F4DA}";
             }
 
             this.add
-              .text(W / 2, 70, emoji, { fontSize: "64px" })
+              .text(W / 2, 96, emoji, { fontSize: "70px" })
               .setOrigin(0.5);
             this.add
-              .text(W / 2, 145, "STORE CLOSED", {
+              .text(W / 2, 178, "STORE CLOSED", {
                 fontSize: "44px",
                 fontFamily: "Arial Black",
-                color: "#d4a017",
+                color: CSS.gold,
                 stroke: "#000",
                 strokeThickness: 4,
               })
               .setOrigin(0.5);
             this.add
-              .text(W / 2, 200, rank, {
-                fontSize: "20px",
-                color: "#f5e6c8",
+              .text(W / 2, 230, rank, {
+                fontSize: "22px",
+                color: CSS.parch,
                 fontStyle: "bold",
               })
               .setOrigin(0.5);
             this.add
-              .text(W / 2, 255, this.gold.toLocaleString() + " \u{1F4B0}", {
-                fontSize: "48px",
+              .text(W / 2, 296, this.gold.toLocaleString() + " \u{1F4B0}", {
+                fontSize: "52px",
                 fontFamily: "Arial Black",
-                color: "#d4a017",
+                color: CSS.gold,
               })
               .setOrigin(0.5);
             this.add
-              .text(W / 2, 295, "GOLD EARNED", {
+              .text(W / 2, 338, "GOLD EARNED", {
                 fontSize: "12px",
-                color: "#9a8070",
+                color: CSS.dim,
               })
               .setOrigin(0.5);
 
             const stats = [
-              { l: "Correct", v: this.correct + "/" + this.total },
+              { l: "Sales made", v: this.correct + "/" + goal },
               { l: "Accuracy", v: pct + "%" },
-              { l: "Streak", v: this.bestStreak },
-              { l: "Level", v: this.level },
-              { l: "Served", v: this.served },
+              { l: "Best streak", v: this.bestStreak },
+              { l: "Level reached", v: this.level },
             ];
             stats.forEach((s, i) => {
-              const x = 112 + i * 180,
-                y = 400;
+              const x = 212 + i * 200,
+                y = 430;
               this.add
-                .rectangle(x, y, 155, 80, COL.panel)
-                .setStrokeStyle(1, 0x3a2030);
+                .rectangle(x, y, 175, 88, COL.panel)
+                .setStrokeStyle(2, COL.track);
               this.add
-                .text(x, y - 10, String(s.v), {
-                  fontSize: "22px",
+                .text(x, y - 12, String(s.v), {
+                  fontSize: "26px",
                   fontFamily: "Arial Black",
-                  color: "#d4a017",
+                  color: CSS.gold,
                 })
                 .setOrigin(0.5);
               this.add
-                .text(x, y + 20, s.l, { fontSize: "11px", color: "#9a8070" })
+                .text(x, y + 24, s.l, { fontSize: "12px", color: CSS.dim })
                 .setOrigin(0.5);
             });
 
-            const btn = this.add
-              .rectangle(W / 2, 520, 260, 54, COL.gold)
+            const again = this.add
+              .rectangle(W / 2 - 140, 560, 250, 56, COL.gold)
               .setInteractive({ useHandCursor: true });
             this.add
-              .text(W / 2, 520, "PLAY AGAIN", {
+              .text(W / 2 - 140, 560, "OPEN AGAIN", {
                 fontSize: "20px",
                 fontFamily: "Arial Black",
                 color: "#0a0608",
               })
               .setOrigin(0.5);
-            btn.on("pointerdown", () => {
+            again.on("pointerover", () => again.setScale(1.05));
+            again.on("pointerout", () => again.setScale(1));
+            again.on("pointerdown", () => {
+              au();
+              sfxCl();
+              this.scene.start("GameScene", { tier: this.tier });
+            });
+
+            const menu = this.add
+              .rectangle(W / 2 + 140, 560, 250, 56, COL.panel)
+              .setStrokeStyle(2, COL.track)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(W / 2 + 140, 560, "CHANGE LEVEL", {
+                fontSize: "18px",
+                fontFamily: "Arial Black",
+                color: "#fff",
+              })
+              .setOrigin(0.5);
+            menu.on("pointerover", () => menu.setScale(1.05));
+            menu.on("pointerout", () => menu.setScale(1));
+            menu.on("pointerdown", () => {
+              au();
               sfxCl();
               this.scene.start("TitleScene");
             });
-            btn.on("pointerover", () => btn.setScale(1.05));
-            btn.on("pointerout", () => btn.setScale(1));
 
-            for (let i = 0; i < 25; i++) {
+            for (let i = 0; i < 26; i++) {
               const p = this.add.circle(
                 Math.random() * W,
                 Math.random() * H,
                 2 + Math.random() * 2,
-                [COL.gold, COL.emerald, COL.amethyst][
-                  Math.floor(Math.random() * 3)
-                ],
-                0.5,
+                [COL.gold, COL.emerald, COL.sky][rndInt(3)],
+                0.6,
               );
               this.tweens.add({
                 targets: p,
@@ -1038,6 +1591,7 @@
           }
         }
 
+        // ─── BOOT ───
         new Phaser.Game({
           type: Phaser.AUTO,
           parent: "game-container",
@@ -1056,7 +1610,7 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
 </html>

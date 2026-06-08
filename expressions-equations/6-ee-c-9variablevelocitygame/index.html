@@ -18,7 +18,7 @@
       window.addEventListener("load", function () {
         if (typeof Phaser === "undefined") {
           document.body.innerHTML =
-            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
         }
       });
     </script>
@@ -44,1079 +44,1195 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <div id="game-container"></div>
     <script>
-      // ============================================================
-      // VARIABLE VELOCITY — Racing Game (6.EE.C.9)
-      // Answer correctly to boost speed, wrong answers slow you down.
-      // Race through 3 laps with 15+ math questions woven in.
-      // ============================================================
+      (() => {
+        // ════════════════════════════════════════════════════════════════
+        //  VARIABLE VELOCITY RACING — 6.EE.C.9 (rate, y = kx, dependent &
+        //  independent variables).  THE MATH IS THE MECHANIC.
+        //
+        //  Your car's distance is the LIVE function  d = k · t.  You set the
+        //  RATE k with the throttle (Up/Down).  The on-track speed IS k, so
+        //  raising k visibly accelerates the car.  t (time) is the independent
+        //  variable; d (distance) is the dependent variable that k controls.
+        //
+        //  Round types — both SOLVED with the throttle, never a menu:
+        //   • INTERCEPT — a rival drone runs d = m·t.  Pick k so YOU reach the
+        //     finish line D at the EXACT same time t* as the drone (k = D/t*).
+        //   • TIE — the rival's equation is shown, d = m·t + b.  Choose your k
+        //     so you are tied with the rival at a stated time T  (solve
+        //     k·T = m·T + b  →  k = m + b/T).  Designed so k is a clean value.
+        //  A distance-time graph fills LIVE as you drive: the slope of your
+        //  line IS your rate k. No A/B/C/D. No dead controls.
+        // ════════════════════════════════════════════════════════════════
 
-      const QUESTIONS = [
-        {
-          stem: "A robot charges $8/hour. Which variable is INDEPENDENT?",
-          choices: [
-            "Hours worked",
-            "Total earnings",
-            "Number of robots",
-            "Hourly rate",
-          ],
-          correct: 0,
-          hint: "Independent = what you choose first.",
-          explain: "You choose hours; earnings depend on it.",
-        },
-        {
-          stem: "A drone flies 15 km/min. Which variable is DEPENDENT?",
-          choices: [
-            "Total distance",
-            "Minutes flown",
-            "Speed",
-            "Number of drones",
-          ],
-          correct: 0,
-          hint: "Dependent = changes because of the other.",
-          explain: "Distance depends on minutes flown.",
-        },
-        {
-          stem: "Server downloads 25 MB/sec. t=seconds, d=MB. Equation?",
-          choices: ["d = 25t", "t = 25d", "d = t + 25", "d = 25 / t"],
-          correct: 0,
-          hint: "Dependent = rate x independent.",
-          explain: "d = 25 x t, so d = 25t.",
-        },
-        {
-          stem: "Table: Hours(h) 1,2,3,5 | Cost(c) $12,$24,$36,$60. Equation?",
-          choices: ["c = 12h", "c = h + 12", "h = 12c", "c = 12/h"],
-          correct: 0,
-          hint: "Look at how cost changes per hour.",
-          explain: "c = 12 x h = 12h.",
-        },
-        {
-          stem: "Energy output (e) depends on fuel (f). Independent variable?",
-          choices: ["Fuel used (f)", "Energy output (e)", "Both", "Neither"],
-          correct: 0,
-          hint: "The cause is independent.",
-          explain: "f causes e, so f is independent.",
-        },
-        {
-          stem: "3D printer: 5g filament/layer. L=layers, g=grams. Dependent?",
-          choices: ["g (grams)", "L (layers)", "5 (rate)", "Both"],
-          correct: 0,
-          hint: "Which RESULTS from the other?",
-          explain: "Grams used results from layers chosen.",
-        },
-        {
-          stem: "Rover: 3 m/s, starts 10m from sensor. d = distance. Equation?",
-          choices: ["d = 3t + 10", "d = 3t", "d = 10t + 3", "d = 3t - 10"],
-          correct: 0,
-          hint: "Starting amount + rate x time.",
-          explain: "Starts at 10, adds 3 per second.",
-        },
-        {
-          stem: "Table: Time(t) 0,1,2,4 | Temp 68,71,74,80. Equation?",
-          choices: ["T = 3t + 68", "T = 3t", "T = 68t + 3", "T = 3t - 68"],
-          correct: 0,
-          hint: "Rate of change + starting value.",
-          explain: "Rate=3, start=68, so T = 3t + 68.",
-        },
-        {
-          stem: "Graph: packets vs time. Through (0,0) and (4,20). Equation?",
-          choices: ["y = 5x", "y = x + 5", "y = 4x", "x = 5y"],
-          correct: 0,
-          hint: "Rate = rise / run = 20/4.",
-          explain: "20/4 = 5, so y = 5x.",
-        },
-        {
-          stem: "Recycler: 6 cans/sec, 18 already loaded. c = total. Equation?",
-          choices: ["c = 6t + 18", "c = 6t", "c = 18t + 6", "c = 6t x 18"],
-          correct: 0,
-          hint: "Rate x time + starting amount.",
-          explain: "6 per second plus 18 already there.",
-        },
-        {
-          stem: "Solar panels(p) 2,4,6,10 | Savings(s) $30,$60,$90,$150. Rate?",
-          choices: [
-            "$15/panel; p independent",
-            "$15/panel; s independent",
-            "$30/panel",
-            "$2/dollar",
-          ],
-          correct: 0,
-          hint: "Rate = change in s / change in p.",
-          explain: "30/2 = 15 per panel, p is chosen first.",
-        },
-        {
-          stem: "Graph: y-intercept at 4, rises 2 per 1 unit right. Equation?",
-          choices: ["y = 2x + 4", "y = 4x + 2", "y = 2x", "y = 2x - 4"],
-          correct: 0,
-          hint: "Slope = 2, y-intercept = 4.",
-          explain: "y = 2x + 4.",
-        },
-        {
-          stem: "Charging station: $5 fee + $0.20/min. 45 minutes cost?",
-          choices: ["$14.00", "$9.00", "$225.20", "$9.00"],
-          correct: 0,
-          hint: "Fee + rate x minutes.",
-          explain: "0.20 x 45 + 5 = 14.",
-        },
-        {
-          stem: "Drone A: d=4t. Drone B: d=2t+6. Same data at t=?",
-          choices: ["t = 3", "t = 6", "t = 2", "Never"],
-          correct: 0,
-          hint: "Set 4t = 2t + 6 and solve.",
-          explain: "2t = 6, t = 3. Both have 12 at t=3.",
-        },
-        {
-          stem: "Table: h 0,1,2,3 | GB 0,5,10,15. Proportional?",
-          choices: [
-            "Yes - constant 5 GB/hr, through (0,0)",
-            "No - keeps increasing",
-            "Yes - easy numbers",
-            "No - only money works",
-          ],
-          correct: 0,
-          hint: "Constant ratio AND through origin.",
-          explain: "5/1=5, 10/2=5, starts at (0,0). Proportional.",
-        },
-        {
-          stem: "y=7x vs y=7x+3. Which is TRUE?",
-          choices: [
-            "Both rate 7, only A through origin",
-            "Both proportional",
-            "B has greater rate",
-            "They are the same",
-          ],
-          correct: 0,
-          hint: "Same slope but different y-intercept.",
-          explain: "Both have rate 7, but B starts at 3, not 0.",
-        },
-        {
-          stem: "Turbine A: y=40t+120. Turbine B: y=55t. B overtakes A at t=?",
-          choices: ["t = 8", "t = 4", "Never", "t = 3"],
-          correct: 0,
-          hint: "Set 40t+120 = 55t.",
-          explain: "120 = 15t, t = 8.",
-        },
-        {
-          stem: 'p = 9n. Student says "can\'t tell dependent." Correct?',
-          choices: [
-            "No - context determines roles",
-            "Yes - both can be independent",
-            "No - left is always dependent",
-            "Yes - only in science",
-          ],
-          correct: 0,
-          hint: "Context tells us which we choose first.",
-          explain: "If n=hours chosen, p=pay earned. Context decides.",
-        },
-      ];
+        // ─── SOUND ENGINE ───
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let actx = null;
+        function ensureAudio() {
+          if (!actx && AudioCtx) actx = new AudioCtx();
+          if (actx && actx.state === "suspended") actx.resume();
+        }
+        function beep(freq, dur, type = "sine", vol = 0.16) {
+          if (!actx) return;
+          const o = actx.createOscillator(),
+            g = actx.createGain();
+          o.connect(g);
+          g.connect(actx.destination);
+          o.frequency.value = freq;
+          o.type = type;
+          g.gain.setValueAtTime(vol, actx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
+          o.start();
+          o.stop(actx.currentTime + dur);
+        }
+        const sfxUp = () =>
+          beep(360 + Math.random() * 40, 0.05, "sawtooth", 0.08);
+        const sfxDown = () => beep(220, 0.06, "sawtooth", 0.08);
+        const sfxWin = () => {
+          beep(523, 0.08);
+          setTimeout(() => beep(659, 0.08), 70);
+          setTimeout(() => beep(880, 0.18), 150);
+        };
+        const sfxLose = () => beep(150, 0.26, "square", 0.1);
+        const sfxLevel = () =>
+          [523, 659, 784, 1047].forEach((f, i) =>
+            setTimeout(() => beep(f, 0.14), i * 90),
+          );
+        const sfxClick = () => beep(440, 0.05, "sine", 0.09);
+        const sfxEngine = () => beep(110, 0.04, "triangle", 0.05);
 
-      const SFX = {
-        ctx: null,
-        init() {
-          if (!this.ctx)
-            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        },
-        tone(f, d, t = "sine", v = 0.1) {
-          if (!this.ctx) return;
-          try {
-            const o = this.ctx.createOscillator(),
-              g = this.ctx.createGain();
-            o.connect(g);
-            g.connect(this.ctx.destination);
-            o.type = t;
-            o.frequency.value = f;
-            g.gain.setValueAtTime(v, this.ctx.currentTime);
-            g.gain.exponentialRampToValueAtTime(
-              0.001,
-              this.ctx.currentTime + d,
+        // ─── PALETTE (colourblind-safe: every coloured object is also labelled
+        //     and uses a distinct shape/texture, never colour alone) ───
+        const W = 1024,
+          H = 768;
+        const C = {
+          bg: 0x0a0a2e,
+          panel: 0x141442,
+          panelHi: 0x1d1d5c,
+          gold: 0xf6c343,
+          white: 0xffffff,
+          dim: 0x9aa6d6,
+          // player = teal/circle, rival = orange/diamond (CB-distinct pair)
+          you: 0x35d0c0,
+          youCss: "#35d0c0",
+          rival: 0xff8a3d,
+          rivalCss: "#ff8a3d",
+          green: 0x2ec26b,
+          red: 0xe7556b,
+          track: 0x121233,
+          stroke: 0x3a3a86,
+        };
+
+        // ─── MATH HELPERS ───
+        const rnd = (n) => Math.floor(Math.random() * n);
+        const pick = (arr) => arr[rnd(arr.length)];
+        const round1 = (x) => Math.round(x * 10) / 10;
+        // throttle step: k moves in increments of STEP so every reachable
+        // rate is an exact multiple of STEP (solvability is provable).
+        const STEP = 0.5;
+        const K_MIN = 0.5;
+        const K_MAX = 12;
+        // snap a real number to the throttle grid
+        const onGrid = (k) =>
+          Math.abs(k / STEP - Math.round(k / STEP)) < 1e-9 &&
+          k >= K_MIN - 1e-9 &&
+          k <= K_MAX + 1e-9;
+
+        // ─── ROUND GENERATOR ───────────────────────────────────────────────
+        //  Every generated round is VERIFIED solvable: the winning k is an
+        //  exact multiple of STEP and lies inside [K_MIN, K_MAX].  We resample
+        //  until that holds, so the player can always reach the answer.
+        //  tier 1 = Support (whole-number-friendly, slower clock, generous
+        //  tolerance, hint always offered).  tier 2 = Challenge.
+        function makeRound(tier, index) {
+          let attempts = 0;
+          while (attempts++ < 400) {
+            const type =
+              tier === 1
+                ? index % 2 === 0
+                  ? "intercept"
+                  : "tie"
+                : pick(["intercept", "tie", "intercept", "tie", "intercept"]);
+
+            if (type === "intercept") {
+              // Rival drone: d = m·t.  Finish distance D.  Drone reaches D at
+              // t* = D/m.  Player must run k = D/t* = m  → BUT we hide that by
+              // phrasing via the meeting time, and we let D differ so k must be
+              // computed as D / t*.  We choose t* and D so k is on-grid.
+              const tStar = tier === 1 ? 2 + rnd(4) : 2 + rnd(7); // whole meeting time
+              const k = pickGridK(tier); // the player's required rate
+              const D = round1(k * tStar); // finish distance the player must hit at t*
+              // rival speed m so the rival ALSO arrives at D exactly at t*:
+              const m = round1(D / tStar); // == k, but presented as the drone's speed
+              if (!onGrid(k) || D <= 0 || D > K_MAX * (tier === 1 ? 8 : 11) + 1)
+                continue;
+              return {
+                type,
+                tier,
+                k, // winning rate
+                D, // finish distance
+                tStar, // intended meeting time
+                rivalM: m,
+                rivalB: 0,
+                T: tStar,
+              };
+            } else {
+              // TIE: rival d = m·t + b (head start b).  At time T the player
+              // must be tied:  k·T = m·T + b  →  k = m + b/T.
+              const T = tier === 1 ? 2 + rnd(4) : 2 + rnd(7);
+              const m = tier === 1 ? 1 + rnd(3) : 1 + rnd(5); // rival rate (whole)
+              // choose b so that b/T is an exact multiple of STEP and k on-grid
+              const bUnits = tier === 1 ? 1 + rnd(3) : 1 + rnd(6); // half-steps of b/T
+              const b = round1(bUnits * STEP * T); // head start
+              const k = round1(m + bUnits * STEP); // required rate
+              const D = round1(k * T); // both reach this distance at T
+              if (!onGrid(k) || k <= m || D > K_MAX * (tier === 1 ? 8 : 11) + 1)
+                continue;
+              return { type, tier, k, D, tStar: T, rivalM: m, rivalB: b, T };
+            }
+          }
+          // Deterministic fallback (always on-grid & solvable)
+          return {
+            type: "intercept",
+            tier,
+            k: 3,
+            D: 9,
+            tStar: 3,
+            rivalM: 3,
+            rivalB: 0,
+            T: 3,
+          };
+        }
+        function pickGridK(tier) {
+          // pick a rate on the STEP grid; tier 1 favours whole numbers
+          const lo = 1,
+            hi = tier === 1 ? 6 : 10;
+          if (tier === 1) return lo + rnd(hi - lo + 1); // whole number
+          const halfSteps =
+            Math.round(lo / STEP) + rnd(Math.round((hi - lo) / STEP) + 1);
+          return round1(halfSteps * STEP);
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        //  TITLE SCENE — real Level 1 / Level 2 choice
+        // ════════════════════════════════════════════════════════════════
+        class TitleScene extends Phaser.Scene {
+          constructor() {
+            super("TitleScene");
+          }
+          create() {
+            this.cameras.main.setBackgroundColor(C.bg);
+            this.add
+              .text(W / 2, 96, "VARIABLE VELOCITY", {
+                fontSize: "62px",
+                fontFamily: "Arial Black, sans-serif",
+                color: "#f6c343",
+                stroke: "#000",
+                strokeThickness: 7,
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(
+                W / 2,
+                150,
+                "6.EE.C.9 — your throttle IS the rate  d = k · t",
+                {
+                  fontSize: "20px",
+                  fontFamily: "Arial",
+                  color: "#c9d2ff",
+                },
+              )
+              .setOrigin(0.5);
+            this.add
+              .text(
+                W / 2,
+                206,
+                "Time t is the independent variable. Distance d depends on it.\n" +
+                  "Set the RATE k with the throttle — your speed becomes k and the\n" +
+                  "car accelerates. Pick k to catch the rival at the exact finish.",
+                {
+                  fontSize: "16px",
+                  fontFamily: "Arial",
+                  color: "#9aa6d6",
+                  align: "center",
+                  lineSpacing: 6,
+                },
+              )
+              .setOrigin(0.5);
+
+            this.drawDemo(W / 2, 360);
+
+            const tiers = [
+              {
+                t: 1,
+                label: "Level 1",
+                sub: "Support",
+                desc: "Whole-number rates · slower clock · roomy timing · hint ready",
+                col: C.green,
+              },
+              {
+                t: 2,
+                label: "Level 2",
+                sub: "Challenge",
+                desc: "Half-step rates · head-start rivals · tight intercepts",
+                col: C.gold,
+              },
+            ];
+            tiers.forEach((d, i) => {
+              const x = W / 2 + (i === 0 ? -200 : 200),
+                y = 560;
+              const card = this.add
+                .rectangle(x, y, 330, 140, C.panel)
+                .setStrokeStyle(3, C.stroke)
+                .setInteractive({ useHandCursor: true });
+              this.add
+                .text(x, y - 42, d.label, {
+                  fontSize: "30px",
+                  fontFamily: "Arial Black",
+                  color: "#fff",
+                })
+                .setOrigin(0.5);
+              this.add
+                .text(x, y - 12, d.sub, {
+                  fontSize: "16px",
+                  fontFamily: "Arial",
+                  color: Phaser.Display.Color.IntegerToColor(d.col).rgba,
+                })
+                .setOrigin(0.5);
+              this.add
+                .text(x, y + 30, d.desc, {
+                  fontSize: "12.5px",
+                  fontFamily: "Arial",
+                  color: "#c9d2ff",
+                  align: "center",
+                  wordWrap: { width: 300 },
+                })
+                .setOrigin(0.5);
+              card.on("pointerover", () => {
+                card.setStrokeStyle(3, d.col);
+                card.setScale(1.04);
+              });
+              card.on("pointerout", () => {
+                card.setStrokeStyle(3, C.stroke);
+                card.setScale(1);
+              });
+              card.on("pointerdown", () => {
+                ensureAudio();
+                sfxClick();
+                this.cameras.main.fadeOut(350, 0, 0, 0);
+                this.time.delayedCall(350, () =>
+                  this.scene.start("RaceScene", { tier: d.t }),
+                );
+              });
+            });
+
+            this.add
+              .text(
+                W / 2,
+                688,
+                "Throttle:  ▲ / ▼  or  W / S  (also tap the + RATE / − RATE pads)  ·  Enter / GO launches the race  ·  H = hint",
+                { fontSize: "12px", color: "#6f79b0", align: "center" },
+              )
+              .setOrigin(0.5);
+            this.cameras.main.fadeIn(400);
+          }
+          drawDemo(cx, cy) {
+            // mini distance-time graph: two lines, slope = rate
+            const ox = cx - 150,
+              oy = cy + 60,
+              gw = 300,
+              gh = 110;
+            const g = this.add.graphics();
+            g.lineStyle(2, C.stroke, 1);
+            g.strokeRect(ox, oy - gh, gw, gh);
+            // axes labels
+            this.add.text(ox - 6, oy - gh - 18, "d (distance)", {
+              fontSize: "12px",
+              color: "#9aa6d6",
+            });
+            this.add
+              .text(ox + gw, oy + 6, "t (time) →", {
+                fontSize: "12px",
+                color: "#9aa6d6",
+              })
+              .setOrigin(1, 0);
+            // your line, slope k=4 (teal)
+            g.lineStyle(4, C.you, 1).beginPath();
+            g.moveTo(ox, oy);
+            g.lineTo(ox + gw, oy - gh);
+            g.strokePath();
+            // rival line, slope shallower (orange, dashed look via dots)
+            g.lineStyle(4, C.rival, 0.95).beginPath();
+            g.moveTo(ox, oy);
+            g.lineTo(ox + gw, oy - gh * 0.55);
+            g.strokePath();
+            this.add
+              .text(ox + gw + 12, oy - gh, "● YOU  d = k·t", {
+                fontSize: "13px",
+                fontFamily: "Arial Black",
+                color: C.youCss,
+              })
+              .setOrigin(0, 0.5);
+            this.add
+              .text(ox + gw + 12, oy - gh * 0.55, "◆ RIVAL", {
+                fontSize: "13px",
+                fontFamily: "Arial Black",
+                color: C.rivalCss,
+              })
+              .setOrigin(0, 0.5);
+            this.add
+              .text(cx, oy + 30, "Steeper line = bigger rate k = faster car", {
+                fontSize: "13px",
+                color: "#f6c343",
+              })
+              .setOrigin(0.5);
+          }
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        //  RACE SCENE — the throttle IS the equation
+        // ════════════════════════════════════════════════════════════════
+        class RaceScene extends Phaser.Scene {
+          constructor() {
+            super("RaceScene");
+          }
+          init(data) {
+            this.tier = data.tier || 1;
+          }
+
+          create() {
+            this.cameras.main.setBackgroundColor(C.bg);
+            this.cameras.main.fadeIn(350);
+
+            // run state
+            this.score = 0;
+            this.streak = 0;
+            this.bestStreak = 0;
+            this.wins = 0;
+            this.raced = 0;
+            this.level = 1;
+            this.lives = this.tier === 1 ? 5 : 3;
+            this.roundIx = 0;
+            this.goalRaces = this.tier === 1 ? 8 : 10;
+
+            // backdrop + track
+            this.add.rectangle(W / 2, H / 2, W, H, C.bg);
+            this.add.rectangle(W / 2, 28, W, 56, 0x06061f, 0.96); // HUD
+
+            this.hScore = this.add.text(24, 14, "0", {
+              fontSize: "26px",
+              fontFamily: "Arial Black",
+              color: "#f6c343",
+            });
+            this.add.text(26, 42, "POINTS", {
+              fontSize: "10px",
+              color: "#7e88c0",
+            });
+            this.hLevel = this.add
+              .text(W / 2, 12, "Level 1", {
+                fontSize: "16px",
+                fontFamily: "Arial Black",
+                color: "#fff",
+              })
+              .setOrigin(0.5, 0);
+            this.hRaces = this.add
+              .text(W / 2, 36, "Race 1", { fontSize: "12px", color: "#9aa6d6" })
+              .setOrigin(0.5, 0);
+            this.hLives = this.add
+              .text(W - 24, 16, "", { fontSize: "20px" })
+              .setOrigin(1, 0);
+            this.hStreak = this.add
+              .text(W - 24, 42, "", { fontSize: "13px", color: "#f6c343" })
+              .setOrigin(1, 0);
+
+            // ── Mission panel (left) ──
+            this.add
+              .rectangle(176, 250, 312, 360, C.panel)
+              .setStrokeStyle(3, C.stroke);
+            this.add
+              .text(176, 96, "\u{1F3C1} MISSION", {
+                fontSize: "18px",
+                fontFamily: "Arial Black",
+                color: "#f6c343",
+              })
+              .setOrigin(0.5);
+            this.mEq = this.add
+              .text(176, 150, "", {
+                fontSize: "26px",
+                fontFamily: "Arial Black",
+                color: "#fff",
+                align: "center",
+                lineSpacing: 4,
+              })
+              .setOrigin(0.5);
+            this.mTask = this.add
+              .text(176, 230, "", {
+                fontSize: "15px",
+                fontFamily: "Arial",
+                fontStyle: "bold",
+                color: "#ffe9a8",
+                align: "center",
+                wordWrap: { width: 280 },
+                lineSpacing: 5,
+              })
+              .setOrigin(0.5);
+            this.mVars = this.add
+              .text(176, 350, "", {
+                fontSize: "13px",
+                fontFamily: "Arial",
+                color: "#9aa6d6",
+                align: "center",
+                wordWrap: { width: 280 },
+                lineSpacing: 4,
+              })
+              .setOrigin(0.5);
+
+            // ── Distance-time graph (right) — fills live while driving ──
+            this.gOX = 632;
+            this.gOY = 420;
+            this.gW = 350;
+            this.gH = 300;
+            this.graph = this.add.graphics();
+            this.graphDyn = this.add.graphics(); // live traces
+            this.add.text(
+              this.gOX - 6,
+              this.gOY - this.gH - 22,
+              "d (distance)",
+              {
+                fontSize: "12px",
+                color: "#9aa6d6",
+              },
             );
-            o.start();
-            o.stop(this.ctx.currentTime + d);
-          } catch (e) {}
-        },
-        boost() {
-          this.tone(523, 0.08);
-          setTimeout(() => this.tone(784, 0.1), 60);
-        },
-        slow() {
-          this.tone(180, 0.2, "sawtooth", 0.08);
-        },
-        engine() {
-          this.tone(120, 0.05, "square", 0.02);
-        },
-        finish() {
-          this.tone(523, 0.1);
-          setTimeout(() => this.tone(659, 0.1), 100);
-          setTimeout(() => this.tone(784, 0.15), 200);
-        },
-      };
+            this.add
+              .text(this.gOX + this.gW, this.gOY + 8, "t (time) →", {
+                fontSize: "12px",
+                color: "#9aa6d6",
+              })
+              .setOrigin(1, 0);
+            this.gLegendYou = this.add.text(
+              this.gOX + 8,
+              this.gOY - this.gH + 6,
+              "● YOU  d = k·t",
+              {
+                fontSize: "13px",
+                fontFamily: "Arial Black",
+                color: C.youCss,
+              },
+            );
+            this.gLegendRival = this.add.text(
+              this.gOX + 8,
+              this.gOY - this.gH + 28,
+              "◆ RIVAL",
+              {
+                fontSize: "13px",
+                fontFamily: "Arial Black",
+                color: C.rivalCss,
+              },
+            );
 
-      const W = 800,
-        H = 600;
+            // ── Track lanes (center band) ──
+            this.trackTop = 470;
+            this.trackBot = 560;
+            this.trackL = 360;
+            this.trackR = 624;
+            this.add
+              .rectangle(
+                (this.trackL + this.trackR) / 2,
+                (this.trackTop + this.trackBot) / 2,
+                this.trackR - this.trackL,
+                this.trackBot - this.trackTop,
+                C.track,
+              )
+              .setStrokeStyle(2, C.stroke);
 
-      class BootScene extends Phaser.Scene {
-        constructor() {
-          super("Boot");
-        }
-        create() {
-          const g = this.make.graphics({ add: false });
-          // Player car (top-down)
-          g.fillStyle(0x00ccff, 1);
-          g.fillRoundedRect(4, 0, 24, 40, 4);
-          g.fillStyle(0x0088dd, 1);
-          g.fillRect(8, 2, 16, 10); // windshield
-          g.fillStyle(0x003366, 1);
-          g.fillRect(0, 8, 32, 6);
-          g.fillRect(0, 30, 32, 6); // wheels
-          g.generateTexture("car", 32, 40);
-          g.clear();
-          // Rival car
-          g.fillStyle(0xff4444, 1);
-          g.fillRoundedRect(4, 0, 24, 40, 4);
-          g.fillStyle(0xcc2222, 1);
-          g.fillRect(8, 2, 16, 10);
-          g.fillStyle(0x660000, 1);
-          g.fillRect(0, 8, 32, 6);
-          g.fillRect(0, 30, 32, 6);
-          g.generateTexture("rival", 32, 40);
-          g.clear();
-          // Road stripe
-          g.fillStyle(0xffffff, 1);
-          g.fillRect(0, 0, 6, 30);
-          g.generateTexture("stripe", 6, 30);
-          g.clear();
-          // Tree
-          g.fillStyle(0x228833, 1);
-          g.fillCircle(12, 8, 12);
-          g.fillStyle(0x664422, 1);
-          g.fillRect(10, 16, 4, 12);
-          g.generateTexture("tree", 24, 28);
-          g.clear();
-          // Spark
-          g.fillStyle(0xffcc00, 1);
-          g.fillCircle(3, 3, 3);
-          g.generateTexture("spark", 6, 6);
-          g.clear();
-          // Boost icon
-          g.fillStyle(0x00ff88, 1);
-          g.fillTriangle(12, 0, 0, 24, 24, 24);
-          g.generateTexture("boostIcon", 24, 24);
-          g.clear();
-          g.destroy();
-          this.scene.start("Title");
-        }
-      }
+            // car (teal circle = YOU) and drone (orange diamond = RIVAL)
+            this.youY = this.trackTop + 24;
+            this.rivalY = this.trackTop + 62;
+            this.youCar = this.add.circle(this.trackL, this.youY, 12, C.you);
+            this.youTag = this.add
+              .text(this.trackL, this.youY - 22, "YOU", {
+                fontSize: "11px",
+                fontFamily: "Arial Black",
+                color: C.youCss,
+              })
+              .setOrigin(0.5);
+            this.rivalCar = this.add
+              .star(this.trackL, this.rivalY, 4, 6, 12, C.rival)
+              .setAngle(45);
+            this.rivalTag = this.add
+              .text(this.trackL, this.rivalY + 22, "RIVAL", {
+                fontSize: "11px",
+                fontFamily: "Arial Black",
+                color: C.rivalCss,
+              })
+              .setOrigin(0.5);
+            // finish line
+            this.finishX = this.add.graphics();
 
-      class TitleScene extends Phaser.Scene {
-        constructor() {
-          super("Title");
-        }
-        create() {
-          SFX.init();
-          this.cameras.main.setBackgroundColor(0x0a0a2e);
+            // ── Throttle control (the heart of the game) ──
+            this.add
+              .rectangle(176, 565, 312, 150, C.panelHi)
+              .setStrokeStyle(3, C.gold);
+            this.add
+              .text(176, 510, "THROTTLE  =  RATE k", {
+                fontSize: "15px",
+                fontFamily: "Arial Black",
+                color: "#f6c343",
+              })
+              .setOrigin(0.5);
+            this.kText = this.add
+              .text(176, 556, "", {
+                fontSize: "44px",
+                fontFamily: "Arial Black",
+                color: "#35d0c0",
+              })
+              .setOrigin(0.5);
+            this.kEqLive = this.add
+              .text(176, 596, "", {
+                fontSize: "16px",
+                fontFamily: "Arial",
+                color: "#c9d2ff",
+              })
+              .setOrigin(0.5);
+            // big touch pads
+            this.upBtn = this.makeBtn(
+              96,
+              640,
+              120,
+              48,
+              "+ RATE  ▲",
+              0x1f7d4d,
+              () => this.adjustK(+STEP),
+              "16px",
+            );
+            this.downBtn = this.makeBtn(
+              256,
+              640,
+              120,
+              48,
+              "− RATE  ▼",
+              0x7d3a52,
+              () => this.adjustK(-STEP),
+              "16px",
+            );
 
-          // Animated road lines
-          for (let i = 0; i < 20; i++) {
-            const y = i * 35;
-            const s = this.add.rectangle(W / 2, y, 6, 25, 0x444444, 0.4);
-            this.tweens.add({
-              targets: s,
-              y: H + 30,
-              duration: 2000,
-              repeat: -1,
-              delay: i * 100,
+            // ── GO / launch ──
+            this.goBtn = this.makeBtn(
+              420,
+              700,
+              190,
+              56,
+              "\u{1F6A6} GO!",
+              0xf6c343,
+              () => this.launch(),
+              "24px",
+              0x10102e,
+            );
+            this.hintBtn = this.makeBtn(
+              630,
+              700,
+              140,
+              50,
+              "\u{1F4A1} Hint",
+              0x2a2a66,
+              () => this.showHint(),
+              "16px",
+            );
+            this.resetBtn = this.makeBtn(
+              790,
+              700,
+              150,
+              50,
+              "↶ Reset k",
+              0x2a2a66,
+              () => this.resetK(),
+              "16px",
+            );
+            this.feedback = this.add
+              .text(490, 642, "", {
+                fontSize: "16px",
+                fontFamily: "Arial",
+                fontStyle: "bold",
+                color: "#fff",
+                align: "center",
+                wordWrap: { width: 540 },
+              })
+              .setOrigin(0.5);
+
+            // keyboard
+            this.input.keyboard.on("keydown", (e) => {
+              const key = e.key.toLowerCase();
+              if (e.key === "ArrowUp" || key === "w") {
+                e.preventDefault?.();
+                this.adjustK(+STEP);
+              } else if (e.key === "ArrowDown" || key === "s") {
+                e.preventDefault?.();
+                this.adjustK(-STEP);
+              } else if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault?.();
+                this.launch();
+              } else if (key === "h") this.showHint();
+            });
+
+            this.racing = false;
+            this.loadRound();
+          }
+
+          makeBtn(
+            x,
+            y,
+            w,
+            h,
+            label,
+            color,
+            cb,
+            fs = "18px",
+            txtColor = 0xffffff,
+          ) {
+            const r = this.add
+              .rectangle(x, y, w, h, color)
+              .setStrokeStyle(2, 0x000000, 0.25)
+              .setInteractive({ useHandCursor: true });
+            const t = this.add
+              .text(x, y, label, {
+                fontSize: fs,
+                fontFamily: "Arial Black",
+                color: Phaser.Display.Color.IntegerToColor(txtColor).rgba,
+              })
+              .setOrigin(0.5);
+            r.on("pointerover", () => r.setScale(1.05));
+            r.on("pointerout", () => r.setScale(1));
+            r.on("pointerdown", () => {
+              ensureAudio();
+              cb();
+            });
+            r._t = t;
+            return r;
+          }
+
+          loadRound() {
+            this.round = makeRound(this.tier, this.roundIx);
+            const r = this.round;
+            this.racing = false;
+            this.k = this.tier === 1 ? 1 : K_MIN; // player's starting rate
+            this.feedback.setText("");
+            this.youCar.x = this.trackL;
+            this.rivalCar.x = this.trackL;
+            this.youTag.x = this.trackL;
+            this.rivalTag.x = this.trackL;
+
+            // mission text per type
+            if (r.type === "intercept") {
+              this.mEq.setText("Your car:\nd = k · t");
+              this.mTask.setText(
+                `Catch the RIVAL at the finish!\nThe rival drone moves d = ${r.rivalM} · t and the\nfinish is ${r.D} units away.\nPick the rate k so YOU reach the finish at the\nsame time the drone does.`,
+              );
+              this.mVars.setText(
+                "t = time (independent) · d = distance (depends on t).\nDrive, watch your line on the graph, then GO.",
+              );
+            } else {
+              this.mEq.setText(`Rival:\nd = ${r.rivalM}·t + ${r.rivalB}`);
+              this.mTask.setText(
+                `The rival has a head start of ${r.rivalB} units.\nYour car is d = k · t.\nChoose k so you are TIED with the rival at\nexactly t = ${r.T}.`,
+              );
+              this.mVars.setText(
+                `Solve k·${r.T} = ${r.rivalM}·${r.T} + ${r.rivalB}.\nUse the throttle to set that k, then GO.`,
+              );
+            }
+
+            this.updateHUD();
+            this.redrawGraph();
+            this.updateThrottle();
+          }
+
+          // graph mapping: t in [0, tMax], d in [0, dMax]
+          tMax() {
+            return Math.max(this.round.T + 1, this.round.tStar + 1, 6);
+          }
+          dMax() {
+            return Math.max(this.round.D * 1.15, K_MAX * this.tMax() * 0.4, 8);
+          }
+          gx(t) {
+            return this.gOX + (t / this.tMax()) * this.gW;
+          }
+          gy(d) {
+            return this.gOY - (d / this.dMax()) * this.gH;
+          }
+
+          redrawGraph() {
+            const g = this.graph;
+            g.clear();
+            // frame + gridlines
+            g.lineStyle(2, C.stroke, 1).strokeRect(
+              this.gOX,
+              this.gOY - this.gH,
+              this.gW,
+              this.gH,
+            );
+            g.lineStyle(1, C.stroke, 0.4);
+            for (let i = 1; i <= 5; i++) {
+              const y = this.gOY - (i / 5) * this.gH;
+              g.beginPath();
+              g.moveTo(this.gOX, y);
+              g.lineTo(this.gOX + this.gW, y);
+              g.strokePath();
+            }
+            // finish-distance reference line (dashed gold)
+            const fy = this.gy(this.round.D);
+            g.lineStyle(2, C.gold, 0.8);
+            for (let x = this.gOX; x < this.gOX + this.gW; x += 14) {
+              g.beginPath();
+              g.moveTo(x, fy);
+              g.lineTo(Math.min(x + 8, this.gOX + this.gW), fy);
+              g.strokePath();
+            }
+            // rival full line (preview): d = m t + b
+            g.lineStyle(3, C.rival, 0.85).beginPath();
+            g.moveTo(this.gx(0), this.gy(this.round.rivalB));
+            const rEnd = this.round.rivalM * this.tMax() + this.round.rivalB;
+            g.lineTo(
+              this.gx(this.tMax()),
+              this.gy(Math.min(rEnd, this.dMax())),
+            );
+            g.strokePath();
+            // your PREVIEW line for current k (thin teal) so slope feedback is live
+            g.lineStyle(2, C.you, 0.45).beginPath();
+            g.moveTo(this.gx(0), this.gy(0));
+            const yEnd = Math.min(this.k * this.tMax(), this.dMax());
+            const yEndT = yEnd / this.k;
+            g.lineTo(this.gx(yEndT), this.gy(yEnd));
+            g.strokePath();
+            this.graphDyn.clear();
+          }
+
+          updateThrottle() {
+            this.kText.setText("k = " + round1(this.k));
+            this.kEqLive.setText(
+              `d = ${round1(this.k)} · t  (slope = ${round1(this.k)})`,
+            );
+            // colour the rate against the rival's so steeper reads instantly
+            this.kText.setColor(C.youCss);
+            this.redrawGraph();
+          }
+
+          adjustK(delta) {
+            if (this.racing) return;
+            const nk = Math.min(K_MAX, Math.max(K_MIN, round1(this.k + delta)));
+            if (nk === this.k) {
+              sfxDown();
+              return;
+            }
+            this.k = nk;
+            delta > 0 ? sfxUp() : sfxDown();
+            this.updateThrottle();
+          }
+          resetK() {
+            if (this.racing) return;
+            sfxClick();
+            this.k = this.tier === 1 ? 1 : K_MIN;
+            this.feedback.setText("");
+            this.updateThrottle();
+          }
+
+          launch() {
+            if (this.racing) return;
+            this.racing = true;
+            this.feedback.setText("");
+            ensureAudio();
+            // animate t from 0 to tMax; positions are LIVE functions of k.
+            const r = this.round;
+            const dur = this.tier === 1 ? 2600 : 2000;
+            const startX = this.trackL;
+            const span = this.trackR - this.trackL;
+            this.graphDyn.clear();
+            const youTrace = [];
+            const rivalTrace = [];
+            this.tweens.addCounter({
+              from: 0,
+              to: this.tMax(),
+              duration: dur,
+              ease: "Linear",
+              onUpdate: (tw) => {
+                const t = tw.getValue();
+                const yourD = this.k * t; // d = k t  (the mechanic)
+                const rivalD = r.rivalM * t + r.rivalB; // rival line
+                // map distance to track x (finish = D at trackR)
+                const yx = startX + Math.min(yourD / r.D, 1) * span;
+                const rx = startX + Math.min(rivalD / r.D, 1) * span;
+                this.youCar.x = yx;
+                this.youTag.x = yx;
+                this.rivalCar.x = rx;
+                this.rivalTag.x = rx;
+                if (Math.random() < 0.5) sfxEngine();
+                // live graph traces
+                youTrace.push([
+                  this.gx(t),
+                  this.gy(Math.min(yourD, this.dMax())),
+                ]);
+                rivalTrace.push([
+                  this.gx(t),
+                  this.gy(Math.min(rivalD, this.dMax())),
+                ]);
+                this.graphDyn.clear();
+                this.drawTrace(youTrace, C.you, 4);
+                this.drawTrace(rivalTrace, C.rival, 3);
+              },
+              onComplete: () => this.judge(),
             });
           }
 
-          this.add
-            .text(W / 2, 100, "VARIABLE VELOCITY", {
-              fontSize: "48px",
-              fontFamily: "monospace",
-              fontStyle: "bold",
-              color: "#00ccff",
-              stroke: "#002244",
-              strokeThickness: 4,
-            })
-            .setOrigin(0.5);
+          drawTrace(pts, color, width) {
+            if (pts.length < 2) return;
+            this.graphDyn.lineStyle(width, color, 1).beginPath();
+            this.graphDyn.moveTo(pts[0][0], pts[0][1]);
+            for (let i = 1; i < pts.length; i++)
+              this.graphDyn.lineTo(pts[i][0], pts[i][1]);
+            this.graphDyn.strokePath();
+          }
 
-          this.add
-            .text(W / 2, 155, "Dependent & Independent Variables Racing", {
-              fontSize: "15px",
-              fontFamily: "Arial",
-              color: "#88aacc",
-            })
-            .setOrigin(0.5);
+          judge() {
+            const r = this.round;
+            // Player wins if their rate equals the required winning rate k*.
+            // (Both round types reduce to: choose k = r.k.)  We compare the
+            // throttle value to r.k with a tolerance that is tier-aware.
+            const tol = this.tier === 1 ? 0.01 : 0.01; // STEP grid makes this exact
+            const win = Math.abs(this.k - r.k) <= tol;
+            // also compute meeting distances for honest feedback
+            const yourAtT = round1(this.k * r.T);
+            const rivalAtT = round1(r.rivalM * r.T + r.rivalB);
 
-          this.add
-            .text(W / 2, 180, "CCSS 6.EE.C.9", {
-              fontSize: "12px",
-              fontFamily: "Arial",
-              color: "#6688aa",
-            })
-            .setOrigin(0.5);
+            if (win) {
+              this.onWin();
+              return;
+            }
+            // ── diagnostic, NON-giveaway feedback that teaches rate/slope ──
+            sfxLose();
+            this.streak = 0;
+            this.cameras.main.shake(160, 0.006);
+            let msg;
+            if (this.k < r.k) {
+              msg =
+                r.type === "intercept"
+                  ? `Too slow — your line is less steep than the rival's, so the drone reaches the finish first. A bigger k makes a steeper line. At t=${r.T} you went ${yourAtT}, the rival ${rivalAtT}.`
+                  : `Not tied yet — at t=${r.T} you only reached ${yourAtT} but the rival reached ${rivalAtT}. Your rate k is too small; raise the slope.`;
+            } else {
+              msg =
+                r.type === "intercept"
+                  ? `Too fast — your steeper line shoots past the finish before the drone arrives. Lower k a little so the lines meet at the finish. At t=${r.T} you went ${yourAtT}, the rival ${rivalAtT}.`
+                  : `Overshot — at t=${r.T} you reached ${yourAtT} but the rival is at ${rivalAtT}. Your rate is too big; ease the slope down to tie.`;
+            }
+            this.flash(this.feedback, "❌ " + msg, "#ffb4b4", 3400);
+            this.racing = false;
 
-          // Car preview
-          const car = this.add.image(W / 2, 280, "car").setScale(3);
-          this.tweens.add({
-            targets: car,
-            y: 270,
-            duration: 800,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut",
-          });
+            // a miss costs a life only after a nudge so Support stays gentle
+            r._misses = (r._misses || 0) + 1;
+            if (r._misses >= (this.tier === 1 ? 3 : 2)) {
+              this.lives--;
+              r._misses = 0;
+              if (this.lives <= 0) {
+                this.updateHUD();
+                this.time.delayedCall(1200, () => this.endGame());
+                return;
+              }
+            }
+            this.updateHUD();
+            // reset cars for another adjustment+attempt of the SAME round
+            this.time.delayedCall(1400, () => {
+              this.youCar.x = this.trackL;
+              this.rivalCar.x = this.trackL;
+              this.youTag.x = this.trackL;
+              this.rivalTag.x = this.trackL;
+              this.redrawGraph();
+            });
+          }
 
-          // Mode select
-          this.add
-            .text(W / 2, 360, "Choose Mode:", {
-              fontSize: "16px",
-              fontFamily: "Arial",
-              color: "#aaa",
-            })
-            .setOrigin(0.5);
+          onWin() {
+            sfxWin();
+            this.wins++;
+            this.raced++;
+            this.streak++;
+            if (this.streak > this.bestStreak) this.bestStreak = this.streak;
+            const combo = Math.min(4, 1 + Math.floor(this.streak / 3));
+            const firstTry = !this.round._misses ? 70 : 0;
+            const pts = (100 + firstTry + this.streak * 8) * combo;
+            this.score += pts;
+            const r = this.round;
+            this.flash(
+              this.feedback,
+              `✅ Photo finish! k = ${round1(this.k)} made d = ${round1(this.k)}·t meet the rival exactly.  +${pts}${combo > 1 ? " x" + combo : ""}`,
+              "#bff7cf",
+              1500,
+            );
+            this.confetti();
 
-          const modes = [
-            { name: "Sprint", desc: "5 questions, fast race", qs: 5 },
-            { name: "Marathon", desc: "All 18 questions", qs: 18 },
-            {
-              name: "Time Trial",
-              desc: "10 questions, beat the clock",
-              qs: 10,
-            },
-          ];
-          this.selectedMode = 1;
-          const cards = [];
-          modes.forEach((m, i) => {
-            const x = W / 2 - 160 + i * 160;
-            const c = this.add
-              .rectangle(x, 420, 140, 70, 0x112244, 0.8)
-              .setStrokeStyle(2, 0x336699, 0.5)
-              .setInteractive({ useHandCursor: true });
+            if (this.wins % 3 === 0) {
+              this.level++;
+              sfxLevel();
+            }
+            this.updateHUD();
+            const done = this.raced >= this.goalRaces;
+            this.time.delayedCall(1500, () => {
+              if (done) this.endGame();
+              else {
+                this.roundIx++;
+                this.loadRound();
+              }
+            });
+          }
+
+          showHint() {
+            sfxClick();
+            const r = this.round;
+            let h;
+            if (r.type === "intercept") {
+              h = `\u{1F4A1} The rival reaches the finish (${r.D} units) at time t = ${r.D} ÷ ${r.rivalM} = ${round1(r.D / r.rivalM)}. You need d = ${r.D} at that same time, so k = distance ÷ time = ${r.D} ÷ ${round1(r.D / r.rivalM)}. Set that rate.`;
+            } else {
+              h = `\u{1F4A1} Tie means same distance at t = ${r.T}. Rival's distance there is ${r.rivalM}·${r.T} + ${r.rivalB} = ${round1(r.rivalM * r.T + r.rivalB)}. Your distance is k·${r.T}, so k = ${round1(r.rivalM * r.T + r.rivalB)} ÷ ${r.T}.`;
+            }
+            this.flash(this.feedback, h, "#ffe9a8", 4200);
+          }
+
+          confetti() {
+            for (let i = 0; i < 22; i++) {
+              const p = this.add.circle(
+                this.trackR,
+                this.youY,
+                2 + Math.random() * 3,
+                [C.gold, C.you, C.green, C.white][rnd(4)],
+              );
+              this.tweens.add({
+                targets: p,
+                x: this.trackR + (Math.random() - 0.5) * 260,
+                y: this.youY + (Math.random() - 0.5) * 180,
+                alpha: 0,
+                scale: 0,
+                duration: 600 + Math.random() * 400,
+                onComplete: () => p.destroy(),
+              });
+            }
+          }
+
+          flash(obj, msg, color = "#ffffff", hold = 2600) {
+            obj.setText(msg).setColor(color).setAlpha(1);
+            this.tweens.killTweensOf(obj);
+            this.time.delayedCall(hold, () => {
+              if (obj.text === msg)
+                this.tweens.add({ targets: obj, alpha: 0.0, duration: 400 });
+            });
+          }
+
+          updateHUD() {
+            this.hScore.setText(this.score.toLocaleString());
+            this.hLevel.setText("Level " + this.level);
+            this.hRaces.setText(
+              "Race " + Math.min(this.raced + 1, this.goalRaces),
+            );
+            this.hLives.setText("❤️".repeat(Math.max(0, this.lives)));
+            this.hStreak.setText(
+              this.streak >= 3 ? "\u{1F525} streak " + this.streak : "",
+            );
+          }
+
+          endGame() {
+            this.cameras.main.fadeOut(450, 0, 0, 0);
+            this.time.delayedCall(450, () =>
+              this.scene.start("ResultScene", {
+                tier: this.tier,
+                score: this.score,
+                wins: this.wins,
+                raced: this.raced,
+                goal: this.goalRaces,
+                bestStreak: this.bestStreak,
+                level: this.level,
+              }),
+            );
+          }
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        //  RESULT SCENE
+        // ════════════════════════════════════════════════════════════════
+        class ResultScene extends Phaser.Scene {
+          constructor() {
+            super("ResultScene");
+          }
+          init(d) {
+            Object.assign(this, d);
+          }
+          create() {
+            this.cameras.main.setBackgroundColor(C.bg);
+            this.cameras.main.fadeIn(450);
+            const goal = this.goal || (this.tier === 1 ? 8 : 10);
+            const pct = goal > 0 ? Math.round((this.wins / goal) * 100) : 0;
+
+            try {
+              window.EduPulse &&
+                EduPulse.record({
+                  activityTitle: document.title,
+                  score: this.wins,
+                  maxScore: goal,
+                  problemsCorrect: this.wins,
+                  problemsAttempted: this.raced,
+                  standard: "6.EE.C.9",
+                });
+            } catch (e) {}
+
+            let rank, emoji;
+            if (pct >= 90) {
+              rank = "GRAND PRIX CHAMPION!";
+              emoji = "\u{1F3C6}";
+            } else if (pct >= 75) {
+              rank = "PODIUM FINISH!";
+              emoji = "\u{1F947}";
+            } else if (pct >= 50) {
+              rank = "RACE FINISHER";
+              emoji = "\u{1F3CE}️";
+            } else {
+              rank = "KEEP TUNING THE RATE!";
+              emoji = "\u{1F527}";
+            }
+
             this.add
-              .text(x, 408, m.name, {
-                fontSize: "15px",
-                fontFamily: "monospace",
+              .text(W / 2, 110, emoji, { fontSize: "76px" })
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 196, "CHECKERED FLAG", {
+                fontSize: "46px",
+                fontFamily: "Arial Black",
+                color: "#f6c343",
+                stroke: "#000",
+                strokeThickness: 4,
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 250, rank, {
+                fontSize: "24px",
+                fontFamily: "Arial",
                 fontStyle: "bold",
                 color: "#fff",
               })
               .setOrigin(0.5);
             this.add
-              .text(x, 430, m.desc, {
-                fontSize: "10px",
-                fontFamily: "Arial",
-                color: "#888",
-                wordWrap: { width: 120 },
-                align: "center",
+              .text(W / 2, 312, this.score.toLocaleString(), {
+                fontSize: "58px",
+                fontFamily: "Arial Black",
+                color: "#f6c343",
               })
               .setOrigin(0.5);
-            c.on("pointerdown", () => {
-              this.selectedMode = i;
-              cards.forEach((cc, j) =>
-                cc.setStrokeStyle(
-                  j === i ? 3 : 2,
-                  j === i ? 0x00ccff : 0x336699,
-                  j === i ? 1 : 0.5,
-                ),
-              );
-            });
-            cards.push(c);
-          });
-          cards[1].setStrokeStyle(3, 0x00ccff, 1);
-
-          const btn = this.add
-            .text(W / 2, 510, "[ START RACE ]", {
-              fontSize: "22px",
-              fontFamily: "monospace",
-              fontStyle: "bold",
-              color: "#00ffcc",
-              padding: { x: 20, y: 10 },
-              backgroundColor: "rgba(0,255,200,0.1)",
-            })
-            .setOrigin(0.5)
-            .setInteractive({ useHandCursor: true });
-          btn.on("pointerover", () =>
-            btn.setStyle({ backgroundColor: "rgba(0,255,200,0.25)" }),
-          );
-          btn.on("pointerout", () =>
-            btn.setStyle({ backgroundColor: "rgba(0,255,200,0.1)" }),
-          );
-          btn.on("pointerdown", () => {
-            SFX.init();
-            this.scene.start("Race", {
-              numQs: modes[this.selectedMode].qs,
-              modeName: modes[this.selectedMode].name,
-            });
-          });
-
-          // Info
-          [
-            "Arrow/WASD to steer",
-            "Correct = BOOST",
-            "Wrong = SLOW DOWN",
-            "Beat the rival!",
-          ].forEach((t, i) => {
             this.add
-              .text(W / 2 - 180 + i * 120, 570, t, {
-                fontSize: "10px",
-                fontFamily: "Arial",
-                color: "#556677",
-                padding: { x: 4, y: 2 },
-                backgroundColor: "rgba(255,255,255,0.03)",
+              .text(W / 2, 352, "POINTS", {
+                fontSize: "13px",
+                color: "#7e88c0",
               })
               .setOrigin(0.5);
-          });
-        }
-      }
 
-      class RaceScene extends Phaser.Scene {
-        constructor() {
-          super("Race");
-        }
-        init(data) {
-          this.numQs = data.numQs || 10;
-          this.modeName = data.modeName || "Race";
-          this.score = 0;
-          this.speed = 3; // base scroll speed
-          this.maxSpeed = 8;
-          this.playerLane = 1; // 0=left, 1=center, 2=right
-          this.distance = 0;
-          this.totalDistance = this.numQs * 500;
-          this.qIndex = 0;
-          this.nextQAt = 400;
-          this.streak = 0;
-          this.bestStreak = 0;
-          this.correct = 0;
-          this.total = 0;
-          this.lives = 3;
-          this.combo = 1;
-          this.questionActive = false;
-          this.shuffledQs = Phaser.Utils.Array.Shuffle([...QUESTIONS]).slice(
-            0,
-            this.numQs,
-          );
-          this.rivalDist = 0;
-          this.rivalSpeed = 3.5;
-          this.boostTimer = 0;
-        }
-        create() {
-          this.cameras.main.setBackgroundColor(0x1a3a1a);
+            const stats = [
+              { l: "Races won", v: `${this.wins}/${goal}` },
+              { l: "Best streak", v: this.bestStreak },
+              { l: "Level reached", v: this.level },
+            ];
+            stats.forEach((s, i) => {
+              const x = 282 + i * 230,
+                y = 440;
+              this.add
+                .rectangle(x, y, 200, 96, C.panel)
+                .setStrokeStyle(2, C.stroke);
+              this.add
+                .text(x, y - 12, String(s.v), {
+                  fontSize: "30px",
+                  fontFamily: "Arial Black",
+                  color: "#f6c343",
+                })
+                .setOrigin(0.5);
+              this.add
+                .text(x, y + 26, s.l, { fontSize: "13px", color: "#c9d2ff" })
+                .setOrigin(0.5);
+            });
 
-          // Road
-          this.roadBg = this.add.rectangle(W / 2, H / 2, 360, H, 0x333333, 1);
-          this.add.rectangle(W / 2 - 180, H / 2, 4, H, 0xffffff, 0.3); // left edge
-          this.add.rectangle(W / 2 + 180, H / 2, 4, H, 0xffffff, 0.3); // right edge
-
-          // Stripes (center dashes)
-          this.stripes = [];
-          for (let i = 0; i < 15; i++) {
-            const s = this.add.image(W / 2, i * 50, "stripe").setAlpha(0.4);
-            this.stripes.push(s);
-          }
-
-          // Trees (scenery)
-          this.trees = [];
-          for (let i = 0; i < 12; i++) {
-            const side = i % 2 === 0 ? W / 2 - 230 : W / 2 + 230;
-            const t = this.add
-              .image(side + Phaser.Math.Between(-20, 20), i * 60, "tree")
-              .setScale(1.5)
-              .setAlpha(0.6);
-            this.trees.push(t);
-          }
-
-          // Lane positions
-          this.laneX = [W / 2 - 100, W / 2, W / 2 + 100];
-
-          // Player car
-          this.car = this.add.image(this.laneX[1], H - 80, "car").setScale(1.8);
-
-          // Rival car
-          this.rival = this.add
-            .image(this.laneX[2], H - 200, "rival")
-            .setScale(1.6)
-            .setAlpha(0.7);
-          this.rivalY = H - 200;
-
-          // Boost particles
-          this.boostEmitter = this.add.particles(0, 0, "spark", {
-            speed: { min: 50, max: 150 },
-            angle: { min: 80, max: 100 },
-            lifespan: 400,
-            scale: { start: 0.8, end: 0 },
-            alpha: { start: 1, end: 0 },
-            blendMode: "ADD",
-            emitting: false,
-          });
-
-          // HUD
-          this.add.rectangle(W / 2, 20, W, 40, 0x000000, 0.7).setDepth(100);
-          this.scoreText = this.add
-            .text(10, 8, "SCORE: 0", {
-              fontSize: "14px",
-              fontFamily: "monospace",
-              fontStyle: "bold",
-              color: "#ffcc00",
-            })
-            .setDepth(101);
-          this.speedText = this.add
-            .text(W / 2, 8, "", {
-              fontSize: "13px",
-              fontFamily: "monospace",
-              color: "#00ff88",
-            })
-            .setOrigin(0.5, 0)
-            .setDepth(101);
-          this.livesText = this.add
-            .text(W - 10, 8, "", {
-              fontSize: "16px",
-              fontFamily: "monospace",
-              color: "#ff4444",
-            })
-            .setOrigin(1, 0)
-            .setDepth(101);
-          this.updateLives();
-          this.progressBar = this.add
-            .rectangle(W / 2, 35, W - 40, 6, 0x333333, 0.8)
-            .setDepth(101);
-          this.progressFill = this.add
-            .rectangle(20, 35, 0, 6, 0x00ccff, 1)
-            .setOrigin(0, 0.5)
-            .setDepth(102);
-          this.streakText = this.add
-            .text(W / 2, 22, "", {
-              fontSize: "10px",
-              fontFamily: "monospace",
-              color: "#ff8800",
-            })
-            .setOrigin(0.5, 0)
-            .setDepth(101);
-
-          // Question panel
-          this.qContainer = this.add
-            .container(W / 2, H / 2)
-            .setDepth(200)
-            .setVisible(false);
-          this.qBg = this.add
-            .rectangle(0, 0, 660, 300, 0x0a1a2e, 0.95)
-            .setStrokeStyle(2, 0x00ccff, 0.6);
-          this.qStem = this.add
-            .text(0, -120, "", {
-              fontSize: "15px",
-              fontFamily: "Arial",
-              fontStyle: "bold",
-              color: "#fff",
-              wordWrap: { width: 600 },
-              align: "center",
-            })
-            .setOrigin(0.5);
-          this.qHint = this.add
-            .text(0, -85, "", {
-              fontSize: "12px",
-              fontFamily: "Arial",
-              color: "#ffcc00",
-              wordWrap: { width: 580 },
-              align: "center",
-            })
-            .setOrigin(0.5);
-          this.qContainer.add([this.qBg, this.qStem, this.qHint]);
-
-          this.qBtns = [];
-          this.qTxts = [];
-          for (let i = 0; i < 4; i++) {
-            const y = -40 + i * 45;
-            const bg = this.add
-              .rectangle(0, y, 540, 38, 0x112244, 0.8)
-              .setStrokeStyle(1, 0x336699, 0.6)
+            const again = this.add
+              .rectangle(W / 2 - 130, 580, 240, 58, C.gold)
               .setInteractive({ useHandCursor: true });
-            const txt = this.add
-              .text(0, y, "", {
-                fontSize: "14px",
-                fontFamily: "Arial",
-                color: "#ccddff",
-                wordWrap: { width: 500 },
-                align: "center",
-              })
-              .setOrigin(0.5);
-            const idx = i;
-            bg.on("pointerdown", () => this.answerQ(idx));
-            bg.on("pointerover", () => {
-              if (this.questionActive) bg.setStrokeStyle(2, 0x00ccff, 1);
-            });
-            bg.on("pointerout", () => {
-              if (this.questionActive) bg.setStrokeStyle(1, 0x336699, 0.6);
-            });
-            this.qContainer.add([bg, txt]);
-            this.qBtns.push(bg);
-            this.qTxts.push(txt);
-          }
-          this.qExplain = this.add
-            .text(0, 140, "", {
-              fontSize: "12px",
-              fontFamily: "Arial",
-              color: "#88ff88",
-              wordWrap: { width: 580 },
-              align: "center",
-            })
-            .setOrigin(0.5)
-            .setVisible(false);
-          this.qContainer.add(this.qExplain);
-
-          // Input
-          this.cursors = this.input.keyboard.createCursorKeys();
-          this.wasd = this.input.keyboard.addKeys("W,A,S,D");
-          this.input.keyboard.on("keydown-ONE", () => this.answerQ(0));
-          this.input.keyboard.on("keydown-TWO", () => this.answerQ(1));
-          this.input.keyboard.on("keydown-THREE", () => this.answerQ(2));
-          this.input.keyboard.on("keydown-FOUR", () => this.answerQ(3));
-
-          // Touch swipe
-          this.input.on("pointerdown", (p) => {
-            this.touchStart = { x: p.x, y: p.y };
-          });
-          this.input.on("pointerup", (p) => {
-            if (this.touchStart && !this.questionActive) {
-              const dx = p.x - this.touchStart.x;
-              if (Math.abs(dx) > 30) {
-                if (dx < 0 && this.playerLane > 0) this.playerLane--;
-                else if (dx > 0 && this.playerLane < 2) this.playerLane++;
-              }
-            }
-          });
-
-          // Countdown
-          this.showCountdown();
-        }
-
-        showCountdown() {
-          const nums = ["3", "2", "1", "GO!"];
-          let i = 0;
-          const show = () => {
-            if (i >= nums.length) {
-              this.racing = true;
-              return;
-            }
-            const t = this.add
-              .text(W / 2, H / 2 - 50, nums[i], {
-                fontSize: "72px",
-                fontFamily: "monospace",
-                fontStyle: "bold",
-                color: i < 3 ? "#ffcc00" : "#00ff88",
-              })
-              .setOrigin(0.5)
-              .setDepth(300);
-            SFX.tone(i < 3 ? 440 : 880, 0.15);
-            this.tweens.add({
-              targets: t,
-              scale: { from: 1.5, to: 0.5 },
-              alpha: 0,
-              duration: 700,
-              onComplete: () => {
-                t.destroy();
-                i++;
-                show();
-              },
-            });
-          };
-          show();
-        }
-
-        updateLives() {
-          let h = "";
-          for (let i = 0; i < 3; i++) h += i < this.lives ? "♥" : "♡";
-          this.livesText.setText(h);
-        }
-
-        showQuestion() {
-          if (this.qIndex >= this.shuffledQs.length) return;
-          const q = this.shuffledQs[this.qIndex];
-          this.currentQ = q;
-          this.questionActive = true;
-          this.qContainer.setVisible(true);
-          this.qStem.setText(q.stem);
-          this.qHint.setText("").setVisible(false);
-          this.qExplain.setVisible(false);
-          this.hintShown = false;
-
-          q.choices.forEach((c, i) => {
-            this.qTxts[i]
-              .setText(String.fromCharCode(65 + i) + ". " + c)
-              .setStyle({ color: "#ccddff" });
-            this.qBtns[i]
-              .setFillStyle(0x112244, 0.8)
-              .setStrokeStyle(1, 0x336699, 0.6)
-              .setInteractive();
-          });
-        }
-
-        answerQ(idx) {
-          if (!this.questionActive) return;
-          this.questionActive = false;
-          this.total++;
-          const q = this.currentQ;
-          const right = idx === q.correct;
-
-          this.qBtns.forEach((b, i) => {
-            b.disableInteractive();
-            if (i === q.correct) {
-              b.setFillStyle(0x004400, 0.9).setStrokeStyle(2, 0x00ff88, 1);
-              this.qTxts[i].setStyle({ color: "#00ff88" });
-            } else if (i === idx && !right) {
-              b.setFillStyle(0x440000, 0.9).setStrokeStyle(2, 0xff4444, 1);
-              this.qTxts[i].setStyle({ color: "#ff4444" });
-            }
-          });
-
-          if (right) {
-            this.correct++;
-            this.streak++;
-            if (this.streak > this.bestStreak) this.bestStreak = this.streak;
-            this.combo = Math.min(4, 1 + Math.floor(this.streak / 3));
-            const pts = 100 * this.combo;
-            this.score += pts;
-            this.speed = Math.min(this.maxSpeed, this.speed + 1.5);
-            this.boostTimer = 120;
-            SFX.boost();
-            this.cameras.main.flash(150, 0, 80, 0);
-            const pop = this.add
-              .text(W / 2, H / 2 - 170, "BOOST! +" + pts, {
-                fontSize: "24px",
-                fontFamily: "monospace",
-                fontStyle: "bold",
-                color: "#00ff88",
-              })
-              .setOrigin(0.5)
-              .setDepth(300);
-            this.tweens.add({
-              targets: pop,
-              y: pop.y - 40,
-              alpha: 0,
-              duration: 1000,
-              onComplete: () => pop.destroy(),
-            });
-          } else {
-            this.streak = 0;
-            this.combo = 1;
-            this.speed = Math.max(1.5, this.speed - 1.5);
-            this.lives--;
-            this.updateLives();
-            SFX.slow();
-            this.cameras.main.shake(300, 0.01);
-            const pop = this.add
-              .text(W / 2, H / 2 - 170, "SLOW DOWN!", {
-                fontSize: "24px",
-                fontFamily: "monospace",
-                fontStyle: "bold",
-                color: "#ff4444",
-              })
-              .setOrigin(0.5)
-              .setDepth(300);
-            this.tweens.add({
-              targets: pop,
-              y: pop.y - 40,
-              alpha: 0,
-              duration: 1000,
-              onComplete: () => pop.destroy(),
-            });
-          }
-
-          this.qExplain.setText(q.explain).setVisible(true);
-          this.scoreText.setText("SCORE: " + this.score);
-          this.streakText.setText(
-            this.streak >= 2 ? "STREAK x" + this.streak : "",
-          );
-
-          if (this.lives <= 0) {
-            this.time.delayedCall(1500, () =>
-              this.scene.start("Results", {
-                score: this.score,
-                correct: this.correct,
-                total: this.total,
-                bestStreak: this.bestStreak,
-                won: false,
-                modeName: this.modeName,
-              }),
-            );
-            return;
-          }
-
-          this.time.delayedCall(1800, () => {
-            this.qContainer.setVisible(false);
-            this.qIndex++;
-            this.nextQAt = this.distance + 400;
-          });
-        }
-
-        update() {
-          if (!this.racing) return;
-
-          // Scroll road
-          this.stripes.forEach((s) => {
-            s.y += this.speed * 3;
-            if (s.y > H + 30) s.y = -30;
-          });
-          this.trees.forEach((t) => {
-            t.y += this.speed * 2;
-            if (t.y > H + 30) t.y = -30;
-          });
-
-          // Distance
-          this.distance += this.speed;
-          this.rivalDist += this.rivalSpeed;
-
-          // Progress bar
-          const pct = Math.min(this.distance / this.totalDistance, 1);
-          this.progressFill.width = (W - 40) * pct;
-
-          // Speed display
-          const mph = Math.round(this.speed * 30);
-          this.speedText.setText(mph + " MPH");
-
-          // Boost effect
-          if (this.boostTimer > 0) {
-            this.boostTimer--;
-            this.boostEmitter.emitParticleAt(this.car.x, this.car.y + 25, 1);
-            if (this.boostTimer === 0)
-              this.speed = Math.max(3, this.speed - 0.5);
-          }
-
-          // Lane movement (keyboard)
-          if (!this.questionActive) {
-            if (
-              Phaser.Input.Keyboard.JustDown(this.cursors.left) ||
-              Phaser.Input.Keyboard.JustDown(this.wasd.A)
-            ) {
-              if (this.playerLane > 0) this.playerLane--;
-            }
-            if (
-              Phaser.Input.Keyboard.JustDown(this.cursors.right) ||
-              Phaser.Input.Keyboard.JustDown(this.wasd.D)
-            ) {
-              if (this.playerLane < 2) this.playerLane++;
-            }
-          }
-
-          // Smooth car position
-          const targetX = this.laneX[this.playerLane];
-          this.car.x += (targetX - this.car.x) * 0.15;
-
-          // Rival movement
-          const rivalTarget =
-            this.laneX[Math.floor(Math.sin(this.time.now / 3000) * 1.5 + 1)];
-          this.rival.x += (rivalTarget - this.rival.x) * 0.05;
-          const rDiff = this.distance - this.rivalDist;
-          const targetRivalY = H - 200 + rDiff * 0.3;
-          this.rivalY +=
-            (Phaser.Math.Clamp(targetRivalY, 50, H + 100) - this.rivalY) * 0.02;
-          this.rival.y = this.rivalY;
-
-          // Trigger questions
-          if (
-            !this.questionActive &&
-            this.distance >= this.nextQAt &&
-            this.qIndex < this.shuffledQs.length
-          ) {
-            this.showQuestion();
-          }
-
-          // Check finish
-          if (this.distance >= this.totalDistance && !this.questionActive) {
-            this.racing = false;
-            const won = this.distance >= this.rivalDist;
-            this.time.delayedCall(1000, () => {
-              SFX.finish();
-              this.scene.start("Results", {
-                score: this.score,
-                correct: this.correct,
-                total: this.total,
-                bestStreak: this.bestStreak,
-                won: won,
-                modeName: this.modeName,
-              });
-            });
-          }
-        }
-      }
-
-      class ResultsScene extends Phaser.Scene {
-        constructor() {
-          super("Results");
-        }
-        init(data) {
-          this.finalScore = data.score || 0;
-          this.correct = data.correct || 0;
-          this.total = data.total || 0;
-          this.bestStreak = data.bestStreak || 0;
-          this.won = data.won !== undefined ? data.won : true;
-          this.modeName = data.modeName || "Race";
-        }
-        create() {
-          this.cameras.main.setBackgroundColor(0x0a0a2e);
-          for (let i = 0; i < 60; i++)
-            this.add.circle(
-              Phaser.Math.Between(0, W),
-              Phaser.Math.Between(0, H),
-              Phaser.Math.FloatBetween(0.5, 1.5),
-              0xffffff,
-              Phaser.Math.FloatBetween(0.15, 0.5),
-            );
-
-          const pct =
-            this.total > 0 ? Math.round((this.correct / this.total) * 100) : 0;
-          try {
-            window.EduPulse &&
-              EduPulse.record({
-                activityTitle: document.title,
-                score: this.correct,
-                maxScore: this.total,
-                problemsCorrect: this.correct,
-                problemsAttempted: this.total,
-                percent: pct,
-                standard: "6.EE.C.9",
-              });
-          } catch (e) {}
-          const title = this.won ? "YOU WON THE RACE!" : "RACE OVER";
-          const titleColor = this.won ? "#ffcc00" : "#ff6644";
-
-          this.add
-            .text(W / 2, 60, title, {
-              fontSize: "40px",
-              fontFamily: "monospace",
-              fontStyle: "bold",
-              color: titleColor,
-              stroke: "#333",
-              strokeThickness: 3,
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(W / 2, 110, this.modeName + " Mode", {
-              fontSize: "16px",
-              fontFamily: "Arial",
-              color: "#888",
-            })
-            .setOrigin(0.5);
-
-          this.add
-            .text(W / 2, 170, String(this.finalScore), {
-              fontSize: "60px",
-              fontFamily: "monospace",
-              fontStyle: "bold",
-              color: "#ffcc00",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(W / 2, 210, "POINTS", {
-              fontSize: "13px",
-              fontFamily: "monospace",
-              color: "#888",
-            })
-            .setOrigin(0.5);
-
-          let grade, gc;
-          if (pct >= 90) {
-            grade = "S RANK";
-            gc = "#ffcc00";
-          } else if (pct >= 80) {
-            grade = "A RANK";
-            gc = "#00ff88";
-          } else if (pct >= 70) {
-            grade = "B RANK";
-            gc = "#00ccff";
-          } else if (pct >= 60) {
-            grade = "C RANK";
-            gc = "#ff8800";
-          } else {
-            grade = "KEEP GOING";
-            gc = "#ff4444";
-          }
-          this.add
-            .text(W / 2, 250, grade, {
-              fontSize: "22px",
-              fontFamily: "monospace",
-              fontStyle: "bold",
-              color: gc,
-            })
-            .setOrigin(0.5);
-
-          [
-            { l: "Correct", v: this.correct + "/" + this.total },
-            { l: "Accuracy", v: pct + "%" },
-            { l: "Best Streak", v: String(this.bestStreak) },
-          ].forEach((s, i) => {
-            const x = W / 2 - 120 + i * 120;
             this.add
-              .rectangle(x, 330, 100, 65, 0x112233, 0.8)
-              .setStrokeStyle(1, 0x336699, 0.5);
-            this.add
-              .text(x, 318, s.v, {
+              .text(W / 2 - 130, 580, "RACE AGAIN", {
                 fontSize: "22px",
-                fontFamily: "monospace",
-                fontStyle: "bold",
-                color: "#00ccff",
+                fontFamily: "Arial Black",
+                color: "#10102e",
               })
               .setOrigin(0.5);
+            again.on("pointerdown", () => {
+              ensureAudio();
+              sfxClick();
+              this.scene.start("RaceScene", { tier: this.tier });
+            });
+            again.on("pointerover", () => again.setScale(1.05));
+            again.on("pointerout", () => again.setScale(1));
+
+            const menu = this.add
+              .rectangle(W / 2 + 130, 580, 240, 58, C.panel)
+              .setStrokeStyle(2, C.stroke)
+              .setInteractive({ useHandCursor: true });
             this.add
-              .text(x, 345, s.l, {
-                fontSize: "11px",
-                fontFamily: "Arial",
-                color: "#888",
+              .text(W / 2 + 130, 580, "CHANGE LEVEL", {
+                fontSize: "20px",
+                fontFamily: "Arial Black",
+                color: "#fff",
               })
               .setOrigin(0.5);
-          });
+            menu.on("pointerdown", () => {
+              ensureAudio();
+              sfxClick();
+              this.scene.start("TitleScene");
+            });
+            menu.on("pointerover", () => menu.setScale(1.05));
+            menu.on("pointerout", () => menu.setScale(1));
 
-          const btn = this.add
-            .text(W / 2, 430, "[ RACE AGAIN ]", {
-              fontSize: "22px",
-              fontFamily: "monospace",
-              fontStyle: "bold",
-              color: "#00ffcc",
-              padding: { x: 20, y: 10 },
-              backgroundColor: "rgba(0,255,200,0.1)",
-            })
-            .setOrigin(0.5)
-            .setInteractive({ useHandCursor: true });
-          btn.on("pointerover", () =>
-            btn.setStyle({ backgroundColor: "rgba(0,255,200,0.25)" }),
-          );
-          btn.on("pointerout", () =>
-            btn.setStyle({ backgroundColor: "rgba(0,255,200,0.1)" }),
-          );
-          btn.on("pointerdown", () => this.scene.start("Title"));
-
-          this.add
-            .text(W / 2, 520, "6.EE.C.9 -- Dependent & Independent Variables", {
-              fontSize: "12px",
-              fontFamily: "Arial",
-              color: "#556677",
-            })
-            .setOrigin(0.5);
+            for (let i = 0; i < 28; i++) {
+              const p = this.add
+                .circle(
+                  Math.random() * W,
+                  Math.random() * H,
+                  2 + Math.random() * 3,
+                  [C.gold, C.you, C.rival, C.green][rnd(4)],
+                )
+                .setAlpha(0.7);
+              this.tweens.add({
+                targets: p,
+                y: p.y - 200 - Math.random() * 300,
+                alpha: 0,
+                duration: 2000 + Math.random() * 2000,
+                delay: Math.random() * 1000,
+                repeat: -1,
+                ease: "Power1",
+              });
+            }
+          }
         }
-      }
 
-      const config = {
-        type: Phaser.AUTO,
-        width: W,
-        height: H,
-        parent: "game-container",
-        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        physics: {
-          default: "arcade",
-          arcade: { gravity: { y: 0 }, debug: false },
-        },
-        scene: [BootScene, TitleScene, RaceScene, ResultsScene],
-        backgroundColor: "#0a0a2e",
-      };
-      new Phaser.Game(config);
+        // ─── BOOT ───
+        new Phaser.Game({
+          type: Phaser.AUTO,
+          parent: "game-container",
+          width: W,
+          height: H,
+          backgroundColor: "#0a0a2e",
+          scale: {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH,
+          },
+          scene: [TitleScene, RaceScene, ResultScene],
+        });
+      })();
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
 </html>

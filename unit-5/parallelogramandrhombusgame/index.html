@@ -18,7 +18,7 @@
       window.addEventListener("load", function () {
         if (typeof Phaser === "undefined") {
           document.body.innerHTML =
-            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
         }
       });
     </script>
@@ -38,23 +38,40 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <div id="game-container"></div>
     <script>
       (() => {
-        /* ═══════════════════════════════════════════
-         SOUND ENGINE — Web Audio oscillator beeps
-         ═══════════════════════════════════════════ */
+        // ════════════════════════════════════════════════════════════════
+        //  ARCHITECTURE BUILDER — area of parallelograms & rhombuses (6.G.1)
+        //  THE MATH IS THE MECHANIC. There are no A/B/C/D choices anywhere.
+        //  Three build tasks, all on a unit grid where 1 cell = 1 square unit:
+        //   • SHEAR: drag the top edge of a rectangle sideways. The slanted
+        //     off-cut animates across to fill the gap — the cell count never
+        //     changes, proving area = base × height stays constant.
+        //   • MISSING DIMENSION: a target area is locked; drag base / height
+        //     handles until base × height == target. The shape only "accepts"
+        //     a configuration that hits the target exactly.
+        //   • RHOMBUS BY DIAGONALS: drag the two diagonal endpoints. The
+        //     rhombus auto-fits inside its bounding rectangle, showing the
+        //     rhombus is exactly half the rectangle: A = ½ · d1 · d2.
+        //  The student PRODUCES the area by manipulation, then confirms it —
+        //  the answer is never offered as an option.
+        //  Level 1 (Support): integer base/height, gridlines + formula scaffold.
+        //  Level 2 (Challenge): adds missing-dimension + diagonal tasks, fewer guides.
+        // ════════════════════════════════════════════════════════════════
+
+        /* ─── SOUND ENGINE — Web Audio oscillator beeps ─── */
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         let actx = null;
         function ensureAudio() {
-          if (!actx) actx = new AudioCtx();
-          if (actx.state === "suspended") actx.resume();
+          if (!actx && AudioCtx) actx = new AudioCtx();
+          if (actx && actx.state === "suspended") actx.resume();
         }
-        function beep(freq, dur, type = "sine", vol = 0.18) {
+        function beep(freq, dur, type = "sine", vol = 0.16) {
           if (!actx) return;
           const o = actx.createOscillator(),
             g = actx.createGain();
@@ -67,1911 +84,1256 @@
           o.start();
           o.stop(actx.currentTime + dur);
         }
-        function sfxCorrect() {
+        const sfxDrag = () =>
+          beep(300 + Math.random() * 40, 0.03, "sine", 0.05);
+        const sfxSnap = () => beep(620, 0.06, "sine", 0.12);
+        const sfxClick = () => beep(880, 0.04, "sine", 0.1);
+        const sfxCorrect = () => {
           beep(523, 0.08);
           setTimeout(() => beep(659, 0.08), 80);
           setTimeout(() => beep(784, 0.12), 160);
-        }
-        function sfxWrong() {
-          beep(220, 0.15, "sawtooth", 0.14);
-          setTimeout(() => beep(180, 0.2, "sawtooth", 0.12), 120);
-        }
-        function sfxClick() {
-          beep(880, 0.04, "sine", 0.1);
-        }
-        function sfxLevelUp() {
-          beep(523, 0.06);
-          setTimeout(() => beep(659, 0.06), 70);
-          setTimeout(() => beep(784, 0.06), 140);
-          setTimeout(() => beep(1047, 0.15), 210);
-        }
-        function sfxBossHit() {
-          beep(330, 0.1, "square", 0.15);
-          setTimeout(() => beep(440, 0.08, "square", 0.12), 100);
-        }
-        function sfxBossDeath() {
-          beep(523, 0.1);
-          setTimeout(() => beep(659, 0.08), 80);
-          setTimeout(() => beep(784, 0.08), 160);
-          setTimeout(() => beep(1047, 0.15), 240);
-          setTimeout(() => beep(1319, 0.2), 340);
-        }
-        function sfxHint() {
-          beep(660, 0.06, "triangle", 0.1);
-          setTimeout(() => beep(550, 0.08, "triangle", 0.08), 70);
-        }
-        function sfxPlace() {
-          beep(392, 0.05, "sine", 0.12);
-          setTimeout(() => beep(523, 0.06, "sine", 0.1), 60);
-        }
-        function sfxGameOver() {
-          beep(330, 0.15, "sawtooth", 0.12);
-          setTimeout(() => beep(262, 0.2, "sawtooth", 0.1), 150);
-          setTimeout(() => beep(196, 0.3, "sawtooth", 0.08), 300);
-        }
-
-        /* ═══════════════════════════════════════════
-         MATH CONTENT — Procedural question generators
-         ═══════════════════════════════════════════ */
-        const UNITS = ["cm", "m", "ft", "in"];
-        const PARA_CTX = [
-          "training platform",
-          "display banner",
-          "garden bed",
-          "landing pad",
-          "stage panel",
-          "solar panel",
-          "roof tile",
-          "wall section",
-        ];
-        const RHOM_CTX = [
-          "logo badge",
-          "window pane",
-          "diamond tile",
-          "kite panel",
-          "signal marker",
-          "gem cut",
-          "floor tile",
-          "mirror frame",
-        ];
-
-        function ri(min, max) {
-          return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-        function pick(arr) {
-          return arr[Math.floor(Math.random() * arr.length)];
-        }
-        function shuffle(arr) {
-          const a = arr.slice();
-          for (let i = a.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [a[i], a[j]] = [a[j], a[i]];
-          }
-          return a;
-        }
-        function fmtA(v, u) {
-          return v + " " + u + "²";
-        }
-        function fmtM(v, u) {
-          return v + " " + u;
-        }
-
-        function mkChoices(correct, distractors, formatter) {
-          const vals = [correct];
-          distractors.forEach((d) => {
-            if (!vals.includes(d) && d > 0) vals.push(d);
-          });
-          let extra = 1;
-          while (vals.length < 4) {
-            const c = correct + extra;
-            if (!vals.includes(c)) vals.push(c);
-            extra++;
-          }
-          return shuffle(
-            vals.slice(0, 4).map((v) => ({
-              text: formatter(v),
-              value: v,
-              correct: v === correct,
-            })),
+        };
+        const sfxWrong = () => beep(190, 0.22, "square", 0.1);
+        const sfxLevel = () =>
+          [523, 659, 784, 1047].forEach((f, i) =>
+            setTimeout(() => beep(f, 0.13), i * 85),
           );
-        }
 
-        // ─── Type 1: Parallelogram area (A = b × h) ───
-        function genParaArea() {
-          const b = ri(4, 18),
-            h = ri(3, 14),
-            a = b * h,
-            u = pick(UNITS);
-          const ctx = pick(PARA_CTX);
-          return {
-            type: "para-area",
-            shape: "para",
-            stem: `A ${ctx} is shaped like a parallelogram.\nBase = ${fmtM(b, u)}, Height = ${fmtM(h, u)}.\nWhat is the area?`,
-            hint: `A = b × h = ${b} × ${h}`,
-            formula: "A = b × h",
-            explain: `${b} × ${h} = ${a} ${u}²`,
-            dims: { b, h, u },
-            choices: mkChoices(
-              a,
-              [b + h, 2 * (b + h), Math.round(a / 2), a + b],
-              (v) => fmtA(v, u),
-            ),
-          };
-        }
-
-        // ─── Type 2: Rhombus area via diagonals (A = 1/2 × d1 × d2) ───
-        function genRhomDiag() {
-          const d1 = ri(4, 16) * 2,
-            d2 = ri(3, 12) * 2,
-            a = (d1 * d2) / 2,
-            u = pick(UNITS);
-          const ctx = pick(RHOM_CTX);
-          return {
-            type: "rhom-diag",
-            shape: "rhom",
-            stem: `A ${ctx} is a rhombus.\nDiagonals: d1 = ${fmtM(d1, u)}, d2 = ${fmtM(d2, u)}.\nFind the area.`,
-            hint: `A = 1/2 × ${d1} × ${d2}`,
-            formula: "A = ½ × d1 × d2",
-            explain: `½ × ${d1} × ${d2} = ${a} ${u}²`,
-            dims: { d1, d2, u },
-            choices: mkChoices(
-              a,
-              [d1 * d2, d1 + d2, Math.round(a / 2), a + d2],
-              (v) => fmtA(v, u),
-            ),
-          };
-        }
-
-        // ─── Type 3: Rhombus area via base-height ───
-        function genRhomBH() {
-          const b = ri(5, 16),
-            h = ri(4, 12),
-            a = b * h,
-            u = pick(UNITS);
-          return {
-            type: "rhom-bh",
-            shape: "rhom",
-            stem: `A rhombus has base ${fmtM(b, u)} and\nperpendicular height ${fmtM(h, u)}.\nWhat is its area?`,
-            hint: `A rhombus is a parallelogram!\nA = b × h = ${b} × ${h}`,
-            formula: "A = b × h",
-            explain: `${b} × ${h} = ${a} ${u}²`,
-            dims: { b, h, u },
-            choices: mkChoices(
-              a,
-              [b + h, 2 * (b + h), Math.round(a / 2), a + h],
-              (v) => fmtA(v, u),
-            ),
-          };
-        }
-
-        // ─── Type 4: Missing height (h = A / b) ───
-        function genMissH() {
-          const b = ri(6, 18),
-            h = ri(3, 12),
-            a = b * h,
-            u = pick(UNITS);
-          return {
-            type: "miss-h",
-            shape: "para",
-            stem: `A parallelogram has area ${fmtA(a, u)}\nand base ${fmtM(b, u)}.\nWhat is the height?`,
-            hint: `h = A ÷ b = ${a} ÷ ${b}`,
-            formula: "h = A ÷ b",
-            explain: `${a} ÷ ${b} = ${h} ${u}`,
-            dims: { b, h, a, u },
-            choices: mkChoices(
-              h,
-              [Math.max(1, Math.round(h / 2)), a - b, b, a],
-              (v) => fmtM(v, u),
-            ),
-          };
-        }
-
-        // ─── Type 5: Missing base (b = A / h) ───
-        function genMissB() {
-          const b = ri(6, 18),
-            h = ri(3, 12),
-            a = b * h,
-            u = pick(UNITS);
-          return {
-            type: "miss-b",
-            shape: "para",
-            stem: `A parallelogram has area ${fmtA(a, u)}\nand height ${fmtM(h, u)}.\nWhat is the base?`,
-            hint: `b = A ÷ h = ${a} ÷ ${h}`,
-            formula: "b = A ÷ h",
-            explain: `${a} ÷ ${h} = ${b} ${u}`,
-            dims: { b, h, a, u },
-            choices: mkChoices(
-              b,
-              [Math.max(1, Math.round(b / 2)), a - h, h, a],
-              (v) => fmtM(v, u),
-            ),
-          };
-        }
-
-        // ─── Type 6: Missing diagonal ───
-        function genMissDiag() {
-          const d1 = ri(4, 16) * 2,
-            d2 = ri(3, 12) * 2,
-            a = (d1 * d2) / 2,
-            u = pick(UNITS);
-          const askD1 = Math.random() > 0.5;
-          const known = askD1 ? d2 : d1,
-            missing = askD1 ? d1 : d2;
-          const kLabel = askD1 ? "d2" : "d1",
-            mLabel = askD1 ? "d1" : "d2";
-          return {
-            type: "miss-diag",
-            shape: "rhom",
-            stem: `A rhombus has area ${fmtA(a, u)}\nand ${kLabel} = ${fmtM(known, u)}.\nFind ${mLabel}.`,
-            hint: `${mLabel} = (2 × A) ÷ ${kLabel}\n= (2 × ${a}) ÷ ${known}`,
-            formula: mLabel + " = (2 × A) ÷ " + kLabel,
-            explain: `(2 × ${a}) ÷ ${known} = ${missing} ${u}`,
-            dims: { d1, d2, a, u, known, missing },
-            choices: mkChoices(
-              missing,
-              [Math.max(1, Math.round(missing / 2)), known, missing * 2, a],
-              (v) => fmtM(v, u),
-            ),
-          };
-        }
-
-        // ─── Type 7: Formula choice ───
-        function genFormulaChoice() {
-          const variant = pick(["para", "rhom-diag", "rhom-bh"]);
-          if (variant === "para") {
-            const b = ri(6, 14),
-              h = ri(4, 10);
-            return {
-              type: "formula",
-              shape: "para",
-              stem: `A parallelogram has base ${b}\nand height ${h}.\nWhich formula should you use?`,
-              hint: "Base and height are given.\nUse the direct formula.",
-              formula: "A = b × h",
-              explain: "Base and height given = A = b × h",
-              dims: { b, h },
-              choices: shuffle([
-                { text: "A = b × h", value: 1, correct: true },
-                { text: "A = ½ × d1 × d2", value: 2, correct: false },
-                { text: "A = 2(b + h)", value: 3, correct: false },
-                { text: "A = b + h", value: 4, correct: false },
-              ]),
-            };
-          }
-          if (variant === "rhom-bh") {
-            const b = ri(6, 16),
-              h = ri(4, 11);
-            return {
-              type: "formula",
-              shape: "rhom",
-              stem: `A rhombus has base ${b}\nand perpendicular height ${h}.\nWhich formula is best?`,
-              hint: "A rhombus is a parallelogram.\nBase + height = A = b × h.",
-              formula: "A = b × h",
-              explain: "Rhombus with b and h = A = b × h",
-              dims: { b, h },
-              choices: shuffle([
-                { text: "A = b × h", value: 1, correct: true },
-                { text: "A = ½ × d1 × d2", value: 2, correct: false },
-                { text: "A = d1 + d2", value: 3, correct: false },
-                { text: "A = 2(b + h)", value: 4, correct: false },
-              ]),
-            };
-          }
-          const d1 = ri(4, 16) * 2,
-            d2 = ri(3, 12) * 2;
-          return {
-            type: "formula",
-            shape: "rhom",
-            stem: `A rhombus has diagonals ${d1} and ${d2}.\nWhich formula is the best match?`,
-            hint: "Both diagonals are given.\nHalve the product.",
-            formula: "A = ½ × d1 × d2",
-            explain: "Diagonals given = A = ½ × d1 × d2",
-            dims: { d1, d2 },
-            choices: shuffle([
-              { text: "A = ½ × d1 × d2", value: 1, correct: true },
-              { text: "A = b × h", value: 2, correct: false },
-              { text: "A = 2(b + h)", value: 3, correct: false },
-              { text: "A = d1 + d2", value: 4, correct: false },
-            ]),
-          };
-        }
-
-        // ─── Type 8: Compare two shapes ───
-        function genCompare() {
-          const scenario = pick(["equal", "para-wins", "rhom-wins"]);
-          const u = pick(UNITS);
-          let pb, ph, d1, d2, answer;
-          if (scenario === "equal") {
-            pb = ri(6, 14);
-            ph = ri(4, 10);
-            d1 = pb * 2;
-            d2 = ph;
-            answer = "They are equal";
-          } else if (scenario === "para-wins") {
-            pb = ri(10, 16);
-            ph = ri(6, 10);
-            d1 = ri(4, 8) * 2;
-            d2 = ri(3, 6) * 2;
-            answer = "Parallelogram is larger";
-          } else {
-            pb = ri(5, 10);
-            ph = ri(4, 8);
-            d1 = ri(10, 16) * 2;
-            d2 = ri(6, 10) * 2;
-            answer = "Rhombus is larger";
-          }
-          const pa = pb * ph,
-            ra = (d1 * d2) / 2;
-          return {
-            type: "compare",
-            shape: "both",
-            stem: `Parallelogram: b=${pb}, h=${ph} (${u})\nRhombus: d1=${d1}, d2=${d2} (${u})\nWhich has the greater area?`,
-            hint: `Para = ${pb}×${ph} = ${pa}\nRhom = ½×${d1}×${d2} = ${ra}`,
-            formula: "Compute both, then compare",
-            explain: `Para = ${pa}, Rhom = ${ra}`,
-            dims: { pb, ph, d1, d2, u },
-            choices: shuffle([
-              {
-                text: "Parallelogram is larger",
-                value: 1,
-                correct: answer === "Parallelogram is larger",
-              },
-              {
-                text: "Rhombus is larger",
-                value: 2,
-                correct: answer === "Rhombus is larger",
-              },
-              {
-                text: "They are equal",
-                value: 3,
-                correct: answer === "They are equal",
-              },
-              { text: "Not enough info", value: 4, correct: false },
-            ]),
-          };
-        }
-
-        // ─── Type 9: Scenario cost ───
-        function genCost() {
-          const rate = pick([2, 3, 4, 5]),
-            u = pick(["m", "ft"]);
-          const isPara = Math.random() > 0.5;
-          if (isPara) {
-            const b = ri(7, 15),
-              h = ri(4, 10),
-              a = b * h,
-              cost = a * rate;
-            return {
-              type: "cost",
-              shape: "para",
-              stem: `A parallelogram mural:\nb=${fmtM(b, u)}, h=${fmtM(h, u)}.\nPaint costs $${rate} per ${u}².\nTotal cost?`,
-              hint: `Area = ${b}×${h} = ${a}\nCost = ${a} × $${rate}`,
-              formula: "Cost = Area × Rate",
-              explain: `${a} × $${rate} = $${cost}`,
-              dims: { b, h, rate, u },
-              choices: mkChoices(
-                cost,
-                [
-                  a,
-                  a * Math.max(1, rate - 1),
-                  cost + rate,
-                  Math.round(cost / 2),
-                ],
-                (v) => "$" + v,
-              ),
-            };
-          }
-          const d1 = ri(4, 10) * 2,
-            d2 = ri(3, 8) * 2,
-            a = (d1 * d2) / 2,
-            cost = a * rate;
-          return {
-            type: "cost",
-            shape: "rhom",
-            stem: `A rhombus sign:\nd1=${fmtM(d1, u)}, d2=${fmtM(d2, u)}.\nCosts $${rate} per ${u}².\nTotal cost?`,
-            hint: `Area = ½×${d1}×${d2} = ${a}\nCost = ${a} × $${rate}`,
-            formula: "Cost = Area × Rate",
-            explain: `${a} × $${rate} = $${cost}`,
-            dims: { d1, d2, rate, u },
-            choices: mkChoices(
-              cost,
-              [a, d1 * d2 * rate, cost + rate, Math.round(cost / 2)],
-              (v) => "$" + v,
-            ),
-          };
-        }
-
-        // ─── Type 10: Boss questions (Mr. Neft) ───
-        function genBoss(phase) {
-          if (phase === "prep") {
-            const b = ri(8, 16),
-              h = ri(5, 11),
-              a = b * h,
-              u = pick(["m", "ft"]);
-            return {
-              type: "boss",
-              shape: "para",
-              bossPhase: "prep",
-              stem: `Mr. Neft throws a shield panel!\nParallelogram: b=${fmtM(b, u)}, h=${fmtM(h, u)}.\nBreak the shield!`,
-              hint: `A = b × h = ${b} × ${h}`,
-              formula: "A = b × h",
-              explain: `${b} × ${h} = ${a} ${u}²`,
-              dims: { b, h, u },
-              choices: mkChoices(
-                a,
-                [b + h, 2 * (b + h), Math.round(a / 2), a + h],
-                (v) => fmtA(v, u),
-              ),
-            };
-          }
-          if (phase === "diag") {
-            const d1 = ri(6, 14) * 2,
-              d2 = ri(5, 12) * 2,
-              a = (d1 * d2) / 2,
-              u = pick(["m", "ft"]);
-            return {
-              type: "boss",
-              shape: "rhom",
-              bossPhase: "diag",
-              stem: `Mr. Neft launches a rhombus barrier!\nd1=${fmtM(d1, u)}, d2=${fmtM(d2, u)}.\nCrack it!`,
-              hint: `A = ½ × ${d1} × ${d2}`,
-              formula: "A = ½ × d1 × d2",
-              explain: `½ × ${d1} × ${d2} = ${a} ${u}²`,
-              dims: { d1, d2, u },
-              choices: mkChoices(
-                a,
-                [d1 * d2, d1 + d2, Math.round(a / 2), a + d1],
-                (v) => fmtA(v, u),
-              ),
-            };
-          }
-          // final: combined
-          const pb = ri(10, 16),
-            ph = ri(6, 10),
-            d1 = ri(10, 16) * 2,
-            d2 = ri(6, 10) * 2,
-            u = pick(["m", "ft"]);
-          const pa = pb * ph,
-            ra = (d1 * d2) / 2,
-            total = pa + ra;
-          return {
-            type: "boss",
-            shape: "both",
-            bossPhase: "final",
-            stem: `FINAL STRIKE!\nPara: b=${pb}, h=${ph} (${u})\nRhom: d1=${d1}, d2=${d2} (${u})\nTotal area to defeat Mr. Neft?`,
-            hint: `Para = ${pb}×${ph} = ${pa}\nRhom = ½×${d1}×${d2} = ${ra}\nTotal = ${pa}+${ra}`,
-            formula: "Add both areas",
-            explain: `${pa} + ${ra} = ${total} ${u}²`,
-            dims: { pb, ph, d1, d2, u },
-            choices: mkChoices(total, [pa, ra, pa + d1, total + ph], (v) =>
-              fmtA(v, u),
-            ),
-          };
-        }
-
-        /* ─── ZONE DEFINITIONS ─── */
-        const ZONES = [
-          {
-            name: "Foundation Floor",
-            emoji: "🏗️",
-            color: 0x4ecdc4,
-            generators: [genParaArea, genRhomDiag, genRhomBH, genFormulaChoice],
-            count: 4,
-          },
-          {
-            name: "Measurement Wing",
-            emoji: "📏",
-            color: 0xf7dc6f,
-            generators: [genMissH, genMissB, genMissDiag, genFormulaChoice],
-            count: 4,
-          },
-          {
-            name: "Design Studio",
-            emoji: "🎨",
-            color: 0xaf7ac5,
-            generators: [genCompare, genCost, genParaArea, genRhomDiag],
-            count: 4,
-          },
-          {
-            name: "Engineering Lab",
-            emoji: "🔧",
-            color: 0xe74c3c,
-            generators: [genCost, genCompare, genMissH, genMissDiag],
-            count: 4,
-          },
-          {
-            name: "Mr. Neft Arena",
-            emoji: "👾",
-            color: 0xff6b6b,
-            generators: null,
-            count: 4,
-          },
-        ];
-
-        /* ═══════════════════════════════════════════
-         SHARED CONSTANTS
-         ═══════════════════════════════════════════ */
-        const W = 960,
-          H = 600;
+        /* ─── PALETTE — colourblind-safe (shape never identified by colour
+              alone; every shape carries a text label + formula) ─── */
+        const W = 1024,
+          H = 720;
         const CLR = {
           bg: 0x0a1628,
           panel: 0x101b35,
           panelLt: 0x162648,
           gold: 0xffcf72,
           teal: 0x4ecdc4,
-          coral: 0xff6b6b,
           violet: 0xa88bff,
-          lime: 0xb9ff78,
           white: 0xeef5ff,
           muted: 0xa4b8dc,
           ok: 0x48df8a,
           danger: 0xff6273,
-          darkBlue: 0x091526,
+          grid: 0x24385f,
+          fillP: 0x2f7fd4, // parallelogram fill (blue)
+          fillR: 0xe08a2e, // rhombus fill (orange) — distinct hue + always labelled
+          stroke: 0x33507e,
         };
+        const CSS = (n) => "#" + n.toString(16).padStart(6, "0");
 
-        /* ═══════════════════════════════════════════
-         TITLE SCENE
-         ═══════════════════════════════════════════ */
+        /* ─── MATH / RANDOM HELPERS ─── */
+        const ri = (min, max) =>
+          Math.floor(Math.random() * (max - min + 1)) + min;
+        const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+        const PARA_CTX = [
+          "training platform",
+          "garden bed",
+          "solar panel",
+          "stage panel",
+          "roof tile",
+          "wall section",
+        ];
+        const RHOM_CTX = [
+          "logo badge",
+          "diamond tile",
+          "kite panel",
+          "signal marker",
+          "floor tile",
+          "window pane",
+        ];
+
+        // Grid bounds (in cells). Every generated target must fit these.
+        const GRID = { maxB: 11, maxH: 8, minB: 2, minH: 2, maxD: 10, minD: 2 };
+
+        /* ═══════════════════════════════════════════════════════════════
+           ROUND GENERATOR — solvability-verified.
+           tier 1: only SHEAR tasks (build a parallelogram by shearing).
+           tier 2: SHEAR + MISSING-DIMENSION + DIAGONAL tasks.
+           Every round guarantees an integer area that fits the grid.
+           ═══════════════════════════════════════════════════════════════ */
+        function makeRound(tier, index) {
+          let type;
+          if (tier === 1) {
+            type = "shear";
+          } else {
+            // Rotate so each task type appears and missing/diagonal are common.
+            type = ["shear", "missing", "diagonal", "missing", "diagonal"][
+              index % 5
+            ];
+          }
+
+          if (type === "shear") {
+            // Build a parallelogram: start as b×h rectangle, shear top edge.
+            const b = ri(GRID.minB, tier === 1 ? 8 : GRID.maxB);
+            const h = ri(GRID.minH, tier === 1 ? 6 : GRID.maxH);
+            const ctx = pick(PARA_CTX);
+            return {
+              type,
+              shape: "para",
+              b,
+              h,
+              area: b * h, // base × height — invariant under shear
+              ctx,
+              prompt: `Build the ${ctx}: a parallelogram with base ${b} and height ${h}.`,
+            };
+          }
+
+          if (type === "missing") {
+            // Lock a target area; player drags base/height until b×h == target.
+            // Choose b,h so target factors fit the grid.
+            const b = ri(2, GRID.maxB);
+            const h = ri(2, GRID.maxH);
+            const area = b * h;
+            const ctx = pick(PARA_CTX);
+            // Decide which dimension is "missing" (the one the student finds).
+            const findHeight = Math.random() < 0.5;
+            return {
+              type,
+              shape: "para",
+              b,
+              h,
+              area,
+              ctx,
+              findHeight,
+              given: findHeight ? b : h,
+              prompt: findHeight
+                ? `This ${ctx} must have area ${area} square units, and base ${b}. Stretch the HEIGHT until the area is exactly ${area}.`
+                : `This ${ctx} must have area ${area} square units, and height ${h}. Stretch the BASE until the area is exactly ${area}.`,
+            };
+          }
+
+          // diagonal — rhombus via diagonals; ½·d1·d2 must be an integer.
+          // Guarantee integer: make at least one diagonal even.
+          let d1 = ri(GRID.minD, GRID.maxD);
+          let d2 = ri(GRID.minD, GRID.maxD);
+          if ((d1 * d2) % 2 !== 0) {
+            // both odd → bump d2 to even within bounds
+            d2 = d2 < GRID.maxD ? d2 + 1 : d2 - 1;
+          }
+          const ctx = pick(RHOM_CTX);
+          return {
+            type: "diagonal",
+            shape: "rhom",
+            d1,
+            d2,
+            area: (d1 * d2) / 2,
+            ctx,
+            prompt: `Build the ${ctx}: a rhombus with diagonals d1 = ${d1} and d2 = ${d2}.`,
+          };
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           TITLE SCENE — Level 1 (Support) vs Level 2 (Challenge)
+           ═══════════════════════════════════════════════════════════════ */
         class TitleScene extends Phaser.Scene {
           constructor() {
             super("TitleScene");
           }
-
           create() {
             this.cameras.main.setBackgroundColor(CLR.bg);
-            // Starfield background
-            for (let i = 0; i < 80; i++) {
-              const x = Phaser.Math.Between(0, W),
-                y = Phaser.Math.Between(0, H);
-              const s = this.add.circle(
-                x,
-                y,
-                Phaser.Math.Between(1, 2),
-                0xffffff,
-                Phaser.Math.FloatBetween(0.1, 0.4),
-              );
-              this.tweens.add({
-                targets: s,
-                alpha: { from: s.alpha, to: 0.05 },
-                duration: Phaser.Math.Between(1500, 3500),
-                yoyo: true,
-                repeat: -1,
-              });
-            }
+            this.cameras.main.fadeIn(350);
 
-            // Grid floor lines
-            const gfx = this.add.graphics();
-            gfx.lineStyle(1, 0x1a2d50, 0.3);
-            for (let y = 200; y < H; y += 40) gfx.lineBetween(0, y, W, y);
-            for (let x = 0; x < W; x += 60) gfx.lineBetween(x, 200, x, H);
+            // soft grid backdrop
+            const g = this.add.graphics();
+            g.lineStyle(1, CLR.grid, 0.25);
+            for (let y = 0; y < H; y += 36) g.lineBetween(0, y, W, y);
+            for (let x = 0; x < W; x += 36) g.lineBetween(x, 0, x, H);
 
-            // Animated building silhouettes
-            this.drawBuildings(gfx);
-
-            // Title
             this.add
-              .text(W / 2, 100, "ARCHITECTURE BUILDER", {
-                fontSize: "48px",
+              .text(W / 2, 88, "ARCHITECTURE BUILDER", {
+                fontSize: "54px",
                 fontFamily: "Arial Black, sans-serif",
-                color: "#ffcf72",
+                color: CSS(CLR.gold),
                 stroke: "#0a1628",
                 strokeThickness: 6,
               })
               .setOrigin(0.5);
-
             this.add
-              .text(W / 2, 155, "Area of Parallelograms & Rhombuses", {
-                fontSize: "18px",
+              .text(W / 2, 140, "Area of Parallelograms & Rhombuses · 6.G.1", {
+                fontSize: "19px",
                 fontFamily: "Arial, sans-serif",
-                color: "#a4b8dc",
+                color: CSS(CLR.teal),
               })
               .setOrigin(0.5);
-
-            // Architect selection
             this.add
-              .text(W / 2, 210, "Choose Your Architect", {
-                fontSize: "22px",
-                fontFamily: "Arial, sans-serif",
-                color: "#4ecdc4",
-              })
+              .text(
+                W / 2,
+                188,
+                "You don't pick an answer — you BUILD the shape. Drag its edges on the grid\n" +
+                  "until it is correct. Watch the area appear as you build.",
+                {
+                  fontSize: "16px",
+                  fontFamily: "Arial, sans-serif",
+                  color: CSS(CLR.muted),
+                  align: "center",
+                  lineSpacing: 6,
+                },
+              )
               .setOrigin(0.5);
 
-            const architects = [
-              { name: "Aria", emoji: "👷‍♀️", perk: "+1 Life", color: 0x4ecdc4 },
+            // mini demo: rectangle → sheared parallelogram, same area
+            this.drawDemo(W / 2, 320);
+
+            const tiers = [
               {
-                name: "Marcus",
-                emoji: "👷",
-                perk: "Extra Hints",
-                color: 0xf7dc6f,
+                t: 1,
+                label: "Level 1",
+                sub: "Support",
+                desc: "Build parallelograms by shearing · gridlines + formula shown · 5 lives",
+                col: CLR.ok,
               },
-              { name: "Zara", emoji: "👩‍🔬", perk: "+5s Timer", color: 0xaf7ac5 },
               {
-                name: "Rex",
-                emoji: "🦸",
-                perk: "Combo Boost",
-                color: 0xff6b6b,
+                t: 2,
+                label: "Level 2",
+                sub: "Challenge",
+                desc: "Adds missing-dimension & rhombus-diagonal builds · fewer guides · 3 lives",
+                col: CLR.gold,
               },
             ];
-
-            const startX = W / 2 - ((architects.length - 1) * 110) / 2;
-            architects.forEach((arch, i) => {
-              const bx = startX + i * 110,
-                by = 320;
+            tiers.forEach((d, i) => {
+              const x = W / 2 + (i === 0 ? -210 : 210),
+                y = 500;
               const card = this.add
-                .rectangle(bx, by, 100, 140, CLR.panel, 0.9)
-                .setStrokeStyle(2, arch.color, 0.6)
+                .rectangle(x, y, 360, 150, CLR.panel)
+                .setStrokeStyle(3, CLR.stroke)
                 .setInteractive({ useHandCursor: true });
               this.add
-                .text(bx, by - 35, arch.emoji, { fontSize: "36px" })
+                .text(x, y - 48, d.label, {
+                  fontSize: "30px",
+                  fontFamily: "Arial Black",
+                  color: "#fff",
+                })
                 .setOrigin(0.5);
               this.add
-                .text(bx, by + 15, arch.name, {
-                  fontSize: "14px",
-                  fontFamily: "Arial, sans-serif",
-                  color: "#eef5ff",
+                .text(x, y - 16, d.sub, {
+                  fontSize: "16px",
+                  fontFamily: "Arial",
+                  color: CSS(d.col),
                   fontStyle: "bold",
                 })
                 .setOrigin(0.5);
               this.add
-                .text(bx, by + 38, arch.perk, {
-                  fontSize: "11px",
-                  fontFamily: "Arial, sans-serif",
-                  color: "#a4b8dc",
+                .text(x, y + 28, d.desc, {
+                  fontSize: "13px",
+                  fontFamily: "Arial",
+                  color: CSS(CLR.muted),
+                  align: "center",
+                  wordWrap: { width: 330 },
+                  lineSpacing: 3,
                 })
                 .setOrigin(0.5);
-
               card.on("pointerover", () => {
-                card.setStrokeStyle(3, arch.color, 1);
+                card.setStrokeStyle(3, d.col);
+                card.setScale(1.03);
               });
               card.on("pointerout", () => {
-                card.setStrokeStyle(2, arch.color, 0.6);
+                card.setStrokeStyle(3, CLR.stroke);
+                card.setScale(1);
               });
               card.on("pointerdown", () => {
                 ensureAudio();
                 sfxClick();
-                this.scene.start("GameScene", { architect: arch });
+                this.cameras.main.fadeOut(300, 0, 0, 0);
+                this.time.delayedCall(300, () =>
+                  this.scene.start("GameScene", { tier: d.t }),
+                );
               });
             });
 
-            // Keyboard shortcuts
             this.add
-              .text(
-                W / 2,
-                440,
-                "Press 1-4 to select  |  5 zones  |  20 questions  |  Mr. Neft boss fight!",
-                {
-                  fontSize: "12px",
-                  fontFamily: "Arial, sans-serif",
-                  color: "#7e96c2",
-                },
-              )
+              .text(W / 2, 632, "Press 1 for Level 1 · 2 for Level 2", {
+                fontSize: "14px",
+                color: CSS(CLR.muted),
+              })
               .setOrigin(0.5);
-
             this.add
               .text(
                 W / 2,
-                470,
-                "Language-Friendly  •  Simple English  •  Visual Cues",
-                {
-                  fontSize: "11px",
-                  fontFamily: "Arial, sans-serif",
-                  color: "#7e96c2",
-                },
-              )
-              .setOrigin(0.5);
-
-            // Formulas reference
-            this.add
-              .text(
-                W / 2,
-                520,
-                "Parallelogram: A = b × h     Rhombus: A = ½ × d1 × d2  or  A = b × h",
+                666,
+                "TOUCH: drag the round handles.   KEYBOARD: Arrow keys move the active handle · Tab switches handle · Enter confirms · H for a hint.",
                 {
                   fontSize: "13px",
-                  fontFamily: "Courier New, monospace",
-                  color: "#4ecdc4",
+                  fontFamily: "Arial, sans-serif",
+                  color: CSS(CLR.violet),
+                  align: "center",
+                  wordWrap: { width: 880 },
                 },
               )
               .setOrigin(0.5);
 
             this.input.keyboard.on("keydown", (e) => {
-              const idx = parseInt(e.key) - 1;
-              if (idx >= 0 && idx < architects.length) {
+              if (e.key === "1" || e.key === "2") {
                 ensureAudio();
                 sfxClick();
-                this.scene.start("GameScene", { architect: architects[idx] });
+                this.scene.start("GameScene", { tier: parseInt(e.key, 10) });
               }
             });
           }
 
-          drawBuildings(gfx) {
-            const buildings = [
-              { x: 60, w: 70, h: 180 },
-              { x: 160, w: 50, h: 140 },
-              { x: 240, w: 80, h: 200 },
-              { x: 350, w: 60, h: 160 },
-              { x: 450, w: 90, h: 220 },
-              { x: 570, w: 55, h: 150 },
-              { x: 660, w: 75, h: 190 },
-              { x: 770, w: 65, h: 170 },
-              { x: 870, w: 50, h: 130 },
-            ];
-            buildings.forEach((b) => {
-              gfx.fillStyle(0x0d1830, 0.7);
-              gfx.fillRect(b.x, H - b.h, b.w, b.h);
-              gfx.lineStyle(1, 0x1a2d50, 0.5);
-              gfx.strokeRect(b.x, H - b.h, b.w, b.h);
-              // Windows
-              for (let wy = H - b.h + 15; wy < H - 20; wy += 25) {
-                for (let wx = b.x + 8; wx < b.x + b.w - 8; wx += 16) {
-                  const lit = Math.random() > 0.4;
-                  gfx.fillStyle(lit ? 0xffcf72 : 0x091526, lit ? 0.4 : 0.3);
-                  gfx.fillRect(wx, wy, 8, 10);
+          drawDemo(cx, cy) {
+            const s = 14; // cell size
+            const g = this.add.graphics();
+            // rectangle 4×3
+            const drawCells = (ox, oy, skew) => {
+              g.lineStyle(1, CLR.stroke, 0.7);
+              for (let r = 0; r < 3; r++)
+                for (let c = 0; c < 4; c++) {
+                  const sx = ox + c * s + (2 - r) * skew;
+                  const sy = oy + r * s;
+                  g.fillStyle(CLR.fillP, 0.5);
+                  g.fillRect(sx, sy, s - 1, s - 1);
+                  g.strokeRect(sx, sy, s - 1, s - 1);
                 }
-              }
-            });
+            };
+            g.clear();
+            drawCells(cx - 150, cy - 20, 0);
+            this.add
+              .text(cx - 99, cy + 28, "rectangle\n4 × 3 = 12", {
+                fontSize: "12px",
+                color: CSS(CLR.muted),
+                align: "center",
+              })
+              .setOrigin(0.5, 0);
+            this.add
+              .text(cx, cy, "→ shear →", {
+                fontSize: "18px",
+                fontFamily: "Arial Black",
+                color: CSS(CLR.gold),
+              })
+              .setOrigin(0.5);
+            drawCells(cx + 70, cy - 20, 9);
+            this.add
+              .text(cx + 140, cy + 28, "parallelogram\nstill 12", {
+                fontSize: "12px",
+                color: CSS(CLR.muted),
+                align: "center",
+              })
+              .setOrigin(0.5, 0);
           }
         }
 
-        /* ═══════════════════════════════════════════
-         GAME SCENE
-         ═══════════════════════════════════════════ */
+        /* ═══════════════════════════════════════════════════════════════
+           GAME SCENE
+           ═══════════════════════════════════════════════════════════════ */
         class GameScene extends Phaser.Scene {
           constructor() {
             super("GameScene");
           }
-
           init(data) {
-            this.architect = data.architect;
-            this.zone = 0;
-            this.qIndex = 0;
-            this.score = 0;
-            this.combo = 0;
-            this.maxCombo = 0;
-            this.correct = 0;
-            this.total = 0;
-            this.lives = this.architect.perk === "+1 Life" ? 6 : 5;
-            this.maxLives = this.lives;
-            this.hints = this.architect.perk === "Extra Hints" ? 4 : 2;
-            this.maxHints = this.hints;
-            this.timerBase = this.architect.perk === "+5s Timer" ? 35 : 30;
-            this.comboMult = this.architect.perk === "Combo Boost" ? 1.5 : 1.0;
-            this.bossHP = 4;
-            this.bossMaxHP = 4;
-            this.questions = this.generateAllQuestions();
-            this.answered = false;
-            this.shownHint = false;
-            this.building = []; // track placed blocks
-          }
-
-          generateAllQuestions() {
-            const qs = [];
-            for (let z = 0; z < 4; z++) {
-              const zone = ZONES[z];
-              for (let i = 0; i < zone.count; i++) {
-                const gen = zone.generators[i % zone.generators.length];
-                qs.push({ ...gen(), zone: z });
-              }
-            }
-            // Boss zone (zone 4)
-            qs.push({ ...genBoss("prep"), zone: 4 });
-            qs.push({ ...genBoss("prep"), zone: 4 });
-            qs.push({ ...genBoss("diag"), zone: 4 });
-            qs.push({ ...genBoss("final"), zone: 4 });
-            return qs;
+            this.tier = data.tier || 1;
           }
 
           create() {
             this.cameras.main.setBackgroundColor(CLR.bg);
+            this.cameras.main.fadeIn(300);
 
-            // Background grid
-            const gfx = this.add.graphics();
-            gfx.lineStyle(1, 0x1a2d50, 0.15);
-            for (let y = 0; y < H; y += 30) gfx.lineBetween(0, y, W, y);
-            for (let x = 0; x < W; x += 30) gfx.lineBetween(x, 0, x, H);
+            // state
+            this.score = 0;
+            this.streak = 0;
+            this.bestStreak = 0;
+            this.built = 0;
+            this.correct = 0;
+            this.attempts = 0;
+            this.lives = this.tier === 1 ? 5 : 3;
+            this.goal = this.tier === 1 ? 8 : 10;
+            this.roundIx = 0;
 
-            // Building area (right side)
-            this.buildingGfx = this.add.graphics();
-            this.drawBuildingArea();
+            // grid geometry (square cells). Origin at the build board.
+            this.cell = 44;
+            this.boardX = 470; // left edge of grid (x of column 0)
+            this.boardYBottom = 560; // baseline (y of row 0 bottom)
+
+            // backdrop grid
+            const bg = this.add.graphics();
+            bg.lineStyle(1, CLR.grid, 0.2);
+            for (let y = 0; y < H; y += 30) bg.lineBetween(0, y, W, y);
+            for (let x = 0; x < W; x += 30) bg.lineBetween(x, 0, x, H);
 
             // HUD
-            this.createHUD();
-
-            // Question area
-            this.showQuestion();
-
-            // Keyboard controls
-            this.input.keyboard.on("keydown", (e) => {
-              if (this.answered) return;
-              const map = { 1: 0, 2: 1, 3: 2, 4: 3, a: 0, b: 1, c: 2, d: 3 };
-              if (map[e.key.toLowerCase()] !== undefined)
-                this.selectAnswer(map[e.key.toLowerCase()]);
-              if (e.key.toLowerCase() === "h") this.useHint();
+            this.add.rectangle(W / 2, 26, W, 52, 0x091526, 0.96);
+            this.hScore = this.add.text(20, 12, "0", {
+              fontSize: "24px",
+              fontFamily: "Arial Black",
+              color: CSS(CLR.gold),
             });
-          }
-
-          createHUD() {
-            // Top bar
-            this.add
-              .rectangle(W / 2, 25, W - 20, 44, CLR.panel, 0.85)
-              .setStrokeStyle(1, 0x1a2d50);
-
-            const q = this.questions[this.qIndex];
-            const zn = ZONES[q.zone];
-
-            this.zoneText = this.add.text(15, 14, `${zn.emoji} ${zn.name}`, {
-              fontSize: "15px",
-              fontFamily: "Arial, sans-serif",
-              color: "#4ecdc4",
-              fontStyle: "bold",
+            this.add.text(22, 40, "POINTS", {
+              fontSize: "10px",
+              color: CSS(CLR.muted),
             });
-
-            this.scoreText = this.add
-              .text(W / 2, 14, `Score: ${this.score}`, {
+            this.hLevel = this.add
+              .text(W / 2, 10, "", {
                 fontSize: "15px",
-                fontFamily: "Arial, sans-serif",
-                color: "#ffcf72",
-                fontStyle: "bold",
+                fontFamily: "Arial Black",
+                color: "#fff",
               })
               .setOrigin(0.5, 0);
+            this.hProgress = this.add
+              .text(W / 2, 32, "", { fontSize: "12px", color: CSS(CLR.muted) })
+              .setOrigin(0.5, 0);
+            this.hLives = this.add
+              .text(W - 20, 12, "", { fontSize: "18px" })
+              .setOrigin(1, 0);
+            this.hStreak = this.add
+              .text(W - 20, 38, "", { fontSize: "12px", color: CSS(CLR.gold) })
+              .setOrigin(1, 0);
 
-            this.comboText = this.add
-              .text(W / 2, 32, "", {
-                fontSize: "11px",
-                fontFamily: "Arial, sans-serif",
-                color: "#b9ff78",
+            // ── Task ticket (left panel) ──
+            this.add
+              .rectangle(210, 320, 340, 470, CLR.panel)
+              .setStrokeStyle(3, CLR.stroke);
+            this.add
+              .text(210, 110, "BLUEPRINT", {
+                fontSize: "18px",
+                fontFamily: "Arial Black",
+                color: CSS(CLR.gold),
+              })
+              .setOrigin(0.5);
+            this.taskIcon = this.add
+              .text(210, 158, "", { fontSize: "40px" })
+              .setOrigin(0.5);
+            this.taskText = this.add
+              .text(210, 230, "", {
+                fontSize: "16px",
+                fontFamily: "Arial",
+                color: CSS(CLR.white),
+                align: "center",
+                wordWrap: { width: 300 },
+                lineSpacing: 5,
               })
               .setOrigin(0.5, 0);
-            this.updateComboText();
-
-            // Lives
-            this.livesText = this.add
-              .text(W - 15, 14, "", {
-                fontSize: "14px",
-                fontFamily: "Arial, sans-serif",
-                color: "#ff6b6b",
-              })
-              .setOrigin(1, 0);
-            this.updateLivesText();
-
-            // Progress bar
-            this.progressBg = this.add
-              .rectangle(W / 2, 52, W - 20, 6, 0x091526)
-              .setStrokeStyle(1, 0x1a2d50);
-            this.progressBar = this.add
-              .rectangle(15, 52, 0, 6, CLR.teal)
-              .setOrigin(0, 0.5);
-            this.updateProgress();
-
-            // Timer bar
-            this.timerBg = this.add.rectangle(W / 2, 62, W - 20, 4, 0x091526);
-            this.timerBar = this.add
-              .rectangle(15, 62, W - 30, 4, CLR.gold)
-              .setOrigin(0, 0.5);
-            this.timeLeft = this.getTimerDuration();
-            this.timerMax = this.timeLeft;
-            this.timerEvent = this.time.addEvent({
-              delay: 100,
-              loop: true,
-              callback: () => {
-                if (this.answered) return;
-                this.timeLeft -= 100;
-                const pct = Math.max(0, this.timeLeft / this.timerMax);
-                this.timerBar.width = (W - 30) * pct;
-                if (pct < 0.3) this.timerBar.setFillStyle(CLR.danger);
-                else if (pct < 0.6) this.timerBar.setFillStyle(0xf7dc6f);
-                else this.timerBar.setFillStyle(CLR.gold);
-                if (this.timeLeft <= 0) this.handleTimeout();
-              },
-            });
-
-            // Question counter
-            this.qCountText = this.add
-              .text(
-                W - 15,
-                32,
-                `Q ${this.qIndex + 1}/${this.questions.length}`,
-                {
-                  fontSize: "11px",
-                  fontFamily: "Arial, sans-serif",
-                  color: "#7e96c2",
-                },
-              )
-              .setOrigin(1, 0);
-
-            // Hint button
-            this.hintBtn = this.add
-              .text(15, 35, `[H] Hints: ${this.hints}`, {
-                fontSize: "11px",
-                fontFamily: "Arial, sans-serif",
-                color: "#a88bff",
-              })
-              .setInteractive({ useHandCursor: true });
-            this.hintBtn.on("pointerdown", () => this.useHint());
-
-            // Architect info
-            this.add
-              .text(
-                W - 15,
-                76,
-                `${this.architect.emoji} ${this.architect.name}`,
-                {
-                  fontSize: "12px",
-                  fontFamily: "Arial, sans-serif",
-                  color: "#a4b8dc",
-                },
-              )
-              .setOrigin(1, 0);
-          }
-
-          getTimerDuration() {
-            const base = this.timerBase * 1000;
-            // Decrease timer slightly as zones progress
-            const reduction = this.zone * 1500;
-            return Math.max(15000, base - reduction);
-          }
-
-          updateProgress() {
-            const pct = this.qIndex / this.questions.length;
-            this.progressBar.width = (W - 30) * pct;
-          }
-
-          updateLivesText() {
-            this.livesText.setText(
-              "❤️".repeat(this.lives) + "🖤".repeat(this.maxLives - this.lives),
-            );
-          }
-
-          updateComboText() {
-            if (this.combo > 1) {
-              const mult = Math.min(
-                5,
-                1 + Math.floor(this.combo / 2) * this.comboMult,
-              );
-              this.comboText.setText(
-                `🔥 Streak: ${this.combo} (${mult.toFixed(1)}x)`,
-              );
-            } else if (this.combo === 1) {
-              this.comboText.setText("⭐ Streak: 1");
-            } else {
-              this.comboText.setText("");
-            }
-          }
-
-          showQuestion() {
-            // Clear previous question elements
-            if (this.questionGroup) this.questionGroup.destroy(true);
-            this.questionGroup = this.add.group();
-            this.answered = false;
-            this.shownHint = false;
-
-            const q = this.questions[this.qIndex];
-            const zn = ZONES[q.zone];
-            const isBoss = q.type === "boss";
-
-            // Update zone text
-            if (this.zoneText) this.zoneText.setText(`${zn.emoji} ${zn.name}`);
-            if (this.qCountText)
-              this.qCountText.setText(
-                `Q ${this.qIndex + 1}/${this.questions.length}`,
-              );
-
-            // Boss banner
-            if (isBoss && q.bossPhase === "prep" && this.zone !== 4) {
-              this.zone = 4;
-              this.showZoneBanner(zn.name, zn.emoji, zn.color);
-            }
-
-            // Boss HP bar
-            if (isBoss) {
-              this.showBossHP();
-            }
-
-            // Shape diagram area (left-center)
-            const shapeX = 120,
-              shapeY = 200;
-            this.drawShapeDiagram(q, shapeX, shapeY);
-
-            // Question stem
-            const stemX = 30,
-              stemY = 100;
-            const stemBg = this.add
-              .rectangle(270, stemY + 60, 500, 130, CLR.panel, 0.9)
-              .setStrokeStyle(1, isBoss ? CLR.coral : 0x1a2d50);
-            this.questionGroup.add(stemBg);
-
-            if (isBoss) {
-              const bossIcon = this.add.text(stemX + 10, stemY + 5, "👾", {
-                fontSize: "20px",
-              });
-              this.questionGroup.add(bossIcon);
-              this.tweens.add({
-                targets: bossIcon,
-                scaleX: 1.2,
-                scaleY: 1.2,
-                duration: 500,
-                yoyo: true,
-                repeat: -1,
-              });
-            }
-
-            const stemText = this.add.text(
-              stemX + (isBoss ? 40 : 10),
-              stemY + 5,
-              q.stem,
-              {
-                fontSize: "15px",
-                fontFamily: "Arial, sans-serif",
-                color: "#eef5ff",
-                wordWrap: { width: 460 },
-                lineSpacing: 6,
-              },
-            );
-            this.questionGroup.add(stemText);
-
-            // Formula reference
-            const formulaText = this.add.text(
-              stemX + 10,
-              stemY + 110,
-              `Formula: ${q.formula}`,
-              {
-                fontSize: "12px",
+            this.formulaText = this.add
+              .text(210, 410, "", {
+                fontSize: "16px",
                 fontFamily: "Courier New, monospace",
-                color: "#4ecdc4",
-              },
-            );
-            this.questionGroup.add(formulaText);
-
-            // Answer choices (below question area)
-            const choiceStartY = 290;
-            this.choiceBtns = [];
-
-            q.choices.forEach((c, i) => {
-              const label = String.fromCharCode(65 + i);
-              const cy = choiceStartY + i * 48;
-              const bg = this.add
-                .rectangle(270, cy, 500, 40, CLR.panelLt, 0.85)
-                .setStrokeStyle(1, 0x1a2d50)
-                .setInteractive({ useHandCursor: true });
-              this.questionGroup.add(bg);
-
-              const keyText = this.add
-                .text(40, cy, `[${i + 1}] ${label}.`, {
-                  fontSize: "13px",
-                  fontFamily: "Arial, sans-serif",
-                  color: "#a88bff",
-                  fontStyle: "bold",
-                })
-                .setOrigin(0, 0.5);
-              this.questionGroup.add(keyText);
-
-              const choiceText = this.add
-                .text(100, cy, c.text, {
-                  fontSize: "15px",
-                  fontFamily: "Arial, sans-serif",
-                  color: "#eef5ff",
-                })
-                .setOrigin(0, 0.5);
-              this.questionGroup.add(choiceText);
-
-              bg.on("pointerover", () => {
-                if (!this.answered) bg.setStrokeStyle(2, CLR.teal);
-              });
-              bg.on("pointerout", () => {
-                if (!this.answered) bg.setStrokeStyle(1, 0x1a2d50);
-              });
-              bg.on("pointerdown", () => {
-                if (!this.answered) this.selectAnswer(i);
-              });
-
-              this.choiceBtns.push({ bg, keyText, choiceText, data: c });
-            });
-
-            // Hint display area
-            this.hintText = this.add.text(30, 505, "", {
-              fontSize: "12px",
-              fontFamily: "Arial, sans-serif",
-              color: "#a88bff",
-              wordWrap: { width: 480 },
-            });
-            this.questionGroup.add(this.hintText);
-
-            // Feedback area
-            this.feedbackText = this.add.text(30, 535, "", {
-              fontSize: "13px",
-              fontFamily: "Arial, sans-serif",
-              color: "#48df8a",
-              wordWrap: { width: 480 },
-            });
-            this.questionGroup.add(this.feedbackText);
-
-            // Reset timer
-            this.timeLeft = this.getTimerDuration();
-            this.timerMax = this.timeLeft;
-            this.timerBar.setFillStyle(CLR.gold);
-            this.timerBar.width = W - 30;
-          }
-
-          drawShapeDiagram(q, cx, cy) {
-            const gfx = this.add.graphics();
-            this.questionGroup.add(gfx);
-
-            if (
-              q.shape === "para" ||
-              (q.shape === "both" && q.type !== "compare")
-            ) {
-              // Parallelogram
-              gfx.fillStyle(0x1fc7ad, 0.15);
-              gfx.lineStyle(3, 0x1fc7ad, 0.8);
-              const pts = [
-                { x: cx - 60, y: cy + 40 },
-                { x: cx + 60, y: cy + 40 },
-                { x: cx + 90, y: cy - 40 },
-                { x: cx - 30, y: cy - 40 },
-              ];
-              gfx.fillPoints(pts, true);
-              gfx.strokePoints(pts, true);
-              // Height dashed line
-              gfx.lineStyle(2, CLR.gold, 0.7);
-              for (let dy = cy - 40; dy < cy + 40; dy += 8) {
-                gfx.lineBetween(
-                  cx - 30,
-                  dy,
-                  cx - 30,
-                  Math.min(dy + 4, cy + 40),
-                );
-              }
-              // Right angle marker
-              gfx.lineStyle(1, CLR.gold, 0.6);
-              gfx.strokeRect(cx - 30, cy + 28, 10, 12);
-            }
-
-            if (q.shape === "rhom" || q.shape === "both") {
-              const rx = q.shape === "both" ? cx + 200 : cx;
-              // Rhombus
-              gfx.fillStyle(0xff9d37, 0.15);
-              gfx.lineStyle(3, 0xff9d37, 0.8);
-              const pts = [
-                { x: rx, y: cy - 45 },
-                { x: rx + 50, y: cy },
-                { x: rx, y: cy + 45 },
-                { x: rx - 50, y: cy },
-              ];
-              gfx.fillPoints(pts, true);
-              gfx.strokePoints(pts, true);
-              // Diagonal lines (dashed)
-              gfx.lineStyle(2, 0x4ecdc4, 0.5);
-              for (let dx = rx - 50; dx < rx + 50; dx += 8) {
-                gfx.lineBetween(dx, cy, Math.min(dx + 4, rx + 50), cy);
-              }
-              gfx.lineStyle(2, 0x1a4a7d, 0.5);
-              for (let dy = cy - 45; dy < cy + 45; dy += 8) {
-                gfx.lineBetween(rx, dy, rx, Math.min(dy + 4, cy + 45));
-              }
-            }
-          }
-
-          drawBuildingArea() {
-            this.buildingGfx.clear();
-            // Building platform on right side
-            const bx = 620,
-              by = 100,
-              bw = 320,
-              bh = 490;
-            this.buildingGfx.fillStyle(CLR.darkBlue, 0.5);
-            this.buildingGfx.fillRect(bx, by, bw, bh);
-            this.buildingGfx.lineStyle(1, 0x1a2d50, 0.4);
-            this.buildingGfx.strokeRect(bx, by, bw, bh);
-
-            // Grid inside building area
-            this.buildingGfx.lineStyle(1, 0x1a2d50, 0.15);
-            for (let y = by; y <= by + bh; y += 30)
-              this.buildingGfx.lineBetween(bx, y, bx + bw, y);
-            for (let x = bx; x <= bx + bw; x += 30)
-              this.buildingGfx.lineBetween(x, by, x, by + bh);
-
-            // Title
-            if (!this.buildingTitle) {
-              this.buildingTitle = this.add
-                .text(bx + bw / 2, by - 10, "🏗️ YOUR BUILDING", {
-                  fontSize: "13px",
-                  fontFamily: "Arial, sans-serif",
-                  color: "#ffcf72",
-                  fontStyle: "bold",
-                })
-                .setOrigin(0.5, 1);
-            }
-
-            // Draw placed blocks
-            const blockH = 28;
-            const baseY = by + bh - 10;
-            this.building.forEach((block, i) => {
-              const y = baseY - i * (blockH + 3);
-              const bWidth = Phaser.Math.Clamp(
-                block.score * 0.8 + 60,
-                60,
-                bw - 20,
-              );
-              const x = bx + bw / 2 - bWidth / 2;
-
-              if (block.correct) {
-                const color = block.isBoss
-                  ? CLR.coral
-                  : block.zone < 2
-                    ? CLR.teal
-                    : block.zone < 4
-                      ? CLR.violet
-                      : CLR.gold;
-                this.buildingGfx.fillStyle(color, 0.7);
-                this.buildingGfx.fillRoundedRect(x, y, bWidth, blockH, 4);
-                this.buildingGfx.lineStyle(1, 0xffffff, 0.3);
-                this.buildingGfx.strokeRoundedRect(x, y, bWidth, blockH, 4);
-
-                // Windows on block
-                for (let wx = x + 8; wx < x + bWidth - 12; wx += 18) {
-                  this.buildingGfx.fillStyle(0xffcf72, 0.3);
-                  this.buildingGfx.fillRect(wx, y + 6, 8, 10);
-                }
-              } else {
-                // Cracked/broken block for wrong answers
-                this.buildingGfx.fillStyle(0x333333, 0.4);
-                this.buildingGfx.fillRoundedRect(x, y, bWidth, blockH, 4);
-                this.buildingGfx.lineStyle(1, CLR.danger, 0.3);
-                this.buildingGfx.strokeRoundedRect(x, y, bWidth, blockH, 4);
-              }
-            });
-          }
-
-          showBossHP() {
-            if (this.bossHPGroup) this.bossHPGroup.destroy(true);
-            this.bossHPGroup = this.add.group();
-
-            const bx = 620,
-              by = 75;
-            const label = this.add
-              .text(
-                bx + 160,
-                by,
-                `👾 Mr. Neft  HP: ${this.bossHP}/${this.bossMaxHP}`,
-                {
-                  fontSize: "13px",
-                  fontFamily: "Arial, sans-serif",
-                  color: "#ff6b6b",
-                  fontStyle: "bold",
-                },
-              )
-              .setOrigin(0.5, 0.5);
-            this.bossHPGroup.add(label);
-
-            // HP bar
-            const barW = 200,
-              barH = 8;
-            const bg = this.add.rectangle(
-              bx + 160,
-              by + 14,
-              barW,
-              barH,
-              0x333333,
-            );
-            this.bossHPGroup.add(bg);
-            const pct = this.bossHP / this.bossMaxHP;
-            const fill = this.add
-              .rectangle(
-                bx + 160 - (barW / 2) * (1 - pct),
-                by + 14,
-                barW * pct,
-                barH,
-                CLR.danger,
-              )
-              .setOrigin(0, 0.5);
-            fill.x = bx + 160 - barW / 2;
-            this.bossHPGroup.add(fill);
-          }
-
-          showZoneBanner(name, emoji, color) {
-            const banner = this.add
-              .rectangle(W / 2, H / 2, 500, 80, 0x000000, 0.85)
-              .setStrokeStyle(3, color)
-              .setDepth(100);
-            const text = this.add
-              .text(W / 2, H / 2, `${emoji} ${name} ${emoji}`, {
-                fontSize: "28px",
-                fontFamily: "Arial Black, sans-serif",
-                color: "#" + color.toString(16).padStart(6, "0"),
-                stroke: "#000000",
-                strokeThickness: 4,
+                color: CSS(CLR.teal),
+                align: "center",
+                wordWrap: { width: 300 },
+                lineSpacing: 5,
               })
-              .setOrigin(0.5)
-              .setDepth(101);
+              .setOrigin(0.5, 0);
+            this.liveReadout = this.add
+              .text(210, 500, "", {
+                fontSize: "20px",
+                fontFamily: "Arial Black",
+                color: "#fff",
+                align: "center",
+              })
+              .setOrigin(0.5);
 
-            this.tweens.add({
-              targets: [banner, text],
-              alpha: 0,
-              delay: 1500,
-              duration: 500,
-              onComplete: () => {
-                banner.destroy();
-                text.destroy();
-              },
+            // ── Build board title ──
+            this.add
+              .text(720, 96, "BUILD BOARD — 1 square = 1 square unit", {
+                fontSize: "13px",
+                fontFamily: "Arial",
+                color: CSS(CLR.muted),
+              })
+              .setOrigin(0.5);
+
+            // graphics layers for the shape
+            this.gridGfx = this.add.graphics(); // grid + cells
+            this.shapeGfx = this.add.graphics(); // shape outline + dims
+            this.handleLayer = this.add.container();
+
+            // ── Action buttons ──
+            this.confirmBtn = this.makeBtn(
+              720,
+              636,
+              260,
+              58,
+              "✓ CONFIRM BUILD",
+              CLR.gold,
+              () => this.confirm(),
+              "22px",
+              0x0a1628,
+            );
+            this.resetBtn = this.makeBtn(
+              512,
+              636,
+              150,
+              48,
+              "↶ Reset",
+              0x2a3c63,
+              () => this.resetShape(),
+              "16px",
+            );
+            this.hintBtn = this.makeBtn(
+              912,
+              636,
+              150,
+              48,
+              "💡 Hint",
+              0x2a3c63,
+              () => this.showHint(),
+              "16px",
+            );
+            this.feedback = this.add
+              .text(720, 686, "", {
+                fontSize: "15px",
+                fontFamily: "Arial",
+                fontStyle: "bold",
+                color: "#fff",
+                align: "center",
+                wordWrap: { width: 560 },
+              })
+              .setOrigin(0.5);
+
+            // keyboard
+            this.input.keyboard.on("keydown", (e) => {
+              const k = e.key;
+              if (k === "Tab") {
+                e.preventDefault?.();
+                this.cycleHandle();
+              } else if (k === "ArrowLeft") this.nudge(-1, 0);
+              else if (k === "ArrowRight") this.nudge(1, 0);
+              else if (k === "ArrowUp") this.nudge(0, -1);
+              else if (k === "ArrowDown") this.nudge(0, 1);
+              else if (k === "Enter") this.confirm();
+              else if (k.toLowerCase() === "h") this.showHint();
             });
+
+            this.loadRound();
           }
 
-          selectAnswer(idx) {
-            if (this.answered || idx >= this.choiceBtns.length) return;
-            this.answered = true;
-
-            const chosen = this.choiceBtns[idx];
-            const q = this.questions[this.qIndex];
-            const isCorrect = chosen.data.correct;
-            const isBoss = q.type === "boss";
-
-            // Highlight correct/wrong
-            this.choiceBtns.forEach((btn) => {
-              if (btn.data.correct) {
-                btn.bg.setFillStyle(CLR.ok, 0.3);
-                btn.bg.setStrokeStyle(2, CLR.ok);
-              }
+          makeBtn(
+            x,
+            y,
+            w,
+            h,
+            label,
+            color,
+            cb,
+            fs = "18px",
+            txtColor = 0xffffff,
+          ) {
+            const r = this.add
+              .rectangle(x, y, w, h, color)
+              .setStrokeStyle(2, 0x000000, 0.25)
+              .setInteractive({ useHandCursor: true });
+            const t = this.add
+              .text(x, y, label, {
+                fontSize: fs,
+                fontFamily: "Arial Black",
+                color: CSS(txtColor),
+              })
+              .setOrigin(0.5);
+            r.on("pointerover", () => r.setScale(1.04));
+            r.on("pointerout", () => r.setScale(1));
+            r.on("pointerdown", () => {
+              ensureAudio();
+              cb();
             });
+            r._t = t;
+            return r;
+          }
 
-            if (isCorrect) {
-              sfxCorrect();
-              this.combo++;
-              if (this.combo > this.maxCombo) this.maxCombo = this.combo;
-              this.correct++;
+          /* ── grid → screen coordinate helpers ── */
+          gx(col) {
+            return this.boardX + col * this.cell;
+          }
+          gy(row) {
+            return this.boardYBottom - row * this.cell;
+          }
 
-              const mult = Math.min(
-                5,
-                1 + Math.floor(this.combo / 2) * this.comboMult,
-              );
-              const timeBonus = Math.floor(this.timeLeft / 1000);
-              let pts = Math.round((100 + timeBonus * 5) * mult);
-              if (this.shownHint) pts = Math.round(pts * 0.7);
-              this.score += pts;
+          loadRound() {
+            this.round = makeRound(this.tier, this.roundIx);
+            const r = this.round;
+            this.attempts = 0;
+            this.solvedThisRound = false;
+            this.feedback.setText("");
+            this.activeHandle = 0;
 
-              this.feedbackText.setColor("#48df8a");
-              this.feedbackText.setText(
-                `✅ Correct! +${pts} pts  |  ${q.explain}`,
-              );
+            // Working state per task type.
+            if (r.type === "shear") {
+              // student builds a parallelogram with base r.b, height r.h.
+              // working: current base, current height, current shear (in cells).
+              this.cur = { b: 2, h: 2, shear: 0 };
+              this.taskIcon.setText("▰");
+            } else if (r.type === "missing") {
+              // base or height fixed; student stretches the other.
+              this.cur = {
+                b: r.findHeight ? r.b : 2,
+                h: r.findHeight ? 2 : r.h,
+                shear: 1,
+              };
+              this.taskIcon.setText("▱");
+            } else {
+              // diagonal: student drags d1 (horizontal) and d2 (vertical).
+              this.cur = { d1: 2, d2: 2 };
+              this.taskIcon.setText("◆");
+            }
 
-              // Boss damage
-              if (isBoss) {
-                this.bossHP--;
-                sfxBossHit();
-                if (this.bossHP <= 0) sfxBossDeath();
-                this.showBossHP();
-                this.cameras.main.shake(200, 0.01);
-              }
+            this.taskText.setText(r.prompt);
 
-              // Place building block
-              this.building.push({
-                correct: true,
-                score: pts,
-                zone: q.zone,
-                isBoss,
-              });
-              sfxPlace();
-              this.drawBuildingArea();
+            // formula scaffold (always on Level 1; shorter on Level 2)
+            let f = "";
+            if (r.shape === "para") {
+              f =
+                this.tier === 1
+                  ? "Area = base × height\nShearing slides the top — area never changes."
+                  : "Area = base × height";
+            } else {
+              f =
+                this.tier === 1
+                  ? "Area = ½ × d1 × d2\nA rhombus fills half its rectangle."
+                  : "Area = ½ × d1 × d2";
+            }
+            this.formulaText.setText(f);
 
-              // Floating score text
-              const floatTxt = this.add
-                .text(W / 2, 500, `+${pts}`, {
-                  fontSize: "22px",
-                  fontFamily: "Arial Black, sans-serif",
-                  color: "#b9ff78",
+            this.updateHUD();
+            this.redraw();
+          }
+
+          /* ── build the interactive handles for the current task ── */
+          buildHandles() {
+            this.handleLayer.removeAll(true);
+            this.handles = [];
+            const r = this.round;
+            const mk = (col, row, label, kind) => {
+              const x = this.gx(col),
+                y = this.gy(row);
+              const c = this.add
+                .circle(x, y, 15, CLR.gold)
+                .setStrokeStyle(3, 0x0a1628)
+                .setInteractive({ useHandCursor: true, draggable: true });
+              c._kind = kind;
+              c._label = label;
+              const lab = this.add
+                .text(x, y, label, {
+                  fontSize: "13px",
+                  fontFamily: "Arial Black",
+                  color: "#0a1628",
                 })
                 .setOrigin(0.5);
-              this.tweens.add({
-                targets: floatTxt,
-                y: 460,
-                alpha: 0,
-                duration: 800,
-                onComplete: () => floatTxt.destroy(),
-              });
+              this.handleLayer.add(c);
+              this.handleLayer.add(lab);
+              c._lab = lab;
+              this.input.setDraggable(c);
+              c.on("drag", (p, dx, dy) => this.onDrag(kind, dx, dy));
+              this.handles.push(c);
+              return c;
+            };
 
-              // Particle burst
-              this.emitParticles(270, 300, CLR.ok);
+            if (r.type === "shear") {
+              // handle to drag the TOP edge sideways (shear) and a corner to size.
+              mk(this.cur.b + this.cur.shear, this.cur.h, "↔", "shear");
+              mk(this.cur.b, 0, "B", "base"); // bottom-right: base
+              mk(this.cur.shear, this.cur.h, "H", "height"); // top-left: height
+            } else if (r.type === "missing") {
+              if (r.findHeight) {
+                mk(this.cur.b + 1, this.cur.h, "H", "height");
+              } else {
+                mk(this.cur.b, this.cur.h + 0, "B", "base");
+              }
             } else {
-              sfxWrong();
-              chosen.bg.setFillStyle(CLR.danger, 0.3);
-              chosen.bg.setStrokeStyle(2, CLR.danger);
-              this.combo = 0;
-              this.lives--;
+              // diagonal endpoints: d1 horizontal (right tip), d2 vertical (top tip)
+              const cx0 = 0; // we render rhombus centred; handles are tips
+              mk(this.cur.d1, 0, "d1", "d1");
+              mk(0, this.cur.d2, "d2", "d2");
+            }
+          }
 
-              this.feedbackText.setColor("#ff6273");
-              this.feedbackText.setText(`❌ Incorrect.  ${q.explain}`);
+          onDrag(kind, dx, dy) {
+            // convert pointer position to nearest grid cell delta
+            const col = Math.round((dx - this.boardX) / this.cell);
+            const row = Math.round((this.boardYBottom - dy) / this.cell);
+            this.applyHandle(kind, col, row);
+          }
 
-              // Cracked block
-              this.building.push({
-                correct: false,
-                score: 0,
-                zone: q.zone,
-                isBoss,
+          // Apply a handle to a target grid coordinate (col,row), clamped.
+          applyHandle(kind, col, row) {
+            const r = this.round,
+              c = this.cur;
+            const cl = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+            if (kind === "base") {
+              c.b = cl(
+                col - (r.type === "shear" ? 0 : 0),
+                GRID.minB,
+                GRID.maxB,
+              );
+            } else if (kind === "height") {
+              c.h = cl(row, GRID.minH, GRID.maxH);
+              if (r.type === "shear") c.shear = cl(col, 0, GRID.maxB);
+            } else if (kind === "shear") {
+              c.shear = cl(col - c.b, -c.b + 1, GRID.maxB);
+            } else if (kind === "d1") {
+              c.d1 = cl(col, GRID.minD, GRID.maxD);
+            } else if (kind === "d2") {
+              c.d2 = cl(row, GRID.minD, GRID.maxD);
+            }
+            sfxDrag();
+            this.redraw();
+          }
+
+          /* keyboard: nudge the active handle by one cell */
+          cycleHandle() {
+            if (!this.handles || !this.handles.length) return;
+            this.activeHandle = (this.activeHandle + 1) % this.handles.length;
+            sfxClick();
+            this.redraw();
+          }
+          nudge(dcol, drow) {
+            if (!this.handles || !this.handles.length) return;
+            const h = this.handles[this.activeHandle];
+            const r = this.round,
+              c = this.cur;
+            if (h._kind === "base") c.b += dcol;
+            else if (h._kind === "height") {
+              c.h += -drow; // up arrow = taller
+              if (r.type === "shear") c.shear += dcol;
+            } else if (h._kind === "shear") c.shear += dcol;
+            else if (h._kind === "d1") c.d1 += dcol;
+            else if (h._kind === "d2") c.d2 += -drow;
+            // clamp
+            c.b =
+              c.b !== undefined
+                ? Math.max(GRID.minB, Math.min(GRID.maxB, c.b))
+                : c.b;
+            c.h =
+              c.h !== undefined
+                ? Math.max(GRID.minH, Math.min(GRID.maxH, c.h))
+                : c.h;
+            if (c.shear !== undefined)
+              c.shear = Math.max(-c.b + 1, Math.min(GRID.maxB, c.shear));
+            if (c.d1 !== undefined)
+              c.d1 = Math.max(GRID.minD, Math.min(GRID.maxD, c.d1));
+            if (c.d2 !== undefined)
+              c.d2 = Math.max(GRID.minD, Math.min(GRID.maxD, c.d2));
+            sfxDrag();
+            this.redraw();
+          }
+
+          resetShape() {
+            sfxClick();
+            const r = this.round;
+            if (r.type === "shear") this.cur = { b: 2, h: 2, shear: 0 };
+            else if (r.type === "missing")
+              this.cur = {
+                b: r.findHeight ? r.b : 2,
+                h: r.findHeight ? 2 : r.h,
+                shear: 1,
+              };
+            else this.cur = { d1: 2, d2: 2 };
+            this.feedback.setText("");
+            this.redraw();
+          }
+
+          /* ── current built area for the working shape ── */
+          builtArea() {
+            const r = this.round,
+              c = this.cur;
+            if (r.shape === "para") return c.b * c.h;
+            return (c.d1 * c.d2) / 2;
+          }
+
+          /* ═══ RENDER ═══ */
+          redraw() {
+            this.releaseLabels();
+            const g = this.gridGfx;
+            g.clear();
+            const r = this.round,
+              c = this.cur;
+
+            // build-board grid (Level 1 always; Level 2 lighter)
+            const showGrid = this.tier === 1 || true;
+            const cols = GRID.maxB + 2,
+              rows = GRID.maxH + 1;
+            const gAlpha = this.tier === 1 ? 0.5 : 0.28;
+            g.lineStyle(1, CLR.grid, gAlpha);
+            for (let cc = 0; cc <= cols; cc++)
+              g.lineBetween(
+                this.gx(cc),
+                this.gy(0),
+                this.gx(cc),
+                this.gy(rows),
+              );
+            for (let rr = 0; rr <= rows; rr++)
+              g.lineBetween(
+                this.gx(0),
+                this.gy(rr),
+                this.gx(cols),
+                this.gy(rr),
+              );
+            // baseline emphasis
+            g.lineStyle(3, CLR.stroke, 0.9);
+            g.lineBetween(this.gx(0), this.gy(0), this.gx(cols), this.gy(0));
+
+            const sg = this.shapeGfx;
+            sg.clear();
+
+            if (r.shape === "para") this.drawPara(g, sg);
+            else this.drawRhombus(g, sg);
+
+            // live readout — the area the student is PRODUCING
+            const a = this.builtArea();
+            if (r.shape === "para") {
+              this.liveReadout.setText(
+                `Your build:\n${c.b} × ${c.h} = ${a} sq units`,
+              );
+            } else {
+              this.liveReadout.setText(
+                `Your build:\n½ × ${c.d1} × ${c.d2} = ${a} sq units`,
+              );
+            }
+            // colour the readout by closeness to the implicit goal (felt, not given)
+            this.liveReadout.setColor(this.isSolved() ? CSS(CLR.ok) : "#fff");
+
+            this.buildHandles();
+            this.highlightActiveHandle();
+          }
+
+          drawPara(g, sg) {
+            const r = this.round,
+              c = this.cur;
+            const sh = c.shear || 0;
+            // animate off-cut illustration: draw individual unit cells, the top
+            // rows slid by `shear` so the cell count is visibly conserved.
+            for (let row = 0; row < c.h; row++) {
+              const slide = (sh / c.h) * row; // proportional slant per row
+              for (let col = 0; col < c.b; col++) {
+                const x = this.gx(col + slide);
+                const yTop = this.gy(row + 1);
+                g.fillStyle(CLR.fillP, 0.45);
+                g.fillRect(x, yTop, this.cell - 1, this.cell - 1);
+                g.lineStyle(1, CLR.white, 0.25);
+                g.strokeRect(x, yTop, this.cell - 1, this.cell - 1);
+              }
+            }
+            // outline parallelogram
+            const p0 = { x: this.gx(0), y: this.gy(0) };
+            const p1 = { x: this.gx(c.b), y: this.gy(0) };
+            const p2 = { x: this.gx(c.b + sh), y: this.gy(c.h) };
+            const p3 = { x: this.gx(sh), y: this.gy(c.h) };
+            sg.lineStyle(3, CLR.fillP, 1);
+            sg.strokePoints([p0, p1, p2, p3, p0], true);
+            // height marker (dashed vertical) + right-angle tick
+            sg.lineStyle(2, CLR.gold, 0.9);
+            const hx = this.gx(Math.max(sh, 0) + 0.05);
+            for (let yy = this.gy(c.h); yy < this.gy(0); yy += 9)
+              sg.lineBetween(hx, yy, hx, Math.min(yy + 5, this.gy(0)));
+            // base / height labels
+            this.dimLabel(
+              sg,
+              "base = " + c.b,
+              this.gx(c.b / 2),
+              this.gy(0) + 24,
+            );
+            this.dimLabel(
+              sg,
+              "height = " + c.h,
+              this.gx(0) - 52,
+              this.gy(c.h / 2),
+            );
+          }
+
+          drawRhombus(g, sg) {
+            const c = this.cur;
+            // bounding rectangle d1 (wide) × d2 (tall), centred on a grid anchor
+            const acx = 5,
+              acy = 4; // anchor cell (centre)
+            const left = acx - c.d1 / 2,
+              right = acx + c.d1 / 2;
+            const bot = acy - c.d2 / 2,
+              top = acy + c.d2 / 2;
+            // bounding rectangle (light) — proves the half relationship
+            g.fillStyle(CLR.fillR, 0.12);
+            g.fillRect(
+              this.gx(left),
+              this.gy(top),
+              (right - left) * this.cell,
+              (top - bot) * this.cell,
+            );
+            g.lineStyle(1, CLR.fillR, 0.6);
+            g.strokeRect(
+              this.gx(left),
+              this.gy(top),
+              (right - left) * this.cell,
+              (top - bot) * this.cell,
+            );
+            // rhombus filling exactly half
+            const tipR = { x: this.gx(right), y: this.gy(acy) };
+            const tipL = { x: this.gx(left), y: this.gy(acy) };
+            const tipT = { x: this.gx(acx), y: this.gy(top) };
+            const tipB = { x: this.gx(acx), y: this.gy(bot) };
+            sg.fillStyle(CLR.fillR, 0.4);
+            sg.fillPoints([tipR, tipT, tipL, tipB], true);
+            sg.lineStyle(3, CLR.fillR, 1);
+            sg.strokePoints([tipR, tipT, tipL, tipB, tipR], true);
+            // diagonals
+            sg.lineStyle(2, CLR.gold, 0.85);
+            sg.lineBetween(tipL.x, tipL.y, tipR.x, tipR.y);
+            sg.lineBetween(tipT.x, tipT.y, tipB.x, tipB.y);
+            this.dimLabel(sg, "d1 = " + c.d1, this.gx(acx), this.gy(acy) - 16);
+            this.dimLabel(sg, "d2 = " + c.d2, this.gx(acx) + 44, this.gy(acy));
+            // store tip cells so handle render matches (right tip & top tip)
+            this._rTips = { right, top, acx, acy };
+          }
+
+          dimLabel(sg, txt, x, y) {
+            if (!this._dimLabels) this._dimLabels = [];
+            // reuse a pool of text objects to avoid leaks
+            let t = this._dimLabels.find((o) => !o._used);
+            if (!t) {
+              t = this.add
+                .text(0, 0, "", {
+                  fontSize: "13px",
+                  fontFamily: "Arial Black",
+                  color: CSS(CLR.white),
+                  backgroundColor: "#0a1628cc",
+                  padding: { x: 4, y: 2 },
+                })
+                .setOrigin(0.5);
+              this._dimLabels.push(t);
+            }
+            t._used = true;
+            t.setText(txt).setPosition(x, y).setVisible(true);
+          }
+
+          // before each redraw we must release labels; do it at redraw start
+          releaseLabels() {
+            if (this._dimLabels)
+              this._dimLabels.forEach((t) => {
+                t._used = false;
+                t.setVisible(false);
               });
-              this.drawBuildingArea();
+          }
 
-              this.cameras.main.shake(300, 0.015);
-              this.updateLivesText();
+          highlightActiveHandle() {
+            if (!this.handles) return;
+            this.handles.forEach((h, i) => {
+              h.setFillStyle(i === this.activeHandle ? CLR.ok : CLR.gold);
+            });
+          }
 
+          /* ── correctness ── */
+          isSolved() {
+            const r = this.round,
+              c = this.cur;
+            if (r.type === "shear") return c.b === r.b && c.h === r.h; // built the requested parallelogram
+            if (r.type === "missing") return c.b * c.h === r.area; // hit the locked target area
+            return c.d1 === r.d1 && c.d2 === r.d2; // matched both diagonals
+          }
+
+          confirm() {
+            ensureAudio();
+            const r = this.round,
+              c = this.cur;
+            if (this.isSolved()) {
+              this.onCorrect();
+              return;
+            }
+            // ── diagnostic, NON-giveaway feedback ──
+            sfxWrong();
+            this.attempts++;
+            this.streak = 0;
+            this.cameras.main.shake(140, 0.005);
+            let msg;
+            if (r.type === "shear") {
+              const aNow = c.b * c.h;
+              if (c.b !== r.b && c.h !== r.h)
+                msg = `Set BASE to ${r.b} and HEIGHT to ${r.h}. Right now base×height = ${c.b}×${c.h} = ${aNow}.`;
+              else if (c.b !== r.b)
+                msg = `Height is right. Your base is ${c.b}; the blueprint base is ${r.b}. Area = base × height.`;
+              else
+                msg = `Base is right. Your height is ${c.h}; the blueprint height is ${r.h}. Shearing did NOT change the area — only base × height matters.`;
+            } else if (r.type === "missing") {
+              const aNow = c.b * c.h;
+              if (aNow < r.area)
+                msg = `Area is ${c.b}×${c.h} = ${aNow}, still below ${r.area}. Stretch ${r.findHeight ? "the height" : "the base"} more — base × height must equal ${r.area}.`;
+              else
+                msg = `Area is ${c.b}×${c.h} = ${aNow}, above ${r.area}. Shrink ${r.findHeight ? "the height" : "the base"} — base × height must equal ${r.area}.`;
+            } else {
+              const aNow = (c.d1 * c.d2) / 2;
+              msg = `Your diagonals make ½×${c.d1}×${c.d2} = ${aNow}. The blueprint wants d1 = ${r.d1} and d2 = ${r.d2}. The rhombus is half its rectangle.`;
+            }
+            this.flash(this.feedback, "✗ " + msg, "#ffb4b4");
+
+            if (this.attempts >= (this.tier === 1 ? 3 : 2)) {
+              this.lives--;
+              this.attempts = 0;
+              this.updateHUD();
               if (this.lives <= 0) {
-                sfxGameOver();
-                this.time.delayedCall(1500, () => {
-                  this.scene.start("ResultScene", {
-                    score: this.score,
-                    correct: this.correct,
-                    total: this.qIndex + 1,
-                    maxCombo: this.maxCombo,
-                    architect: this.architect,
-                    bossDefeated: false,
-                    building: this.building,
-                    gameOver: true,
-                  });
-                });
+                this.time.delayedCall(900, () => this.endGame(false));
                 return;
               }
             }
+          }
 
-            this.total = this.qIndex + 1;
-            this.scoreText.setText(`Score: ${this.score}`);
-            this.updateComboText();
-            this.updateProgress();
+          onCorrect() {
+            sfxCorrect();
+            sfxSnap();
+            this.correct++;
+            this.built++;
+            this.streak++;
+            if (this.streak > this.bestStreak) this.bestStreak = this.streak;
+            const combo = Math.min(4, 1 + Math.floor(this.streak / 3));
+            const firstTry = this.attempts === 0 ? 60 : 0;
+            const pts = (100 + firstTry + this.streak * 8) * combo;
+            this.score += pts;
+            const r = this.round;
+            const eq =
+              r.shape === "para"
+                ? `${r.b} × ${r.h} = ${r.area}`
+                : `½ × ${r.d1} × ${r.d2} = ${r.area}`;
+            this.flash(
+              this.feedback,
+              `✓ Built! ${eq} sq units  +${pts}${combo > 1 ? " ×" + combo : ""}`,
+              "#bff7cf",
+            );
+            this.celebrate();
+            if (this.correct % 3 === 0) sfxLevel();
+            this.updateHUD();
 
-            // Next question after delay
-            this.time.delayedCall(isCorrect ? 1200 : 2000, () => {
-              this.qIndex++;
-              if (this.qIndex >= this.questions.length) {
-                this.scene.start("ResultScene", {
-                  score: this.score,
-                  correct: this.correct,
-                  total: this.questions.length,
-                  maxCombo: this.maxCombo,
-                  architect: this.architect,
-                  bossDefeated: this.bossHP <= 0,
-                  building: this.building,
-                  gameOver: false,
-                });
-              } else {
-                // Check zone transition
-                const newZone = this.questions[this.qIndex].zone;
-                if (newZone !== this.zone) {
-                  this.zone = newZone;
-                  const zn = ZONES[newZone];
-                  if (newZone < 4) {
-                    sfxLevelUp();
-                    this.showZoneBanner(zn.name, zn.emoji, zn.color);
-                  } else {
-                    this.showZoneBanner(zn.name, zn.emoji, zn.color);
-                  }
-                }
-                this.showQuestion();
+            const done = this.built >= this.goal;
+            this.time.delayedCall(1150, () => {
+              if (done) this.endGame(true);
+              else {
+                this.roundIx++;
+                this.loadRound();
               }
             });
           }
 
-          handleTimeout() {
-            if (this.answered) return;
-            this.answered = true;
-            sfxWrong();
-            this.combo = 0;
-            this.lives--;
-
-            const q = this.questions[this.qIndex];
-            this.feedbackText.setColor("#ff6273");
-            this.feedbackText.setText(`⏰ Time's up!  ${q.explain}`);
-
-            // Show correct answer
-            this.choiceBtns.forEach((btn) => {
-              if (btn.data.correct) {
-                btn.bg.setFillStyle(CLR.ok, 0.3);
-                btn.bg.setStrokeStyle(2, CLR.ok);
-              }
-            });
-
-            this.building.push({
-              correct: false,
-              score: 0,
-              zone: q.zone,
-              isBoss: q.type === "boss",
-            });
-            this.drawBuildingArea();
-            this.updateLivesText();
-            this.updateComboText();
-            this.cameras.main.shake(300, 0.015);
-
-            if (this.lives <= 0) {
-              sfxGameOver();
-              this.time.delayedCall(1500, () => {
-                this.scene.start("ResultScene", {
-                  score: this.score,
-                  correct: this.correct,
-                  total: this.qIndex + 1,
-                  maxCombo: this.maxCombo,
-                  architect: this.architect,
-                  bossDefeated: false,
-                  building: this.building,
-                  gameOver: true,
-                });
-              });
-              return;
-            }
-
-            this.time.delayedCall(2000, () => {
-              this.qIndex++;
-              if (this.qIndex >= this.questions.length) {
-                this.scene.start("ResultScene", {
-                  score: this.score,
-                  correct: this.correct,
-                  total: this.questions.length,
-                  maxCombo: this.maxCombo,
-                  architect: this.architect,
-                  bossDefeated: this.bossHP <= 0,
-                  building: this.building,
-                  gameOver: false,
-                });
-              } else {
-                const newZone = this.questions[this.qIndex].zone;
-                if (newZone !== this.zone) {
-                  this.zone = newZone;
-                  const zn = ZONES[newZone];
-                  sfxLevelUp();
-                  this.showZoneBanner(zn.name, zn.emoji, zn.color);
-                }
-                this.showQuestion();
-              }
-            });
-          }
-
-          useHint() {
-            if (this.answered || this.hints <= 0 || this.shownHint) return;
-            sfxHint();
-            this.hints--;
-            this.shownHint = true;
-            const q = this.questions[this.qIndex];
-            this.hintText.setText(`💡 HINT: ${q.hint}`);
-            this.hintBtn.setText(`[H] Hints: ${this.hints}`);
-          }
-
-          emitParticles(x, y, color) {
-            for (let i = 0; i < 12; i++) {
+          celebrate() {
+            const cx = this.gx(3),
+              cy = this.gy(3);
+            for (let i = 0; i < 18; i++) {
               const p = this.add.circle(
-                x,
-                y,
-                Phaser.Math.Between(2, 5),
-                color,
-                0.8,
+                cx,
+                cy,
+                3 + Math.random() * 3,
+                [CLR.gold, CLR.ok, CLR.teal, CLR.violet][
+                  Math.floor(Math.random() * 4)
+                ],
               );
               this.tweens.add({
                 targets: p,
-                x: x + Phaser.Math.Between(-80, 80),
-                y: y + Phaser.Math.Between(-60, -120),
+                x: cx + (Math.random() - 0.5) * 320,
+                y: cy + (Math.random() - 0.5) * 240,
                 alpha: 0,
                 scale: 0,
-                duration: Phaser.Math.Between(400, 800),
-                ease: "Cubic.easeOut",
+                duration: 600 + Math.random() * 400,
                 onComplete: () => p.destroy(),
               });
             }
           }
+
+          showHint() {
+            sfxClick();
+            const r = this.round;
+            let h;
+            if (r.type === "shear")
+              h = `💡 Set base to ${r.b} and height to ${r.h}. Try sliding the top with the ↔ handle — count the cells: the area stays base × height = ${r.b} × ${r.h}.`;
+            else if (r.type === "missing")
+              h = `💡 You need base × ${r.findHeight ? "height" : "base"}... area must be ${r.area}. With ${r.findHeight ? "base " + r.b : "height " + r.h}, what number times ${r.findHeight ? r.b : r.h} gives ${r.area}?`;
+            else
+              h = `💡 The rhombus fills HALF its rectangle. Drag d1 to ${r.d1} (across) and d2 to ${r.d2} (up & down). Area = ½ × d1 × d2.`;
+            this.flash(this.feedback, h, "#ffe9a8", 3600);
+          }
+
+          flash(obj, msg, color = "#ffffff", hold = 2600) {
+            obj.setText(msg).setColor(color).setAlpha(1);
+            this.tweens.killTweensOf(obj);
+            this.time.delayedCall(hold, () => {
+              if (obj.text === msg)
+                this.tweens.add({ targets: obj, alpha: 0.0, duration: 400 });
+            });
+          }
+
+          updateHUD() {
+            this.hScore.setText(this.score.toLocaleString());
+            this.hLevel.setText(
+              this.tier === 1 ? "Level 1 · Support" : "Level 2 · Challenge",
+            );
+            this.hProgress.setText(`Built ${this.built} / ${this.goal}`);
+            this.hLives.setText("❤️".repeat(Math.max(0, this.lives)));
+            this.hStreak.setText(
+              this.streak >= 3 ? "🔥 streak " + this.streak : "",
+            );
+          }
+
+          endGame(won) {
+            this.cameras.main.fadeOut(420, 0, 0, 0);
+            this.time.delayedCall(420, () =>
+              this.scene.start("ResultScene", {
+                tier: this.tier,
+                score: this.score,
+                correct: this.correct,
+                built: this.built,
+                goal: this.goal,
+                bestStreak: this.bestStreak,
+                won,
+              }),
+            );
+          }
         }
 
-        /* ═══════════════════════════════════════════
-         RESULT SCENE
-         ═══════════════════════════════════════════ */
+        /* ═══════════════════════════════════════════════════════════════
+           RESULT SCENE
+           ═══════════════════════════════════════════════════════════════ */
         class ResultScene extends Phaser.Scene {
           constructor() {
             super("ResultScene");
           }
-
-          init(data) {
-            this.data = data;
+          init(d) {
+            Object.assign(this, d);
           }
-
           create() {
             this.cameras.main.setBackgroundColor(CLR.bg);
-            const d = this.data;
+            this.cameras.main.fadeIn(420);
+            const goal = this.goal || 1;
+            const pct = Math.round((this.correct / goal) * 100);
 
-            // Stars background
-            for (let i = 0; i < 60; i++) {
-              const x = Phaser.Math.Between(0, W),
-                y = Phaser.Math.Between(0, H);
-              this.add.circle(
-                x,
-                y,
-                Phaser.Math.Between(1, 2),
-                0xffffff,
-                Phaser.Math.FloatBetween(0.1, 0.3),
-              );
-            }
-
-            // Title
-            const titleText = d.gameOver
-              ? "BUILDING COLLAPSED"
-              : d.bossDefeated
-                ? "MR. NEFT DEFEATED!"
-                : "BUILDING COMPLETE!";
-            const titleColor = d.gameOver
-              ? "#ff6273"
-              : d.bossDefeated
-                ? "#ffcf72"
-                : "#48df8a";
-            this.add
-              .text(W / 2, 40, titleText, {
-                fontSize: "38px",
-                fontFamily: "Arial Black, sans-serif",
-                color: titleColor,
-                stroke: "#0a1628",
-                strokeThickness: 5,
-              })
-              .setOrigin(0.5);
-
-            if (d.bossDefeated) {
-              sfxBossDeath();
-              // Victory particles
-              for (let i = 0; i < 30; i++) {
-                this.time.delayedCall(i * 50, () => {
-                  this.emitConfetti(
-                    Phaser.Math.Between(100, W - 100),
-                    Phaser.Math.Between(50, 200),
-                  );
-                });
-              }
-            }
-
-            // Stats panel
-            const pX = 100,
-              pY = 90;
-            this.add
-              .rectangle(240, pY + 120, 300, 240, CLR.panel, 0.9)
-              .setStrokeStyle(1, 0x1a2d50);
-
-            this.add.text(
-              pX,
-              pY + 15,
-              `${d.architect.emoji} ${d.architect.name}`,
-              {
-                fontSize: "16px",
-                fontFamily: "Arial, sans-serif",
-                color: "#4ecdc4",
-                fontStyle: "bold",
-              },
-            );
-
-            const stats = [
-              `Score: ${d.score}`,
-              `Correct: ${d.correct} / ${d.total}`,
-              `Accuracy: ${d.total > 0 ? Math.round((d.correct / d.total) * 100) : 0}%`,
-              `Best Streak: ${d.maxCombo}`,
-              `Boss: ${d.bossDefeated ? "DEFEATED 🏆" : d.gameOver ? "SURVIVED" : "STANDING"}`,
-              `Blocks Placed: ${d.building.filter((b) => b.correct).length}`,
-            ];
-
-            stats.forEach((s, i) => {
-              this.add.text(pX, pY + 48 + i * 30, s, {
-                fontSize: "15px",
-                fontFamily: "Arial, sans-serif",
-                color: "#eef5ff",
-              });
-            });
-
-            // Grade
-            const pct = d.total > 0 ? d.correct / d.total : 0;
+            // EduPulse — standard 6.G.1
             try {
               window.EduPulse &&
                 EduPulse.record({
                   activityTitle: document.title,
-                  score: d.correct,
-                  maxScore: d.total,
-                  problemsCorrect: d.correct,
-                  problemsAttempted: d.total,
+                  score: this.correct,
+                  maxScore: goal,
+                  problemsCorrect: this.correct,
+                  problemsAttempted: this.built,
+                  standard: "6.G.1",
                 });
             } catch (e) {}
-            let grade, gradeColor;
-            if (pct >= 0.95) {
-              grade = "S - Master Architect";
-              gradeColor = "#ffcf72";
-            } else if (pct >= 0.85) {
-              grade = "A - Expert Builder";
-              gradeColor = "#48df8a";
-            } else if (pct >= 0.7) {
-              grade = "B - Skilled Designer";
-              gradeColor = "#4ecdc4";
-            } else if (pct >= 0.5) {
-              grade = "C - Apprentice";
-              gradeColor = "#f7dc6f";
+
+            let rank, emoji;
+            if (pct >= 90) {
+              rank = "MASTER ARCHITECT!";
+              emoji = "👑";
+            } else if (pct >= 75) {
+              rank = "LEAD BUILDER!";
+              emoji = "🏆";
+            } else if (pct >= 50) {
+              rank = "APPRENTICE";
+              emoji = "⭐";
             } else {
-              grade = "D - Keep Practicing!";
-              gradeColor = "#ff6273";
+              rank = "KEEP BUILDING!";
+              emoji = "📐";
             }
 
-            this.add.text(pX, pY + 240, `Grade: ${grade}`, {
-              fontSize: "18px",
-              fontFamily: "Arial, sans-serif",
-              color: gradeColor,
-              fontStyle: "bold",
-            });
-
-            // Building visualization (right side)
-            this.drawFinalBuilding(d.building);
-
-            // Play again button
-            const replayBg = this.add
-              .rectangle(W / 2, H - 60, 220, 50, CLR.panel, 0.9)
-              .setStrokeStyle(2, CLR.teal)
-              .setInteractive({ useHandCursor: true });
-            const replayText = this.add
-              .text(W / 2, H - 60, "🔄 Play Again (Enter)", {
-                fontSize: "16px",
-                fontFamily: "Arial, sans-serif",
-                color: "#4ecdc4",
+            this.add
+              .text(W / 2, 96, emoji, { fontSize: "72px" })
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 180, this.won ? "PROJECT COMPLETE" : "SITE CLOSED", {
+                fontSize: "44px",
+                fontFamily: "Arial Black",
+                color: CSS(CLR.gold),
+                stroke: "#000",
+                strokeThickness: 4,
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 232, rank, {
+                fontSize: "24px",
+                fontFamily: "Arial",
                 fontStyle: "bold",
+                color: "#fff",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 300, this.score.toLocaleString(), {
+                fontSize: "56px",
+                fontFamily: "Arial Black",
+                color: CSS(CLR.gold),
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 340, "POINTS", {
+                fontSize: "13px",
+                color: CSS(CLR.muted),
               })
               .setOrigin(0.5);
 
-            replayBg.on("pointerover", () =>
-              replayBg.setStrokeStyle(3, CLR.gold),
-            );
-            replayBg.on("pointerout", () =>
-              replayBg.setStrokeStyle(2, CLR.teal),
-            );
-            replayBg.on("pointerdown", () => {
+            const stats = [
+              { l: "Shapes built", v: `${this.correct}/${goal}` },
+              { l: "Best streak", v: this.bestStreak },
+              { l: "Level", v: this.tier },
+            ];
+            stats.forEach((s, i) => {
+              const x = W / 2 - 230 + i * 230,
+                y = 430;
+              this.add
+                .rectangle(x, y, 200, 96, CLR.panel)
+                .setStrokeStyle(2, CLR.stroke);
+              this.add
+                .text(x, y - 12, String(s.v), {
+                  fontSize: "30px",
+                  fontFamily: "Arial Black",
+                  color: CSS(CLR.gold),
+                })
+                .setOrigin(0.5);
+              this.add
+                .text(x, y + 26, s.l, {
+                  fontSize: "13px",
+                  color: CSS(CLR.muted),
+                })
+                .setOrigin(0.5);
+            });
+
+            const again = this.add
+              .rectangle(W / 2 - 130, 560, 240, 58, CLR.gold)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(W / 2 - 130, 560, "BUILD AGAIN", {
+                fontSize: "22px",
+                fontFamily: "Arial Black",
+                color: "#0a1628",
+              })
+              .setOrigin(0.5);
+            again.on("pointerover", () => again.setScale(1.05));
+            again.on("pointerout", () => again.setScale(1));
+            again.on("pointerdown", () => {
+              ensureAudio();
+              sfxClick();
+              this.scene.start("GameScene", { tier: this.tier });
+            });
+
+            const menu = this.add
+              .rectangle(W / 2 + 130, 560, 240, 58, CLR.panel)
+              .setStrokeStyle(2, CLR.stroke)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(W / 2 + 130, 560, "CHANGE LEVEL", {
+                fontSize: "20px",
+                fontFamily: "Arial Black",
+                color: "#fff",
+              })
+              .setOrigin(0.5);
+            menu.on("pointerover", () => menu.setScale(1.05));
+            menu.on("pointerout", () => menu.setScale(1));
+            menu.on("pointerdown", () => {
+              ensureAudio();
               sfxClick();
               this.scene.start("TitleScene");
             });
 
-            this.input.keyboard.on("keydown", (e) => {
-              if (e.key === "Enter") {
-                sfxClick();
-                this.scene.start("TitleScene");
-              }
-            });
-
-            // Formula reference
             this.add
               .text(
                 W / 2,
-                H - 20,
-                "Parallelogram: A = b × h     Rhombus: A = ½ × d1 × d2  or  A = b × h",
+                640,
+                "Parallelogram: A = base × height     Rhombus: A = ½ × d1 × d2",
                 {
-                  fontSize: "11px",
+                  fontSize: "13px",
                   fontFamily: "Courier New, monospace",
-                  color: "#7e96c2",
+                  color: CSS(CLR.teal),
                 },
               )
               .setOrigin(0.5);
-          }
 
-          drawFinalBuilding(blocks) {
-            const gfx = this.add.graphics();
-            const bx = 520,
-              by = 80,
-              bw = 400,
-              bh = 480;
-
-            // Platform
-            gfx.fillStyle(CLR.darkBlue, 0.5);
-            gfx.fillRect(bx, by, bw, bh);
-            gfx.lineStyle(1, 0x1a2d50, 0.3);
-            gfx.strokeRect(bx, by, bw, bh);
-
-            // Ground
-            gfx.fillStyle(0x2d4a3e, 0.6);
-            gfx.fillRect(bx, by + bh - 15, bw, 15);
-
-            this.add
-              .text(bx + bw / 2, by - 5, "🏗️ FINAL BUILDING", {
-                fontSize: "14px",
-                fontFamily: "Arial, sans-serif",
-                color: "#ffcf72",
-                fontStyle: "bold",
-              })
-              .setOrigin(0.5, 1);
-
-            const blockH = 22;
-            const baseY = by + bh - 20;
-
-            blocks.forEach((block, i) => {
-              const y = baseY - i * (blockH + 2);
-              if (y < by + 10) return; // don't overflow
-              const blockW = Phaser.Math.Clamp(
-                block.score * 0.6 + 80,
-                80,
-                bw - 30,
-              );
-              const x = bx + bw / 2 - blockW / 2;
-
-              if (block.correct) {
-                const colors = [
-                  CLR.teal,
-                  CLR.teal,
-                  0xf7dc6f,
-                  0xf7dc6f,
-                  CLR.violet,
-                  CLR.violet,
-                  0xe74c3c,
-                  0xe74c3c,
-                ];
-                const zoneColors = [
-                  CLR.teal,
-                  0xf7dc6f,
-                  CLR.violet,
-                  0xe74c3c,
-                  CLR.coral,
-                ];
-                const color = block.isBoss
-                  ? CLR.gold
-                  : zoneColors[block.zone] || CLR.teal;
-                gfx.fillStyle(color, 0.65);
-                gfx.fillRoundedRect(x, y, blockW, blockH, 3);
-                gfx.lineStyle(1, 0xffffff, 0.2);
-                gfx.strokeRoundedRect(x, y, blockW, blockH, 3);
-
-                // Windows
-                for (let wx = x + 6; wx < x + blockW - 10; wx += 14) {
-                  gfx.fillStyle(0xffcf72, 0.25);
-                  gfx.fillRect(wx, y + 4, 6, 8);
-                }
-
-                // Antenna on top block
-                if (i === blocks.length - 1 && block.correct) {
-                  gfx.lineStyle(2, 0xffffff, 0.5);
-                  gfx.lineBetween(bx + bw / 2, y, bx + bw / 2, y - 20);
-                  gfx.fillStyle(CLR.coral, 0.8);
-                  gfx.fillCircle(bx + bw / 2, y - 22, 4);
-                }
-              } else {
-                gfx.fillStyle(0x444444, 0.3);
-                gfx.fillRoundedRect(x, y, blockW, blockH, 3);
-                gfx.lineStyle(1, CLR.danger, 0.2);
-                gfx.strokeRoundedRect(x, y, blockW, blockH, 3);
-                // Crack lines
-                gfx.lineStyle(1, CLR.danger, 0.3);
-                gfx.lineBetween(
-                  x + blockW * 0.3,
-                  y,
-                  x + blockW * 0.5,
-                  y + blockH,
-                );
-                gfx.lineBetween(
-                  x + blockW * 0.7,
-                  y,
-                  x + blockW * 0.6,
-                  y + blockH,
-                );
+            this.input.keyboard.on("keydown", (e) => {
+              if (e.key === "Enter") {
+                ensureAudio();
+                sfxClick();
+                this.scene.start("GameScene", { tier: this.tier });
               }
             });
           }
-
-          emitConfetti(x, y) {
-            const colors = [
-              CLR.gold,
-              CLR.teal,
-              CLR.coral,
-              CLR.lime,
-              CLR.violet,
-            ];
-            for (let i = 0; i < 4; i++) {
-              const p = this.add.circle(
-                x,
-                y,
-                Phaser.Math.Between(2, 5),
-                Phaser.Utils.Array.GetRandom(colors),
-                0.8,
-              );
-              this.tweens.add({
-                targets: p,
-                x: x + Phaser.Math.Between(-100, 100),
-                y: y + Phaser.Math.Between(100, 300),
-                alpha: 0,
-                duration: Phaser.Math.Between(800, 1500),
-                ease: "Cubic.easeOut",
-                onComplete: () => p.destroy(),
-              });
-            }
-          }
         }
 
-        /* ═══════════════════════════════════════════
-         BOOT
-         ═══════════════════════════════════════════ */
-        const config = {
+        /* ─── BOOT ─── */
+        new Phaser.Game({
           type: Phaser.AUTO,
           parent: "game-container",
           width: W,
@@ -1982,15 +1344,14 @@
             autoCenter: Phaser.Scale.CENTER_BOTH,
           },
           scene: [TitleScene, GameScene, ResultScene],
-        };
-        new Phaser.Game(config);
+        });
       })();
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
 </html>

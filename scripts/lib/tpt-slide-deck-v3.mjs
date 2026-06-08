@@ -442,7 +442,8 @@ function buildStructuredErrorSlide(data, themeEmoji, themeName, contentObj) {
 
   const stepButtons = steps
     .map((s, idx) => {
-      const ok = idx + 1 === errorStep ? 'true' : 'false';
+      // errorStep is 0-indexed into workedExample (config convention).
+      const ok = idx === errorStep ? 'true' : 'false';
       return `<button type="button" class="assess-btn ea-pick" onclick="(function(b){var ok=${ok};document.querySelectorAll('.ea-pick').forEach(function(x){x.classList.remove('ea-correct','ea-wrong');});document.querySelectorAll('.ea-step').forEach(function(x){x.classList.remove('ea-step-flag');});b.classList.add(ok?'ea-correct':'ea-wrong');if(ok){var s=document.getElementById('ea-step-${idx + 1}');if(s){s.classList.add('ea-step-flag');}}document.getElementById('ea-fb').textContent=ok?'✓ Yes — step ${idx + 1} is where the work breaks down. Now explain why.':'Not yet — check each step against the rule, then try again.';})(this)">Step ${idx + 1}</button>`;
     })
     .join('');
