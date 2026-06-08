@@ -642,6 +642,7 @@
             this.solvedThisRound = false;
             this.feedback.setText("");
             this.activeHandle = 0;
+            this._needHandles = true; // new task → rebuild the handle set once
 
             // Working state per task type.
             if (r.type === "shear") {
@@ -709,7 +710,7 @@
               this.handleLayer.add(lab);
               c._lab = lab;
               this.input.setDraggable(c);
-              c.on("drag", (p, dx, dy) => this.onDrag(kind, dx, dy));
+              c.on("drag", (p) => this.onDrag(kind, p));
               this.handles.push(c);
               return c;
             };
@@ -733,11 +734,46 @@
             }
           }
 
-          onDrag(kind, dx, dy) {
-            // convert pointer position to nearest grid cell delta
-            const col = Math.round((dx - this.boardX) / this.cell);
-            const row = Math.round((this.boardYBottom - dy) / this.cell);
+          onDrag(kind, pointer) {
+            // snap to the grid cell under the finger/cursor (pointer.worldX/Y are
+            // in game space). Works on both axes regardless of grab offset.
+            const col = Math.round((pointer.worldX - this.boardX) / this.cell);
+            const row = Math.round(
+              (this.boardYBottom - pointer.worldY) / this.cell,
+            );
             this.applyHandle(kind, col, row);
+          }
+
+          // Grid position (col,row) where a handle of the given kind should sit
+          // for the current working shape. Shared by buildHandles + positionHandles.
+          handlePos(kind) {
+            const r = this.round,
+              c = this.cur;
+            if (r.type === "shear") {
+              if (kind === "shear") return { col: c.b + c.shear, row: c.h };
+              if (kind === "base") return { col: c.b, row: 0 };
+              if (kind === "height") return { col: c.shear, row: c.h };
+            } else if (r.type === "missing") {
+              if (kind === "height") return { col: c.b + 1, row: c.h };
+              return { col: c.b, row: c.h };
+            } else {
+              if (kind === "d1") return { col: c.d1, row: 0 };
+              return { col: 0, row: c.d2 };
+            }
+            return { col: 0, row: 0 };
+          }
+
+          // Move existing handles to match the working shape WITHOUT destroying
+          // them — destroying mid-drag was killing the drag (esp. vertically).
+          positionHandles() {
+            if (!this.handles) return;
+            for (const h of this.handles) {
+              const { col, row } = this.handlePos(h._kind);
+              const x = this.gx(col),
+                y = this.gy(row);
+              h.setPosition(x, y);
+              if (h._lab) h._lab.setPosition(x, y);
+            }
           }
 
           // Apply a handle to a target grid coordinate (col,row), clamped.
@@ -878,7 +914,14 @@
             // colour the readout by closeness to the implicit goal (felt, not given)
             this.liveReadout.setColor(this.isSolved() ? CSS(CLR.ok) : "#fff");
 
-            this.buildHandles();
+            // Build handles once per round; afterwards just reposition them so a
+            // drag in progress is never destroyed (that broke vertical dragging).
+            if (this._needHandles || !this.handles || !this.handles.length) {
+              this.buildHandles();
+              this._needHandles = false;
+            } else {
+              this.positionHandles();
+            }
             this.highlightActiveHandle();
           }
 
