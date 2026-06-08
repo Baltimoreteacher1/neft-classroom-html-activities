@@ -123,15 +123,21 @@ lockfile match), then run the checks.
 
 ## Hard Constraints
 
-- Do **not** deploy. Deploys are done manually by the maintainer with
-  `wrangler pages deploy dist`.
-  - **Deploy-conflict warning:** the `neft-classroom-html-activities` Pages
-    project (serving `eduwonderlab.com`) may have **Cloudflare Git integration**
-    connected. When it is, every push to `main` auto-deploys and can _overwrite_
-    a manual `wrangler pages deploy`, which looks like the site "reverting to an
-    old version." Pick **one** deploy path (Git auto-deploy **or** manual
-    wrangler), not both. If the site reverts unexpectedly, check the Pages
-    project's Git settings in the Cloudflare dashboard before re-deploying.
+- **Deployment (as of 2026-06-08): push to `main` is the SINGLE deploy path.**
+  The `neft-classroom-html-activities` Pages project (serving `eduwonderlab.com`)
+  has Cloudflare Git integration **enabled** — production branch `main`, preview
+  branches disabled. A push to `main` auto-runs `npm run build` (Vite) and
+  promotes to production in ~1-2 min.
+  - **Do NOT run `wrangler pages deploy` manually.** Mixing manual wrangler with
+    Git auto-deploy is what historically caused the site to "revert to an old
+    version" (competing builds racing to production). One path only: `git push`.
+  - Because CF rebuilds from committed source, **any change must be committed and
+    pushed to `main` to go live** — an uncommitted or feature-branch change will
+    not deploy, and will be reverted on the next `main` rebuild.
+  - To add content: drop a self-contained top-level folder (`my-thing/index.html`
+    - assets), commit, push. `vite.config.js` `copyStandaloneHtml()` copies every
+      top-level dir into `dist/` except reserved names (engine, lessons, scripts,
+      docs, node_modules, dist, dot-dirs); `.md` files are stripped.
 - **Do NOT change the site structure or routes.** Routes are defined by
   `data/routes.json` → generated `_redirects`/`_headers`. Folder layout and URL
   paths are load-bearing (bookmarks, student links, save/resume keys). Edit
