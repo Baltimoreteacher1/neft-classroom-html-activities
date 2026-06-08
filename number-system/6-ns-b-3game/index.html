@@ -65,9 +65,12 @@
       aria-label="Cooking Simulator — a Grade 6 math game for decimal operations (6.NS.B.3)."
     >
       <p class="sr-only">
-        Cooking Simulator is an interactive math game. Add, subtract, multiply,
-        and divide decimals to complete recipes and choose the correct answer.
-        Play with touch, mouse, or keyboard.
+        Cooking Simulator is an interactive math game. Pour liquid into a
+        graduated measuring cup to an exact decimal amount to add, subtract,
+        multiply, and divide decimals on a marked ruler. The answer is produced
+        by where you stop the liquid — it is never picked from a list. Play with
+        touch, mouse, or keyboard: use the pour and pour-back buttons or the
+        arrow keys.
       </p>
     </div>
 
@@ -224,19 +227,35 @@
       "use strict";
       (() => {
         /* ============================================================
-      COOKING SIMULATOR — 6.NS.B.3
-      Add, subtract, multiply, divide multi-digit decimals.
-      Follow recipes, measure ingredients with decimal operations.
-      ============================================================ */
+       COOKING SIMULATOR — MEASURING STATION — 6.NS.B.3
+       Add, subtract, multiply, and divide multi-digit decimals.
 
-        // --- Audio ---
+       THE MATH IS THE MECHANIC. There are no A/B/C/D choices. The
+       player produces the decimal answer by POURING liquid into a
+       graduated measuring cup until the level sits exactly on a target
+       mark read off a ruler that is labelled in tenths/hundredths:
+         ADD      — pour up to a + b cups.
+         SUBTRACT — start full at a cups, pour OUT down to a - b.
+         MULTIPLY — scale a recipe: set the cup to a * servings.
+         DIVIDE   — size one scoop so n equal scoops empty a cups
+                    (scoop = a / n).
+       Overpour spills red over the rim and must be poured back;
+       underpour leaves the line below the mark. Feedback teaches
+       lining up decimal places / counting tenths — it never prints
+       the target as a pickable number.
+
+       All arithmetic is done in INTEGER HUNDREDTHS (centiunits, "cu")
+       so there is zero floating-point error, and every target is
+       guaranteed to land on the ruler's increment grid.
+       ============================================================ */
+
+        // ---------- Audio ----------
         let audioCtx = null;
         function getAudio() {
           if (!audioCtx)
             try {
-              audioCtx = new (
-                window.AudioContext || window.webkitAudioContext
-              )();
+              audioCtx = new (window.AudioContext ||
+                window.webkitAudioContext)();
             } catch (e) {}
           return audioCtx;
         }
@@ -255,65 +274,39 @@
           o.start();
           o.stop(c.currentTime + d + 0.01);
         }
-        function playSweep(
-          startFreq,
-          endFreq,
-          duration,
-          type = "sine",
-          vol = 0.05,
-        ) {
+        function playSweep(s, e, d, t = "sine", v = 0.05) {
           const c = getAudio();
           if (!c) return;
           if (c.state === "suspended") c.resume();
           const o = c.createOscillator(),
             g = c.createGain();
-          o.type = type;
-          o.frequency.setValueAtTime(startFreq, c.currentTime);
-          o.frequency.exponentialRampToValueAtTime(
-            endFreq,
-            c.currentTime + duration,
-          );
+          o.type = t;
+          o.frequency.setValueAtTime(s, c.currentTime);
+          o.frequency.exponentialRampToValueAtTime(e, c.currentTime + d);
           g.gain.setValueAtTime(0.0001, c.currentTime);
-          g.gain.linearRampToValueAtTime(vol, c.currentTime + 0.02);
-          g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + duration);
+          g.gain.linearRampToValueAtTime(v, c.currentTime + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + d);
           o.connect(g).connect(c.destination);
           o.start();
-          o.stop(c.currentTime + duration + 0.01);
+          o.stop(c.currentTime + d + 0.01);
         }
-        function sfxCorrect() {
+        const sfxPour = () => playTone(360 + Math.random() * 50, 0.05, "sine", 0.03);
+        const sfxPourBack = () => playTone(240, 0.05, "sine", 0.03);
+        const sfxSpill = () => playSweep(500, 160, 0.25, "sawtooth", 0.04);
+        const sfxServe = () => {
           playTone(523, 0.1);
           setTimeout(() => playTone(659, 0.1), 70);
-          setTimeout(() => playTone(784, 0.12), 140);
-        }
-        function sfxWrong() {
-          playSweep(180, 60, 0.35, "sawtooth", 0.04);
-        }
-        function sfxDing() {
-          playTone(880, 0.15, "triangle", 0.04);
-        }
-        function sfxSizzle() {
-          for (let i = 0; i < 5; i++)
-            setTimeout(
-              () =>
-                playTone(3000 + Math.random() * 2000, 0.03, "sawtooth", 0.01),
-              i * 30,
-            );
-        }
-        function sfxChop() {
-          playTone(300, 0.05, "square", 0.04);
-          setTimeout(() => playTone(250, 0.04, "square", 0.03), 40);
-        }
-        function sfxLevelUp() {
-          playSweep(200, 800, 0.5, "sine", 0.06);
-          setTimeout(() => playSweep(400, 1600, 0.5, "triangle", 0.04), 150);
-          setTimeout(() => playTone(2000, 0.25, "sine", 0.05), 500);
-        }
-        function sfxServe() {
-          playSweep(300, 1200, 0.4, "triangle", 0.06);
-          setTimeout(() => playTone(1200, 0.15, "sine", 0.05), 200);
-        }
+          setTimeout(() => playTone(880, 0.16), 150);
+        };
+        const sfxWrong = () => playSweep(180, 60, 0.32, "sawtooth", 0.04);
+        const sfxClick = () => playTone(440, 0.05, "sine", 0.04);
+        const sfxLevel = () =>
+          [523, 659, 784, 1047].forEach((f, i) =>
+            setTimeout(() => playTone(f, 0.14), i * 90),
+          );
 
-        // --- Math ---
+        // ---------- Math (INTEGER HUNDREDTHS) ----------
+        // A "cu" is one hundredth of a cup. 1 cup = 100 cu, 0.1 cup = 10 cu.
         function rand(a, b) {
           return Math.floor(Math.random() * (b - a + 1)) + a;
         }
@@ -328,345 +321,132 @@
           }
           return r;
         }
-        function round2(n) {
-          return Math.round(n * 100) / 100;
-        }
-        function fmtDec(n) {
-          const r = round2(n);
-          return r === Math.floor(r) ? r.toFixed(1) : String(r);
+        // Format an integer-hundredths value as a decimal string of cups.
+        function cuToStr(cu) {
+          const neg = cu < 0;
+          cu = Math.abs(cu);
+          const whole = Math.floor(cu / 100);
+          const freq = cu % 100;
+          let s;
+          if (freq === 0) s = whole + ".0";
+          else if (freq % 10 === 0) s = whole + "." + freq / 10;
+          else s = whole + "." + String(freq).padStart(2, "0");
+          return (neg ? "-" : "") + s;
         }
 
-        const OPS = ["+", "-", "×", "÷"];
-        const OP_WORDS = {
-          "+": "add",
-          "-": "subtract",
-          "×": "multiply",
-          "÷": "divide",
+        // ---------- Tier + round config ----------
+        // Level 1 (Support): tenths grid (step 10cu), add/sub only, target band
+        //   tolerance, 5 lives. Level 2 (Challenge): hundredths grid (step 5cu),
+        //   all four operations, exact match, 3 lives.
+        const TIERS = {
+          1: { step: 10, lives: 5, tol: 5, label: "Level 1", sub: "Support" },
+          2: { step: 5, lives: 3, tol: 0, label: "Level 2", sub: "Challenge" },
         };
+        const RULER_MAX = 500; // 5.00 cups — top of every cup
+        const ROUNDS_TO_WIN = { 1: 8, 2: 10 };
 
+        const RECIPES = [
+          { name: "Chocolate Cake", emoji: "\u{1F382}" },
+          { name: "Pancake Stack", emoji: "\u{1F95E}" },
+          { name: "Berry Smoothie", emoji: "\u{1F964}" },
+          { name: "Banana Bread", emoji: "\u{1F35E}" },
+          { name: "Lemon Bars", emoji: "\u{1F34B}" },
+          { name: "Veggie Soup", emoji: "\u{1F372}" },
+          { name: "Fruit Salad", emoji: "\u{1F957}" },
+          { name: "Rice Pudding", emoji: "\u{1F35A}" },
+        ];
         const INGREDIENTS = [
           "flour",
           "sugar",
-          "butter",
           "milk",
-          "eggs",
-          "salt",
-          "vanilla",
-          "cocoa",
-          "cream",
+          "water",
           "oil",
           "honey",
-          "cinnamon",
-          "baking powder",
-          "cheese",
-          "tomato sauce",
-          "rice",
-          "pasta",
-          "beans",
-          "pepper",
-          "garlic",
-        ];
-        const UNITS = [
-          "cups",
-          "tablespoons",
-          "teaspoons",
-          "ounces",
-          "grams",
-          "liters",
-          "milliliters",
-          "pounds",
-        ];
-        const RECIPES = [
-          { name: "Chocolate Cake", emoji: "🎂", color: 0x8b4513 },
-          { name: "Pasta Primavera", emoji: "🍝", color: 0xdaa520 },
-          { name: "Berry Smoothie", emoji: "🥤", color: 0xdc143c },
-          { name: "Veggie Stir-Fry", emoji: "🥘", color: 0x228b22 },
-          { name: "Pancake Stack", emoji: "🥞", color: 0xf4a460 },
-          { name: "Pizza Margherita", emoji: "🍕", color: 0xff6347 },
-          { name: "Fruit Salad", emoji: "🥗", color: 0x32cd32 },
-          { name: "Banana Bread", emoji: "🍞", color: 0xd2691e },
-          { name: "Lemon Bars", emoji: "🍋", color: 0xffd700 },
-          { name: "Rice Pudding", emoji: "🍚", color: 0xfffacd },
+          "cream",
+          "juice",
+          "broth",
+          "syrup",
         ];
 
-        function generateDecimalQ(level) {
-          const op = pick(
-            level <= 1
-              ? ["+", "-"]
-              : level <= 3
-                ? ["+", "-", "×"]
-                : ["+", "-", "×", "÷"],
-          );
-          let a, b, answer;
+        // Build one solvable round. Every value is integer hundredths and the
+        // target is guaranteed to be a multiple of the tier's grid step and to
+        // fit on the ruler. Returns {type, a, b, n, start, target, ...}.
+        function makeRound(tier, ix) {
+          const step = TIERS[tier].step;
           const ingredient = pick(INGREDIENTS);
-          const unit = pick(UNITS);
+          const recipe = pick(RECIPES);
+          // grid() -> a random positive multiple of `step` cu in [lo, hi].
+          const grid = (loCu, hiCu) => {
+            const lo = Math.ceil(loCu / step),
+              hi = Math.floor(hiCu / step);
+            return rand(Math.max(1, lo), Math.max(1, hi)) * step;
+          };
 
-          if (op === "+") {
-            if (level <= 2) {
-              a = rand(10, 99) / 10;
-              b = rand(10, 99) / 10;
-            } else {
-              a = rand(100, 999) / 100;
-              b = rand(100, 999) / 100;
-            }
-            answer = round2(a + b);
-          } else if (op === "-") {
-            if (level <= 2) {
-              a = rand(30, 99) / 10;
-              b = rand(10, Math.floor(a * 10) - 1) / 10;
-            } else {
-              a = rand(200, 999) / 100;
-              b = rand(100, Math.floor(a * 100) - 1) / 100;
-            }
-            answer = round2(a - b);
-          } else if (op === "×") {
-            if (level <= 2) {
-              a = rand(10, 50) / 10;
-              b = rand(2, 9);
-            } else if (level <= 4) {
-              a = rand(10, 99) / 10;
-              b = rand(10, 50) / 10;
-            } else {
-              a = rand(10, 99) / 10;
-              b = rand(10, 99) / 10;
-            }
-            answer = round2(a * b);
+          // Choose operation. Level 1 = add/sub only; Level 2 = all four.
+          let type;
+          if (tier === 1) type = ix % 2 === 0 ? "add" : "sub";
+          else type = pick(["add", "sub", "mul", "div", "add", "mul", "div"]);
+
+          const r = { type, ingredient, recipe, step, start: 0 };
+
+          if (type === "add") {
+            // target = a + b, both on grid, sum <= ruler max.
+            const a = grid(20, 280);
+            const b = grid(20, RULER_MAX - a);
+            r.a = a;
+            r.b = b;
+            r.target = a + b;
+          } else if (type === "sub") {
+            // start full at a, pour OUT b; target = a - b > 0, both on grid.
+            const a = grid(80, RULER_MAX);
+            const b = grid(10, a - step); // leave at least one step
+            r.a = a;
+            r.b = b;
+            r.start = a;
+            r.target = a - b;
+          } else if (type === "mul") {
+            // scale a recipe: target = a * n. Pick n then a so product on grid
+            // and <= ruler max. a is already a multiple of step, so a*n is too.
+            const n = rand(2, 5);
+            const a = grid(15, Math.floor(RULER_MAX / n));
+            r.a = a;
+            r.n = n;
+            r.target = a * n;
           } else {
-            // Division
-            if (level <= 3) {
-              b = rand(2, 9);
-              answer = rand(10, 50) / 10;
-              a = round2(answer * b);
-            } else {
-              b = rand(10, 50) / 10;
-              answer = rand(10, 99) / 10;
-              a = round2(answer * b);
-            }
+            // div: split a into n equal scoops; target (one scoop) = a / n.
+            // Pick scoop on grid first, then a = scoop*n so it divides exactly.
+            const n = rand(2, 5);
+            const scoop = grid(10, Math.floor(RULER_MAX / n));
+            r.a = scoop * n;
+            r.n = n;
+            r.target = scoop; // player sizes ONE scoop
           }
-
-          a = round2(a);
-          b = round2(b);
-          answer = round2(answer);
-          const stem = fmtDec(a) + " " + op + " " + fmtDec(b);
-
-          // Context sentence
-          const contexts = {
-            "+":
-              "You need " +
-              fmtDec(a) +
-              " " +
-              unit +
-              " of " +
-              ingredient +
-              " plus " +
-              fmtDec(b) +
-              " more " +
-              unit +
-              ". How much total?",
-            "-":
-              "You have " +
-              fmtDec(a) +
-              " " +
-              unit +
-              " of " +
-              ingredient +
-              ". You use " +
-              fmtDec(b) +
-              " " +
-              unit +
-              ". How much is left?",
-            "×":
-              "Each serving needs " +
-              fmtDec(a) +
-              " " +
-              unit +
-              " of " +
-              ingredient +
-              ". You make " +
-              fmtDec(b) +
-              " servings. How much total?",
-            "÷":
-              "You have " +
-              fmtDec(a) +
-              " " +
-              unit +
-              " of " +
-              ingredient +
-              ". Split into groups of " +
-              fmtDec(b) +
-              ". How many groups?",
-          };
-
-          // Wrong answers
-          const wrongs = new Set();
-          wrongs.add(fmtDec(round2(answer + 0.1)));
-          wrongs.add(fmtDec(round2(answer - 0.1)));
-          wrongs.add(fmtDec(round2(answer + 1)));
-          wrongs.add(fmtDec(round2(Math.abs(answer - 1))));
-          // Decimal place error
-          wrongs.add(fmtDec(round2(answer * 10)));
-          wrongs.add(fmtDec(round2(answer / 10)));
-          wrongs.delete(fmtDec(answer));
-
-          const wrongArr = [...wrongs]
-            .filter((w) => parseFloat(w) > 0 && w !== fmtDec(answer))
-            .slice(0, 3);
-          while (wrongArr.length < 3)
-            wrongArr.push(fmtDec(round2(answer + rand(1, 20) / 10)));
-
-          const choices = shuffle([
-            { text: fmtDec(answer), correct: true },
-            ...wrongArr.slice(0, 3).map((w) => ({ text: w, correct: false })),
-          ]);
-
-          return {
-            a,
-            b,
-            op,
-            answer,
-            stem,
-            context: contexts[op],
-            choices,
-            hint:
-              "Line up decimals. " +
-              OP_WORDS[op] +
-              " carefully: " +
-              stem +
-              " = " +
-              fmtDec(answer),
-            ingredient,
-            unit,
-          };
+          return r;
         }
 
-        // --- Phaser ---
+        // ---------- Phaser ----------
         const W = 960,
           H = 640;
+        const C = {
+          gold: "#fbbf24",
+          cream: "#fef3c7",
+          tan: "#d4a574",
+          green: "#34d399",
+          red: "#f87171",
+          liquid: 0x3b82f6,
+          liquidSpill: 0xef4444,
+          glass: 0x10243f,
+          panel: 0x2d1810,
+        };
         const config = {
           type: Phaser.AUTO,
           parent: "game-container",
           width: W,
           height: H,
           backgroundColor: "#1a0f05",
-          scale: {
-            mode: Phaser.Scale.FIT,
-            autoCenter: Phaser.Scale.CENTER_BOTH,
-          },
-          physics: {
-            default: "arcade",
-            arcade: { gravity: { y: 300 }, debug: false },
-          },
+          scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
           scene: [],
         };
-
-        // ==================== BOOT ====================
-        class BootScene extends Phaser.Scene {
-          constructor() {
-            super("Boot");
-          }
-          create() {
-            const g = this.make.graphics({ add: false });
-
-            // Chef character
-            g.clear();
-            g.fillStyle(0xffffff);
-            g.fillRoundedRect(6, 0, 20, 14, 4); // hat
-            g.fillStyle(0xfcd9b6);
-            g.fillCircle(16, 20, 10); // face
-            g.fillStyle(0xffffff);
-            g.fillRoundedRect(6, 28, 20, 22, 4); // body
-            g.fillStyle(0x333333);
-            g.fillCircle(13, 18, 2);
-            g.fillCircle(19, 18, 2); // eyes
-            g.fillStyle(0xff6b6b);
-            g.fillEllipse(16, 23, 4, 2); // mouth
-            g.generateTexture("chef", 32, 52);
-
-            // Ingredient item
-            g.clear();
-            g.fillStyle(0xfbbf24);
-            g.fillRoundedRect(0, 0, 36, 36, 8);
-            g.fillStyle(0xffffff, 0.3);
-            g.fillRoundedRect(4, 4, 28, 12, 4);
-            g.generateTexture("ingredient", 36, 36);
-
-            // Pot
-            g.clear();
-            g.fillStyle(0x6b7280);
-            g.fillRoundedRect(0, 10, 50, 35, 6);
-            g.fillStyle(0x4b5563);
-            g.fillRect(5, 0, 40, 12);
-            g.fillStyle(0xff6347, 0.5);
-            g.fillEllipse(25, 25, 30, 15); // contents
-            g.generateTexture("pot", 50, 45);
-
-            // Cutting board
-            g.clear();
-            g.fillStyle(0xd4a574);
-            g.fillRoundedRect(0, 0, 60, 40, 6);
-            g.lineStyle(1, 0xb8956a);
-            g.strokeRoundedRect(0, 0, 60, 40, 6);
-            g.generateTexture("board", 60, 40);
-
-            // Oven
-            g.clear();
-            g.fillStyle(0x374151);
-            g.fillRoundedRect(0, 0, 70, 60, 8);
-            g.fillStyle(0x1f2937);
-            g.fillRoundedRect(5, 5, 60, 35, 4);
-            g.fillStyle(0xff6347, 0.3);
-            g.fillRoundedRect(8, 8, 54, 29, 3); // glow
-            g.fillStyle(0x9ca3af);
-            g.fillCircle(20, 50, 4);
-            g.fillCircle(35, 50, 4);
-            g.fillCircle(50, 50, 4);
-            g.generateTexture("oven", 70, 60);
-
-            // Plate
-            g.clear();
-            g.fillStyle(0xffffff, 0.9);
-            g.fillEllipse(25, 20, 50, 35);
-            g.lineStyle(2, 0xe5e7eb);
-            g.strokeEllipse(25, 20, 50, 35);
-            g.generateTexture("plate", 50, 40);
-
-            // Star
-            g.clear();
-            g.fillStyle(0xfbbf24);
-            g.fillCircle(5, 5, 5);
-            g.generateTexture("star", 10, 10);
-
-            // Particle
-            g.clear();
-            g.fillStyle(0xffffff);
-            g.fillCircle(3, 3, 3);
-            g.generateTexture("particle", 6, 6);
-
-            // Steam particle
-            g.clear();
-            g.fillStyle(0xffffff, 0.4);
-            g.fillCircle(6, 6, 6);
-            g.generateTexture("steam", 12, 12);
-
-            // Answer card
-            g.clear();
-            g.fillStyle(0x2d1810, 0.92);
-            g.fillRoundedRect(0, 0, 130, 55, 12);
-            g.lineStyle(2, 0xfbbf24, 0.4);
-            g.strokeRoundedRect(0, 0, 130, 55, 12);
-            g.generateTexture("card", 130, 55);
-
-            // Conveyor belt segment
-            g.clear();
-            g.fillStyle(0x374151);
-            g.fillRect(0, 0, 80, 20);
-            g.lineStyle(1, 0x4b5563);
-            g.lineBetween(0, 10, 80, 10);
-            g.generateTexture("belt", 80, 20);
-
-            this.scene.start("Title");
-          }
-        }
 
         // ==================== TITLE ====================
         class TitleScene extends Phaser.Scene {
@@ -674,134 +454,131 @@
             super("Title");
           }
           create() {
-            // Kitchen background
             const bg = this.add.graphics();
             bg.fillGradientStyle(0x2d1810, 0x2d1810, 0x1a0f05, 0x1a0f05, 1);
             bg.fillRect(0, 0, W, H);
 
-            // Tile pattern
-            for (let x = 0; x < W; x += 40) {
-              for (let y = 0; y < H; y += 40) {
-                this.add
-                  .rectangle(
-                    x + 20,
-                    y + 20,
-                    38,
-                    38,
-                    (x + y) % 80 === 0 ? 0x3d2215 : 0x2d1810,
-                    0.3,
-                  )
-                  .setStrokeStyle(1, 0x4d3220, 0.15);
-              }
-            }
-
-            // Steam effects
-            for (let i = 0; i < 10; i++) {
-              const s = this.add
-                .image(rand(100, W - 100), H + 20, "steam")
-                .setAlpha(0)
-                .setScale(1 + Math.random() * 2);
-              this.tweens.add({
-                targets: s,
-                y: -30,
-                alpha: { from: 0.3, to: 0 },
-                duration: 4000 + rand(0, 3000),
-                repeat: -1,
-                delay: rand(0, 3000),
-              });
-            }
-
             this.add
-              .text(W / 2, 90, "COOKING\nSIMULATOR", {
-                fontSize: "52px",
+              .text(W / 2, 70, "COOKING SIMULATOR", {
+                fontSize: "44px",
                 fontStyle: "bold",
-                color: "#fbbf24",
+                color: C.gold,
                 align: "center",
-                lineSpacing: 6,
                 stroke: "#78350f",
                 strokeThickness: 4,
               })
               .setOrigin(0.5);
-
             this.add
-              .text(W / 2, 185, "6.NS.B.3 — Decimal Operations", {
+              .text(W / 2, 110, "Measuring Station • 6.NS.B.3 Decimals", {
                 fontSize: "15px",
-                color: "#d4a574",
+                color: C.tan,
               })
               .setOrigin(0.5);
+            this.add
+              .text(
+                W / 2,
+                160,
+                "Pour liquid into the cup until the level lands EXACTLY on the\n" +
+                  "target mark. Read the answer off the ruler — never pick it.",
+                { fontSize: "14px", color: "#e8c9a0", align: "center", lineSpacing: 5 },
+              )
+              .setOrigin(0.5);
 
-            // Kitchen items
-            this.add.image(W / 2 - 120, 310, "pot").setScale(2);
-            this.add.image(W / 2, 300, "chef").setScale(2.5);
-            this.add.image(W / 2 + 120, 310, "oven").setScale(1.8);
+            this.drawDemo(W / 2, 300);
 
-            // Floating ingredients
-            const emojis = ["🥚", "🧈", "🥛", "🍫", "🍯", "🧂", "🫒", "🌾"];
-            emojis.forEach((e, i) => {
-              const t = this.add
-                .text(80 + i * 115, 380, e, { fontSize: "32px" })
+            const tiers = [
+              {
+                t: 1,
+                desc: "Tenths ruler • add & subtract\nbig target band • 5 lives",
+              },
+              {
+                t: 2,
+                desc: "Hundredths ruler • × and ÷ too\nexact match • 3 lives",
+              },
+            ];
+            tiers.forEach((d, i) => {
+              const x = W / 2 + (i === 0 ? -150 : 150),
+                y = 460;
+              const card = this.add
+                .rectangle(x, y, 270, 120, 0x3d2215, 0.92)
+                .setStrokeStyle(2, 0xc17d11)
+                .setInteractive({ useHandCursor: true });
+              this.add
+                .text(x, y - 36, TIERS[d.t].label, {
+                  fontSize: "24px",
+                  fontStyle: "bold",
+                  color: "#fff",
+                })
                 .setOrigin(0.5);
-              this.tweens.add({
-                targets: t,
-                y: 370,
-                duration: 1500 + rand(0, 800),
-                yoyo: true,
-                repeat: -1,
-                ease: "Sine.easeInOut",
-                delay: rand(0, 600),
+              this.add
+                .text(x, y - 12, TIERS[d.t].sub, {
+                  fontSize: "14px",
+                  color: d.t === 1 ? C.green : C.gold,
+                })
+                .setOrigin(0.5);
+              this.add
+                .text(x, y + 24, d.desc, {
+                  fontSize: "12px",
+                  color: "#e8c9a0",
+                  align: "center",
+                  lineSpacing: 3,
+                })
+                .setOrigin(0.5);
+              card.on("pointerover", () => card.setScale(1.04));
+              card.on("pointerout", () => card.setScale(1));
+              card.on("pointerdown", () => {
+                getAudio();
+                sfxClick();
+                this.cameras.main.fadeOut(350);
+                this.time.delayedCall(350, () =>
+                  this.scene.start("Game", { tier: d.t }),
+                );
+              });
+              this.input.keyboard.on("keydown-" + (d.t === 1 ? "ONE" : "TWO"), () => {
+                getAudio();
+                sfxClick();
+                this.cameras.main.fadeOut(350);
+                this.time.delayedCall(350, () =>
+                  this.scene.start("Game", { tier: d.t }),
+                );
               });
             });
 
-            const lines = [
-              "Run a kitchen and solve decimal math!",
-              "Add, subtract, multiply, and divide decimals.",
-              "Measure ingredients on the conveyor belt.",
-              "Pick the right answer to complete each dish.",
-              "Click / Tap answer cards or press 1-4",
-            ];
-            lines.forEach((t, i) =>
-              this.add
-                .text(W / 2, 430 + i * 22, t, {
-                  fontSize: "13px",
-                  color: "#d4a574",
-                })
-                .setOrigin(0.5),
-            );
-
-            // Start
-            const btn = this.add
-              .rectangle(W / 2, 575, 220, 50, 0xfbbf24)
-              .setInteractive({ useHandCursor: true });
             this.add
-              .text(W / 2, 575, "OPEN KITCHEN", {
-                fontSize: "20px",
-                fontStyle: "bold",
-                color: "#000",
-              })
+              .text(
+                W / 2,
+                575,
+                "Touch: tap POUR / POUR BACK • Keyboard: ↑↓ pour, +/− fine, Enter to serve, H for hint • keys 1 / 2 pick a level",
+                { fontSize: "11px", color: "#a07a4a", align: "center" },
+              )
               .setOrigin(0.5);
-            btn.on("pointerover", () => btn.setFillStyle(0xfcd34d));
-            btn.on("pointerout", () => btn.setFillStyle(0xfbbf24));
-            btn.on("pointerdown", () => {
-              getAudio();
-              sfxDing();
-              this.cameras.main.fadeOut(400);
-              this.time.delayedCall(400, () => this.scene.start("Game"));
-            });
-
-            this.input.keyboard.on("keydown-SPACE", () => {
-              getAudio();
-              sfxDing();
-              this.cameras.main.fadeOut(400);
-              this.time.delayedCall(400, () => this.scene.start("Game"));
-            });
-            this.input.keyboard.on("keydown-ENTER", () => {
-              getAudio();
-              sfxDing();
-              this.cameras.main.fadeOut(400);
-              this.time.delayedCall(400, () => this.scene.start("Game"));
-            });
-
             this.cameras.main.fadeIn(400);
+          }
+          drawDemo(cx, cy) {
+            // mini cup filled to a mid mark with a ruler
+            const g = this.add.graphics();
+            g.fillStyle(C.glass, 1).fillRoundedRect(cx - 30, cy - 70, 60, 140, 8);
+            g.lineStyle(2, 0xc17d11, 1).strokeRoundedRect(cx - 30, cy - 70, 60, 140, 8);
+            g.fillStyle(C.liquid, 0.9).fillRoundedRect(cx - 26, cy + 6, 52, 60, 4);
+            for (let i = 0; i <= 5; i++) {
+              const yy = cy + 66 - i * 27.2;
+              g.lineStyle(1, 0xffffff, 0.5).beginPath();
+              g.moveTo(cx - 30, yy);
+              g.lineTo(cx - 18, yy);
+              g.strokePath();
+              this.add
+                .text(cx - 36, yy, i.toString(), {
+                  fontSize: "9px",
+                  color: "#e8c9a0",
+                })
+                .setOrigin(1, 0.5);
+            }
+            this.add
+              .text(cx + 50, cy + 12, "← stop here", {
+                fontSize: "12px",
+                color: C.gold,
+              })
+              .setOrigin(0, 0.5);
           }
         }
 
@@ -810,646 +587,643 @@
           constructor() {
             super("Game");
           }
+          init(data) {
+            this.tier = data && data.tier ? data.tier : 1;
+          }
 
           create() {
             this.cameras.main.fadeIn(300);
-            this.physics.world.gravity.y = 0;
+            const tcfg = TIERS[this.tier];
 
-            // State
+            // state
             this.score = 0;
-            this.combo = 0;
-            this.bestCombo = 0;
-            this.lives = 4;
-            this.level = 1;
-            this.dishesServed = 0;
-            this.questionsCorrect = 0;
-            this.questionsTotal = 0;
-            this.currentQ = null;
-            this.answered = false;
-            this.currentRecipe = pick(RECIPES);
-            this.recipeProgress = 0;
-            this.recipesPerDish = 3;
-            this.timer = 20;
-            this.timerMax = 20;
+            this.streak = 0;
+            this.bestStreak = 0;
+            this.lives = tcfg.lives;
+            this.served = 0;
+            this.correct = 0;
+            this.attempts = 0;
+            this.roundIx = 0;
+            this.level = this.tier; // shown level grows with progress
+            this.fillCu = 0; // current liquid level in cu
 
-            // Load state from localStorage
-            try {
-              const raw = localStorage.getItem("neft_decimal_champion_state");
-              if (raw) {
-                const loaded = JSON.parse(raw);
-                if (loaded) {
-                  this.score = loaded.score ?? 0;
-                  this.level = loaded.level ?? 1;
-                  this.dishesServed = loaded.dishesServed ?? 0;
-                  this.bestCombo = loaded.bestCombo ?? 0;
-                  this.questionsCorrect = loaded.questionsCorrect ?? 0;
-                  this.questionsTotal = loaded.questionsTotal ?? 0;
-                  this.lives = loaded.lives ?? 4;
-                  this.recipeProgress = loaded.recipeProgress ?? 0;
-                  this.timerMax = Math.max(10, 20 - this.level * 2);
-                  if (loaded.currentRecipeName) {
-                    const found = RECIPES.find(
-                      (r) => r.name === loaded.currentRecipeName,
-                    );
-                    if (found) this.currentRecipe = found;
-                  }
-                }
-              }
-            } catch (e) {
-              console.error("Error loading state", e);
-            }
-
-            // Kitchen background
+            // background
             const bg = this.add.graphics();
             bg.fillGradientStyle(0x2d1810, 0x2d1810, 0x1a0f05, 0x1a0f05, 1);
             bg.fillRect(0, 0, W, H);
-
-            // Wall tiles (top half)
-            for (let x = 0; x < W; x += 48) {
-              for (let y = 0; y < 280; y += 48) {
-                this.add
-                  .rectangle(x + 24, y + 24, 46, 46, 0x3d2215, 0.25)
-                  .setStrokeStyle(1, 0x4d3220, 0.12);
-              }
-            }
-
-            // Counter
-            this.add
-              .rectangle(W / 2, 285, W, 20, 0x8b6914)
-              .setStrokeStyle(2, 0xa0791e);
-
-            // Conveyor belt
-            for (let x = 0; x < W; x += 80) {
-              this.add.image(x + 40, 480, "belt").setAlpha(0.5);
-            }
-            // Belt animation dots
-            this.beltDots = [];
-            for (let i = 0; i < 15; i++) {
-              const d = this.add.circle(i * 70, 480, 3, 0x9ca3af, 0.4);
-              this.beltDots.push(d);
-            }
-
-            // Kitchen items (static decor)
-            this.add.image(80, 240, "pot").setScale(1.5).setAlpha(0.6);
-            this.add
-              .image(W - 80, 240, "oven")
-              .setScale(1.4)
-              .setAlpha(0.5);
-
-            // Steam from pot
-            this.add.particles(80, 210, "steam", {
-              lifespan: 2000,
-              speedY: { min: -20, max: -50 },
-              speedX: { min: -8, max: 8 },
-              scale: { start: 0.5, end: 1.5 },
-              alpha: { start: 0.3, end: 0 },
-              frequency: 400,
-              quantity: 1,
-            });
-
-            // Chef
-            this.chef = this.add
-              .image(W / 2, 240, "chef")
-              .setScale(2)
-              .setDepth(5);
-            this.tweens.add({
-              targets: this.chef,
-              y: 235,
-              duration: 1500,
-              yoyo: true,
-              repeat: -1,
-              ease: "Sine.easeInOut",
-            });
-
-            // Plate (where food goes)
-            this.plate = this.add
-              .image(W / 2, 360, "plate")
-              .setScale(2)
-              .setDepth(4);
-            this.dishEmoji = this.add
-              .text(W / 2, 355, this.currentRecipe.emoji, { fontSize: "30px" })
-              .setOrigin(0.5)
-              .setDepth(6);
-
-            // Answer cards (interactive)
-            this.cards = [];
-            this.cardLabels = [];
-            this.cardBgs = [];
-            for (let i = 0; i < 4; i++) {
-              const x = 140 + i * 190;
-              const y = 555;
-              const bg = this.add
-                .image(x, y, "card")
-                .setScale(1.1)
-                .setDepth(10)
-                .setInteractive({ useHandCursor: true });
-              bg.on("pointerover", () => {
-                if (!this.answered) bg.setScale(1.18);
-              });
-              bg.on("pointerout", () => bg.setScale(1.1));
-              const idx = i;
-              bg.on("pointerdown", () => this.selectAnswer(idx));
-
-              const label = this.add
-                .text(x, y, "", {
-                  fontSize: "20px",
-                  fontStyle: "bold",
-                  color: "#fef3c7",
-                  align: "center",
-                })
-                .setOrigin(0.5)
-                .setDepth(11);
-              this.cards.push({ bg, label, index: i });
-              this.cardBgs.push(bg);
-              this.cardLabels.push(label);
-            }
-
-            // Keyboard
-            this.input.keyboard.on("keydown-ONE", () => this.selectAnswer(0));
-            this.input.keyboard.on("keydown-TWO", () => this.selectAnswer(1));
-            this.input.keyboard.on("keydown-THREE", () => this.selectAnswer(2));
-            this.input.keyboard.on("keydown-FOUR", () => this.selectAnswer(3));
+            this.add.rectangle(W / 2, 300, W, 16, 0x8b6914).setStrokeStyle(1, 0xa0791e);
 
             // HUD
             this.createHUD();
 
-            // Timer event
-            this.timerEvent = this.time.addEvent({
-              delay: 1000,
-              callback: () => {
-                if (!this.answered && this.timer > 0) {
-                  this.timer--;
-                  this.updateTimerBar();
-                  if (this.timer <= 0) this.timeUp();
-                }
-              },
-              loop: true,
+            // ---- Cup + ruler geometry ----
+            this.cupX = 470;
+            this.cupW = 120;
+            this.cupTopY = 110; // y for RULER_MAX
+            this.cupBotY = 560; // y for 0 cu
+            this.cupH = this.cupBotY - this.cupTopY;
+
+            this.cupGfx = this.add.graphics();
+            this.rulerGfx = this.add.graphics();
+            this.targetGfx = this.add.graphics();
+
+            // draggable liquid handle (drag the surface up/down)
+            this.handle = this.add
+              .rectangle(this.cupX, this.cupBotY, this.cupW + 24, 26, 0xffffff, 0.0001)
+              .setInteractive({ useHandCursor: true, draggable: true });
+            this.input.setDraggable(this.handle);
+            this.input.on("drag", (p, obj, dx, dy) => {
+              if (obj !== this.handle || this.locked) return;
+              const cu = this.yToCu(dy);
+              this.setFill(this.snap(cu), false);
             });
 
-            // First question
-            this.nextQuestion();
+            // live read-out of current level
+            this.readout = this.add
+              .text(this.cupX, 588, "", {
+                fontSize: "26px",
+                fontStyle: "bold",
+                color: "#fff",
+              })
+              .setOrigin(0.5);
+
+            // ---- Order ticket (left) ----
+            this.add
+              .rectangle(150, 230, 240, 300, 0x2d1810, 0.92)
+              .setStrokeStyle(2, 0xc17d11);
+            this.add
+              .text(150, 110, "\u{1F9FE} ORDER", {
+                fontSize: "17px",
+                fontStyle: "bold",
+                color: C.gold,
+              })
+              .setOrigin(0.5);
+            this.dishText = this.add
+              .text(150, 150, "", { fontSize: "34px" })
+              .setOrigin(0.5);
+            this.stemText = this.add
+              .text(150, 205, "", {
+                fontSize: "30px",
+                fontStyle: "bold",
+                color: "#fff",
+              })
+              .setOrigin(0.5);
+            this.taskText = this.add
+              .text(150, 290, "", {
+                fontSize: "14px",
+                color: C.cream,
+                align: "center",
+                wordWrap: { width: 210 },
+                lineSpacing: 4,
+              })
+              .setOrigin(0.5);
+
+            // ---- Pour controls (right) ----
+            this.makeBtn(800, 200, 150, 60, "▲ POUR", 0x2e7d46, () =>
+              this.pour(this.tier === 1 ? tcfg.step : tcfg.step * 2),
+            );
+            this.makeBtn(800, 280, 150, 56, "▼ POUR BACK", 0x8a3b3b, () =>
+              this.pour(-(this.tier === 1 ? tcfg.step : tcfg.step * 2)),
+            );
+            this.makeBtn(800, 350, 70, 44, "+" + cuToStr(tcfg.step), 0x3a6f53, () =>
+              this.pour(tcfg.step),
+            );
+            this.makeBtn(870, 350, 70, 44, "−" + cuToStr(tcfg.step), 0x6a3a52, () =>
+              this.pour(-tcfg.step),
+            );
+            this.serveBtn = this.makeBtn(
+              800,
+              470,
+              160,
+              58,
+              "\u{1F373} SERVE",
+              0xfbbf24,
+              () => this.serve(),
+              "#1a0f05",
+            );
+            this.makeBtn(800, 540, 76, 40, "Reset", 0x4a2d20, () =>
+              this.resetFill(),
+            );
+            this.makeBtn(884, 540, 76, 40, "\u{1F4A1} Hint", 0x4a2d20, () =>
+              this.showHint(),
+            );
+
+            // feedback line under the cup
+            this.feedback = this.add
+              .text(this.cupX, 612, "", {
+                fontSize: "14px",
+                fontStyle: "bold",
+                color: "#fff",
+                align: "center",
+                wordWrap: { width: 560 },
+              })
+              .setOrigin(0.5);
+
+            // input controls panel hint
+            this.add
+              .text(
+                W / 2,
+                628,
+                "Touch or ↑↓ to pour • +/− fine • Enter = serve • H = hint",
+                { fontSize: "10px", color: "#7a5a36" },
+              )
+              .setOrigin(0.5);
+
+            // keyboard
+            this.input.keyboard.on("keydown-UP", () => this.pour(tcfg.step));
+            this.input.keyboard.on("keydown-DOWN", () => this.pour(-tcfg.step));
+            this.input.keyboard.on("keydown-PLUS", () => this.pour(tcfg.step));
+            this.input.keyboard.on("keydown-MINUS", () => this.pour(-tcfg.step));
+            this.input.keyboard.on("keydown-EQUALS", () => this.pour(tcfg.step));
+            this.input.keyboard.on("keydown-ENTER", () => this.serve());
+            this.input.keyboard.on("keydown-H", () => this.showHint());
+            this.input.keyboard.on("keydown-R", () => this.resetFill());
+
+            this.loadRound();
+          }
+
+          // ----- geometry helpers -----
+          cuToY(cu) {
+            return this.cupBotY - (cu / RULER_MAX) * this.cupH;
+          }
+          yToCu(y) {
+            return ((this.cupBotY - y) / this.cupH) * RULER_MAX;
+          }
+          snap(cu) {
+            const step = TIERS[this.tier].step;
+            return (
+              Math.max(0, Math.min(RULER_MAX, Math.round(cu / step) * step)) | 0
+            );
+          }
+
+          makeBtn(x, y, w, h, label, color, cb, txtColor = "#fff", fs = "16px") {
+            const r = this.add
+              .rectangle(x, y, w, h, color)
+              .setStrokeStyle(2, 0x000000, 0.25)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(x, y, label, {
+                fontSize: fs,
+                fontStyle: "bold",
+                color: txtColor,
+              })
+              .setOrigin(0.5);
+            r.on("pointerover", () => r.setScale(1.05));
+            r.on("pointerout", () => r.setScale(1));
+            r.on("pointerdown", () => {
+              getAudio();
+              cb();
+            });
+            return r;
           }
 
           createHUD() {
-            const y = 22;
-            // Score
-            this.add
-              .rectangle(75, y, 130, 32, 0x2d1810, 0.9)
-              .setStrokeStyle(1, 0xfbbf24, 0.3)
-              .setDepth(100);
-            this.scoreText = this.add
-              .text(75, y, "Score: 0", {
-                fontSize: "14px",
-                fontStyle: "bold",
-                color: "#fbbf24",
-              })
-              .setOrigin(0.5)
-              .setDepth(101);
-
-            // Combo
-            this.add
-              .rectangle(205, y, 100, 32, 0x2d1810, 0.9)
-              .setStrokeStyle(1, 0xfb923c, 0.3)
-              .setDepth(100);
-            this.comboText = this.add
-              .text(205, y, "x0", {
-                fontSize: "14px",
-                fontStyle: "bold",
-                color: "#fb923c",
-              })
-              .setOrigin(0.5)
-              .setDepth(101);
-
-            // Level
-            this.add
-              .rectangle(315, y, 100, 32, 0x2d1810, 0.9)
-              .setStrokeStyle(1, 0x34d399, 0.3)
-              .setDepth(100);
-            this.levelText = this.add
-              .text(315, y, "Level: 1", {
-                fontSize: "14px",
-                fontStyle: "bold",
-                color: "#34d399",
-              })
-              .setOrigin(0.5)
-              .setDepth(101);
-
-            // Dishes
-            this.add
-              .rectangle(435, y, 120, 32, 0x2d1810, 0.9)
-              .setStrokeStyle(1, 0xa78bfa, 0.3)
-              .setDepth(100);
-            this.dishText = this.add
-              .text(435, y, "Dishes: 0", {
-                fontSize: "14px",
-                fontStyle: "bold",
-                color: "#a78bfa",
-              })
-              .setOrigin(0.5)
-              .setDepth(101);
-
-            // Lives
-            this.livesText = this.add
-              .text(W - 80, y, "", { fontSize: "22px" })
-              .setOrigin(0.5)
-              .setDepth(101);
-            this.updateLives();
-
-            // Recipe progress
-            this.add
-              .rectangle(W / 2, 300, 200, 18, 0x1a0f05, 0.8)
-              .setStrokeStyle(1, 0xfbbf24, 0.3)
-              .setDepth(100);
-            this.recipeBar = this.add
-              .rectangle(W / 2 - 95, 300, 0, 12, 0xfbbf24, 0.8)
-              .setOrigin(0, 0.5)
-              .setDepth(101);
-            this.recipeName = this.add
-              .text(
-                W / 2,
-                300,
-                this.currentRecipe.emoji + " " + this.currentRecipe.name,
-                { fontSize: "11px", fontStyle: "bold", color: "#fff" },
-              )
-              .setOrigin(0.5)
-              .setDepth(102);
-
-            // Timer bar
-            this.add
-              .rectangle(W / 2, 510, W - 80, 10, 0x1a0f05, 0.8)
-              .setStrokeStyle(1, 0x34d399, 0.2)
-              .setDepth(100);
-            this.timerBar = this.add
-              .rectangle(50, 510, 0, 6, 0x34d399, 0.9)
-              .setOrigin(0, 0.5)
-              .setDepth(101);
-            this.timerBar.width = W - 90;
-
-            // Question panel
-            this.qPanel = this.add
-              .rectangle(W / 2, 415, W - 60, 60, 0x2d1810, 0.9)
-              .setStrokeStyle(1, 0xfbbf24, 0.3)
-              .setDepth(100);
-            this.qText = this.add
-              .text(W / 2, 408, "", {
-                fontSize: "22px",
-                fontStyle: "bold",
-                color: "#fef3c7",
-              })
-              .setOrigin(0.5)
-              .setDepth(101);
-            this.qContext = this.add
-              .text(W / 2, 430, "", { fontSize: "12px", color: "#d4a574" })
-              .setOrigin(0.5)
-              .setDepth(101);
-
-            // Feedback
-            this.feedbackText = this.add
-              .text(W / 2, 350, "", {
-                fontSize: "26px",
-                fontStyle: "bold",
-                color: "#34d399",
-                stroke: "#000",
-                strokeThickness: 3,
-              })
-              .setOrigin(0.5)
-              .setDepth(102)
-              .setAlpha(0);
-          }
-
-          saveState() {
-            try {
-              const stateData = {
-                score: this.score,
-                level: this.level,
-                dishesServed: this.dishesServed,
-                bestCombo: this.bestCombo,
-                questionsCorrect: this.questionsCorrect,
-                questionsTotal: this.questionsTotal,
-                lives: this.lives,
-                recipeProgress: this.recipeProgress,
-                currentRecipeName: this.currentRecipe.name,
-              };
-              localStorage.setItem(
-                "neft_decimal_champion_state",
-                JSON.stringify(stateData),
-              );
-            } catch (e) {
-              console.error("Error saving state", e);
-            }
-          }
-
-          nextQuestion() {
-            this.answered = false;
-            this.timer = this.timerMax;
-            this.updateTimerBar();
-
-            this.currentQ = generateDecimalQ(this.level);
-            this.qText.setText(this.currentQ.stem);
-            this.qContext.setText(this.currentQ.context);
-
-            // Reset card visuals
-            this.currentQ.choices.forEach((c, i) => {
-              if (i < this.cardLabels.length) {
-                this.cardLabels[i].setText(c.text);
-                this.cardBgs[i].setTint(0xffffff).setAlpha(1).setScale(1.1);
-                this.cardLabels[i].setColor("#fef3c7");
-              }
-            });
-
-            // Ingredient animation on conveyor
-            this.spawnIngredientOnBelt();
-          }
-
-          spawnIngredientOnBelt() {
-            const ing = this.add
-              .image(-30, 480, "ingredient")
-              .setScale(1)
-              .setDepth(8);
-            const label = this.add
-              .text(-30, 478, this.currentQ.ingredient.substring(0, 6), {
-                fontSize: "9px",
-                fontStyle: "bold",
-                color: "#000",
-              })
-              .setOrigin(0.5)
-              .setDepth(9);
-            this.tweens.add({
-              targets: [ing, label],
-              x: W + 40,
-              duration: 6000,
-              onComplete: () => {
-                ing.destroy();
-                label.destroy();
-              },
-            });
-          }
-
-          selectAnswer(idx) {
-            if (this.answered || idx >= this.currentQ.choices.length) return;
-            this.answered = true;
-
-            const choice = this.currentQ.choices[idx];
-
-            if (choice.correct) {
-              sfxCorrect();
-              this.combo++;
-              this.bestCombo = Math.max(this.bestCombo, this.combo);
-              this.questionsCorrect++;
-              this.questionsTotal++;
-
-              const pts = 100 + this.combo * 15 + this.level * 25;
-              this.score += pts;
-
-              this.cardBgs[idx].setTint(0x34d399);
-              this.cardLabels[idx].setColor("#34d399");
-
-              this.showFeedback("Delicious! +" + pts, 0x34d399);
-
-              // Particles
+            const y = 24;
+            const chip = (x, w, label, color) => {
               this.add
-                .particles(this.cardBgs[idx].x, this.cardBgs[idx].y, "star", {
-                  speed: { min: 50, max: 150 },
-                  lifespan: 600,
-                  scale: { start: 0.8, end: 0 },
-                  tint: [0xfbbf24, 0xfb923c, 0x34d399],
-                  quantity: 12,
-                  emitting: false,
+                .rectangle(x, y, w, 30, 0x2d1810, 0.9)
+                .setStrokeStyle(1, color, 0.4);
+              return this.add
+                .text(x, y, label, {
+                  fontSize: "13px",
+                  fontStyle: "bold",
+                  color: "#" + color.toString(16).padStart(6, "0"),
                 })
-                .explode(12);
-
-              // Chef happy
-              this.tweens.add({
-                targets: this.chef,
-                scaleX: 2.2,
-                scaleY: 2.2,
-                duration: 100,
-                yoyo: true,
-                repeat: 1,
-              });
-
-              // Recipe progress
-              this.recipeProgress++;
-              this.recipeBar.width =
-                (this.recipeProgress / this.recipesPerDish) * 190;
-
-              if (this.recipeProgress >= this.recipesPerDish) {
-                this.serveDish();
-              }
-
-              // Level up
-              if (
-                this.questionsCorrect > 0 &&
-                this.questionsCorrect % 5 === 0 &&
-                this.level < 6
-              ) {
-                this.level++;
-                this.levelText.setText("Level: " + this.level);
-                this.timerMax = Math.max(10, 20 - this.level * 2);
-                sfxLevelUp();
-              }
-
-              this.cameras.main.flash(150, 52, 211, 153, false);
-              this.updateHUD();
-              this.saveState();
-              this.time.delayedCall(1000, () => {
-                if (this.lives > 0) this.nextQuestion();
-              });
-            } else {
-              sfxWrong();
-              this.combo = 0;
-              this.lives--;
-              this.questionsTotal++;
-
-              this.cardBgs[idx].setTint(0xef4444);
-              this.cardLabels[idx].setColor("#ef4444");
-
-              // Highlight correct
-              this.currentQ.choices.forEach((c, i) => {
-                if (c.correct) {
-                  this.cardBgs[i].setTint(0x34d399);
-                  this.cardLabels[i].setColor("#34d399");
-                }
-              });
-
-              this.showFeedback(
-                "Not right! Answer: " + fmtDec(this.currentQ.answer),
-                0xef4444,
-              );
-              this.qContext.setText(this.currentQ.hint);
-
-              this.cameras.main.shake(200, 0.008);
-
-              this.add
-                .particles(
-                  this.cardBgs[idx].x,
-                  this.cardBgs[idx].y,
-                  "particle",
-                  {
-                    speed: { min: 30, max: 80 },
-                    lifespan: 400,
-                    tint: 0xef4444,
-                    quantity: 8,
-                    emitting: false,
-                  },
-                )
-                .explode(8);
-
-              this.updateHUD();
-              this.saveState();
-              if (this.lives <= 0) {
-                this.time.delayedCall(1200, () => this.endGame());
-              } else {
-                this.time.delayedCall(1800, () => this.nextQuestion());
-              }
-            }
+                .setOrigin(0.5);
+            };
+            this.scoreText = chip(70, 120, "Score 0", 0xfbbf24);
+            this.streakText = chip(200, 100, "Streak 0", 0xfb923c);
+            this.levelText = chip(310, 100, "Level " + this.level, 0x34d399);
+            this.servedText = chip(430, 120, "Served 0", 0xa78bfa);
+            this.livesText = this.add
+              .text(W - 70, y, "", { fontSize: "18px" })
+              .setOrigin(0.5);
+            this.updateHUD();
           }
 
-          serveDish() {
-            sfxServe();
-            this.dishesServed++;
-            this.score += 200;
-            this.recipeProgress = 0;
-            this.recipeBar.width = 0;
+          loadRound() {
+            this.round = makeRound(this.tier, this.roundIx);
+            this.attempts = 0;
+            this.locked = false;
+            const r = this.round;
 
-            // Dish served animation
-            this.showFeedback(
-              this.currentRecipe.emoji +
-                " " +
-                this.currentRecipe.name +
-                " Served! +200",
-              0xfbbf24,
-            );
+            this.dishText.setText(r.recipe.emoji);
+            const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
-            // Plate animation
-            this.tweens.add({
-              targets: this.plate,
-              scaleX: 2.5,
-              scaleY: 2.5,
-              duration: 200,
-              yoyo: true,
-            });
+            let stem, task;
+            if (r.type === "add") {
+              stem = cuToStr(r.a) + " + " + cuToStr(r.b);
+              task =
+                "Recipe needs " +
+                cuToStr(r.a) +
+                " then " +
+                cuToStr(r.b) +
+                " more cups of " +
+                r.ingredient +
+                ". Pour the cup to the TOTAL.";
+            } else if (r.type === "sub") {
+              stem = cuToStr(r.a) + " − " + cuToStr(r.b);
+              task =
+                "The cup starts FULL at " +
+                cuToStr(r.a) +
+                " cups of " +
+                r.ingredient +
+                ". Pour OUT " +
+                cuToStr(r.b) +
+                " so the level shows what is LEFT.";
+            } else if (r.type === "mul") {
+              stem = cuToStr(r.a) + " × " + r.n;
+              task =
+                "One serving uses " +
+                cuToStr(r.a) +
+                " cups of " +
+                r.ingredient +
+                ". Scale up for " +
+                r.n +
+                " servings: pour the cup to " +
+                r.n +
+                " × that amount.";
+            } else {
+              stem = cuToStr(r.a) + " ÷ " + r.n;
+              task =
+                "Split " +
+                cuToStr(r.a) +
+                " cups of " +
+                r.ingredient +
+                " into " +
+                r.n +
+                " equal scoops. Pour the cup to the size of ONE scoop.";
+            }
+            this.stemText.setText(stem);
+            this.taskText.setText(cap(task));
+            this.feedback.setText("");
+            this.setFill(r.start, true);
+            this.updateHUD();
+            this.drawRulerNumbers();
+          }
 
-            // Pick new recipe
-            this.currentRecipe = pick(RECIPES);
-            this.recipeName.setText(
-              this.currentRecipe.emoji + " " + this.currentRecipe.name,
-            );
-            this.dishEmoji.setText(this.currentRecipe.emoji);
-
-            // Firework particles
-            for (let i = 0; i < 3; i++) {
-              const x = rand(200, W - 200),
-                y = rand(100, 300);
-              this.time.delayedCall(i * 200, () => {
+          // draw ruler tick numbers once per round (depends on tier step)
+          drawRulerNumbers() {
+            if (this.rulerLabels) this.rulerLabels.forEach((t) => t.destroy());
+            this.rulerLabels = [];
+            const step = TIERS[this.tier].step;
+            // label every 0.1 (10 cu) on L1; every 0.5 on L2 to avoid clutter,
+            // with minor ticks at the 0.05 grid drawn in redraw().
+            const labelEvery = this.tier === 1 ? 10 : 50;
+            for (let cu = 0; cu <= RULER_MAX; cu += labelEvery) {
+              const yy = this.cuToY(cu);
+              this.rulerLabels.push(
                 this.add
-                  .particles(x, y, "star", {
-                    speed: { min: 60, max: 200 },
-                    lifespan: 800,
-                    scale: { start: 1, end: 0 },
-                    tint: [0xfbbf24, 0xfb923c, 0xef4444, 0x34d399],
-                    quantity: 15,
-                    emitting: false,
+                  .text(this.cupX - this.cupW / 2 - 10, yy, cuToStr(cu), {
+                    fontSize: "11px",
+                    color: "#e8c9a0",
                   })
-                  .explode(15);
+                  .setOrigin(1, 0.5),
+              );
+            }
+          }
+
+          pour(deltaCu) {
+            if (this.locked) return;
+            const before = this.fillCu;
+            const next = this.fillCu + deltaCu;
+            this.setFill(this.snap(next), false);
+            if (this.fillCu > before) sfxPour();
+            else if (this.fillCu < before) sfxPourBack();
+            // visible overpour warning when trying to exceed the rim
+            if (next > RULER_MAX) {
+              sfxSpill();
+              this.flash(
+                "Careful — the cup overflows! Pour back to stay on the ruler.",
+                C.red,
+              );
+              this.spill();
+            }
+          }
+
+          setFill(cu, silent) {
+            this.fillCu = Math.max(0, Math.min(RULER_MAX, cu | 0));
+            this.redraw();
+            if (!silent) this.feedback.setText("");
+          }
+
+          resetFill() {
+            sfxClick();
+            this.setFill(this.round.start, false);
+          }
+
+          redraw() {
+            const g = this.cupGfx;
+            g.clear();
+            const left = this.cupX - this.cupW / 2;
+            // glass shell
+            g.fillStyle(C.glass, 1).fillRoundedRect(
+              left,
+              this.cupTopY,
+              this.cupW,
+              this.cupH,
+              10,
+            );
+            // liquid
+            const r = this.round;
+            const overTarget = r && this.fillCu > r.target;
+            const fillTopY = this.cuToY(this.fillCu);
+            g.fillStyle(C.liquid, 0.92).fillRoundedRect(
+              left + 4,
+              fillTopY,
+              this.cupW - 8,
+              this.cupBotY - fillTopY,
+              6,
+            );
+            // spill band if above the target (visual overpour cue, not colour-only:
+            // the readout number also turns and feedback explains it)
+            if (overTarget) {
+              g.fillStyle(C.liquidSpill, 0.55).fillRect(
+                left + 4,
+                fillTopY,
+                this.cupW - 8,
+                this.cuToY(r.target) - fillTopY,
+              );
+            }
+            g.lineStyle(3, 0xc17d11, 1).strokeRoundedRect(
+              left,
+              this.cupTopY,
+              this.cupW,
+              this.cupH,
+              10,
+            );
+
+            // ruler ticks
+            const rg = this.rulerGfx;
+            rg.clear();
+            const step = TIERS[this.tier].step;
+            const minor = this.tier === 1 ? 10 : 5;
+            for (let cu = 0; cu <= RULER_MAX; cu += minor) {
+              const yy = this.cuToY(cu);
+              const major = cu % (this.tier === 1 ? 10 : 50) === 0;
+              rg.lineStyle(major ? 2 : 1, 0xffffff, major ? 0.6 : 0.3).beginPath();
+              rg.moveTo(left, yy);
+              rg.lineTo(left + (major ? 18 : 10), yy);
+              rg.strokePath();
+            }
+
+            // target mark — a labelled white line + arrow, with a tolerance band
+            const tg = this.targetGfx;
+            tg.clear();
+            if (r) {
+              const ty = this.cuToY(r.target);
+              const tol = TIERS[this.tier].tol;
+              if (tol > 0) {
+                const yHi = this.cuToY(r.target + tol),
+                  yLo = this.cuToY(r.target - tol);
+                tg.fillStyle(0x34d399, 0.18).fillRect(
+                  left,
+                  yHi,
+                  this.cupW,
+                  yLo - yHi,
+                );
+              }
+              tg.lineStyle(3, 0xfde047, 1).beginPath();
+              tg.moveTo(left - 6, ty);
+              tg.lineTo(left + this.cupW + 6, ty);
+              tg.strokePath();
+              // arrow marker on the right edge of the cup
+              tg.fillStyle(0xfde047, 1).fillTriangle(
+                left + this.cupW + 6,
+                ty,
+                left + this.cupW + 20,
+                ty - 7,
+                left + this.cupW + 20,
+                ty + 7,
+              );
+            }
+
+            // move drag handle to current surface
+            if (this.handle) this.handle.y = fillTopY;
+
+            // readout
+            const onTarget = r && this.onTarget();
+            this.readout.setText(cuToStr(this.fillCu) + " cups");
+            this.readout.setColor(
+              onTarget ? C.green : overTarget ? C.red : "#fff",
+            );
+          }
+
+          onTarget() {
+            const tol = TIERS[this.tier].tol;
+            return Math.abs(this.fillCu - this.round.target) <= tol;
+          }
+
+          spill() {
+            const left = this.cupX - this.cupW / 2;
+            for (let i = 0; i < 10; i++) {
+              const p = this.add.circle(
+                this.cupX + rand(-50, 50),
+                this.cupTopY,
+                3,
+                C.liquidSpill,
+              );
+              this.tweens.add({
+                targets: p,
+                y: this.cupTopY + rand(20, 70),
+                alpha: 0,
+                duration: 500,
+                onComplete: () => p.destroy(),
               });
             }
-
-            this.updateHUD();
-            this.saveState();
           }
 
-          timeUp() {
-            if (this.answered) return;
-            this.answered = true;
+          serve() {
+            if (this.locked) return;
+            const r = this.round;
+            if (this.onTarget()) {
+              this.onCorrect();
+              return;
+            }
+            // ----- diagnostic, non-giveaway feedback -----
             sfxWrong();
-            this.combo = 0;
-            this.lives--;
-            this.questionsTotal++;
-
-            // Highlight correct
-            this.currentQ.choices.forEach((c, i) => {
-              if (c.correct) {
-                this.cardBgs[i].setTint(0x34d399);
-                this.cardLabels[i].setColor("#34d399");
-              }
-            });
-
-            this.showFeedback(
-              "Time is up! Answer: " + fmtDec(this.currentQ.answer),
-              0xfb923c,
-            );
-            this.updateHUD();
-            this.saveState();
-            if (this.lives <= 0) {
-              this.time.delayedCall(1200, () => this.endGame());
+            this.attempts++;
+            this.streak = 0;
+            this.cameras.main.shake(150, 0.006);
+            const diff = this.fillCu - r.target; // cu, signed
+            const tenths = Math.round(Math.abs(diff) / 10);
+            let msg;
+            if (diff > 0) {
+              msg =
+                "Too high — you poured past the mark. Pour back about " +
+                (tenths >= 1
+                  ? tenths + (tenths === 1 ? " tenth" : " tenths")
+                  : "a little") +
+                ". Count the marks down to the yellow line.";
             } else {
-              this.time.delayedCall(1800, () => this.nextQuestion());
+              msg =
+                "Too low — the level is below the mark. Keep pouring about " +
+                (tenths >= 1
+                  ? tenths + (tenths === 1 ? " tenth" : " tenths")
+                  : "a little") +
+                " more, lining up the decimal places.";
+            }
+            this.flash(msg, C.red, 3000);
+
+            if (this.attempts >= (this.tier === 1 ? 3 : 2)) {
+              this.lives--;
+              this.attempts = 0;
+              this.updateHUD();
+              if (this.lives <= 0) {
+                this.locked = true;
+                this.time.delayedCall(900, () => this.endGame());
+                return;
+              }
             }
           }
 
-          showFeedback(text, color) {
-            const hex = "#" + color.toString(16).padStart(6, "0");
-            this.feedbackText
-              .setText(text)
-              .setColor(hex)
-              .setAlpha(1)
-              .setScale(0.5);
-            this.tweens.add({
-              targets: this.feedbackText,
-              scale: 1,
-              duration: 200,
-              ease: "Back.easeOut",
+          onCorrect() {
+            this.locked = true;
+            sfxServe();
+            this.correct++;
+            this.served++;
+            this.streak++;
+            if (this.streak > this.bestStreak) this.bestStreak = this.streak;
+            const firstTry = this.attempts === 0 ? 50 : 0;
+            const combo = Math.min(4, 1 + Math.floor(this.streak / 3));
+            const pts = (100 + firstTry + this.streak * 8) * combo;
+            this.score += pts;
+            this.flash(
+              "✅ Perfect measure! " +
+                cuToStr(this.round.target) +
+                " cups exactly. +" +
+                pts +
+                (combo > 1 ? " ×" + combo : ""),
+              C.green,
+            );
+            this.cameras.main.flash(150, 52, 211, 153);
+            this.celebrate();
+
+            if (this.correct % 3 === 0) {
+              this.level++;
+              sfxLevel();
+            }
+            this.updateHUD();
+
+            const goal = ROUNDS_TO_WIN[this.tier];
+            this.time.delayedCall(1100, () => {
+              if (this.served >= goal) this.endGame();
+              else {
+                this.roundIx++;
+                this.loadRound();
+              }
             });
+          }
+
+          celebrate() {
+            const cup = this.add
+              .text(this.cupX, this.cuToY(this.fillCu), "\u{1F373}", {
+                fontSize: "44px",
+              })
+              .setOrigin(0.5);
             this.tweens.add({
-              targets: this.feedbackText,
+              targets: cup,
+              y: 150,
+              x: 150,
+              scale: 0.4,
               alpha: 0,
-              duration: 700,
-              delay: 900,
+              duration: 850,
+              ease: "Cubic.easeIn",
+              onComplete: () => cup.destroy(),
             });
+            for (let i = 0; i < 16; i++) {
+              const p = this.add.circle(
+                this.cupX,
+                this.cuToY(this.fillCu),
+                3,
+                [0xfbbf24, 0x34d399, 0x3b82f6][rand(0, 2)],
+              );
+              this.tweens.add({
+                targets: p,
+                x: this.cupX + rand(-160, 160),
+                y: this.cuToY(this.fillCu) + rand(-120, 120),
+                alpha: 0,
+                duration: 600 + rand(0, 300),
+                onComplete: () => p.destroy(),
+              });
+            }
           }
 
-          updateTimerBar() {
-            const pct = this.timer / this.timerMax;
-            this.timerBar.width = (W - 90) * pct;
-            this.timerBar.fillColor =
-              pct > 0.5 ? 0x34d399 : pct > 0.25 ? 0xfbbf24 : 0xef4444;
+          showHint() {
+            sfxClick();
+            const r = this.round;
+            let h;
+            if (r.type === "add")
+              h =
+                "Line up the decimal points and add: start at " +
+                cuToStr(r.a) +
+                ", then pour " +
+                Math.round(r.b / 10) +
+                " more tenths.";
+            else if (r.type === "sub")
+              h =
+                "Start at " +
+                cuToStr(r.a) +
+                " and pour OUT " +
+                Math.round(r.b / 10) +
+                " tenths. The level left is your answer.";
+            else if (r.type === "mul")
+              h =
+                "Add " +
+                cuToStr(r.a) +
+                " to itself " +
+                r.n +
+                " times — that is " +
+                cuToStr(r.a) +
+                " × " +
+                r.n +
+                ".";
+            else
+              h =
+                "Share " +
+                cuToStr(r.a) +
+                " equally among " +
+                r.n +
+                " scoops: how much in ONE scoop? Pour to that.";
+            this.flash("\u{1F4A1} " + h, C.gold, 3500);
           }
 
-          updateLives() {
-            let h = "";
-            for (let i = 0; i < 4; i++) h += i < this.lives ? "❤️" : "🖤";
-            this.livesText.setText(h);
+          flash(msg, color, hold = 2400) {
+            this.feedback.setText(msg).setColor(color).setAlpha(1);
+            this.tweens.killTweensOf(this.feedback);
+            this.time.delayedCall(hold, () => {
+              if (this.feedback.text === msg)
+                this.tweens.add({
+                  targets: this.feedback,
+                  alpha: 0,
+                  duration: 400,
+                });
+            });
           }
 
           updateHUD() {
-            this.scoreText.setText("Score: " + this.score);
-            this.comboText.setText(
-              "x" + this.combo + (this.combo >= 3 ? " 🔥" : ""),
-            );
-            this.levelText.setText("Level: " + this.level);
-            this.dishText.setText("Dishes: " + this.dishesServed);
-            this.updateLives();
+            this.scoreText.setText("Score " + this.score);
+            this.streakText.setText("Streak " + this.streak);
+            this.levelText.setText("Level " + this.level);
+            this.servedText.setText("Served " + this.served);
+            let h = "";
+            for (let i = 0; i < TIERS[this.tier].lives; i++)
+              h += i < this.lives ? "❤️" : "\u{1F90D}";
+            this.livesText.setText(h);
           }
 
           endGame() {
-            if (this.timerEvent) this.timerEvent.destroy();
-            this.scene.start("Results", {
-              score: this.score,
-              correct: this.questionsCorrect,
-              total: this.questionsTotal,
-              level: this.level,
-              bestCombo: this.bestCombo,
-              dishes: this.dishesServed,
-            });
-          }
-
-          update(time, delta) {
-            // Belt animation
-            this.beltDots.forEach((d) => {
-              d.x += 0.5;
-              if (d.x > W + 10) d.x = -10;
-            });
+            this.cameras.main.fadeOut(400);
+            this.time.delayedCall(400, () =>
+              this.scene.start("Results", {
+                tier: this.tier,
+                score: this.score,
+                correct: this.correct,
+                served: this.served,
+                bestStreak: this.bestStreak,
+                level: this.level,
+              }),
+            );
           }
         }
 
@@ -1458,8 +1232,8 @@
           constructor() {
             super("Results");
           }
-          init(data) {
-            this.d = data;
+          init(d) {
+            this.d = d;
           }
           create() {
             const d = this.d;
@@ -1467,169 +1241,153 @@
             bg.fillGradientStyle(0x2d1810, 0x2d1810, 0x1a0f05, 0x1a0f05, 1);
             bg.fillRect(0, 0, W, H);
 
-            const acc = d.total ? Math.round((d.correct / d.total) * 100) : 0;
-            const won = d.dishes >= 3;
+            const goal = ROUNDS_TO_WIN[d.tier];
+            const pct = goal ? Math.round((d.correct / goal) * 100) : 0;
 
             try {
               window.EduPulse &&
                 EduPulse.record({
                   activityTitle: document.title,
                   score: d.correct,
-                  maxScore: d.total,
+                  maxScore: goal,
                   problemsCorrect: d.correct,
-                  problemsAttempted: d.total,
+                  problemsAttempted: d.served,
                   standard: "6.NS.B.3",
                 });
             } catch (e) {}
 
+            let rank, emoji;
+            if (pct >= 90) {
+              rank = "MASTER MEASURER!";
+              emoji = "\u{1F451}";
+            } else if (pct >= 75) {
+              rank = "HEAD CHEF!";
+              emoji = "\u{1F3C6}";
+            } else if (pct >= 50) {
+              rank = "LINE COOK";
+              emoji = "⭐";
+            } else {
+              rank = "KEEP PRACTICING!";
+              emoji = "\u{1F4DA}";
+            }
+
+            this.add.text(W / 2, 80, emoji, { fontSize: "64px" }).setOrigin(0.5);
             this.add
-              .text(W / 2, 55, won ? "HEAD CHEF!" : "KITCHEN CLOSED", {
-                fontSize: "36px",
+              .text(W / 2, 150, "KITCHEN CLOSED", {
+                fontSize: "40px",
                 fontStyle: "bold",
-                color: won ? "#fbbf24" : "#fb923c",
+                color: C.gold,
                 stroke: "#000",
                 strokeThickness: 3,
               })
               .setOrigin(0.5);
             this.add
-              .text(W / 2, 90, "6.NS.B.3 — Decimal Operations", {
-                fontSize: "14px",
-                color: "#d4a574",
+              .text(W / 2, 195, rank, {
+                fontSize: "20px",
+                fontStyle: "bold",
+                color: "#fff",
               })
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 245, d.score.toLocaleString(), {
+                fontSize: "48px",
+                fontStyle: "bold",
+                color: C.gold,
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 280, "POINTS", { fontSize: "12px", color: C.tan })
               .setOrigin(0.5);
 
             const stats = [
-              { label: "Score", value: d.score, color: "#fbbf24" },
-              {
-                label: "Correct",
-                value: d.correct + "/" + d.total,
-                color: "#34d399",
-              },
-              { label: "Accuracy", value: acc + "%", color: "#61dafb" },
-              { label: "Level", value: d.level, color: "#a78bfa" },
-              { label: "Best Combo", value: d.bestCombo, color: "#fb923c" },
-              { label: "Dishes Served", value: d.dishes, color: "#fbbf24" },
+              { l: "Exact pours", v: d.correct + "/" + goal },
+              { l: "Best streak", v: d.bestStreak },
+              { l: "Level reached", v: d.level },
             ];
             stats.forEach((s, i) => {
-              const col = i % 3,
-                row = Math.floor(i / 3);
-              const x = W / 2 - 190 + col * 190,
-                y = 150 + row * 95;
+              const x = W / 2 - 200 + i * 200,
+                y = 360;
               this.add
-                .rectangle(x, y, 165, 70, 0x2d1810, 0.85)
-                .setStrokeStyle(1, parseInt(s.color.slice(1), 16), 0.4);
+                .rectangle(x, y, 170, 84, 0x2d1810, 0.9)
+                .setStrokeStyle(2, 0xc17d11, 0.5);
               this.add
-                .text(x, y - 14, s.label, {
-                  fontSize: "11px",
-                  color: "#d4a574",
+                .text(x, y - 12, String(s.v), {
+                  fontSize: "26px",
+                  fontStyle: "bold",
+                  color: C.gold,
                 })
                 .setOrigin(0.5);
               this.add
-                .text(x, y + 12, String(s.value), {
-                  fontSize: "24px",
-                  fontStyle: "bold",
-                  color: s.color,
-                })
-                .setOrigin(0.5);
-            });
-
-            const badges = [];
-            if (acc >= 90) badges.push("Master Chef");
-            if (acc >= 70) badges.push("Sous Chef");
-            if (d.bestCombo >= 5) badges.push("Combo Cook");
-            if (d.dishes >= 5) badges.push("Kitchen Hero");
-            if (d.level >= 4) badges.push("Advanced");
-            if (!badges.length) badges.push("Keep Cooking!");
-
-            this.add
-              .text(W / 2, 370, "Achievements", {
-                fontSize: "13px",
-                color: "#d4a574",
-              })
-              .setOrigin(0.5);
-            badges.forEach((b, i) => {
-              const bx = W / 2 + (i - (badges.length - 1) / 2) * 130;
-              this.add
-                .rectangle(bx, 400, 115, 28, 0x3d2215, 0.8)
-                .setStrokeStyle(1, 0xfbbf24, 0.5);
-              this.add
-                .text(bx, 400, b, {
-                  fontSize: "11px",
-                  fontStyle: "bold",
-                  color: "#fbbf24",
-                })
+                .text(x, y + 22, s.l, { fontSize: "12px", color: C.tan })
                 .setOrigin(0.5);
             });
 
             this.add
               .text(
                 W / 2,
-                455,
-                "Tip: Line up decimal points.\nEstimate first, then compute carefully.",
-                {
-                  fontSize: "13px",
-                  color: "#d4a574",
-                  align: "center",
-                  lineSpacing: 4,
-                },
+                450,
+                "Tip: line up the decimal places and count the ruler marks\nin tenths and hundredths before you serve.",
+                { fontSize: "13px", color: C.tan, align: "center", lineSpacing: 4 },
               )
               .setOrigin(0.5);
 
-            const btn = this.add
-              .rectangle(W / 2 - 80, 535, 160, 46, 0xfbbf24)
+            const again = this.add
+              .rectangle(W / 2 - 110, 530, 200, 52, 0xfbbf24)
               .setInteractive({ useHandCursor: true });
             this.add
-              .text(W / 2 - 80, 535, "COOK AGAIN", {
-                fontSize: "17px",
+              .text(W / 2 - 110, 530, "COOK AGAIN", {
+                fontSize: "18px",
                 fontStyle: "bold",
-                color: "#000",
+                color: "#1a0f05",
               })
               .setOrigin(0.5);
-            btn.on("pointerover", () => btn.setFillStyle(0xfcd34d));
-            btn.on("pointerout", () => btn.setFillStyle(0xfbbf24));
-            btn.on("pointerdown", () => {
-              sfxDing();
-              localStorage.removeItem("neft_decimal_champion_state");
-              this.scene.start("Game");
+            again.on("pointerover", () => again.setScale(1.05));
+            again.on("pointerout", () => again.setScale(1));
+            again.on("pointerdown", () => {
+              getAudio();
+              sfxClick();
+              this.scene.start("Game", { tier: d.tier });
             });
 
             const menu = this.add
-              .rectangle(W / 2 + 100, 535, 110, 46, 0x2d1810)
-              .setStrokeStyle(1, 0xfbbf24, 0.5)
+              .rectangle(W / 2 + 110, 530, 200, 52, 0x2d1810)
+              .setStrokeStyle(2, 0xc17d11)
               .setInteractive({ useHandCursor: true });
             this.add
-              .text(W / 2 + 100, 535, "MENU", {
-                fontSize: "15px",
+              .text(W / 2 + 110, 530, "CHANGE LEVEL", {
+                fontSize: "17px",
                 fontStyle: "bold",
-                color: "#fbbf24",
+                color: C.gold,
               })
               .setOrigin(0.5);
+            menu.on("pointerover", () => menu.setScale(1.05));
+            menu.on("pointerout", () => menu.setScale(1));
             menu.on("pointerdown", () => {
-              localStorage.removeItem("neft_decimal_champion_state");
+              getAudio();
+              sfxClick();
               this.scene.start("Title");
             });
 
-            this.input.keyboard.on("keydown-SPACE", () => {
-              sfxDing();
-              localStorage.removeItem("neft_decimal_champion_state");
-              this.scene.start("Game");
+            this.input.keyboard.on("keydown-ENTER", () => {
+              getAudio();
+              this.scene.start("Game", { tier: d.tier });
             });
             this.cameras.main.fadeIn(400);
 
-            if (acc >= 70) {
-              for (let i = 0; i < 20; i++) {
+            if (pct >= 75) {
+              for (let i = 0; i < 18; i++) {
                 const e = this.add.text(
-                  rand(50, W - 50),
+                  rand(40, W - 40),
                   -20,
-                  pick(["🎂", "🍝", "🥤", "🥘", "🥞", "🍕"]),
-                  { fontSize: "28px" },
+                  pick(["\u{1F382}", "\u{1F95E}", "\u{1F964}", "\u{1F372}"]),
+                  { fontSize: "26px" },
                 );
                 this.tweens.add({
                   targets: e,
                   y: H + 30,
-                  x: e.x + rand(-60, 60),
+                  x: e.x + rand(-50, 50),
                   angle: 360,
-                  duration: 2500 + rand(0, 1500),
+                  duration: 2400 + rand(0, 1400),
                   delay: rand(0, 1000),
                   alpha: 0,
                 });
@@ -1638,9 +1396,7 @@
           }
         }
 
-        config.scene = [BootScene, TitleScene, GameScene, ResultsScene];
-
-        // Expose game instance globally
+        config.scene = [TitleScene, GameScene, ResultsScene];
         window.phaserGame = new Phaser.Game(config);
 
         // --- Sketchpad Overlay Logic ---
@@ -1794,56 +1550,52 @@
           redrawHistory();
         };
 
-        // --- Diagnostics & Self-Test ---
+
+        // --- Diagnostics & Self-Test (integer-hundredths model) ---
         function validateConfig() {
-          if (!Array.isArray(RECIPES) || RECIPES.length === 0) {
-            throw new Error(
-              "Configuration Error: 'RECIPES' array is invalid or empty.",
-            );
-          }
-          if (!Array.isArray(INGREDIENTS) || INGREDIENTS.length === 0) {
-            throw new Error(
-              "Configuration Error: 'INGREDIENTS' array is invalid or empty.",
-            );
-          }
-          RECIPES.forEach((r, idx) => {
-            if (!r.name || !r.emoji || r.color === undefined) {
-              throw new Error(
-                `Configuration Error: Missing fields in recipe at index ${idx}.`,
-              );
-            }
+          if (!Array.isArray(RECIPES) || RECIPES.length === 0)
+            throw new Error("Configuration Error: 'RECIPES' is empty.");
+          if (!Array.isArray(INGREDIENTS) || INGREDIENTS.length === 0)
+            throw new Error("Configuration Error: 'INGREDIENTS' is empty.");
+          RECIPES.forEach((r, i) => {
+            if (!r.name || !r.emoji)
+              throw new Error("Configuration Error: bad recipe at " + i);
           });
           return true;
         }
 
         function selfTest() {
           try {
-            console.assert(
-              round2(1.23 + 2.34) === 3.57,
-              "round2 arithmetic validation failed",
-            );
-            console.assert(
-              fmtDec(1.5) === "1.5",
-              "fmtDec simple float formatting failed",
-            );
-            console.assert(
-              fmtDec(1.0) === "1.0",
-              "fmtDec whole number formatting failed",
-            );
-            console.assert(
-              fmtDec(1.25) === "1.25",
-              "fmtDec hundredths formatting failed",
-            );
-            const mockArr = [10, 20, 30];
-            const p = pick(mockArr);
-            console.assert(mockArr.includes(p), "pick utility function failed");
-            localStorage.setItem("neft_decimal_champion_test", "test_active");
-            console.assert(
-              localStorage.getItem("neft_decimal_champion_test") ===
-                "test_active",
-              "Game state persistence verification failed",
-            );
-            localStorage.removeItem("neft_decimal_champion_test");
+            console.assert(cuToStr(115) === "1.15", "cuToStr hundredths");
+            console.assert(cuToStr(120) === "1.2", "cuToStr tenths");
+            console.assert(cuToStr(100) === "1.0", "cuToStr whole");
+            console.assert(cuToStr(5) === "0.05", "cuToStr small");
+            // Every generated round must be exact and on the grid for both tiers.
+            for (let tier = 1; tier <= 2; tier++) {
+              const step = TIERS[tier].step;
+              for (let i = 0; i < 300; i++) {
+                const r = makeRound(tier, i);
+                let expect;
+                if (r.type === "add") expect = r.a + r.b;
+                else if (r.type === "sub") expect = r.a - r.b;
+                else if (r.type === "mul") expect = r.a * r.n;
+                else expect = r.a / r.n;
+                console.assert(
+                  Number.isInteger(expect) && expect === r.target,
+                  "round arithmetic exact: " + r.type,
+                );
+                console.assert(
+                  r.target % step === 0 &&
+                    r.target > 0 &&
+                    r.target <= RULER_MAX,
+                  "target on grid + reachable: " + r.type,
+                );
+                console.assert(
+                  r.start % step === 0 && r.start >= 0,
+                  "start on grid: " + r.type,
+                );
+              }
+            }
             return true;
           } catch (e) {
             console.error("SelfTest Diagnostics Failed:", e);
@@ -1853,6 +1605,7 @@
 
         validateConfig();
         selfTest();
+
       })();
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
