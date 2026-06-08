@@ -41,6 +41,7 @@ export function tokensToCssVars(palette, themeColor) {
   return `
       --ref-navy: ${navy};
       --ref-teal: ${teal};
+      --ref-white: #ffffff;
       --ref-sand: ${sand};
       --ref-sage: ${sage};
       --ref-sage-panel: ${sagePanel};
@@ -112,7 +113,7 @@ export function refSlideFrame(slideTitle, standard, innerHtml, opts = {}) {
     </div>`;
 }
 
-/** Session opener — navy left spine + notebook fields */
+/** Session opener — premium cover: full navy left panel + cream right field */
 export function refTitleOpener(ctx) {
   const {
     sessionNum = 1,
@@ -127,42 +128,56 @@ export function refTitleOpener(ctx) {
     googleSlidesUrl,
   } = ctx;
 
+  // Extract lesson number cleanly from lessonId (e.g. "8-1-flagship" → "1")
+  const lessonNum = String(lessonId).split('-')[1] || sessionNum;
+
   return `
-    <div class="ref-title-opener">
-      ${refHeaderBar(`Session ${sessionNum} Notebook`, standard)}
-      <div class="ref-title-body">
-        <div class="ref-title-spine">
-          <div class="ref-spine-standard">${esc(standard)}</div>
-          <div class="ref-spine-unit">Unit ${unit}</div>
-          <div class="ref-spine-subject">${esc(subject)}</div>
-          <h1 class="ref-spine-title">${esc(title)}</h1>
-          <div class="ref-spine-emoji">${esc(themeEmoji)}</div>
+    <div class="ref-title-opener-v2">
+      <div class="ref-title-left-panel">
+        <div class="ref-title-brand-row">
+          <span class="ref-title-brand-mark">Neft Teacher</span>
+          <span class="ref-title-unit-chip">Unit ${unit}</span>
         </div>
-        <div class="ref-title-main">
-          <h2 class="ref-notebook-heading">My Math Notebook</h2>
-          <div class="ref-notebook-fields">
-            <div class="ref-field-row"><label>Name:</label><span class="ref-field-line"></span></div>
-            <div class="ref-field-row"><label>Date:</label><span class="ref-field-line"></span></div>
-          </div>
-          <div class="ref-learning-target-box">
-            <strong>🎯 Learning Target</strong>
-            <p>${esc(contentObj)}</p>
-          </div>
-          <p class="ref-title-meta">Unit ${unit} · Lesson ${esc(lessonId)} · ⏱️ ${esc(timeEstimate || '~45 min')}</p>
-          ${googleSlidesUrl ? `<a href="${esc(googleSlidesUrl)}" target="_blank" rel="noopener" class="ref-gs-link">↗ Open editable Google Slides copy</a>` : ''}
+        <div class="ref-title-emoji-large">${esc(themeEmoji)}</div>
+        <h1 class="ref-title-hero">${esc(title)}</h1>
+        <div class="ref-title-meta-row">
+          <span class="ref-title-standard-badge">${esc(standard)}</span>
+          <span class="ref-title-lesson-num">Lesson ${esc(lessonId)}</span>
+        </div>
+      </div>
+      <div class="ref-title-right-panel">
+        <div class="ref-title-fields-block">
+          <div class="ref-title-fields-heading">My Math Notebook</div>
+          <div class="ref-field-row"><label>Name:</label><span class="ref-field-line"></span></div>
+          <div class="ref-field-row"><label>Date:</label><span class="ref-field-line"></span></div>
+          <div class="ref-field-row"><label>Period:</label><span class="ref-field-line"></span></div>
+        </div>
+        <div class="ref-title-target-card">
+          <div class="ref-title-target-label">I Can…</div>
+          <p class="ref-title-target-text">${esc(contentObj)}</p>
+        </div>
+        <div class="ref-title-footer-row">
+          <span>${esc(subject)}</span>
+          <span>⏱ ${esc(timeEstimate || '~45 min')}</span>
+          ${googleSlidesUrl ? `<a href="${esc(googleSlidesUrl)}" target="_blank" rel="noopener" class="ref-gs-link">↗ Edit</a>` : ''}
         </div>
       </div>
     </div>`;
 }
 
-/** Full-bleed navy section divider */
+/** Full-bleed navy section divider — premium horizontal rule + teal accent line */
 export function refSectionOpener(section, minutes, emoji = '') {
   return `
-    <div class="ref-section-opener">
-      ${emoji ? `<div class="ref-section-emoji">${emoji}</div>` : ''}
-      <h2 class="ref-section-title">${section}</h2>
-      <p class="ref-section-time">⏱️ ~${minutes} min</p>
-      <div class="ref-section-line"></div>
+    <div class="ref-section-opener-v2">
+      <div class="ref-section-inner">
+        ${emoji ? `<div class="ref-section-emoji-v2">${emoji}</div>` : ''}
+        <div class="ref-section-text-block">
+          <div class="ref-section-eyebrow">Lesson Phase</div>
+          <h2 class="ref-section-title-v2">${section}</h2>
+          <div class="ref-section-accent-line"></div>
+          <p class="ref-section-time-v2">⏱ ~${minutes} min</p>
+        </div>
+      </div>
     </div>`;
 }
 
@@ -440,69 +455,168 @@ export const REFERENCE_CSS = `
       line-height: 1.4;
     }
 
-    /* Title opener */
-    .ref-title-opener { display: flex; flex-direction: column; height: 100%; background: var(--ref-sand); }
-    .ref-title-body {
+    /* Title opener — premium cover: navy left panel + cream right field */
+    .ref-title-opener-v2 {
       display: grid;
-      grid-template-columns: 1.1fr 1.9fr;
-      flex: 1;
-      gap: 0;
-      padding: 0 12px 8px 48px;
+      grid-template-columns: 0.85fr 1.15fr;
+      height: 100%;
+      overflow: hidden;
+      background: var(--ref-sand);
+    }
+    .ref-title-left-panel {
+      position: relative;
+      background:
+        radial-gradient(circle at 85% 12%, rgba(31,166,162,0.28), transparent 42%),
+        var(--ref-navy);
+      color: var(--ref-white);
+      padding: 24px 26px 22px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
       overflow: hidden;
     }
-    .ref-title-spine {
-      background: var(--ref-navy);
+    .ref-title-brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .ref-title-brand-mark {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ref-teal);
+    }
+    .ref-title-unit-chip {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .ref-title-emoji-large { font-size: 56px; line-height: 1; margin-top: 6px; }
+    .ref-title-hero {
+      font-family: 'Outfit', sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--ref-white);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin: 0;
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+    .ref-title-meta-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .ref-title-standard-badge {
+      background: var(--ref-teal);
       color: white;
-      padding: 16px 14px;
-      border-radius: 0 0 8px 0;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 4px 11px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .ref-title-lesson-num { font-size: 10px; font-weight: 700; opacity: 0.78; }
+
+    .ref-title-right-panel {
+      padding: 24px 30px 22px 26px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      justify-content: center;
+      gap: 16px;
+      overflow: hidden;
     }
-    .ref-spine-standard { font-size: 11px; font-weight: 800; color: var(--ref-teal); }
-    .ref-spine-unit { font-size: 10px; opacity: 0.8; }
-    .ref-spine-subject { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.7; }
-    .ref-spine-title { font-family: 'Outfit'; font-size: 18px; font-weight: 800; margin: 8px 0; line-height: 1.2; flex: 1; }
-    .ref-spine-emoji { font-size: 32px; }
-    .ref-title-main { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
-    .ref-notebook-heading { font-family: 'Outfit'; font-size: 20px; color: var(--ref-navy); margin: 0; font-weight: 800; }
-    .ref-notebook-fields { display: flex; flex-direction: column; gap: 8px; }
-    .ref-field-row { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--ref-navy); }
-    .ref-field-row label { min-width: 42px; }
-    .ref-field-line { flex: 1; border-bottom: 1.5px solid var(--ref-navy); height: 14px; opacity: 0.35; }
-    .ref-learning-target-box {
+    .ref-title-fields-block {
       background: var(--ref-white);
-      border: 2px solid var(--ref-teal);
-      border-radius: 8px;
-      padding: 10px 12px;
-      font-size: 11px;
+      border: 1px solid rgba(18,53,91,0.12);
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 2px 10px rgba(18,53,91,0.06);
     }
-    .ref-learning-target-box p { margin: 4px 0 0; font-weight: 600; line-height: 1.4; }
-    .ref-title-meta { font-size: 10px; color: var(--gray); font-weight: 700; margin: 0; }
+    .ref-title-fields-heading {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--ref-navy);
+    }
+    .ref-field-row { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--ref-navy); }
+    .ref-field-row label { min-width: 48px; }
+    .ref-field-line { flex: 1; border-bottom: 1.5px solid var(--ref-navy); height: 14px; opacity: 0.35; }
+    .ref-title-target-card {
+      background: var(--ref-white);
+      border-left: 4px solid var(--ref-teal);
+      border-radius: 8px;
+      padding: 12px 16px;
+      box-shadow: 0 2px 10px rgba(18,53,91,0.05);
+    }
+    .ref-title-target-label {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ref-teal);
+      margin-bottom: 4px;
+    }
+    .ref-title-target-text { margin: 0; font-size: 13px; font-weight: 600; line-height: 1.4; color: var(--ref-navy); }
+    .ref-title-footer-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--gray);
+    }
     .ref-gs-link { font-size: 10px; color: var(--ref-teal); font-weight: 700; }
 
-    /* Section opener — full bleed navy */
-    .ref-section-opener {
+    /* Section opener — full-bleed navy with teal accent */
+    .ref-section-opener-v2 {
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100%;
-      background: var(--ref-navy);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(31,166,162,0.22), transparent 55%),
+        var(--ref-navy);
       color: white;
       text-align: center;
       padding: 0 48px;
     }
-    .ref-section-emoji { font-size: 36px; margin-bottom: 8px; }
-    .ref-section-title {
-      font-family: 'Outfit';
-      font-size: 32px;
+    .ref-section-inner { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .ref-section-emoji-v2 { font-size: 48px; line-height: 1; }
+    .ref-section-text-block { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .ref-section-eyebrow {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
       font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--ref-teal);
+    }
+    .ref-section-title-v2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 34px;
+      font-weight: 800;
+      color: var(--ref-white);
       margin: 0;
       letter-spacing: -0.02em;
+      line-height: 1.05;
     }
-    .ref-section-time { font-size: 13px; opacity: 0.75; margin: 10px 0; font-weight: 700; }
-    .ref-section-line { width: 100px; height: 3px; background: var(--ref-teal); border-radius: 99px; }
+    .ref-section-accent-line { width: 88px; height: 3px; background: var(--ref-teal); border-radius: 99px; }
+    .ref-section-time-v2 { font-size: 13px; opacity: 0.78; margin: 0; font-weight: 700; }
 
     /* Choice board */
     .ref-choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }

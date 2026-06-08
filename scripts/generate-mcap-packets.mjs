@@ -417,6 +417,16 @@ function htmlPacket(skill) {
     ...skill.mcapItems.map((it, i) => `<tr><td>MCAP ${i + 1}</td><td><b>${esc(it.answer)}</b> — ${esc(it.why)}</td></tr>`),
   ].join("");
 
+  // Answer-explanation layout — rendered ONLY from explanation text already in
+  // the data (it.why / it.answer). No new math content is invented here.
+  const mcapExplain = skill.mcapItems
+    .map(
+      (it, i) =>
+        `<div class="nt-callout nt-selfcheck"><div class="nt-callout-title">Item ${i + 1} — Answer &amp; why</div>` +
+        `<p><b>Answer:</b> ${esc(it.answer)}</p><p>${esc(it.why)}</p></div>`
+    )
+    .join("");
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -425,6 +435,8 @@ function htmlPacket(skill) {
 <title>${esc(skill.title)} · MCAP ${esc(skill.code)} · Neft Teacher</title>
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/shared.css">
+<link rel="stylesheet" href="/assets/design-tokens.css">
+<link rel="stylesheet" href="/assets/nt-activity-kit.css">
 <style>
   :root{ --domain:#${skill.domainColor}; --navy:#12355B; --teal:#1FA6A2; --amber:#B97A12; --purple:#6B4FA0; --ink:#1A2733; --muted:#5F6F80; }
   *{box-sizing:border-box}

@@ -11,6 +11,7 @@
     :root {
       --ref-navy: #1C2E42;
       --ref-teal: #387F84;
+      --ref-white: #ffffff;
       --ref-sand: #F5F0E6;
       --ref-sage: #FCF5E0;
       --ref-sage-panel: #E0F0F1;
@@ -1324,69 +1325,168 @@
       line-height: 1.4;
     }
 
-    /* Title opener */
-    .ref-title-opener { display: flex; flex-direction: column; height: 100%; background: var(--ref-sand); }
-    .ref-title-body {
+    /* Title opener — premium cover: navy left panel + cream right field */
+    .ref-title-opener-v2 {
       display: grid;
-      grid-template-columns: 1.1fr 1.9fr;
-      flex: 1;
-      gap: 0;
-      padding: 0 12px 8px 48px;
+      grid-template-columns: 0.85fr 1.15fr;
+      height: 100%;
+      overflow: hidden;
+      background: var(--ref-sand);
+    }
+    .ref-title-left-panel {
+      position: relative;
+      background:
+        radial-gradient(circle at 85% 12%, rgba(31,166,162,0.28), transparent 42%),
+        var(--ref-navy);
+      color: var(--ref-white);
+      padding: 24px 26px 22px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
       overflow: hidden;
     }
-    .ref-title-spine {
-      background: var(--ref-navy);
+    .ref-title-brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .ref-title-brand-mark {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ref-teal);
+    }
+    .ref-title-unit-chip {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .ref-title-emoji-large { font-size: 56px; line-height: 1; margin-top: 6px; }
+    .ref-title-hero {
+      font-family: 'Outfit', sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--ref-white);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin: 0;
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+    .ref-title-meta-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .ref-title-standard-badge {
+      background: var(--ref-teal);
       color: white;
-      padding: 16px 14px;
-      border-radius: 0 0 8px 0;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 4px 11px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .ref-title-lesson-num { font-size: 10px; font-weight: 700; opacity: 0.78; }
+
+    .ref-title-right-panel {
+      padding: 24px 30px 22px 26px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      justify-content: center;
+      gap: 16px;
+      overflow: hidden;
     }
-    .ref-spine-standard { font-size: 11px; font-weight: 800; color: var(--ref-teal); }
-    .ref-spine-unit { font-size: 10px; opacity: 0.8; }
-    .ref-spine-subject { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.7; }
-    .ref-spine-title { font-family: 'Outfit'; font-size: 18px; font-weight: 800; margin: 8px 0; line-height: 1.2; flex: 1; }
-    .ref-spine-emoji { font-size: 32px; }
-    .ref-title-main { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
-    .ref-notebook-heading { font-family: 'Outfit'; font-size: 20px; color: var(--ref-navy); margin: 0; font-weight: 800; }
-    .ref-notebook-fields { display: flex; flex-direction: column; gap: 8px; }
-    .ref-field-row { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--ref-navy); }
-    .ref-field-row label { min-width: 42px; }
-    .ref-field-line { flex: 1; border-bottom: 1.5px solid var(--ref-navy); height: 14px; opacity: 0.35; }
-    .ref-learning-target-box {
+    .ref-title-fields-block {
       background: var(--ref-white);
-      border: 2px solid var(--ref-teal);
-      border-radius: 8px;
-      padding: 10px 12px;
-      font-size: 11px;
+      border: 1px solid rgba(18,53,91,0.12);
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 2px 10px rgba(18,53,91,0.06);
     }
-    .ref-learning-target-box p { margin: 4px 0 0; font-weight: 600; line-height: 1.4; }
-    .ref-title-meta { font-size: 10px; color: var(--gray); font-weight: 700; margin: 0; }
+    .ref-title-fields-heading {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--ref-navy);
+    }
+    .ref-field-row { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--ref-navy); }
+    .ref-field-row label { min-width: 48px; }
+    .ref-field-line { flex: 1; border-bottom: 1.5px solid var(--ref-navy); height: 14px; opacity: 0.35; }
+    .ref-title-target-card {
+      background: var(--ref-white);
+      border-left: 4px solid var(--ref-teal);
+      border-radius: 8px;
+      padding: 12px 16px;
+      box-shadow: 0 2px 10px rgba(18,53,91,0.05);
+    }
+    .ref-title-target-label {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ref-teal);
+      margin-bottom: 4px;
+    }
+    .ref-title-target-text { margin: 0; font-size: 13px; font-weight: 600; line-height: 1.4; color: var(--ref-navy); }
+    .ref-title-footer-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--gray);
+    }
     .ref-gs-link { font-size: 10px; color: var(--ref-teal); font-weight: 700; }
 
-    /* Section opener — full bleed navy */
-    .ref-section-opener {
+    /* Section opener — full-bleed navy with teal accent */
+    .ref-section-opener-v2 {
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100%;
-      background: var(--ref-navy);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(31,166,162,0.22), transparent 55%),
+        var(--ref-navy);
       color: white;
       text-align: center;
       padding: 0 48px;
     }
-    .ref-section-emoji { font-size: 36px; margin-bottom: 8px; }
-    .ref-section-title {
-      font-family: 'Outfit';
-      font-size: 32px;
+    .ref-section-inner { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .ref-section-emoji-v2 { font-size: 48px; line-height: 1; }
+    .ref-section-text-block { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .ref-section-eyebrow {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
       font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--ref-teal);
+    }
+    .ref-section-title-v2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 34px;
+      font-weight: 800;
+      color: var(--ref-white);
       margin: 0;
       letter-spacing: -0.02em;
+      line-height: 1.05;
     }
-    .ref-section-time { font-size: 13px; opacity: 0.75; margin: 10px 0; font-weight: 700; }
-    .ref-section-line { width: 100px; height: 3px; background: var(--ref-teal); border-radius: 99px; }
+    .ref-section-accent-line { width: 88px; height: 3px; background: var(--ref-teal); border-radius: 99px; }
+    .ref-section-time-v2 { font-size: 13px; opacity: 0.78; margin: 0; font-weight: 700; }
 
     /* Choice board */
     .ref-choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
@@ -2019,33 +2119,34 @@
         </div>
       
         <div class="slide-body active" id="slide-1" data-section="launch" data-slide-type="title" data-teacher-notes="Display while students enter. Start presenter mode with ▶ Present.">
-    <div class="ref-title-opener">
-      
-    <header class="ref-header-bar">
-      <span class="ref-brand">Reveal Math Grade 6</span>
-      <span class="ref-header-title">Session 1 Notebook</span>
-      <span class="ref-standard-pill">6.EE.6</span>
-    </header>
-      <div class="ref-title-body">
-        <div class="ref-title-spine">
-          <div class="ref-spine-standard">6.EE.6</div>
-          <div class="ref-spine-unit">Unit 7</div>
-          <div class="ref-spine-subject">DETECTIVE AGENCY</div>
-          <h1 class="ref-spine-title">Write Equations</h1>
-          <div class="ref-spine-emoji">🔍</div>
+    <div class="ref-title-opener-v2">
+      <div class="ref-title-left-panel">
+        <div class="ref-title-brand-row">
+          <span class="ref-title-brand-mark">Neft Teacher</span>
+          <span class="ref-title-unit-chip">Unit 7</span>
         </div>
-        <div class="ref-title-main">
-          <h2 class="ref-notebook-heading">My Math Notebook</h2>
-          <div class="ref-notebook-fields">
-            <div class="ref-field-row"><label>Name:</label><span class="ref-field-line"></span></div>
-            <div class="ref-field-row"><label>Date:</label><span class="ref-field-line"></span></div>
-          </div>
-          <div class="ref-learning-target-box">
-            <strong>🎯 Learning Target</strong>
-            <p>I can write an equation to represent a real-world situation.</p>
-          </div>
-          <p class="ref-title-meta">Unit 7 · Lesson 7-1-flagship · ⏱️ ~50 min</p>
-          <a href="https://docs.google.com/presentation/d/1mXTO98syi1zCDcYuq6ATfFpKxPD7zjMZG6SCV2Syoks/edit" target="_blank" rel="noopener" class="ref-gs-link">↗ Open editable Google Slides copy</a>
+        <div class="ref-title-emoji-large">🔍</div>
+        <h1 class="ref-title-hero">Write Equations</h1>
+        <div class="ref-title-meta-row">
+          <span class="ref-title-standard-badge">6.EE.6</span>
+          <span class="ref-title-lesson-num">Lesson 7-1-flagship</span>
+        </div>
+      </div>
+      <div class="ref-title-right-panel">
+        <div class="ref-title-fields-block">
+          <div class="ref-title-fields-heading">My Math Notebook</div>
+          <div class="ref-field-row"><label>Name:</label><span class="ref-field-line"></span></div>
+          <div class="ref-field-row"><label>Date:</label><span class="ref-field-line"></span></div>
+          <div class="ref-field-row"><label>Period:</label><span class="ref-field-line"></span></div>
+        </div>
+        <div class="ref-title-target-card">
+          <div class="ref-title-target-label">I Can…</div>
+          <p class="ref-title-target-text">I can write an equation to represent a real-world situation.</p>
+        </div>
+        <div class="ref-title-footer-row">
+          <span>DETECTIVE AGENCY</span>
+          <span>⏱ ~50 min</span>
+          <a href="https://docs.google.com/presentation/d/1mXTO98syi1zCDcYuq6ATfFpKxPD7zjMZG6SCV2Syoks/edit" target="_blank" rel="noopener" class="ref-gs-link">↗ Edit</a>
         </div>
       </div>
     </div></div>
@@ -2168,11 +2269,16 @@
     </footer></div>
 
         <div class="slide-body" id="slide-5" data-section="launch" data-slide-type="section">
-    <div class="ref-section-opener">
-      <div class="ref-section-emoji">🔍</div>
-      <h2 class="ref-section-title">LAUNCH</h2>
-      <p class="ref-section-time">⏱️ ~10 min</p>
-      <div class="ref-section-line"></div>
+    <div class="ref-section-opener-v2">
+      <div class="ref-section-inner">
+        <div class="ref-section-emoji-v2">🔍</div>
+        <div class="ref-section-text-block">
+          <div class="ref-section-eyebrow">Lesson Phase</div>
+          <h2 class="ref-section-title-v2">LAUNCH</h2>
+          <div class="ref-section-accent-line"></div>
+          <p class="ref-section-time-v2">⏱ ~10 min</p>
+        </div>
+      </div>
     </div></div>
 
         <div class="slide-body" id="slide-6" data-section="launch" data-slide-type="hook" data-teacher-notes="Students choose a variable (such as n) for the unknown gems, build n + 8 = 20, and connect &#039;plus 8 more&#039; to + 8 and &#039;equals 20 total&#039; to = 20.">
@@ -2520,11 +2626,16 @@
     </footer></div>
 
         <div class="slide-body" id="slide-15" data-section="vocabulary" data-slide-type="section">
-    <div class="ref-section-opener">
-      <div class="ref-section-emoji">📚</div>
-      <h2 class="ref-section-title">VOCABULARY</h2>
-      <p class="ref-section-time">⏱️ ~8 min</p>
-      <div class="ref-section-line"></div>
+    <div class="ref-section-opener-v2">
+      <div class="ref-section-inner">
+        <div class="ref-section-emoji-v2">📚</div>
+        <div class="ref-section-text-block">
+          <div class="ref-section-eyebrow">Lesson Phase</div>
+          <h2 class="ref-section-title-v2">VOCABULARY</h2>
+          <div class="ref-section-accent-line"></div>
+          <p class="ref-section-time-v2">⏱ ~8 min</p>
+        </div>
+      </div>
     </div></div>
 
         <div class="slide-body" id="slide-16" data-section="vocabulary" data-slide-type="vocab-card" data-teacher-notes="Post vocabulary on board for reference.">
@@ -2717,11 +2828,16 @@
     </footer></div>
 
         <div class="slide-body" id="slide-20" data-section="explore" data-slide-type="section">
-    <div class="ref-section-opener">
-      <div class="ref-section-emoji">🔍</div>
-      <h2 class="ref-section-title">EXPLORE &amp; PRACTICE</h2>
-      <p class="ref-section-time">⏱️ ~18 min</p>
-      <div class="ref-section-line"></div>
+    <div class="ref-section-opener-v2">
+      <div class="ref-section-inner">
+        <div class="ref-section-emoji-v2">🔍</div>
+        <div class="ref-section-text-block">
+          <div class="ref-section-eyebrow">Lesson Phase</div>
+          <h2 class="ref-section-title-v2">EXPLORE &amp; PRACTICE</h2>
+          <div class="ref-section-accent-line"></div>
+          <p class="ref-section-time-v2">⏱ ~18 min</p>
+        </div>
+      </div>
     </div></div>
 
         <div class="slide-body" id="slide-21" data-section="explore" data-slide-type="worked-example">
@@ -3563,11 +3679,16 @@
     </footer></div>
 
         <div class="slide-body" id="slide-38" data-section="closure" data-slide-type="section">
-    <div class="ref-section-opener">
-      <div class="ref-section-emoji">✅</div>
-      <h2 class="ref-section-title">CLOSURE &amp; REFLECT</h2>
-      <p class="ref-section-time">⏱️ ~8 min</p>
-      <div class="ref-section-line"></div>
+    <div class="ref-section-opener-v2">
+      <div class="ref-section-inner">
+        <div class="ref-section-emoji-v2">✅</div>
+        <div class="ref-section-text-block">
+          <div class="ref-section-eyebrow">Lesson Phase</div>
+          <h2 class="ref-section-title-v2">CLOSURE &amp; REFLECT</h2>
+          <div class="ref-section-accent-line"></div>
+          <p class="ref-section-time-v2">⏱ ~8 min</p>
+        </div>
+      </div>
     </div></div>
 
         <div class="slide-body" id="slide-39" data-section="closure" data-slide-type="exit-ticket">

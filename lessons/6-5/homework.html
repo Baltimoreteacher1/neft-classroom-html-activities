@@ -1496,8 +1496,22 @@ header.homework-header h1 {
 .homework-tabs-shell {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 100px;
+  gap: 16px;
+}
+/* Sticky TOP chrome: tab bar + progress row */
+.homework-tab-chrome {
+  position: sticky;
+  top: 0;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 0 12px;
+  background: rgba(255,255,255,0.97);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 4px 16px rgba(18,53,91,0.06);
 }
 .homework-tab-progress {
   display: flex;
@@ -1513,28 +1527,20 @@ header.homework-header h1 {
 .tab-panel-inner[hidden] { display: none !important; }
 .tab-panel-inner:not([hidden]) { display: block; }
 .homework-tab-bar {
-  position: fixed;
-  bottom: calc(var(--hw-status-height, 104px) + 4px);
-  left: 0;
-  right: 0;
-  z-index: 1001;
   display: flex;
-  gap: 4px;
+  gap: 6px;
   overflow-x: auto;
-  padding: 8px 10px;
-  background: rgba(255,255,255,0.97);
-  border-top: 1px solid var(--line);
-  box-shadow: 0 -4px 20px rgba(18,53,91,0.08);
+  padding: 2px;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
 }
 .homework-tab-btn {
   flex: 0 0 auto;
   scroll-snap-align: start;
-  min-width: 64px;
-  min-height: 48px;
-  padding: 6px 8px;
-  border: 1px solid var(--line);
+  min-width: 66px;
+  min-height: 56px;
+  padding: 8px 10px;
+  border: 1.5px solid var(--line);
   border-radius: var(--radius-sm);
   background: var(--white);
   cursor: pointer;
@@ -1542,21 +1548,25 @@ header.homework-header h1 {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: 3px;
   font-family: var(--font-display);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--muted);
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
+.homework-tab-btn:hover { border-color: var(--teal); color: var(--navy); }
+.homework-tab-btn:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
 .homework-tab-btn.is-active {
-  background: var(--teal-light);
+  background: var(--teal);
   border-color: var(--teal);
-  color: var(--navy);
+  color: var(--white);
+  box-shadow: 0 2px 8px rgba(31,166,162,0.30);
 }
-.tab-icon { font-size: 18px; line-height: 1; }
-.tab-label { display: flex; flex-direction: column; align-items: center; line-height: 1.1; }
-.tab-es { font-size: 9px; color: var(--muted); font-weight: 600; }
-.homework-tab-btn.is-active .tab-es { color: var(--navy); }
+.tab-icon { font-size: 20px; line-height: 1; }
+.tab-label { display: flex; flex-direction: column; align-items: center; line-height: 1.15; }
+.tab-es { font-size: 10px; color: var(--muted); font-weight: 600; }
+.homework-tab-btn.is-active .tab-es { color: var(--white); }
 
 .help-pop-btn {
   margin: 8px 0;
@@ -1649,7 +1659,7 @@ body.help-modal-open { overflow: hidden; }
   .homework-tab-btn, .hw-game-choice-btn, .help-pop-btn { transition: none; }
 }
 @media print {
-  .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn { display: none !important; }
+  .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
   body { padding-bottom: 0; }
 }
@@ -1679,9 +1689,62 @@ body.help-modal-open { overflow: hidden; }
 
   
     <div class="homework-tabs-shell" data-tab-count="8">
-      <div class="homework-tab-progress" aria-live="polite">
-        <span id="hw_tab_progress">1 of 8</span>
-        <button type="button" class="btn btn-sm btn-secondary print-all-btn" onclick="window.print()">🖨️ Print all / Imprimir todo</button>
+      <div class="homework-tab-chrome">
+        <nav class="homework-tab-bar" role="tablist" aria-label="Family homework sections">
+          
+            <button type="button" role="tab" id="hw_tab_learn" class="homework-tab-btn is-active"
+              aria-selected="true" aria-controls="hw_panel_learn"
+              data-tab="learn" onclick="switchHomeworkTab('learn')">
+              <span class="tab-icon" aria-hidden="true">📖</span>
+              <span class="tab-label"><span class="tab-en">Learn</span><span class="tab-es" lang="es">Aprender</span></span>
+            </button>
+            <button type="button" role="tab" id="hw_tab_words" class="homework-tab-btn"
+              aria-selected="false" aria-controls="hw_panel_words"
+              data-tab="words" onclick="switchHomeworkTab('words')">
+              <span class="tab-icon" aria-hidden="true">📚</span>
+              <span class="tab-label"><span class="tab-en">Words</span><span class="tab-es" lang="es">Palabras</span></span>
+            </button>
+            <button type="button" role="tab" id="hw_tab_together" class="homework-tab-btn"
+              aria-selected="false" aria-controls="hw_panel_together"
+              data-tab="together" onclick="switchHomeworkTab('together')">
+              <span class="tab-icon" aria-hidden="true">🤝</span>
+              <span class="tab-label"><span class="tab-en">Together</span><span class="tab-es" lang="es">Juntos</span></span>
+            </button>
+            <button type="button" role="tab" id="hw_tab_check" class="homework-tab-btn"
+              aria-selected="false" aria-controls="hw_panel_check"
+              data-tab="check" onclick="switchHomeworkTab('check')">
+              <span class="tab-icon" aria-hidden="true">✅</span>
+              <span class="tab-label"><span class="tab-en">Check</span><span class="tab-es" lang="es">Repaso</span></span>
+            </button>
+            <button type="button" role="tab" id="hw_tab_help" class="homework-tab-btn"
+              aria-selected="false" aria-controls="hw_panel_help"
+              data-tab="help" onclick="switchHomeworkTab('help')">
+              <span class="tab-icon" aria-hidden="true">💬</span>
+              <span class="tab-label"><span class="tab-en">Help</span><span class="tab-es" lang="es">Ayuda</span></span>
+            </button>
+            <button type="button" role="tab" id="hw_tab_more" class="homework-tab-btn"
+              aria-selected="false" aria-controls="hw_panel_more"
+              data-tab="more" onclick="switchHomeworkTab('more')">
+              <span class="tab-icon" aria-hidden="true">🌐</span>
+              <span class="tab-label"><span class="tab-en">More</span><span class="tab-es" lang="es">Más</span></span>
+            </button>
+            <button type="button" role="tab" id="hw_tab_play" class="homework-tab-btn"
+              aria-selected="false" aria-controls="hw_panel_play"
+              data-tab="play" onclick="switchHomeworkTab('play')">
+              <span class="tab-icon" aria-hidden="true">🎮</span>
+              <span class="tab-label"><span class="tab-en">Play</span><span class="tab-es" lang="es">Jugar</span></span>
+            </button>
+            <button type="button" role="tab" id="hw_tab_done" class="homework-tab-btn"
+              aria-selected="false" aria-controls="hw_panel_done"
+              data-tab="done" onclick="switchHomeworkTab('done')">
+              <span class="tab-icon" aria-hidden="true">🎉</span>
+              <span class="tab-label"><span class="tab-en">Done</span><span class="tab-es" lang="es">Listo</span></span>
+            </button>
+        </nav>
+        <div class="homework-tab-progress" aria-live="polite">
+          <span id="hw_tab_progress">1 of 8</span>
+          <button type="button" class="btn btn-sm btn-secondary print-all-btn" onclick="window.print()">🖨️ Print all / Imprimir todo</button>
+        </div>
       </div>
       <div class="homework-tab-panels" id="hw_tab_panels">
         
@@ -2162,57 +2225,6 @@ body.help-modal-open { overflow: hidden; }
       </p>
     </div>
       </div>
-      <nav class="homework-tab-bar" role="tablist" aria-label="Family homework sections">
-        
-          <button type="button" role="tab" id="hw_tab_learn" class="homework-tab-btn is-active"
-            aria-selected="true" aria-controls="hw_panel_learn"
-            data-tab="learn" onclick="switchHomeworkTab('learn')">
-            <span class="tab-icon" aria-hidden="true">📖</span>
-            <span class="tab-label"><span class="tab-en">Learn</span><span class="tab-es" lang="es">Aprender</span></span>
-          </button>
-          <button type="button" role="tab" id="hw_tab_words" class="homework-tab-btn"
-            aria-selected="false" aria-controls="hw_panel_words"
-            data-tab="words" onclick="switchHomeworkTab('words')">
-            <span class="tab-icon" aria-hidden="true">📚</span>
-            <span class="tab-label"><span class="tab-en">Words</span><span class="tab-es" lang="es">Palabras</span></span>
-          </button>
-          <button type="button" role="tab" id="hw_tab_together" class="homework-tab-btn"
-            aria-selected="false" aria-controls="hw_panel_together"
-            data-tab="together" onclick="switchHomeworkTab('together')">
-            <span class="tab-icon" aria-hidden="true">🤝</span>
-            <span class="tab-label"><span class="tab-en">Together</span><span class="tab-es" lang="es">Juntos</span></span>
-          </button>
-          <button type="button" role="tab" id="hw_tab_check" class="homework-tab-btn"
-            aria-selected="false" aria-controls="hw_panel_check"
-            data-tab="check" onclick="switchHomeworkTab('check')">
-            <span class="tab-icon" aria-hidden="true">✅</span>
-            <span class="tab-label"><span class="tab-en">Check</span><span class="tab-es" lang="es">Repaso</span></span>
-          </button>
-          <button type="button" role="tab" id="hw_tab_help" class="homework-tab-btn"
-            aria-selected="false" aria-controls="hw_panel_help"
-            data-tab="help" onclick="switchHomeworkTab('help')">
-            <span class="tab-icon" aria-hidden="true">💬</span>
-            <span class="tab-label"><span class="tab-en">Help</span><span class="tab-es" lang="es">Ayuda</span></span>
-          </button>
-          <button type="button" role="tab" id="hw_tab_more" class="homework-tab-btn"
-            aria-selected="false" aria-controls="hw_panel_more"
-            data-tab="more" onclick="switchHomeworkTab('more')">
-            <span class="tab-icon" aria-hidden="true">🌐</span>
-            <span class="tab-label"><span class="tab-en">More</span><span class="tab-es" lang="es">Más</span></span>
-          </button>
-          <button type="button" role="tab" id="hw_tab_play" class="homework-tab-btn"
-            aria-selected="false" aria-controls="hw_panel_play"
-            data-tab="play" onclick="switchHomeworkTab('play')">
-            <span class="tab-icon" aria-hidden="true">🎮</span>
-            <span class="tab-label"><span class="tab-en">Play</span><span class="tab-es" lang="es">Jugar</span></span>
-          </button>
-          <button type="button" role="tab" id="hw_tab_done" class="homework-tab-btn"
-            aria-selected="false" aria-controls="hw_panel_done"
-            data-tab="done" onclick="switchHomeworkTab('done')">
-            <span class="tab-icon" aria-hidden="true">🎉</span>
-            <span class="tab-label"><span class="tab-en">Done</span><span class="tab-es" lang="es">Listo</span></span>
-          </button>
-      </nav>
     </div>
 
 </div>
@@ -2257,7 +2269,8 @@ function syncHomeworkChromeHeights() {
   const tabH = tabBar ? Math.ceil(tabBar.getBoundingClientRect().height) : 72;
   document.documentElement.style.setProperty('--hw-status-height', statusH + 'px');
   document.documentElement.style.setProperty('--hw-tab-height', tabH + 'px');
-  document.body.style.paddingBottom = (statusH + tabH + 16) + 'px';
+  // Tab bar is a sticky TOP bar, so only reserve space for the bottom status bar.
+  document.body.style.paddingBottom = (statusH + 16) + 'px';
 }
 
 function switchHomeworkTab(tabId) {

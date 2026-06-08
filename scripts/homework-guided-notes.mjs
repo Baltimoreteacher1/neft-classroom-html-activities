@@ -846,24 +846,26 @@ export function renderHomeworkTabs(panelsHtml) {
   const tabCount = HOMEWORK_TABS.length;
   return `
     <div class="homework-tabs-shell" data-tab-count="${tabCount}">
-      <div class="homework-tab-progress" aria-live="polite">
-        <span id="hw_tab_progress">1 of ${tabCount}</span>
-        <button type="button" class="btn btn-sm btn-secondary print-all-btn" onclick="window.print()">🖨️ Print all / Imprimir todo</button>
+      <div class="homework-tab-chrome">
+        <nav class="homework-tab-bar" role="tablist" aria-label="Family homework sections">
+          ${HOMEWORK_TABS.map(
+            (t, i) => `
+            <button type="button" role="tab" id="hw_tab_${t.id}" class="homework-tab-btn${i === 0 ? " is-active" : ""}"
+              aria-selected="${i === 0 ? "true" : "false"}" aria-controls="hw_panel_${t.id}"
+              data-tab="${t.id}" onclick="switchHomeworkTab('${t.id}')">
+              <span class="tab-icon" aria-hidden="true">${t.icon}</span>
+              <span class="tab-label"><span class="tab-en">${t.en}</span><span class="tab-es" lang="es">${t.es}</span></span>
+            </button>`,
+          ).join("")}
+        </nav>
+        <div class="homework-tab-progress" aria-live="polite">
+          <span id="hw_tab_progress">1 of ${tabCount}</span>
+          <button type="button" class="btn btn-sm btn-secondary print-all-btn" onclick="window.print()">🖨️ Print all / Imprimir todo</button>
+        </div>
       </div>
       <div class="homework-tab-panels" id="hw_tab_panels">
         ${panelsHtml}
       </div>
-      <nav class="homework-tab-bar" role="tablist" aria-label="Family homework sections">
-        ${HOMEWORK_TABS.map(
-          (t, i) => `
-          <button type="button" role="tab" id="hw_tab_${t.id}" class="homework-tab-btn${i === 0 ? " is-active" : ""}"
-            aria-selected="${i === 0 ? "true" : "false"}" aria-controls="hw_panel_${t.id}"
-            data-tab="${t.id}" onclick="switchHomeworkTab('${t.id}')">
-            <span class="tab-icon" aria-hidden="true">${t.icon}</span>
-            <span class="tab-label"><span class="tab-en">${t.en}</span><span class="tab-es" lang="es">${t.es}</span></span>
-          </button>`,
-        ).join("")}
-      </nav>
     </div>`;
 }
 
@@ -887,7 +889,8 @@ function syncHomeworkChromeHeights() {
   const tabH = tabBar ? Math.ceil(tabBar.getBoundingClientRect().height) : 72;
   document.documentElement.style.setProperty('--hw-status-height', statusH + 'px');
   document.documentElement.style.setProperty('--hw-tab-height', tabH + 'px');
-  document.body.style.paddingBottom = (statusH + tabH + 16) + 'px';
+  // Tab bar is a sticky TOP bar, so only reserve space for the bottom status bar.
+  document.body.style.paddingBottom = (statusH + 16) + 'px';
 }
 
 function switchHomeworkTab(tabId) {
@@ -1146,8 +1149,22 @@ export const GUIDED_NOTES_CSS = `
 .homework-tabs-shell {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 100px;
+  gap: 16px;
+}
+/* Sticky TOP chrome: tab bar + progress row */
+.homework-tab-chrome {
+  position: sticky;
+  top: 0;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 0 12px;
+  background: rgba(255,255,255,0.97);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 4px 16px rgba(18,53,91,0.06);
 }
 .homework-tab-progress {
   display: flex;
@@ -1163,28 +1180,20 @@ export const GUIDED_NOTES_CSS = `
 .tab-panel-inner[hidden] { display: none !important; }
 .tab-panel-inner:not([hidden]) { display: block; }
 .homework-tab-bar {
-  position: fixed;
-  bottom: calc(var(--hw-status-height, 104px) + 4px);
-  left: 0;
-  right: 0;
-  z-index: 1001;
   display: flex;
-  gap: 4px;
+  gap: 6px;
   overflow-x: auto;
-  padding: 8px 10px;
-  background: rgba(255,255,255,0.97);
-  border-top: 1px solid var(--line);
-  box-shadow: 0 -4px 20px rgba(18,53,91,0.08);
+  padding: 2px;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
 }
 .homework-tab-btn {
   flex: 0 0 auto;
   scroll-snap-align: start;
-  min-width: 64px;
-  min-height: 48px;
-  padding: 6px 8px;
-  border: 1px solid var(--line);
+  min-width: 66px;
+  min-height: 56px;
+  padding: 8px 10px;
+  border: 1.5px solid var(--line);
   border-radius: var(--radius-sm);
   background: var(--white);
   cursor: pointer;
@@ -1192,21 +1201,25 @@ export const GUIDED_NOTES_CSS = `
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: 3px;
   font-family: var(--font-display);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--muted);
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
+.homework-tab-btn:hover { border-color: var(--teal); color: var(--navy); }
+.homework-tab-btn:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
 .homework-tab-btn.is-active {
-  background: var(--teal-light);
+  background: var(--teal);
   border-color: var(--teal);
-  color: var(--navy);
+  color: var(--white);
+  box-shadow: 0 2px 8px rgba(31,166,162,0.30);
 }
-.tab-icon { font-size: 18px; line-height: 1; }
-.tab-label { display: flex; flex-direction: column; align-items: center; line-height: 1.1; }
-.tab-es { font-size: 9px; color: var(--muted); font-weight: 600; }
-.homework-tab-btn.is-active .tab-es { color: var(--navy); }
+.tab-icon { font-size: 20px; line-height: 1; }
+.tab-label { display: flex; flex-direction: column; align-items: center; line-height: 1.15; }
+.tab-es { font-size: 10px; color: var(--muted); font-weight: 600; }
+.homework-tab-btn.is-active .tab-es { color: var(--white); }
 
 .help-pop-btn {
   margin: 8px 0;
@@ -1299,7 +1312,7 @@ body.help-modal-open { overflow: hidden; }
   .homework-tab-btn, .hw-game-choice-btn, .help-pop-btn { transition: none; }
 }
 @media print {
-  .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn { display: none !important; }
+  .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
   body { padding-bottom: 0; }
 }
