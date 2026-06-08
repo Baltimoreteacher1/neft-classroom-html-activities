@@ -1816,9 +1816,88 @@
     }
     .ref-main-panel .mc-btn:hover { border-color: var(--ref-teal); background: var(--ref-sage-panel); }
 
+    /* ── Structured Error Analysis ── */
+    .ea-steps { display: flex; flex-direction: column; gap: 4px; }
+    .ea-step {
+      display: grid;
+      grid-template-columns: 18px 1fr auto;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 8px;
+      border-radius: 4px;
+      background: var(--ref-white);
+      border: 1px solid var(--ref-gray-mid, #D6DBDF);
+      font-size: 10.5px;
+    }
+    .ea-step-num {
+      width: 18px; height: 18px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--ref-navy); color: #fff;
+      border-radius: 50%; font-size: 9px; font-weight: 800;
+    }
+    .ea-step-label { color: var(--ref-navy); font-weight: 700; }
+    .ea-step-work {
+      font-family: 'Courier New', monospace; font-weight: 700;
+      background: var(--ref-sand); padding: 2px 7px; border-radius: 3px; white-space: nowrap;
+    }
+    .ea-step-flag {
+      border-color: #C0392B; background: #FDECEA;
+      box-shadow: 0 0 0 2px rgba(192,57,43,0.18);
+    }
+    .ea-pick-row { margin-top: 8px; }
+    .ea-pick-prompt { display: block; font-size: 10.5px; color: var(--ref-navy); margin-bottom: 5px; }
+    .ea-pick-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+    .ea-pick {
+      min-width: 56px; font-size: 11px; font-weight: 800;
+      padding: 5px 10px; border-radius: 6px; cursor: pointer;
+      border: 1px solid var(--ref-gray-mid, #D6DBDF); background: var(--ref-white);
+    }
+    .ea-pick:hover { border-color: var(--ref-teal); }
+    .ea-pick.ea-correct { background: #1FA6A2; color: #fff; border-color: #1FA6A2; }
+    .ea-pick.ea-wrong { background: #FDECEA; color: #C0392B; border-color: #C0392B; }
+    .ea-feedback { font-size: 10.5px; font-weight: 700; color: var(--ref-navy); min-height: 14px; margin-top: 6px; }
+    .ea-reveal {
+      margin-top: 8px; font-size: 10.5px; font-weight: 700; cursor: pointer;
+      padding: 5px 12px; border-radius: 6px;
+      background: var(--ref-navy); color: #fff; border: none;
+    }
+    .ea-solution {
+      margin-top: 8px; padding: 8px 10px; border-radius: 6px;
+      background: #E7F6F4; border: 1px solid #1FA6A2; font-size: 10.5px; line-height: 1.45;
+    }
+    .ea-frame { margin-bottom: 10px; }
+    .ea-frame-label {
+      font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;
+      color: var(--ref-teal); margin-bottom: 3px;
+    }
+    .ea-frame-text { font-size: 11px; color: var(--ref-navy); margin: 0 0 5px; }
+    .ea-hints { font-size: 10px; margin-top: 6px; }
+    .ea-hints summary { cursor: pointer; font-weight: 700; color: var(--ref-navy); }
+    .ea-hints p { margin: 4px 0 0; line-height: 1.4; }
+
+    /* ── Vocabulary example / non-example chips ── */
+    .vocab-ex-strip { margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }
+    .vocab-ex-group {
+      border: 1px solid var(--ref-gray-mid, #D6DBDF); border-radius: 6px;
+      padding: 6px 8px; background: var(--ref-white);
+    }
+    .vocab-ex-term { font-size: 10px; font-weight: 800; color: var(--ref-navy); margin-bottom: 5px; }
+    .vocab-ex-chips { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+    .vocab-ex-chip { display: flex; gap: 6px; align-items: flex-start; padding: 5px 7px; border-radius: 5px; font-size: 10px; line-height: 1.35; }
+    .vocab-ex-yes { background: #E7F6F4; border: 1px solid #1FA6A2; }
+    .vocab-ex-no { background: #FDECEA; border: 1px solid #E2A39B; }
+    .vocab-ex-mark { font-weight: 900; }
+    .vocab-ex-yes .vocab-ex-mark { color: #1FA6A2; }
+    .vocab-ex-no .vocab-ex-mark { color: #C0392B; }
+    .vocab-ex-text { display: flex; flex-direction: column; }
+    .vocab-ex-why { color: var(--body-text); opacity: 0.85; }
+
     @media (max-width: 768px) {
       .ref-two-col, .ref-curious-layout, .ref-exit-split, .ref-choice-grid, .ref-goal-grid { grid-template-columns: 1fr; }
       .ref-title-body { grid-template-columns: 1fr; }
+      .vocab-ex-chips { grid-template-columns: 1fr; }
+      .ea-step { grid-template-columns: 16px 1fr; }
+      .ea-step-work { grid-column: 2; white-space: normal; }
     }
 
 
@@ -2638,7 +2717,7 @@
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-16" data-section="vocabulary" data-slide-type="vocab-card" data-teacher-notes="Post vocabulary on board for reference.">
+        <div class="slide-body" id="slide-16" data-section="vocabulary" data-slide-type="vocab-card" data-teacher-notes="Post vocabulary on board for reference. Use the example / non-example row to surface misconceptions.">
     <div class="ref-slide-frame ref-variant-content">
       
     <header class="ref-header-bar">
@@ -2695,10 +2774,20 @@
       <td></td>
       <td class="ref-vocab-visual">"No more than 8 people" means people ≤ 8.</td>
     </tr></tbody>
-    </table></div>
+    </table><div class="vocab-ex-strip"><div class="vocab-ex-group">
+        <div class="vocab-ex-term">Inequality: example vs. non-example</div>
+        <div class="vocab-ex-chips"><div class="vocab-ex-chip vocab-ex-yes">
+            <span class="vocab-ex-mark">✓</span>
+            <span class="vocab-ex-text"><strong>x &gt; 5</strong><span class="vocab-ex-why">It compares values with a greater-than sign.</span></span>
+          </div><div class="vocab-ex-chip vocab-ex-no">
+            <span class="vocab-ex-mark">✗</span>
+            <span class="vocab-ex-text"><strong>x = 5</strong><span class="vocab-ex-why">That is an equation, not an inequality.</span></span>
+          </div></div>
+      </div></div></div>
       <aside class="ref-side-panel">
         <div class="ref-side-header">💬 Talk It Over</div>
         <div class="ref-side-body"><p class="ref-teacher-note ref-note-say"><span>👩‍🏫</span> Say each term, definition, and example. Students repeat.</p>
+       <p class="ref-teacher-note ref-note-ask"><span>❓</span> Why is each ✓ an example and each ✗ a non-example?</p>
        <p class="ref-teacher-note ref-note-time"><span>⏱️</span> 5 min</p></div>
       </aside>
     </div></div>
@@ -3225,7 +3314,7 @@
       <span class="ref-footer-dots" data-for-slide="28"></span>
     </footer></div>
 
-        <div class="slide-body" id="slide-29" data-section="practice" data-slide-type="error-analysis" data-teacher-notes="A common mistake in Write Inequalities is skipping the key idea: &quot;&#039;At least&#039; means ≥ and &#039;at most&#039; means ≤; &#039;more than&#039; means &gt; and &#039;fewer/less than&#039; means &lt;.&quot; — always check your work against this rule before you submit.">
+        <div class="slide-body" id="slide-29" data-section="practice" data-slide-type="error-analysis" data-teacher-notes="&#039;No more than&#039; means less than or equal to (≤), not greater than. The correct inequality is s ≤ 25.">
     <div class="ref-slide-frame ref-variant-content">
       
     <header class="ref-header-bar">
@@ -3236,71 +3325,50 @@
       <div class="ref-slide-content">
     <div class="ref-two-col">
       <div class="ref-main-panel">
-    <span class="ref-error-badge">⚠ Find the Error</span>
-    <div class="ref-error-scenario"><p>A common mistake in Write Inequalities is skipping the key idea: &quot;&#039;At least&#039; means ≥ and &#039;at most&#039; means ≤; &#039;more than&#039; means &gt; and &#039;fewer/less than&#039; means &lt;.&quot; — always check your work against this rule before you submit.</p></div>
+    <span class="ref-error-badge">⚠ Find the Inequality Error</span>
+    <p class="ref-instruction">A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.</p>
     <div class="ref-student-work-box">
-      <div class="ref-work-label">Student&apos;s Work (labeled — contains an error):</div>
-      
-      <div class="slide-grid-2">
-        <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%; position:relative;">
-          <div>
-            <div class="slide-badge-row" style="display:flex; align-items:center; margin-bottom:8px;">
-              <span class="slide-badge" style="background:var(--amber); color:var(--navy); font-weight:800; font-size:10px; padding:3px 8px; border-radius:99px; font-family:'Outfit'; text-transform:uppercase; letter-spacing:0.05em; display:inline-flex; align-items:center; gap:4px;">⚠️ ERROR ANALYSIS</span>
-            </div>
-            <h2 class="card-title" style="font-size:16px; margin: 4px 0 6px;">Find the Inequality Error</h2>
-            <p class="card-desc" style="font-size:11.5px; margin-bottom:8px; line-height:1.4;">Analyze the worked steps on the clipboard. Hover over a step button below to highlight its line, select the incorrect step, and justify your fix.</p>
-            
-            <!-- Clipboard Frame with Wood kraft backboard and paper sheet sheet inside -->
-            <div class="clipboard">
-              <div class="clipboard-rivets">
-                <div class="clipboard-rivet"></div>
-                <div class="clipboard-rivet"></div>
-              </div>
-              <div class="clipboard-paper">
-                <div class="worked-step" id="worked-step-1" style="font-size:11px; padding:6px 12px; border-bottom: 1px solid #e1eaeef8; display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-weight:700; color:var(--navy);">Situation:</span>
-        <span style="font-family:monospace; background:var(--google-gray); padding:2px 6px; border-radius:3px; font-weight:700;">No more than 25 students can join the field trip</span>
-      </div><div class="worked-step" id="worked-step-2" style="font-size:11px; padding:6px 12px; border-bottom: 1px solid #e1eaeef8; display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-weight:700; color:var(--navy);">Identify key phrase:</span>
-        <span style="font-family:monospace; background:var(--google-gray); padding:2px 6px; border-radius:3px; font-weight:700;">&#039;No more than&#039; means greater than</span>
-      </div><div class="worked-step" id="worked-step-3" style="font-size:11px; padding:6px 12px; border-bottom: 1px solid #e1eaeef8; display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-weight:700; color:var(--navy);">Write inequality:</span>
-        <span style="font-family:monospace; background:var(--google-gray); padding:2px 6px; border-radius:3px; font-weight:700;">s &gt; 25</span>
+      <div class="ref-work-label">Student&apos;s work — read every step:</div>
+      <div class="ea-steps">
+      <div class="ea-step" id="ea-step-1">
+        <span class="ea-step-num">1</span>
+        <span class="ea-step-label">Situation</span>
+        <span class="ea-step-work">No more than 25 students can join the field trip</span>
       </div>
-              </div>
-            </div>
-          </div>
-          
-          <div style="margin-top:6px; display:flex; flex-direction:column; gap:4px;">
-            <strong style="font-size:10px; color:var(--navy); text-transform:uppercase;">Identify Error Step:</strong>
-            <div style="display:flex; gap:6px;">
-              <button class="assess-btn px-btn" id="btn-errstep-1" onmouseover="highlightWorkedStep(1)" onmouseout="clearStepHighlight(1)" onclick="checkErrorStep(1, 1)">1</button><button class="assess-btn px-btn" id="btn-errstep-2" onmouseover="highlightWorkedStep(2)" onmouseout="clearStepHighlight(2)" onclick="checkErrorStep(2, 1)">2</button><button class="assess-btn px-btn" id="btn-errstep-3" onmouseover="highlightWorkedStep(3)" onmouseout="clearStepHighlight(3)" onclick="checkErrorStep(3, 1)">3</button>
-            </div>
-            <div id="error-step-feedback" style="font-size:10px; font-weight:700; min-height:14px; margin-top:2px;"></div>
-          </div>
-        </div>
-        
-        <div class="slide-card" style="background:var(--coral); display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
-          <div>
-            <h2 class="card-title">🛠️ Fix & Justify</h2>
-            <textarea id="practice-fix-work" class="slide-input-placeholder" rows="5" placeholder="Explain the error and write the correct calculation steps here..."></textarea>
-          </div>
-          <button class="btn-present" onclick="revealPracticeSolution()" style="align-self:flex-end; padding:6px 12px; font-size:11px; margin-top:6px;">Reveal Solution</button>
-          <div id="practice-solution-box" style="display:none; background:var(--white); border:1px solid #D9795D; border-radius:6px; padding:6px 10px; font-size:10px; line-height:1.4; color:var(--body-text); margin-top:6px; box-shadow:var(--shadow);">
-            <strong>Correct Work:</strong> &#039;No more than&#039; means less than or equal to (≤), not greater than. The correct inequality is s ≤ 25.
-          </div>
-        </div>
+      <div class="ea-step" id="ea-step-2">
+        <span class="ea-step-num">2</span>
+        <span class="ea-step-label">Identify key phrase</span>
+        <span class="ea-step-work">&#039;No more than&#039; means greater than</span>
       </div>
-    
+      <div class="ea-step" id="ea-step-3">
+        <span class="ea-step-num">3</span>
+        <span class="ea-step-label">Write inequality</span>
+        <span class="ea-step-work">s &gt; 25</span>
+      </div></div>
     </div>
-    <div class="ref-error-zone">
-      <strong>What went wrong?</strong>
-      <textarea class="ref-lined-input" rows="3" placeholder="Explain the mistake and how to fix it..."></textarea>
+    <div class="ea-pick-row">
+      <strong class="ea-pick-prompt">Which step has the error?</strong>
+      <div class="ea-pick-buttons"><button type="button" class="assess-btn ea-pick" onclick="(function(b){var ok=true;document.querySelectorAll('.ea-pick').forEach(function(x){x.classList.remove('ea-correct','ea-wrong');});document.querySelectorAll('.ea-step').forEach(function(x){x.classList.remove('ea-step-flag');});b.classList.add(ok?'ea-correct':'ea-wrong');if(ok){var s=document.getElementById('ea-step-1');if(s){s.classList.add('ea-step-flag');}}document.getElementById('ea-fb').textContent=ok?'✓ Yes — step 1 is where the work breaks down. Now explain why.':'Not yet — check each step against the rule, then try again.';})(this)">Step 1</button><button type="button" class="assess-btn ea-pick" onclick="(function(b){var ok=false;document.querySelectorAll('.ea-pick').forEach(function(x){x.classList.remove('ea-correct','ea-wrong');});document.querySelectorAll('.ea-step').forEach(function(x){x.classList.remove('ea-step-flag');});b.classList.add(ok?'ea-correct':'ea-wrong');if(ok){var s=document.getElementById('ea-step-2');if(s){s.classList.add('ea-step-flag');}}document.getElementById('ea-fb').textContent=ok?'✓ Yes — step 2 is where the work breaks down. Now explain why.':'Not yet — check each step against the rule, then try again.';})(this)">Step 2</button><button type="button" class="assess-btn ea-pick" onclick="(function(b){var ok=false;document.querySelectorAll('.ea-pick').forEach(function(x){x.classList.remove('ea-correct','ea-wrong');});document.querySelectorAll('.ea-step').forEach(function(x){x.classList.remove('ea-step-flag');});b.classList.add(ok?'ea-correct':'ea-wrong');if(ok){var s=document.getElementById('ea-step-3');if(s){s.classList.add('ea-step-flag');}}document.getElementById('ea-fb').textContent=ok?'✓ Yes — step 3 is where the work breaks down. Now explain why.':'Not yet — check each step against the rule, then try again.';})(this)">Step 3</button></div>
+      <div id="ea-fb" class="ea-feedback"></div>
     </div>
-  </div>
+    <button type="button" class="assess-btn ea-reveal" onclick="var s=document.getElementById('ea-solution');if(s){s.style.display='block';}this.style.display='none';">Reveal the fix</button>
+    <div id="ea-solution" class="ea-solution" style="display:none;">
+      <strong>Correct work:</strong> &#039;No more than&#039; means less than or equal to (≤), not greater than. The correct inequality is s ≤ 25.
+    </div></div>
       <aside class="ref-side-panel">
         <div class="ref-side-header">💬 Talk It Over</div>
-        <div class="ref-side-body"><p class="ref-side-prompt">What mistake did the student make? How would you help them fix it?</p></div>
+        <div class="ref-side-body">
+    <div class="ea-frame">
+      <div class="ea-frame-label">Explain it</div>
+      <p class="ea-frame-text">The mistake was <strong>___</strong> because <strong>___</strong>.</p>
+      <textarea class="ref-lined-input" rows="3" placeholder="The mistake was... because..."></textarea>
+    </div>
+    <div class="ea-frame">
+      <div class="ea-frame-label">Fix it</div>
+      <textarea class="ref-lined-input" rows="2" placeholder="Rewrite the broken step correctly..."></textarea>
+    </div>
+    <details class="ea-hints"><summary>Need a hint?</summary><p>💡 &#039;No more than 25&#039; means the number cannot exceed 25. Is that greater than or less than or equal to?</p><p>💡 &#039;No more than&#039; = at most = ≤. The correct inequality is s ≤ 25.</p></details>
+    <p class="ref-teacher-note ref-note-say"><span>👩‍🏫</span> Let students hunt for the error before revealing. Ask: which rule did this step break?</p></div>
       </aside>
     </div></div>
     </div><footer class="ref-slide-footer" data-slide-num="29">
@@ -3324,33 +3392,34 @@
     <button type="button" class="ref-choice-card ref-choice-mist" onclick="selectChoiceBoard(0)" id="choice-card-0">
       <div class="ref-choice-card-header">✏️ Draw &amp; Label</div>
       <span class="ref-choice-icon">✏️</span>
-      <p>Sketch a visual model. Label key parts using today&#039;s vocabulary.</p>
+      <p>Sketch a model for today&#039;s problem. Label it using Inequality and Greater than.</p>
       <span class="choice-check" id="choice-check-0">✓</span>
     </button>
     <button type="button" class="ref-choice-card ref-choice-sage" onclick="selectChoiceBoard(1)" id="choice-card-1">
       <div class="ref-choice-card-header">💬 Explain It</div>
       <span class="ref-choice-icon">💬</span>
-      <p>Write 2–3 sentences explaining the key idea in your own words.</p>
+      <p>In 2–3 sentences, explain &quot;&#039;At least&#039; means ≥ and &#039;at most&#039; means ≤; &#039;more than&#039; means &gt; and &#039;fewer/less than&#039; means &lt;.&quot; in your own words.</p>
       <span class="choice-check" id="choice-check-1">✓</span>
     </button>
     <button type="button" class="ref-choice-card ref-choice-cream" onclick="selectChoiceBoard(2)" id="choice-card-2">
       <div class="ref-choice-card-header">🧮 Solve It</div>
       <span class="ref-choice-icon">🧮</span>
-      <p>Work one practice problem showing each step clearly.</p>
+      <p>Work one practice problem and show every step clearly.</p>
       <span class="choice-check" id="choice-check-2">✓</span>
     </button>
     <button type="button" class="ref-choice-card ref-choice-panel" onclick="selectChoiceBoard(3)" id="choice-card-3">
-      <div class="ref-choice-card-header">↔️ Compare</div>
-      <span class="ref-choice-icon">↔️</span>
-      <p>How is today&#039;s method different from a related idea you already know?</p>
+      <div class="ref-choice-card-header">🎯 Create a Problem</div>
+      <span class="ref-choice-icon">🎯</span>
+      <p>Write your own problem that uses Inequality, then solve it and make an answer key.</p>
       <span class="choice-check" id="choice-check-3">✓</span>
     </button></div>
     <textarea class="ref-lined-input" rows="2" placeholder="Record which choice you made and your response..."></textarea></div>
       <aside class="ref-side-panel">
         <div class="ref-side-header">💬 Talk It Over</div>
-        <div class="ref-side-body"><p class="ref-teacher-note ref-note-students"><span>👨‍🎓</span> Choose ONE option. Complete on paper or whiteboard.</p>
+        <div class="ref-side-body"><p class="ref-teacher-note ref-note-students"><span>👨‍🎓</span> Choose ONE option. Show your work on paper or whiteboard.</p>
     <p class="ref-teacher-note ref-note-time"><span>⏱️</span> 6 min</p>
-    <p class="ref-side-prompt"><strong>Vocabulary:</strong> Inequality, Greater than, Less than</p></div>
+    <p class="ref-side-prompt"><strong>Use these words:</strong> Inequality, Greater than, Less than, At least / At most</p>
+    <p class="ref-side-prompt"><strong>Stretch (early finishers):</strong> teach your strategy to a partner, then compare it with a different method.</p></div>
       </aside>
     </div></div>
     </div><footer class="ref-slide-footer" data-slide-num="30">
@@ -3374,40 +3443,40 @@
     <div class="ref-twr-frame">
       <div class="ref-twr-label">
         <span class="ref-twr-num">Frame 1</span>
-        <strong>Explain the Formula</strong>
+        <strong>Explain the Rule</strong>
       </div>
       <div class="ref-twr-body">
-        <p class="ref-twr-prompt">The key formula works because ___</p>
+        <p class="ref-twr-prompt">Today&#039;s key idea is: &quot;&#039;At least&#039; means ≥ and &#039;at most&#039; means ≤; &#039;more than&#039; means &gt; and &#039;fewer/less than&#039; means &lt;.&quot; — and it works because ___.</p>
         <textarea class="ref-lined-input twr-input" rows="2" placeholder="Write your response..."></textarea>
       </div>
     </div>
     <div class="ref-twr-frame">
       <div class="ref-twr-label">
         <span class="ref-twr-num">Frame 2</span>
-        <strong>Connect to Prior Learning</strong>
+        <strong>Because / But / So</strong>
       </div>
       <div class="ref-twr-body">
-        <p class="ref-twr-prompt">This connects to what I already know about ___ because ___</p>
+        <p class="ref-twr-prompt">Because Inequality means ___, but a tricky part is ___, so I have to ___.</p>
         <textarea class="ref-lined-input twr-input" rows="2" placeholder="Write your response..."></textarea>
       </div>
     </div>
     <div class="ref-twr-frame">
       <div class="ref-twr-label">
         <span class="ref-twr-num">Frame 3</span>
-        <strong>Justify a Method</strong>
+        <strong>Catch the Mistake</strong>
       </div>
       <div class="ref-twr-body">
-        <p class="ref-twr-prompt">I can justify this method by showing ___</p>
+        <p class="ref-twr-prompt">A common mistake with Inequality is ___. It happens because ___, and the fix is ___.</p>
         <textarea class="ref-lined-input twr-input" rows="2" placeholder="Write your response..."></textarea>
       </div>
     </div>
     <div class="ref-twr-frame">
       <div class="ref-twr-label">
         <span class="ref-twr-num">Frame 4</span>
-        <strong>Apply to a New Problem</strong>
+        <strong>Prove It</strong>
       </div>
       <div class="ref-twr-body">
-        <p class="ref-twr-prompt">If I apply today&#039;s strategy to a new problem, I would ___</p>
+        <p class="ref-twr-prompt">I can prove my answer is correct by ___, using Greater than to check my work.</p>
         <textarea class="ref-lined-input twr-input" rows="2" placeholder="Write your response..."></textarea>
       </div>
     </div></div></div>
@@ -4030,7 +4099,7 @@
     const totalSlides = 46;
     
     const slideTitles = ["TITLE","HOW TO USE","LEARNING TARGETS","AGENDA","LAUNCH SECTION","WARM-UP HOOK","CFU 1","BE CURIOUS","CONCEPT LAUNCH","I DO — WATCH ME","I DO — KEY STEP","WE DO — TOGETHER","CFU 2","YOU DO — YOUR TURN","VOCABULARY SECTION","VOCABULARY","WHICH WORD?","CFU 3","TURN & TALK","EXPLORE SECTION","VISUAL MODEL","EXPLORE","WHITEBOARD CFU","DISCUSS EXPLORE","PRACTICE A","PRACTICE B","EXPRESSION SIMPLIFY","SORT IT OUT","ERROR ANALYSIS","CHOICE BOARD","THINK WRITE","STUDENT WORKSPACE","DIFFERENTIATION","PARTNER ACTIVITY","CFU 4","MATH IN THE WILD","DISCUSS CONNECT","CLOSURE SECTION","EXIT TICKET","GOAL TRACKER","BONUS CHECK","REFLECTION","DIGITAL ACTIVITY","FAMILY CONNECTION","TEACHER NOTES","ANSWER KEY"];
-    const teacherNotesMap = {"1":"Display while students enter. Start presenter mode with ▶ Present.","2":"First day with deck? Spend 30 sec here. Skip on repeat lessons.","3":"Post objectives on board. Return to these at closure.","4":"Adjust minutes based on your block schedule.","6":"Students explain that 'at least 18' allows many values (18 and up), so an inequality with ≥ captures it while an equation would force one value.","9":"'At least' means ≥ and 'at most' means ≤; 'more than' means > and 'fewer/less than' means <.","10":"Reveal one step at a time. Do NOT show all steps at once.","11":"Second reveal sequence — focus on the most critical step.","12":"Call on students to predict each step before revealing.","16":"Post vocabulary on board for reference.","19":"Students explain that 'at least 18' allows many values (18 and up), so an inequality with ≥ captures it while an equation would force one value.","22":"Match each phrase to the correct inequality symbol. Drag each phrase card into the matching symbol category.","29":"A common mistake in Write Inequalities is skipping the key idea: \"'At least' means ≥ and 'at most' means ≤; 'more than' means > and 'fewer/less than' means <.\" — always check your work against this rule before you submit.","45":"Hide during presentation — use Notes panel (N key).","46":"CONFIDENTIAL — do not display to students."};
+    const teacherNotesMap = {"1":"Display while students enter. Start presenter mode with ▶ Present.","2":"First day with deck? Spend 30 sec here. Skip on repeat lessons.","3":"Post objectives on board. Return to these at closure.","4":"Adjust minutes based on your block schedule.","6":"Students explain that 'at least 18' allows many values (18 and up), so an inequality with ≥ captures it while an equation would force one value.","9":"'At least' means ≥ and 'at most' means ≤; 'more than' means > and 'fewer/less than' means <.","10":"Reveal one step at a time. Do NOT show all steps at once.","11":"Second reveal sequence — focus on the most critical step.","12":"Call on students to predict each step before revealing.","16":"Post vocabulary on board for reference. Use the example / non-example row to surface misconceptions.","19":"Students explain that 'at least 18' allows many values (18 and up), so an inequality with ≥ captures it while an equation would force one value.","22":"Match each phrase to the correct inequality symbol. Drag each phrase card into the matching symbol category.","29":"'No more than' means less than or equal to (≤), not greater than. The correct inequality is s ≤ 25.","45":"Hide during presentation — use Notes panel (N key).","46":"CONFIDENTIAL — do not display to students."};
     
     // Concept Intro Tab Data
     const conceptData = {

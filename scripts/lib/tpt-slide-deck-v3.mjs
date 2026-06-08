@@ -15,7 +15,6 @@ import {
   refExitSplit,
   refVocabTable,
   refNoticeWonder,
-  refErrorLayout,
   refSortLayout,
   refSortBucket,
   refTeacherNote,
@@ -165,6 +164,32 @@ function buildMcSlide(problem, prefix, title, themeEmoji, themeName, contentObj,
         ${problem.explanation ? `<div class="teacher-reveal-box"><strong>Teacher reveal:</strong> ${esc(problem.explanation)}</div>` : ''}
       </div>
     </div>`;
+}
+
+// Example / non-example chips drawn from config vocabulary[].examples (isExample + why).
+function buildVocabExamplesStrip(vocabList) {
+  const withExamples = (vocabList || []).filter((v) => Array.isArray(v.examples) && v.examples.length);
+  if (!withExamples.length) return '';
+  const blocks = withExamples
+    .slice(0, 1)
+    .map((v) => {
+      const chips = v.examples
+        .slice(0, 4)
+        .map((ex) => {
+          const yes = ex.isExample;
+          return `<div class="vocab-ex-chip ${yes ? 'vocab-ex-yes' : 'vocab-ex-no'}">
+            <span class="vocab-ex-mark">${yes ? '✓' : '✗'}</span>
+            <span class="vocab-ex-text"><strong>${esc(ex.text)}</strong>${ex.why ? `<span class="vocab-ex-why">${esc(ex.why)}</span>` : ''}</span>
+          </div>`;
+        })
+        .join('');
+      return `<div class="vocab-ex-group">
+        <div class="vocab-ex-term">${esc(v.term)}: example vs. non-example</div>
+        <div class="vocab-ex-chips">${chips}</div>
+      </div>`;
+    })
+    .join('');
+  return `<div class="vocab-ex-strip">${blocks}</div>`;
 }
 
 function buildVocabRichCard(v, themeEmoji) {
@@ -383,6 +408,78 @@ function buildErrorAnalysisSlide(practiceHtml) {
   return practiceHtml;
 }
 
+// Pull the lesson's real, structured error-analysis problem from any practice pool.
+function findErrorProblem(data) {
+  const pools = [
+    ...(data.practice?.extending || []),
+    ...(data.practice?.onLevel || []),
+    ...(data.practice?.approaching || []),
+    ...(data.practice?.optional || []),
+  ];
+  return pools.find((p) => p.type === 'error-analysis') || null;
+}
+
+// Error Analysis slide built from the lesson's actual worked example, error step,
+// and correct work — students find the error, name it, and fix it.
+function buildStructuredErrorSlide(data, themeEmoji, themeName, contentObj) {
+  const prob = findErrorProblem(data);
+  const title = prob?.title || 'Find the Mistake';
+  const steps = prob?.workedExample || [];
+  const errorStep = prob?.errorStep || 0;
+  const correctWork = prob?.correctWork || '';
+  const hints = prob?.hints || [];
+
+  const stepsHtml = steps
+    .map(
+      (s, idx) => `
+      <div class="ea-step" id="ea-step-${idx + 1}">
+        <span class="ea-step-num">${idx + 1}</span>
+        <span class="ea-step-label">${esc(s.label)}</span>
+        <span class="ea-step-work">${esc(s.work)}</span>
+      </div>`
+    )
+    .join('');
+
+  const stepButtons = steps
+    .map((s, idx) => {
+      const ok = idx + 1 === errorStep ? 'true' : 'false';
+      return `<button type="button" class="assess-btn ea-pick" onclick="(function(b){var ok=${ok};document.querySelectorAll('.ea-pick').forEach(function(x){x.classList.remove('ea-correct','ea-wrong');});document.querySelectorAll('.ea-step').forEach(function(x){x.classList.remove('ea-step-flag');});b.classList.add(ok?'ea-correct':'ea-wrong');if(ok){var s=document.getElementById('ea-step-${idx + 1}');if(s){s.classList.add('ea-step-flag');}}document.getElementById('ea-fb').textContent=ok?'✓ Yes — step ${idx + 1} is where the work breaks down. Now explain why.':'Not yet — check each step against the rule, then try again.';})(this)">Step ${idx + 1}</button>`;
+    })
+    .join('');
+
+  const main = `
+    <span class="ref-error-badge">⚠ ${esc(title)}</span>
+    <p class="ref-instruction">A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.</p>
+    <div class="ref-student-work-box">
+      <div class="ref-work-label">Student&apos;s work — read every step:</div>
+      <div class="ea-steps">${stepsHtml || '<p class="card-desc">No worked steps provided for this lesson.</p>'}</div>
+    </div>
+    ${steps.length ? `<div class="ea-pick-row">
+      <strong class="ea-pick-prompt">Which step has the error?</strong>
+      <div class="ea-pick-buttons">${stepButtons}</div>
+      <div id="ea-fb" class="ea-feedback"></div>
+    </div>
+    <button type="button" class="assess-btn ea-reveal" onclick="var s=document.getElementById('ea-solution');if(s){s.style.display='block';}this.style.display='none';">Reveal the fix</button>
+    <div id="ea-solution" class="ea-solution" style="display:none;">
+      <strong>Correct work:</strong> ${esc(correctWork) || 'Redo the broken step so every part follows the rule.'}
+    </div>` : ''}`;
+
+  const side = `
+    <div class="ea-frame">
+      <div class="ea-frame-label">Explain it</div>
+      <p class="ea-frame-text">The mistake was <strong>___</strong> because <strong>___</strong>.</p>
+      <textarea class="ref-lined-input" rows="3" placeholder="The mistake was... because..."></textarea>
+    </div>
+    <div class="ea-frame">
+      <div class="ea-frame-label">Fix it</div>
+      <textarea class="ref-lined-input" rows="2" placeholder="Rewrite the broken step correctly..."></textarea>
+    </div>
+    ${hints.length ? `<details class="ea-hints"><summary>Need a hint?</summary>${hints.map((h) => `<p>\u{1f4a1} ${esc(h)}</p>`).join('')}</details>` : ''}
+    ${refTeacherNote('say', 'Let students hunt for the error before revealing. Ask: which rule did this step break?')}`;
+
+  return refTwoColumn(main, side);
+}
+
 function buildVocabMatchSlide(vocabList, themeEmoji, themeName, contentObj) {
   const withSentences = vocabList.filter((v) => v.sentences && v.sentences.length);
   if (!withSentences.length) return null;
@@ -447,26 +544,50 @@ function buildSectionDivider(section, minutes, themeEmoji) {
   return refSectionOpener(section, minutes, themeEmoji);
 }
 
-function buildChoiceBoardSlide(contentObj, themeEmoji, themeName, vocabList) {
-  const terms = (vocabList || []).slice(0, 3).map((v) => v.term).filter(Boolean);
+function buildChoiceBoardSlide(contentObj, themeEmoji, themeName, vocabList, keyIdea) {
+  const terms = (vocabList || []).map((v) => v.term).filter(Boolean);
+  const t1 = terms[0] || "today's key word";
+  const t2 = terms[1] || t1;
+  const labelList = terms.length >= 2 ? `${t1} and ${t2}` : t1;
   const choices = [
-    { icon: '✏️', title: '✏️ Draw & Label', desc: 'Sketch a visual model. Label key parts using today\'s vocabulary.' },
-    { icon: '💬', title: '💬 Explain It', desc: 'Write 2–3 sentences explaining the key idea in your own words.' },
-    { icon: '🧮', title: '🧮 Solve It', desc: 'Work one practice problem showing each step clearly.' },
-    { icon: '↔️', title: '↔️ Compare', desc: 'How is today\'s method different from a related idea you already know?' },
+    { icon: '✏️', title: '✏️ Draw & Label', desc: `Sketch a model for today's problem. Label it using ${labelList}.` },
+    {
+      icon: '💬',
+      title: '💬 Explain It',
+      desc: keyIdea
+        ? `In 2–3 sentences, explain "${keyIdea}" in your own words.`
+        : 'In 2–3 sentences, explain today\'s key idea in your own words.',
+    },
+    { icon: '🧮', title: '🧮 Solve It', desc: 'Work one practice problem and show every step clearly.' },
+    { icon: '🎯', title: '🎯 Create a Problem', desc: `Write your own problem that uses ${t1}, then solve it and make an answer key.` },
   ];
-  const side = `${refTeacherNote('students', 'Choose ONE option. Complete on paper or whiteboard.')}
+  const side = `${refTeacherNote('students', 'Choose ONE option. Show your work on paper or whiteboard.')}
     ${refTeacherNote('time', '6 min')}
-    ${terms.length ? `<p class="ref-side-prompt"><strong>Vocabulary:</strong> ${terms.map((t) => esc(t)).join(', ')}</p>` : ''}`;
+    ${terms.length ? `<p class="ref-side-prompt"><strong>Use these words:</strong> ${terms.slice(0, 4).map((t) => esc(t)).join(', ')}</p>` : ''}
+    <p class="ref-side-prompt"><strong>Stretch (early finishers):</strong> teach your strategy to a partner, then compare it with a different method.</p>`;
   return refTwoColumn(refChoiceBoardGrid(choices), side);
 }
 
-function buildThinkWriteSlide(contentObj, themeEmoji, themeName, keyIdea) {
+function buildThinkWriteSlide(contentObj, themeEmoji, themeName, keyIdea, vocabList = [], data = {}) {
+  const terms = (vocabList || []).map((v) => v.term).filter(Boolean);
+  const t1 = terms[0] || "today's key word";
+  const t2 = terms[1] || t1;
+  const hasError = Boolean(findErrorProblem(data));
   const frames = [
-    { title: 'Explain the Formula', prompt: `The key formula works because ___` },
-    { title: 'Connect to Prior Learning', prompt: `This connects to what I already know about ___ because ___` },
-    { title: 'Justify a Method', prompt: `I can justify this method by showing ___` },
-    { title: 'Apply to a New Problem', prompt: `If I apply today's strategy to a new problem, I would ___` },
+    {
+      title: 'Explain the Rule',
+      prompt: keyIdea
+        ? `Today's key idea is: "${keyIdea}" — and it works because ___.`
+        : `The most important rule from today is ___, and it works because ___.`,
+    },
+    { title: 'Because / But / So', prompt: `Because ${t1} means ___, but a tricky part is ___, so I have to ___.` },
+    {
+      title: hasError ? 'Catch the Mistake' : 'Justify Your Method',
+      prompt: hasError
+        ? `A common mistake with ${t1} is ___. It happens because ___, and the fix is ___.`
+        : `I can justify my method by showing ___, which proves my answer makes sense.`,
+    },
+    { title: 'Prove It', prompt: `I can prove my answer is correct by ___, using ${t2} to check my work.` },
   ];
   const main = refThinkWriteFrames(frames);
   const side = `${keyIdea ? `<p class="ref-side-prompt"><strong>Key Idea:</strong> ${esc(keyIdea)}</p>` : ''}
@@ -845,11 +966,13 @@ export function buildTptSlideDeckV3(ctx) {
 
   // Vocabulary table — reference navy header row (all terms on one slide)
   if (vocabList.length) {
+    const examplesStrip = buildVocabExamplesStrip(vocabList);
     add('📝 Vocab', 'Vocabulary', refTwoColumn(
-      refVocabTable(vocabList.slice(0, 6)),
+      `${refVocabTable(vocabList.slice(0, 6))}${examplesStrip}`,
       `${refTeacherNote('say', 'Say each term, definition, and example. Students repeat.')}
+       ${examplesStrip ? refTeacherNote('ask', 'Why is each ✓ an example and each ✗ a non-example?') : ''}
        ${refTeacherNote('time', '5 min')}`
-    ), { type: 'vocab-card', section: 'vocabulary', slideTitle: 'Vocabulary', notes: 'Post vocabulary on board for reference.' });
+    ), { type: 'vocab-card', section: 'vocabulary', slideTitle: 'Vocabulary', notes: 'Post vocabulary on board for reference. Use the example / non-example row to surface misconceptions.' });
   }
 
   const vocabMatch = buildVocabMatchSlide(vocabList, themeEmoji, themeName, contentObj);
@@ -901,7 +1024,9 @@ export function buildTptSlideDeckV3(ctx) {
   maybeCfu('Can you solve a similar problem without help?');
 
   // Unit-specific primary activity (varied per lesson type)
-  const primaryActivity = buildUnitActivitySlide(activityPlan.primary, contentObj, themeEmoji, themeName, vocabList, practiceHtml);
+  const primaryActivity = activityPlan.primary === 'error-analysis'
+    ? buildStructuredErrorSlide(data, themeEmoji, themeName, contentObj)
+    : buildUnitActivitySlide(activityPlan.primary, contentObj, themeEmoji, themeName, vocabList, practiceHtml);
   if (primaryActivity) {
     const pMeta = ACTIVITY_VARIANTS[activityPlan.primary] || { icon: '🎯' };
     add(pMeta.icon || '🎯', pMeta.label || 'Activity', primaryActivity, { type: activityPlan.primary, section: 'practice' });
@@ -926,21 +1051,21 @@ export function buildTptSlideDeckV3(ctx) {
     add('↕️ Sort', 'Sort It Out', sortMain, { type: 'drag-sort', section: 'practice', slideTitle: 'Sort It Out' });
   }
 
-  // Error analysis — reference red badge + sage side panel
+  // Error analysis — built from the lesson's real worked example + fix frame
   if (activityPlan.primary !== 'error-analysis') {
-    const errMain = refErrorLayout(
-      `<p>${esc(data.practice?.commonMistake || 'A student made an error using today\'s strategy.')}</p>`,
-      practiceHtml || '<p>A = b × h = 70</p>',
-      'What mistake did the student make? How would you help them fix it?'
-    );
-    add('⚠️ Error', 'Error Analysis', errMain, { type: 'error-analysis', section: 'practice', slideTitle: 'Error Analysis', notes: data.practice?.commonMistake || '' });
+    add('⚠️ Error', 'Error Analysis', buildStructuredErrorSlide(data, themeEmoji, themeName, contentObj), {
+      type: 'error-analysis',
+      section: 'practice',
+      slideTitle: 'Error Analysis',
+      notes: findErrorProblem(data)?.correctWork || data.practice?.commonMistake || '',
+    });
   }
 
   // Choice board (reference PPTX slide 8)
-  add('🎯 Choice', 'Choice Board', buildChoiceBoardSlide(contentObj, themeEmoji, themeName, vocabList), { type: 'choice-board', section: 'practice' });
+  add('🎯 Choice', 'Choice Board', buildChoiceBoardSlide(contentObj, themeEmoji, themeName, vocabList, conceptKeyIdea), { type: 'choice-board', section: 'practice' });
 
   // Think-Write-Respond (reference PPTX slide 11)
-  add('✍️ TWR', 'Think Write', buildThinkWriteSlide(contentObj, themeEmoji, themeName, conceptKeyIdea), { type: 'think-write', section: 'practice' });
+  add('✍️ TWR', 'Think Write', buildThinkWriteSlide(contentObj, themeEmoji, themeName, conceptKeyIdea, vocabList, data), { type: 'think-write', section: 'practice' });
 
   // Student workspace
   add('📊 Workspace', 'Student Workspace', buildStudentWorkspaceSlide(data.explore || {}, themeEmoji, themeName, contentObj), { type: 'student-workspace', section: 'practice' });

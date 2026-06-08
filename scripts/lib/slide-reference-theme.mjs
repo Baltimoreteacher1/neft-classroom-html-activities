@@ -946,8 +946,87 @@ export const REFERENCE_CSS = `
     }
     .ref-main-panel .mc-btn:hover { border-color: var(--ref-teal); background: var(--ref-sage-panel); }
 
+    /* ── Structured Error Analysis ── */
+    .ea-steps { display: flex; flex-direction: column; gap: 4px; }
+    .ea-step {
+      display: grid;
+      grid-template-columns: 18px 1fr auto;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 8px;
+      border-radius: 4px;
+      background: var(--ref-white);
+      border: 1px solid var(--ref-gray-mid, #D6DBDF);
+      font-size: 10.5px;
+    }
+    .ea-step-num {
+      width: 18px; height: 18px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--ref-navy); color: #fff;
+      border-radius: 50%; font-size: 9px; font-weight: 800;
+    }
+    .ea-step-label { color: var(--ref-navy); font-weight: 700; }
+    .ea-step-work {
+      font-family: 'Courier New', monospace; font-weight: 700;
+      background: var(--ref-sand); padding: 2px 7px; border-radius: 3px; white-space: nowrap;
+    }
+    .ea-step-flag {
+      border-color: #C0392B; background: #FDECEA;
+      box-shadow: 0 0 0 2px rgba(192,57,43,0.18);
+    }
+    .ea-pick-row { margin-top: 8px; }
+    .ea-pick-prompt { display: block; font-size: 10.5px; color: var(--ref-navy); margin-bottom: 5px; }
+    .ea-pick-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+    .ea-pick {
+      min-width: 56px; font-size: 11px; font-weight: 800;
+      padding: 5px 10px; border-radius: 6px; cursor: pointer;
+      border: 1px solid var(--ref-gray-mid, #D6DBDF); background: var(--ref-white);
+    }
+    .ea-pick:hover { border-color: var(--ref-teal); }
+    .ea-pick.ea-correct { background: #1FA6A2; color: #fff; border-color: #1FA6A2; }
+    .ea-pick.ea-wrong { background: #FDECEA; color: #C0392B; border-color: #C0392B; }
+    .ea-feedback { font-size: 10.5px; font-weight: 700; color: var(--ref-navy); min-height: 14px; margin-top: 6px; }
+    .ea-reveal {
+      margin-top: 8px; font-size: 10.5px; font-weight: 700; cursor: pointer;
+      padding: 5px 12px; border-radius: 6px;
+      background: var(--ref-navy); color: #fff; border: none;
+    }
+    .ea-solution {
+      margin-top: 8px; padding: 8px 10px; border-radius: 6px;
+      background: #E7F6F4; border: 1px solid #1FA6A2; font-size: 10.5px; line-height: 1.45;
+    }
+    .ea-frame { margin-bottom: 10px; }
+    .ea-frame-label {
+      font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;
+      color: var(--ref-teal); margin-bottom: 3px;
+    }
+    .ea-frame-text { font-size: 11px; color: var(--ref-navy); margin: 0 0 5px; }
+    .ea-hints { font-size: 10px; margin-top: 6px; }
+    .ea-hints summary { cursor: pointer; font-weight: 700; color: var(--ref-navy); }
+    .ea-hints p { margin: 4px 0 0; line-height: 1.4; }
+
+    /* ── Vocabulary example / non-example chips ── */
+    .vocab-ex-strip { margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }
+    .vocab-ex-group {
+      border: 1px solid var(--ref-gray-mid, #D6DBDF); border-radius: 6px;
+      padding: 6px 8px; background: var(--ref-white);
+    }
+    .vocab-ex-term { font-size: 10px; font-weight: 800; color: var(--ref-navy); margin-bottom: 5px; }
+    .vocab-ex-chips { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+    .vocab-ex-chip { display: flex; gap: 6px; align-items: flex-start; padding: 5px 7px; border-radius: 5px; font-size: 10px; line-height: 1.35; }
+    .vocab-ex-yes { background: #E7F6F4; border: 1px solid #1FA6A2; }
+    .vocab-ex-no { background: #FDECEA; border: 1px solid #E2A39B; }
+    .vocab-ex-mark { font-weight: 900; }
+    .vocab-ex-yes .vocab-ex-mark { color: #1FA6A2; }
+    .vocab-ex-no .vocab-ex-mark { color: #C0392B; }
+    .vocab-ex-text { display: flex; flex-direction: column; }
+    .vocab-ex-why { color: var(--body-text); opacity: 0.85; }
+
     @media (max-width: 768px) {
       .ref-two-col, .ref-curious-layout, .ref-exit-split, .ref-choice-grid, .ref-goal-grid { grid-template-columns: 1fr; }
       .ref-title-body { grid-template-columns: 1fr; }
+      .vocab-ex-chips { grid-template-columns: 1fr; }
+      .ea-step { grid-template-columns: 16px 1fr; }
+      .ea-step-work { grid-column: 2; white-space: normal; }
     }
 `;
