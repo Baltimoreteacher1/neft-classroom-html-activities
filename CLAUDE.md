@@ -125,6 +125,18 @@ lockfile match), then run the checks.
 
 - Do **not** deploy. Deploys are done manually by the maintainer with
   `wrangler pages deploy dist`.
+  - **Deploy-conflict warning:** the `neft-classroom-html-activities` Pages
+    project (serving `eduwonderlab.com`) may have **Cloudflare Git integration**
+    connected. When it is, every push to `main` auto-deploys and can _overwrite_
+    a manual `wrangler pages deploy`, which looks like the site "reverting to an
+    old version." Pick **one** deploy path (Git auto-deploy **or** manual
+    wrangler), not both. If the site reverts unexpectedly, check the Pages
+    project's Git settings in the Cloudflare dashboard before re-deploying.
+- **Do NOT change the site structure or routes.** Routes are defined by
+  `data/routes.json` → generated `_redirects`/`_headers`. Folder layout and URL
+  paths are load-bearing (bookmarks, student links, save/resume keys). Edit
+  content in place; do not move/rename/delete folders or restructure routes
+  unless the task explicitly requires it.
 - Do **not** push to GitHub or open a PR unless explicitly asked.
 - Do **not** make broad, unrelated changes.
 - Do **not** bypass permissions.
