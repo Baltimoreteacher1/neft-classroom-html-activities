@@ -562,7 +562,7 @@ function buildChoiceBoardSlide(contentObj, themeEmoji, themeName, vocabList, key
     { icon: '🧮', title: '🧮 Solve It', desc: 'Work one practice problem and show every step clearly.' },
     { icon: '🎯', title: '🎯 Create a Problem', desc: `Write your own problem that uses ${t1}, then solve it and make an answer key.` },
   ];
-  const side = `${refTeacherNote('students', 'Choose ONE option. Show your work on paper or whiteboard.')}
+  const side = `${refTeacherNote('students', 'Pick ONE numbered option, then do it in the workspace right on this slide.')}
     ${refTeacherNote('time', '6 min')}
     ${terms.length ? `<p class="ref-side-prompt"><strong>Use these words:</strong> ${terms.slice(0, 4).map((t) => esc(t)).join(', ')}</p>` : ''}
     <p class="ref-side-prompt"><strong>Stretch (early finishers):</strong> teach your strategy to a partner, then compare it with a different method.</p>`;

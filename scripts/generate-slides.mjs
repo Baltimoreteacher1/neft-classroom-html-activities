@@ -3162,32 +3162,32 @@ ${deck.thumbnailsHtml}
       let html = '';
       
       // Title
-      html += '<text x="15" y="22" font-family="\'Outfit\', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">INTERACTIVE TAPE DIAGRAM (Ratio 2 : 3)</text>';
+      html += '<text x="15" y="22" font-family="Outfit, sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">INTERACTIVE TAPE DIAGRAM (Ratio 2 : 3)</text>';
       
       // Tape Diagram - Row 1 (Juice: 2 parts)
-      html += '<text x="15" y="52" font-family="\'Outfit\', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">Juice</text>';
+      html += '<text x="15" y="52" font-family="Outfit, sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">Juice</text>';
       for (let i = 0; i < 2; i++) {
         const rx = 65 + i * 55;
         html += '<rect x="' + rx + '" y="38" width="50" height="22" fill="var(--teal-light)" stroke="var(--navy)" stroke-width="1.5" rx="3"/>';
-        html += '<text x="' + (rx + 25) + '" y="53" font-family="\'Outfit\', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)" text-anchor="middle">' + S + '</text>';
+        html += '<text x="' + (rx + 25) + '" y="53" font-family="Outfit, sans-serif" font-size="10" font-weight="bold" fill="var(--navy)" text-anchor="middle">' + S + '</text>';
       }
       // Bracket and total for Row 1
       html += '<path d="M 65 32 L 65 28 L 120 28 L 120 32" fill="none" stroke="var(--navy)" stroke-width="1"/>';
-      html += '<text x="180" y="52" font-family="\'Outfit\', sans-serif" font-size="10" font-weight="bold" fill="var(--teal)">Total: ' + (2 * S) + '</text>';
+      html += '<text x="180" y="52" font-family="Outfit, sans-serif" font-size="10" font-weight="bold" fill="var(--teal)">Total: ' + (2 * S) + '</text>';
       
       // Tape Diagram - Row 2 (Water: 3 parts)
-      html += '<text x="15" y="87" font-family="\'Outfit\', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">Water</text>';
+      html += '<text x="15" y="87" font-family="Outfit, sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">Water</text>';
       for (let i = 0; i < 3; i++) {
         const rx = 65 + i * 55;
         html += '<rect x="' + rx + '" y="73" width="50" height="22" fill="var(--amber)" stroke="var(--navy)" stroke-width="1.5" rx="3"/>';
-        html += '<text x="' + (rx + 25) + '" y="88" font-family="\'Outfit\', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)" text-anchor="middle">' + S + '</text>';
+        html += '<text x="' + (rx + 25) + '" y="88" font-family="Outfit, sans-serif" font-size="10" font-weight="bold" fill="var(--navy)" text-anchor="middle">' + S + '</text>';
       }
       // Bracket and total for Row 2
       html += '<path d="M 65 67 L 65 63 L 175 63 L 175 67" fill="none" stroke="var(--navy)" stroke-width="1"/>';
-      html += '<text x="235" y="87" font-family="\'Outfit\', sans-serif" font-size="10" font-weight="bold" fill="var(--teal)">Total: ' + (3 * S) + '</text>';
+      html += '<text x="235" y="87" font-family="Outfit, sans-serif" font-size="10" font-weight="bold" fill="var(--teal)">Total: ' + (3 * S) + '</text>';
       
       // Double Number Line Title
-      html += '<text x="15" y="122" font-family="\'Outfit\', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">DOUBLE NUMBER LINE</text>';
+      html += '<text x="15" y="122" font-family="Outfit, sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">DOUBLE NUMBER LINE</text>';
       
       // Lines
       html += '<line x1="65" y1="142" x2="355" y2="142" stroke="var(--navy)" stroke-width="2"/>';
@@ -3208,13 +3208,13 @@ ${deck.thumbnailsHtml}
         html += '<line x1="' + tx + '" y1="178" x2="' + tx + '" y2="186" stroke="var(--navy)" stroke-width="1.5"/>';
         
         // Values
-        html += '<text x="' + tx + '" y="134" font-family="\'Outfit\', sans-serif" font-size="9" font-weight="bold" fill="var(--navy)" text-anchor="middle">' + (i * 2 * S) + '</text>';
-        html += '<text x="' + tx + '" y="196" font-family="\'Outfit\', sans-serif" font-size="9" font-weight="bold" fill="var(--navy)" text-anchor="middle">' + (i * 3 * S) + '</text>';
+        html += '<text x="' + tx + '" y="134" font-family="Outfit, sans-serif" font-size="9" font-weight="bold" fill="var(--navy)" text-anchor="middle">' + (i * 2 * S) + '</text>';
+        html += '<text x="' + tx + '" y="196" font-family="Outfit, sans-serif" font-size="9" font-weight="bold" fill="var(--navy)" text-anchor="middle">' + (i * 3 * S) + '</text>';
       }
       
       // Line Labels
-      html += '<text x="362" y="145" font-family="\'Outfit\', sans-serif" font-size="9" font-weight="bold" fill="var(--navy)">Juice (c)</text>';
-      html += '<text x="362" y="185" font-family="\'Outfit\', sans-serif" font-size="9" font-weight="bold" fill="var(--navy)">Water (c)</text>';
+      html += '<text x="362" y="145" font-family="Outfit, sans-serif" font-size="9" font-weight="bold" fill="var(--navy)">Juice (c)</text>';
+      html += '<text x="362" y="185" font-family="Outfit, sans-serif" font-size="9" font-weight="bold" fill="var(--navy)">Water (c)</text>';
       
       svgGroup.innerHTML = html;
     }
@@ -3241,8 +3241,8 @@ ${deck.thumbnailsHtml}
         html += '<line x1="107" y1="' + py + '" x2="113" y2="' + py + '" stroke="var(--navy)" stroke-width="1"/>';
         
         // Axis Labels
-        html += '<text x="' + px + '" y="121" font-family="\'Outfit\', sans-serif" font-size="7" fill="var(--navy)" text-anchor="middle">' + val + '</text>';
-        html += '<text x="99" y="' + (py + 2.5) + '" font-family="\'Outfit\', sans-serif" font-size="7" fill="var(--navy)" text-anchor="end">' + val + '</text>';
+        html += '<text x="' + px + '" y="121" font-family="Outfit, sans-serif" font-size="7" fill="var(--navy)" text-anchor="middle">' + val + '</text>';
+        html += '<text x="99" y="' + (py + 2.5) + '" font-family="Outfit, sans-serif" font-size="7" fill="var(--navy)" text-anchor="end">' + val + '</text>';
       }
       
       // Main Axes
@@ -3256,15 +3256,15 @@ ${deck.thumbnailsHtml}
       html += '<path d="M 110 210 L 107 205 M 110 210 L 113 205" stroke="var(--navy)" stroke-width="1.5"/>';
       
       // Axis Names
-      html += '<text x="214" y="113" font-family="\'Outfit\', sans-serif" font-size="8" font-weight="bold" fill="var(--navy)">x</text>';
-      html += '<text x="110" y="8" font-family="\'Outfit\', sans-serif" font-size="8" font-weight="bold" fill="var(--navy)" text-anchor="middle">y</text>';
+      html += '<text x="214" y="113" font-family="Outfit, sans-serif" font-size="8" font-weight="bold" fill="var(--navy)">x</text>';
+      html += '<text x="110" y="8" font-family="Outfit, sans-serif" font-size="8" font-weight="bold" fill="var(--navy)" text-anchor="middle">y</text>';
       
       // Plot Points
       coordPoints.forEach(pt => {
         const cx = 110 + pt.x * 18;
         const cy = 110 - pt.y * 18;
         html += '<circle cx="' + cx + '" cy="' + cy + '" r="7" fill="rgba(255,255,255,0.85)"/>';
-        html += '<text x="' + cx + '" y="' + (cy + 3.5) + '" font-family="\'Outfit\', sans-serif" font-size="10" text-anchor="middle">' + pt.marker + '</text>';
+        html += '<text x="' + cx + '" y="' + (cy + 3.5) + '" font-family="Outfit, sans-serif" font-size="10" text-anchor="middle">' + pt.marker + '</text>';
       });
       
       svgGroup.innerHTML = html;
@@ -3306,7 +3306,7 @@ ${deck.thumbnailsHtml}
       let html = '';
       
       // Title
-      html += '<text x="15" y="24" font-family="\'Outfit\', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">INTERACTIVE PAN BALANCE SCALE (x = 8 units)</text>';
+      html += '<text x="15" y="24" font-family="Outfit, sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">INTERACTIVE PAN BALANCE SCALE (x = 8 units)</text>';
       
       // Fulcrum
       html += '<polygon points="205,170 235,170 220,90" fill="#dadce0" stroke="var(--navy)" stroke-width="1.5"/>';
@@ -3315,10 +3315,10 @@ ${deck.thumbnailsHtml}
       // Balanced / Unbalanced Banner
       if (wl === wr) {
         html += '<rect x="140" y="10" width="160" height="22" fill="var(--teal-light)" stroke="var(--teal)" stroke-width="1.5" rx="4"/>';
-        html += '<text x="220" y="25" font-family="\'Outfit\', sans-serif" font-size="9.5" font-weight="bold" fill="var(--navy)" text-anchor="middle">⚖️ BALANCED! (Total: ' + wl + ')</text>';
+        html += '<text x="220" y="25" font-family="Outfit, sans-serif" font-size="9.5" font-weight="bold" fill="var(--navy)" text-anchor="middle">⚖️ BALANCED! (Total: ' + wl + ')</text>';
       } else {
-        html += '<text x="75" y="24" font-family="\'Outfit\', sans-serif" font-size="9.5" font-weight="bold" fill="var(--navy)" text-anchor="middle">Left: ' + wl + ' units</text>';
-        html += '<text x="365" y="24" font-family="\'Outfit\', sans-serif" font-size="9.5" font-weight="bold" fill="var(--navy)" text-anchor="middle">Right: ' + wr + ' units</text>';
+        html += '<text x="75" y="24" font-family="Outfit, sans-serif" font-size="9.5" font-weight="bold" fill="var(--navy)" text-anchor="middle">Left: ' + wl + ' units</text>';
+        html += '<text x="365" y="24" font-family="Outfit, sans-serif" font-size="9.5" font-weight="bold" fill="var(--navy)" text-anchor="middle">Right: ' + wr + ' units</text>';
       }
       
       // Strings Left
@@ -3339,7 +3339,7 @@ ${deck.thumbnailsHtml}
       let by = ly + 50 - 20;
       for (let i = 0; i < balanceLeft.x; i++) {
         leftBlocksHtml += '<rect x="' + bx + '" y="' + by + '" width="18" height="20" fill="var(--amber)" stroke="var(--navy)" stroke-width="1.2" rx="2"/>';
-        leftBlocksHtml += '<text x="' + (bx + 9) + '" y="' + (by + 14) + '" font-family="\'Outfit\', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)" text-anchor="middle">x</text>';
+        leftBlocksHtml += '<text x="' + (bx + 9) + '" y="' + (by + 14) + '" font-family="Outfit, sans-serif" font-size="10" font-weight="bold" fill="var(--navy)" text-anchor="middle">x</text>';
         bx += 20;
         if (bx > lx + 15) {
           bx = lx - 32;
@@ -3354,7 +3354,7 @@ ${deck.thumbnailsHtml}
       }
       for (let i = 0; i < balanceLeft.one; i++) {
         leftBlocksHtml += '<rect x="' + ux + '" y="' + uy + '" width="12" height="12" fill="var(--teal-light)" stroke="var(--teal)" stroke-width="1.2" rx="1"/>';
-        leftBlocksHtml += '<text x="' + (ux + 6) + '" y="' + (uy + 9) + '" font-family="\'Outfit\', sans-serif" font-size="8" font-weight="bold" fill="var(--teal)" text-anchor="middle">1</text>';
+        leftBlocksHtml += '<text x="' + (ux + 6) + '" y="' + (uy + 9) + '" font-family="Outfit, sans-serif" font-size="8" font-weight="bold" fill="var(--teal)" text-anchor="middle">1</text>';
         ux += 14;
         if (ux > lx + 22) {
           ux = lx - 32;
@@ -3369,7 +3369,7 @@ ${deck.thumbnailsHtml}
       let rby = ry + 50 - 20;
       for (let i = 0; i < balanceRight.x; i++) {
         rightBlocksHtml += '<rect x="' + rbx + '" y="' + rby + '" width="18" height="20" fill="var(--amber)" stroke="var(--navy)" stroke-width="1.2" rx="2"/>';
-        rightBlocksHtml += '<text x="' + (rbx + 9) + '" y="' + (rby + 14) + '" font-family="\'Outfit\', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)" text-anchor="middle">x</text>';
+        rightBlocksHtml += '<text x="' + (rbx + 9) + '" y="' + (rby + 14) + '" font-family="Outfit, sans-serif" font-size="10" font-weight="bold" fill="var(--navy)" text-anchor="middle">x</text>';
         rbx += 20;
         if (rbx > rx + 15) {
           rbx = rx - 32;
@@ -3384,7 +3384,7 @@ ${deck.thumbnailsHtml}
       }
       for (let i = 0; i < balanceRight.one; i++) {
         rightBlocksHtml += '<rect x="' + rux + '" y="' + ruy + '" width="12" height="12" fill="var(--teal-light)" stroke="var(--teal)" stroke-width="1.2" rx="1"/>';
-        rightBlocksHtml += '<text x="' + (rux + 6) + '" y="' + (ruy + 9) + '" font-family="\'Outfit\', sans-serif" font-size="8" font-weight="bold" fill="var(--teal)" text-anchor="middle">1</text>';
+        rightBlocksHtml += '<text x="' + (rux + 6) + '" y="' + (ruy + 9) + '" font-family="Outfit, sans-serif" font-size="8" font-weight="bold" fill="var(--teal)" text-anchor="middle">1</text>';
         rux += 14;
         if (rux > rx + 22) {
           rux = rx - 32;

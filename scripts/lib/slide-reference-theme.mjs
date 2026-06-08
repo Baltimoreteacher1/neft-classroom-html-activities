@@ -185,15 +185,18 @@ export function refChoiceBoardGrid(choices) {
   const palettes = ['ref-choice-mist', 'ref-choice-sage', 'ref-choice-cream', 'ref-choice-panel'];
   const cards = (choices || []).slice(0, 4).map((c, i) => `
     <button type="button" class="ref-choice-card ${palettes[i]}" onclick="selectChoiceBoard(${i})" id="choice-card-${i}">
-      <div class="ref-choice-card-header">${esc(c.title)}</div>
+      <div class="ref-choice-card-header"><span class="ref-choice-num">${i + 1}</span><span class="ref-choice-title">${esc(c.title)}</span></div>
       <span class="ref-choice-icon">${c.icon || '✓'}</span>
       <p>${esc(c.desc)}</p>
       <span class="choice-check" id="choice-check-${i}">✓</span>
     </button>`).join('');
   return `
-    <p class="ref-instruction">Choose ONE to show what you know:</p>
+    <p class="ref-instruction">Choose ONE option to show what you know — then do it in the workspace below.</p>
     <div class="ref-choice-grid">${cards}</div>
-    <textarea class="ref-lined-input" rows="2" placeholder="Record which choice you made and your response..."></textarea>`;
+    <div class="ref-choice-workspace">
+      <label class="ref-choice-workspace-label">I chose option <input type="text" class="ref-choice-pick" maxlength="1" inputmode="numeric" aria-label="The option number you chose (1-4)" /> — my work:</label>
+      <textarea class="ref-lined-input ref-choice-do" rows="6" placeholder="Do your chosen activity right here — draw &amp; label, explain in words, solve and show every step, or write your own problem and solve it."></textarea>
+    </div>`;
 }
 
 /** Think-Write-Respond — sage frames with teal label column */
@@ -639,8 +642,43 @@ export const REFERENCE_CSS = `
       font-weight: 800;
       padding: 5px 8px;
       font-family: 'Outfit', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ref-choice-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      color: var(--ref-navy);
+      font-size: 10px;
+      font-weight: 900;
     }
     .ref-choice-card p { margin: 0; padding: 8px; color: var(--body-text); }
+    .ref-choice-workspace { margin-top: 6px; }
+    .ref-choice-workspace-label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--body-text);
+      margin-bottom: 3px;
+      font-family: 'Outfit', sans-serif;
+    }
+    .ref-choice-pick {
+      width: 24px;
+      text-align: center;
+      border: none;
+      border-bottom: 2px solid var(--ref-navy);
+      background: rgba(28,46,66,0.06);
+      font-weight: 800;
+      font-size: 11px;
+      color: var(--ref-navy);
+    }
     .ref-choice-icon { display: block; font-size: 18px; padding: 4px 8px 0; }
     .ref-choice-mist { background: var(--ref-mist); }
     .ref-choice-sage { background: var(--ref-sage); }
@@ -669,6 +707,75 @@ export const REFERENCE_CSS = `
     .ref-twr-num { font-weight: 800; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.04em; }
     .ref-twr-body { padding: 8px 10px; background: var(--ref-sage); }
     .ref-twr-prompt { margin: 0 0 4px; font-size: 10px; font-style: italic; color: var(--ref-slate); }
+
+    /* TWR — Because / But / So conjunction expansion */
+    .twr-kernel {
+      background: var(--ref-navy);
+      color: #fff;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin: 0 0 10px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .twr-kernel .twr-kernel-tag {
+      display: block;
+      font-size: 8.5px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ref-amber);
+      margin-bottom: 2px;
+    }
+    .twr-bbs-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .twr-bbs-col {
+      display: flex;
+      flex-direction: column;
+      background: var(--ref-sage);
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+    .twr-bbs-conj {
+      color: #fff;
+      font-weight: 800;
+      font-size: 12px;
+      text-align: center;
+      padding: 5px 4px;
+      letter-spacing: 0.03em;
+    }
+    .twr-bbs-because .twr-bbs-conj { background: var(--ref-teal); }
+    .twr-bbs-but .twr-bbs-conj { background: var(--ref-coral, #d9776a); }
+    .twr-bbs-so .twr-bbs-conj { background: var(--ref-amber); color: var(--ref-navy); }
+    .twr-bbs-job { font-size: 8.5px; font-weight: 700; color: var(--ref-slate); text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 8px 2px; }
+    .twr-bbs-prompt { margin: 0; padding: 0 8px 6px; font-size: 10px; font-style: italic; color: var(--ref-slate); line-height: 1.3; }
+    .twr-bbs-col .ref-lined-input { margin: 0 8px 8px; width: calc(100% - 16px); }
+
+    /* TWR — sentence kernel expansion + sentence starters */
+    .twr-qword-row { display: flex; flex-wrap: wrap; gap: 5px; margin: 6px 0 8px; }
+    .twr-qword {
+      background: var(--ref-teal);
+      color: #fff;
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 99px;
+    }
+    .twr-starter-bank { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+    .twr-starter-chip {
+      background: #fff;
+      border: 1px solid var(--ref-teal);
+      color: var(--ref-navy);
+      font-size: 9.5px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 99px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .twr-starter-chip:hover { background: var(--ref-teal); color: #fff; }
+    .twr-sub-label { font-size: 9px; font-weight: 800; color: var(--ref-slate); text-transform: uppercase; letter-spacing: 0.04em; margin: 8px 0 2px; }
 
     /* Sort It Out */
     .ref-card-bank-label { font-size: 9px; font-weight: 800; color: var(--ref-slate); text-transform: uppercase; margin-bottom: 4px; }
