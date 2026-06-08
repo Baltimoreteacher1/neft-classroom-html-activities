@@ -18,21 +18,25 @@ in this repo, close your own feedback loop before claiming the work is complete.
 Follow these stages in order.
 
 ### A. Understand
+
 - Restate the actual goal in 1–3 lines.
 - Identify the files, routes, components, scripts, or systems likely affected.
 - Identify the likely failure risks **before** editing.
 
 ### B. Plan
+
 - Create a short implementation plan before modifying files.
 - Prefer minimal, targeted changes over broad rewrites.
 - Preserve existing behavior unless the task explicitly requires changing it.
 
 ### C. Implement
+
 - Make the required changes.
 - Keep edits clean, readable, and maintainable.
 - Avoid unrelated formatting changes or refactors.
 
 ### D. Verify
+
 - Run the strongest relevant checks available in this repo (see
   **Verification Commands** below).
 - Choose from: build, validate, audit, preview/smoke test, manual
@@ -42,6 +46,7 @@ Follow these stages in order.
   verification checklist and actually run through it.
 
 ### E. Failure Loop
+
 - If any check fails, **do not stop.**
 - Summarize the failure clearly.
 - Fix the issue.
@@ -51,6 +56,7 @@ Follow these stages in order.
   name explicitly.
 
 ### F. Proof Before Handoff
+
 - Before saying "done," provide:
   - **files changed**
   - **commands / checks run**
@@ -92,15 +98,18 @@ For this repo, especially verify:
 Use only commands that actually exist in `package.json` / repo tooling. Prefer
 the strongest one(s) relevant to what you changed:
 
-| Command | What it does | Use when |
-| --- | --- | --- |
-| `npm run validate` | Runs `validate:static` + `validate:reveal-math` (link/structure checks). | Any HTML, link, or structure change. **Primary check.** |
-| `npm run validate:static` | Validates the static site structure/links only. | Static HTML/link-only edits. |
-| `npm run validate:reveal-math` | Validates the Reveal Math tool launchers. | Reveal Math / lesson launcher edits. |
-| `npm run build` | Vite production build to `dist/`. | Anything touching Vite-built lesson launchers, config, or before a deploy-affecting change. |
-| `npm run preview` | Serves the built `dist/` for smoke testing. | Manual browser/smoke verification after a build. |
-| `npm run audit` | `audit-curriculum.mjs` curriculum audit. | Curriculum/lesson data changes. |
-| `node tools/audit-save-resume-integration.js` | Audits Save/Resume wiring across activities. | Any change near activity state, Save, or Resume. |
+| Command                                       | What it does                                                                                                              | Use when                                                                                    |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `npm run validate`                            | Runs `validate:static` + `validate:reveal-math` (link/structure checks).                                                  | Any HTML, link, or structure change. **Primary check.**                                     |
+| `npm run validate:static`                     | Validates the static site structure/links only.                                                                           | Static HTML/link-only edits.                                                                |
+| `npm run validate:reveal-math`                | Validates the Reveal Math tool launchers.                                                                                 | Reveal Math / lesson launcher edits.                                                        |
+| `npm run build`                               | Vite production build to `dist/`.                                                                                         | Anything touching Vite-built lesson launchers, config, or before a deploy-affecting change. |
+| `npm run preview`                             | Serves the built `dist/` for smoke testing.                                                                               | Manual browser/smoke verification after a build.                                            |
+| `npm run audit`                               | `audit-curriculum.mjs` site-wide structural audit (links/redirects/orphans).                                              | Curriculum/lesson data changes.                                                             |
+| `npm run generate-curriculum-manifest`        | Rebuilds `data/curriculum-manifest.json` (curriculum SoT) from lesson configs + disk checks.                              | After adding/removing a lesson or its resources.                                            |
+| `npm run audit:curriculum`                    | `audit-curriculum-resources.mjs` per-lesson resource-completeness audit → `reports/curriculum-audit-resources.{json,md}`. | Checking which lessons are missing family/teacher/student/etc. resources.                   |
+| `npm run generate-support-pages`              | Generates missing family/teacher-notes/student-help pages from lesson configs (skips `<!-- hand-edited -->`).             | Repairing missing lesson support pages.                                                     |
+| `node tools/audit-save-resume-integration.js` | Audits Save/Resume wiring across activities.                                                                              | Any change near activity state, Save, or Resume.                                            |
 
 > **Note:** This repo has **no `npm run lint` and no `npm test`** scripts. Do not
 > invent them. The equivalents here are `npm run validate`, `npm run audit`, the
