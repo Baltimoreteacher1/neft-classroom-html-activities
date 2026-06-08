@@ -222,8 +222,19 @@ function buildVocabRichCard(v, themeEmoji) {
 
 function buildTurnAndTalkSlide(talk, title, themeEmoji, themeName, contentObj, timerId, seconds = 90) {
   if (!talk) return null;
-  const stems = (talk.stems || [])
-    .map((s) => `<div class="tt-stem">✍️ ${esc(s.en || s)}</div>`)
+  // Sentence starters scaffold every Turn & Talk — fall back to a strong
+  // academic-discourse set when the lesson config supplies none.
+  const DEFAULT_STARTERS = [
+    'I think ___ because ___.',
+    'I agree with ___, and I would add ___.',
+    'My answer is different because ___.',
+    'One pattern I notice is ___.',
+  ];
+  const starterList = (talk.stems || []).length
+    ? talk.stems.map((s) => s.en || s)
+    : DEFAULT_STARTERS;
+  const stems = starterList
+    .map((s) => `<div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\\s*/,''))">✍️ ${esc(s)}</div>`)
     .join('');
   const wordBank = (talk.wordBank || [])
     .map((w) => `<span class="vocab-pill" onclick="insertAtCursor(this.textContent)">${esc(w)}</span>`)
@@ -240,8 +251,8 @@ function buildTurnAndTalkSlide(talk, title, themeEmoji, themeName, contentObj, t
         ${teacherCue('time', `${seconds} sec`)}
         <p class="card-desc tt-question">${esc(talk.question || '')}</p>
         <div class="tt-stems-box">
-          <strong>Sentence stems:</strong>
-          ${stems || '<div class="tt-stem">Partner A shares first, then Partner B.</div>'}
+          <strong>Sentence starters (tap to use):</strong>
+          ${stems}
         </div>
         ${wordBank ? `<div class="tt-wordbank"><strong>WORD BANK:</strong><div>${wordBank}</div></div>` : ''}
         <div class="turn-talk-timer" id="tt-timer-${timerId}">
@@ -562,7 +573,7 @@ function buildChoiceBoardSlide(contentObj, themeEmoji, themeName, vocabList, key
     { icon: '🧮', title: '🧮 Solve It', desc: 'Work one practice problem and show every step clearly.' },
     { icon: '🎯', title: '🎯 Create a Problem', desc: `Write your own problem that uses ${t1}, then solve it and make an answer key.` },
   ];
-  const side = `${refTeacherNote('students', 'Choose ONE option. Show your work on paper or whiteboard.')}
+  const side = `${refTeacherNote('students', 'Pick ONE numbered option, then do it in the workspace right on this slide.')}
     ${refTeacherNote('time', '6 min')}
     ${terms.length ? `<p class="ref-side-prompt"><strong>Use these words:</strong> ${terms.slice(0, 4).map((t) => esc(t)).join(', ')}</p>` : ''}
     <p class="ref-side-prompt"><strong>Stretch (early finishers):</strong> teach your strategy to a partner, then compare it with a different method.</p>`;
@@ -595,6 +606,71 @@ function buildThinkWriteSlide(contentObj, themeEmoji, themeName, keyIdea, vocabL
     ${refTeacherNote('students', 'Complete all four frames using evidence from today\'s lesson.')}
     ${refTeacherNote('time', '8 min')}`;
   return refTwoColumn(main, side);
+}
+
+/**
+ * TWR conjunction expansion — the "because / but / so" strategy.
+ * One kernel idea from the lesson, extended three ways to build different
+ * kinds of reasoning (cause, contrast, consequence). Each conjunction does a
+ * different job, so students cannot just restate the kernel.
+ */
+function buildBecauseButSoSlide(contentObj, themeEmoji, themeName, keyIdea, vocabList = []) {
+  const terms = (vocabList || []).map((v) => v.term).filter(Boolean);
+  const t1 = terms[0] || "today's key idea";
+  const kernel = (keyIdea && keyIdea.trim()) || `${t1.charAt(0).toUpperCase()}${t1.slice(1)} matters in this lesson`;
+  const wordBank = terms.slice(0, 5)
+    .map((w) => `<span class="vocab-pill" onclick="insertAtCursor(this.textContent)">${esc(w)}</span>`)
+    .join('');
+  const cols = [
+    { conj: 'because', cls: 'twr-bbs-because', job: 'Give a reason', prompt: `${esc(kernel)} because ___` },
+    { conj: 'but', cls: 'twr-bbs-but', job: 'Name a tricky part', prompt: `${esc(kernel)} but ___` },
+    { conj: 'so', cls: 'twr-bbs-so', job: 'State what it means', prompt: `${esc(kernel)} so ___` },
+  ];
+  const grid = cols.map((c) => `
+    <div class="twr-bbs-col ${c.cls}">
+      <div class="twr-bbs-conj">${c.conj}</div>
+      <div class="twr-bbs-job">${c.job}</div>
+      <p class="twr-bbs-prompt">${c.prompt}</p>
+      <textarea class="ref-lined-input" rows="3" placeholder="Finish the sentence with &quot;${c.conj}&quot;..."></textarea>
+    </div>`).join('');
+  const main = `
+    <p class="ref-instruction">✍️ TWR · WRITE 3 SENTENCES · 7 MIN</p>
+    <div class="twr-kernel"><span class="twr-kernel-tag">Sentence kernel</span>${esc(kernel)}</div>
+    <div class="twr-bbs-grid">${grid}</div>`;
+  const side = `${refTeacherNote('say', 'Each conjunction does a different job. "Because" gives a reason, "but" shows a limit or exception, "so" tells the result.')}
+    ${refTeacherNote('students', 'Finish all three sentences. Each one must be different — you cannot just repeat the kernel.')}
+    ${refTeacherNote('time', '7 min')}
+    ${wordBank ? `<p class="twr-sub-label">Word bank</p><div class="connect-vocab">${wordBank}</div>` : ''}`;
+  return refTwoColumn(main, side, '✍️ Because · But · So');
+}
+
+/**
+ * TWR sentence expansion — start from a bare kernel sentence and grow it using
+ * the question words (who/what/when/where/why/how) plus a sentence-starter bank.
+ * Builds detail and academic syntax for multilingual learners.
+ */
+function buildSentenceExpansionSlide(contentObj, themeEmoji, themeName, keyIdea, vocabList = []) {
+  const terms = (vocabList || []).map((v) => v.term).filter(Boolean);
+  const t1 = terms[0] || 'this idea';
+  const kernel = `Today we used ${esc(t1)}.`;
+  const qwords = ['What exactly?', 'When?', 'Where in real life?', 'Why does it work?', 'How did we use it?'];
+  const starters = ['First, …', 'For example, …', 'This means that …', 'In other words, …', 'As a result, …', 'I know this because …'];
+  const qwordHtml = qwords.map((q) => `<span class="twr-qword">${esc(q)}</span>`).join('');
+  const starterHtml = starters
+    .map((s) => `<span class="twr-starter-chip" onclick="insertAtCursor(this.textContent.replace(/[…\\u2026].*$/,'').trim()+' ')">${esc(s)}</span>`)
+    .join('');
+  const main = `
+    <p class="ref-instruction">🌱 TWR · GROW THE KERNEL · 6 MIN</p>
+    <div class="twr-kernel"><span class="twr-kernel-tag">Sentence kernel</span>${kernel}</div>
+    <p class="twr-sub-label">Answer these to add detail</p>
+    <div class="twr-qword-row">${qwordHtml}</div>
+    <textarea class="ref-lined-input" rows="4" placeholder="Rewrite the kernel as ONE expanded sentence that answers two or more questions..."></textarea>
+    <p class="twr-sub-label">Sentence starters (tap to use)</p>
+    <div class="twr-starter-bank">${starterHtml}</div>`;
+  const side = `${refTeacherNote('say', 'A kernel is a bare-bones sentence. Adding who/what/when/where/why/how turns it into a strong academic sentence.')}
+    ${refTeacherNote('students', 'Pick at least two question words. Combine your answers into one clear sentence.')}
+    ${refTeacherNote('time', '6 min')}`;
+  return refTwoColumn(main, side, '🌱 Expand the Sentence');
 }
 
 function buildGoalTrackerSlide(contentObj, themeEmoji, themeName) {
@@ -1067,6 +1143,22 @@ export function buildTptSlideDeckV3(ctx) {
 
   // Think-Write-Respond (reference PPTX slide 11)
   add('✍️ TWR', 'Think Write', buildThinkWriteSlide(contentObj, themeEmoji, themeName, conceptKeyIdea, vocabList, data), { type: 'think-write', section: 'practice' });
+
+  // TWR — Because / But / So conjunction expansion
+  add('✍️ B/B/S', 'Because But So', buildBecauseButSoSlide(contentObj, themeEmoji, themeName, conceptKeyIdea, vocabList), {
+    type: 'twr-conjunctions',
+    section: 'practice',
+    slideTitle: 'Because · But · So',
+    notes: 'TWR conjunctions. Cold-call one student per conjunction and chart the differences in reasoning.',
+  });
+
+  // TWR — sentence kernel expansion + sentence starters
+  add('🌱 Expand', 'Sentence Expansion', buildSentenceExpansionSlide(contentObj, themeEmoji, themeName, conceptKeyIdea, vocabList), {
+    type: 'twr-expansion',
+    section: 'practice',
+    slideTitle: 'Sentence Expansion',
+    notes: 'TWR sentence expansion. Model one expansion aloud first, then release to independent writing.',
+  });
 
   // Student workspace
   add('📊 Workspace', 'Student Workspace', buildStudentWorkspaceSlide(data.explore || {}, themeEmoji, themeName, contentObj), { type: 'student-workspace', section: 'practice' });

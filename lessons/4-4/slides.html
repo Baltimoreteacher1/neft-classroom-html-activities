@@ -1510,8 +1510,43 @@
       font-weight: 800;
       padding: 5px 8px;
       font-family: 'Outfit', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ref-choice-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      color: var(--ref-navy);
+      font-size: 10px;
+      font-weight: 900;
     }
     .ref-choice-card p { margin: 0; padding: 8px; color: var(--body-text); }
+    .ref-choice-workspace { margin-top: 6px; }
+    .ref-choice-workspace-label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--body-text);
+      margin-bottom: 3px;
+      font-family: 'Outfit', sans-serif;
+    }
+    .ref-choice-pick {
+      width: 24px;
+      text-align: center;
+      border: none;
+      border-bottom: 2px solid var(--ref-navy);
+      background: rgba(28,46,66,0.06);
+      font-weight: 800;
+      font-size: 11px;
+      color: var(--ref-navy);
+    }
     .ref-choice-icon { display: block; font-size: 18px; padding: 4px 8px 0; }
     .ref-choice-mist { background: var(--ref-mist); }
     .ref-choice-sage { background: var(--ref-sage); }
@@ -1540,6 +1575,75 @@
     .ref-twr-num { font-weight: 800; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.04em; }
     .ref-twr-body { padding: 8px 10px; background: var(--ref-sage); }
     .ref-twr-prompt { margin: 0 0 4px; font-size: 10px; font-style: italic; color: var(--ref-slate); }
+
+    /* TWR — Because / But / So conjunction expansion */
+    .twr-kernel {
+      background: var(--ref-navy);
+      color: #fff;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin: 0 0 10px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .twr-kernel .twr-kernel-tag {
+      display: block;
+      font-size: 8.5px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ref-amber);
+      margin-bottom: 2px;
+    }
+    .twr-bbs-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .twr-bbs-col {
+      display: flex;
+      flex-direction: column;
+      background: var(--ref-sage);
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+    .twr-bbs-conj {
+      color: #fff;
+      font-weight: 800;
+      font-size: 12px;
+      text-align: center;
+      padding: 5px 4px;
+      letter-spacing: 0.03em;
+    }
+    .twr-bbs-because .twr-bbs-conj { background: var(--ref-teal); }
+    .twr-bbs-but .twr-bbs-conj { background: var(--ref-coral, #d9776a); }
+    .twr-bbs-so .twr-bbs-conj { background: var(--ref-amber); color: var(--ref-navy); }
+    .twr-bbs-job { font-size: 8.5px; font-weight: 700; color: var(--ref-slate); text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 8px 2px; }
+    .twr-bbs-prompt { margin: 0; padding: 0 8px 6px; font-size: 10px; font-style: italic; color: var(--ref-slate); line-height: 1.3; }
+    .twr-bbs-col .ref-lined-input { margin: 0 8px 8px; width: calc(100% - 16px); }
+
+    /* TWR — sentence kernel expansion + sentence starters */
+    .twr-qword-row { display: flex; flex-wrap: wrap; gap: 5px; margin: 6px 0 8px; }
+    .twr-qword {
+      background: var(--ref-teal);
+      color: #fff;
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 99px;
+    }
+    .twr-starter-bank { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+    .twr-starter-chip {
+      background: #fff;
+      border: 1px solid var(--ref-teal);
+      color: var(--ref-navy);
+      font-size: 9.5px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 99px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .twr-starter-chip:hover { background: var(--ref-teal); color: #fff; }
+    .twr-sub-label { font-size: 9px; font-weight: 800; color: var(--ref-slate); text-transform: uppercase; letter-spacing: 0.04em; margin: 8px 0 2px; }
 
     /* Sort It Out */
     .ref-card-bank-label { font-size: 9px; font-weight: 800; color: var(--ref-slate); text-transform: uppercase; margin-bottom: 4px; }
@@ -2102,76 +2206,86 @@
 
       <div class="thumb-card" data-slide="32" onclick="goToSlide(32)">
         <span class="thumb-label">Slide 32</span>
-        <div class="thumb-preview">📊 Workspace</div>
+        <div class="thumb-preview">✍️ B/B/S</div>
       </div>
 
       <div class="thumb-card" data-slide="33" onclick="goToSlide(33)">
         <span class="thumb-label">Slide 33</span>
-        <div class="thumb-preview">🎯 Diff</div>
+        <div class="thumb-preview">🌱 Expand</div>
       </div>
 
       <div class="thumb-card" data-slide="34" onclick="goToSlide(34)">
         <span class="thumb-label">Slide 34</span>
-        <div class="thumb-preview">🤝 Partner</div>
+        <div class="thumb-preview">📊 Workspace</div>
       </div>
 
       <div class="thumb-card" data-slide="35" onclick="goToSlide(35)">
         <span class="thumb-label">Slide 35</span>
-        <div class="thumb-preview">✋ CFU</div>
+        <div class="thumb-preview">🎯 Diff</div>
       </div>
 
       <div class="thumb-card" data-slide="36" onclick="goToSlide(36)">
         <span class="thumb-label">Slide 36</span>
-        <div class="thumb-preview">🌍 Connect</div>
+        <div class="thumb-preview">🤝 Partner</div>
       </div>
 
       <div class="thumb-card" data-slide="37" onclick="goToSlide(37)">
         <span class="thumb-label">Slide 37</span>
-        <div class="thumb-preview">🗣️ Connect</div>
+        <div class="thumb-preview">✋ CFU</div>
       </div>
 
       <div class="thumb-card" data-slide="38" onclick="goToSlide(38)">
         <span class="thumb-label">Slide 38</span>
-        <div class="thumb-preview">✅ Close</div>
+        <div class="thumb-preview">🌍 Connect</div>
       </div>
 
       <div class="thumb-card" data-slide="39" onclick="goToSlide(39)">
         <span class="thumb-label">Slide 39</span>
-        <div class="thumb-preview">📝 Exit</div>
+        <div class="thumb-preview">🗣️ Connect</div>
       </div>
 
       <div class="thumb-card" data-slide="40" onclick="goToSlide(40)">
         <span class="thumb-label">Slide 40</span>
-        <div class="thumb-preview">🏆 Goal</div>
+        <div class="thumb-preview">✅ Close</div>
       </div>
 
       <div class="thumb-card" data-slide="41" onclick="goToSlide(41)">
         <span class="thumb-label">Slide 41</span>
-        <div class="thumb-preview">📝 Bonus</div>
+        <div class="thumb-preview">📝 Exit</div>
       </div>
 
       <div class="thumb-card" data-slide="42" onclick="goToSlide(42)">
         <span class="thumb-label">Slide 42</span>
-        <div class="thumb-preview">🤔 Reflect</div>
+        <div class="thumb-preview">🏆 Goal</div>
       </div>
 
       <div class="thumb-card" data-slide="43" onclick="goToSlide(43)">
         <span class="thumb-label">Slide 43</span>
-        <div class="thumb-preview">🎮 Activity</div>
+        <div class="thumb-preview">📝 Bonus</div>
       </div>
 
       <div class="thumb-card" data-slide="44" onclick="goToSlide(44)">
         <span class="thumb-label">Slide 44</span>
-        <div class="thumb-preview">🏠 Home</div>
+        <div class="thumb-preview">🤔 Reflect</div>
       </div>
 
       <div class="thumb-card" data-slide="45" onclick="goToSlide(45)">
         <span class="thumb-label">Slide 45</span>
-        <div class="thumb-preview">👩‍🏫 Notes</div>
+        <div class="thumb-preview">🎮 Activity</div>
       </div>
 
       <div class="thumb-card" data-slide="46" onclick="goToSlide(46)">
         <span class="thumb-label">Slide 46</span>
+        <div class="thumb-preview">🏠 Home</div>
+      </div>
+
+      <div class="thumb-card" data-slide="47" onclick="goToSlide(47)">
+        <span class="thumb-label">Slide 47</span>
+        <div class="thumb-preview">👩‍🏫 Notes</div>
+      </div>
+
+      <div class="thumb-card" data-slide="48" onclick="goToSlide(48)">
+        <span class="thumb-label">Slide 48</span>
         <div class="thumb-preview">🔑 Key</div>
       </div>
     </nav>
@@ -2891,8 +3005,8 @@
   </div>
         <p class="card-desc tt-question">On Discount Day the claw machine is 25% off its 60-ticket price. In &#039;25% of 60,&#039; which number is the base (the whole), and what part are you trying to find?</p>
         <div class="tt-stems-box">
-          <strong>Sentence stems:</strong>
-          <div class="tt-stem">✍️ The base is ___ and the part I want is ___.</div><div class="tt-stem">✍️ I need to find ___% of ___.</div>
+          <strong>Sentence starters (tap to use):</strong>
+          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ The base is ___ and the part I want is ___.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ I need to find ___% of ___.</div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">percent</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">base</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">part</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">discount</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-launch">
@@ -3102,8 +3216,8 @@
   </div>
         <p class="card-desc tt-question">What steps did you follow every time to find the percent of a number in the discount table?</p>
         <div class="tt-stems-box">
-          <strong>Sentence stems:</strong>
-          <div class="tt-stem">✍️ I changed ___% into the decimal ___.</div><div class="tt-stem">✍️ Then I multiplied ___ x ___ = ___ (the part).</div>
+          <strong>Sentence starters (tap to use):</strong>
+          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ I changed ___% into the decimal ___.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ Then I multiplied ___ x ___ = ___ (the part).</div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">percent</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">base</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">part</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">equation</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-explore">
@@ -3390,36 +3504,39 @@
       <div class="ref-slide-content">
     <div class="ref-two-col">
       <div class="ref-main-panel">
-    <p class="ref-instruction">Choose ONE to show what you know:</p>
+    <p class="ref-instruction">Choose ONE option to show what you know — then do it in the workspace below.</p>
     <div class="ref-choice-grid">
     <button type="button" class="ref-choice-card ref-choice-mist" onclick="selectChoiceBoard(0)" id="choice-card-0">
-      <div class="ref-choice-card-header">✏️ Draw &amp; Label</div>
+      <div class="ref-choice-card-header"><span class="ref-choice-num">1</span><span class="ref-choice-title">✏️ Draw &amp; Label</span></div>
       <span class="ref-choice-icon">✏️</span>
       <p>Sketch a model for today&#039;s problem. Label it using Percent and Base.</p>
       <span class="choice-check" id="choice-check-0">✓</span>
     </button>
     <button type="button" class="ref-choice-card ref-choice-sage" onclick="selectChoiceBoard(1)" id="choice-card-1">
-      <div class="ref-choice-card-header">💬 Explain It</div>
+      <div class="ref-choice-card-header"><span class="ref-choice-num">2</span><span class="ref-choice-title">💬 Explain It</span></div>
       <span class="ref-choice-icon">💬</span>
       <p>In 2–3 sentences, explain &quot;To find the part, change the percent to a decimal, then multiply: part = percent × base.&quot; in your own words.</p>
       <span class="choice-check" id="choice-check-1">✓</span>
     </button>
     <button type="button" class="ref-choice-card ref-choice-cream" onclick="selectChoiceBoard(2)" id="choice-card-2">
-      <div class="ref-choice-card-header">🧮 Solve It</div>
+      <div class="ref-choice-card-header"><span class="ref-choice-num">3</span><span class="ref-choice-title">🧮 Solve It</span></div>
       <span class="ref-choice-icon">🧮</span>
       <p>Work one practice problem and show every step clearly.</p>
       <span class="choice-check" id="choice-check-2">✓</span>
     </button>
     <button type="button" class="ref-choice-card ref-choice-panel" onclick="selectChoiceBoard(3)" id="choice-card-3">
-      <div class="ref-choice-card-header">🎯 Create a Problem</div>
+      <div class="ref-choice-card-header"><span class="ref-choice-num">4</span><span class="ref-choice-title">🎯 Create a Problem</span></div>
       <span class="ref-choice-icon">🎯</span>
       <p>Write your own problem that uses Percent, then solve it and make an answer key.</p>
       <span class="choice-check" id="choice-check-3">✓</span>
     </button></div>
-    <textarea class="ref-lined-input" rows="2" placeholder="Record which choice you made and your response..."></textarea></div>
+    <div class="ref-choice-workspace">
+      <label class="ref-choice-workspace-label">I chose option <input type="text" class="ref-choice-pick" maxlength="1" inputmode="numeric" aria-label="The option number you chose (1-4)" /> — my work:</label>
+      <textarea class="ref-lined-input ref-choice-do" rows="6" placeholder="Do your chosen activity right here — draw &amp; label, explain in words, solve and show every step, or write your own problem and solve it."></textarea>
+    </div></div>
       <aside class="ref-side-panel">
         <div class="ref-side-header">💬 Talk It Over</div>
-        <div class="ref-side-body"><p class="ref-teacher-note ref-note-students"><span>👨‍🎓</span> Choose ONE option. Show your work on paper or whiteboard.</p>
+        <div class="ref-side-body"><p class="ref-teacher-note ref-note-students"><span>👨‍🎓</span> Pick ONE numbered option, then do it in the workspace right on this slide.</p>
     <p class="ref-teacher-note ref-note-time"><span>⏱️</span> 6 min</p>
     <p class="ref-side-prompt"><strong>Use these words:</strong> Percent, Base, Part, Equation</p>
     <p class="ref-side-prompt"><strong>Stretch (early finishers):</strong> teach your strategy to a partner, then compare it with a different method.</p></div>
@@ -3495,7 +3612,82 @@
       <span class="ref-footer-dots" data-for-slide="31"></span>
     </footer></div>
 
-        <div class="slide-body" id="slide-32" data-section="practice" data-slide-type="student-workspace">
+        <div class="slide-body" id="slide-32" data-section="practice" data-slide-type="twr-conjunctions" data-teacher-notes="TWR conjunctions. Cold-call one student per conjunction and chart the differences in reasoning.">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Because · But · So</span>
+      <span class="ref-standard-pill">6.RP.3c</span>
+    </header>
+      <div class="ref-slide-content">
+    <div class="ref-two-col">
+      <div class="ref-main-panel">
+    <p class="ref-instruction">✍️ TWR · WRITE 3 SENTENCES · 7 MIN</p>
+    <div class="twr-kernel"><span class="twr-kernel-tag">Sentence kernel</span>To find the part, change the percent to a decimal, then multiply: part = percent × base.</div>
+    <div class="twr-bbs-grid">
+    <div class="twr-bbs-col twr-bbs-because">
+      <div class="twr-bbs-conj">because</div>
+      <div class="twr-bbs-job">Give a reason</div>
+      <p class="twr-bbs-prompt">To find the part, change the percent to a decimal, then multiply: part = percent × base. because ___</p>
+      <textarea class="ref-lined-input" rows="3" placeholder="Finish the sentence with &quot;because&quot;..."></textarea>
+    </div>
+    <div class="twr-bbs-col twr-bbs-but">
+      <div class="twr-bbs-conj">but</div>
+      <div class="twr-bbs-job">Name a tricky part</div>
+      <p class="twr-bbs-prompt">To find the part, change the percent to a decimal, then multiply: part = percent × base. but ___</p>
+      <textarea class="ref-lined-input" rows="3" placeholder="Finish the sentence with &quot;but&quot;..."></textarea>
+    </div>
+    <div class="twr-bbs-col twr-bbs-so">
+      <div class="twr-bbs-conj">so</div>
+      <div class="twr-bbs-job">State what it means</div>
+      <p class="twr-bbs-prompt">To find the part, change the percent to a decimal, then multiply: part = percent × base. so ___</p>
+      <textarea class="ref-lined-input" rows="3" placeholder="Finish the sentence with &quot;so&quot;..."></textarea>
+    </div></div></div>
+      <aside class="ref-side-panel">
+        <div class="ref-side-header">✍️ Because · But · So</div>
+        <div class="ref-side-body"><p class="ref-teacher-note ref-note-say"><span>👩‍🏫</span> Each conjunction does a different job. &quot;Because&quot; gives a reason, &quot;but&quot; shows a limit or exception, &quot;so&quot; tells the result.</p>
+    <p class="ref-teacher-note ref-note-students"><span>👨‍🎓</span> Finish all three sentences. Each one must be different — you cannot just repeat the kernel.</p>
+    <p class="ref-teacher-note ref-note-time"><span>⏱️</span> 7 min</p>
+    <p class="twr-sub-label">Word bank</p><div class="connect-vocab"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">Percent</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">Base</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">Part</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">Equation</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">Discount</span></div></div>
+      </aside>
+    </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="32">
+      <span>Reveal Math Grade 6 · Unit 4 · 4-4</span>
+      <span class="ref-footer-dots" data-for-slide="32"></span>
+    </footer></div>
+
+        <div class="slide-body" id="slide-33" data-section="practice" data-slide-type="twr-expansion" data-teacher-notes="TWR sentence expansion. Model one expansion aloud first, then release to independent writing.">
+    <div class="ref-slide-frame ref-variant-content">
+      
+    <header class="ref-header-bar">
+      <span class="ref-brand">Reveal Math Grade 6</span>
+      <span class="ref-header-title">Sentence Expansion</span>
+      <span class="ref-standard-pill">6.RP.3c</span>
+    </header>
+      <div class="ref-slide-content">
+    <div class="ref-two-col">
+      <div class="ref-main-panel">
+    <p class="ref-instruction">🌱 TWR · GROW THE KERNEL · 6 MIN</p>
+    <div class="twr-kernel"><span class="twr-kernel-tag">Sentence kernel</span>Today we used Percent.</div>
+    <p class="twr-sub-label">Answer these to add detail</p>
+    <div class="twr-qword-row"><span class="twr-qword">What exactly?</span><span class="twr-qword">When?</span><span class="twr-qword">Where in real life?</span><span class="twr-qword">Why does it work?</span><span class="twr-qword">How did we use it?</span></div>
+    <textarea class="ref-lined-input" rows="4" placeholder="Rewrite the kernel as ONE expanded sentence that answers two or more questions..."></textarea>
+    <p class="twr-sub-label">Sentence starters (tap to use)</p>
+    <div class="twr-starter-bank"><span class="twr-starter-chip" onclick="insertAtCursor(this.textContent.replace(/[…\u2026].*$/,'').trim()+' ')">First, …</span><span class="twr-starter-chip" onclick="insertAtCursor(this.textContent.replace(/[…\u2026].*$/,'').trim()+' ')">For example, …</span><span class="twr-starter-chip" onclick="insertAtCursor(this.textContent.replace(/[…\u2026].*$/,'').trim()+' ')">This means that …</span><span class="twr-starter-chip" onclick="insertAtCursor(this.textContent.replace(/[…\u2026].*$/,'').trim()+' ')">In other words, …</span><span class="twr-starter-chip" onclick="insertAtCursor(this.textContent.replace(/[…\u2026].*$/,'').trim()+' ')">As a result, …</span><span class="twr-starter-chip" onclick="insertAtCursor(this.textContent.replace(/[…\u2026].*$/,'').trim()+' ')">I know this because …</span></div></div>
+      <aside class="ref-side-panel">
+        <div class="ref-side-header">🌱 Expand the Sentence</div>
+        <div class="ref-side-body"><p class="ref-teacher-note ref-note-say"><span>👩‍🏫</span> A kernel is a bare-bones sentence. Adding who/what/when/where/why/how turns it into a strong academic sentence.</p>
+    <p class="ref-teacher-note ref-note-students"><span>👨‍🎓</span> Pick at least two question words. Combine your answers into one clear sentence.</p>
+    <p class="ref-teacher-note ref-note-time"><span>⏱️</span> 6 min</p></div>
+      </aside>
+    </div></div>
+    </div><footer class="ref-slide-footer" data-slide-num="33">
+      <span>Reveal Math Grade 6 · Unit 4 · 4-4</span>
+      <span class="ref-footer-dots" data-for-slide="33"></span>
+    </footer></div>
+
+        <div class="slide-body" id="slide-34" data-section="practice" data-slide-type="student-workspace">
     <div class="ref-slide-frame ref-variant-content">
       
     <header class="ref-header-bar">
@@ -3535,12 +3727,12 @@
         <button class="assess-btn" onclick="clearSketchCanvas()" style="margin-top:6px; font-size:10px;">Clear Sketch</button>
       </div>
     </div></div>
-    </div><footer class="ref-slide-footer" data-slide-num="32">
+    </div><footer class="ref-slide-footer" data-slide-num="34">
       <span>Reveal Math Grade 6 · Unit 4 · 4-4</span>
-      <span class="ref-footer-dots" data-for-slide="32"></span>
+      <span class="ref-footer-dots" data-for-slide="34"></span>
     </footer></div>
 
-        <div class="slide-body" id="slide-33" data-section="practice" data-slide-type="differentiation">
+        <div class="slide-body" id="slide-35" data-section="practice" data-slide-type="differentiation">
     <div class="ref-slide-frame ref-variant-content">
       
     <header class="ref-header-bar">
@@ -3579,12 +3771,12 @@
     </div>
       </div>
     </div></div>
-    </div><footer class="ref-slide-footer" data-slide-num="33">
+    </div><footer class="ref-slide-footer" data-slide-num="35">
       <span>Reveal Math Grade 6 · Unit 4 · 4-4</span>
-      <span class="ref-footer-dots" data-for-slide="33"></span>
+      <span class="ref-footer-dots" data-for-slide="35"></span>
     </footer></div>
 
-        <div class="slide-body" id="slide-34" data-section="practice" data-slide-type="partner-activity">
+        <div class="slide-body" id="slide-36" data-section="practice" data-slide-type="partner-activity">
     <div class="ref-slide-frame ref-variant-content">
       
     <header class="ref-header-bar">
@@ -3620,12 +3812,12 @@
       <p class="card-desc">Work with your partner on the practice problems at your differentiation path level. Explain each step using math vocabulary.</p>
       <textarea class="slide-input-placeholder" rows="4" placeholder="Partners: write one thing you learned from each other..."></textarea>
     </div></div>
-    </div><footer class="ref-slide-footer" data-slide-num="34">
+    </div><footer class="ref-slide-footer" data-slide-num="36">
       <span>Reveal Math Grade 6 · Unit 4 · 4-4</span>
-      <span class="ref-footer-dots" data-for-slide="34"></span>
+      <span class="ref-footer-dots" data-for-slide="36"></span>
     </footer></div>
 
-        <div class="slide-body" id="slide-35" data-section="check" data-slide-type="cfu">
+        <div class="slide-body" id="slide-37" data-section="check" data-slide-type="cfu">
     <div class="ref-slide-frame ref-variant-content">
       
     <header class="ref-header-bar">
@@ -3657,12 +3849,12 @@
       <div id="cfu-feedback-4" class="cfu-feedback"></div>
       <p class="cfu-teacher-tip"><strong>Teacher:</strong> If &gt;30% thumbs down, re-teach with a fresh example before moving on.</p>
     </div></div>
-    </div><footer class="ref-slide-footer" data-slide-num="35">
+    </div><footer class="ref-slide-footer" data-slide-num="37">
       <span>Reveal Math Grade 6 · Unit 4 · 4-4</span>
-      <span class="ref-footer-dots" data-for-slide="35"></span>
+      <span class="ref-footer-dots" data-for-slide="37"></span>
     </footer></div>
 
-        <div class="slide-body" id="slide-36" data-section="connect" data-slide-type="real-world">
+        <div class="slide-body" id="slide-38" data-section="connect" data-slide-type="real-world">
     <div class="ref-slide-frame ref-variant-content">
       
     <header class="ref-header-bar">
@@ -3696,12 +3888,12 @@
         <textarea id="rw-connect-work" class="slide-input-placeholder" rows="4" placeholder="Write your connection..."></textarea>
       </div>
     </div></div>
-    </div><footer class="ref-slide-footer" data-slide-num="36">
+    </div><footer class="ref-slide-footer" data-slide-num="38">
       <span>Reveal Math Grade 6 · Unit 4 · 4-4</span>
-      <span class="ref-footer-dots" data-for-slide="36"></span>
+      <span class="ref-footer-dots" data-for-slide="38"></span>
     </footer></div>
 
-        <div class="slide-body" id="slide-37" data-section="connect" data-slide-type="turn-talk-timer">
+        <div class="slide-body" id="slide-39" data-section="connect" data-slide-type="turn-talk-timer">
     <div class="ref-slide-frame ref-variant-content">
       
     <header class="ref-header-bar">
@@ -3737,8 +3929,8 @@
   </div>
         <p class="card-desc tt-question">The arcade donates 12% of Saturday&#039;s 1,500 ticket sales. The manager says 180 tickets, a student says 18. Who is right, and how do you know?</p>
         <div class="tt-stems-box">
-          <strong>Sentence stems:</strong>
-          <div class="tt-stem">✍️ The ___ is correct because 12% of 1,500 = ___ x 1,500 = ___.</div><div class="tt-stem">✍️ The mistake was using ___ instead of ___.</div>
+          <strong>Sentence starters (tap to use):</strong>
+          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ The ___ is correct because 12% of 1,500 = ___ x 1,500 = ___.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ The mistake was using ___ instead of ___.</div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">percent</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">base</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">part</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">equation</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-connect">
@@ -3753,12 +3945,12 @@
         <p class="tt-extend"><strong>Extend:</strong> Estimate first: 10% of 1,500 is easy to find. Use that to check whether 180 is reasonable for 12%, and explain your reasoning.</p>
       </div>
     </div></div>
-    </div><footer class="ref-slide-footer" data-slide-num="37">
+    </div><footer class="ref-slide-footer" data-slide-num="39">
       <span>Reveal Math Grade 6 · Unit 4 · 4-4</span>
-      <span class="ref-footer-dots" data-for-slide="37"></span>
+      <span class="ref-footer-dots" data-for-slide="39"></span>
     </footer></div>
 
-        <div class="slide-body" id="slide-38" data-section="closure" data-slide-type="section">
+        <div class="slide-body" id="slide-40" data-section="closure" data-slide-type="section">
     <div class="ref-section-opener-v2">
       <div class="ref-section-inner">
         <div class="ref-section-emoji-v2">✅</div>
@@ -3771,7 +3963,7 @@
       </div>
     </div></div>
 
-        <div class="slide-body" id="slide-39" data-section="closure" data-slide-type="exit-ticket">
+        <div class="slide-body" id="slide-41" data-section="closure" data-slide-type="exit-ticket">
     <div class="ref-slide-frame ref-variant-content">
       
     <header class="ref-header-bar">
@@ -3814,12 +4006,12 @@
     </div>
       </div>
     </div></div>
-    </div><footer class="ref-slide-footer" data-slide-num="39">
+    </div><footer class="ref-slide-footer" data-slide-num="41">
       <span>Reveal Math Grade 6 · Unit 4 · 4-4</span>
-      <span class="ref-footer-dots" data-for-slide="39"></span>
+      <span class="ref-footer-dots" data-for-slide="41"></span>
     </footer></div>
 
-        <div class="slide-body" id="slide-40" data-section="closure" data-slide-type="goal-tracker">
+        <div class="slide-body" id="slide-42" data-section="closure" data-slide-type="goal-tracker">
     <div class="ref-slide-frame ref-variant-content">
       
     <header class="ref-header-bar">
@@ -3854,12 +4046,12 @@
       <p>I can explain the strategy to a classmate clearly.</p>
       <span class="goal-circle" id="goal-circle-4">○</span>
     </button></div></div>
-    </div><footer class="ref-slide-footer" data-slide-num="40">
+    </div><footer class="ref-slide-footer" data-slide-num="42">
       <span>Reveal Math Grade 6 · Unit 4 · 4-4</span>
-      <span class="ref-footer-dots" data-for-slide="40"></span>
+      <span class="ref-footer-dots" data-for-slide="42"></span>
     </footer></div>
 
-        <div class="slide-body" id="slide-41" data-section="closure" data-slide-type="interactive-mc">
+        <div class="slide-body" id="slide-43" data-section="closure" data-slide-type="interactive-mc">
     <div class="ref-slide-frame ref-variant-content">
       
     <header class="ref-header-bar">
@@ -3911,12 +4103,12 @@
         <div class="teacher-reveal-box"><strong>Teacher reveal:</strong> 20% = 0.20. Multiply: 0.20 × 150 = 30.</div>
       </div>
     </div></div>
-    </div><footer class="ref-slide-footer" data-slide-num="41">
+    </div><footer class="ref-slide-footer" data-slide-num="43">
       <span>Reveal Math Grade 6 · Unit 4 · 4-4</span>
-      <span class="ref-footer-dots" data-for-slide="41"></span>
+      <span class="ref-footer-dots" data-for-slide="43"></span>
     </footer></div>
 
-        <div class="slide-body" id="slide-42" data-section="closure" data-slide-type="exit-ticket">
+        <div class="slide-body" id="slide-44" data-section="closure" data-slide-type="exit-ticket">
     <div class="ref-slide-frame ref-variant-content">
       
     <header class="ref-header-bar">
@@ -3948,12 +4140,12 @@
         </div>
       </div>
     </div></div>
-    </div><footer class="ref-slide-footer" data-slide-num="42">
+    </div><footer class="ref-slide-footer" data-slide-num="44">
       <span>Reveal Math Grade 6 · Unit 4 · 4-4</span>
-      <span class="ref-footer-dots" data-for-slide="42"></span>
+      <span class="ref-footer-dots" data-for-slide="44"></span>
     </footer></div>
 
-        <div class="slide-body" id="slide-43" data-section="closure" data-slide-type="activity-link">
+        <div class="slide-body" id="slide-45" data-section="closure" data-slide-type="activity-link">
     <div class="ref-slide-frame ref-variant-content">
       
     <header class="ref-header-bar">
@@ -3979,12 +4171,12 @@
     <span class="teacher-cue-text">Early finishers: open the activity. Everyone else: start homework tonight.</span>
   </div>
     </div></div>
-    </div><footer class="ref-slide-footer" data-slide-num="43">
+    </div><footer class="ref-slide-footer" data-slide-num="45">
       <span>Reveal Math Grade 6 · Unit 4 · 4-4</span>
-      <span class="ref-footer-dots" data-for-slide="43"></span>
+      <span class="ref-footer-dots" data-for-slide="45"></span>
     </footer></div>
 
-        <div class="slide-body" id="slide-44" data-section="closure" data-slide-type="activity-link">
+        <div class="slide-body" id="slide-46" data-section="closure" data-slide-type="activity-link">
     <div class="ref-slide-frame ref-variant-content">
       
     <header class="ref-header-bar">
@@ -4005,12 +4197,12 @@
     <span class="teacher-cue-text">Tell families: "Ask your student to teach you one thing from today's lesson."</span>
   </div>
     </div></div>
-    </div><footer class="ref-slide-footer" data-slide-num="44">
+    </div><footer class="ref-slide-footer" data-slide-num="46">
       <span>Reveal Math Grade 6 · Unit 4 · 4-4</span>
-      <span class="ref-footer-dots" data-for-slide="44"></span>
+      <span class="ref-footer-dots" data-for-slide="46"></span>
     </footer></div>
 
-        <div class="slide-body" id="slide-45" data-slide-type="teacher-notes" data-teacher-notes="Hide during presentation — use Notes panel (N key).">
+        <div class="slide-body" id="slide-47" data-slide-type="teacher-notes" data-teacher-notes="Hide during presentation — use Notes panel (N key).">
     <div class="ref-slide-frame ref-variant-content">
       
     <header class="ref-header-bar">
@@ -4039,12 +4231,12 @@
         <p class="notes-mistake"><strong>Common mistake:</strong> A common mistake in Find the Percent of a Number is skipping the key idea: &quot;To find the part, change the percent to a decimal, then multiply: part = percent × base.&quot; — always check your work against this rule before you submit.</p>
       </div>
     </div></div>
-    </div><footer class="ref-slide-footer" data-slide-num="45">
+    </div><footer class="ref-slide-footer" data-slide-num="47">
       <span>Reveal Math Grade 6 · Unit 4 · 4-4</span>
-      <span class="ref-footer-dots" data-for-slide="45"></span>
+      <span class="ref-footer-dots" data-for-slide="47"></span>
     </footer></div>
 
-        <div class="slide-body" id="slide-46" data-slide-type="teacher-notes" data-teacher-notes="CONFIDENTIAL — do not display to students.">
+        <div class="slide-body" id="slide-48" data-slide-type="teacher-notes" data-teacher-notes="CONFIDENTIAL — do not display to students.">
     <div class="ref-slide-frame ref-variant-content">
       
     <header class="ref-header-bar">
@@ -4060,9 +4252,9 @@
       <p class="answer-key-note">Hide this slide during presentation or move to the end of your copy.</p>
       <p class="answer-key-item">✓ Practice 1: 36 tickets — 15% of 240 = 0.15 × 240 = 36 tickets saved.</p><p class="answer-key-item">✓ Practice 2: 80% — 72 ÷ 90 = 0.80 = 80%.</p><p class="answer-key-item">✓ Practice 3: 30 — 20% = 0.20. Multiply: 0.20 × 150 = 30.</p><p class="answer-key-item">✓ Practice 4: 42 — 50% = 0.50. Multiply: 0.50 × 84 = 42. (Or simply divide by 2: 84 ÷ 2 = 42.)</p><p class="answer-key-item">✓ Exit ticket: 162 — 45% = 0.45. Multiply: 0.45 × 360 = 162.</p>
     </div></div>
-    </div><footer class="ref-slide-footer" data-slide-num="46">
+    </div><footer class="ref-slide-footer" data-slide-num="48">
       <span>Reveal Math Grade 6 · Unit 4 · 4-4</span>
-      <span class="ref-footer-dots" data-for-slide="46"></span>
+      <span class="ref-footer-dots" data-for-slide="48"></span>
     </footer></div>
         
         <!-- Subtle Slide Watermark -->
@@ -4089,7 +4281,7 @@
   <!-- Presenter Controls HUD (Visible in fullscreen Present Mode) -->
   <div class="presenter-hud" id="presenter-hud">
     <button class="hud-btn" onclick="prevSlide()" title="Previous (←)">◀</button>
-    <span id="hud-page-indicator">1 / 46</span>
+    <span id="hud-page-indicator">1 / 48</span>
     <button class="hud-btn" onclick="nextSlide()" title="Next (→)">▶</button>
     <button class="notes-toolbar-btn" onclick="toggleNotesPanel()" title="Notes (N)">📝 Notes</button>
     <button class="notes-toolbar-btn" onclick="window.print()" title="Print">🖨️</button>
@@ -4099,10 +4291,10 @@
 
   <script>
     let currentSlide = 1;
-    const totalSlides = 46;
+    const totalSlides = 48;
     
-    const slideTitles = ["TITLE","HOW TO USE","LEARNING TARGETS","AGENDA","LAUNCH SECTION","WARM-UP HOOK","CFU 1","BE CURIOUS","CONCEPT LAUNCH","I DO — WATCH ME","I DO — KEY STEP","WE DO — TOGETHER","CFU 2","YOU DO — YOUR TURN","VOCABULARY SECTION","VOCABULARY","WHICH WORD?","CFU 3","TURN & TALK","EXPLORE SECTION","VISUAL MODEL","EXPLORE","WHITEBOARD CFU","DISCUSS EXPLORE","PRACTICE A","PRACTICE B","EQUIVALENT RATIO SORT","SORT IT OUT","ERROR ANALYSIS","CHOICE BOARD","THINK WRITE","STUDENT WORKSPACE","DIFFERENTIATION","PARTNER ACTIVITY","CFU 4","MATH IN THE WILD","DISCUSS CONNECT","CLOSURE SECTION","EXIT TICKET","GOAL TRACKER","BONUS CHECK","REFLECTION","DIGITAL ACTIVITY","FAMILY CONNECTION","TEACHER NOTES","ANSWER KEY"];
-    const teacherNotesMap = {"1":"Display while students enter. Start presenter mode with ▶ Present.","2":"First day with deck? Spend 30 sec here. Skip on repeat lessons.","3":"Post objectives on board. Return to these at closure.","4":"Adjust minutes based on your block schedule.","6":"Students identify 60 as the base, the 25% discount as the part to find, and connect 'of' to the base.","9":"To find the part, change the percent to a decimal, then multiply: part = percent × base.","10":"Reveal one step at a time. Do NOT show all steps at once.","11":"Second reveal sequence — focus on the most critical step.","12":"Call on students to predict each step before revealing.","16":"Post vocabulary on board for reference. Use the example / non-example row to surface misconceptions.","19":"Students identify 60 as the base, the 25% discount as the part to find, and connect 'of' to the base.","22":"Find the percent of each number. Use the equation: Part = Percent × Base. Convert the percent to a decimal first.","29":"30% = 0.30 (divide by 100, not by 10). 0.30 × 90 = 27. The correct answer is 27.","45":"Hide during presentation — use Notes panel (N key).","46":"CONFIDENTIAL — do not display to students."};
+    const slideTitles = ["TITLE","HOW TO USE","LEARNING TARGETS","AGENDA","LAUNCH SECTION","WARM-UP HOOK","CFU 1","BE CURIOUS","CONCEPT LAUNCH","I DO — WATCH ME","I DO — KEY STEP","WE DO — TOGETHER","CFU 2","YOU DO — YOUR TURN","VOCABULARY SECTION","VOCABULARY","WHICH WORD?","CFU 3","TURN & TALK","EXPLORE SECTION","VISUAL MODEL","EXPLORE","WHITEBOARD CFU","DISCUSS EXPLORE","PRACTICE A","PRACTICE B","EQUIVALENT RATIO SORT","SORT IT OUT","ERROR ANALYSIS","CHOICE BOARD","THINK WRITE","BECAUSE BUT SO","SENTENCE EXPANSION","STUDENT WORKSPACE","DIFFERENTIATION","PARTNER ACTIVITY","CFU 4","MATH IN THE WILD","DISCUSS CONNECT","CLOSURE SECTION","EXIT TICKET","GOAL TRACKER","BONUS CHECK","REFLECTION","DIGITAL ACTIVITY","FAMILY CONNECTION","TEACHER NOTES","ANSWER KEY"];
+    const teacherNotesMap = {"1":"Display while students enter. Start presenter mode with ▶ Present.","2":"First day with deck? Spend 30 sec here. Skip on repeat lessons.","3":"Post objectives on board. Return to these at closure.","4":"Adjust minutes based on your block schedule.","6":"Students identify 60 as the base, the 25% discount as the part to find, and connect 'of' to the base.","9":"To find the part, change the percent to a decimal, then multiply: part = percent × base.","10":"Reveal one step at a time. Do NOT show all steps at once.","11":"Second reveal sequence — focus on the most critical step.","12":"Call on students to predict each step before revealing.","16":"Post vocabulary on board for reference. Use the example / non-example row to surface misconceptions.","19":"Students identify 60 as the base, the 25% discount as the part to find, and connect 'of' to the base.","22":"Find the percent of each number. Use the equation: Part = Percent × Base. Convert the percent to a decimal first.","29":"30% = 0.30 (divide by 100, not by 10). 0.30 × 90 = 27. The correct answer is 27.","32":"TWR conjunctions. Cold-call one student per conjunction and chart the differences in reasoning.","33":"TWR sentence expansion. Model one expansion aloud first, then release to independent writing.","47":"Hide during presentation — use Notes panel (N key).","48":"CONFIDENTIAL — do not display to students."};
     
     // Concept Intro Tab Data
     const conceptData = {
@@ -5119,32 +5311,32 @@
       let html = '';
       
       // Title
-      html += '<text x="15" y="22" font-family="'Outfit', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">INTERACTIVE TAPE DIAGRAM (Ratio 2 : 3)</text>';
+      html += '<text x="15" y="22" font-family="Outfit, sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">INTERACTIVE TAPE DIAGRAM (Ratio 2 : 3)</text>';
       
       // Tape Diagram - Row 1 (Juice: 2 parts)
-      html += '<text x="15" y="52" font-family="'Outfit', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">Juice</text>';
+      html += '<text x="15" y="52" font-family="Outfit, sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">Juice</text>';
       for (let i = 0; i < 2; i++) {
         const rx = 65 + i * 55;
         html += '<rect x="' + rx + '" y="38" width="50" height="22" fill="var(--teal-light)" stroke="var(--navy)" stroke-width="1.5" rx="3"/>';
-        html += '<text x="' + (rx + 25) + '" y="53" font-family="'Outfit', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)" text-anchor="middle">' + S + '</text>';
+        html += '<text x="' + (rx + 25) + '" y="53" font-family="Outfit, sans-serif" font-size="10" font-weight="bold" fill="var(--navy)" text-anchor="middle">' + S + '</text>';
       }
       // Bracket and total for Row 1
       html += '<path d="M 65 32 L 65 28 L 120 28 L 120 32" fill="none" stroke="var(--navy)" stroke-width="1"/>';
-      html += '<text x="180" y="52" font-family="'Outfit', sans-serif" font-size="10" font-weight="bold" fill="var(--teal)">Total: ' + (2 * S) + '</text>';
+      html += '<text x="180" y="52" font-family="Outfit, sans-serif" font-size="10" font-weight="bold" fill="var(--teal)">Total: ' + (2 * S) + '</text>';
       
       // Tape Diagram - Row 2 (Water: 3 parts)
-      html += '<text x="15" y="87" font-family="'Outfit', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">Water</text>';
+      html += '<text x="15" y="87" font-family="Outfit, sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">Water</text>';
       for (let i = 0; i < 3; i++) {
         const rx = 65 + i * 55;
         html += '<rect x="' + rx + '" y="73" width="50" height="22" fill="var(--amber)" stroke="var(--navy)" stroke-width="1.5" rx="3"/>';
-        html += '<text x="' + (rx + 25) + '" y="88" font-family="'Outfit', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)" text-anchor="middle">' + S + '</text>';
+        html += '<text x="' + (rx + 25) + '" y="88" font-family="Outfit, sans-serif" font-size="10" font-weight="bold" fill="var(--navy)" text-anchor="middle">' + S + '</text>';
       }
       // Bracket and total for Row 2
       html += '<path d="M 65 67 L 65 63 L 175 63 L 175 67" fill="none" stroke="var(--navy)" stroke-width="1"/>';
-      html += '<text x="235" y="87" font-family="'Outfit', sans-serif" font-size="10" font-weight="bold" fill="var(--teal)">Total: ' + (3 * S) + '</text>';
+      html += '<text x="235" y="87" font-family="Outfit, sans-serif" font-size="10" font-weight="bold" fill="var(--teal)">Total: ' + (3 * S) + '</text>';
       
       // Double Number Line Title
-      html += '<text x="15" y="122" font-family="'Outfit', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">DOUBLE NUMBER LINE</text>';
+      html += '<text x="15" y="122" font-family="Outfit, sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">DOUBLE NUMBER LINE</text>';
       
       // Lines
       html += '<line x1="65" y1="142" x2="355" y2="142" stroke="var(--navy)" stroke-width="2"/>';
@@ -5165,13 +5357,13 @@
         html += '<line x1="' + tx + '" y1="178" x2="' + tx + '" y2="186" stroke="var(--navy)" stroke-width="1.5"/>';
         
         // Values
-        html += '<text x="' + tx + '" y="134" font-family="'Outfit', sans-serif" font-size="9" font-weight="bold" fill="var(--navy)" text-anchor="middle">' + (i * 2 * S) + '</text>';
-        html += '<text x="' + tx + '" y="196" font-family="'Outfit', sans-serif" font-size="9" font-weight="bold" fill="var(--navy)" text-anchor="middle">' + (i * 3 * S) + '</text>';
+        html += '<text x="' + tx + '" y="134" font-family="Outfit, sans-serif" font-size="9" font-weight="bold" fill="var(--navy)" text-anchor="middle">' + (i * 2 * S) + '</text>';
+        html += '<text x="' + tx + '" y="196" font-family="Outfit, sans-serif" font-size="9" font-weight="bold" fill="var(--navy)" text-anchor="middle">' + (i * 3 * S) + '</text>';
       }
       
       // Line Labels
-      html += '<text x="362" y="145" font-family="'Outfit', sans-serif" font-size="9" font-weight="bold" fill="var(--navy)">Juice (c)</text>';
-      html += '<text x="362" y="185" font-family="'Outfit', sans-serif" font-size="9" font-weight="bold" fill="var(--navy)">Water (c)</text>';
+      html += '<text x="362" y="145" font-family="Outfit, sans-serif" font-size="9" font-weight="bold" fill="var(--navy)">Juice (c)</text>';
+      html += '<text x="362" y="185" font-family="Outfit, sans-serif" font-size="9" font-weight="bold" fill="var(--navy)">Water (c)</text>';
       
       svgGroup.innerHTML = html;
     }
@@ -5198,8 +5390,8 @@
         html += '<line x1="107" y1="' + py + '" x2="113" y2="' + py + '" stroke="var(--navy)" stroke-width="1"/>';
         
         // Axis Labels
-        html += '<text x="' + px + '" y="121" font-family="'Outfit', sans-serif" font-size="7" fill="var(--navy)" text-anchor="middle">' + val + '</text>';
-        html += '<text x="99" y="' + (py + 2.5) + '" font-family="'Outfit', sans-serif" font-size="7" fill="var(--navy)" text-anchor="end">' + val + '</text>';
+        html += '<text x="' + px + '" y="121" font-family="Outfit, sans-serif" font-size="7" fill="var(--navy)" text-anchor="middle">' + val + '</text>';
+        html += '<text x="99" y="' + (py + 2.5) + '" font-family="Outfit, sans-serif" font-size="7" fill="var(--navy)" text-anchor="end">' + val + '</text>';
       }
       
       // Main Axes
@@ -5213,15 +5405,15 @@
       html += '<path d="M 110 210 L 107 205 M 110 210 L 113 205" stroke="var(--navy)" stroke-width="1.5"/>';
       
       // Axis Names
-      html += '<text x="214" y="113" font-family="'Outfit', sans-serif" font-size="8" font-weight="bold" fill="var(--navy)">x</text>';
-      html += '<text x="110" y="8" font-family="'Outfit', sans-serif" font-size="8" font-weight="bold" fill="var(--navy)" text-anchor="middle">y</text>';
+      html += '<text x="214" y="113" font-family="Outfit, sans-serif" font-size="8" font-weight="bold" fill="var(--navy)">x</text>';
+      html += '<text x="110" y="8" font-family="Outfit, sans-serif" font-size="8" font-weight="bold" fill="var(--navy)" text-anchor="middle">y</text>';
       
       // Plot Points
       coordPoints.forEach(pt => {
         const cx = 110 + pt.x * 18;
         const cy = 110 - pt.y * 18;
         html += '<circle cx="' + cx + '" cy="' + cy + '" r="7" fill="rgba(255,255,255,0.85)"/>';
-        html += '<text x="' + cx + '" y="' + (cy + 3.5) + '" font-family="'Outfit', sans-serif" font-size="10" text-anchor="middle">' + pt.marker + '</text>';
+        html += '<text x="' + cx + '" y="' + (cy + 3.5) + '" font-family="Outfit, sans-serif" font-size="10" text-anchor="middle">' + pt.marker + '</text>';
       });
       
       svgGroup.innerHTML = html;
@@ -5263,7 +5455,7 @@
       let html = '';
       
       // Title
-      html += '<text x="15" y="24" font-family="'Outfit', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">INTERACTIVE PAN BALANCE SCALE (x = 8 units)</text>';
+      html += '<text x="15" y="24" font-family="Outfit, sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">INTERACTIVE PAN BALANCE SCALE (x = 8 units)</text>';
       
       // Fulcrum
       html += '<polygon points="205,170 235,170 220,90" fill="#dadce0" stroke="var(--navy)" stroke-width="1.5"/>';
@@ -5272,10 +5464,10 @@
       // Balanced / Unbalanced Banner
       if (wl === wr) {
         html += '<rect x="140" y="10" width="160" height="22" fill="var(--teal-light)" stroke="var(--teal)" stroke-width="1.5" rx="4"/>';
-        html += '<text x="220" y="25" font-family="'Outfit', sans-serif" font-size="9.5" font-weight="bold" fill="var(--navy)" text-anchor="middle">⚖️ BALANCED! (Total: ' + wl + ')</text>';
+        html += '<text x="220" y="25" font-family="Outfit, sans-serif" font-size="9.5" font-weight="bold" fill="var(--navy)" text-anchor="middle">⚖️ BALANCED! (Total: ' + wl + ')</text>';
       } else {
-        html += '<text x="75" y="24" font-family="'Outfit', sans-serif" font-size="9.5" font-weight="bold" fill="var(--navy)" text-anchor="middle">Left: ' + wl + ' units</text>';
-        html += '<text x="365" y="24" font-family="'Outfit', sans-serif" font-size="9.5" font-weight="bold" fill="var(--navy)" text-anchor="middle">Right: ' + wr + ' units</text>';
+        html += '<text x="75" y="24" font-family="Outfit, sans-serif" font-size="9.5" font-weight="bold" fill="var(--navy)" text-anchor="middle">Left: ' + wl + ' units</text>';
+        html += '<text x="365" y="24" font-family="Outfit, sans-serif" font-size="9.5" font-weight="bold" fill="var(--navy)" text-anchor="middle">Right: ' + wr + ' units</text>';
       }
       
       // Strings Left
@@ -5296,7 +5488,7 @@
       let by = ly + 50 - 20;
       for (let i = 0; i < balanceLeft.x; i++) {
         leftBlocksHtml += '<rect x="' + bx + '" y="' + by + '" width="18" height="20" fill="var(--amber)" stroke="var(--navy)" stroke-width="1.2" rx="2"/>';
-        leftBlocksHtml += '<text x="' + (bx + 9) + '" y="' + (by + 14) + '" font-family="'Outfit', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)" text-anchor="middle">x</text>';
+        leftBlocksHtml += '<text x="' + (bx + 9) + '" y="' + (by + 14) + '" font-family="Outfit, sans-serif" font-size="10" font-weight="bold" fill="var(--navy)" text-anchor="middle">x</text>';
         bx += 20;
         if (bx > lx + 15) {
           bx = lx - 32;
@@ -5311,7 +5503,7 @@
       }
       for (let i = 0; i < balanceLeft.one; i++) {
         leftBlocksHtml += '<rect x="' + ux + '" y="' + uy + '" width="12" height="12" fill="var(--teal-light)" stroke="var(--teal)" stroke-width="1.2" rx="1"/>';
-        leftBlocksHtml += '<text x="' + (ux + 6) + '" y="' + (uy + 9) + '" font-family="'Outfit', sans-serif" font-size="8" font-weight="bold" fill="var(--teal)" text-anchor="middle">1</text>';
+        leftBlocksHtml += '<text x="' + (ux + 6) + '" y="' + (uy + 9) + '" font-family="Outfit, sans-serif" font-size="8" font-weight="bold" fill="var(--teal)" text-anchor="middle">1</text>';
         ux += 14;
         if (ux > lx + 22) {
           ux = lx - 32;
@@ -5326,7 +5518,7 @@
       let rby = ry + 50 - 20;
       for (let i = 0; i < balanceRight.x; i++) {
         rightBlocksHtml += '<rect x="' + rbx + '" y="' + rby + '" width="18" height="20" fill="var(--amber)" stroke="var(--navy)" stroke-width="1.2" rx="2"/>';
-        rightBlocksHtml += '<text x="' + (rbx + 9) + '" y="' + (rby + 14) + '" font-family="'Outfit', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)" text-anchor="middle">x</text>';
+        rightBlocksHtml += '<text x="' + (rbx + 9) + '" y="' + (rby + 14) + '" font-family="Outfit, sans-serif" font-size="10" font-weight="bold" fill="var(--navy)" text-anchor="middle">x</text>';
         rbx += 20;
         if (rbx > rx + 15) {
           rbx = rx - 32;
@@ -5341,7 +5533,7 @@
       }
       for (let i = 0; i < balanceRight.one; i++) {
         rightBlocksHtml += '<rect x="' + rux + '" y="' + ruy + '" width="12" height="12" fill="var(--teal-light)" stroke="var(--teal)" stroke-width="1.2" rx="1"/>';
-        rightBlocksHtml += '<text x="' + (rux + 6) + '" y="' + (ruy + 9) + '" font-family="'Outfit', sans-serif" font-size="8" font-weight="bold" fill="var(--teal)" text-anchor="middle">1</text>';
+        rightBlocksHtml += '<text x="' + (rux + 6) + '" y="' + (ruy + 9) + '" font-family="Outfit, sans-serif" font-size="8" font-weight="bold" fill="var(--teal)" text-anchor="middle">1</text>';
         rux += 14;
         if (rux > rx + 22) {
           rux = rx - 32;
