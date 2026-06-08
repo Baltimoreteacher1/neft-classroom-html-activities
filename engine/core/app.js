@@ -13,7 +13,11 @@ import {
   mountCoverArt,
   applyPhaseAccent,
 } from "./premium.js";
-import { mountTeacherPanel, buildWelcomeTeacherNotes, isTeacherMode } from "./teacher-mode.js";
+import {
+  mountTeacherPanel,
+  buildWelcomeTeacherNotes,
+  isTeacherMode,
+} from "./teacher-mode.js";
 import { t, stackHtml, phaseName } from "./i18n.js";
 import "@engine/styles/design-system.css";
 import "@engine/styles/themes.css";
@@ -255,8 +259,7 @@ function mountWelcomeGoogleSlidesLink(lessonId, slot) {
   loadGoogleSlidesUrlMap().then((map) => {
     const url = map && map[lessonId];
     if (!url) return;
-    slot.innerHTML =
-      ` · <a href="${escHtml(url)}" target="_blank" rel="noopener" style="color:var(--teal); font-weight:700;">↗ ${stackHtml(t("googleSlides", "en"), t("googleSlides", "es"))}</a>`;
+    slot.innerHTML = ` · <a href="${escHtml(url)}" target="_blank" rel="noopener" style="color:var(--teal); font-weight:700;">↗ ${stackHtml(t("googleSlides", "en"), t("googleSlides", "es"))}</a>`;
   });
 }
 
@@ -332,7 +335,9 @@ function showIdentityScreen(root, config) {
     coverExtras.innerHTML = buildLessonCoverExtras(config, savedMatch);
     const artSlot = coverExtras.querySelector(".lesson-cover-art");
     if (artSlot) mountCoverArt(artSlot, config);
-    const stdBtn = coverExtras.querySelector('[data-action="standards-explainer"]');
+    const stdBtn = coverExtras.querySelector(
+      '[data-action="standards-explainer"]',
+    );
     if (stdBtn) {
       stdBtn.addEventListener("click", () => {
         const open = stdBtn.getAttribute("aria-expanded") === "true";
@@ -545,6 +550,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     // the student's place in the graded flow is preserved underneath.
     openExtra(kind) {
       if (kind === "projects") return this.openProjects();
+      if (kind === "printables") return this.openPrintables();
       if (kind === "activity") return this.openActivity();
       const id = encodeURIComponent(config.lessonId);
       const meta =
@@ -719,6 +725,75 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       el.scrollIntoView({ block: "start" });
     },
 
+    // Printables: a non-graded "extra" tab listing this lesson's print-ready
+    // paper resources (paper game/activity, color-by-number, vocabulary word
+    // search, MCAP-style practice) from config.printables. Each card has a
+    // Preview button (PDFs load inline below) plus Download buttons. Never
+    // touches phase state, XP, or stars. No-op when the lesson has none.
+    openPrintables() {
+      const items = Array.isArray(config.printables) ? config.printables : [];
+      if (!items.length) return;
+
+      this.setExtraActive("printables");
+      phaseContainer.innerHTML = "";
+      const el = document.createElement("div");
+      el.className = "phase active extra-panel";
+      el.setAttribute("role", "region");
+      el.setAttribute("aria-label", "Printables");
+
+      const card = (p, i) => {
+        const chips = [p.type, p.standard].filter(Boolean);
+        return `
+          <div class="printable-card" style="border:1px solid var(--line, #e4ddc9); border-radius:var(--radius-md, 12px); background:var(--card, #fff); padding:var(--sp-4, 16px); display:flex; flex-direction:column; gap:var(--sp-2, 8px);">
+            <div style="font-size:1.8rem; line-height:1;">${escHtml(p.emoji || "📄")}</div>
+            <div style="font-weight:800; font-size:1.05rem; color:var(--navy, #264653);">${escHtml(p.name || "Printable")}</div>
+            ${p.desc ? `<div class="section-desc" style="font-size:0.9rem;">${escHtml(p.desc)}</div>` : ""}
+            ${
+              chips.length
+                ? `<div style="display:flex; flex-wrap:wrap; gap:var(--sp-1, 4px);">${chips
+                    .map(
+                      (c) =>
+                        `<span style="font-size:0.72rem; font-weight:700; background:var(--cream, #fdf6ec); border:1px solid var(--line, #e4ddc9); border-radius:999px; padding:2px 10px; color:var(--navy, #264653);">${escHtml(c)}</span>`,
+                    )
+                    .join("")}</div>`
+                : ""
+            }
+            <div style="display:flex; flex-wrap:wrap; gap:var(--sp-2, 8px); margin-top:auto; padding-top:var(--sp-2, 8px);">
+              ${p.pdf ? `<button class="btn btn-secondary" data-preview="${i}">👁️ Preview</button>` : ""}
+              ${p.pdf ? `<a class="btn btn-secondary" href="${escHtml(p.pdf)}" download>📄 PDF</a>` : ""}
+              ${p.docx ? `<a class="btn btn-secondary" href="${escHtml(p.docx)}" download>📝 Word</a>` : ""}
+            </div>
+          </div>`;
+      };
+
+      el.innerHTML = `
+        <div class="extra-head" style="display:flex; flex-wrap:wrap; gap:var(--sp-3, 12px); align-items:center; justify-content:space-between; margin-bottom:var(--sp-3, 12px);">
+          <div>
+            <div class="section-title" style="font-size:1.6rem;">🖨️ Printables</div>
+            <div class="section-desc">Print-ready paper games and practice for this lesson — preview here or download to print. Not graded.</div>
+          </div>
+        </div>
+        <div class="printable-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:var(--sp-3, 12px);">${items
+          .map(card)
+          .join("")}</div>
+        <iframe class="printable-frame" title="Printable preview" hidden
+          style="width:100%; height:calc(100vh - 320px); min-height:480px; margin-top:var(--sp-4, 16px); border:1px solid var(--line, #e4ddc9); border-radius:var(--radius-md, 12px); background:var(--card, #fff);"></iframe>
+      `;
+      phaseContainer.append(el);
+
+      const frame = el.querySelector(".printable-frame");
+      el.querySelectorAll("[data-preview]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const p = items[Number(btn.dataset.preview)];
+          if (!p || !p.pdf) return;
+          frame.src = p.pdf;
+          frame.hidden = false;
+          frame.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+      });
+      el.scrollIntoView({ block: "start" });
+    },
+
     start() {
       const s = state.get();
       const startIndex = s.currentPhase || 0;
@@ -805,6 +880,8 @@ function buildSidebar(config, state, phaseConfigs) {
 
     ${bonusNavHtml(config)}
 
+    ${printablesNavHtml(config)}
+
     ${projectsNavHtml(config)}
 
     <div style="margin-top:auto; opacity:0.5; font-size:0.7rem; text-align:center;">
@@ -860,6 +937,23 @@ function bonusNavHtml(config) {
       <button class="phase-btn extra-btn" data-extra="activity">
         <span class="phase-num">${escHtml(act.emoji || "🎯")}</span>
         <span>${escHtml(act.name || "Bonus Activity")}</span>
+      </button>
+    </div>`;
+}
+
+// "Printables" group: a single non-graded tab when the lesson ships print-ready
+// paper resources (config.printables — paper game, color-by-number, vocabulary
+// word search, MCAP practice). Opens inline via app.openPrintables(). Hidden
+// when the lesson has none.
+function printablesNavHtml(config) {
+  const items = Array.isArray(config.printables) ? config.printables : [];
+  if (!items.length) return "";
+  return `
+    <div class="printables-nav" data-bind="printables">
+      <div class="prelesson-label" style="font-size:0.68rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; opacity:0.55; padding:0 var(--sp-2, 8px); margin:var(--sp-3, 12px) 0 var(--sp-1, 4px);">Printables</div>
+      <button class="phase-btn extra-btn" data-extra="printables">
+        <span class="phase-num">🖨️</span>
+        <span>Printables (${items.length})</span>
       </button>
     </div>`;
 }
@@ -938,7 +1032,9 @@ function updateLessonHero(hero, state, phaseConfigs) {
 
   const stars = hero.querySelector('[data-bind="hero-stars"]');
   if (stars)
-    stars.textContent = String(s.phases.reduce((sum, p) => sum + (p.stars || 0), 0));
+    stars.textContent = String(
+      s.phases.reduce((sum, p) => sum + (p.stars || 0), 0),
+    );
 
   const coins = hero.querySelector('[data-bind="hero-coins"]');
   if (coins) coins.textContent = String(s.coins || 0);
@@ -953,11 +1049,11 @@ function updateLessonHero(hero, state, phaseConfigs) {
   }
 
   const phaseName = hero.querySelector('[data-bind="hero-phase-name"]');
-  if (phaseName) phaseName.textContent = current?.name || `Phase ${s.currentPhase + 1}`;
+  if (phaseName)
+    phaseName.textContent = current?.name || `Phase ${s.currentPhase + 1}`;
 
   const phaseCount = hero.querySelector('[data-bind="hero-phase-count"]');
-  if (phaseCount)
-    phaseCount.textContent = `${completed} of ${total} complete`;
+  if (phaseCount) phaseCount.textContent = `${completed} of ${total} complete`;
 }
 
 function updateSidebar(sidebar, state, phaseConfigs) {
