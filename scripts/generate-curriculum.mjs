@@ -169,6 +169,10 @@ function lessonResources(id) {
       // Do not surface the legacy Drive copy — it is an old, un-upgraded deck and
       // only causes confusion about which version is current.
       pills.push(resLink("Google Slides", `/lessons/${id}/slides.html`, true));
+      // Editable .pptx companion — opens natively in Google Slides / PowerPoint.
+      if (has("lessons", id, "slides.pptx")) {
+        pills.push(resLink("📝 Editable Slides", `/lessons/${id}/slides.pptx`, true));
+      }
     } else if (googleSlidesUrls[id]) {
       pills.push(resLink("Google Slides", googleSlidesUrls[id], true));
     }

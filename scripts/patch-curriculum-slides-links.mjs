@@ -31,12 +31,13 @@ html = html.replace(
     const legacyUrl = googleSlidesUrls[lessonId];
     primaryPatched += 1;
 
+    // Legacy Drive copies are intentionally NOT linked — the upgraded HTML deck
+    // (slides.html) plus the editable .pptx are the canonical decks.
+    void legacyUrl;
     let replacement =
       `${prefix}<a class="res" href="${slidesHref}">Google Slides</a>`;
-
-    if (legacyUrl && !rowContent.includes(legacyUrl)) {
-      legacyAdded += 1;
-      replacement += `<a class="res teacher-only" href="${legacyUrl}" target="_blank" rel="noopener">↗ Google Drive copy (legacy)</a>`;
+    if (existsSync(join(root, "lessons", lessonId, "slides.pptx"))) {
+      replacement += `<a class="res" href="/lessons/${lessonId}/slides.pptx">📝 Editable Slides</a>`;
     }
 
     return replacement;
