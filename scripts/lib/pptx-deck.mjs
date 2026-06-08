@@ -206,13 +206,19 @@ function slideGuidedPractice(slide, pptx, c) {
   }
 }
 
+// Each card is a SINGLE shape-with-text object (fill+line on the text box itself),
+// so it drags as one piece in Google Slides — the box stays with its number.
 function chips(slide, pptx, x, y, w, items, perRow = 2, chipH = 0.42, bg = T.sand) {
   items.forEach((it, i) => {
     const col = i % perRow, row = Math.floor(i / perRow);
     const cw = (w - (perRow - 1) * 0.15) / perRow;
     const cx = x + col * (cw + 0.15), cy = y + row * (chipH + 0.12);
-    panel(slide, pptx, cx, cy, cw, chipH, bg, T.line, 0.05);
-    slide.addText(esc(it), { x: cx + 0.1, y: cy, w: cw - 0.2, h: chipH, fontFace: BODY, fontSize: 9, color: T.navy, valign: 'middle', align: 'center' });
+    slide.addText(esc(it), {
+      x: cx, y: cy, w: cw, h: chipH,
+      shape: pptx.ShapeType.roundRect, rectRadius: 0.05,
+      fill: { color: bg }, line: { color: T.line, width: 1 },
+      fontFace: BODY, fontSize: 9, bold: true, color: T.navy, align: 'center', valign: 'middle',
+    });
   });
   return y + Math.ceil(items.length / perRow) * (chipH + 0.12);
 }
