@@ -159,7 +159,6 @@ export function refTitleOpener(ctx) {
         <div class="ref-title-footer-row">
           <span>${esc(subject)}</span>
           <span>⏱ ${esc(timeEstimate || '~45 min')}</span>
-          ${googleSlidesUrl ? `<a href="${esc(googleSlidesUrl)}" target="_blank" rel="noopener" class="ref-gs-link">↗ Edit</a>` : ''}
         </div>
       </div>
     </div>`;

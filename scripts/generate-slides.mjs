@@ -848,9 +848,10 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
     timeEstimate: data.timeEstimate,
   });
 
-  const googleSlidesLinkHtml = googleSlidesUrl
-    ? `<a href="${esc(googleSlidesUrl)}" target="_blank" rel="noopener" class="btn-present" style="background:var(--white); color:var(--navy); border:1px solid #dadce0; text-decoration:none; font-size:12px; padding:6px 12px;">↗ Google Slides</a>`
-    : '';
+  // This HTML deck IS the primary "Google Slides" experience for students. Do not
+  // surface a link out to the legacy Drive copy from inside the deck — it sends
+  // teachers/students to an old, un-upgraded presentation and hides these slides.
+  const googleSlidesLinkHtml = '';
   
   return `<!doctype html>
 <html lang="en">
