@@ -243,7 +243,46 @@ export function renderCoordinateGrid(
     });
   });
 
-  wrapper.append(svg);
+  // Layout: coordinate plane on the left, the list of coordinates to plot on
+  // the right (next to the plane) so students never have to recall them from a
+  // previous page. Stacks vertically on narrow screens.
+  const layout = document.createElement("div");
+  layout.style.cssText =
+    "display:flex; flex-wrap:wrap; gap:var(--sp-4); align-items:flex-start;";
+  const planeWrap = document.createElement("div");
+  planeWrap.style.cssText = "flex:1 1 320px; min-width:260px;";
+  planeWrap.append(svg);
+
+  const side = document.createElement("aside");
+  side.style.cssText =
+    "flex:1 1 190px; min-width:170px; padding:14px 16px; background:var(--surface-soft); border:1px solid var(--line); border-radius:var(--radius-md);";
+  const sideHead = document.createElement("p");
+  sideHead.style.cssText =
+    "margin:0 0 10px; font-size:0.78rem; font-weight:800; letter-spacing:0.04em; text-transform:uppercase; color:var(--teal-dark, #115e59);";
+  sideHead.textContent = "Coordinates to plot";
+  side.append(sideHead);
+
+  const list = document.createElement("ol");
+  list.style.cssText =
+    "margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:8px;";
+  const listItems = targets.map((t) => {
+    const li = document.createElement("li");
+    li.style.cssText =
+      "display:flex; align-items:center; gap:8px; font-size:0.98rem; font-weight:700; color:var(--ink);";
+    const dot = document.createElement("span");
+    dot.style.cssText =
+      "flex:0 0 auto; width:14px; height:14px; border-radius:50%; border:2px solid var(--line); background:#fff; transition:all .2s ease;";
+    const txt = document.createElement("span");
+    const name = t.label ? `${t.label}: ` : "";
+    txt.innerHTML = `${name}<strong style="color:var(--navy,#12355b)">(${t.x}, ${t.y})</strong>`;
+    li.append(dot, txt);
+    list.append(li);
+    return { li, dot, t };
+  });
+  side.append(list);
+
+  layout.append(planeWrap, side);
+  wrapper.append(layout);
 
   // Draw line between points toggle
   if (showLine && targets.length >= 2) {
@@ -322,7 +361,12 @@ export function renderCoordinateGrid(
     });
 
     targets.forEach((t, i) => {
-      if (!used.has(i)) targetMarkers[i].ring.style.display = "";
+      if (!used.has(i)) {
+        targetMarkers[i].ring.style.display = "";
+      } else if (listItems[i]) {
+        listItems[i].dot.style.background = "var(--success, #16a34a)";
+        listItems[i].dot.style.borderColor = "var(--success, #16a34a)";
+      }
     });
 
     if (correct === targets.length) {
