@@ -178,9 +178,10 @@ def _find_notice_wonder(slides):
     anchors = []
     for idx, slide in enumerate(slides):
         joined = " ".join(_slide_text_blocks(slide)).lower()
-        if ("be curious" in joined or "mindset" in joined) and (
-            "notice" in joined or "wonder" in joined
-        ):
+        # Reveal's Be Curious launch varies: "What do you notice? / wonder?" on
+        # some decks, "What could the question be?" on others. Anchor on the
+        # Be Curious / Mindset marker itself (don't require notice/wonder words).
+        if "be curious" in joined or "mindset" in joined:
             anchors.append(idx)
 
     # 2) The Be Curious photo: largest real image on the anchor slide, scanning a
@@ -201,16 +202,14 @@ def _find_notice_wonder(slides):
     if best_pic is None:
         return None
 
-    # 3) Context = the data-context sentence from a nearby data slide if present,
-    #    else the descriptive text on the chosen slide.
-    context = ""
-    for slide in slides:
-        blocks = _slide_text_blocks(slide)
-        joined = " ".join(blocks).lower()
-        if any(h in joined for h in _DATA_HINTS):
-            context = _pick_context(blocks)
-            if context:
-                break
+    # 3) Context = the scenario/data sentence NEAR the Be Curious slide (not the
+    #    later rule/summary). Gather text from the anchor slide + the next few,
+    #    then pick the best descriptive (non-question, non-rule) block.
+    start = anchors[0] if anchors else best_idx
+    window_blocks = []
+    for idx in range(start, min(start + 4, len(slides))):
+        window_blocks.extend(_slide_text_blocks(slides[idx]))
+    context = _pick_context(window_blocks)
     if not context:
         context = _pick_context(_slide_text_blocks(slides[best_idx]))
 
@@ -221,8 +220,19 @@ def _find_notice_wonder(slides):
     }
 
 
+# Procedural rule/summary phrasing — NOT a notice/wonder scenario.
+_RULE_HINTS = (
+    "algorithm",
+    "place the decimal",
+    "multiply both",
+    "power of 10",
+    "quotient above",
+    "you can use",
+)
+
+
 def _pick_context(blocks):
-    """Pick the data-context sentence(s) from a slide's text blocks."""
+    """Pick the scenario/data sentence from a set of text blocks."""
     descriptive = []
     for b in blocks:
         low = b.lower()
@@ -230,14 +240,20 @@ def _pick_context(blocks):
             continue
         if low.endswith(":") and len(b) < 40:
             continue  # short labels like "Teaching Experience"
+        if any(r in low for r in _RULE_HINTS):
+            continue  # skip the procedural rule/summary
         descriptive.append(b)
     if not descriptive:
         return ""
-    # Prefer the block that actually describes the data (the longest one that
-    # is not purely a question), else the longest block overall.
-    non_q = [b for b in descriptive if not b.strip().endswith("?")]
-    pool = non_q or descriptive
-    return max(pool, key=len)
+    # The richest scenario/data block is reliably the longest one (it may end
+    # with the framing question, which is fine for a Notice & Wonder prompt).
+    # Only fall back to skipping questions if the longest is a bare mindset ask.
+    longest = max(descriptive, key=len)
+    if longest.strip().endswith("?") and len(longest) < 30:
+        non_q = [b for b in descriptive if not b.strip().endswith("?")]
+        if non_q:
+            return max(non_q, key=len)
+    return longest
 
 
 def _find_word_problem(slides):
