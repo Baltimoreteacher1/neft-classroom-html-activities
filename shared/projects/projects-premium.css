@@ -1,0 +1,667 @@
+/* ==========================================================================
+   Neft Teacher — Projects PREMIUM design layer
+   Loads AFTER each project page's inline <style> and projects-kit.css to
+   elevate culminating projects to TPT-seller / publisher quality.
+
+   Non-destructive: targets existing class vocabulary only (no markup or ID
+   changes), so every calculator, save/resume hook, and EN/ES toggle keeps
+   working. Version pages are scoped under `.pk` (the <body class="pk">), the
+   unit project index/hub pages under `.pk-hub` — neither class exists on any
+   other page in the site, so nothing here leaks.
+
+   Vanilla CSS, zero dependencies, offline-safe (system fonts only).
+   Reference as /shared/projects/projects-premium.css
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   0. Shared premium tokens + motion
+   -------------------------------------------------------------------------- */
+.pk,
+.pk-hub {
+  --pp-ink: #0c1b2a;
+  --pp-muted: #54677c;
+  --pp-line: #e4ebf2;
+  --pp-bg: #eef3f8;
+  --pp-card: #ffffff;
+
+  --pp-blue: #1763c7;
+  --pp-blue-deep: #0c3f86;
+  --pp-teal: #0e9a8c;
+  --pp-violet: #6d4ad6;
+  --pp-gold: #f4a924;
+  --pp-coral: #ef6b52;
+  --pp-green: #19a35a;
+
+  --pp-shadow-sm: 0 2px 6px rgba(12, 27, 42, 0.06);
+  --pp-shadow: 0 10px 30px rgba(12, 27, 42, 0.1);
+  --pp-shadow-lg: 0 24px 60px rgba(12, 27, 42, 0.16);
+  --pp-radius: 22px;
+  --pp-radius-lg: 28px;
+  --pp-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes pp-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes pp-sheen {
+  0% {
+    transform: translateX(-120%) skewX(-18deg);
+  }
+  60%,
+  100% {
+    transform: translateX(260%) skewX(-18deg);
+  }
+}
+
+.pk {
+  background:
+    radial-gradient(
+      1200px 480px at 12% -8%,
+      rgba(23, 99, 199, 0.08),
+      transparent 60%
+    ),
+    radial-gradient(
+      1000px 420px at 100% 0%,
+      rgba(14, 154, 140, 0.07),
+      transparent 55%
+    ),
+    var(--pp-bg);
+}
+
+/* Stagger the entrance of the major sections */
+.pk .wrap > section,
+.pk .wrap > .intro-card {
+  animation: pp-rise 0.6s var(--pp-ease) both;
+}
+.pk .wrap > *:nth-child(2) {
+  animation-delay: 0.04s;
+}
+.pk .wrap > *:nth-child(3) {
+  animation-delay: 0.08s;
+}
+.pk .wrap > *:nth-child(4) {
+  animation-delay: 0.12s;
+}
+.pk .wrap > *:nth-child(5) {
+  animation-delay: 0.16s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pk .wrap > section,
+  .pk .wrap > .intro-card,
+  .pk .phero .deco {
+    animation: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   1. Hero — depth, pattern, polished pills
+   -------------------------------------------------------------------------- */
+.pk .phero {
+  background:
+    radial-gradient(
+      900px 360px at 78% -30%,
+      rgba(244, 169, 36, 0.35),
+      transparent 55%
+    ),
+    radial-gradient(
+      700px 300px at 8% 120%,
+      rgba(14, 154, 140, 0.45),
+      transparent 55%
+    ),
+    linear-gradient(135deg, #0b2c52 0%, #1763c7 55%, #1c84c6 100%);
+  padding: 56px 24px 48px;
+  border-radius: 0 0 var(--pp-radius-lg) var(--pp-radius-lg);
+  box-shadow: var(--pp-shadow);
+}
+.pk .phero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.16) 1.4px,
+    transparent 1.6px
+  );
+  background-size: 22px 22px;
+  opacity: 0.5;
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 78%);
+  pointer-events: none;
+}
+.pk .phero > * {
+  position: relative;
+  z-index: 1;
+}
+.pk .phero .deco {
+  font-size: 64px;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.3));
+  animation: pp-rise 0.7s var(--pp-ease) both;
+}
+.pk .phero h1 {
+  font-size: clamp(30px, 5.4vw, 46px);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.22);
+}
+.pk .phero p {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.92);
+}
+.pk .phero .tag {
+  backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  letter-spacing: 0.01em;
+}
+.pk .phero .tag.gold {
+  background: linear-gradient(135deg, #ffce5c, var(--pp-gold));
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #3a2600;
+  box-shadow: 0 4px 12px rgba(244, 169, 36, 0.4);
+}
+
+/* Hero toolbar buttons → glassy chips */
+.pk .toolbar button {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 999px;
+  padding: 9px 18px;
+  backdrop-filter: blur(6px);
+  transition:
+    transform 0.18s var(--pp-ease),
+    background 0.18s ease;
+}
+.pk .toolbar button:hover {
+  background: rgba(255, 255, 255, 0.26);
+  transform: translateY(-1px);
+}
+
+/* Progress bar — gradient + glow */
+.pk .progress-track {
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(12, 27, 42, 0.1);
+}
+.pk .progress-fill {
+  background: linear-gradient(90deg, var(--pp-teal), var(--pp-blue));
+  box-shadow: 0 0 14px rgba(23, 99, 199, 0.45);
+  transition: width 0.5s var(--pp-ease);
+}
+
+/* --------------------------------------------------------------------------
+   2. Cards: intro + phases — elevation, accent rail, hover lift
+   -------------------------------------------------------------------------- */
+.pk .intro-card,
+.pk .phase {
+  background: var(--pp-card);
+  border: 1px solid var(--pp-line);
+  border-radius: var(--pp-radius);
+  box-shadow: var(--pp-shadow);
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.25s var(--pp-ease),
+    box-shadow 0.25s var(--pp-ease);
+}
+.pk .phase {
+  padding-top: 26px;
+}
+.pk .intro-card:hover,
+.pk .phase:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--pp-shadow-lg);
+}
+.pk .phase::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 6px;
+  background: linear-gradient(180deg, var(--pp-blue), var(--pp-teal));
+}
+.pk .intro-card {
+  border-top: 6px solid transparent;
+  border-image: linear-gradient(90deg, var(--pp-gold), var(--pp-coral)) 1;
+}
+
+/* Phase header — bold gradient number badge */
+.pk .phase-head {
+  align-items: center;
+}
+.pk .phase-num {
+  background: linear-gradient(135deg, var(--pp-blue), var(--pp-blue-deep));
+  color: #fff;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  font-weight: 800;
+  box-shadow: 0 8px 18px rgba(12, 63, 134, 0.35);
+  flex: 0 0 auto;
+}
+.pk .skill {
+  font-weight: 800;
+  color: var(--pp-ink);
+  letter-spacing: -0.01em;
+}
+
+/* Self → Peer → World arc banners */
+.pk .arc-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, var(--pp-violet), var(--pp-blue));
+  color: #fff;
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-weight: 800;
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 12px rgba(109, 74, 214, 0.32);
+}
+
+/* --------------------------------------------------------------------------
+   3. Tasks, inputs, fields — friendly, tactile
+   -------------------------------------------------------------------------- */
+.pk .task {
+  background: linear-gradient(180deg, #fbfdff, #f3f8fd);
+  border: 1px solid var(--pp-line);
+  border-radius: 16px;
+  box-shadow: inset 0 1px 0 #fff;
+}
+.pk .fld {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--pp-muted);
+}
+.pk input[type="text"],
+.pk input[type="number"],
+.pk input:not([type]),
+.pk select,
+.pk textarea {
+  border: 1.5px solid var(--pp-line);
+  border-radius: 12px;
+  background: #fff;
+  transition:
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    transform 0.16s ease;
+}
+.pk input[type="text"]:focus,
+.pk input[type="number"]:focus,
+.pk input:not([type]):focus,
+.pk select:focus,
+.pk textarea:focus {
+  outline: none;
+  border-color: var(--pp-blue);
+  box-shadow: 0 0 0 4px rgba(23, 99, 199, 0.16);
+}
+
+/* --------------------------------------------------------------------------
+   4. Buttons — gradient depth, hover lift, variants
+   -------------------------------------------------------------------------- */
+.pk .btn {
+  background: linear-gradient(135deg, var(--pp-blue), var(--pp-blue-deep));
+  color: #fff;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  box-shadow: 0 8px 18px rgba(12, 63, 134, 0.26);
+  transition:
+    transform 0.16s var(--pp-ease),
+    box-shadow 0.16s var(--pp-ease),
+    filter 0.16s ease;
+}
+.pk .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px rgba(12, 63, 134, 0.32);
+  filter: brightness(1.04);
+}
+.pk .btn:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 12px rgba(12, 63, 134, 0.26);
+}
+.pk .btn.alt {
+  background: linear-gradient(135deg, var(--pp-teal), #0c7d72);
+  box-shadow: 0 8px 18px rgba(14, 154, 140, 0.28);
+}
+.pk .btn.ghost {
+  background: #fff;
+  color: var(--pp-blue-deep);
+  border: 1.5px solid var(--pp-blue);
+  box-shadow: var(--pp-shadow-sm);
+}
+.pk .btn.ghost:hover {
+  background: #eef5ff;
+}
+
+/* --------------------------------------------------------------------------
+   5. Readouts / feedback — celebratory result cards
+   -------------------------------------------------------------------------- */
+.pk .readout:not(:empty) {
+  background: linear-gradient(135deg, #e8f8f0, #dcf3ff);
+  border: 1.5px solid #bfe8d6;
+  border-radius: 16px;
+  box-shadow:
+    inset 0 1px 0 #fff,
+    var(--pp-shadow-sm);
+  position: relative;
+}
+.pk .readout .big,
+.pk .big {
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--pp-blue), var(--pp-teal));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.pk .feedback {
+  font-weight: 800;
+}
+
+/* Hint disclosure → pill summary */
+.pk .hintbox {
+  border: 1px dashed #c9d6e4;
+  border-radius: 14px;
+  background: #f9fcff;
+}
+.pk .hintbox > summary {
+  cursor: pointer;
+  font-weight: 800;
+  color: var(--pp-blue-deep);
+  list-style: none;
+}
+.pk .hintbox > summary::-webkit-details-marker {
+  display: none;
+}
+.pk .hintbox > summary::before {
+  content: "💡 ";
+}
+
+/* --------------------------------------------------------------------------
+   6. Vocab cards + callouts (Formula Bank / Sentence Frames)
+   -------------------------------------------------------------------------- */
+.pk .pk-vocab .pk-term {
+  border: 1.5px solid var(--pp-line);
+  box-shadow: var(--pp-shadow-sm);
+  transition:
+    transform 0.2s var(--pp-ease),
+    box-shadow 0.2s var(--pp-ease);
+}
+.pk .pk-vocab .pk-term:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--pp-shadow);
+}
+.pk .pk-vocab .pk-term .pk-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 4px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #eaf3ff, #e2f6f1);
+  box-shadow:
+    inset 0 0 0 2px #fff,
+    var(--pp-shadow-sm);
+}
+.pk .pk-callout {
+  background: linear-gradient(135deg, #eef5ff, #e6f6f2);
+  border: 1px solid #d6e6f4;
+  box-shadow: var(--pp-shadow-sm);
+}
+.pk .pk-callout h3 {
+  color: var(--pp-blue-deep);
+}
+
+/* What-If lab + stat cards */
+.pk .pk-whatif {
+  background: linear-gradient(135deg, #fff7e6, #fff1f0);
+  border: 1px solid #ffe2bd;
+}
+.pk .pk-stat {
+  box-shadow: var(--pp-shadow-sm);
+  border-color: var(--pp-line);
+}
+.pk .pk-stat b {
+  background: linear-gradient(135deg, var(--pp-blue), var(--pp-teal));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   7. Rubric — colored header, zebra, rounded frame
+   -------------------------------------------------------------------------- */
+.pk .rubric {
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--pp-shadow-sm);
+  border: 1px solid var(--pp-line);
+}
+.pk .rubric thead th {
+  background: linear-gradient(135deg, var(--pp-blue-deep), var(--pp-blue));
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+.pk .rubric tbody tr:nth-child(even) {
+  background: #f5f9fd;
+}
+.pk .rubric td,
+.pk .rubric th {
+  border-color: var(--pp-line) !important;
+}
+
+/* Checklist — tactile rows */
+.pk .checklist label {
+  border-radius: 12px;
+  transition: background 0.15s ease;
+}
+.pk .checklist label:hover {
+  background: #f1f7ff;
+}
+.pk .checklist input[type="checkbox"] {
+  accent-color: var(--pp-green);
+  width: 20px;
+  height: 20px;
+}
+
+/* Report box — terminal window chrome */
+.pk .pk-report {
+  background: linear-gradient(180deg, #16233b, #0f172a);
+  box-shadow: var(--pp-shadow);
+  border: 1px solid #24344f;
+  position: relative;
+  padding-top: 40px;
+}
+.pk .pk-report::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  left: 18px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ff5f57;
+  box-shadow:
+    20px 0 0 #febc2e,
+    40px 0 0 #28c840;
+}
+
+/* --------------------------------------------------------------------------
+   8. Footer
+   -------------------------------------------------------------------------- */
+.pk .footer {
+  color: var(--pp-muted);
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   9. Unit Project INDEX / hub pages (.pk-hub) — storefront polish
+   -------------------------------------------------------------------------- */
+.pk-hub {
+  background:
+    radial-gradient(
+      1100px 460px at 10% -10%,
+      rgba(23, 99, 199, 0.1),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 380px at 100% 0%,
+      rgba(244, 169, 36, 0.12),
+      transparent 55%
+    ),
+    #eef3f8;
+}
+.pk-hub .hero.compact-hero {
+  background: linear-gradient(135deg, #0b2c52 0%, #1763c7 60%, #1c84c6 100%);
+  color: #fff;
+  border-radius: var(--pp-radius-lg);
+  padding: 48px 36px;
+  box-shadow: var(--pp-shadow);
+  position: relative;
+  overflow: hidden;
+}
+.pk-hub .hero.compact-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.15) 1.4px,
+    transparent 1.6px
+  );
+  background-size: 22px 22px;
+  opacity: 0.45;
+  mask-image: linear-gradient(to bottom, #000, transparent 80%);
+}
+.pk-hub .hero.compact-hero > * {
+  position: relative;
+  z-index: 1;
+}
+.pk-hub .hero .eyebrow {
+  color: #ffd874;
+}
+.pk-hub .hero h1 {
+  font-size: clamp(28px, 5vw, 44px);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+.pk-hub .hero .hero-copy {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* Version choice cards become bold product tiles */
+.pk-hub .activity-grid {
+  gap: 22px;
+}
+.pk-hub .activity-card {
+  border: 1px solid var(--pp-line);
+  border-radius: var(--pp-radius);
+  background: var(--pp-card);
+  box-shadow: var(--pp-shadow);
+  padding: 26px;
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.25s var(--pp-ease),
+    box-shadow 0.25s var(--pp-ease);
+}
+.pk-hub .activity-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 6px;
+  background: linear-gradient(90deg, var(--pp-blue), var(--pp-teal));
+}
+.pk-hub .activity-card:nth-child(2)::before {
+  background: linear-gradient(90deg, var(--pp-gold), var(--pp-coral));
+}
+.pk-hub .activity-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--pp-shadow-lg);
+}
+.pk-hub .activity-card .card-kicker {
+  display: inline-block;
+  background: #eef5ff;
+  color: var(--pp-blue-deep);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+.pk-hub .activity-card:nth-child(2) .card-kicker {
+  background: #fff3e0;
+  color: #9a5b12;
+}
+.pk-hub .activity-card h3 {
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+.pk-hub .activity-card .button-link {
+  display: inline-block;
+  margin-top: 8px;
+  background: linear-gradient(135deg, var(--pp-blue), var(--pp-blue-deep));
+  color: #fff;
+  border-radius: 12px;
+  padding: 11px 20px;
+  font-weight: 800;
+  box-shadow: 0 8px 18px rgba(12, 63, 134, 0.26);
+  transition:
+    transform 0.16s var(--pp-ease),
+    box-shadow 0.16s var(--pp-ease);
+}
+.pk-hub .activity-card:hover .button-link {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px rgba(12, 63, 134, 0.32);
+}
+.pk-hub .activity-card:nth-child(2) .button-link {
+  background: linear-gradient(135deg, var(--pp-coral), #d6492f);
+  box-shadow: 0 8px 18px rgba(239, 107, 82, 0.3);
+}
+.pk-hub .note-panel {
+  border-radius: var(--pp-radius);
+  border: 1px solid var(--pp-line);
+  border-left: 6px solid var(--pp-teal);
+  background: linear-gradient(135deg, #f4fbf9, #eef6ff);
+  box-shadow: var(--pp-shadow-sm);
+}
+
+/* --------------------------------------------------------------------------
+   10. Print — flatten premium effects so worksheets stay clean
+   -------------------------------------------------------------------------- */
+@media print {
+  .pk,
+  .pk-hub {
+    background: #fff !important;
+  }
+  .pk .phero,
+  .pk-hub .hero.compact-hero {
+    background: #0b2c52 !important;
+    box-shadow: none !important;
+  }
+  .pk .intro-card,
+  .pk .phase,
+  .pk .btn,
+  .pk-hub .activity-card {
+    box-shadow: none !important;
+    transform: none !important;
+    animation: none !important;
+  }
+  .pk .pk-report::before,
+  .pk .phero::before {
+    display: none !important;
+  }
+}
