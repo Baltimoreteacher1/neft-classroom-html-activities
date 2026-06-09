@@ -150,3 +150,32 @@ lockfile match), then run the checks.
 
 See [`docs/closed-loop-qa-checklist.md`](docs/closed-loop-qa-checklist.md) for the
 fill-in checklist to run before every handoff.
+
+---
+
+## Automated QA Loop
+
+A repeatable, conservative build → audit → fix → retest loop, defined in
+[`.claude/loop.md`](.claude/loop.md) and runnable as a slash command (`/qa-loop`).
+
+- **How to run:** `npm run qa:loop` (or the `/qa-loop` command). It detects which
+  check scripts actually exist, runs the safe ones (`build`, `validate*`,
+  `audit*`, plus `lint`/`test`/`format` _if_ they ever exist), prints PASS / SKIP
+  / FAIL per check, and writes a timestamped log to `.qa-logs/`. It exits non-zero
+  if any available check fails. `npm run qa:danger -- "<cmd>"` checks whether a
+  command is one of the blocked dangerous ones.
+- **What it checks:** Vite build + the repo's `validate`/`audit` suites. It never
+  runs generators or `deploy`.
+- **What it refuses to do:** deploy, commit, push, force-push, delete/move lesson
+  folders or routes, restructure curriculum/pages, or replace working content
+  with placeholders. These are enforced by `permissions.deny` and the
+  `pre-bash-guard.sh` PreToolUse hook in `.claude/settings.json`.
+- **Deploy rule:** push to `main` is the only deploy path (Cloudflare Git
+  integration). **Never** run `wrangler` / `npm run deploy` manually — it is
+  blocked.
+- **Structure rule:** do not change curriculum / page / route / lesson-card
+  structure unless Joel explicitly asks.
+- **Stop rule:** stop after available checks pass (twice in a row), or when the
+  same failure repeats and needs human judgment, or when the only fix left would
+  be a risky structural change — then produce the final report from
+  `.claude/loop.md`.
