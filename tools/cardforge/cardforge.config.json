@@ -1,0 +1,41 @@
+{
+  "name": "EduWonderLab CardForge",
+  "version": "1.0.0",
+  "description": "Universal Lesson-to-EduWonderLab Math Card Engine. Local-first, staging-only in v1.",
+  "paths": {
+    "staged": "tools/cardforge/staged",
+    "generated": "tools/cardforge/generated",
+    "examples": "tools/cardforge/examples",
+    "reports": "tools/cardforge/reports",
+    "curriculumManifest": "data/curriculum-manifest.json"
+  },
+  "publicPages": {
+    "cardBuilder": "/math/card-builder/",
+    "samplePreview": "/math/card-builder/sample/"
+  },
+  "adapters": {
+    "implemented": ["text", "markdown", "html", "json"],
+    "scaffolded": ["pptx", "pdf", "docx", "gslides"]
+  },
+  "qa": {
+    "blockOn": [
+      "missingCardTitle",
+      "missingAnswerKey",
+      "answerCountMismatch",
+      "brokenInternalLink",
+      "fakeLiveLink"
+    ],
+    "warnOn": [
+      "uncertainStandard",
+      "uncertainUnit",
+      "missingExitTicket",
+      "aiSlopPhrase",
+      "todoMarker",
+      "thinScaffold"
+    ]
+  },
+  "safety": {
+    "publishWritesLiveData": false,
+    "note": "v1 publish is a guarded, documented manual procedure. It never overwrites live curriculum data or moves files into live routes automatically."
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "cardforge/card.schema.json",
+  "title": "CardForge Math Card",
+  "description": "Mirrors the data/curriculum-manifest.json lesson entry, plus CardForge staging fields. Live publish maps these fields into the real manifest pipeline.",
+  "type": "object",
+  "required": ["id", "title", "status", "objective", "resources"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Stable card id. Demo cards use a cf-demo-* prefix to avoid colliding with live lesson ids."
+    },
+    "demo": {
+      "type": "boolean",
+      "description": "True for sample/demo cards. Never added to the live manifest."
+    },
+    "unit": {
+      "type": ["integer", "null"],
+      "description": "Unit number, or null if uncertain."
+    },
+    "unitUncertain": { "type": "boolean" },
+    "lesson": {
+      "type": ["integer", "string", "null"],
+      "description": "Lesson number/slug, or null if uncertain."
+    },
+    "lessonUncertain": { "type": "boolean" },
+    "title": { "type": "string" },
+    "topic": { "type": "string" },
+    "standard": {
+      "type": ["string", "null"],
+      "description": "CCSS code, or null if uncertain."
+    },
+    "standardUncertain": { "type": "boolean" },
+    "gradeLevel": { "type": "string" },
+    "difficulty": {
+      "type": "string",
+      "enum": ["intro", "easy", "moderate", "challenge", "mixed"]
+    },
+    "objective": {
+      "type": "string",
+      "description": "Student-friendly 'I can...' objective."
+    },
+    "languageObjective": { "type": "string" },
+    "description": {
+      "type": "string",
+      "description": "Short card description for the hub."
+    },
+    "timeEstimate": { "type": "string" },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "lessonPath": {
+      "type": ["string", "null"],
+      "description": "Live route once published; null while staged-only."
+    },
+    "previewPath": {
+      "type": ["string", "null"],
+      "description": "Served preview route, if any."
+    },
+    "resources": {
+      "type": "object",
+      "description": "Keyed resource map, matching the manifest resources shape.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["file", "exists"],
+        "properties": {
+          "label": { "type": "string" },
+          "path": { "type": ["string", "null"] },
+          "file": { "type": "string" },
+          "applicable": { "type": "boolean" },
+          "exists": { "type": "boolean" }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "staged", "ready-to-publish", "blocked", "live"]
+    },
+    "qaStatus": {
+      "type": "string",
+      "enum": ["not-run", "pass", "pass-with-warnings", "blocked"]
+    },
+    "createdDate": { "type": "string" }
+  }
+}

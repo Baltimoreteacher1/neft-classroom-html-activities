@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "cardforge/lesson-analysis.schema.json",
+  "title": "CardForge Lesson Analysis",
+  "description": "Normalized object every input adapter produces. Conservative inference; uncertainty is flagged, never faked.",
+  "type": "object",
+  "required": ["sourceType", "title", "confidence"],
+  "properties": {
+    "sourceType": {
+      "type": "string",
+      "enum": [
+        "text",
+        "markdown",
+        "html",
+        "json",
+        "pptx",
+        "pdf",
+        "docx",
+        "gslides"
+      ]
+    },
+    "sourceFile": { "type": ["string", "null"] },
+    "supported": { "type": "boolean" },
+    "message": {
+      "type": ["string", "null"],
+      "description": "Honest note when an input type is not yet fully supported."
+    },
+    "title": { "type": "string" },
+    "rawText": { "type": "string" },
+    "unit": { "type": ["integer", "null"] },
+    "lesson": { "type": ["integer", "string", "null"] },
+    "topic": { "type": ["string", "null"] },
+    "gradeLevel": { "type": ["string", "null"] },
+    "standard": { "type": ["string", "null"] },
+    "objective": { "type": ["string", "null"] },
+    "languageObjective": { "type": ["string", "null"] },
+    "vocabulary": { "type": "array", "items": { "type": "string" } },
+    "prerequisites": { "type": "array", "items": { "type": "string" } },
+    "formulas": { "type": "array", "items": { "type": "string" } },
+    "examples": { "type": "array", "items": { "type": "string" } },
+    "practiceTypes": { "type": "array", "items": { "type": "string" } },
+    "misconceptions": { "type": "array", "items": { "type": "string" } },
+    "esolSupports": { "type": "array", "items": { "type": "string" } },
+    "spedSupports": { "type": "array", "items": { "type": "string" } },
+    "timeEstimate": { "type": ["string", "null"] },
+    "suggestedResources": { "type": "array", "items": { "type": "string" } },
+    "suggestedTags": { "type": "array", "items": { "type": "string" } },
+    "difficulty": { "type": ["string", "null"] },
+    "missing": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Pieces the source did not provide."
+    },
+    "uncertain": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Fields inferred with low confidence."
+    },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+  }
+}

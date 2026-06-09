@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Math Card Builder — turn any lesson (slides, worksheet, PDF, or a rough idea) into a complete EduWonderLab Math card with teacher guide, student practice, answer key, exit ticket, and a QA report. Powered by CardForge."
+    />
+    <title>Math Card Builder | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      .page-shell {
+        width: min(100% - 32px, 1180px);
+      }
+      .activity-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+      @media (max-width: 1024px) {
+        .activity-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 680px) {
+        .activity-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .cf-flow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 6px;
+      }
+      .cf-flow-step {
+        flex: 1 1 150px;
+        min-width: 140px;
+        padding: 16px 14px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-top: 5px solid var(--teal);
+        border-radius: var(--radius);
+        text-align: center;
+      }
+      .cf-flow-step .cf-step-num {
+        display: inline-grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        margin-bottom: 8px;
+        border-radius: 999px;
+        background: var(--surface-soft);
+        color: var(--teal-dark);
+        font-weight: 850;
+      }
+      .cf-flow-step h3 {
+        margin: 0 0 4px;
+        font-size: 1.05rem;
+      }
+      .cf-flow-step p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .cf-flow-arrow {
+        align-self: center;
+        color: var(--teal);
+        font-size: 1.4rem;
+        font-weight: 800;
+      }
+      @media (max-width: 680px) {
+        .cf-flow-arrow {
+          display: none;
+        }
+      }
+      .cf-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+      @media (max-width: 680px) {
+        .cf-list {
+          grid-template-columns: 1fr;
+        }
+      }
+      .cf-list li {
+        padding: 13px 16px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        font-size: 1.02rem;
+        font-weight: 700;
+        color: var(--ink);
+      }
+      .cf-list li span {
+        display: block;
+        margin-top: 3px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: var(--muted);
+      }
+      .cf-usecase {
+        padding: 16px 18px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-left: 5px solid var(--gold);
+        border-radius: var(--radius);
+      }
+      .cf-usecase p {
+        margin: 0;
+        font-size: 1.02rem;
+        color: var(--ink);
+        line-height: 1.4;
+      }
+      .cf-qa {
+        columns: 2;
+        column-gap: 28px;
+        margin: 6px 0 0;
+        padding-left: 20px;
+      }
+      .cf-qa li {
+        margin: 4px 0;
+        font-size: 0.98rem;
+      }
+      @media (max-width: 680px) {
+        .cf-qa {
+          columns: 1;
+        }
+      }
+      .cf-cmd {
+        display: block;
+        margin-top: 10px;
+        padding: 12px 14px;
+        background: #0f2e2b;
+        color: #d7f3ee;
+        border-radius: var(--radius);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.9rem;
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body class="tools-page">
+    <main class="page-shell">
+      <!-- Hero -->
+      <section class="hero compact-hero tools-hero" aria-labelledby="cf-title">
+        <div>
+          <p class="eyebrow">Grade 6 · Teacher Workspace · CardForge</p>
+          <h1 id="cf-title">Math Card Builder</h1>
+          <p class="hero-copy">
+            Turn any lesson into a complete EduWonderLab Math card. A
+            teacher-facing workspace for converting slides, worksheets, PDFs,
+            and rough lesson ideas into polished math lesson cards with
+            classroom-ready resources.
+          </p>
+          <ul class="hero-callouts" aria-label="What it produces">
+            <li><strong>Teacher</strong>Guide, answer key, sub notes.</li>
+            <li><strong>Student</strong>Practice, exit ticket, vocabulary.</li>
+            <li><strong>Checked</strong>Every package runs a QA gate.</li>
+          </ul>
+        </div>
+        <aside class="summary-card" aria-labelledby="cf-summary-title">
+          <p class="eyebrow">At a glance</p>
+          <h2 id="cf-summary-title">How it works</h2>
+          <dl class="summary-list">
+            <div>
+              <dt>Engine</dt>
+              <dd>CardForge (local tool)</dd>
+            </div>
+            <div>
+              <dt>Flow</dt>
+              <dd>Source → Analyze → Build → QA → Stage</dd>
+            </div>
+            <div>
+              <dt>Output</dt>
+              <dd>Card + teacher/student resources</dd>
+            </div>
+          </dl>
+        </aside>
+      </section>
+
+      <!-- Honesty note -->
+      <section aria-label="How CardForge runs">
+        <div class="note-panel" role="note">
+          <p>
+            <strong>How this works today:</strong> CardForge runs as a
+            <strong>local EduWonderLab tool</strong>. This page explains the
+            workflow and links to a real generated sample. There is
+            <strong>no upload or live "generate" button</strong> yet — building
+            happens in the repo with the <code>npm run cardforge:*</code>
+            commands. Live in-browser building can be added later.
+          </p>
+        </div>
+      </section>
+
+      <!-- What it can use -->
+      <section aria-labelledby="cf-use-heading">
+        <div class="section-heading">
+          <p class="eyebrow">What It Can Use</p>
+          <h2 id="cf-use-heading">Start From Almost Anything</h2>
+          <p>
+            Fully supported sources are parsed today. Slide decks and PDFs are
+            scaffolded — export them to text first, or author a lesson directly.
+          </p>
+        </div>
+        <ul class="cf-list" aria-label="Supported lesson sources">
+          <li>
+            📝 Rough lesson idea<span>Supported now (text / markdown).</span>
+          </li>
+          <li>
+            📄 Worksheet or notes text<span
+              >Supported now (text / markdown).</span
+            >
+          </li>
+          <li>🌐 HTML activity<span>Supported now (HTML parsed).</span></li>
+          <li>
+            🗂️ Existing EduWonderLab lesson<span
+              >Supported now (config.json).</span
+            >
+          </li>
+          <li>
+            📊 Slide deck / PowerPoint<span
+              >Scaffolded — export to text first.</span
+            >
+          </li>
+          <li>📕 PDF / DOCX<span>Scaffolded — export to text first.</span></li>
+        </ul>
+      </section>
+
+      <!-- What it creates -->
+      <section aria-labelledby="cf-create-heading">
+        <div class="section-heading">
+          <p class="eyebrow">What It Creates</p>
+          <h2 id="cf-create-heading">A Complete Card Package</h2>
+        </div>
+        <ul class="cf-list" aria-label="What CardForge creates">
+          <li>
+            🗂️ EduWonderLab lesson card<span
+              >Metadata matching the site schema.</span
+            >
+          </li>
+          <li>
+            👩‍🏫 Teacher guide<span>Overview, pacing, examples, supports.</span>
+          </li>
+          <li>
+            ✏️ Student practice<span>Directions, vocabulary, problems.</span>
+          </li>
+          <li>✅ Answer key<span>Every problem, with work shown.</span></li>
+          <li>🎫 Exit ticket<span>Quick end-of-lesson check.</span></li>
+          <li>📋 QA report<span>Pass / warning / blocked checklist.</span></li>
+        </ul>
+      </section>
+
+      <!-- Workflow -->
+      <section aria-labelledby="cf-workflow-heading">
+        <div class="section-heading">
+          <p class="eyebrow">The Workflow</p>
+          <h2 id="cf-workflow-heading">
+            Source → Analyze → Build → QA → Stage → Publish
+          </h2>
+        </div>
+        <div class="cf-flow" aria-label="CardForge workflow">
+          <div class="cf-flow-step">
+            <span class="cf-step-num">1</span>
+            <h3>Source</h3>
+            <p>Bring a lesson, file, or idea.</p>
+          </div>
+          <span class="cf-flow-arrow" aria-hidden="true">→</span>
+          <div class="cf-flow-step">
+            <span class="cf-step-num">2</span>
+            <h3>Analyze</h3>
+            <p>Infer unit, standard, vocab.</p>
+          </div>
+          <span class="cf-flow-arrow" aria-hidden="true">→</span>
+          <div class="cf-flow-step">
+            <span class="cf-step-num">3</span>
+            <h3>Build</h3>
+            <p>Generate every resource.</p>
+          </div>
+          <span class="cf-flow-arrow" aria-hidden="true">→</span>
+          <div class="cf-flow-step">
+            <span class="cf-step-num">4</span>
+            <h3>QA Check</h3>
+            <p>Math + completeness gate.</p>
+          </div>
+          <span class="cf-flow-arrow" aria-hidden="true">→</span>
+          <div class="cf-flow-step">
+            <span class="cf-step-num">5</span>
+            <h3>Stage</h3>
+            <p>Review the package.</p>
+          </div>
+          <span class="cf-flow-arrow" aria-hidden="true">→</span>
+          <div class="cf-flow-step">
+            <span class="cf-step-num">6</span>
+            <h3>Publish</h3>
+            <p>Guarded manual promote.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Use cases -->
+      <section aria-labelledby="cf-cases-heading">
+        <div class="section-heading">
+          <p class="eyebrow">Example Use Cases</p>
+          <h2 id="cf-cases-heading">Real Things You Can Build</h2>
+        </div>
+        <div class="activity-grid" aria-label="Example use cases">
+          <div class="cf-usecase">
+            <p>“Turn a slide deck on ratios into a full EduWonderLab card.”</p>
+          </div>
+          <div class="cf-usecase">
+            <p>“Build a review packet from a rough lesson idea.”</p>
+          </div>
+          <div class="cf-usecase">
+            <p>“Audit an existing lesson card for missing resources.”</p>
+          </div>
+          <div class="cf-usecase">
+            <p>
+              “Create a teacher guide, student practice, and answer key from a
+              worksheet.”
+            </p>
+          </div>
+          <div class="cf-usecase">
+            <p>
+              “Package a statistics lesson with an activity and exit ticket.”
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- QA checklist -->
+      <section aria-labelledby="cf-qa-heading">
+        <div class="section-heading">
+          <p class="eyebrow">Quality Gate</p>
+          <h2 id="cf-qa-heading">What QA Checks Before a Card Is "Ready"</h2>
+          <p>
+            Every package runs this checklist. Blocking failures stop a card;
+            warnings are flagged for cleanup.
+          </p>
+        </div>
+        <ul class="cf-qa">
+          <li>Card title, objective, and description exist</li>
+          <li>Unit / lesson / standard present or clearly flagged uncertain</li>
+          <li>Teacher guide, student practice, and answer key all present</li>
+          <li>Answer key covers <em>every</em> practice problem</li>
+          <li>Inline math claims are recomputed and must match</li>
+          <li>No vague “answers may vary” without a rubric</li>
+          <li>ESOL / SPED supports included when helpful</li>
+          <li>No broken links or fake live buttons</li>
+          <li>No AI-slop phrases or stray TODO markers</li>
+          <li>Enough practice scaffolding for the grade level</li>
+        </ul>
+      </section>
+
+      <!-- Sample + actions -->
+      <section aria-labelledby="cf-actions-heading">
+        <div class="section-heading">
+          <p class="eyebrow">Sample &amp; Actions</p>
+          <h2 id="cf-actions-heading">See a Real Generated Package</h2>
+          <p>
+            A complete sample built by CardForge —
+            <strong>Mean, Median, Mode, and Range</strong> (a staged demo, not a
+            live curriculum card).
+          </p>
+        </div>
+        <div class="activity-grid" aria-label="Sample and actions">
+          <a class="activity-card" href="/math/card-builder/sample/">
+            <span class="card-kicker">Live preview</span>
+            <h3>📦 View Sample Generated Card</h3>
+            <p>
+              The full Mean/Median/Mode/Range package: card, teacher guide,
+              student practice, answer key, exit ticket, and QA.
+            </p>
+            <span class="button-link">Open the Sample</span>
+          </a>
+          <a class="activity-card" href="/math/command-center/">
+            <span class="card-kicker">Related</span>
+            <h3>🛠️ Math Command Center</h3>
+            <p>
+              The broader teacher workspace for building, auditing, and
+              packaging math materials.
+            </p>
+            <span class="button-link">Open Command Center</span>
+          </a>
+          <a class="activity-card" href="/math/">
+            <span class="card-kicker">Live now</span>
+            <h3>← Back to Math Hub</h3>
+            <p>
+              Return to the Grade 6 Reveal Math curriculum hub and ready-to-use
+              tools.
+            </p>
+            <span class="button-link">Open Math Hub</span>
+          </a>
+        </div>
+        <div class="note-panel" role="note" style="margin-top: 16px">
+          <p>
+            <strong>For teachers running it locally:</strong> build the sample
+            package yourself with —
+            <code class="cf-cmd"
+              >npm run cardforge:stage --
+              tools/cardforge/examples/mean-median-mode-range/job.json</code
+            >
+            Documentation lives in the repo at
+            <code>tools/cardforge/README.md</code>; staged outputs go to
+            <code>tools/cardforge/staged/</code>.
+          </p>
+        </div>
+      </section>
+
+      <footer class="site-footer">
+        <span>Neft Teacher · Math Card Builder (CardForge)</span>
+        <span>Grade 6 Teacher Workspace · <span data-current-year></span></span>
+      </footer>
+    </main>
+    <script src="/assets/app.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,155 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "cardforge/job.schema.json",
+  "title": "CardForge Build Job",
+  "description": "Single source of truth for one lesson package. `npm run cardforge:build -- <job.json>` renders every artifact (card.json, teacher guide, student practice, answer key, exit ticket, resource manifest, README, QA report) deterministically from this file.",
+  "type": "object",
+  "required": ["card", "lesson"],
+  "properties": {
+    "source": {
+      "type": "object",
+      "description": "Optional provenance. If `file` is set, `cardforge:build` runs the matching adapter to attach an analysis; authored content in `lesson` still wins.",
+      "properties": {
+        "type": { "type": "string" },
+        "file": { "type": ["string", "null"] },
+        "note": { "type": "string" }
+      }
+    },
+    "card": { "$ref": "card.schema.json" },
+    "lesson": {
+      "type": "object",
+      "required": [
+        "objective",
+        "vocabulary",
+        "modeledExamples",
+        "practice",
+        "answerKey"
+      ],
+      "properties": {
+        "overview": { "type": "string" },
+        "objective": { "type": "string" },
+        "languageObjective": { "type": "string" },
+        "materials": { "type": "array", "items": { "type": "string" } },
+        "pacing": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "phase": { "type": "string" },
+              "minutes": { "type": "integer" },
+              "what": { "type": "string" }
+            }
+          }
+        },
+        "warmUp": { "type": "string" },
+        "vocabulary": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["term", "definition"],
+            "properties": {
+              "term": { "type": "string" },
+              "termEs": { "type": "string" },
+              "definition": { "type": "string" },
+              "definitionEs": { "type": "string" },
+              "example": { "type": "string" }
+            }
+          }
+        },
+        "formulas": { "type": "array", "items": { "type": "string" } },
+        "modeledExamples": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["prompt", "steps", "answer"],
+            "properties": {
+              "prompt": { "type": "string" },
+              "steps": { "type": "array", "items": { "type": "string" } },
+              "answer": { "type": "string" }
+            }
+          }
+        },
+        "guidedPractice": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "prompt": { "type": "string" },
+              "answer": { "type": "string" }
+            }
+          }
+        },
+        "practice": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["n", "prompt", "answer"],
+            "properties": {
+              "n": { "type": "integer" },
+              "prompt": { "type": "string" },
+              "answer": { "type": "string" },
+              "work": { "type": "string" },
+              "teacherJudgment": { "type": "boolean" },
+              "rubric": { "type": "string" }
+            }
+          }
+        },
+        "answerKey": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["n", "answer"],
+            "properties": {
+              "n": { "type": "integer" },
+              "answer": { "type": "string" },
+              "work": { "type": "string" },
+              "teacherJudgment": { "type": "boolean" }
+            }
+          }
+        },
+        "exitTicket": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "prompt": { "type": "string" },
+              "answer": { "type": "string" }
+            }
+          }
+        },
+        "reflection": { "type": "string" },
+        "misconceptions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "misconception": { "type": "string" },
+              "fix": { "type": "string" }
+            }
+          }
+        },
+        "esolSupports": { "type": "array", "items": { "type": "string" } },
+        "spedSupports": { "type": "array", "items": { "type": "string" } },
+        "extension": { "type": "string" },
+        "subNotes": { "type": "string" }
+      }
+    },
+    "enhancements": {
+      "type": "array",
+      "description": "Optional, only when they fit the lesson.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "sub-packet",
+          "color-by-number",
+          "word-search",
+          "math-game",
+          "html-activity",
+          "review-packet",
+          "tpt-description",
+          "family-support"
+        ]
+      }
+    }
+  }
+}
