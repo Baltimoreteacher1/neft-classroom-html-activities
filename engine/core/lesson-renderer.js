@@ -29,10 +29,7 @@ import {
   renderOptionalPracticeOptIn,
 } from "../components/activity-chooser.js";
 import { buildGradeCard } from "./grade.js";
-import {
-  createProblemCard,
-  problemTypeLabel,
-} from "./problem-shell.js";
+import { createProblemCard, problemTypeLabel } from "./problem-shell.js";
 import { renderThemeIllustration } from "./theme-illustrations.js";
 import { deriveWorkedSteps } from "./worked-steps.js";
 import {
@@ -804,13 +801,7 @@ async function completePhase(el, ctx, state, phaseIdx, name, correct, total) {
     xp,
     stars,
   );
-  await ctx.engagement.showPhaseComplete(
-    el,
-    name,
-    xp,
-    stars,
-    transitionMeta,
-  );
+  await ctx.engagement.showPhaseComplete(el, name, xp, stars, transitionMeta);
   ctx.navigateTo(phaseIdx + 1);
 }
 
@@ -1018,6 +1009,82 @@ function renderUnknownComponentFallback(container, def = {}) {
   container.append(card);
 }
 
+// ── Reveal Math slides (inline, additive) ───────────────────────────────────
+// A sibling pipeline may write `config.revealSlides`: an array of
+//   { src, caption?, placement, page? }
+// where `placement` is one of the canonical sections:
+//   launch | explore | vocabulary | instruction | practice | connect | closure
+//
+// Each lesson section renders the slides whose placement maps to it, appended
+// at the END of that section's content. Section ↔ placement mapping:
+//   Launch  ← launch, instruction   (no dedicated "instruction" phase exists;
+//                                     Launch holds the teaching/concept block,
+//                                     so it is the nearest sensible home)
+//   Vocab   ← vocabulary            (the Vocab phase IS rendered separately)
+//   Explore ← explore
+//   Practice← practice
+//   Connect ← connect
+//   Reflect ← closure               (Reflect is the closing/reflect section)
+// Every placement therefore surfaces in exactly one rendered section; none are
+// silently dropped.
+//
+// STRICT no-op guarantee: when `config.revealSlides` is missing, not an array,
+// or contains no slide for the requested placement(s), this appends NOTHING —
+// no container, no heading, no console output. Lessons without the field render
+// byte-for-byte as before.
+function revealSlidesFor(config, placements) {
+  const all = Array.isArray(config?.revealSlides) ? config.revealSlides : [];
+  if (!all.length) return [];
+  const wanted = Array.isArray(placements) ? placements : [placements];
+  return all.filter(
+    (s) =>
+      s && typeof s.src === "string" && s.src && wanted.includes(s.placement),
+  );
+}
+
+// Append an accessible Reveal Math figure list for the given placement(s) to
+// `host`. Returns early (no DOM) when there are no matching slides.
+function renderRevealSlides(host, config, placements) {
+  const slides = revealSlidesFor(config, placements);
+  if (!slides.length) return;
+
+  const section = document.createElement("section");
+  section.className = "reveal-slides";
+  section.setAttribute("aria-label", "Reveal Math slides");
+
+  const heading = document.createElement("div");
+  heading.className = "reveal-slides-heading";
+  heading.innerHTML = `<span class="reveal-slides-tag" aria-hidden="true">📘 Reveal Math</span>`;
+  section.append(heading);
+
+  slides.forEach((slide, i) => {
+    const fig = document.createElement("figure");
+    fig.className = "reveal-slides-figure";
+
+    const img = document.createElement("img");
+    img.className = "reveal-slides-img";
+    img.setAttribute("loading", "lazy");
+    img.setAttribute("decoding", "async");
+    img.src = slide.src;
+    const pageNum = Number.isFinite(slide.page) ? slide.page : i + 1;
+    img.alt = slide.caption
+      ? String(slide.caption)
+      : `Reveal Math slide ${pageNum}`;
+    fig.append(img);
+
+    if (slide.caption) {
+      const cap = document.createElement("figcaption");
+      cap.className = "reveal-slides-caption";
+      cap.textContent = String(slide.caption);
+      fig.append(cap);
+    }
+
+    section.append(fig);
+  });
+
+  host.append(section);
+}
+
 // ── Phase 1: Launch ──
 // Resolve the "I can ..." Content Objective with graceful fallbacks.
 export function resolveContentObjective(config) {
@@ -1143,11 +1210,7 @@ function renderLaunchPhase(el, state, ctx, config) {
     <div class="badge badge-amber mb-4">${esc(cfg.badge || config.title)}</div>
     <p class="launch-narrative">${renderMathText(cfg.narrative)}</p>`;
   if (cfg.contextImage || config.theme) {
-    renderThemeIllustration(
-      scenario,
-      config.theme,
-      cfg.contextImage || null,
-    );
+    renderThemeIllustration(scenario, config.theme, cfg.contextImage || null);
   }
   el.append(scenario);
 
@@ -1196,6 +1259,9 @@ function renderLaunchPhase(el, state, ctx, config) {
   if (launchTT) {
     renderTurnAndTalk(el, launchTT, state, 0);
   }
+
+  // Inline Reveal Math slides for this section (launch + instruction).
+  renderRevealSlides(el, config, ["launch", "instruction"]);
 
   const btn = document.createElement("button");
   btn.className = "btn btn-primary btn-lg mt-6";
@@ -1284,6 +1350,9 @@ function renderVocabPhase(el, state, ctx, config) {
           terms: config.vocabulary,
           onComplete: onDone,
         });
+        // Inline Reveal Math vocabulary slides surface on the study step, where
+        // students first see the words before any vocab activity.
+        renderRevealSlides(el, config, "vocabulary");
         break;
       case "builder":
         renderVocabBuilder(el, {
@@ -1389,28 +1458,31 @@ function renderExplorePhase(el, state, ctx, config) {
   exploreShell.className = "explore-problem-wrap";
   el.append(exploreShell);
 
+  // Inline Reveal Math slides for the Explore section.
+  renderRevealSlides(el, config, "explore");
+
   renderComponent(
     exploreShell,
     { ...cfg, stem: cfg.instructions || cfg.stem },
     () => {
-    if (cfg.discourse) {
-      const disc = document.createElement("div");
-      disc.className = "card card-teal mt-6";
-      disc.innerHTML = `<h4 style="color:var(--teal); margin-bottom:var(--sp-3);">💬 Discuss</h4>`;
-      renderOpenResponse(disc, {
-        prompt: cfg.discourse.prompt,
-        sentenceFrame: cfg.discourse.sentenceFrame,
-        keywords: cfg.discourse.keywords,
-        minLength: 20,
-        onSubmit() {
-          showTurnTalkThenComplete();
-        },
-      });
-      el.append(disc);
-    } else {
-      showTurnTalkThenComplete();
-    }
-  },
+      if (cfg.discourse) {
+        const disc = document.createElement("div");
+        disc.className = "card card-teal mt-6";
+        disc.innerHTML = `<h4 style="color:var(--teal); margin-bottom:var(--sp-3);">💬 Discuss</h4>`;
+        renderOpenResponse(disc, {
+          prompt: cfg.discourse.prompt,
+          sentenceFrame: cfg.discourse.sentenceFrame,
+          keywords: cfg.discourse.keywords,
+          minLength: 20,
+          onSubmit() {
+            showTurnTalkThenComplete();
+          },
+        });
+        el.append(disc);
+      } else {
+        showTurnTalkThenComplete();
+      }
+    },
     { number: 1, total: 1, skipHints: true },
   );
 }
@@ -1503,6 +1575,11 @@ function renderPracticePhase(el, state, ctx, config) {
 
   const area = document.createElement("div");
   el.append(area);
+
+  // Inline Reveal Math slides for the Practice section. Appended after the
+  // (dynamically replaced) problem area so they remain visible as a stable
+  // reference while problems cycle through `area`.
+  renderRevealSlides(el, config, "practice");
 
   const seq = createAdaptiveSequence(config, state);
   let totalCorrect = 0,
@@ -1604,40 +1681,41 @@ function renderPracticePhase(el, state, ctx, config) {
       area,
       prob,
       (isCorrect) => {
-      totalAttempts++;
-      if (isCorrect) {
-        totalCorrect++;
-        coins++;
-        state.awardCoin(1);
-        const result = ctx.engagement.recordCorrect(null);
-        if (result.streakMessage) {
-          const toast = document.createElement("div");
-          toast.className = "feedback feedback-success visible practice-toast";
-          toast.style.animation = "feedbackIn 0.3s var(--ease-spring)";
-          toast.innerHTML = `<span class="feedback-icon">✓</span><span>${result.message} ${result.streakMessage}</span>`;
-          area.append(toast);
+        totalAttempts++;
+        if (isCorrect) {
+          totalCorrect++;
+          coins++;
+          state.awardCoin(1);
+          const result = ctx.engagement.recordCorrect(null);
+          if (result.streakMessage) {
+            const toast = document.createElement("div");
+            toast.className =
+              "feedback feedback-success visible practice-toast";
+            toast.style.animation = "feedbackIn 0.3s var(--ease-spring)";
+            toast.innerHTML = `<span class="feedback-icon">✓</span><span>${result.message} ${result.streakMessage}</span>`;
+            area.append(toast);
+          }
+          updateScoreBar();
+          setTimeout(() => next(), 1500);
+        } else {
+          ctx.engagement.recordIncorrect(null);
+          updateScoreBar();
+          // Run the scaffolded remediation sequence (hint -> worked example ->
+          // guided steps -> easier retry) before advancing. The flow also biases
+          // the adaptive tier toward Level 1 on repeated misses via state hooks.
+          const remSlot = document.createElement("div");
+          remSlot.className = "mt-4";
+          area.append(remSlot);
+          renderRemediation(remSlot, {
+            question: prob,
+            state,
+            level: prob.tier,
+            onComplete() {
+              setTimeout(() => next(), 600);
+            },
+          });
         }
-        updateScoreBar();
-        setTimeout(() => next(), 1500);
-      } else {
-        ctx.engagement.recordIncorrect(null);
-        updateScoreBar();
-        // Run the scaffolded remediation sequence (hint -> worked example ->
-        // guided steps -> easier retry) before advancing. The flow also biases
-        // the adaptive tier toward Level 1 on repeated misses via state hooks.
-        const remSlot = document.createElement("div");
-        remSlot.className = "mt-4";
-        area.append(remSlot);
-        renderRemediation(remSlot, {
-          question: prob,
-          state,
-          level: prob.tier,
-          onComplete() {
-            setTimeout(() => next(), 600);
-          },
-        });
-      }
-    },
+      },
       { number: shown, total: seq.total, tier: prob.tier, state },
     );
   }
@@ -1686,6 +1764,9 @@ function renderConnectPhase(el, state, ctx, config) {
     getResponse: (key) => state.getResponse(4, key),
     saveResponse: (key, val) => state.saveResponse(4, key, val),
   });
+
+  // Inline Reveal Math slides for the Connect section.
+  renderRevealSlides(el, config, "connect");
 
   // Editable response box (core-owned), mirroring Launch/Reflect persistence.
   const minLength = 25;
@@ -1808,13 +1889,7 @@ function renderConnectPhase(el, state, ctx, config) {
 // ── Phase 6: Reflect ──
 function renderReflectPhase(el, state, ctx, config) {
   const cfg = config.reflect;
-  phaseHeader(
-    el,
-    "💡",
-    "section-icon-coral",
-    phaseName(5),
-    t("reflectDesc"),
-  );
+  phaseHeader(el, "💡", "section-icon-coral", phaseName(5), t("reflectDesc"));
 
   // 3-2-1
   const rCard = document.createElement("div");
@@ -1899,6 +1974,9 @@ function renderReflectPhase(el, state, ctx, config) {
   el.append(confCard);
 
   el.append(buildPrintableSummary(state, config));
+
+  // Inline Reveal Math slides for the closing/reflect section.
+  renderRevealSlides(el, config, "closure");
 
   // Exit ticket
   phaseHeader(
@@ -2001,9 +2079,7 @@ function showFinalSummary(el, state, config) {
           ? `👍 ${t("gradeGood")}`
           : `💪 ${t("gradeKeep")}`;
   const streakText =
-    s.bestStreak >= 3
-      ? `🔥 Best streak: ${s.bestStreak} in a row`
-      : "";
+    s.bestStreak >= 3 ? `🔥 Best streak: ${s.bestStreak} in a row` : "";
   const accuracy =
     s.totalAttempts > 0
       ? Math.round((s.totalCorrect / s.totalAttempts) * 100)

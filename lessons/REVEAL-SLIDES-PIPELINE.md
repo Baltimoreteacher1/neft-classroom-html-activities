@@ -1,13 +1,23 @@
 # Reveal Math Slides Pipeline
 
 Drop the **official Reveal Math slides** for a lesson into one folder, run one
-command, and they are injected into BOTH of that lesson's generated decks:
+command, and they show up in **three** places for that lesson:
 
 - the interactive HTML deck — `lessons/<id>/slides.html`
 - the editable PPTX deck — `lessons/<id>/slides.pptx`
+- the **client-rendered HTML lesson page** — `lessons/<id>/index.html` (the app
+  that renders from `config.json`). Each Reveal slide is shown **inside its
+  matching lesson section** (Launch, Explore, Practice, Connect, …), driven by a
+  managed `config.revealSlides` field this pipeline writes (see §6).
 
 Everything stays **local** to the repo. No image is uploaded anywhere; the HTML
 references the images by relative path and the PPTX embeds them directly.
+
+> **Build/deploy note:** the lesson page (`index.html`) is **built from
+> `config.json`** by Vite. After running this pipeline you must **rebuild/deploy**
+> (push to `main` → Cloudflare runs `npm run build`) for the new Reveal slides to
+> appear on the live lesson page. The slide decks (`slides.html`/`slides.pptx`)
+> are post-processed in place and need no build.
 
 ---
 
@@ -46,21 +56,52 @@ the script just uses every image in the folder in natural filename order.
   "title": "Reveal Math — Lesson 3-1: Ratios",
   "source": "Reveal Math Grade 6, Course 1 (McGraw Hill)",
   "slides": [
-    { "file": "01.png", "caption": "Warm-Up: What is a ratio?" },
-    { "file": "02.png", "caption": "Example 1 — Comparing quantities" },
-    { "file": "03.png", "caption": "Guided Practice" }
+    {
+      "file": "01.png",
+      "caption": "Warm-Up: What is a ratio?",
+      "placement": "notice-wonder"
+    },
+    {
+      "file": "02.png",
+      "caption": "Example 1 — Comparing quantities",
+      "placement": "problem"
+    },
+    { "file": "03.png", "caption": "Guided Practice", "placement": "connect" }
   ]
 }
 ```
 
-| Field              | Required | Meaning                                                              |
-| ------------------ | -------- | -------------------------------------------------------------------- |
-| `title`            | no       | Heading on the section divider slide. Default: "Reveal Math Slides". |
-| `source`           | no       | Attribution line shown on the divider slide.                         |
-| `slides[].file`    | yes      | Image filename inside `reveal-slides/`.                              |
-| `slides[].caption` | no       | Caption shown under the image + used as alt text / speaker note.     |
+| Field                | Required | Meaning                                                                                     |
+| -------------------- | -------- | ------------------------------------------------------------------------------------------- |
+| `title`              | no       | Heading on the section divider slide. Default: "Reveal Math Slides".                        |
+| `source`             | no       | Attribution line shown on the divider slide.                                                |
+| `slides[].file`      | yes      | Image filename inside `reveal-slides/`.                                                     |
+| `slides[].caption`   | no       | Caption shown under the image + used as alt text / speaker note + lesson-page caption.      |
+| `slides[].placement` | no       | Which **lesson section** the slide belongs in. Alias of `role`. Resolved to a canonical id. |
+| `slides[].role`      | no       | Same as `placement` (alias). If both are present, `placement` wins.                         |
+| `slides[].page`      | no       | Page number recorded in `config.revealSlides`. Defaults to the slide's 1-based order.       |
 
 Files listed in the manifest that don't exist are skipped with a warning.
+
+### Placement → canonical lesson section
+
+`placement`/`role` tells the **lesson page** (and the deck) which section a Reveal
+slide belongs in. Any friendly value is resolved to one of the **canonical
+sections** below via `resolvePlacement()` in `scripts/integrate-reveal-slides.mjs`
+— so the deck and the lesson page always agree exactly. Unknown or missing values
+fall back to **`launch`**.
+
+| Canonical section | Example accepted aliases                                                         |
+| ----------------- | -------------------------------------------------------------------------------- |
+| `launch`          | `launch`, `warm-up`, `notice-wonder`, `intro`, `hook`, `do-now`                  |
+| `explore`         | `explore`, `investigate`, `discover`, `sort`, `activity`                         |
+| `vocabulary`      | `vocabulary`, `vocab`, `words`, `terms`, `glossary`                              |
+| `instruction`     | `instruction`, `teach`, `concept`, `example(s)`, `model`, `i-do`                 |
+| `practice`        | `practice`, `problem(s)`, `guided`, `independent`, `we-do`, `you-do`, `exercise` |
+| `connect`         | `connect`, `apply`, `real-world`, `discuss`, `turn-and-talk`                     |
+| `closure`         | `closure`, `wrap-up`, `exit(-ticket)`, `reflect`, `summary`, `review`            |
+
+(See `PLACEMENT_ALIASES` in the script for the full list.)
 
 ---
 
@@ -101,17 +142,25 @@ npm run generate-reveal-slides -- --lesson 3-1-flagship --dry-run
 
 ### What it does
 
-- **slides.html** — appends a labeled "Reveal Math Slides" section: a divider
-  slide plus one responsive, lazy-loaded, keyboard-navigable `<img>` slide per
-  Reveal page. These join the existing deck navigation (sidebar thumbnails,
-  ← → arrows, present mode). Alt text comes from the caption.
-- **slides.pptx** — rebuilds the base notebook deck, then appends a divider
-  slide and one **full-bleed, editable picture slide** per Reveal image.
+- **slides.html** — **interleaves** each Reveal page into the deck at its
+  placement: a responsive, lazy-loaded, keyboard-navigable `<img>` slide is
+  inserted right after the matching section's slides (notice/wonder → Launch,
+  problems → Practice, etc.), then all slide ids, the `slideTitles` table of
+  contents, `totalSlides`, and the sidebar thumbnails are rebuilt so navigation
+  (← → arrows, present mode) stays correct. Alt text comes from the caption.
+- **slides.pptx** — rebuilds the base notebook deck and inserts each Reveal
+  image as a **full-bleed, editable picture slide** near its placement (not all
+  trailing at the end).
+- **config.json** — writes a managed `revealSlides` array so the **lesson page**
+  (`index.html` app) can render each Reveal slide inside its matching section.
+  See §6. (Requires a rebuild/deploy to appear on the live lesson page.)
 
 ### No-op when absent
 
-If a lesson has **no `reveal-slides/` folder**, the script does nothing for that
-lesson and reports it as `skipped`. The base generators are never modified.
+If a lesson has **no `reveal-slides/` folder**, the script does nothing to the
+decks for that lesson and reports it as `skipped`. The base generators are never
+modified. As a clean reversal, if `config.revealSlides` was set by a prior run it
+is **removed** from that lesson's `config.json` (reported as `cleared`).
 
 ---
 
@@ -125,9 +174,12 @@ Re-running is always safe and never duplicates:
   original slide count/titles (saved in a state comment), then re-injects fresh.
 - **PPTX** — rebuilt from the lesson's `config.json` each run, so Reveal picture
   slides never stack up.
+- **config.json** — `config.revealSlides` is a **managed field**: each run
+  **replaces it entirely** from the current `reveal-slides/` folder + manifest, so
+  it never grows or duplicates. When the folder is removed, the field is removed.
 
-Update the images or `reveal-slides.json`, re-run, and the decks reflect the new
-state exactly.
+Update the images or `reveal-slides.json`, re-run, and the decks **and the lesson
+page config** reflect the new state exactly.
 
 ### Removing Reveal slides from a lesson
 
@@ -152,13 +204,45 @@ That returns both decks to their clean, Reveal-free state.
 
 ---
 
+## 6. Reveal slides on the lesson page (`config.revealSlides`)
+
+The same Reveal slides also appear on the **client-rendered HTML lesson page**
+(`lessons/<id>/index.html`, which renders from `config.json`). The renderer reads
+a managed `config.revealSlides` array and displays each slide **inside its
+matching section**. This pipeline is the **only writer** of that field; the
+renderer is the only reader.
+
+```jsonc
+"revealSlides": [
+  {
+    "src": "/lessons/<id>/reveal-slides/01.png", // absolute served image path
+    "caption": "Notice & Wonder warm-up", // from the manifest (may be "")
+    "placement": "launch", // CANONICAL section (resolvePlacement of placement/role)
+    "page": 1 // from the manifest, else 1-based order
+  }
+]
+```
+
+- **Managed + idempotent:** re-running **replaces** the whole array; it never
+  grows or duplicates.
+- **Reversible:** delete the `reveal-slides/` folder and re-run → the field is
+  **removed** from `config.json` (the lesson page reverts cleanly).
+- **`placement` is canonical:** it is the same value the deck uses, resolved via
+  `resolvePlacement()`, so the deck and the lesson page agree exactly.
+- **Build/deploy required:** the lesson app is built from `config.json` by Vite —
+  push to `main` (Cloudflare runs `npm run build`) for changes to go live.
+
+---
+
 ## Quick reference
 
-| Thing           | Value                                                  |
-| --------------- | ------------------------------------------------------ |
-| Drop folder     | `lessons/<id>/reveal-slides/`                          |
-| Image order     | natural filename sort, or `reveal-slides.json` order   |
-| Manifest        | `lessons/<id>/reveal-slides/reveal-slides.json` (opt)  |
-| Command         | `npm run generate-reveal-slides -- --lesson <id>`      |
-| Dry run         | add `--dry-run`                                        |
-| Outputs touched | `lessons/<id>/slides.html`, `lessons/<id>/slides.pptx` |
+| Thing           | Value                                                                                  |
+| --------------- | -------------------------------------------------------------------------------------- |
+| Drop folder     | `lessons/<id>/reveal-slides/`                                                          |
+| Image order     | natural filename sort, or `reveal-slides.json` order                                   |
+| Manifest        | `lessons/<id>/reveal-slides/reveal-slides.json` (opt)                                  |
+| Placement       | per-slide `placement`/`role` → canonical section (see §1); default `launch`            |
+| Command         | `npm run generate-reveal-slides -- --lesson <id>`                                      |
+| Dry run         | add `--dry-run`                                                                        |
+| Outputs touched | `lessons/<id>/slides.html`, `lessons/<id>/slides.pptx`, `config.json` (`revealSlides`) |
+| Lesson page     | reads `config.revealSlides`; needs a **build/deploy** to reflect config changes        |

@@ -488,8 +488,18 @@ const BUILDERS = [
   slideThinkWrite, slideExitTicket, slideGoalTracker,
 ];
 
-/** Build all slides for one lesson into the given pptx instance. */
-export function buildPptxDeck(pptx, content) {
+/**
+ * Build all slides for one lesson into the given pptx instance.
+ *
+ * Optional `hooks` lets a caller interleave extra slides at named boundaries so
+ * post-processors (e.g. integrate-reveal-slides) can place picture slides inside
+ * the lesson flow rather than only at the very end. Each hook is a function
+ * `(pptx) => void` that may add its own slides:
+ *   - hooks.afterObjectives — runs right after the cover + objectives slides
+ *   - hooks.afterPractice   — runs right after the independent-practice slide
+ *   - hooks.end             — runs after the final slide
+ */
+export function buildPptxDeck(pptx, content, hooks = {}) {
   const c = { ...content, accent: accentForUnit(content.unit) };
   let slideNum = 0;
   const emit = (build) => {
@@ -498,10 +508,14 @@ export function buildPptxDeck(pptx, content) {
     c.slideNum = slideNum;
     build(slide, pptx, c);
   };
+  const runHook = (name) => {
+    if (typeof hooks[name] === 'function') hooks[name](pptx);
+  };
 
   // Core template: cover + objectives, then the notebook activity slides.
   emit(slideCover);
   emit(slideObjectives);
+  runHook('afterObjectives');
 
   // One discussion (Turn & Talk) slide per phase prompt from the config.
   (c.discussions || []).forEach((d) => {
@@ -511,5 +525,10 @@ export function buildPptxDeck(pptx, content) {
   c.discussion = null;
 
   // Remaining notebook activity slides (cover + objectives already emitted).
-  BUILDERS.slice(2).forEach(emit);
+  BUILDERS.slice(2).forEach((build) => {
+    emit(build);
+    if (build === slideIndependentPractice) runHook('afterPractice');
+  });
+
+  runHook('end');
 }

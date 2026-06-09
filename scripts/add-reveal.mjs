@@ -173,7 +173,7 @@ function main() {
   }
   console.log(`✅ ${count} slide image(s) → lessons/${lessonId}/${REVEAL_DIRNAME}/`);
 
-  console.log(`🔗 Injecting into slides.html + slides.pptx …`);
+  console.log(`🔗 Injecting into slides.html + slides.pptx + config.json (lesson page) …`);
   try {
     execFileSync(
       process.execPath,
@@ -187,11 +187,16 @@ function main() {
   console.log(
     [
       "",
-      "🎉 Done. Reveal slides are now in both decks for lesson " + lessonId + ".",
+      "🎉 Done. Reveal slides are now in BOTH decks AND the HTML lesson page for lesson " + lessonId + ".",
+      "   • slides.html + slides.pptx — Reveal slides injected into the decks.",
+      "   • config.json (revealSlides) — the lesson app shows each slide in its matching section.",
       "",
       "Next:",
       "  • Preview:  npm run preview   (then open the lesson's slides.html / editable-slides.html)",
-      "  • Go live:  commit on a feature branch, merge to main, push  (Cloudflare auto-deploys)",
+      "  • Lesson page: the index.html app is built from config.json, so a rebuild/deploy is",
+      "    required for the new Reveal slides to appear on the live lesson page.",
+      "  • Go live:  commit on a feature branch, merge to main, push  (Cloudflare auto-deploys",
+      "    by running the Vite build, which regenerates the lesson app from config.json).",
       "",
       "Re-run this command anytime to replace the slides for this lesson.",
       "",
