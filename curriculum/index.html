@@ -6419,6 +6419,17 @@
             listEl.appendChild(groupEl);
           });
         }
+        // Sort key for a lessonId like "1-5" or "1-1-flagship": unit, then
+        // lesson, then flagship variants immediately after their base lesson.
+        function lessonRank(lessonId) {
+          var m = String(lessonId || "").match(/(\d+)\s*-\s*(\d+)/);
+          if (!m) return 9999999;
+          var flagship = /flagship/i.test(lessonId) ? 1 : 0;
+          return (
+            parseInt(m[1], 10) * 10000 + parseInt(m[2], 10) * 100 + flagship
+          );
+        }
+
         var units = Array.prototype.slice.call(
           document.querySelectorAll("details.unit"),
         );
@@ -6548,6 +6559,7 @@
 
             lessonsData.push({
               id: uIdx + "-" + lIdx,
+              lessonId: lessonId,
               title: head,
               titleHTML: headHTML,
               objective: obj,
@@ -6555,6 +6567,13 @@
               projects: projects,
               dataSearch: dataSearchLower,
             });
+          });
+
+          // Order lessons by their lesson number (1-1, 1-2, … 1-7), not the
+          // alphabetical-by-title DOM order. Flagship variants sort right after
+          // their base lesson (e.g. 1-1 then 1-1-flagship).
+          lessonsData.sort(function (a, b) {
+            return lessonRank(a.lessonId) - lessonRank(b.lessonId);
           });
 
           unitsData.push({
