@@ -42,8 +42,14 @@ from __future__ import annotations
 import argparse
 import io
 import json
+import os
 import re
 import sys
+
+try:
+    from PIL import Image
+except Exception:  # Pillow optional — fall back to raw bytes if unavailable.
+    Image = None
 
 try:
     from pptx import Presentation
@@ -143,38 +149,31 @@ def _slide_pictures(slide):
     return pics
 
 
-def _is_data_graphic(pic) -> bool:
-    """True for a plausible data graphic: a PNG, not a wide stock photo."""
-    ct = (pic.get("content_type") or "").lower()
-    pn = (pic.get("partname") or "").lower()
-    if any(h in pn for h in _STOCK_HINTS):
-        return False
-    if "jpeg" in ct or "jpg" in ct:
-        # Reveal's decorative mindset/stock art is a wide JPEG photo.
-        return False
-    # Very small PNGs are usually icons/badges (e.g. the 797x132 banner).
+# Banners/badges are tiny; the Be Curious photo is a large image.
+_MIN_IMAGE_PX = 40_000
+
+
+def _is_real_image(pic) -> bool:
+    """True for a substantial image (the Be Curious photo), not a tiny banner/icon."""
     w, h = pic.get("w"), pic.get("h")
-    if w and h and (w * h) < 30_000:
+    if w and h and (w * h) < _MIN_IMAGE_PX:
         return False
     return True
 
 
-def _score_notice_image(pic) -> float:
-    """Higher = more likely the real data display on a notice/wonder slide."""
-    score = 0.0
-    if _is_data_graphic(pic):
-        score += 100.0
-    # Prefer a graphic with a substantial-but-not-giant footprint.
-    w, h = pic.get("w"), pic.get("h")
-    if w and h:
-        area = w * h
-        # Sweet spot ~ a readable table/chart (tens to low-hundreds of k px).
-        score += min(area, 400_000) / 10_000.0
-    return score
+def _image_area(pic) -> float:
+    return float((pic.get("w") or 0) * (pic.get("h") or 0))
 
 
 def _find_notice_wonder(slides):
-    """Locate the Notice & Wonder data slide, image, and context text."""
+    """Locate the Be Curious slide, its PHOTO (the launch image students notice &
+    wonder about), and the data-context text.
+
+    Teacher preference: the Notice & Wonder image is the Be Curious launch PHOTO
+    (the engaging real-world image on the "What do you notice? / wonder?" slide),
+    NOT the later data table. We pick the largest real image on the Be Curious
+    anchor slide (or the next slide that has one).
+    """
     # 1) Anchor on the "Be Curious / notice / wonder / mindset" slides.
     anchors = []
     for idx, slide in enumerate(slides):
@@ -184,35 +183,39 @@ def _find_notice_wonder(slides):
         ):
             anchors.append(idx)
 
-    # 2) Candidate data slides: those mentioning the data context, ideally
-    #    just after the first anchor (the lesson's opening notice/wonder).
-    first_anchor = anchors[0] if anchors else 0
-    candidates = []
-    for idx, slide in enumerate(slides):
+    # 2) The Be Curious photo: largest real image on the anchor slide, scanning a
+    #    small window forward if the anchor itself has no usable image.
+    if anchors:
+        order = list(range(anchors[0], min(anchors[0] + 4, len(slides))))
+    else:
+        order = list(range(min(8, len(slides))))
+
+    best_idx, best_pic = None, None
+    for idx in order:
+        pics = [p for p in _slide_pictures(slides[idx]) if _is_real_image(p)]
+        if pics:
+            best_idx = idx
+            best_pic = max(pics, key=_image_area)
+            break
+
+    if best_pic is None:
+        return None
+
+    # 3) Context = the data-context sentence from a nearby data slide if present,
+    #    else the descriptive text on the chosen slide.
+    context = ""
+    for slide in slides:
         blocks = _slide_text_blocks(slide)
         joined = " ".join(blocks).lower()
         if any(h in joined for h in _DATA_HINTS):
-            pics = _slide_pictures(slide)
-            data_pics = [p for p in pics if _is_data_graphic(p)]
-            if not data_pics:
-                continue
-            # Proximity to the opening anchor breaks ties toward the intro.
-            distance = abs(idx - first_anchor)
-            candidates.append((distance, idx, slide, blocks, data_pics))
-
-    if not candidates:
-        return None
-
-    candidates.sort(key=lambda c: c[0])
-    _, idx, slide, blocks, data_pics = candidates[0]
-
-    best_pic = max(data_pics, key=_score_notice_image)
-
-    # Context = the longest descriptive (non-question, non-"Reveal:") block.
-    context = _pick_context(blocks)
+            context = _pick_context(blocks)
+            if context:
+                break
+    if not context:
+        context = _pick_context(_slide_text_blocks(slides[best_idx]))
 
     return {
-        "slide_number": idx + 1,
+        "slide_number": best_idx + 1,
         "context": context,
         "image": best_pic,
     }
@@ -262,9 +265,8 @@ def _find_word_problem(slides):
     title = _derive_apply_title(blocks)
     text = _pick_problem_text(blocks)
 
-    pics = _slide_pictures(slide)
-    data_pics = [p for p in pics if _is_data_graphic(p)]
-    image = max(data_pics, key=lambda p: p["bytes"]) if data_pics else None
+    pics = [p for p in _slide_pictures(slide) if _is_real_image(p)]
+    image = max(pics, key=_image_area) if pics else None
 
     return {
         "slide_number": idx + 1,
@@ -296,21 +298,51 @@ def _pick_problem_text(blocks):
     return text
 
 
+def _web_extension(content_type) -> str:
+    """Keep photos as .jpg (light) and graphics as .png."""
+    ct = (content_type or "").lower()
+    return ".jpg" if ("jpeg" in ct or "jpg" in ct) else ".png"
+
+
+def _save_web_image(blob, final_path, ext, max_w=1100):
+    """Downscale to <= max_w wide and save in a web-friendly format."""
+    if Image is None:
+        with open(final_path, "wb") as fh:
+            fh.write(blob)
+        return
+    try:
+        img = Image.open(io.BytesIO(blob))
+        if img.width and img.width > max_w:
+            ratio = max_w / float(img.width)
+            img = img.resize((max_w, max(1, int(img.height * ratio))), Image.LANCZOS)
+        if ext == ".jpg":
+            img.convert("RGB").save(final_path, "JPEG", quality=85, optimize=True)
+        else:
+            img.save(final_path, "PNG", optimize=True)
+    except Exception:
+        with open(final_path, "wb") as fh:
+            fh.write(blob)
+
+
 def _emit_image(pic, out_path, write):
-    """Write the chosen image to out_path (unless dry-run); return a report."""
+    """Write the chosen image (web-sized, format matched to source); return a
+    report whose `out`/`filename` reflect the ACTUAL extension written."""
     if pic is None:
         return None
+    ext = _web_extension(pic.get("content_type"))
+    base, _ = os.path.splitext(out_path)
+    final_path = base + ext
     report = {
         "partname": pic["partname"],
         "content_type": pic["content_type"],
         "bytes": pic["bytes"],
         "width": pic["w"],
         "height": pic["h"],
-        "out": out_path,
+        "out": final_path,
+        "filename": os.path.basename(final_path),
     }
     if write:
-        with open(out_path, "wb") as fh:
-            fh.write(pic["blob"])
+        _save_web_image(pic["blob"], final_path, ext)
     return report
 
 

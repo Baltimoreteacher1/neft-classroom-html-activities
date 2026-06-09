@@ -185,9 +185,10 @@ function serializeConfig(obj) {
 // ── piece builders ───────────────────────────────────────────────────────────
 function buildNoticeAndWonder(lessonId, nw) {
   if (!nw) return null;
+  const imgName = nw.image && nw.image.filename;
   const field = {
-    image: nw.image
-      ? `/lessons/${lessonId}/${REVEAL_ASSETS_DIRNAME}/notice-wonder.png`
+    image: imgName
+      ? `/lessons/${lessonId}/${REVEAL_ASSETS_DIRNAME}/${imgName}`
       : undefined,
     context: nw.context || "",
     noticeStarters: DEFAULT_NOTICE_STARTERS,
@@ -204,8 +205,8 @@ function buildWordProblem(lessonId, wp) {
     title: wp.title || "Apply",
     text: wp.text || "",
   };
-  if (wp.image) {
-    field.image = `/lessons/${lessonId}/${REVEAL_ASSETS_DIRNAME}/word-problem.png`;
+  if (wp.image && wp.image.filename) {
+    field.image = `/lessons/${lessonId}/${REVEAL_ASSETS_DIRNAME}/${wp.image.filename}`;
   }
   return field;
 }
@@ -319,7 +320,16 @@ function main() {
   console.log(`📄 Deck:   ${pptx}`);
   if (dryRun) console.log("🔎 DRY RUN — no files will be written.");
 
-  if (!dryRun) fs.mkdirSync(assetsDir, { recursive: true });
+  if (!dryRun) {
+    fs.mkdirSync(assetsDir, { recursive: true });
+    // Remove any prior notice-wonder.*/word-problem.* so a new format (e.g. a
+    // .jpg photo replacing a .png) never leaves a stale asset behind.
+    for (const f of fs.readdirSync(assetsDir)) {
+      if (/^(notice-wonder|word-problem)\.[a-z0-9]+$/i.test(f)) {
+        fs.rmSync(path.join(assetsDir, f), { force: true });
+      }
+    }
+  }
 
   const data = runExtractor({ python, pptx, nwOut, wpOut, write: !dryRun });
 
