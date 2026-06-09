@@ -110,18 +110,29 @@ function runExtractor({ python, pptx, nwOut, wpOut, write }) {
     wpOut,
   ];
   if (!write) args.push("--no-write");
-  let stdout;
+  let stdout = "";
   try {
-    stdout = execFileSync(python, args, { stdio: ["ignore", "pipe", "pipe"] }).toString();
+    // Suppress python/library warnings so stdout stays pure JSON.
+    stdout = execFileSync(python, args, {
+      stdio: ["ignore", "pipe", "pipe"],
+      env: { ...process.env, PYTHONWARNINGS: "ignore" },
+    }).toString();
   } catch (e) {
-    const detail = (e.stderr && e.stderr.toString()) || e.message || String(e);
-    die(`Reveal extraction failed:\n   ${detail}`);
+    // The extractor reports structured errors as JSON on stdout even when it
+    // exits non-zero — prefer that over the raw stderr dump.
+    stdout = (e.stdout && e.stdout.toString()) || "";
+    const detail = stdout || (e.stderr && e.stderr.toString()) || e.message || String(e);
+    if (!stdout.trim().startsWith("{")) die(`Reveal extraction failed:\n   ${detail}`);
   }
   let data;
   try {
-    data = JSON.parse(stdout.trim().split("\n").pop());
+    data = JSON.parse(stdout.trim()); // single JSON object
   } catch {
-    die(`Extractor returned non-JSON output:\n${stdout}`);
+    try {
+      data = JSON.parse(stdout.trim().split("\n").pop());
+    } catch {
+      die(`Extractor returned non-JSON output:\n${stdout}`);
+    }
   }
   if (data.error) die(`Extractor error: ${data.error}`);
   return data;
@@ -257,24 +268,53 @@ function git(args, opts = {}) {
   });
 }
 
-function deploy(lessonId) {
+function currentBranch() {
+  try {
+    return git(["rev-parse", "--abbrev-ref", "HEAD"], { capture: true }).toString().trim();
+  } catch {
+    return null;
+  }
+}
+
+// Deploy by staging ONLY the files this run wrote (never -A / never the whole
+// reveal-assets dir), committing on a feature branch, then ff-merging main and
+// pushing. Transactional: on any failure we restore the starting branch and
+// keep the user's work on the feature branch rather than stranding them on main.
+function deploy(lessonId, writtenFiles) {
   console.log("\n🏗️  Building (npm run build) …");
   execFileSync("npm", ["run", "build"], { cwd: root, stdio: "inherit" });
 
+  const startBranch = currentBranch();
   const branch = `reveal-lesson-${lessonId}-${Date.now()}`;
-  console.log(`\n🌿 Committing on feature branch ${branch} …`);
-  git(["switch", "-c", branch]);
-  git(["add", `lessons/${lessonId}/config.json`, `lessons/${lessonId}/${REVEAL_ASSETS_DIRNAME}`]);
-  git(["commit", "-m", `feat(${lessonId}): wire curated Reveal Notice & Wonder + word problem`]);
+  let committed = false;
+  try {
+    console.log(`\n🌿 Committing on feature branch ${branch} …`);
+    git(["switch", "-c", branch]);
+    git(["add", "--", ...writtenFiles]);
+    git(["commit", "-m", `feat(${lessonId}): wire curated Reveal Notice & Wonder + word problem`]);
+    committed = true;
 
-  console.log("\n⏩ Fast-forwarding main and pushing …");
-  git(["switch", "main"]);
-  git(["pull", "--ff-only"]);
-  git(["merge", "--ff-only", branch]);
-  git(["push", "origin", "main"]);
-  git(["branch", "-d", branch]);
-
-  console.log("\n🚀 Pushed to main. Cloudflare Pages will rebuild & deploy in ~1-2 min.");
+    console.log("\n⏩ Fast-forwarding main and pushing …");
+    git(["switch", "main"]);
+    git(["pull", "--ff-only"]);
+    git(["merge", "--ff-only", branch]);
+    git(["push", "origin", "main"]);
+    git(["branch", "-d", branch]);
+    console.log("\n🚀 Pushed to main. Cloudflare Pages will rebuild & deploy in ~1-2 min.");
+  } catch (e) {
+    try {
+      if (currentBranch() !== startBranch) git(["switch", startBranch || "main"]);
+    } catch {
+      /* best-effort */
+    }
+    die(
+      `Deploy failed mid-flow: ${e.message || e}\n` +
+        (committed
+          ? `   Your changes are safe on branch "${branch}" — finish with: ` +
+            `git switch main && git pull --ff-only && git merge --ff-only ${branch} && git push origin main`
+          : "   No commit was made; re-run when ready."),
+    );
+  }
 }
 
 // ── main ─────────────────────────────────────────────────────────────────────
@@ -364,12 +404,23 @@ function main() {
     return;
   }
 
-  fs.writeFileSync(file, serialized);
+  // Atomic write: validate it round-trips, write a temp file, then rename so a
+  // crash mid-write can never leave a truncated/invalid config.json.
+  JSON.parse(serialized);
+  const tmp = `${file}.tmp-${process.pid}`;
+  fs.writeFileSync(tmp, serialized);
+  fs.renameSync(tmp, file);
   console.log(`✅ Wired lessons/${lessonId}/config.json (noticeAndWonder + revealWordProblem).`);
-  console.log(`🖼️  Images → lessons/${lessonId}/${REVEAL_ASSETS_DIRNAME}/notice-wonder.png, word-problem.png`);
+
+  // Exact files this run wrote — used to scope the deploy commit (never -A).
+  const writtenFiles = [path.relative(root, file)];
+  for (const f of [nwField, wpField]) {
+    if (f && f.image) writtenFiles.push(f.image.replace(/^\//, ""));
+  }
+  console.log(`🖼️  Assets → ${writtenFiles.filter((p) => p.includes(REVEAL_ASSETS_DIRNAME)).join(", ") || "(none)"}`);
 
   if (wantDeploy) {
-    deploy(lessonId);
+    deploy(lessonId, writtenFiles);
     return;
   }
 

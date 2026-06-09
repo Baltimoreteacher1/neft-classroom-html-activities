@@ -1165,18 +1165,23 @@ function renderNoticeAndWonder(host, config, state) {
     if (opts.starters.length) {
       const chips = document.createElement("div");
       chips.className = "nw-chips";
+      chips.setAttribute("role", "group");
+      chips.setAttribute(
+        "aria-label",
+        "Sentence starters — tap one to add it to your answer",
+      );
       opts.starters.forEach((starter) => {
         const chip = document.createElement("button");
         chip.type = "button";
         chip.className = "nw-chip";
         chip.textContent = starter;
+        chip.title = "Tap to add this sentence starter";
         chip.addEventListener("click", () => {
           const needsSpace = ta.value && !/\s$/.test(ta.value);
           ta.value = `${ta.value}${needsSpace ? " " : ""}${starter} `;
           ta.focus();
-          if (state && state.saveResponse) {
-            state.saveResponse(0, opts.responseKey, ta.value);
-          }
+          // Route persistence through the single input handler below.
+          ta.dispatchEvent(new Event("input", { bubbles: true }));
         });
         chips.append(chip);
       });

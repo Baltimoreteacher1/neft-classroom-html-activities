@@ -1,40 +1,40 @@
 #!/usr/bin/env python3
 """extract_reveal.py — pull curated teaching pieces out of a Reveal Math .pptx.
 
-Given a Reveal Math lesson deck, this finds the three pieces the HTML lesson
+Given a Reveal Math lesson deck, this finds two curated pieces the HTML lesson
 engine knows how to render:
 
-  1. Notice & Wonder DATA image  — the data display students analyze (NOT the
-     decorative "Be Curious Mindset" stock photo), plus the data-context text.
-  2. Word problem               — the application/"Apply:" slide: its image
-     (if any), the problem text, and a short title from the "Apply: ___" label.
+  1. Notice & Wonder  — the Be Curious LAUNCH IMAGE students notice & wonder
+     about (the engaging real-world photo/graphic on the Be Curious slide),
+     plus a short scenario/context sentence.
+  2. Word problem     — the application/"Apply" slide: its image (if any), the
+     problem text, and a short title from the "Apply: ___" label.
 
 It is a *read-only reporter*: it extracts text, copies the chosen raster images
-to the requested output paths, and prints a single JSON blob on stdout. All
-config wiring + git/build orchestration lives in scripts/reveal-lesson.mjs.
+to the requested output paths (web-sized; format matched to source), and prints
+a single JSON blob on stdout. All config wiring + git/build orchestration lives
+in scripts/reveal-lesson.mjs.
 
 Usage:
-  python3 extract_reveal.py <deck.pptx> --notice-wonder-out <path.png> \
-      --word-problem-out <path.png> [--no-write]
+  python3 extract_reveal.py <deck.pptx> --notice-wonder-out <path> \
+      --word-problem-out <path> [--no-write]   # the extension is re-derived
 
 With --no-write, no image files are written (dry-run); the JSON still reports
 which slides/images WOULD be used and their dimensions.
 
-Heuristics (validated on the official "Describe Data Using the Median" deck,
-where notice/wonder data = image8.png and word problem = image23.png/slide53):
+Heuristics (robust across the ~70 Grade-6 Reveal decks):
 
-  * Notice & Wonder image: among the slides near the "Be Curious / notice /
-    wonder" mindset slides, pick the embedded raster on the slide whose text
-    mentions the DATA ("data set", "summarize", "collected the data",
-    "notice about"). Strongly prefer a PNG data graphic; avoid wide JPEG
-    photos and stock-photo media (Shutterstock / Rawpixel / the large
-    decorative "Be Curious Mindset" image).
-  * Notice & Wonder context: the data-context sentence(s) from that slide
-    (the non-question body text), lightly cleaned.
-  * Word problem: the slide whose text contains "Apply" or a real-world
-    application question ("fair... price", "What would be...", "Question:").
-    Save its largest content image; derive the title from an "Apply: ___"
-    label when present.
+  * Notice & Wonder image: anchor on the "Be Curious / Mindset" slide (the
+    launch routine varies — "What do you notice/wonder?" vs "What could the
+    question be?"), then take the LARGEST real raster image on that slide (or
+    the next slide that has one). Images inside group shapes and picture
+    placeholders are included; vector (EMF/WMF/SVG) and undecodable images are
+    skipped so a broken asset is never written.
+  * Notice & Wonder context: the longest descriptive scenario block in a small
+    window after the anchor, with procedural rule/summary text excluded.
+  * Word problem: the "Apply" slide (Apply as a heading/title, not a substring),
+    weighted toward late-deck slides; its largest real image; title from the
+    "Apply: ___" label.
 """
 
 from __future__ import annotations
@@ -48,44 +48,26 @@ import sys
 
 try:
     from PIL import Image
-except Exception:  # Pillow optional — fall back to raw bytes if unavailable.
+
+    # Guard untrusted decks against decompression-bomb images.
+    Image.MAX_IMAGE_PIXELS = 64_000_000  # ~64 MP
+except Exception:  # Pillow optional — without it we can't size/re-encode images.
     Image = None
 
 try:
     from pptx import Presentation
+    from pptx.enum.shapes import MSO_SHAPE_TYPE
     from pptx.util import Emu
 except Exception as exc:  # pragma: no cover - dependency guard
-    print(
-        json.dumps({"error": f"python-pptx import failed: {exc}"}),
-        file=sys.stdout,
-    )
+    print(json.dumps({"error": f"python-pptx import failed: {exc}"}), file=sys.stdout)
     sys.exit(2)
 
-try:
-    from PIL import Image
 
-    _HAVE_PIL = True
-except Exception:  # pragma: no cover - PIL is optional for dims only
-    _HAVE_PIL = False
+# Raster formats a browser can display (and Pillow can re-encode).
+_RASTER_TYPES = ("image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp")
 
-
-PICTURE_SHAPE_TYPE = 13  # MSO_SHAPE_TYPE.PICTURE
-
-# Words that flag the decorative mindset/stock art we must NOT pick.
-_STOCK_HINTS = ("shutterstock", "rawpixel", "istock", "getty", "adobe stock")
-
-# Words that flag the data-context slide for Notice & Wonder.
-_DATA_HINTS = (
-    "data set",
-    "summarize",
-    "collected the data",
-    "notice about",
-    "the data shown",
-    "data shown",
-)
-
-# Words that flag the application / word-problem slide.
-_APPLY_HINTS = ("apply", "question:", "fair, but", "fair but", "selling price")
+# Cap extracted text so a malformed/bloated deck can't write a huge config value.
+_MAX_CONTEXT_CHARS = 600
 
 
 def _clean_text(text: str) -> str:
@@ -111,29 +93,49 @@ def _slide_text_blocks(slide):
     return blocks
 
 
-def _slide_pictures(slide):
-    """Return [{partname, content_type, bytes, w, h, emu_w, emu_h, blob}] for a slide."""
-    pics = []
-    for shape in slide.shapes:
-        if shape.shape_type != PICTURE_SHAPE_TYPE:
+def _iter_picture_shapes(shapes):
+    """Yield leaf picture shapes, recursing into groups. Reveal commonly groups
+    the launch photo / data graphic with captions, and uses picture placeholders
+    — both are invisible to a flat ``shape_type == PICTURE`` scan."""
+    for shape in shapes:
+        if shape.shape_type == MSO_SHAPE_TYPE.GROUP:
+            yield from _iter_picture_shapes(shape.shapes)
             continue
+        if shape.shape_type == MSO_SHAPE_TYPE.PICTURE:
+            yield shape
+            continue
+        # Picture placeholder: carries .image but isn't a PICTURE shape_type.
         try:
-            blip = shape._element.blip_rId
-            part = slide.part.related_part(blip)
-            partname = str(part.partname)
-            blob = shape.image.blob
-            content_type = shape.image.content_type
+            if shape.image is not None:
+                yield shape
         except Exception:
             continue
-        w = h = None
-        if _HAVE_PIL:
-            try:
-                with Image.open(io.BytesIO(blob)) as im:
-                    w, h = im.size
-            except Exception:
-                w = h = None
-        emu_w = Emu(shape.width).inches if shape.width else None
-        emu_h = Emu(shape.height).inches if shape.height else None
+
+
+def _slide_pictures(slide):
+    """Return raster picture dicts for a slide (groups + placeholders included).
+    Non-raster (EMF/WMF/SVG) and undecodable images are dropped so we never write
+    a browser-unreadable asset under a .png/.jpg name."""
+    pics = []
+    for shape in _iter_picture_shapes(slide.shapes):
+        try:
+            image = shape.image
+            blob = image.blob
+            content_type = (image.content_type or "").lower()
+            partname = getattr(image, "filename", None) or ""
+        except Exception:
+            continue
+        if not any(t in content_type for t in _RASTER_TYPES):
+            continue  # vector/unsupported — a browser can't show it
+        if Image is None:
+            continue  # can't verify/encode without Pillow
+        try:
+            with Image.open(io.BytesIO(blob)) as im:
+                w, h = im.size
+        except Exception:
+            continue  # corrupt/undecodable — skip rather than ship broken art
+        emu_w = Emu(shape.width).inches if getattr(shape, "width", None) else None
+        emu_h = Emu(shape.height).inches if getattr(shape, "height", None) else None
         pics.append(
             {
                 "partname": partname,
@@ -149,16 +151,15 @@ def _slide_pictures(slide):
     return pics
 
 
-# Banners/badges are tiny; the Be Curious photo is a large image.
+# Banners/badges are tiny; a real launch/data image clears this floor.
 _MIN_IMAGE_PX = 40_000
 
 
 def _is_real_image(pic) -> bool:
-    """True for a substantial image (the Be Curious photo), not a tiny banner/icon."""
+    """True for a substantial raster image, not a tiny banner/icon. Unknown
+    dimensions are rejected (every kept pic was decoded in _slide_pictures)."""
     w, h = pic.get("w"), pic.get("h")
-    if w and h and (w * h) < _MIN_IMAGE_PX:
-        return False
-    return True
+    return bool(w and h and (w * h) >= _MIN_IMAGE_PX)
 
 
 def _image_area(pic) -> float:
@@ -252,8 +253,8 @@ def _pick_context(blocks):
     if longest.strip().endswith("?") and len(longest) < 30:
         non_q = [b for b in descriptive if not b.strip().endswith("?")]
         if non_q:
-            return max(non_q, key=len)
-    return longest
+            longest = max(non_q, key=len)
+    return longest[:_MAX_CONTEXT_CHARS].strip()
 
 
 def _find_word_problem(slides):
@@ -262,14 +263,15 @@ def _find_word_problem(slides):
     n = len(slides)
     for idx, slide in enumerate(slides):
         blocks = _slide_text_blocks(slide)
-        joined = " ".join(blocks).lower()
-        hits = sum(1 for h in _APPLY_HINTS if h in joined)
+        # Require "Apply" as a slide heading (Reveal's Apply section), not a
+        # substring like "apply the formula" on a teaching slide.
         has_apply_label = any(b.lower().startswith("apply") for b in blocks)
-        if hits == 0 and not has_apply_label:
+        if not has_apply_label:
             continue
-        # Application slides live late in the deck; weight that in.
+        # A real application problem asks a question; weight late-deck position.
+        has_question = "?" in " ".join(blocks)
         lateness = idx / max(n - 1, 1)
-        score = hits + (2.0 if has_apply_label else 0.0) + lateness
+        score = (1.0 if has_question else 0.0) + lateness
         candidates.append((score, idx, slide, blocks))
 
     if not candidates:
@@ -311,7 +313,7 @@ def _pick_problem_text(blocks):
     # Reveal often prefixes the ask with a literal "Question:" — keep the
     # whole statement but normalise that marker into a sentence flow.
     text = re.sub(r"\bQuestion:\s*", "", text).strip()
-    return text
+    return text[:_MAX_CONTEXT_CHARS].strip()
 
 
 def _web_extension(content_type) -> str:
