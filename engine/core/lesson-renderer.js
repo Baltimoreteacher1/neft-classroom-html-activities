@@ -1085,6 +1085,185 @@ function renderRevealSlides(host, config, placements) {
   host.append(section);
 }
 
+// ── Notice & Wonder (Reveal data-context) ───────────────────────────────────
+// Opt-in card driven by `config.noticeAndWonder`. Rendered immediately after the
+// Launch Objectives block. Shows a data-context image, a framing sentence, then
+// two columns ("What do you notice?" / "What do you wonder?"), each with tappable
+// sentence-starter chips that insert into a typeable textarea. The textareas
+// persist via the lesson's canonical save/resume API (state.saveResponse /
+// state.getResponse on phaseId 0 — the Launch phase — with stable keys), so
+// answers survive reload exactly like every other lesson input.
+//
+// STRICT no-op: when `config.noticeAndWonder` is absent or not an object, this
+// renders NOTHING — no container, no heading, no console output.
+function renderNoticeAndWonder(host, config, state) {
+  const nw = config && config.noticeAndWonder;
+  if (!nw || typeof nw !== "object") return;
+
+  const noticeStarters = Array.isArray(nw.noticeStarters)
+    ? nw.noticeStarters.filter((s) => typeof s === "string" && s.trim())
+    : [];
+  const wonderStarters = Array.isArray(nw.wonderStarters)
+    ? nw.wonderStarters.filter((s) => typeof s === "string" && s.trim())
+    : [];
+
+  const card = document.createElement("section");
+  card.className = "card nw-card";
+  card.setAttribute("aria-label", "Notice and Wonder");
+
+  const head = document.createElement("div");
+  head.className = "nw-head";
+  head.innerHTML = `
+    <div class="nw-eyebrow">Be Curious</div>
+    <h3 class="nw-title">👀 Notice &amp; Wonder</h3>`;
+  card.append(head);
+
+  if (nw.context) {
+    const ctxP = document.createElement("p");
+    ctxP.className = "nw-context";
+    ctxP.textContent = String(nw.context);
+    card.append(ctxP);
+  }
+
+  if (nw.image) {
+    const fig = document.createElement("figure");
+    fig.className = "nw-figure";
+    const img = document.createElement("img");
+    img.className = "nw-img";
+    img.setAttribute("loading", "lazy");
+    img.setAttribute("decoding", "async");
+    img.src = String(nw.image);
+    img.alt = nw.context
+      ? String(nw.context)
+      : "Notice and Wonder data display";
+    fig.append(img);
+    card.append(fig);
+  }
+
+  const grid = document.createElement("div");
+  grid.className = "nw-grid";
+
+  // Build one column (notice or wonder): starter chips + a save/resume textarea.
+  const buildColumn = (opts) => {
+    const col = document.createElement("div");
+    col.className = `nw-col ${opts.colClass}`;
+
+    const h4 = document.createElement("h4");
+    h4.className = "nw-col-title";
+    h4.innerHTML = `${opts.icon} ${esc(opts.heading)}`;
+    col.append(h4);
+
+    const ta = document.createElement("textarea");
+    ta.className = "text-input nw-textarea";
+    ta.rows = 4;
+    ta.placeholder = opts.placeholder;
+    ta.id = `nw-${opts.key}`;
+    ta.value =
+      (state && state.getResponse && state.getResponse(0, opts.responseKey)) ||
+      "";
+
+    if (opts.starters.length) {
+      const chips = document.createElement("div");
+      chips.className = "nw-chips";
+      opts.starters.forEach((starter) => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "nw-chip";
+        chip.textContent = starter;
+        chip.addEventListener("click", () => {
+          const needsSpace = ta.value && !/\s$/.test(ta.value);
+          ta.value = `${ta.value}${needsSpace ? " " : ""}${starter} `;
+          ta.focus();
+          if (state && state.saveResponse) {
+            state.saveResponse(0, opts.responseKey, ta.value);
+          }
+        });
+        chips.append(chip);
+      });
+      col.append(chips);
+    }
+
+    ta.addEventListener("input", () => {
+      if (state && state.saveResponse) {
+        state.saveResponse(0, opts.responseKey, ta.value);
+      }
+    });
+    col.append(ta);
+
+    return col;
+  };
+
+  grid.append(
+    buildColumn({
+      colClass: "nw-col-notice",
+      icon: "👁",
+      heading: "What do you notice?",
+      placeholder: "I notice that…",
+      key: "notice",
+      responseKey: "nw_notice",
+      starters: noticeStarters,
+    }),
+    buildColumn({
+      colClass: "nw-col-wonder",
+      icon: "💭",
+      heading: "What do you wonder?",
+      placeholder: "I wonder…",
+      key: "wonder",
+      responseKey: "nw_wonder",
+      starters: wonderStarters,
+    }),
+  );
+
+  card.append(grid);
+  host.append(card);
+}
+
+// ── Word Problem (Reveal application) ───────────────────────────────────────
+// Opt-in display card driven by `config.revealWordProblem`. Rendered immediately
+// after the Vocabulary section's study step. Shows a title, the problem text in
+// large readable type, and an optional image. Display-only — no required input.
+//
+// STRICT no-op: when `config.revealWordProblem` is absent or not an object, this
+// renders NOTHING.
+function renderRevealWordProblem(host, config) {
+  const wp = config && config.revealWordProblem;
+  if (!wp || typeof wp !== "object") return;
+  if (!wp.text && !wp.image) return;
+
+  const card = document.createElement("section");
+  card.className = "card wp-card";
+  card.setAttribute("aria-label", "Word problem");
+
+  const head = document.createElement("div");
+  head.className = "wp-head";
+  head.innerHTML = `
+    <span class="wp-badge" aria-hidden="true">✏️ Apply</span>
+    <h3 class="wp-title">${esc(wp.title || "Word Problem")}</h3>`;
+  card.append(head);
+
+  if (wp.text) {
+    const p = document.createElement("p");
+    p.className = "wp-text";
+    p.textContent = String(wp.text);
+    card.append(p);
+  }
+
+  if (wp.image) {
+    const fig = document.createElement("figure");
+    fig.className = "wp-figure";
+    const img = document.createElement("img");
+    img.className = "wp-img";
+    img.setAttribute("loading", "lazy");
+    img.setAttribute("decoding", "async");
+    img.src = String(wp.image);
+    img.alt = wp.title ? String(wp.title) : "Word problem image";
+    fig.append(img);
+    card.append(fig);
+  }
+
+  host.append(card);
+}
+
 // ── Phase 1: Launch ──
 // Resolve the "I can ..." Content Objective with graceful fallbacks.
 export function resolveContentObjective(config) {
@@ -1186,6 +1365,10 @@ function renderLaunchPhase(el, state, ctx, config) {
   const cfg = config.launch;
 
   renderLaunchHeader(el, state, config);
+
+  // Notice & Wonder (Reveal data-context) — rendered immediately AFTER the
+  // Objectives block. No-op when config.noticeAndWonder is absent.
+  renderNoticeAndWonder(el, config, state);
 
   phaseHeader(
     el,
@@ -1353,6 +1536,9 @@ function renderVocabPhase(el, state, ctx, config) {
         // Inline Reveal Math vocabulary slides surface on the study step, where
         // students first see the words before any vocab activity.
         renderRevealSlides(el, config, "vocabulary");
+        // Word Problem (Reveal application) — rendered immediately AFTER the
+        // Vocabulary section. No-op when config.revealWordProblem is absent.
+        renderRevealWordProblem(el, config);
         break;
       case "builder":
         renderVocabBuilder(el, {

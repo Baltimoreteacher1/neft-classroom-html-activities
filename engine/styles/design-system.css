@@ -2260,7 +2260,11 @@ body:has(.identity-screen) .export-toolbar {
 
 /* ── Worked example panel ── */
 .worked-example-panel {
-  background: linear-gradient(135deg, rgba(42, 157, 143, 0.06), rgba(233, 196, 106, 0.08));
+  background: linear-gradient(
+    135deg,
+    rgba(42, 157, 143, 0.06),
+    rgba(233, 196, 106, 0.08)
+  );
   border: 2px solid var(--teal-light);
   border-radius: var(--radius-md);
   padding: var(--sp-4);
@@ -3421,4 +3425,177 @@ body:has(.identity-screen) .export-toolbar {
   line-height: 1.5;
   color: var(--muted);
   text-align: center;
+}
+
+/* ── Notice & Wonder (config.noticeAndWonder) ──────────────────────────────
+   Opt-in card. The renderer only emits `.nw-card` when config.noticeAndWonder
+   exists, so this block has no effect on lessons without the field. */
+.nw-card {
+  border-top: 4px solid #0f766e;
+}
+.nw-head {
+  margin-bottom: var(--sp-4);
+}
+.nw-eyebrow {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0f766e;
+}
+.nw-title {
+  margin: var(--sp-1) 0 0;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--navy);
+}
+.nw-context {
+  margin: 0 0 var(--sp-4);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.nw-figure {
+  margin: 0 0 var(--sp-5);
+}
+.nw-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 640px;
+  margin: 0 auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--card);
+}
+.nw-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-4);
+}
+.nw-col {
+  padding: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--card);
+}
+.nw-col-notice {
+  border-left: 4px solid var(--teal);
+  background: var(--teal-light);
+}
+.nw-col-wonder {
+  border-left: 4px solid var(--amber);
+  background: var(--amber-light);
+}
+.nw-col-title {
+  margin: 0 0 var(--sp-3);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--navy);
+}
+.nw-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+.nw-chip {
+  padding: 6px 12px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--navy);
+  background: var(--card);
+  border: 1px solid rgba(18, 53, 91, 0.18);
+  border-radius: var(--radius-full);
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+}
+.nw-chip:hover,
+.nw-chip:focus-visible {
+  background: #0f766e;
+  border-color: #0f766e;
+  color: #fff;
+}
+.nw-textarea {
+  width: 100%;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+}
+@media (max-width: 640px) {
+  .nw-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media print {
+  .nw-chip {
+    display: none;
+  }
+  .nw-card,
+  .nw-col {
+    break-inside: avoid;
+  }
+}
+
+/* ── Reveal Word Problem (config.revealWordProblem) ────────────────────────
+   Opt-in display card. The renderer only emits `.wp-card` when
+   config.revealWordProblem exists. */
+.wp-card {
+  border-top: 4px solid #0f766e;
+}
+.wp-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-4);
+}
+.wp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: 4px 12px;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #0f766e;
+  background: var(--teal-light);
+  border-radius: var(--radius-full);
+}
+.wp-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--navy);
+}
+.wp-text {
+  margin: 0;
+  font-size: 1.2rem;
+  line-height: 1.7;
+  color: var(--ink);
+}
+.wp-figure {
+  margin: var(--sp-4) 0 0;
+}
+.wp-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 640px;
+  margin: 0 auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--card);
+}
+@media print {
+  .wp-card {
+    break-inside: avoid;
+  }
 }

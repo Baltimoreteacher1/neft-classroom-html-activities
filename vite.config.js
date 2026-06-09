@@ -159,6 +159,20 @@ function copyStandaloneHtml() {
             mkdirSync(destDir, { recursive: true });
             cpSync(readiness, destDir, { recursive: true });
           }
+          // Reveal-deck assets (e.g. Notice & Wonder data graphic) referenced by
+          // config.noticeAndWonder / config.revealWordProblem image fields.
+          const revealAssets = resolve(lessonsDir, dir.name, "reveal-assets");
+          if (existsSync(revealAssets)) {
+            const destDir = resolve(
+              __dirname,
+              "dist",
+              "lessons",
+              dir.name,
+              "reveal-assets",
+            );
+            mkdirSync(destDir, { recursive: true });
+            cpSync(revealAssets, destDir, { recursive: true });
+          }
           // Generated lesson support pages (static index.html folders) linked
           // from the curriculum hub: family / teacher-notes / student-help.
           for (const sub of ["family", "teacher-notes", "student-help"]) {
