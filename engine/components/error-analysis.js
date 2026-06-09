@@ -2,8 +2,10 @@ export function renderErrorAnalysis(
   container,
   { title, workedExample, errorStep, correctWork, hints, onAnswer },
 ) {
+  injectErrorAnalysisStyles();
+
   const wrapper = document.createElement("div");
-  wrapper.className = "card";
+  wrapper.className = "card ea-root";
 
   const header = document.createElement("div");
   header.className = "section-header";
@@ -25,13 +27,14 @@ export function renderErrorAnalysis(
     .map((step, i) => {
       const isError = i === errorStep;
       return `
-      <div class="ea-step" data-step="${i}" style="
+      <div class="ea-step" data-step="${i}" role="button" tabindex="0"
+        aria-pressed="false" aria-label="Step ${i + 1}: ${escHtml(step.label)}" style="
         display:grid; grid-template-columns:32px 1fr; gap:var(--sp-3); align-items:start;
         padding:10px 12px; border-radius:var(--radius-sm); margin:var(--sp-1) 0;
         cursor:pointer; transition:all var(--duration-fast) ease;
         border:2px solid transparent;
       ">
-        <span style="
+        <span class="ea-step-badge" style="
           width:32px; height:32px; border-radius:8px; display:grid; place-items:center;
           background:var(--navy); color:white; font-weight:900; font-size:0.82rem;
         ">S${i + 1}</span>
@@ -63,18 +66,25 @@ export function renderErrorAnalysis(
   wrapper.append(explainLabel);
 
   const textarea = document.createElement("textarea");
-  textarea.className = "text-input";
+  textarea.className = "text-input ea-textarea";
   textarea.rows = 3;
   textarea.placeholder = "The error is in this step because...";
   textarea.style.display = "none";
   wrapper.append(textarea);
+
+  // Auto-expand the textarea to fit its content as the student types.
+  const autoGrow = () => {
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  };
+  textarea.addEventListener("input", autoGrow);
 
   const feedbackSlot = document.createElement("div");
   feedbackSlot.className = "mt-4";
   wrapper.append(feedbackSlot);
 
   const checkBtn = document.createElement("button");
-  checkBtn.className = "btn btn-primary mt-4";
+  checkBtn.className = "btn btn-primary mt-4 ea-check-btn";
   checkBtn.textContent = "Check My Analysis";
   checkBtn.style.display = "none";
   wrapper.append(checkBtn);
@@ -83,22 +93,34 @@ export function renderErrorAnalysis(
   let answered = false;
   let hintIndex = 0;
 
+  const selectStep = (stepEl) => {
+    if (answered) return;
+    selectedStep = parseInt(stepEl.dataset.step, 10);
+
+    workCard.querySelectorAll(".ea-step").forEach((s) => {
+      s.style.borderColor = "transparent";
+      s.style.background = "transparent";
+      s.dataset.selected = "false";
+      s.setAttribute("aria-pressed", "false");
+    });
+
+    stepEl.style.borderColor = "var(--coral)";
+    stepEl.style.background = "var(--coral-light)";
+    stepEl.dataset.selected = "true";
+    stepEl.setAttribute("aria-pressed", "true");
+
+    explainLabel.style.display = "";
+    textarea.style.display = "";
+    checkBtn.style.display = "";
+  };
+
   workCard.querySelectorAll(".ea-step").forEach((stepEl) => {
-    stepEl.addEventListener("click", () => {
-      if (answered) return;
-      selectedStep = parseInt(stepEl.dataset.step, 10);
-
-      workCard.querySelectorAll(".ea-step").forEach((s) => {
-        s.style.borderColor = "transparent";
-        s.style.background = "transparent";
-      });
-
-      stepEl.style.borderColor = "var(--coral)";
-      stepEl.style.background = "var(--coral-light)";
-
-      explainLabel.style.display = "";
-      textarea.style.display = "";
-      checkBtn.style.display = "";
+    stepEl.addEventListener("click", () => selectStep(stepEl));
+    stepEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+        e.preventDefault();
+        selectStep(stepEl);
+      }
     });
   });
 
@@ -130,9 +152,21 @@ export function renderErrorAnalysis(
     checkBtn.style.display = "none";
 
     workCard.querySelectorAll(".ea-step").forEach((s, i) => {
+      s.dataset.selected = "false";
+      s.setAttribute("aria-pressed", "false");
+      s.removeAttribute("tabindex");
       if (i === errorStep) {
         s.style.borderColor = "var(--success)";
         s.style.background = "var(--success-bg)";
+        s.dataset.correct = "true";
+        if (!s.querySelector(".ea-check-mark")) {
+          const mark = document.createElement("span");
+          mark.className = "ea-check-mark";
+          mark.setAttribute("aria-hidden", "true");
+          mark.textContent = "✓";
+          const badge = s.querySelector(".ea-step-badge");
+          if (badge) badge.append(mark);
+        }
       }
     });
 
@@ -163,4 +197,121 @@ function escHtml(s) {
   const d = document.createElement("div");
   d.textContent = s ?? "";
   return d.innerHTML;
+}
+
+const EA_STYLE_ID = "ea-enhancements-styles";
+
+// Inject the component's scoped polish styles exactly once per document.
+// All motion is additive and disabled under prefers-reduced-motion: reduce.
+function injectErrorAnalysisStyles() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById(EA_STYLE_ID)) return;
+
+  const style = document.createElement("style");
+  style.id = EA_STYLE_ID;
+  style.textContent = `
+    /* Selectable step polish */
+    .ea-root .ea-step { position: relative; outline: none; }
+
+    .ea-root .ea-step:hover:not([data-correct="true"]) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Accessible focus ring for keyboard users */
+    .ea-root .ea-step:focus-visible {
+      box-shadow:
+        0 0 0 2px var(--cream),
+        0 0 0 4px var(--teal);
+    }
+
+    /* Selected error-step: glow + subtle scale + growing depth/lift */
+    .ea-root .ea-step[data-selected="true"] {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow:
+        0 8px 22px rgba(0, 0, 0, 0.12),
+        0 0 0 1px var(--coral),
+        0 0 14px var(--coral-light);
+    }
+
+    /* Success: correct step glows green */
+    .ea-root .ea-step[data-correct="true"] {
+      transform: translateY(-1px) scale(1.015);
+      box-shadow:
+        0 6px 18px rgba(0, 0, 0, 0.10),
+        0 0 16px var(--success-bg);
+      animation: eaCorrectGlow 1.6s ease-in-out 1;
+    }
+
+    /* Checkmark scale-in on the step badge */
+    .ea-root .ea-check-mark {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--success);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 900;
+      line-height: 1;
+      transform-origin: center;
+      animation: eaCheckPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) 1;
+    }
+
+    /* Textarea auto-expand: smooth height transitions + comfortable sizing */
+    .ea-root .ea-textarea {
+      transition: height var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
+      min-height: 4.5rem;
+      overflow: hidden;
+      resize: vertical;
+    }
+
+    @keyframes eaCheckPop {
+      0%   { transform: scale(0); opacity: 0; }
+      70%  { transform: scale(1.25); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes eaCorrectGlow {
+      0%   { box-shadow: 0 6px 18px rgba(0,0,0,0.10), 0 0 0 var(--success-bg); }
+      40%  { box-shadow: 0 6px 18px rgba(0,0,0,0.10), 0 0 22px var(--success); }
+      100% { box-shadow: 0 6px 18px rgba(0,0,0,0.10), 0 0 16px var(--success-bg); }
+    }
+
+    /* Mobile: stack the textarea and button vertically, enlarge the textarea */
+    @media (max-width: 600px) {
+      .ea-root .ea-textarea {
+        width: 100%;
+        min-height: 6.5rem;
+        font-size: 1.05rem;
+      }
+      .ea-root .ea-check-btn {
+        display: block;
+        width: 100%;
+      }
+    }
+
+    /* Accessibility: disable/neutralize all motion when requested */
+    @media (prefers-reduced-motion: reduce) {
+      .ea-root .ea-step,
+      .ea-root .ea-step:hover:not([data-correct="true"]),
+      .ea-root .ea-step[data-selected="true"],
+      .ea-root .ea-step[data-correct="true"] {
+        transform: none;
+        animation: none;
+      }
+      .ea-root .ea-check-mark {
+        animation: none;
+      }
+      .ea-root .ea-textarea {
+        transition: none;
+      }
+    }
+  `;
+
+  (document.head || document.documentElement).append(style);
 }

@@ -15,8 +15,10 @@ export function renderCoordinateGrid(
     onComplete,
   },
 ) {
+  injectCoordinateGridStyles();
+
   const wrapper = document.createElement("div");
-  wrapper.className = "card";
+  wrapper.className = "card cgrid-root";
 
   if (label) {
     const lbl = document.createElement("p");
@@ -45,6 +47,8 @@ export function renderCoordinateGrid(
     "width:100%; max-width:500px; height:auto; display:block; margin:0 auto; user-select:none; touch-action:none; background:white; border-radius:var(--radius-md); border:1px solid var(--line);";
   svg.setAttribute("role", "application");
   svg.setAttribute("aria-label", "Coordinate grid");
+  svg.setAttribute("tabindex", "0");
+  svg.classList.add("cgrid-svg");
 
   // Gridlines
   for (let x = xMin; x <= xMax; x += xStep) {
@@ -146,6 +150,8 @@ export function renderCoordinateGrid(
     const cy = toSvgY(t.y);
     const ring = svgCircle(svg, cx, cy, 12, "none", "rgba(15,124,74,0.3)", 2);
     ring.style.display = "none";
+    ring.classList.add("cgrid-target-ring");
+    ring.style.transformOrigin = `${cx}px ${cy}px`;
     ring.setAttribute("stroke-dasharray", "4,3");
     targetMarkers.push({ ring, ...t });
   });
@@ -203,7 +209,9 @@ export function renderCoordinateGrid(
     const finalSy = toSvgY(coord.y);
 
     const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    g.classList.add("cgrid-point");
     const dot = svgCircle(g, finalSx, finalSy, 7, "#f2c15b", "#12355b", 2);
+    dot.classList.add("cgrid-dot");
     const lbl = svgText(
       g,
       finalSx + 12,
@@ -267,6 +275,7 @@ export function renderCoordinateGrid(
     "margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:8px;";
   const listItems = targets.map((t) => {
     const li = document.createElement("li");
+    li.className = "cgrid-coord-row";
     li.style.cssText =
       "display:flex; align-items:center; gap:8px; font-size:0.98rem; font-weight:700; color:var(--ink);";
     const dot = document.createElement("span");
@@ -327,7 +336,7 @@ export function renderCoordinateGrid(
   wrapper.append(feedbackSlot);
 
   const checkBtn = document.createElement("button");
-  checkBtn.className = "btn btn-primary mt-4";
+  checkBtn.className = "btn btn-primary mt-4 cgrid-check";
   checkBtn.textContent = "Check Points";
   let done = false;
 
@@ -362,7 +371,12 @@ export function renderCoordinateGrid(
 
     targets.forEach((t, i) => {
       if (!used.has(i)) {
-        targetMarkers[i].ring.style.display = "";
+        const ring = targetMarkers[i].ring;
+        ring.style.display = "";
+        // Retrigger the pulse animation each time Check runs.
+        ring.classList.remove("cgrid-pulse");
+        void ring.getBBox; // reflow hint (no-op read keeps order deterministic)
+        requestAnimationFrame(() => ring.classList.add("cgrid-pulse"));
       } else if (listItems[i]) {
         listItems[i].dot.style.background = "var(--success, #16a34a)";
         listItems[i].dot.style.borderColor = "var(--success, #16a34a)";
@@ -372,6 +386,9 @@ export function renderCoordinateGrid(
     if (correct === targets.length) {
       done = true;
       checkBtn.style.display = "none";
+      placedPoints.forEach((pp) =>
+        celebrateBurst(svg, pp.coord, toSvgX, toSvgY),
+      );
       showFb(
         feedbackSlot,
         "success",
@@ -434,4 +451,125 @@ function showFb(slot, type, msg) {
   fb.innerHTML = `<span class="feedback-icon">${type === "success" ? "✓" : "💡"}</span><span>${msg}</span>`;
   slot.innerHTML = "";
   slot.append(fb);
+}
+
+// Returns true when the user has asked for reduced motion. Animations are
+// skipped (or already neutralized via CSS) when this is true.
+function prefersReducedMotion() {
+  return (
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
+// Tasteful micro-burst of a few small particles around a correctly plotted
+// point. Purely decorative: particles are appended, animated with WAAPI, and
+// removed on finish. Entirely skipped under prefers-reduced-motion.
+function celebrateBurst(svg, coord, toSvgX, toSvgY) {
+  if (prefersReducedMotion()) return;
+  if (typeof svg.animate !== "function") return; // WAAPI guard for safety
+
+  const cx = toSvgX(coord.x);
+  const cy = toSvgY(coord.y);
+  const colors = ["#f2c15b", "#1fa6a2", "#0f7c4a"];
+  const count = 6;
+  const burst = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  burst.setAttribute("aria-hidden", "true");
+  burst.style.pointerEvents = "none";
+
+  for (let i = 0; i < count; i++) {
+    const angle = (Math.PI * 2 * i) / count - Math.PI / 2;
+    const dist = 22;
+    const dx = Math.cos(angle) * dist;
+    const dy = Math.sin(angle) * dist;
+    const p = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    p.setAttribute("cx", cx);
+    p.setAttribute("cy", cy);
+    p.setAttribute("r", 2.6);
+    p.setAttribute("fill", colors[i % colors.length]);
+    burst.append(p);
+
+    const anim = p.animate(
+      [
+        { transform: "translate(0px,0px) scale(1)", opacity: 1 },
+        {
+          transform: `translate(${dx}px,${dy}px) scale(0.2)`,
+          opacity: 0,
+        },
+      ],
+      {
+        duration: 560,
+        easing: "cubic-bezier(0.22,1,0.36,1)",
+        fill: "forwards",
+      },
+    );
+    if (i === count - 1) {
+      anim.addEventListener("finish", () => burst.remove());
+    }
+  }
+
+  svg.append(burst);
+  // Safety net in case the finish event never fires.
+  setTimeout(() => burst.remove(), 900);
+}
+
+// Injects the scoped polish stylesheet exactly once per document. Every
+// animation/transition here is disabled or reduced under
+// prefers-reduced-motion, and all colors reuse existing CSS variables.
+function injectCoordinateGridStyles() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById("cgrid-enhancement-styles")) return;
+
+  const style = document.createElement("style");
+  style.id = "cgrid-enhancement-styles";
+  style.textContent = `
+.cgrid-svg { transition: box-shadow .2s ease; }
+.cgrid-svg:focus { outline: none; }
+.cgrid-svg:focus-visible {
+  outline: 3px solid var(--teal, #1fa6a2);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(31,166,162,0.18);
+}
+
+.cgrid-check:focus-visible {
+  outline: 3px solid var(--navy, #12355b);
+  outline-offset: 2px;
+}
+
+/* Sidebar coordinate row hover/active highlight */
+.cgrid-coord-row {
+  border-radius: var(--radius-md, 8px);
+  padding: 4px 8px;
+  margin: -4px -8px;
+  transition: background-color .18s ease;
+}
+.cgrid-coord-row:hover,
+.cgrid-coord-row:active {
+  background-color: rgba(31,166,162,0.12);
+}
+
+/* Subtle entrance ease for plotted-point groups (the dot keeps its WAAPI pop) */
+.cgrid-point { animation: cgrid-point-in .26s ease both; }
+@keyframes cgrid-point-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Pulse on the dashed target rings when Check reveals them */
+.cgrid-target-ring.cgrid-pulse { animation: cgrid-ring-pulse .9s ease-out 2; }
+@keyframes cgrid-ring-pulse {
+  0% { transform: scale(1); opacity: 0.35; }
+  50% { transform: scale(1.18); opacity: 0.9; }
+  100% { transform: scale(1); opacity: 0.55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cgrid-svg,
+  .cgrid-coord-row { transition: none; }
+  .cgrid-point { animation: none; }
+  .cgrid-target-ring.cgrid-pulse { animation: none; }
+}
+`;
+  document.head.append(style);
 }

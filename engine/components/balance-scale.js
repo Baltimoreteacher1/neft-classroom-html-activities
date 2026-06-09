@@ -1,7 +1,38 @@
+let BS_STYLE_INJECTED = false;
+
+function injectStyle() {
+  if (BS_STYLE_INJECTED) return;
+  BS_STYLE_INJECTED = true;
+  const css = `
+  .bs-input:focus-visible { outline:3px solid rgba(31,166,162,0.4); outline-offset:2px; border-color:var(--teal, #1fa6a2); }
+  .bs-op-btn { transition:transform .12s ease, box-shadow .15s ease, background .15s ease; }
+  .bs-op-btn.bs-pressed { transform:scale(0.94); box-shadow:0 0 0 3px rgba(31,166,162,0.28), 0 2px 8px rgba(31,166,162,0.22); }
+  .bs-hint-wrap { display:grid; grid-template-rows:0fr; transition:grid-template-rows .28s ease; }
+  .bs-hint-wrap.bs-open { grid-template-rows:1fr; }
+  .bs-hint-inner { overflow:hidden; min-height:0; }
+  @media (prefers-reduced-motion:reduce){
+    .bs-op-btn { transition:none }
+    .bs-op-btn.bs-pressed { transform:none }
+    .bs-hint-wrap { transition:none }
+  }
+  `;
+  const style = document.createElement("style");
+  style.dataset.bs = "balance-scale";
+  style.textContent = css;
+  document.head.append(style);
+}
+
 export function renderBalanceScale(
   container,
   { equation, variable, answer, tolerance, hints, label, onComplete },
 ) {
+  injectStyle();
+
+  const prefersReducedMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
   const wrapper = document.createElement("div");
   wrapper.className = "card";
 
@@ -179,11 +210,12 @@ export function renderBalanceScale(
 
   operations.forEach(({ text, op }) => {
     const btn = document.createElement("button");
-    btn.className = "btn btn-secondary";
+    btn.className = "btn btn-secondary bs-op-btn";
     btn.style.cssText = "padding:8px 14px; font-size:0.85rem;";
     btn.textContent = text;
 
     btn.addEventListener("click", () => {
+      pressFeedback(btn);
       const val = prompt(`${text} — enter the value:`);
       if (!val || isNaN(Number(val))) return;
       steps.push(`${op} ${val}`);
@@ -196,20 +228,91 @@ export function renderBalanceScale(
 
   wrapper.append(opsCard);
 
+  const tiltParts = [beam, leftPanG, rightPanG, leftLabel, rightLabel];
+  let tiltRaf = null;
+
+  function applyTilt(angle) {
+    tilt = angle;
+    const t =
+      Math.abs(angle) < 0.001 ? "" : `rotate(${angle}, ${MID}, ${BEAM_Y})`;
+    tiltParts.forEach((el) => el.setAttribute("transform", t));
+  }
+
+  // Ease the beam from its current tilt to `target`, then (optionally) settle
+  // back to level. requestAnimationFrame-driven so it stays smooth and is fully
+  // disabled under prefers-reduced-motion.
+  function easeTiltTo(target, { settle = true } = {}) {
+    if (tiltRaf) cancelAnimationFrame(tiltRaf);
+
+    if (prefersReducedMotion) {
+      applyTilt(settle ? 0 : target);
+      return;
+    }
+
+    const easeOut = (p) => 1 - Math.pow(1 - p, 3);
+    const start = tilt;
+    const toTarget = 380; // ms to reach the tilt
+    const hold = 160; // ms paused at the tilt
+    const toLevel = 520; // ms easing back to balanced
+    const total = settle ? toTarget + hold + toLevel : toTarget;
+    const t0 =
+      typeof performance !== "undefined" ? performance.now() : Date.now();
+
+    function frame(now) {
+      const elapsed = now - t0;
+      if (elapsed >= total) {
+        applyTilt(settle ? 0 : target);
+        tiltRaf = null;
+        return;
+      }
+      if (elapsed < toTarget) {
+        applyTilt(start + (target - start) * easeOut(elapsed / toTarget));
+      } else if (elapsed < toTarget + hold) {
+        applyTilt(target);
+      } else {
+        const p = (elapsed - toTarget - hold) / toLevel;
+        applyTilt(target * (1 - easeOut(p)));
+      }
+      tiltRaf = requestAnimationFrame(frame);
+    }
+    tiltRaf = requestAnimationFrame(frame);
+  }
+
   function animateTilt() {
-    tilt = (Math.random() - 0.5) * 6;
-    beam.setAttribute("transform", `rotate(${tilt}, ${MID}, ${BEAM_Y})`);
-    leftPanG.setAttribute("transform", `rotate(${tilt}, ${MID}, ${BEAM_Y})`);
-    rightPanG.setAttribute("transform", `rotate(${tilt}, ${MID}, ${BEAM_Y})`);
-    leftLabel.setAttribute("transform", `rotate(${tilt}, ${MID}, ${BEAM_Y})`);
-    rightLabel.setAttribute("transform", `rotate(${tilt}, ${MID}, ${BEAM_Y})`);
-    setTimeout(() => {
-      beam.setAttribute("transform", "");
-      leftPanG.setAttribute("transform", "");
-      rightPanG.setAttribute("transform", "");
-      leftLabel.setAttribute("transform", "");
-      rightLabel.setAttribute("transform", "");
-    }, 600);
+    const target = (Math.random() - 0.5) * 6;
+    easeTiltTo(target, { settle: true });
+  }
+
+  // Brief press/glow feedback on an operation button.
+  function pressFeedback(btn) {
+    if (prefersReducedMotion) return;
+    btn.classList.add("bs-pressed");
+    setTimeout(() => btn.classList.remove("bs-pressed"), 170);
+  }
+
+  // On a correct solve, ease the beam smoothly to perfect level (equilibrium).
+  function settleToBalance() {
+    if (tiltRaf) cancelAnimationFrame(tiltRaf);
+    if (prefersReducedMotion) {
+      applyTilt(0);
+      return;
+    }
+    const easeOut = (p) => 1 - Math.pow(1 - p, 3);
+    const start = tilt;
+    const dur = 600;
+    const t0 =
+      typeof performance !== "undefined" ? performance.now() : Date.now();
+    function frame(now) {
+      const p = Math.min(1, (now - t0) / dur);
+      applyTilt(start * (1 - easeOut(p)));
+      if (p < 1) {
+        tiltRaf = requestAnimationFrame(frame);
+      } else {
+        applyTilt(0);
+        tiltRaf = null;
+      }
+    }
+    tiltRaf = requestAnimationFrame(frame);
   }
 
   // Answer input
@@ -224,7 +327,7 @@ export function renderBalanceScale(
 
   const ansInput = document.createElement("input");
   ansInput.type = "text";
-  ansInput.className = "text-input";
+  ansInput.className = "text-input bs-input";
   ansInput.style.cssText =
     "max-width:100px; text-align:center; font-weight:800; font-size:1.1rem;";
   ansInput.placeholder = "?";
@@ -265,9 +368,8 @@ export function renderBalanceScale(
       ansInput.style.background = "var(--success-bg)";
       checkBtn.style.display = "none";
 
-      beam.setAttribute("transform", "");
-      leftPanG.setAttribute("transform", "");
-      rightPanG.setAttribute("transform", "");
+      // Equilibrium: ease the beam smoothly to perfectly level.
+      settleToBalance();
 
       showFb(
         feedbackSlot,
@@ -352,6 +454,18 @@ function showFb(slot, type, msg) {
   fb.className = `feedback feedback-${type} visible`;
   fb.setAttribute("role", "alert");
   fb.innerHTML = `<span class="feedback-icon">${type === "success" ? "✓" : "💡"}</span><span>${msg}</span>`;
+
+  // Slide-down reveal: nest the feedback in a collapsed grid wrapper, then open
+  // it on the next frame so the height transition runs. Gated by CSS
+  // prefers-reduced-motion (the .bs-hint-wrap transition is disabled there).
+  const wrap = document.createElement("div");
+  wrap.className = "bs-hint-wrap";
+  const inner = document.createElement("div");
+  inner.className = "bs-hint-inner";
+  inner.append(fb);
+  wrap.append(inner);
+
   slot.innerHTML = "";
-  slot.append(fb);
+  slot.append(wrap);
+  requestAnimationFrame(() => wrap.classList.add("bs-open"));
 }
