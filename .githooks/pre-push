@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Auto QA gate (canonical copy — version-controlled).
+# Runs the EduWonderLab QA Loop before every push. Since a push to `main`
+# triggers the Cloudflare Git-integration deploy, this prevents broken builds
+# from going live automatically.
+#
+# Install / reinstall into the active hooks path with:  npm run qa:install-hooks
+# Emergency bypass (use sparingly):                      git push --no-verify
+set -uo pipefail
+
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+cd "$ROOT" || exit 0
+
+echo "[pre-push] Running QA loop before push (npm run qa:loop)..."
+if npm run qa:loop; then
+  echo "[pre-push] QA loop PASSED — allowing push."
+  exit 0
+else
+  echo "" >&2
+  echo "[pre-push] QA loop FAILED — push aborted." >&2
+  echo "  Fix the failing check(s) above, then push again." >&2
+  echo "  Pushing to main triggers a live Cloudflare deploy, so this gate is intentional." >&2
+  echo "  Emergency bypass (not recommended): git push --no-verify" >&2
+  exit 1
+fi
