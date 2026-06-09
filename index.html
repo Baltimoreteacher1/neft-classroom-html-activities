@@ -561,6 +561,19 @@
 
         <div class="sb-group collapsed">
           <div class="sb-group-label">
+            <span class="sb-group-icon" aria-hidden="true">📊</span> Reveal Math
+            <span class="chevron" aria-hidden="true">&#9660;</span>
+          </div>
+          <div class="sb-items">
+            <a class="sb-item" href="/reveal-math/"
+              ><span class="sb-emoji" aria-hidden="true">📊</span> Reveal Math
+              Hub</a
+            >
+          </div>
+        </div>
+
+        <div class="sb-group collapsed">
+          <div class="sb-group-label">
             <span class="sb-group-icon" aria-hidden="true">📖</span> Reading &
             Language
             <span class="chevron" aria-hidden="true">&#9660;</span>
@@ -3741,6 +3754,14 @@
     <script>
       // Sidebar navigation
       document.querySelectorAll(".sb-item").forEach((item) => {
+        // Items with a real href (e.g. the Reveal Math hub link) are plain
+        // links — let them navigate natively and skip the panel-switch wiring.
+        const isPanelSwitcher = !!item.dataset.panel;
+        if (!isPanelSwitcher) {
+          if (item.classList.contains("active"))
+            item.setAttribute("aria-current", "page");
+          return;
+        }
         // Make these div-like <a> (no href) keyboard-operable buttons.
         if (!item.hasAttribute("role")) item.setAttribute("role", "button");
         if (!item.hasAttribute("tabindex")) item.setAttribute("tabindex", "0");
