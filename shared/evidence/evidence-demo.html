@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Evidence Layer — Minimal Integration Demo | Neft Teacher</title>
+    <meta
+      name="description"
+      content="Smallest possible example of wiring the Thinking Trails Evidence Layer into an HTML activity. For developers."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      .demo {
+        max-width: 760px;
+      }
+      .demo button {
+        font-size: 1rem;
+        font-weight: 600;
+        padding: 0.6rem 1.1rem;
+        border-radius: 10px;
+        border: 2px solid #0f766e;
+        background: #0f766e;
+        color: #fff;
+        cursor: pointer;
+        margin: 0.25rem 0.25rem 0.25rem 0;
+      }
+      .demo button.secondary {
+        background: #fff;
+        color: #115e59;
+      }
+      .demo code {
+        background: #eef4f3;
+        padding: 0.1rem 0.35rem;
+        border-radius: 6px;
+      }
+      #host {
+        margin-top: 1.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page-shell demo">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a><span>/</span><span>Evidence Layer Demo</span>
+      </nav>
+      <h1>Evidence Layer — Minimal Integration Demo</h1>
+      <p>
+        Developer demo. The buttons below simulate an activity logging attempts,
+        then render the same report any activity gets. For the full classroom
+        activity, see
+        <a href="/activities/thinking-trails-evidence-demo/"
+          >Thinking Trails: Mean, Median, Mode &amp; Range</a
+        >.
+      </p>
+      <p>
+        <button id="seed" type="button">
+          1 · Start session + log sample attempts
+        </button>
+        <button id="report" type="button" class="secondary">
+          2 · Render report
+        </button>
+        <button id="csv" type="button" class="secondary">3 · Export CSV</button>
+        <button id="clear" type="button" class="secondary">Clear</button>
+      </p>
+      <div id="host"></div>
+    </main>
+
+    <script src="/shared/evidence/export-utils.js"></script>
+    <script src="/shared/evidence/report-renderer.js"></script>
+    <script src="/shared/evidence/evidence-layer.js"></script>
+    <script>
+      document.getElementById("seed").addEventListener("click", function () {
+        Evidence.startSession({
+          studentNameOrCode: "Demo Student",
+          lessonId: "demo",
+          activityId: "evidence-demo",
+          activityTitle: "Evidence Layer Demo",
+          standard: "6.SP.B.5",
+          skillFocus: "mean, median, range",
+          languageSupport: "ESOL",
+        });
+        Evidence.logAttempt({
+          problemId: "p1",
+          skill: "mean",
+          prompt: "Mean of 4,6,10,8",
+          studentAnswer: "7",
+          correctAnswer: "7",
+          result: "correct",
+          hintUsed: false,
+          attempts: 1,
+          explanation: "I added all four numbers to get 28, then divided by 4.",
+        });
+        Evidence.logAttempt({
+          problemId: "p2",
+          skill: "median",
+          prompt: "Median of 5,2,9,4,7",
+          studentAnswer: "9",
+          correctAnswer: "5",
+          result: "incorrect",
+          hintUsed: true,
+          attempts: 2,
+          explanation: "I picked the middle.",
+          misconceptionTag: "median_did_not_order",
+        });
+        Evidence.logAttempt({
+          problemId: "p3",
+          skill: "range",
+          prompt: "Range of 71,65,80,68",
+          studentAnswer: "15",
+          correctAnswer: "15",
+          result: "correct",
+          hintUsed: false,
+          attempts: 1,
+          explanation: "80 minus 65.",
+        });
+        Evidence.endSession();
+        alert("Logged 3 sample attempts. Now click Render report.");
+      });
+      document.getElementById("report").addEventListener("click", function () {
+        Evidence.renderReport(document.getElementById("host"));
+      });
+      document.getElementById("csv").addEventListener("click", function () {
+        Evidence.downloadCSV();
+      });
+      document.getElementById("clear").addEventListener("click", function () {
+        Evidence.clearSession();
+        document.getElementById("host").innerHTML = "";
+      });
+    </script>
+  </body>
+</html>

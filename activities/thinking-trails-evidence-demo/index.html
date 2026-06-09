@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thinking Trails: Mean, Median, Mode & Range | Neft Teacher</title>
+    <meta
+      name="description"
+      content="A Grade 6 mean, median, mode, and range activity that captures student thinking, hints, explanations, and misconception patterns, then builds a student, teacher, and family evidence report. ESOL-friendly. All data stays in the browser."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      .tt-shell {
+        max-width: 880px;
+      }
+      .tt-help {
+        background: #eef4f3;
+        border: 1px solid #d8dfdc;
+        border-radius: 14px;
+        padding: 1rem 1.25rem;
+        margin: 1rem 0;
+      }
+      .tt-help h2 {
+        font-size: 1.15rem;
+        margin: 0 0 0.5rem;
+      }
+      .tt-formulas {
+        display: grid;
+        gap: 0.6rem;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      }
+      .tt-formula {
+        background: #fff;
+        border-radius: 10px;
+        padding: 0.6rem 0.8rem;
+        border: 1px solid #d8dfdc;
+      }
+      .tt-formula b {
+        color: #115e59;
+        display: block;
+      }
+      .tt-setup {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 14px;
+        padding: 1rem 1.25rem;
+        margin: 1rem 0;
+      }
+      .tt-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        margin: 0.5rem 0;
+      }
+      .tt-field label {
+        font-weight: 600;
+      }
+      .tt-field input,
+      .tt-field textarea {
+        font-size: 1.05rem;
+        padding: 0.6rem 0.7rem;
+        border: 2px solid #d8dfdc;
+        border-radius: 10px;
+        font-family: inherit;
+      }
+      .tt-field input:focus,
+      .tt-field textarea:focus {
+        outline: 3px solid #b7791f;
+        outline-offset: 1px;
+        border-color: #0f766e;
+      }
+      .tt-progress {
+        font-weight: 600;
+        color: #5b6773;
+        margin: 0.5rem 0;
+      }
+      .tt-progressbar {
+        height: 10px;
+        background: #e3e9e7;
+        border-radius: 999px;
+        overflow: hidden;
+        margin: 0.25rem 0 1rem;
+      }
+      .tt-progressbar > i {
+        display: block;
+        height: 100%;
+        background: #0f766e;
+        width: 0;
+        transition: width 0.3s;
+      }
+      .tt-problem {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 16px;
+        padding: 1.25rem 1.4rem;
+        box-shadow: 0 8px 24px rgba(23, 32, 42, 0.06);
+      }
+      .tt-skill-tag {
+        display: inline-block;
+        background: #0f766e;
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+      }
+      .tt-prompt {
+        font-size: 1.3rem;
+        margin: 0.75rem 0;
+      }
+      .tt-data {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #115e59;
+        letter-spacing: 0.04em;
+        margin: 0.5rem 0 1rem;
+      }
+      .tt-starters {
+        font-size: 0.92rem;
+        color: #5b6773;
+        background: #f6f7f2;
+        border-radius: 10px;
+        padding: 0.6rem 0.8rem;
+        margin: 0.4rem 0;
+      }
+      .tt-starters b {
+        color: #17202a;
+      }
+      .tt-btnrow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin-top: 1rem;
+      }
+      .tt-btn {
+        font-size: 1.05rem;
+        font-weight: 600;
+        padding: 0.7rem 1.3rem;
+        border-radius: 10px;
+        border: 2px solid #0f766e;
+        background: #0f766e;
+        color: #fff;
+        cursor: pointer;
+      }
+      .tt-btn.secondary {
+        background: #fff;
+        color: #115e59;
+      }
+      .tt-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .tt-btn:focus-visible {
+        outline: 3px solid #b7791f;
+        outline-offset: 2px;
+      }
+      .tt-feedback {
+        margin-top: 1rem;
+        padding: 0.8rem 1rem;
+        border-radius: 10px;
+        font-weight: 600;
+      }
+      .tt-feedback.correct {
+        background: #e7f4ef;
+        color: #115e59;
+        border: 1px solid #0f766e;
+      }
+      .tt-feedback.incorrect {
+        background: #fdeee6;
+        color: #9a3412;
+        border: 1px solid #c2410c;
+      }
+      .tt-feedback.hint {
+        background: #fdf6e3;
+        color: #92600a;
+        border: 1px solid #b7791f;
+      }
+      .tt-report-host {
+        margin-top: 1.5rem;
+      }
+      .tt-privacy {
+        font-size: 0.85rem;
+        color: #5b6773;
+      }
+      @media (max-width: 520px) {
+        .tt-prompt {
+          font-size: 1.15rem;
+        }
+        .tt-data {
+          font-size: 1.25rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page-shell tt-shell">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a><span>/</span><a href="/math/">Math</a><span>/</span
+        ><span>Thinking Trails Evidence Demo</span>
+      </nav>
+
+      <section class="hero compact-hero">
+        <p class="eyebrow">Grade 6 · Statistics · ESOL-Friendly</p>
+        <h1>Thinking Trails: Mean, Median, Mode &amp; Range</h1>
+        <p class="hero-copy">
+          Solve ten problems one at a time. Use a hint if you need one, and
+          explain your thinking before you move on. At the end you get a clear
+          report you can show your teacher and family.
+          <strong>Everything stays on this device.</strong>
+        </p>
+      </section>
+
+      <div class="tt-help">
+        <h2>Help box — the four measures</h2>
+        <div class="tt-formulas">
+          <div class="tt-formula">
+            <b>Mean</b> Add all the numbers. Then divide by how many numbers
+            there are.
+          </div>
+          <div class="tt-formula">
+            <b>Median</b> Put the numbers in order. Find the middle number.
+          </div>
+          <div class="tt-formula">
+            <b>Mode</b> Find the number that appears the most.
+          </div>
+          <div class="tt-formula">
+            <b>Range</b> Biggest number minus smallest number.
+          </div>
+        </div>
+      </div>
+
+      <!-- Setup -->
+      <section id="tt-setup" class="tt-setup">
+        <h2>Start your trail</h2>
+        <div class="tt-field">
+          <label for="tt-name">Your name or class code</label>
+          <input
+            id="tt-name"
+            type="text"
+            autocomplete="off"
+            placeholder="e.g. Student 12 or your first name"
+          />
+        </div>
+        <p class="tt-privacy">
+          You can use a code instead of your full name. Nothing you type is sent
+          anywhere — it stays in this browser until you clear it.
+        </p>
+        <button id="tt-start" class="tt-btn" type="button">
+          Start the activity
+        </button>
+      </section>
+
+      <!-- Activity -->
+      <section id="tt-activity" hidden aria-live="polite">
+        <p class="tt-progress" id="tt-progress">Problem 1 of 10</p>
+        <div class="tt-progressbar"><i id="tt-bar"></i></div>
+
+        <div class="tt-problem">
+          <span class="tt-skill-tag" id="tt-skill">Mean</span>
+          <p class="tt-prompt" id="tt-prompt"></p>
+          <p class="tt-data" id="tt-data"></p>
+
+          <div class="tt-field">
+            <label for="tt-answer">Your answer</label>
+            <input
+              id="tt-answer"
+              type="text"
+              inputmode="decimal"
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="tt-field">
+            <label for="tt-explain">Explain your thinking (required)</label>
+            <textarea
+              id="tt-explain"
+              rows="3"
+              placeholder="First, I... Then, I... I know this because..."
+            ></textarea>
+          </div>
+          <div class="tt-starters">
+            <b>Sentence starters:</b> I found the answer by… · First, I… · Then,
+            I… · I know this because… · The mistake I checked for was…
+          </div>
+
+          <div class="tt-btnrow">
+            <button id="tt-hint" class="tt-btn secondary" type="button">
+              Show a hint
+            </button>
+            <button id="tt-check" class="tt-btn" type="button">
+              Check answer
+            </button>
+            <button id="tt-next" class="tt-btn" type="button" hidden>
+              Next problem
+            </button>
+          </div>
+
+          <div id="tt-feedback" class="tt-feedback" hidden></div>
+        </div>
+      </section>
+
+      <!-- Report -->
+      <section id="tt-report-section" hidden>
+        <div id="tt-report-host" class="tt-report-host"></div>
+      </section>
+    </main>
+
+    <!-- Evidence Layer (local-first; no network) -->
+    <script src="/shared/evidence/export-utils.js"></script>
+    <script src="/shared/evidence/report-renderer.js"></script>
+    <script src="/shared/evidence/evidence-layer.js"></script>
+    <script src="./activity.js"></script>
+  </body>
+</html>
