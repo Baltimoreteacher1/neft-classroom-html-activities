@@ -135,7 +135,11 @@ function placeImages(files, outDir) {
 }
 
 function main() {
-  const args = process.argv.slice(2);
+  const rawArgs = process.argv.slice(2);
+  // Flags (e.g. --dry-run / --deploy) are only meaningful for the curated
+  // .pptx pipeline; split them out so positional counting stays correct.
+  const passthroughFlags = rawArgs.filter((a) => a.startsWith("--") && a !== "--help");
+  const args = rawArgs.filter((a) => !a.startsWith("--") || a === "--help" || a === "-h");
   if (args.length < 2 || args[0] === "--help" || args[0] === "-h") {
     console.log(
       [
@@ -158,6 +162,31 @@ function main() {
   const inputs = args.slice(1).map(expandHome);
 
   const first = inputs[0];
+
+  // A single .pptx is a Reveal Math lesson DECK → route to the curated
+  // extraction pipeline (Notice & Wonder data image + word problem wired into
+  // config.json), NOT the old bulk image dump. PDFs/images keep the legacy
+  // slide-deck behavior below.
+  const isPptx =
+    inputs.length === 1 &&
+    fs.existsSync(first) &&
+    fs.statSync(first).isFile() &&
+    path.extname(first).toLowerCase() === ".pptx";
+  if (isPptx) {
+    console.log(`\n📚 Lesson: ${lessonId}`);
+    console.log(`🎯 Reveal deck (.pptx) detected → running curated lesson integration.`);
+    try {
+      execFileSync(
+        process.execPath,
+        [path.join(__dirname, "reveal-lesson.mjs"), lessonId, first, ...passthroughFlags],
+        { stdio: "inherit" }
+      );
+    } catch (e) {
+      die(`Curated Reveal integration failed: ${e.message || e}`);
+    }
+    return;
+  }
+
   const isPdf = inputs.length === 1 && fs.statSync(first).isFile() && path.extname(first).toLowerCase() === ".pdf";
 
   console.log(`\n📚 Lesson: ${lessonId}`);

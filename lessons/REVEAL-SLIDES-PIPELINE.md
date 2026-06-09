@@ -21,6 +21,72 @@ references the images by relative path and the PPTX embeds them directly.
 
 ---
 
+## 0. Curated lesson integration (recommended)
+
+If you have the **raw Reveal Math lesson deck** (`.pptx`), you don't need to
+hand-crop images or write config. One command extracts the right teaching pieces
+and wires them into the lesson:
+
+```bash
+npm run reveal-lesson -- <lesson-id> <reveal.pptx> [--dry-run] [--deploy]
+
+# Preview only, write nothing:
+npm run reveal-lesson -- 8-2 ~/Downloads/reveal-median.pptx --dry-run
+
+# Wire it (writes images + config; review, then deploy yourself):
+npm run reveal-lesson -- 8-2 ~/Downloads/reveal-median.pptx
+
+# Wire + build + commit on a branch + ff main + push (auto-deploy):
+npm run reveal-lesson -- 8-2 ~/Downloads/reveal-median.pptx --deploy
+```
+
+`npm run add-reveal -- <lesson> <reveal.pptx>` routes here automatically when the
+single input is a `.pptx` (PDF / image-folder inputs keep the legacy slide-deck
+behavior in §1–§3).
+
+### What it extracts
+
+It reads the deck with `python-pptx` (helper: `scripts/lib/extract_reveal.py`)
+and writes two managed fields into `lessons/<id>/config.json`:
+
+- **`config.noticeAndWonder`** — the **data display** students analyze plus its
+  context sentence. Rendered as a "Be Curious / Notice & Wonder" card **after the
+  Objectives**.
+- **`config.revealWordProblem`** — the application/"Apply:" problem (title, text,
+  image). Rendered as an "Apply" card **after Vocabulary**.
+
+Images are saved to `lessons/<id>/reveal-assets/notice-wonder.png` and
+`word-problem.png` (Vite copies `reveal-assets/` into `dist/`).
+
+### Heuristics (and when to eyeball the result)
+
+- **Notice & Wonder image** — among the slides near the "Be Curious / notice /
+  wonder / mindset" slides, it picks the embedded raster on the slide whose text
+  mentions the data (`data set`, `summarize`, `collected the data`,
+  `notice about`). It **prefers a PNG data graphic** and **rejects wide JPEG
+  photos / stock art** (Shutterstock, Rawpixel) — so it grabs the chalkboard data
+  table, not the decorative "Be Curious Mindset" stock photo.
+- **Notice & Wonder context** — the longest descriptive (non-question) body
+  sentence on that slide, whitespace-cleaned.
+- **Word problem** — the late-deck slide whose text contains `Apply` / a
+  real-world ask (`fair, but… price`, `Question:`); its largest content image is
+  saved; the title comes from the `Apply: ___` label.
+- **Sentence starters** — generic, reusable defaults (`I notice that…` /
+  `I wonder why…`, etc.); customize per lesson if you want topic-specific stems.
+
+These are robust on standard Reveal lesson decks. **Always eyeball the two images
+and the extracted text after a real run** (`--dry-run` first, or `npm run preview`
+after) — context/title wording often reads better after light teacher polish, and
+unusual deck layouts may need the slide/image picked by hand.
+
+### Idempotent & order-preserving
+
+Re-running **replaces** the two managed fields (never duplicates). All other
+config keys, the key order, the 2-space indent, and the trailing newline are
+preserved. `--dry-run` writes nothing.
+
+---
+
 ## 1. Where to drop the slides (input contract)
 
 Create this folder inside the lesson you want to populate:
