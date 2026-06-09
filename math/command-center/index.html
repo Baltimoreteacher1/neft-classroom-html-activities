@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="The Math Command Center — a teacher workspace for building, auditing, organizing, and packaging classroom-ready Grade 6 math materials: lesson packets, sub plans, guided notes, worksheets, answer keys, games, and printables."
+    />
+    <title>Math Command Center | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      /* Scoped layout — roomy 3-col grids, large readable text, print-friendly */
+      .page-shell {
+        width: min(100% - 32px, 1180px);
+      }
+      .activity-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+      @media (max-width: 1024px) {
+        .activity-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 680px) {
+        .activity-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Workflow: Idea → Build → QA → Package → Use */
+      .cc-flow {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        gap: 10px;
+        margin-top: 6px;
+      }
+      .cc-flow-step {
+        flex: 1 1 150px;
+        min-width: 140px;
+        padding: 16px 14px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-top: 5px solid var(--teal);
+        border-radius: var(--radius);
+        text-align: center;
+      }
+      .cc-flow-step .cc-step-num {
+        display: inline-grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        margin-bottom: 8px;
+        border-radius: 999px;
+        background: var(--surface-soft);
+        color: var(--teal-dark);
+        font-weight: 850;
+        font-size: 0.95rem;
+      }
+      .cc-flow-step h3 {
+        margin: 0 0 4px;
+        font-size: 1.12rem;
+      }
+      .cc-flow-step p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+      .cc-flow-arrow {
+        align-self: center;
+        color: var(--teal);
+        font-size: 1.4rem;
+        font-weight: 800;
+      }
+      @media (max-width: 680px) {
+        .cc-flow-arrow {
+          display: none;
+        }
+      }
+
+      /* Teacher use cases — readable list of example prompts */
+      .cc-usecases {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+      @media (max-width: 680px) {
+        .cc-usecases {
+          grid-template-columns: 1fr;
+        }
+      }
+      .cc-usecase {
+        padding: 16px 18px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-left: 5px solid var(--gold);
+        border-radius: var(--radius);
+      }
+      .cc-usecase .cc-eyebrow {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--teal-dark);
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .cc-usecase p {
+        margin: 0;
+        color: var(--ink);
+        font-size: 1.02rem;
+        line-height: 1.4;
+      }
+
+      /* Launch / action cards — clearly marked as previews, not live */
+      .cc-action-card {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 18px;
+        background: var(--surface);
+        border: 1px dashed var(--line);
+        border-radius: var(--radius);
+      }
+      .cc-action-card h3 {
+        margin: 0;
+        font-size: 1.15rem;
+      }
+      .cc-action-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .cc-action-card .cc-action-foot {
+        margin-top: auto;
+      }
+      .cc-preview-pill {
+        width: fit-content;
+        padding: 4px 10px;
+        background: #fdf3e7;
+        color: var(--coral);
+        border: 1px solid rgba(194, 65, 12, 0.25);
+        border-radius: 999px;
+        font-size: 0.74rem;
+        font-weight: 850;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .cc-disabled-btn {
+        display: inline-block;
+        padding: 8px 14px;
+        background: var(--surface-soft);
+        color: var(--muted);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        font-weight: 800;
+        font-size: 0.92rem;
+        cursor: not-allowed;
+      }
+      .cc-what-list {
+        margin: 0;
+        padding-left: 0;
+        list-style: none;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+      @media (max-width: 1024px) {
+        .cc-what-list {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 680px) {
+        .cc-what-list {
+          grid-template-columns: 1fr;
+        }
+      }
+      .cc-what-list li {
+        padding: 14px 16px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        font-size: 1.02rem;
+        font-weight: 700;
+        color: var(--ink);
+      }
+      .cc-what-list li span {
+        display: block;
+        margin-top: 3px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body class="tools-page">
+    <main class="page-shell">
+      <!-- 1. Hero -->
+      <section class="hero compact-hero tools-hero" aria-labelledby="cc-title">
+        <div>
+          <p class="eyebrow">Grade 6 · Teacher Workspace</p>
+          <h1 id="cc-title">Math Command Center</h1>
+          <p class="hero-copy">
+            Build, audit, organize, and package classroom-ready math materials.
+            A teacher workspace for turning rough ideas into polished math
+            lessons, activities, packets, games, and printables.
+          </p>
+          <ul class="hero-callouts" aria-label="What it does">
+            <li><strong>Build</strong>Lessons, packets, notes, and games.</li>
+            <li>
+              <strong>Audit</strong>Check answer keys and worksheet quality.
+            </li>
+            <li>
+              <strong>Package</strong>Bundle into DOCX, PDF, and answer keys.
+            </li>
+          </ul>
+        </div>
+        <aside class="summary-card" aria-labelledby="cc-summary-title">
+          <p class="eyebrow">At a glance</p>
+          <h2 id="cc-summary-title">How it works</h2>
+          <dl class="summary-list">
+            <div>
+              <dt>For</dt>
+              <dd>Mr. Neft's Grade 6 math classroom</dd>
+            </div>
+            <div>
+              <dt>Flow</dt>
+              <dd>Idea → Build → QA → Package → Use</dd>
+            </div>
+            <div>
+              <dt>Output</dt>
+              <dd>Packets, notes, games, printables</dd>
+            </div>
+          </dl>
+        </aside>
+      </section>
+
+      <!-- 2. What It Can Build -->
+      <section aria-labelledby="cc-build-heading">
+        <div class="section-heading">
+          <p class="eyebrow">What It Can Build</p>
+          <h2 id="cc-build-heading">One Workspace, Many Materials</h2>
+          <p>
+            Describe what you need and the Command Center helps you create,
+            organize, and package it — ready for class.
+          </p>
+        </div>
+        <ul
+          class="cc-what-list"
+          aria-label="Materials the Command Center can build"
+        >
+          <li>
+            📦 Lesson packets<span>Full, classroom-ready lesson bundles.</span>
+          </li>
+          <li>
+            🆘 Emergency sub plans<span
+              >Self-running plans a sub can teach.</span
+            >
+          </li>
+          <li>📝 Guided notes<span>Scaffolded fill-in note sheets.</span></li>
+          <li>
+            ✏️ Practice worksheets<span>Targeted practice by standard.</span>
+          </li>
+          <li>✅ Answer keys<span>Worked, checkable solutions.</span></li>
+          <li>
+            🎨 Color-by-number<span>Self-checking art-math activities.</span>
+          </li>
+          <li>🎮 Math games<span>Interactive review and warm-ups.</span></li>
+          <li>
+            🕹️ HTML interactive activities<span
+              >Browser-based, auto-graded.</span
+            >
+          </li>
+          <li>
+            🛍️ TPT-style product packages<span
+              >Polished, sellable bundles.</span
+            >
+          </li>
+          <li>🔁 Review packets<span>Unit and MCAP review sets.</span></li>
+          <li>
+            📊 Data activities<span>Statistics and data investigations.</span>
+          </li>
+          <li>
+            🏠 Family / student support<span>Home-connection one-pagers.</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 3. Workflow -->
+      <section aria-labelledby="cc-flow-heading">
+        <div class="section-heading">
+          <p class="eyebrow">The Workflow</p>
+          <h2 id="cc-flow-heading">Idea → Build → QA → Package → Use</h2>
+          <p>
+            A simple, repeatable path from a rough idea to materials in
+            students' hands.
+          </p>
+        </div>
+        <div class="cc-flow" aria-label="Command Center workflow steps">
+          <div class="cc-flow-step">
+            <span class="cc-step-num">1</span>
+            <h3>Idea</h3>
+            <p>Describe the lesson, topic, or material you need.</p>
+          </div>
+          <span class="cc-flow-arrow" aria-hidden="true">→</span>
+          <div class="cc-flow-step">
+            <span class="cc-step-num">2</span>
+            <h3>Build</h3>
+            <p>Generate the packet, notes, worksheet, or game.</p>
+          </div>
+          <span class="cc-flow-arrow" aria-hidden="true">→</span>
+          <div class="cc-flow-step">
+            <span class="cc-step-num">3</span>
+            <h3>QA Check</h3>
+            <p>Audit the answer key, math, and readability.</p>
+          </div>
+          <span class="cc-flow-arrow" aria-hidden="true">→</span>
+          <div class="cc-flow-step">
+            <span class="cc-step-num">4</span>
+            <h3>Package</h3>
+            <p>Bundle into DOCX, PDF, and answer-key files.</p>
+          </div>
+          <span class="cc-flow-arrow" aria-hidden="true">→</span>
+          <div class="cc-flow-step">
+            <span class="cc-step-num">5</span>
+            <h3>Use in Class</h3>
+            <p>Print, project, or assign to students.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Teacher Use Cases -->
+      <section aria-labelledby="cc-usecases-heading">
+        <div class="section-heading">
+          <p class="eyebrow">Teacher Use Cases</p>
+          <h2 id="cc-usecases-heading">Real Things You Can Ask For</h2>
+          <p>Plain-language requests the Command Center is built to handle.</p>
+        </div>
+        <div class="cc-usecases">
+          <div class="cc-usecase">
+            <span class="cc-eyebrow">Sub Plans</span>
+            <p>“Create a 3-day emergency sub packet for ratios.”</p>
+          </div>
+          <div class="cc-usecase">
+            <span class="cc-eyebrow">Audit</span>
+            <p>“Audit a worksheet and check the answer key.”</p>
+          </div>
+          <div class="cc-usecase">
+            <span class="cc-eyebrow">Lesson Build</span>
+            <p>
+              “Turn a lesson into guided notes, practice, and an exit ticket.”
+            </p>
+          </div>
+          <div class="cc-usecase">
+            <span class="cc-eyebrow">Package</span>
+            <p>“Package a unit review into DOCX, PDF, and answer-key files.”</p>
+          </div>
+          <div class="cc-usecase">
+            <span class="cc-eyebrow">Interactive</span>
+            <p>“Create an interactive math activity for students.”</p>
+          </div>
+          <div class="cc-usecase">
+            <span class="cc-eyebrow">Data</span>
+            <p>“Build a data activity using real Grade 6 statistics.”</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. Launch / Action Area -->
+      <section aria-labelledby="cc-launch-heading">
+        <div class="section-heading">
+          <p class="eyebrow">Launch &amp; Actions</p>
+          <h2 id="cc-launch-heading">Start a Workflow</h2>
+          <p>
+            These actions run as a guided build workflow. The live in-browser
+            buttons below are <strong>previews</strong> — they will connect once
+            the Command Center backend is wired up.
+          </p>
+        </div>
+        <div class="note-panel" role="note">
+          <p>
+            <strong>Status:</strong> The Command Center build/audit/package
+            engine is a local teacher workflow and is
+            <strong>not yet connected to this page</strong>. The buttons below
+            are placeholders so nothing here pretends to be live. Use the
+            <a href="/math/finder/">Activities Finder</a> and
+            <a href="/directory/">Full Directory</a> for materials that are
+            ready to use right now.
+          </p>
+        </div>
+        <div
+          class="activity-grid"
+          aria-label="Command Center actions"
+          style="margin-top: 16px"
+        >
+          <div class="cc-action-card">
+            <span class="cc-preview-pill">Preview</span>
+            <h3>🛠️ Build a Math Resource</h3>
+            <p>
+              Start from an idea and generate a packet, notes, worksheet, or
+              game.
+            </p>
+            <span class="cc-action-foot"
+              ><span class="cc-disabled-btn" aria-disabled="true"
+                >Not yet connected</span
+              ></span
+            >
+          </div>
+          <div class="cc-action-card">
+            <span class="cc-preview-pill">Preview</span>
+            <h3>🔍 Audit a Resource</h3>
+            <p>
+              Check a worksheet's math, answer key, and readability for errors.
+            </p>
+            <span class="cc-action-foot"
+              ><span class="cc-disabled-btn" aria-disabled="true"
+                >Not yet connected</span
+              ></span
+            >
+          </div>
+          <div class="cc-action-card">
+            <span class="cc-preview-pill">Preview</span>
+            <h3>📦 Package a Resource</h3>
+            <p>
+              Bundle a finished resource into DOCX, PDF, and answer-key files.
+            </p>
+            <span class="cc-action-foot"
+              ><span class="cc-disabled-btn" aria-disabled="true"
+                >Not yet connected</span
+              ></span
+            >
+          </div>
+          <div class="cc-action-card">
+            <span class="cc-preview-pill">Preview</span>
+            <h3>🗂️ View Recent Outputs</h3>
+            <p>Browse the materials most recently built and packaged.</p>
+            <span class="cc-action-foot"
+              ><span class="cc-disabled-btn" aria-disabled="true"
+                >Not yet connected</span
+              ></span
+            >
+          </div>
+          <div class="cc-action-card">
+            <span class="cc-preview-pill">Preview</span>
+            <h3>📋 Open QA Reports</h3>
+            <p>Review answer-key and quality checks from recent audits.</p>
+            <span class="cc-action-foot"
+              ><span class="cc-disabled-btn" aria-disabled="true"
+                >Not yet connected</span
+              ></span
+            >
+          </div>
+          <a class="activity-card" href="/math/">
+            <span class="card-kicker">Live now</span>
+            <h3>← Back to Math Hub</h3>
+            <p>
+              Return to the Grade 6 Reveal Math curriculum hub and ready-to-use
+              tools.
+            </p>
+            <span class="button-link">Open Math Hub</span>
+          </a>
+        </div>
+      </section>
+
+      <footer class="site-footer">
+        <span>Neft Teacher · Math Command Center</span>
+        <span>Grade 6 Teacher Workspace · <span data-current-year></span></span>
+      </footer>
+    </main>
+    <script src="/assets/app.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+  </body>
+</html>
