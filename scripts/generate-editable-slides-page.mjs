@@ -5,11 +5,13 @@
  * Generates a teacher-facing "Editable Slides" launcher page for every lesson at
  *   lessons/<id>/editable-slides.html
  *
- * The page gives teachers three clearly distinguished ways to use the lesson deck:
+ * The page gives teachers four clearly distinguished ways to use the lesson:
+ *   0. Open the Lesson     → the updated interactive HTML lesson at lessons/<id>/
+ *      (Notice & Wonder + word problem — the version students actually use).
  *   1. Edit in PowerPoint  → download the generated lessons/<id>/slides.pptx
  *   2. Edit in Google Slides → download the .pptx, then upload to Google Slides
  *      (Drive → New → File upload → Open with Google Slides auto-converts).
- *   3. Present in browser  → open the interactive (non-editable) lessons/<id>/slides.html
+ *   3. Present the slide deck → open the (non-editable) slide deck lessons/<id>/slides.html
  *
  * IMPORTANT — why the Google Slides path is "download then upload":
  * The live site (eduwonderlab.com) is behind HTTP Basic Auth, so external
@@ -86,6 +88,8 @@ h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);margin:6px 0 6px;fo
 .btn.ppt:hover{background:#a8330f;border-color:#a8330f;}
 .btn.ghost{background:#fff;color:var(--navy);border-color:var(--navy);}
 .btn.ghost:hover{background:var(--navy);color:#fff;}
+.card.feature{border-color:var(--teal);border-width:2px;background:var(--teal-light);}
+.card.feature .tag{color:var(--teal-700);}
 .note{background:var(--amber-light);border:1px solid var(--amber);border-radius:10px;
   padding:14px 16px;font-size:15px;margin:18px 0 0;}
 .note strong{color:var(--navy);}
@@ -137,11 +141,21 @@ function page({ id, unit, lesson, title, standard, contentObjective, languageObj
 
 <p class="eyebrow">Editable Slides</p>
 <h1>${esc(title)}${stdBadge}</h1>
-<p class="sub">${esc(lessonNum)} · Open this lesson's deck in PowerPoint or Google Slides, or present it live in the browser.</p>
+<p class="sub">${esc(lessonNum)} · Open the interactive student lesson, or open this lesson's deck in PowerPoint or Google Slides, or present the deck live in the browser.</p>
 
 ${objBlock}
 
 <div class="grid">
+
+  <div class="card feature">
+    <div class="ico" aria-hidden="true">🌐</div>
+    <h2>Open the Lesson</h2>
+    <p class="tag">Interactive · updated student lesson</p>
+    <p>Open the full interactive HTML lesson — the up-to-date version students use, including the Notice &amp; Wonder warm-up and the word problem. This is the lesson itself, not a slide deck.</p>
+    <a class="btn" href="/lessons/${esc(id)}/">
+      🌐 Open the Lesson
+    </a>
+  </div>
 
   <div class="card">
     <div class="ico" aria-hidden="true">📊</div>
@@ -172,9 +186,9 @@ ${objBlock}
 
   <div class="card">
     <div class="ico" aria-hidden="true">🖥️</div>
-    <h2>Present in browser</h2>
-    <p class="tag">Live · projector view</p>
-    <p>Open the interactive lesson deck full-screen for projecting in class. This view is for presenting, not editing.</p>
+    <h2>Present the slide deck</h2>
+    <p class="tag">Slide deck · projector view</p>
+    <p>Open the <strong>slide deck</strong> full-screen for projecting in class. This is the presentation deck (same content as the PowerPoint), not the interactive lesson and not for editing.</p>
     <a class="btn ghost" href="/lessons/${esc(id)}/slides.html">
       ▶ Present in browser
     </a>
