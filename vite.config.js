@@ -94,6 +94,19 @@ function copyStandaloneHtml() {
             mkdirSync(destDir, { recursive: true });
             cpSync(slidesPptx, resolve(destDir, "slides.pptx"));
           }
+          // Generated "Editable Slides" launcher page (PPTX download +
+          // Google Slides upload path + browser present) — npm run
+          // generate-editable-slides. Linked from the curriculum hub.
+          const editableSlides = resolve(
+            lessonsDir,
+            dir.name,
+            "editable-slides.html",
+          );
+          if (existsSync(editableSlides)) {
+            const destDir = resolve(__dirname, "dist", "lessons", dir.name);
+            mkdirSync(destDir, { recursive: true });
+            cpSync(editableSlides, resolve(destDir, "editable-slides.html"));
+          }
           const homework = resolve(lessonsDir, dir.name, "homework.docx");
           if (existsSync(homework)) {
             const destDir = resolve(__dirname, "dist", "lessons", dir.name);
