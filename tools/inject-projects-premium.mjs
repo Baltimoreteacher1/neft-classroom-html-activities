@@ -18,6 +18,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const LINK =
   '<link rel="stylesheet" href="/shared/projects/projects-premium.css" />';
+const TABS_CSS =
+  '<link rel="stylesheet" href="/shared/projects/projects-tabs.css" />';
+const TABS_JS =
+  '<script src="/shared/projects/projects-tabs.js" defer></script>';
 
 const UNITS = Array.from({ length: 10 }, (_, i) => i + 1);
 let changed = 0;
@@ -37,7 +41,18 @@ function addHubClass(html) {
   return html.replace(/<body(\s|>)/, '<body class="pk-hub"$1');
 }
 
-function process(rel, { hub } = {}) {
+// Version pages (with .phase sections) get the tabbed-stepper enhancement.
+function addTabsAssets(html) {
+  if (!html.includes("projects-tabs.css")) {
+    html = html.replace(/([ \t]*)<\/head>/i, `$1  ${TABS_CSS}\n$1</head>`);
+  }
+  if (!html.includes("projects-tabs.js")) {
+    html = html.replace(/([ \t]*)<\/body>/i, `$1  ${TABS_JS}\n$1</body>`);
+  }
+  return html;
+}
+
+function process(rel, { hub, tabs } = {}) {
   const file = path.join(ROOT, rel);
   if (!fs.existsSync(file)) {
     console.warn("  skip (missing):", rel);
@@ -46,6 +61,7 @@ function process(rel, { hub } = {}) {
   const before = fs.readFileSync(file, "utf8");
   let after = addLink(before);
   if (hub) after = addHubClass(after);
+  if (tabs) after = addTabsAssets(after);
   if (after !== before) {
     fs.writeFileSync(file, after);
     changed++;
@@ -60,8 +76,8 @@ const DIRS = [
 
 for (const dir of DIRS) {
   process(`${dir}/index.html`, { hub: true });
-  process(`${dir}/version-a/index.html`);
-  process(`${dir}/version-b/index.html`);
+  process(`${dir}/version-a/index.html`, { tabs: true });
+  process(`${dir}/version-b/index.html`, { tabs: true });
 }
 
 console.log(`Projects premium injection: ${changed} file(s) updated.`);

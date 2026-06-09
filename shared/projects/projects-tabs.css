@@ -1,0 +1,333 @@
+/* ==========================================================================
+   Neft Teacher — Projects TABS / STEPPER layer (shared, progressive)
+   Turns the top-level .phase sections of a `.pk` culminating project into an
+   accessible, tabbed stepper. Loaded AFTER projects-kit.css and
+   projects-premium.css. Reference as /shared/projects/projects-tabs.css
+
+   PROGRESSIVE ENHANCEMENT CONTRACT:
+   - Panels are only hidden when JS has added `.pk-tabs-on` to <body>.
+     Without JS every .phase stays visible (no CSS-only hiding of content).
+   - @media print removes all tab hiding so a printout shows every phase.
+   Vanilla CSS, zero dependencies, offline-safe (system fonts only).
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Sticky tab bar (the stepper rail)
+   -------------------------------------------------------------------------- */
+.pk .pk-tabbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  margin: 18px -20px 22px;
+  padding: 12px 20px 13px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: saturate(1.4) blur(8px);
+  -webkit-backdrop-filter: saturate(1.4) blur(8px);
+  border-bottom: 1px solid var(--pp-line, #e4ebf2);
+  box-shadow: 0 6px 18px rgba(12, 27, 42, 0.06);
+}
+
+/* Step counter + mini progress ring/bar above the tabs */
+.pk .pk-tabbar-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.pk .pk-step-count {
+  font-weight: 900;
+  font-size: 0.95rem;
+  color: var(--pp-ink, #0c1b2a);
+  white-space: nowrap;
+}
+.pk .pk-step-count b {
+  color: var(--pp-blue, #1763c7);
+}
+.pk .pk-step-bar {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(12, 27, 42, 0.1);
+  overflow: hidden;
+}
+.pk .pk-step-bar > i {
+  display: block;
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--pp-teal, #0e9a8c),
+    var(--pp-blue, #1763c7)
+  );
+  box-shadow: 0 0 12px rgba(23, 99, 199, 0.4);
+  transition: width 0.45s var(--pp-ease, ease);
+}
+
+/* The scrollable tab strip */
+.pk .pk-tablist {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+.pk .pk-tab {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1.5px solid var(--pp-line, #e4ebf2);
+  background: #fff;
+  color: var(--pp-muted, #54677c);
+  border-radius: 999px;
+  padding: 9px 15px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.86rem;
+  line-height: 1.1;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+}
+.pk .pk-tab:hover {
+  border-color: var(--pp-blue, #1763c7);
+  color: var(--pp-ink, #0c1b2a);
+  transform: translateY(-1px);
+}
+.pk .pk-tab .pk-tab-dot {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--pp-bg, #eef3f8);
+  color: var(--pp-muted, #54677c);
+  font-size: 0.78rem;
+  font-weight: 900;
+  flex: 0 0 auto;
+}
+.pk .pk-tab[aria-selected="true"] {
+  background: linear-gradient(
+    135deg,
+    var(--pp-blue, #1763c7),
+    var(--pp-blue-deep, #0c3f86)
+  );
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(12, 63, 134, 0.3);
+}
+.pk .pk-tab[aria-selected="true"] .pk-tab-dot {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+.pk .pk-tab.pk-done .pk-tab-dot {
+  background: var(--pp-green, #19a35a);
+  color: #fff;
+}
+.pk .pk-tab.pk-done[aria-selected="true"] .pk-tab-dot {
+  background: rgba(255, 255, 255, 0.28);
+}
+.pk .pk-tab:focus-visible {
+  outline: 3px solid var(--pp-gold, #f4a924);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   2. Panels — only hidden once JS is active (progressive)
+   -------------------------------------------------------------------------- */
+.pk-tabs-on .pk .phase[hidden],
+.pk-tabs-on .pk .phase.pk-panel-hidden {
+  display: none;
+}
+.pk .phase.pk-panel {
+  animation: pk-panel-in 0.35s var(--pp-ease, ease);
+}
+@keyframes pk-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. Prev / Next footer nav
+   -------------------------------------------------------------------------- */
+.pk .pk-tabnav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 6px 0 8px;
+}
+.pk .pk-tabnav button {
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.95rem;
+  border-radius: 999px;
+  padding: 12px 22px;
+  cursor: pointer;
+  border: 1.5px solid var(--pp-line, #e4ebf2);
+  background: #fff;
+  color: var(--pp-ink, #0c1b2a);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+  min-height: 44px;
+}
+.pk .pk-tabnav button:hover:not([disabled]) {
+  transform: translateY(-1px);
+}
+.pk .pk-tabnav .pk-next {
+  background: linear-gradient(
+    135deg,
+    var(--pp-teal, #0e9a8c),
+    var(--pp-blue, #1763c7)
+  );
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(14, 154, 140, 0.32);
+  margin-left: auto;
+}
+.pk .pk-tabnav button[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.pk .pk-tabnav .pk-next:focus-visible,
+.pk .pk-tabnav .pk-prev:focus-visible {
+  outline: 3px solid var(--pp-gold, #f4a924);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   4. Research tab content
+   -------------------------------------------------------------------------- */
+.pk .pk-research-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 6px;
+}
+.pk .pk-research-card {
+  display: block;
+  border: 1.5px solid var(--pp-line, #e4ebf2);
+  border-left: 6px solid var(--pp-blue, #1763c7);
+  border-radius: 16px;
+  padding: 16px 18px;
+  background: #fff;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+.pk .pk-research-card:hover,
+.pk .pk-research-card:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: var(--pp-shadow, 0 10px 30px rgba(12, 27, 42, 0.1));
+  border-left-color: var(--pp-teal, #0e9a8c);
+  outline: none;
+}
+.pk .pk-research-card:focus-visible {
+  outline: 3px solid var(--pp-gold, #f4a924);
+  outline-offset: 2px;
+}
+.pk .pk-research-card .pk-rc-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pk .pk-research-card .pk-rc-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+.pk .pk-research-card .pk-rc-title {
+  font-weight: 900;
+  font-size: 1.08rem;
+  color: var(--pp-blue-deep, #0c3f86);
+}
+.pk .pk-research-card .pk-rc-ext {
+  margin-left: auto;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--pp-muted, #54677c);
+  white-space: nowrap;
+}
+.pk .pk-research-card .pk-rc-find {
+  margin: 8px 0 0;
+  font-size: 0.98rem;
+}
+.pk .pk-research-card .pk-rc-look {
+  margin: 6px 0 0;
+  font-size: 0.92rem;
+  color: var(--pp-muted, #54677c);
+}
+.pk .pk-research-card .pk-rc-look b {
+  color: var(--pp-ink, #0c1b2a);
+}
+.pk .pk-research-safe {
+  margin-top: 14px;
+  font-size: 0.86rem;
+  color: var(--pp-muted, #54677c);
+  background: var(--pp-bg, #eef3f8);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+/* --------------------------------------------------------------------------
+   5. Responsive — phones / Chromebooks
+   -------------------------------------------------------------------------- */
+@media (max-width: 480px) {
+  .pk .pk-tabbar {
+    margin: 14px -20px 18px;
+  }
+  .pk .pk-tab {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+  .pk .pk-tabnav button {
+    padding: 11px 16px;
+    font-size: 0.9rem;
+  }
+  .pk .pk-tabnav .pk-prev span,
+  .pk .pk-tabnav .pk-next span {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. PRINT — show every phase, hide the interactive chrome
+   -------------------------------------------------------------------------- */
+@media print {
+  .pk-tabs-on .pk .phase[hidden],
+  .pk-tabs-on .pk .phase.pk-panel-hidden {
+    display: block !important;
+  }
+  .pk .pk-tabbar,
+  .pk .pk-tabnav {
+    display: none !important;
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .pk .phase.pk-panel,
+  .pk .pk-step-bar > i,
+  .pk .pk-tab,
+  .pk .pk-research-card,
+  .pk .pk-tabnav button {
+    animation: none !important;
+    transition: none !important;
+  }
+}
