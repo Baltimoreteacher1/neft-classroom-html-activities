@@ -615,6 +615,27 @@
         border-color: rgba(255, 255, 255, 0.15);
         color: #ffffff;
       }
+      .lesson-outline-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 6px;
+        flex-basis: 100%;
+        width: 100%;
+      }
+      .lesson-outline-group:first-child {
+        margin-top: 0;
+      }
+      .lesson-outline-group-title {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--muted);
+        letter-spacing: 0.06em;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
 
       /* Unit Resources section */
       .unit-resources-row {
@@ -6282,6 +6303,122 @@
 
         // 1. Scrape Curriculum Data from existing DOM
         var unitsData = [];
+
+        // Render an activity outline as 4 labeled, ordered sections.
+        // Organization only — same items, same hrefs/icons/order within a
+        // group; no items added or removed. Categorize by visible label text
+        // (case-insensitive substring): check Lesson&Slides / Notes&Handouts /
+        // Homework&Family first, else fall back to Practice & Games.
+        var OUTLINE_GROUPS = [
+          {
+            title: "📊 Lesson & Slides",
+            keywords: [
+              "open the lesson",
+              "interactive lesson",
+              "reveal math",
+              "editable slides",
+              "google slides",
+              "google drive copy",
+              "present",
+              "slides",
+            ],
+          },
+          {
+            title: "📝 Notes & Handouts",
+            keywords: ["notes", "handout"],
+          },
+          {
+            title: "🏠 Homework & Family",
+            keywords: ["homework", "family", "forms"],
+          },
+          // Practice & Games is the catch-all; rendered last regardless of
+          // position here (see buildGroupedOutline ordering).
+        ];
+
+        function outlineItemIcon(act, isProject) {
+          var name = (act.text || "").toLowerCase();
+          if (act.isBonus) return "🎯";
+          if (isProject) return "🛠️";
+          if (name.indexOf("lesson") > -1 || name.indexOf("html") > -1)
+            return "💻";
+          if (name.indexOf("notes") > -1 || name.indexOf("packet") > -1)
+            return "📝";
+          if (name.indexOf("homework") > -1) return "🏠";
+          return "🔗";
+        }
+
+        function outlineCategoryIndex(act) {
+          var name = (act.text || "").toLowerCase();
+          for (var g = 0; g < OUTLINE_GROUPS.length; g++) {
+            var kw = OUTLINE_GROUPS[g].keywords;
+            for (var k = 0; k < kw.length; k++) {
+              if (name.indexOf(kw[k]) > -1) return g;
+            }
+          }
+          // No match → Practice & Games (catch-all bucket index).
+          return OUTLINE_GROUPS.length;
+        }
+
+        function makeOutlineItem(act, isProject) {
+          var li = document.createElement("li");
+          li.className = "lesson-outline-item";
+          var a = document.createElement("a");
+          a.href = act.href;
+          a.target = "_blank";
+          if (isProject) {
+            a.className = "res-project";
+          } else if (act.isBonus) {
+            a.className = "res-bonus";
+          }
+          a.innerHTML = outlineItemIcon(act, isProject) + " " + act.text;
+          li.appendChild(a);
+          return li;
+        }
+
+        // Populate `listEl` (a .lesson-outline-list <ul>) with grouped
+        // sections. Each non-empty group gets a sub-header; items keep their
+        // original relative order. `projects` is the lesson's projects array
+        // (used to flag project items), may be undefined.
+        function buildGroupedOutline(listEl, allActs, projects) {
+          // Buckets: one per defined group, plus a final Practice & Games
+          // catch-all.
+          var buckets = [];
+          for (var i = 0; i <= OUTLINE_GROUPS.length; i++) buckets.push([]);
+          allActs.forEach(function (act) {
+            buckets[outlineCategoryIndex(act)].push(act);
+          });
+
+          var sections = OUTLINE_GROUPS.map(function (grp, idx) {
+            return { title: grp.title, items: buckets[idx] };
+          });
+          // Insert Practice & Games (catch-all) in 3rd position so display
+          // order is: Lesson & Slides, Notes & Handouts, Practice & Games,
+          // Homework & Family.
+          sections.splice(2, 0, {
+            title: "🎮 Practice & Games",
+            items: buckets[OUTLINE_GROUPS.length],
+          });
+
+          sections.forEach(function (section) {
+            if (!section.items.length) return;
+            var groupEl = document.createElement("li");
+            groupEl.className = "lesson-outline-group";
+
+            var titleEl = document.createElement("span");
+            titleEl.className = "lesson-outline-group-title";
+            titleEl.textContent = section.title;
+            groupEl.appendChild(titleEl);
+
+            var subList = document.createElement("ul");
+            subList.className = "lesson-outline-list";
+            section.items.forEach(function (act) {
+              var isProject = projects && projects.indexOf(act) > -1;
+              subList.appendChild(makeOutlineItem(act, isProject));
+            });
+            groupEl.appendChild(subList);
+            listEl.appendChild(groupEl);
+          });
+        }
         var units = Array.prototype.slice.call(
           document.querySelectorAll("details.unit"),
         );
@@ -6592,46 +6729,10 @@
                 actSelect.appendChild(opt);
               });
 
-              // Update Outline list
+              // Update Outline list — grouped into 4 labeled sections
+              // (appearance/organization only; same items, no data changed).
               outlineList.innerHTML = "";
-              allActs.forEach(function (act) {
-                var li = document.createElement("li");
-                li.className = "lesson-outline-item";
-
-                var isProject =
-                  lesson.projects && lesson.projects.indexOf(act) > -1;
-                var icon = "🔗";
-                var name = act.text.toLowerCase();
-                if (act.isBonus) {
-                  icon = "🎯";
-                } else if (isProject) {
-                  icon = "🛠️";
-                } else if (
-                  name.indexOf("lesson") > -1 ||
-                  name.indexOf("html") > -1
-                ) {
-                  icon = "💻";
-                } else if (
-                  name.indexOf("notes") > -1 ||
-                  name.indexOf("packet") > -1
-                ) {
-                  icon = "📝";
-                } else if (name.indexOf("homework") > -1) {
-                  icon = "🏠";
-                }
-
-                var a = document.createElement("a");
-                a.href = act.href;
-                a.target = "_blank";
-                if (isProject) {
-                  a.className = "res-project";
-                } else if (act.isBonus) {
-                  a.className = "res-bonus";
-                }
-                a.innerHTML = icon + " " + act.text;
-                li.appendChild(a);
-                outlineList.appendChild(li);
-              });
+              buildGroupedOutline(outlineList, allActs, lesson.projects);
 
               // Launch Button handler
               function updateLauncher() {
@@ -6714,43 +6815,7 @@
                 outlineList.className = "lesson-outline-list";
 
                 var allActs = l.activities.concat(l.projects || []);
-                allActs.forEach(function (act) {
-                  var li = document.createElement("li");
-                  li.className = "lesson-outline-item";
-
-                  var isProject = l.projects && l.projects.indexOf(act) > -1;
-                  var icon = "🔗";
-                  var name = act.text.toLowerCase();
-                  if (act.isBonus) {
-                    icon = "🎯";
-                  } else if (isProject) {
-                    icon = "🛠️";
-                  } else if (
-                    name.indexOf("lesson") > -1 ||
-                    name.indexOf("html") > -1
-                  ) {
-                    icon = "💻";
-                  } else if (
-                    name.indexOf("notes") > -1 ||
-                    name.indexOf("packet") > -1
-                  ) {
-                    icon = "📝";
-                  } else if (name.indexOf("homework") > -1) {
-                    icon = "🏠";
-                  }
-
-                  var a = document.createElement("a");
-                  a.href = act.href;
-                  a.target = "_blank";
-                  if (isProject) {
-                    a.className = "res-project";
-                  } else if (act.isBonus) {
-                    a.className = "res-bonus";
-                  }
-                  a.innerHTML = icon + " " + act.text;
-                  li.appendChild(a);
-                  outlineList.appendChild(li);
-                });
+                buildGroupedOutline(outlineList, allActs, l.projects);
                 item.appendChild(outlineList);
 
                 panel.appendChild(item);
