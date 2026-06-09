@@ -89,6 +89,22 @@ function writeLines(slide, pptx, x, y, w, count, gap = 0.3) {
 
 const esc = (s) => String(s == null ? '' : s);
 
+// Phase keys in config (launch/explore/connect/reflect/practice) → student-facing
+// titles. Falls back to a title-cased version of any unknown phase key.
+const PHASE_TITLES = {
+  launch: 'Launch',
+  explore: 'Explore',
+  connect: 'Connect',
+  reflect: 'Reflect',
+  practice: 'Practice',
+};
+function phaseTitle(phase) {
+  const key = String(phase || '').trim().toLowerCase();
+  if (PHASE_TITLES[key]) return PHASE_TITLES[key];
+  if (!key) return 'Discussion';
+  return key.charAt(0).toUpperCase() + key.slice(1);
+}
+
 // ── Slide builders (each receives slide, pptx, content c) ──
 
 function slideCover(slide, pptx, c) {
@@ -384,8 +400,90 @@ function slideGoalTracker(slide, pptx, c) {
   slide.addText([{ text: 'My next step:  ', options: { bold: true, color: c.accent } }, { text: 'To move up one level, I will ___.', options: { color: T.body } }], { x: 0.7, y: 4.35, w: 8.7, h: 0.75, fontFace: BODY, fontSize: 10.5, valign: 'middle' });
 }
 
+// Learning objectives — large, print-friendly, light background. Mirrors the
+// HTML deck's Content + Language Objective ("I can…") statements.
+function slideObjectives(slide, pptx, c) {
+  header(slide, pptx, c, 'Learning Objectives / Objetivos');
+  slide.addText("Today's goals — what I will know and be able to say:", {
+    x: 0.45, y: 0.66, w: 9.2, h: 0.3, fontFace: BODY, fontSize: 11, italic: true, color: T.gray,
+  });
+
+  // Content Objective
+  panel(slide, pptx, 0.45, 1.1, 9.2, 1.75, T.tealLight, T.teal);
+  pillText(slide, 0.65, 1.28, 2.1, 0.34, 'CONTENT OBJECTIVE', c.accent, T.white, 10);
+  slide.addText([
+    { text: 'I can…  ', options: { bold: true, color: c.accent } },
+    { text: 'Yo puedo…', options: { italic: true, color: T.gray, fontSize: 11 } },
+  ], { x: 2.9, y: 1.28, w: 6.6, h: 0.34, fontFace: HEAD, fontSize: 13, valign: 'middle' });
+  slide.addText(esc(c.contentObj), {
+    x: 0.7, y: 1.72, w: 8.7, h: 1.0, fontFace: BODY, fontSize: 18, color: T.navy, valign: 'top', lineSpacingMultiple: 1.05,
+  });
+
+  // Language Objective
+  panel(slide, pptx, 0.45, 3.05, 9.2, 1.75, T.amberLight, T.amber);
+  pillText(slide, 0.65, 3.23, 2.1, 0.34, 'LANGUAGE OBJECTIVE', c.accent, T.white, 10);
+  slide.addText([
+    { text: 'I can explain…  ', options: { bold: true, color: c.accent } },
+    { text: 'Puedo explicar…', options: { italic: true, color: T.gray, fontSize: 11 } },
+  ], { x: 2.9, y: 3.23, w: 6.6, h: 0.34, fontFace: HEAD, fontSize: 13, valign: 'middle' });
+  slide.addText(esc(c.langObj), {
+    x: 0.7, y: 3.67, w: 8.7, h: 1.0, fontFace: BODY, fontSize: 17, color: T.navy, valign: 'top', lineSpacingMultiple: 1.05,
+  });
+}
+
+// One discussion (Turn & Talk) slide per turnAndTalk entry, titled with its
+// phase and showing the question plus any sentence starters / word bank.
+function slideDiscussion(slide, pptx, c) {
+  const d = c.discussion || {};
+  const label = phaseTitle(d.phase);
+  header(slide, pptx, c, `Turn & Talk · ${label} / Comenta`);
+
+  // Prompt panel (left/main)
+  panel(slide, pptx, 0.45, 0.75, 6.1, 4.4, T.white, T.line);
+  pillText(slide, 0.65, 0.95, 2.4, 0.34, `💬 ${esc(label).toUpperCase()} DISCUSSION`, c.accent, T.white, 9.5);
+  slide.addText('Talk with your partner. Use full sentences and math words.', {
+    x: 0.65, y: 1.4, w: 5.7, h: 0.3, fontFace: BODY, fontSize: 9.5, italic: true, color: T.gray,
+  });
+  slide.addText(esc(d.question), {
+    x: 0.65, y: 1.78, w: 5.7, h: 2.0, fontFace: BODY, fontSize: 14, color: T.navy, valign: 'top', lineSpacingMultiple: 1.08,
+  });
+  slide.addText('Jot your partner talk here:', {
+    x: 0.65, y: 4.05, w: 5.7, h: 0.25, fontFace: BODY, fontSize: 9, italic: true, color: T.gray,
+  });
+  writeLines(slide, pptx, 0.65, 4.5, 5.7, 2, 0.32);
+
+  // Supports panel (right): sentence starters + word bank
+  panel(slide, pptx, 6.65, 0.75, 2.95, 4.4, T.tealLight, T.teal);
+  let sy = 0.75;
+  const stems = (d.sentenceStems || []).slice(0, 4);
+  if (stems.length) {
+    sectionLabel(slide, 6.65, sy, 2.95, '✏️ Sentence starters', T.teal);
+    sy += 0.4;
+    slide.addText(stems.map((s) => ({ text: `•  ${esc(s)}`, options: { breakLine: true } })), {
+      x: 6.85, y: sy, w: 2.6, h: 1.6, fontFace: BODY, fontSize: 10, color: T.navy, valign: 'top', lineSpacingMultiple: 1.1,
+    });
+    sy += 1.7;
+  } else {
+    // Generic frames so every discussion slide gives a starting point.
+    sectionLabel(slide, 6.65, sy, 2.95, '✏️ Sentence starters', T.teal);
+    sy += 0.4;
+    slide.addText([
+      { text: '•  I think ___ because ___.', options: { breakLine: true } },
+      { text: '•  I agree/disagree because ___.', options: { breakLine: true } },
+      { text: '•  My evidence is ___.', options: { breakLine: true } },
+    ], { x: 6.85, y: sy, w: 2.6, h: 1.4, fontFace: BODY, fontSize: 10, color: T.navy, valign: 'top', lineSpacingMultiple: 1.1 });
+    sy += 1.5;
+  }
+
+  const bank = (d.wordBank || []).slice(0, 8);
+  if (bank.length) {
+    sectionLabel(slide, 6.65, sy, 2.95, '📚 Word bank', T.amber, T.navy);
+    chips(slide, pptx, 6.85, sy + 0.4, 2.6, bank, 2, 0.36, T.white);
+  }
+}
+
 const BUILDERS = [
-  slideCover, slideBeCurious, slideVocabulary, slideGuidedPractice, slideSortItOut,
+  slideCover, slideObjectives, slideBeCurious, slideVocabulary, slideGuidedPractice, slideSortItOut,
   slideErrorAnalysis, slideTwoColumn, slideChoiceBoard, slideIndependentPractice,
   slideThinkWrite, slideExitTicket, slideGoalTracker,
 ];
@@ -393,9 +491,25 @@ const BUILDERS = [
 /** Build all slides for one lesson into the given pptx instance. */
 export function buildPptxDeck(pptx, content) {
   const c = { ...content, accent: accentForUnit(content.unit) };
-  BUILDERS.forEach((build, i) => {
+  let slideNum = 0;
+  const emit = (build) => {
     const slide = pptx.addSlide();
-    c.slideNum = i + 1;
+    slideNum += 1;
+    c.slideNum = slideNum;
     build(slide, pptx, c);
+  };
+
+  // Core template: cover + objectives, then the notebook activity slides.
+  emit(slideCover);
+  emit(slideObjectives);
+
+  // One discussion (Turn & Talk) slide per phase prompt from the config.
+  (c.discussions || []).forEach((d) => {
+    c.discussion = d;
+    emit(slideDiscussion);
   });
+  c.discussion = null;
+
+  // Remaining notebook activity slides (cover + objectives already emitted).
+  BUILDERS.slice(2).forEach(emit);
 }

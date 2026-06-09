@@ -43,7 +43,18 @@ function extractContent(lessonId, data) {
   const ci = data.launch?.conceptIntro || {};
   const err = findErrorProblem(data) || {};
   const exit = data.reflect?.exitTicket || {};
-  const talks = (data.turnAndTalk || []).map((t) => t.question).filter(Boolean);
+  // Full discussion objects (phase, question, wordBank, sentenceStems) for the
+  // per-phase Turn & Talk slides; `talks` keeps the question-only list used by
+  // the inline "Talk It Over" boxes on the work slides.
+  const discussions = (data.turnAndTalk || [])
+    .filter((t) => t && t.question)
+    .map((t) => ({
+      phase: t.phase || '',
+      question: t.question,
+      wordBank: Array.isArray(t.wordBank) ? t.wordBank : [],
+      sentenceStems: Array.isArray(t.sentenceStems) ? t.sentenceStems : [],
+    }));
+  const talks = discussions.map((t) => t.question);
 
   const explore = data.explore || {};
   const sortCats = (explore.categories || []).map((c) =>
@@ -88,6 +99,7 @@ function extractContent(lessonId, data) {
 
     practice: independentProblems(data),
 
+    discussions,
     talk1: talks[0] || '',
     talk2: talks[1] || '',
     talk3: talks[2] || '',
