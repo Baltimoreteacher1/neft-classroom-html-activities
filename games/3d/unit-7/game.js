@@ -543,6 +543,30 @@ export default {
       }
     }
 
+    // Worked integer math for the current round, shown continuously so students
+    // SEE the reasoning (opposite, distance from 0, comparison on the line) —
+    // not just the goal. The navigation/timing/dodging stays the challenge.
+    function mathLine() {
+      if (!round) return "";
+      const t = computeTarget(round);
+      switch (round.kind) {
+        case "move":
+          return t === 0
+            ? "0 is sea level."
+            : `${t} is ${Math.abs(t)} ${t > 0 ? "above" : "below"} 0 on the number line.`;
+        case "opposite":
+          return `Opposite of ${round.value} = ${-round.value} — same distance from 0, other side.`;
+        case "absolute":
+          return `Below sea level is negative, above is positive, so this is ${t}.  |${t}| = ${Math.abs(t)} from 0.`;
+        case "compare":
+          return `${round.a} vs ${round.b} → ${t} is ${round.pick}.  Higher on the number line is greater.`;
+        case "order":
+          return `${round.values.join(", ")} → ${round.pick} is ${t}.`;
+        default:
+          return "";
+      }
+    }
+
     function announceTask() {
       if (!round) return;
       let intro;
@@ -571,9 +595,11 @@ export default {
     }
 
     function updateHud() {
+      const ml = mathLine();
       const text = `${taskText()}  ·  you are at ${subInt()}`;
-      hud.setObjective(text);
-      if (clarity) clarity.setObjective(text);
+      const full = ml ? `${text}\n🧮 ${ml}` : text;
+      hud.setObjective(full);
+      if (clarity) clarity.setObjective(full);
     }
 
     // ---- Decoy depths -------------------------------------------------------

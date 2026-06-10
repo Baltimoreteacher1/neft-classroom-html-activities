@@ -176,7 +176,8 @@ function injectHudStyles() {
   .e3d-hud-progress{font-size:12px;font-weight:700;color:rgba(255,255,255,.85);
     white-space:nowrap;}
   .e3d-hud-objective{margin:0;font-weight:700;font-size:clamp(17px,2.3vw,23px);
-    line-height:1.34;letter-spacing:.005em;text-shadow:0 1px 3px rgba(0,0,0,.5);}
+    line-height:1.34;letter-spacing:.005em;text-shadow:0 1px 3px rgba(0,0,0,.5);
+    white-space:pre-line;}
   .e3d-hud-dots{display:flex;gap:6px;margin-top:8px;}
   .e3d-dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.28);
     transition:background .25s ease,transform .25s ease;}
