@@ -3954,7 +3954,15 @@
     </div>
 
     <!-- Beautiful Custom Launch Modal -->
-    <div id="launch-modal" class="modal-overlay" style="display: none">
+    <div
+      id="launch-modal"
+      class="modal-overlay"
+      style="display: none"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title-text"
+      aria-hidden="true"
+    >
       <div class="modal-card">
         <button
           class="modal-close"
@@ -6581,10 +6589,80 @@
             name: unitName,
             blurb: unitBlurb,
             cluster: unitCluster,
+            unitIndex: unitInteger,
             resources: unitRes,
             lessons: lessonsData,
           });
         });
+
+        function syncHubUrl(unit, lessonId, actHref) {
+          var params = new URLSearchParams(location.search);
+          if (unit && unit.unitIndex) {
+            params.set("u", String(unit.unitIndex));
+          } else {
+            params.delete("u");
+          }
+          if (lessonId) {
+            params.set("l", lessonId);
+          } else {
+            params.delete("l");
+          }
+          if (actHref) {
+            params.set("a", actHref);
+          } else {
+            params.delete("a");
+          }
+          var qs = params.toString();
+          history.replaceState(
+            null,
+            "",
+            location.pathname + (qs ? "?" + qs : "") + location.hash,
+          );
+        }
+
+        function applyDeepLink() {
+          var params = new URLSearchParams(location.search);
+          var uNum = parseInt(params.get("u") || "", 10);
+          var lessonId = params.get("l");
+          var actHref = params.get("a");
+          if (!uNum && !lessonId) return;
+
+          var uIdx = -1;
+          unitsData.forEach(function (u, i) {
+            if (u.unitIndex === uNum) uIdx = i;
+          });
+          if (uIdx < 0) return;
+
+          var cards = hub.querySelectorAll(".unit-card");
+          var card = cards[uIdx];
+          if (!card) return;
+
+          var lessonSelect = card.querySelector(".lesson-select");
+          if (lessonSelect && lessonId) {
+            var targetIdx = 0;
+            unitsData[uIdx].lessons.forEach(function (l, i) {
+              if (l.lessonId === lessonId) targetIdx = i;
+            });
+            lessonSelect.value = String(targetIdx);
+            lessonSelect.dispatchEvent(new Event("change"));
+          }
+
+          if (actHref) {
+            requestAnimationFrame(function () {
+              var actSelect = card.querySelector(".activity-select");
+              if (!actSelect) return;
+              for (var i = 0; i < actSelect.options.length; i++) {
+                if (actSelect.options[i].value === actHref) {
+                  actSelect.selectedIndex = i;
+                  actSelect.dispatchEvent(new Event("change"));
+                  break;
+                }
+              }
+            });
+          }
+
+          card.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        }
 
         // 2. Create Mount Point
         var hub = document.getElementById("interactive-hub");
@@ -6770,13 +6848,20 @@
               actSelect.onchange = updateLauncher;
               actSelect.addEventListener("change", function () {
                 var href = actSelect.value;
+                syncHubUrl(u, lesson.lessonId, href || "");
                 if (href) {
                   var selectedActText =
                     actSelect.options[actSelect.selectedIndex].textContent;
-                  showLaunchModal(selectedActText, href);
+                  var isMobile = window.matchMedia(
+                    "(max-width: 640px)",
+                  ).matches;
+                  if (!isMobile) {
+                    showLaunchModal(selectedActText, href);
+                  }
                 }
               });
               updateLauncher();
+              syncHubUrl(u, lesson.lessonId, "");
             }
 
             lessonSelect.onchange = updateCardState;
@@ -6877,59 +6962,40 @@
           noResultsEl: noResults,
         };
 
-        // Theme Toggle Logic
-        var themeToggleBtn = document.getElementById("theme-toggle");
-
-        function applyTheme(theme) {
-          if (theme === "light") {
-            document.body.classList.add("light-theme");
-            if (themeToggleBtn) {
-              themeToggleBtn.textContent = "🌙 Dark Mode";
-            }
-          } else {
-            document.body.classList.remove("light-theme");
-            if (themeToggleBtn) {
-              themeToggleBtn.textContent = "☀️ Light Mode";
-            }
-          }
-        }
-
-        // Light is the only theme now (dark/neon retired). Force light even for
-        // returning students who previously saved a "dark" preference.
-        applyTheme("light");
-
-        if (themeToggleBtn) {
-          themeToggleBtn.addEventListener("click", function () {
-            var currentTheme = document.body.classList.contains("light-theme")
-              ? "light"
-              : "dark";
-            var newTheme = currentTheme === "light" ? "dark" : "light";
-            applyTheme(newTheme);
-            try {
-              localStorage.setItem("curriculumTheme", newTheme);
-            } catch (e) {}
-          });
-        }
-
         // 6. Launch Modal Logic
         var modal = document.getElementById("launch-modal");
         var modalTitle = document.getElementById("modal-title-text");
         var modalLaunchLink = document.getElementById("modal-launch-link");
         var modalCloseBtn = document.getElementById("modal-close-btn");
 
+        var modalKeyHandler = null;
+
         function showLaunchModal(title, href) {
           if (!modal || !modalTitle || !modalLaunchLink) return;
           modalTitle.textContent = title;
           modalLaunchLink.href = href;
           modal.style.display = "flex";
-          // Force reflow for transitions
+          modal.setAttribute("aria-hidden", "false");
           modal.offsetHeight;
           modal.classList.add("show");
+          modalLaunchLink.focus();
+          if (modalKeyHandler) {
+            document.removeEventListener("keydown", modalKeyHandler);
+          }
+          modalKeyHandler = function (e) {
+            if (e.key === "Escape") hideLaunchModal();
+          };
+          document.addEventListener("keydown", modalKeyHandler);
         }
 
         function hideLaunchModal() {
           if (!modal) return;
           modal.classList.remove("show");
+          modal.setAttribute("aria-hidden", "true");
+          if (modalKeyHandler) {
+            document.removeEventListener("keydown", modalKeyHandler);
+            modalKeyHandler = null;
+          }
           setTimeout(function () {
             if (!modal.classList.contains("show")) {
               modal.style.display = "none";
@@ -6955,6 +7021,7 @@
 
         // Initial Hub Render
         renderHub();
+        applyDeepLink();
       })();
     </script>
     <script src="/assets/curriculum-enhancements.js" defer></script>

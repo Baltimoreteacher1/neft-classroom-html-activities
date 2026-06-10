@@ -301,6 +301,26 @@
     summary.className = "hub-progress-summary";
     summary.setAttribute("role", "status");
     chips.parentNode.insertBefore(summary, chips.nextSibling);
+
+    var sticky = document.getElementById("hub-toolbar-sticky");
+    if (!sticky) {
+      sticky = document.createElement("div");
+      sticky.id = "hub-toolbar-sticky";
+      sticky.className = "hub-toolbar-sticky";
+      var anchor = document.getElementById("hub-student-hint") || controls;
+      anchor.parentNode.insertBefore(sticky, anchor);
+    }
+    [
+      document.getElementById("hub-student-hint"),
+      controls,
+      bar,
+      chips,
+      summary,
+    ].forEach(function (el) {
+      if (el && el.parentNode !== sticky) {
+        sticky.appendChild(el);
+      }
+    });
   }
 
   function updateProgressSummary() {
@@ -313,17 +333,40 @@
       "%</strong> of visible activities marked complete. Toggle ✓ on any activity to track.";
   }
 
+  function clusterAlignment(cluster) {
+    if (!cluster) return [];
+    var code = String(cluster).trim();
+    return [
+      {
+        "@type": "AlignmentObject",
+        alignmentType: "educationalSubject",
+        educationalFramework: "Common Core State Standards for Mathematics",
+        targetName: code,
+        targetUrl:
+          "http://corestandards.org/Math/Content/" + code.replace(".", "/"),
+      },
+    ];
+  }
+
   function injectJsonLd() {
     if (document.getElementById("curriculum-jsonld")) return;
     if (!hubApi || !hubApi.unitsData) return;
 
     var courseParts = hubApi.unitsData.map(function (u, i) {
       return {
-        "@type": "Course",
+        "@type": "CourseInstance",
         name: u.num + " — " + u.name,
         description: u.blurb || "",
         position: i + 1,
-        numberOfCredits: (u.lessons || []).length,
+        educationalAlignment: clusterAlignment(u.cluster),
+        hasPart: (u.lessons || []).map(function (l, j) {
+          return {
+            "@type": "LearningResource",
+            name: l.title,
+            position: j + 1,
+            learningResourceType: "lesson",
+          };
+        }),
       };
     });
 
@@ -391,7 +434,18 @@
           escapeHtml(q) +
           "</strong>" +
           (activeFilter !== FILTER_ALL ? " in <strong>" + escapeHtml(activeFilter) + "</strong>" : "") +
-          ".</p>";
+          '.</p><button type="button" class="hub-clear-filters">Clear search &amp; filters</button>';
+        panel.querySelector(".hub-clear-filters").addEventListener("click", function () {
+          if (hubApi.searchBox) hubApi.searchBox.value = "";
+          activeFilter = FILTER_ALL;
+          document.querySelectorAll(".hub-filter-chip").forEach(function (c) {
+            c.setAttribute(
+              "aria-pressed",
+              c.dataset.filter === FILTER_ALL ? "true" : "false",
+            );
+          });
+          runSearch();
+        });
         hubApi.hubEl.appendChild(panel);
         return;
       }
@@ -645,6 +699,7 @@
   function runSearch() {
     if (!hubApi || !hubApi.searchBox) return;
     var q = (hubApi.searchBox.value || "").trim().toLowerCase();
+    if (q.length === 1) return;
     if (q) {
       hubApi.renderSearchResults(q);
     } else if (activeFilter !== FILTER_ALL) {
@@ -865,8 +920,10 @@
     injectJsonLd();
 
     if (hubApi.searchBox) {
+      var searchTimer = null;
       hubApi.searchBox.addEventListener("input", function () {
-        runSearch();
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(runSearch, 120);
       });
     }
 

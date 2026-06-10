@@ -205,183 +205,120 @@
   font-size: 0.95rem;
 }
 
+/* ---- Project step tabs (initProjectTabs in projects-kit.js) ---- */
+.pk-tabs-wrap {
+  margin: 20px 0 8px;
+}
+.pk-tabs-wrap.pk-tabs-sticky {
+  position: sticky;
+  top: 52px;
+  z-index: 40;
+  background: var(--pk-soft, #f7f9fb);
+  padding: 10px 0 6px;
+  margin-top: 12px;
+  border-bottom: 1px solid var(--pk-line, #e2e7ec);
+}
+@media (max-width: 640px) {
+  .pk-tabs-wrap.pk-tabs-sticky {
+    top: 44px;
+  }
+}
+.pk-tablist {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  padding: 2px 2px 6px;
+  margin: 0;
+  list-style: none;
+  scrollbar-width: thin;
+}
+.pk-tablist::-webkit-scrollbar {
+  height: 6px;
+}
+.pk-tablist::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+.pk-tab {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  appearance: none;
+  border: 2px solid var(--pk-line, #dbe4ee);
+  background: #fff;
+  color: var(--pk-ink, #172033);
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-weight: 800;
+  font-size: 0.88rem;
+  line-height: 1.2;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.pk-tab:hover {
+  border-color: var(--pk-blue, #0369a1);
+  background: var(--pk-blue2, #e0f2fe);
+}
+.pk-tab[aria-selected="true"] {
+  background: var(--pk-blue, #0369a1);
+  border-color: var(--pk-blue, #0369a1);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(3, 105, 161, 0.25);
+}
+.pk-tab:focus-visible {
+  outline: 3px solid var(--pk-amber, #f59e0b);
+  outline-offset: 2px;
+}
+.pk-tab-panels {
+  margin-top: 4px;
+}
+.pk-tab-panel {
+  display: none;
+}
+.pk-tab-panel[data-active="true"] {
+  display: block;
+}
+.pk-tab-panel > .phase {
+  margin-top: 18px;
+}
+.pk-tab-panel > .phase:first-child {
+  margin-top: 0;
+}
+.pk-tab-hint {
+  margin: 0 0 10px;
+  font-size: 0.85rem;
+  color: var(--pk-muted, #64748b);
+  font-weight: 600;
+}
+.pk-tabs-wrap .pk-tab-progress {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--pk-muted, #64748b);
+  margin-left: auto;
+  padding: 10px 4px 0;
+  white-space: nowrap;
+}
+@media (max-width: 640px) {
+  .pk-tab {
+    padding: 9px 14px;
+    font-size: 0.82rem;
+  }
+}
+
 @media print {
   .pk-no-print {
     display: none !important;
   }
+  .pk-tabs-wrap {
+    display: none !important;
+  }
+  .pk-tab-panel {
+    display: block !important;
+  }
+  .pk-tab-panel > .phase {
+    break-inside: avoid;
+  }
 }
-
-/* ---- Research Lab (legacy compatibility) ---- */
-.pk-research-lab {
-  background: #f8fafc;
-  border: 2px dashed #cbd5e1;
-  border-radius: 16px;
-  padding: 20px;
-  margin: 18px 0;
-}
-.pk-research-lab h3 {
-  margin-top: 0;
-  color: var(--pk-teal);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.pk-research-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--pk-teal);
-  color: #fff !important;
-  text-decoration: none;
-  font-weight: 800;
-  padding: 8px 16px;
-  border-radius: 8px;
-  margin: 8px 0;
-  font-size: 0.9rem;
-}
-.pk-research-btn:hover {
-  filter: brightness(1.1);
-}
-
-/* ---- Premium Inline Research Card ---- */
-.pk-research-inline-card {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border: 2.5px solid var(--pk-line);
-  border-radius: 18px;
-  padding: 20px;
-  margin: 24px 0;
-  box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
-  transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
-}
-.pk-research-inline-card:hover {
-  border-color: #b4c6d9;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-  transform: translateY(-1px);
-}
-.pk-research-inline-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-.pk-research-badge {
-  background: #e2e8f0;
-  border: 1px solid #cbd5e1;
-  color: #475569;
-  font-size: 10.5px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 5px 12px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-.pk-research-inline-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: var(--pk-teal);
-  color: #fff !important;
-  text-decoration: none;
-  font-weight: 800;
-  font-size: 12px;
-  padding: 7px 14px;
-  border-radius: 9px;
-  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 2px 5px rgba(15, 118, 110, 0.2);
-}
-.pk-research-inline-link:hover {
-  filter: brightness(1.1);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(15, 118, 110, 0.3);
-}
-.pk-research-inline-link:active {
-  transform: translateY(0);
-}
-.pk-research-inline-instructions {
-  color: #475569;
-  font-size: 13.5px;
-  line-height: 1.55;
-  margin-bottom: 16px;
-}
-
-/* ---- Visualizer Cards ---- */
-.pk-visualizer-card {
-  background: #ffffff;
-  border: 1px solid var(--pk-line);
-  border-radius: var(--pk-radius);
-  padding: 20px;
-  margin: 20px 0;
-  box-shadow: var(--pk-shadow);
-  text-align: center;
-}
-.pk-visualizer-card h3 {
-  margin-top: 0;
-  color: var(--pk-teal);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 1.15rem;
-}
-.pk-visualizer-svg {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  margin-top: 10px;
-  max-width: 100%;
-  height: auto;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* ---- Tooltips for vocabulary guidance ---- */
-.pk-tooltip {
-  border-bottom: 2px dashed var(--pk-teal);
-  cursor: help;
-  position: relative;
-  display: inline-block;
-  color: var(--pk-teal);
-  font-weight: 700;
-}
-.pk-tooltip:hover::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: 125%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(15, 23, 42, 0.95);
-  color: #fff;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 400;
-  width: 220px;
-  text-align: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  line-height: 1.4;
-  pointer-events: none;
-  font-family: "DM Sans", sans-serif;
-  text-transform: none;
-  letter-spacing: normal;
-}
-.pk-tooltip:hover::before {
-  content: "";
-  position: absolute;
-  bottom: 115%;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 5px;
-  border-style: solid;
-  border-color: rgba(15, 23, 42, 0.95) transparent transparent transparent;
-  z-index: 1000;
-  pointer-events: none;
-}
-
-

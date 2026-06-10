@@ -23,6 +23,7 @@
      save(storageKey)                 — save all [data-save] fields
      load(storageKey, opts?)          — restore all [data-save] fields
      mean(arr) / sum(arr)             — small numeric helpers
+     initProjectTabs(opts?)           — group .phase sections into step tabs
    ========================================================================== */
 (function () {
   "use strict";
@@ -98,9 +99,6 @@
     }
     const fb = $(inputId + "Fb");
     if (fb) {
-      if (raw && ok && typeof PK.playSuccess === "function") {
-        PK.playSuccess();
-      }
       fb.innerHTML = raw
         ? ok
           ? '<span class="pk-ok">✅ Correct</span>'
@@ -280,201 +278,245 @@
     return arr.length ? PK.sum(arr) / arr.length : 0;
   };
 
-  /* ---------------- Sound FX engine (Web Audio API) ---------------- */
-  let audioCtx = null;
-  function getAudioCtx() {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
-    return audioCtx;
+  /* ---------------- Project step tabs ---------------- */
+  function phaseH2(section) {
+    const h2 = section.querySelector(".phase-head h2, h2");
+    return h2 ? h2.textContent.trim() : "";
   }
 
-  PK.playSuccess = function () {
-    try {
-      const ctx = getAudioCtx();
-      const now = ctx.currentTime;
-      const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
-      notes.forEach((freq, index) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(freq, now + index * 0.08);
-        gain.gain.setValueAtTime(0.1, now + index * 0.08);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.08 + 0.3);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now + index * 0.08);
-        osc.stop(now + index * 0.08 + 0.3);
-      });
-    } catch (e) {}
-  };
+  function isVocabPhase(section) {
+    return /Visual Math Notes/i.test(phaseH2(section));
+  }
 
-  PK.playClick = function () {
-    try {
-      const ctx = getAudioCtx();
-      const now = ctx.currentTime;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(120, now);
-      osc.frequency.exponentialRampToValueAtTime(60, now + 0.04);
-      gain.gain.setValueAtTime(0.06, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.04);
-    } catch (e) {}
-  };
+  function isFinishPhase(section) {
+    const num = section.querySelector(".phase-num");
+    const t = num ? num.textContent.trim() : "";
+    const h2 = phaseH2(section);
+    return (
+      t === "★" ||
+      t === "✓" ||
+      /Rubric|Answer Key/i.test(h2)
+    );
+  }
 
-  // Auto-wire click sounds on interactive items
-  document.addEventListener('click', (e) => {
-    const el = e.target.closest('button, .pk-tab, .btn, .pk-research-inline-link');
-    if (el) {
-      PK.playClick();
+  function partBannerLabel(section) {
+    const raw = (section.querySelector(".arc-banner")?.textContent || "")
+      .replace(/\s+/g, " ")
+      .trim();
+    const n = raw.match(/part\s*(\d)/i);
+    if (!n) return null;
+    if (n[1] === "1") return "Your Turn";
+    if (n[1] === "2") return "Compare";
+    if (n[1] === "3") return "Real World";
+    return "Part " + n[1];
+  }
+
+  function hasArcBanner(section) {
+    return !!section.querySelector(".arc-banner");
+  }
+
+  function shortLabel(text, max) {
+    max = max || 26;
+    const clean = text.replace(/\s+/g, " ").trim();
+    if (clean.length <= max) return clean;
+    return clean.slice(0, max - 1).trim() + "…";
+  }
+
+  function phaseLabel(section) {
+    const part = partBannerLabel(section);
+    if (part) return part;
+    const h2 = phaseH2(section);
+    if (/Visual Math Notes/i.test(h2)) return "Get Ready";
+    if (/Quick-Check Answer Key/i.test(h2)) return "Check Answers";
+    if (/Rubric/i.test(h2)) return "Rubric";
+    if (h2) return shortLabel(h2, 28);
+    const num = section.querySelector(".phase-num");
+    if (num && num.textContent.trim()) {
+      const n = num.textContent.trim();
+      if (n === "★" || n === "✓") return n === "★" ? "Your Project" : "Rubric";
+      return "Step " + n;
     }
-  });
+    return "Step";
+  }
 
-  /* ---------------- Dynamic Vocabulary Tooltips (ELL/ESOL) ---------------- */
-  PK.initVocabTooltips = function () {
-    const terms = [];
-    document.querySelectorAll(".pk-term").forEach((el) => {
-      const b = el.querySelector("b");
-      const p = el.querySelector("p");
-      if (b && p) {
-        terms.push({
-          word: b.textContent.trim(),
-          definition: p.textContent.trim(),
-          icon: el.querySelector(".pk-icon")?.textContent.trim() || "💡"
-        });
+  function pairLabel(a, b) {
+    const la = phaseLabel(a);
+    const lb = phaseLabel(b);
+    const na = a.querySelector(".phase-num");
+    const nb = b.querySelector(".phase-num");
+    const aNum = na && /^\d+$/.test(na.textContent.trim()) ? na.textContent.trim() : null;
+    const bNum = nb && /^\d+$/.test(nb.textContent.trim()) ? nb.textContent.trim() : null;
+    if (aNum && bNum) return "Steps " + aNum + "–" + bNum;
+    if (la === lb) return la;
+    return shortLabel(la + " & " + lb, 30);
+  }
+
+  function buildTabGroups(phases) {
+    const groups = [];
+    let start = 0;
+    if (start < phases.length && isVocabPhase(phases[start])) {
+      groups.push({ label: "Get Ready", sections: [phases[start]] });
+      start += 1;
+    }
+    let end = phases.length;
+    const finish = [];
+    while (end > start && isFinishPhase(phases[end - 1])) {
+      finish.unshift(phases[end - 1]);
+      end -= 1;
+    }
+    const middle = phases.slice(start, end);
+    let i = 0;
+    while (i < middle.length) {
+      const section = middle[i];
+      if (hasArcBanner(section)) {
+        groups.push({ label: phaseLabel(section), sections: [section] });
+        i += 1;
+        continue;
       }
-    });
+      const next = middle[i + 1];
+      if (next && !hasArcBanner(next)) {
+        groups.push({ label: pairLabel(section, next), sections: [section, next] });
+        i += 2;
+      } else {
+        groups.push({ label: phaseLabel(section), sections: [section] });
+        i += 1;
+      }
+    }
+    if (finish.length === 1) {
+      groups.push({ label: phaseLabel(finish[0]), sections: finish });
+    } else if (finish.length === 2) {
+      groups.push({ label: "Finish Up", sections: finish });
+    } else if (finish.length > 2) {
+      groups.push({ label: phaseLabel(finish[0]), sections: [finish[0]] });
+      groups.push({ label: "Rubric & Check", sections: finish.slice(1) });
+    }
+    return groups;
+  }
 
-    if (!terms.length) return;
+  function tabStorageKey() {
+    return "pk-tabs:" + (location.pathname || "project");
+  }
 
-    const phases = Array.from(document.querySelectorAll(".phase")).slice(1);
-    terms.sort((a, b) => b.word.length - a.word.length);
+  // opts: { wrap?: selector, sticky?: bool, storageKey?: string }
+  PK.initProjectTabs = function (opts) {
+    opts = opts || {};
+    if (document.body.hasAttribute("data-pk-no-tabs")) return;
+    const wrap =
+      (opts.wrap && document.querySelector(opts.wrap)) ||
+      document.querySelector(".wrap");
+    if (!wrap) return;
+    const allPhases = Array.from(wrap.querySelectorAll(":scope > section.phase"));
+    if (allPhases.length < 3) return;
+    if (wrap.querySelector(".pk-tabs-wrap")) return;
 
-    phases.forEach((phase) => {
-      walkTextNodes(phase, (node) => {
-        let text = node.nodeValue;
-        let replaced = false;
-        
-        for (const term of terms) {
-          const regex = new RegExp(`\\b(${escapeRegExp(term.word)})\\b`, "gi");
-          if (regex.test(text)) {
-            const tempDiv = document.createElement("div");
-            tempDiv.innerHTML = text.replace(regex, (match) => {
-              return `<span class="pk-tooltip" data-tooltip="${term.icon} ${term.word}: ${term.definition}">${match}</span>`;
-            });
-            
-            const fragment = document.createDocumentFragment();
-            while (tempDiv.firstChild) {
-              fragment.appendChild(tempDiv.firstChild);
-            }
-            node.parentNode.replaceChild(fragment, node);
-            replaced = true;
-            break;
-          }
+    const teacher = allPhases.filter((s) => s.classList.contains("teacher-key"));
+    const phases = allPhases.filter((s) => !s.classList.contains("teacher-key"));
+    const groups = buildTabGroups(phases);
+    if (groups.length < 2) return;
+
+    const storageKey = opts.storageKey || tabStorageKey();
+    let active = 0;
+    try {
+      const saved = parseInt(sessionStorage.getItem(storageKey), 10);
+      if (!Number.isNaN(saved) && saved >= 0 && saved < groups.length) active = saved;
+    } catch (e) {
+      /* ignore */
+    }
+
+    const tabsWrap = document.createElement("div");
+    tabsWrap.className =
+      "pk-tabs-wrap pk-no-print" + (opts.sticky !== false ? " pk-tabs-sticky" : "");
+
+    const hint = document.createElement("p");
+    hint.className = "pk-tab-hint";
+    hint.textContent =
+      "Work one tab at a time — use the steps across the top to move through the project.";
+    tabsWrap.appendChild(hint);
+
+    const tablist = document.createElement("div");
+    tablist.setAttribute("role", "tablist");
+    tablist.setAttribute("aria-label", "Project steps");
+    tablist.className = "pk-tablist";
+
+    const panelsWrap = document.createElement("div");
+    panelsWrap.className = "pk-tab-panels";
+
+    const anchor =
+      wrap.querySelector(":scope > .intro-card") ||
+      wrap.querySelector(":scope > .progress-wrap") ||
+      phases[0];
+    const tabs = [];
+    const panels = [];
+
+    function selectTab(index, focusTab) {
+      active = index;
+      tabs.forEach((tab, idx) => {
+        const on = idx === index;
+        tab.setAttribute("aria-selected", on ? "true" : "false");
+        tab.tabIndex = on ? 0 : -1;
+      });
+      panels.forEach((entry, idx) => {
+        entry.el.dataset.active = idx === index ? "true" : "false";
+        entry.el.hidden = idx !== index;
+      });
+      try {
+        sessionStorage.setItem(storageKey, String(index));
+      } catch (e) {
+        /* ignore */
+      }
+      if (focusTab && tabs[index]) tabs[index].focus();
+    }
+
+    groups.forEach((group, idx) => {
+      const tab = document.createElement("button");
+      tab.type = "button";
+      tab.className = "pk-tab";
+      tab.setAttribute("role", "tab");
+      tab.id = "pk-tab-" + idx;
+      tab.setAttribute("aria-controls", "pk-panel-" + idx);
+      tab.textContent = group.label;
+      tab.addEventListener("click", () => selectTab(idx, false));
+      tab.addEventListener("keydown", (ev) => {
+        let next = null;
+        if (ev.key === "ArrowRight" || ev.key === "ArrowDown") next = (idx + 1) % groups.length;
+        else if (ev.key === "ArrowLeft" || ev.key === "ArrowUp")
+          next = (idx - 1 + groups.length) % groups.length;
+        else if (ev.key === "Home") next = 0;
+        else if (ev.key === "End") next = groups.length - 1;
+        if (next !== null) {
+          ev.preventDefault();
+          selectTab(next, true);
         }
       });
+      tablist.appendChild(tab);
+      tabs.push(tab);
+
+      const panel = document.createElement("div");
+      panel.className = "pk-tab-panel";
+      panel.id = "pk-panel-" + idx;
+      panel.setAttribute("role", "tabpanel");
+      panel.setAttribute("aria-labelledby", tab.id);
+      panelsWrap.appendChild(panel);
+      panels.push({ el: panel, sections: group.sections });
     });
+
+    tabsWrap.appendChild(tablist);
+
+    anchor.insertAdjacentElement("afterend", tabsWrap);
+    tabsWrap.insertAdjacentElement("afterend", panelsWrap);
+    panels.forEach((entry) => {
+      entry.sections.forEach((section) => entry.el.appendChild(section));
+    });
+    teacher.forEach((section) => wrap.appendChild(section));
+
+    selectTab(active, false);
   };
 
-  function walkTextNodes(node, callback) {
-    if (node.nodeType === Node.TEXT_NODE) {
-      callback(node);
-      return;
-    }
-    if (["SCRIPT", "STYLE", "INPUT", "TEXTAREA", "BUTTON", "SELECT", "A"].includes(node.nodeName)) {
-      return;
-    }
-    if (node.classList && node.classList.contains("pk-tooltip")) {
-      return;
-    }
-    const children = Array.from(node.childNodes);
-    children.forEach((child) => walkTextNodes(child, callback));
-  }
-
-  function escapeRegExp(string) {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  }
-
-  // Scan tooltips when page is loaded
-  window.addEventListener('DOMContentLoaded', () => {
-    PK.initVocabTooltips();
-    if (typeof PK.updateTabVisuals === 'function') {
-      PK.updateTabVisuals();
+  document.addEventListener("DOMContentLoaded", function () {
+    if (document.body.classList.contains("pk")) {
+      PK.initProjectTabs();
     }
   });
-
-  // Listen for input changes to drive interactive tab visualizers
-  document.addEventListener('input', () => {
-    if (typeof PK.updateTabVisuals === 'function') {
-      PK.updateTabVisuals();
-    }
-  });
-
-  /* ---------------- Interactive Tab visualizers ---------------- */
-  PK.updateTabVisuals = function () {
-    const $ = (id) => document.getElementById(id);
-    
-    // 1. GCF Venn Diagram
-    const stickersEl = document.querySelector('input[id$="-stickers"], input[id$="stickers"]');
-    const barsEl = document.querySelector('input[id$="-bars"], input[id$="bars"]');
-    if (stickersEl && barsEl && $("gcf-svg-center")) {
-      const s = parseInt(stickersEl.value) || 0;
-      const b = parseInt(barsEl.value) || 0;
-      if (s > 0 && b > 0) {
-        const gcdVal = (x, y) => y ? gcdVal(y, x % y) : x;
-        const g = gcdVal(s, b);
-        $("gcf-svg-left").textContent = `${s} (each: ${s/g})`;
-        $("gcf-svg-right").textContent = `${b} (each: ${b/g})`;
-        $("gcf-svg-center").textContent = `GCF: ${g}`;
-      } else {
-        $("gcf-svg-left").textContent = "Stickers";
-        $("gcf-svg-right").textContent = "Bars";
-        $("gcf-svg-center").textContent = "GCF";
-      }
-    }
-
-    // 2. LCM Timeline
-    const djEl = document.querySelector('input[id$="-dj"], input[id$="dj"]');
-    const bubbleEl = document.querySelector('input[id$="-bubble"], input[id$="bubble"]');
-    if (djEl && bubbleEl && $("lcm-svg-text")) {
-      const d = parseInt(djEl.value) || 0;
-      const b = parseInt(bubbleEl.value) || 0;
-      if (d > 0 && b > 0) {
-        const gcdVal = (x, y) => y ? gcdVal(y, x % y) : x;
-        const lcmVal = (x, y) => (x * y) / gcdVal(x, y);
-        const l = lcmVal(d, b);
-        $("lcm-svg-text").textContent = `LCM: syncs every ${l} mins!`;
-      } else {
-        $("lcm-svg-text").textContent = "Enter DJ & Activity intervals";
-      }
-    }
-
-    // 3. Fraction Division
-    const totalEl = document.querySelector('input[id$="-total"], input[id$="total"]');
-    const partEl = document.querySelector('input[id$="-size"], input[id$="size"], input[id$="-servings"]');
-    if (totalEl && partEl && $("frac-svg-text") && $("frac-svg-bar-total")) {
-      const t = parseFloat(totalEl.value) || 0;
-      const p = parseFloat(partEl.value) || 0;
-      if (t > 0) {
-        const maxWidth = 300;
-        const scale = maxWidth / Math.max(t, p || 1, 1);
-        $("frac-svg-bar-total").setAttribute("width", Math.min(maxWidth, t * scale));
-        if (p > 0) {
-          $("frac-svg-bar-part").setAttribute("width", Math.min(maxWidth, p * scale));
-          const fits = (t / p).toFixed(1);
-          $("frac-svg-text").textContent = `Fits exactly ${fits} times!`;
-        }
-      }
-    }
-  };
 
   window.PK = PK;
 })();
