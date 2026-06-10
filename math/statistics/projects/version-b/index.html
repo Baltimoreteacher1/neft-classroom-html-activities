@@ -773,46 +773,80 @@
       </section>
 
       <!-- PHASE 2: MEAN AND MEDIAN -->
-      <section class="phase" data-phase>
+      <section class="phase" id="phase-2" data-phase>
         <div class="phase-head">
           <div class="phase-num">2</div>
           <div>
+            <span class="arc-banner">Phase 2 · Center &amp; Outliers</span>
             <div class="skill">Measures of Center · 6.SP.3 · 6.SP.5c</div>
             <h2>Mean and Median — Compare the Centers</h2>
           </div>
         </div>
-        <p>
-          Compute the <strong>mean</strong> and <strong>median</strong> for your
-          selected dataset, then compare them. Are they close? What does that
-          tell you about the shape of the distribution?
-        </p>
+        
+        <div class="grid2">
+          <div>
+            <p style="font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 20px;">
+              Compute the <strong>mean</strong> and <strong>median</strong> for your selected dataset, then compare them. Are they close? What does that tell you about the shape of the distribution?
+            </p>
+            <div style="margin-top: 16px;">
+              
+    <svg width="100%" height="220" viewBox="0 0 500 220" style="background:white; border-radius:12px; border: 1px solid #e2e8f0; max-width: 480px; margin: 0 auto; display: block;" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="setup-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ffffff" />
+          <stop offset="100%" stop-color="#f8fafc" />
+        </linearGradient>
+      </defs>
+      
+      <rect x="20" y="20" width="460" height="200" rx="15" fill="url(#setup-grad)" stroke="#0e8a7d" stroke-width="2"/>
+      <text x="250" y="60" text-anchor="middle" font-size="20" font-weight="bold" fill="#0f2b3c">DATA ANALYSIS HUB</text>
+      <rect x="100" y="100" width="300" height="20" fill="#e2e8f0" rx="4"/>
+      <rect x="150" y="100" width="120" height="20" fill="#0e8a7d" rx="4"/>
+    
+    </svg>
+  
+            </div>
+          </div>
+          
+          <div style="background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 20px; box-shadow: var(--shadow);">
+            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
+              <span>📊</span> Data Calculations
+            </h3>
+            
+            <div class="task teal" style="margin-bottom: 12px;">
+              <strong style="font-size: 12px;">Selected dataset will appear here after you choose a topic in Phase 1.</strong>
+            </div>
 
-        <div class="task teal">
-          <strong
-            >Selected dataset will appear here after you choose a topic in Phase
-            1.</strong
-          >
-          You can also enter your own data below.
+            <label class="fld" for="dataset2">Your data set (comma-separated)</label>
+            <input type="text" id="dataset2" data-save oninput="calcCenter2()" placeholder="Click 'Use Dataset' after choosing a topic" style="margin-bottom: 12px;"/>
+
+            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+              <button class="btn blue" onclick="useTopicData()" style="flex: 1;">Use Topic Data</button>
+              <button class="btn" onclick="calcCenter2()" style="flex: 1;">Calculate</button>
+            </div>
+            
+            <div class="readout" id="center2-out" style="margin-bottom: 15px;"></div>
+            
+            <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card" style="margin-top: 15px;">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/national/rankings" target="_blank" class="pk-research-inline-link">🔗 NOAA: Climate Maps & Temperature Tables ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the NOAA database or local temperature charts. Find the record highest temperature ever recorded in your home state (often around 105°F). Enter the state/city name and temperature below:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">State/City Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. Arizona" oninput="recalcAll()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Record High Temp (°F)</label>
+              <input type="number" id="worldSize" data-save placeholder="e.g. 115" oninput="recalcAll()">
+            </div>
+          </div>
         </div>
-
-        <label class="fld" for="dataset2"
-          >Your data set (numbers separated by commas)</label
-        >
-        <input
-          type="text"
-          id="dataset2"
-          data-save
-          oninput="calcCenter2()"
-          placeholder="Click 'Use Dataset' after choosing a topic, or type your own"
-        />
-
-        <button class="btn blue" onclick="useTopicData()">
-          Use My Topic's Dataset
-        </button>
-        <button class="btn" onclick="calcCenter2()" style="margin-left: 8px">
-          Calculate Mean &amp; Median
-        </button>
-        <div class="readout" id="center2-out"></div>
+          </div>
+        </div>
 
         <label class="fld" for="center-compare" style="margin-top: 20px"
           >Compare mean and median: what do the two values tell you about your
@@ -1061,6 +1095,16 @@
         </details>
       </section>
 
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+    
       <!-- DELIVERABLE -->
       <section class="phase">
         <div class="phase-head">
@@ -1973,20 +2017,110 @@
         PK.downloadCsv("data-investigation.csv", rows);
       }
 
-      function recalcAll() {
-        if (document.getElementById("topic").value) {
-          loadDataset(true);
+      
+      function syncResearch() {
+        const ws = $("worldSize");
+        if (!ws) return;
+        const val = num("worldSize");
+        if (isNaN(val) || val <= 0) return;
+        if ($("dataset2")) {
+          const raw = $("dataset2").value.trim();
+          const clean = raw.split(",").map(x => x.trim()).filter(Boolean);
+          if (!clean.includes(String(val))) {
+            clean.push(val);
+            $("dataset2").value = clean.join(", ");
+            calcCenter2();
+          }
         }
-        if (document.getElementById("dataset2").value) {
-          calcCenter2();
-          calcSpread();
-          drawDotPlot();
-        }
-        if (document.getElementById("dataset2b").value) {
-          drawDotPlot2();
-        }
-        updateProgress();
+        if (typeof worldGo === "function") worldGo();
       }
+    
+
+      function drawVisualizer() {
+        let raw = "";
+        if (document.getElementById("dataset2b") && document.getElementById("dataset2b").value.trim()) {
+          raw = document.getElementById("dataset2b").value;
+        } else if (document.getElementById("dataset2") && document.getElementById("dataset2").value.trim()) {
+          raw = document.getElementById("dataset2").value;
+        }
+        const nums = parseInput(raw);
+        if (!nums || nums.length === 0) {
+          $("projectVisualizer").innerHTML = '<text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter data set to draw plots</text>';
+          return;
+        }
+        
+        const min = Math.min(...nums), max = Math.max(...nums);
+        const mean = calcMean(nums);
+        const sorted = sortNums(nums);
+        const median = calcMedian(nums);
+        
+        let q1 = sorted[Math.floor(sorted.length / 4)];
+        let q3 = sorted[Math.floor(sorted.length * 3 / 4)];
+        
+        const maxVal = Math.max(max, 130);
+        const minVal = Math.min(min, 30);
+        const range = maxVal - minVal;
+        
+        const getPx = (v) => 80 + ((v - minVal) / range) * 340;
+        
+        const medPx = getPx(median);
+        const minPx = getPx(min);
+        const maxPx = getPx(max);
+        const q1Px = getPx(q1);
+        const q3Px = getPx(q3);
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Dataset Statistical Summary Box Plot</text>
+            
+            <!-- Box -->
+            <rect x="${q1Px}" y="100" width="${q3Px - q1Px}" height="40" fill="rgba(14, 138, 125, 0.2)" stroke="#0e8a7d" stroke-width="2" />
+            
+            <!-- Whiskers -->
+            <line x1="${minPx}" y1="120" x2="${q1Px}" y2="120" stroke="#0f2b3c" stroke-width="1.5" />
+            <line x1="${maxPx}" y1="120" x2="${q3Px}" y2="120" stroke="#0f2b3c" stroke-width="1.5" />
+            <line x1="${minPx}" y1="105" x2="${minPx}" y2="135" stroke="#0f2b3c" stroke-width="1.5" />
+            <line x1="${maxPx}" y1="105" x2="${maxPx}" y2="135" stroke="#0f2b3c" stroke-width="1.5" />
+            
+            <!-- Median Line -->
+            <line x1="${medPx}" y1="100" x2="${medPx}" y2="140" stroke="#d4952a" stroke-width="2" />
+            
+            <!-- Labels -->
+            <text x="${minPx}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#5e6e7e">Min: ${min}</text>
+            <text x="${q1Px}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#0e8a7d">Q1: ${q1}</text>
+            <text x="${medPx}" y="75" text-anchor="middle" font-size="10" font-weight="bold" fill="#d4952a">Med: ${median}</text>
+            <text x="${q3Px}" y="80" text-anchor="middle" font-weight="bold" fill="#0e8a7d">Q3: ${q3}</text>
+            <text x="${maxPx}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#5e6e7e">Max: ${max}</text>
+            
+            <!-- Axis Line -->
+            <line x1="80" y1="180" x2="420" y2="180" stroke="#0f2b3c" stroke-width="1.5" />
+            <text x="80" y="195" text-anchor="middle" font-size="10" fill="#1a2633">${minVal}</text>
+            <text x="420" y="195" text-anchor="middle" font-size="10" fill="#1a2633">${maxVal}</text>
+            
+            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#2d874b">Mean = ${mean.toFixed(2)} | Range = ${max - min}</text>
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+
+        function recalcAll() {
+          if (typeof syncResearch === "function") syncResearch();
+          if (document.getElementById("topic").value) {
+            loadDataset(true);
+          }
+          if (document.getElementById("dataset2").value) {
+            calcCenter2();
+            calcSpread();
+            drawDotPlot();
+          }
+          if (document.getElementById("dataset2b").value) {
+            drawDotPlot2();
+          }
+          if (typeof drawVisualizer === "function") drawVisualizer();
+          updateProgress();
+        }
+      
 
       // ── Level hook: Level 1 prefills a smaller dataset if empty ──
       window.onLevelChange = function (level) {
@@ -2029,49 +2163,5 @@
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script type="application/json" id="pk-research">
-      {
-        "title": "Research & Resources",
-        "icon": "🔎",
-        "intro": "Use these safe, ad-light sites to choose a real-world dataset (sports, weather, or survey) for your investigation. Each link opens in a new tab so you keep your project page.",
-        "links": [
-          {
-            "icon": "🏀",
-            "name": "ESPN — NBA Player Stats",
-            "url": "https://www.espn.com/nba/stats",
-            "find": "Official, organized tables of real player numbers like points and rebounds per game.",
-            "look": "Pick a sports dataset and pose your statistical question, then list the values to analyze."
-          },
-          {
-            "icon": "🌦️",
-            "name": "NOAA Climate.gov — Maps & Data",
-            "url": "https://www.climate.gov/maps-data",
-            "find": "Official U.S. weather and climate data with clear graphs and tables.",
-            "look": "Choose a weather dataset (like daily high temperatures) to compute mean and median."
-          },
-          {
-            "icon": "📊",
-            "name": "U.S. Census Bureau — Statistics in Schools",
-            "url": "https://www.census.gov/programs-surveys/sis.html",
-            "find": "Login-free, kid-safe survey data and facts about people across the U.S.",
-            "look": "Use survey-style data to measure spread with range and MAD."
-          },
-          {
-            "icon": "📐",
-            "name": "Math is Fun — Statistics (Center, Range & MAD)",
-            "url": "https://www.mathsisfun.com/data/index.html",
-            "find": "Step-by-step lessons on mean, median, range, and mean absolute deviation.",
-            "look": "Verify your formulas before filling each calculator in the four phases."
-          },
-          {
-            "icon": "📈",
-            "name": "Khan Academy — Data Displays (6.SP)",
-            "url": "https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-data-statistics",
-            "find": "Free practice on dot plots, histograms, and box plots and when to use each.",
-            "look": "Choose the best display for your dataset before writing your investigation report."
-          }
-        ]
-      }
-    </script>
-  </body>
+    </body>
 </html>

@@ -1181,6 +1181,16 @@
         </details>
       </section>
 
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+    
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase" data-phase>
         <div class="phase-head">
@@ -2124,36 +2134,33 @@
       }
 
       // ── What-If Lab: add a value, show before/after ──
-      function runWhatIf() {
-        var nums = lastParsed.length ? lastParsed : parseDataset();
-        var v = parseFloat(document.getElementById("whatIfVal").value);
-        var box = document.getElementById("whatIfBox");
-        if (!nums) {
-          box.textContent = "Enter your data above first.";
-          return;
+      
+        function runWhatIf() {
+          const v = parseFloat($("whatIfVal").value);
+          let sample = worldSample();
+          const customSize = $("worldSize") ? num("worldSize") : NaN;
+          if (!isNaN(customSize) && customSize > 0) {
+            sample = [...sample, customSize];
+          }
+          if (isNaN(v)) {
+            $("whatIfBox").textContent = "Enter a number first.";
+            return;
+          }
+          const before = PK.mean(sample);
+          const after = PK.mean(sample.concat([v]));
+          
+          let beforeStr = before.toFixed(2) + "%";
+          let afterStr = after.toFixed(2) + "%";
+          let vStr = v + "%";
+
+          PK.whatIf(
+            "whatIfBox",
+            { average: beforeStr },
+            { average: afterStr },
+            "Adding a value of " + vStr + " to the sample:"
+          );
         }
-        if (isNaN(v)) {
-          box.textContent = "Enter a number to add.";
-          return;
-        }
-        var after = nums.concat([v]);
-        var sB = sortNums(nums),
-          sA = sortNums(after);
-        PK.whatIf(
-          "whatIfBox",
-          {
-            mean: calcMean(nums).toFixed(2),
-            median: calcMedian(nums),
-            range: sB[sB.length - 1] - sB[0],
-          },
-          {
-            mean: calcMean(after).toFixed(2),
-            median: calcMedian(after),
-            range: sA[sA.length - 1] - sA[0],
-          },
-          "Adding " + v + " to your data:",
-        );
-      }
+      
 
       // ── Part 2 Peer: compare my data vs partner's ──
       function comparePeer() {
@@ -2221,18 +2228,53 @@
           .join("");
       }
 
-      function worldGo() {
-        var my = parseFloat(document.getElementById("myWorld").value);
-        PK.worldMeter(
-          "worldMeter",
-          world.map(function (r) {
-            return r[1];
-          }),
-          my,
-          { mean: "World avg", me: "Me" },
-        );
-        updateProgress();
-      }
+      
+        function worldSample() {
+          if (typeof world !== 'undefined') {
+            return world.map(r => r[1]);
+          }
+          return [28, 35, 22, 18, 16, 24, 26, 30];
+        }
+
+        function worldGo() {
+          const my = num("myWorld");
+          const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
+          const customSize = $("worldSize") ? num("worldSize") : NaN;
+          
+          let sample = worldSample();
+          if (!isNaN(customSize) && customSize > 0) {
+            sample = [...sample, customSize];
+          }
+          
+          const labels = { mean: "City avg", me: "Me" };
+              
+          PK.worldMeter("worldMeter", sample, my, labels);
+          
+          const fb = $("worldMeter");
+          if (!isNaN(customSize) && customSize > 0 && customName) {
+            const ratio = (my / customSize).toFixed(2);
+            const pct = Math.round((my / customSize) * 100);
+            const diff = Math.abs(my - customSize).toFixed(2);
+            
+            let myValStr = my + "%";
+            let custValStr = customSize + "%";
+            let diffStr = Number(diff).toFixed(2) + "%";
+
+            const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
+            const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
+              `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
+              `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
+              `</div>`;
+            fb.innerHTML += desc;
+          }
+          
+          if (typeof drawVisualizer === 'function') {
+            drawVisualizer();
+          }
+          
+          updateProgress();
+        }
+      
 
       // ── Report + export ──
       function reportText() {
@@ -2310,7 +2352,67 @@
         PK.downloadCsv("data-detective.csv", rows);
       }
 
-      function recalcAll() {
+      
+      function drawVisualizer() {
+        const nums = lastParsed && lastParsed.length ? lastParsed : parseDataset();
+        if (!nums || nums.length === 0) {
+          $("projectVisualizer").innerHTML = '<text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter data set in Phase 1 to draw plots</text>';
+          return;
+        }
+        
+        const min = Math.min(...nums), max = Math.max(...nums);
+        const mean = calcMean(nums);
+        const sorted = sortNums(nums);
+        const median = calcMedian(nums);
+        
+        let q1 = sorted[Math.floor(sorted.length / 4)];
+        let q3 = sorted[Math.floor(sorted.length * 3 / 4)];
+        
+        const maxVal = Math.max(max, 100);
+        const minVal = Math.min(min, 0);
+        const range = maxVal - minVal;
+        
+        const getPx = (v) => 80 + ((v - minVal) / range) * 340;
+        
+        const medPx = getPx(median);
+        const minPx = getPx(min);
+        const maxPx = getPx(max);
+        const q1Px = getPx(q1);
+        const q3Px = getPx(q3);
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Dataset Statistical Summary Box Plot</text>
+            
+            <!-- Box -->
+            <rect x="${q1Px}" y="100" width="${q3Px - q1Px}" height="40" fill="rgba(14, 138, 125, 0.2)" stroke="#0e8a7d" stroke-width="2" />
+            
+            <!-- Whiskers -->
+            <line x1="${minPx}" y1="120" x2="${q1Px}" y2="120" stroke="#0f2b3c" stroke-width="1.5" />
+            <line x1="${maxPx}" y1="120" x2="${q3Px}" y2="120" stroke="#0f2b3c" stroke-width="1.5" />
+            <line x1="${minPx}" y1="105" x2="${minPx}" y2="135" stroke="#0f2b3c" stroke-width="1.5" />
+            <line x1="${maxPx}" y1="105" x2="${maxPx}" y2="135" stroke="#0f2b3c" stroke-width="1.5" />
+            
+            <!-- Median Line -->
+            <line x1="${medPx}" y1="100" x2="${medPx}" y2="140" stroke="#d4952a" stroke-width="2" />
+            
+            <!-- Labels -->
+            <text x="${minPx}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#5e6e7e">Min: ${min}</text>
+            <text x="${q1Px}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#0e8a7d">Q1: ${q1}</text>
+            <text x="${medPx}" y="75" text-anchor="middle" font-size="10" font-weight="bold" fill="#d4952a">Med: ${median}</text>
+            <text x="${q3Px}" y="80" text-anchor="middle" font-weight="bold" fill="#0e8a7d">Q3: ${q3}</text>
+            <text x="${maxPx}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#5e6e7e">Max: ${max}</text>
+            
+            <text x="80" y="195" text-anchor="middle" font-size="10" fill="#1a2633">${minVal}</text>
+            <text x="420" y="195" text-anchor="middle" font-size="10" fill="#1a2633">${maxVal}</text>
+            
+            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#2d874b">Mean = ${mean.toFixed(2)} | Range = ${max - min}</text>
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+function recalcAll() {
         collectData();
         calcCenter();
         calcVariability();
@@ -2359,49 +2461,5 @@
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script type="application/json" id="pk-research">
-      {
-        "title": "Research & Resources",
-        "icon": "🔎",
-        "intro": "Use these safe, ad-light sites to gather real data and a world sample for your investigation. Each link opens in a new tab so you keep your project page.",
-        "links": [
-          {
-            "icon": "📊",
-            "name": "U.S. Census Bureau — Statistics in Schools",
-            "url": "https://www.census.gov/programs-surveys/sis.html",
-            "find": "Kid-friendly, login-free real data, activities, and fun facts about people in the U.S.",
-            "look": "Pull a real-world dataset to use as your 'world sample' when you compare beyond the classroom."
-          },
-          {
-            "icon": "🌍",
-            "name": "Our World in Data",
-            "url": "https://ourworldindata.org/",
-            "find": "Trustworthy charts and downloadable data on health, population, and daily life worldwide.",
-            "look": "Find a world sample to compare against your collected class data in the compare phase."
-          },
-          {
-            "icon": "📐",
-            "name": "Math is Fun — Statistics (Mean, Median, Mode, MAD)",
-            "url": "https://www.mathsisfun.com/data/index.html",
-            "find": "Clear lessons on measures of center, range, and mean absolute deviation with examples.",
-            "look": "Check your formulas before you compute center and variability for your own data."
-          },
-          {
-            "icon": "🌦️",
-            "name": "NOAA — Weather & Climate Data Tools",
-            "url": "https://www.climate.gov/maps-data",
-            "find": "Official U.S. weather and climate data, maps, and easy-to-read graphs.",
-            "look": "Collect numeric data (like temperatures over days) to run a real statistical investigation."
-          },
-          {
-            "icon": "📈",
-            "name": "Khan Academy — Statistics & Data Displays (6.SP)",
-            "url": "https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-data-statistics",
-            "find": "Free videos and practice on dot plots, histograms, and box plots.",
-            "look": "Decide which display best fits your data before you build it in the display phase."
-          }
-        ]
-      }
-    </script>
-  </body>
+    </body>
 </html>
