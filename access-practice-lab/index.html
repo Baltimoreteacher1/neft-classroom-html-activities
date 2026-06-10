@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACCESS Practice Lab — EduWonderLab</title>
+<style>
+:root{
+  --paper:#F7F4EC; --navy:#17324D; --navy2:#274A6A; --teal:#1FA6A2; --teal-soft:#E3F2F0;
+  --amber:#F2C15B; --ink:#24323F; --coral:#E8765B; --coral-soft:#FBE7E1; --purple:#4A2580;
+  --green:#2E8B6F; --green-soft:#DDF1E9; --line:#dcd6c8; --white:#ffffff; --shadow:0 2px 10px rgba(23,50,77,.10);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Segoe UI',Calibri,system-ui,Arial,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5}
+header.app{background:var(--navy);color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow)}
+header.app h1{font-size:20px;margin:0;letter-spacing:.3px}
+header.app .sub{font-size:12px;color:#cfe0e6;font-weight:400}
+.brandtag{background:var(--amber);color:var(--navy);font-weight:700;font-size:11px;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px}
+.wrap{max-width:1080px;margin:0 auto;padding:18px}
+/* domain tabs */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 14px}
+.tab{border:2px solid var(--navy2);background:#fff;color:var(--navy);padding:9px 16px;border-radius:24px;font-weight:700;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:7px}
+.tab .ic{font-size:16px}
+.tab[aria-selected="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+.tab.teacher[aria-selected="true"]{background:var(--purple);border-color:var(--purple)}
+.tab.teacher{border-color:var(--purple);color:var(--purple)}
+/* band toggle */
+.bandbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.bandbar .lbl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--navy2)}
+.bandtoggle{display:inline-flex;border:2px solid var(--teal);border-radius:22px;overflow:hidden}
+.bandtoggle button{border:0;background:#fff;color:var(--teal);padding:8px 14px;font-weight:700;cursor:pointer;font-size:13px}
+.bandtoggle button[aria-pressed="true"]{background:var(--teal);color:#fff}
+.progresswrap{flex:1;min-width:180px}
+.progressbar{height:12px;background:#e7e0d0;border-radius:8px;overflow:hidden}
+.progressbar > i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--green));width:0%;transition:width .3s}
+.progresswrap small{font-size:11px;color:var(--navy2);font-weight:600}
+/* activity grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:16px;display:flex;flex-direction:column;gap:10px;position:relative}
+.card.done{border-color:var(--green);box-shadow:0 0 0 2px var(--green-soft)}
+.card .meta{display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--navy2)}
+.card .meta .lvl{background:var(--teal-soft);color:var(--navy);padding:2px 8px;border-radius:12px}
+.card .meta .typ{background:var(--paper);padding:2px 8px;border-radius:12px;border:1px solid var(--line)}
+.card h3{margin:0;font-size:16px;color:var(--navy)}
+.card .donebadge{position:absolute;top:-9px;right:-9px;background:var(--green);color:#fff;border-radius:50%;width:26px;height:26px;display:none;align-items:center;justify-content:center;font-size:14px;box-shadow:var(--shadow)}
+.card.done .donebadge{display:flex}
+.scriptbox,.passage{background:var(--paper);border-left:4px solid var(--teal);border-radius:8px;padding:10px 12px;font-size:14px}
+.passage{border-left-color:var(--navy);white-space:pre-wrap}
+.q{font-weight:600;font-size:14px}
+.choices{display:flex;flex-direction:column;gap:7px}
+.choice{text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:9px;padding:9px 11px;cursor:pointer;font-size:14px;display:flex;gap:8px;align-items:flex-start}
+.choice:hover{border-color:var(--teal)}
+.choice .k{font-weight:700;color:var(--navy2)}
+.choice.correct{background:var(--green-soft);border-color:var(--green)}
+.choice.wrong{background:var(--coral-soft);border-color:var(--coral)}
+.choice[disabled]{cursor:default;opacity:.95}
+.fb{font-size:13px;font-weight:600;min-height:18px}
+.fb.ok{color:var(--green)} .fb.no{color:var(--coral)}
+.btn{border:0;border-radius:9px;padding:9px 14px;font-weight:700;cursor:pointer;font-size:13px}
+.btn.play{background:var(--navy);color:#fff;display:inline-flex;gap:7px;align-items:center;align-self:flex-start}
+.btn.tealb{background:var(--teal);color:#fff}
+.btn.amberb{background:var(--amber);color:var(--navy)}
+.btn.ghost{background:#fff;border:1.5px solid var(--navy2);color:var(--navy)}
+.btn:active{transform:translateY(1px)}
+.support{background:var(--teal-soft);border-radius:8px;padding:9px 11px;font-size:13px}
+.support b{color:var(--navy)}
+.frames{display:flex;flex-direction:column;gap:6px;font-size:14px}
+.frame{background:#fff;border:1px dashed var(--teal);border-radius:8px;padding:7px 10px}
+.wordbank{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--amber);color:var(--navy);border:0;border-radius:16px;padding:5px 11px;font-size:13px;font-weight:600;cursor:pointer}
+.chip.muted{background:var(--paper);border:1px solid var(--line);color:var(--navy2);cursor:default}
+.blanks input{border:0;border-bottom:2px solid var(--teal);background:var(--paper);font-size:14px;padding:3px 6px;min-width:90px;font-family:inherit}
+textarea.write{width:100%;min-height:90px;border:1.5px solid var(--line);border-radius:9px;padding:9px;font-family:inherit;font-size:14px;resize:vertical}
+.orgrow{display:flex;flex-direction:column;gap:3px;margin-bottom:7px}
+.orgrow label{font-size:12px;font-weight:700;color:var(--navy2)}
+.orgrow input,.orgrow textarea{border:1.5px solid var(--line);border-radius:8px;padding:7px;font-family:inherit;font-size:13px}
+.checklist{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:5px}
+.checklist li{display:flex;gap:8px;align-items:flex-start;font-size:13px}
+.checklist input{margin-top:3px}
+.timer{font-size:30px;font-weight:800;color:var(--navy);text-align:center;font-variant-numeric:tabular-nums}
+.timerctl{display:flex;gap:8px;justify-content:center}
+.stars{display:flex;gap:4px;justify-content:center;font-size:26px;color:#d8cdb4;cursor:pointer}
+.stars span.on{color:var(--amber)}
+.ordlist{display:flex;flex-direction:column;gap:6px}
+.orditem{display:flex;gap:8px;align-items:center;background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:7px 10px;font-size:14px}
+.orditem .num{background:var(--navy);color:#fff;border-radius:6px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
+.orditem .mv{margin-left:auto;display:flex;gap:4px}
+.orditem .mv button{border:1px solid var(--line);background:var(--paper);border-radius:6px;width:26px;height:26px;cursor:pointer;font-weight:700}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.wc{font-size:12px;color:var(--navy2);font-weight:600}
+/* teacher panel */
+.teacherhead{background:linear-gradient(120deg,var(--purple),#6a3fb0);color:#fff;border-radius:14px;padding:16px 18px;margin-bottom:14px}
+.teacherhead h2{margin:0 0 4px}
+.teacherhead p{margin:0;font-size:13px;color:#ece3fa}
+.acc{background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow)}
+.acc > button.acchead{width:100%;text-align:left;background:#fff;border:0;padding:14px 16px;font-size:16px;font-weight:700;color:var(--navy);cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.acc > button.acchead .ar{transition:transform .2s}
+.acc.open > button.acchead .ar{transform:rotate(90deg)}
+.accbody{padding:0 16px;max-height:0;overflow:hidden;transition:max-height .3s ease}
+.acc.open .accbody{max-height:6000px;padding:0 16px 16px}
+.path{border-left:4px solid var(--teal);background:var(--paper);border-radius:8px;padding:11px 13px;margin-bottom:10px}
+.path h4{margin:0 0 5px;color:var(--navy)}
+.path .steps{margin:0;padding-left:18px;font-size:13px}
+.path .steps li{margin-bottom:3px}
+.plan{border:1px solid var(--line);border-radius:10px;padding:13px;margin-bottom:12px;background:#fff}
+.plan h4{margin:0 0 6px;color:var(--purple)}
+.plan table{width:100%;border-collapse:collapse;font-size:13px}
+.plan td,.plan th{border:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top}
+.plan th{background:var(--teal-soft);color:var(--navy)}
+.deck{display:flex;flex-direction:column;align-items:center;gap:10px}
+.promptcard{width:100%;max-width:520px;min-height:200px;background:linear-gradient(135deg,#fff,var(--teal-soft));border:2px solid var(--teal);border-radius:16px;padding:18px;box-shadow:var(--shadow)}
+.promptcard .cat{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--teal);display:flex;justify-content:space-between}
+.promptcard .big{font-size:19px;font-weight:700;color:var(--navy);margin:8px 0}
+.promptcard .frames{margin-top:8px}
+.deckctl{display:flex;gap:10px;align-items:center}
+.note{font-size:12px;color:var(--navy2);background:var(--paper);border-radius:8px;padding:8px 10px}
+footer{text-align:center;font-size:12px;color:var(--navy2);padding:24px}
+.hidden{display:none!important}
+@media (max-width:600px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="app">
+  <div>
+    <h1>ACCESS Practice Lab <span class="brandtag">v2.0</span></h1>
+    <div class="sub">Interactive WIDA test-prep for Listening · Reading · Speaking · Writing — EduWonderLab</div>
+  </div>
+  <div class="brandtag" id="statTotal">80 activities</div>
+</header>
+
+<div class="wrap">
+  <div class="tabs" role="tablist" id="tabs">
+    <button class="tab" role="tab" data-domain="Listening" aria-selected="true"><span class="ic">🎧</span> Listening</button>
+    <button class="tab" role="tab" data-domain="Reading"><span class="ic">📖</span> Reading</button>
+    <button class="tab" role="tab" data-domain="Speaking"><span class="ic">🗣️</span> Speaking</button>
+    <button class="tab" role="tab" data-domain="Writing"><span class="ic">✏️</span> Writing</button>
+    <button class="tab teacher" role="tab" data-domain="Teacher"><span class="ic">🧑‍🏫</span> Teacher Hub</button>
+  </div>
+
+  <div id="bandbar" class="bandbar">
+    <span class="lbl">WIDA Band:</span>
+    <div class="bandtoggle" id="bandtoggle">
+      <button data-band="A" aria-pressed="true">Level 1–2.5</button>
+      <button data-band="B" aria-pressed="false">Level 2.6–4.5</button>
+    </div>
+    <div class="progresswrap">
+      <div class="progressbar"><i id="progFill"></i></div>
+      <small id="progText">0 of 0 done in this view</small>
+    </div>
+  </div>
+
+  <main id="activityView" class="grid" aria-live="polite"></main>
+  <section id="teacherView" class="hidden"></section>
+</div>
+
+<footer>ACCESS Practice Lab · EduWonderLab · Standalone — works offline, no logins. Listening audio uses your browser's built-in voice.</footer>
+
+<script>
+/* ============================ DATA ============================ */
+/* Activities injected below as ACTIVITIES; teacher resources as TEACHER. */
+var ACTIVITIES = [
+/* ===================== LISTENING — Band A (WIDA 1–2.5) ===================== */
+{id:'L-A-01',domain:'Listening',band:'A',level:'WIDA 1–2.5',type:'listen-mcq',typeLabel:'Listen & Choose',title:'Classroom Directions',script:'Take out your notebook. Open to page ten. Write your name at the top.',question:'What page do you open to?',choices:['Page 2','Page 10','Page 12','Page 20'],answer:1,explain:'The teacher says "page ten."',support:'Listen for the number word: ten.'},
+{id:'L-A-02',domain:'Listening',band:'A',level:'WIDA 1–2.5',type:'listen-mcq',typeLabel:'Listen & Choose',title:'Daily Schedule',script:'We have math at nine o\'clock. Then we have lunch at twelve o\'clock.',question:'What time is math?',choices:['8:00','9:00','12:00','3:00'],answer:1,explain:'Math is at nine o\'clock.',support:'Key words: math … nine.'},
+{id:'L-A-03',domain:'Listening',band:'A',level:'WIDA 1–2.5',type:'listen-mcq',typeLabel:'Listen & Choose',title:'Today\'s Weather',script:'Good morning. Today it is cold and rainy. Take your umbrella to school.',question:'What is the weather today?',choices:['Hot and sunny','Cold and rainy','Warm and windy','Snowy'],answer:1,explain:'It is cold and rainy.',support:'An umbrella is for rain.'},
+{id:'L-A-04',domain:'Listening',band:'A',level:'WIDA 1–2.5',type:'listen-mcq',typeLabel:'Listen & Choose',title:'Two-Step Directions',script:'First, color the circle blue. Then draw a line under it.',question:'What do you do first?',choices:['Draw a line','Color the circle blue','Write your name','Cut the paper'],answer:1,explain:'"First" tells you the first step.',support:'Listen for the order word: first.'},
+{id:'L-A-05',domain:'Listening',band:'A',level:'WIDA 1–2.5',type:'listen-mcq',typeLabel:'Listen & Choose',title:'In the Cafeteria',script:'The lunch line is on the left. Please take a tray and a fork.',question:'What two things do you take?',choices:['A book and a pen','A tray and a fork','A coat and a hat','A cup and a plate'],answer:1,explain:'You take a tray and a fork.',support:'Listen for two nouns: tray, fork.'},
+{id:'L-A-06',domain:'Listening',band:'A',level:'WIDA 1–2.5',type:'listen-mcq',typeLabel:'Listen & Choose',title:'How Many Apples?',script:'There are five red apples and two green apples on the table.',question:'How many green apples are there?',choices:['Five','Two','Seven','Three'],answer:1,explain:'There are two green apples.',support:'Match the color to the number: green = two.'},
+{id:'L-A-07',domain:'Listening',band:'A',level:'WIDA 1–2.5',type:'listen-mcq',typeLabel:'Listen & Choose',title:'Where Is It?',script:'The backpack is under the desk. The pencil is on the chair.',question:'Where is the backpack?',choices:['On the chair','Under the desk','In the bag','On the desk'],answer:1,explain:'The backpack is under the desk.',support:'Position words: under, on, in.'},
+{id:'L-A-08',domain:'Listening',band:'A',level:'WIDA 1–2.5',type:'order',typeLabel:'Listen & Order',title:'Morning Routine',script:'Listen: First I wake up. Then I eat breakfast. Last, I go to school.',question:'Put the morning steps in the right order.',items:['Wake up','Eat breakfast','Go to school'],support:'Order words: first, then, last.'},
+{id:'L-A-09',domain:'Listening',band:'A',level:'WIDA 1–2.5',type:'listen-mcq',typeLabel:'Listen & Choose',title:'How Does She Feel?',script:'Maria is smiling. Today is her birthday. She feels very happy.',question:'How does Maria feel?',choices:['Sad','Happy','Tired','Angry'],answer:1,explain:'It is her birthday and she is smiling.',support:'A smile shows happy.'},
+{id:'L-A-10',domain:'Listening',band:'A',level:'WIDA 1–2.5',type:'order',typeLabel:'Listen & Order',title:'Washing Your Hands',script:'Listen to the steps: Turn on the water. Use soap. Dry your hands.',question:'Put the hand-washing steps in order.',items:['Turn on the water','Use soap','Dry your hands'],support:'Think about what you do first, next, and last.'},
+
+/* ===================== LISTENING — Band B (WIDA 2.6–4.5) ===================== */
+{id:'L-B-01',domain:'Listening',band:'B',level:'WIDA 2.6–4.5',type:'listen-mcq',typeLabel:'Listen & Choose',title:'Plants and Sunlight',script:'Plants need sunlight, water, and air to grow. Without sunlight, a plant turns yellow and becomes weak.',question:'What happens to a plant without sunlight?',choices:['It grows faster','It turns yellow and weak','It makes more fruit','It turns blue'],answer:1,explain:'No sunlight makes the plant yellow and weak.',support:'Listen for the result after "without sunlight."'},
+{id:'L-B-02',domain:'Listening',band:'B',level:'WIDA 2.6–4.5',type:'listen-mcq',typeLabel:'Listen & Infer',title:'What\'s the Weather? (Clues)',script:'Diego put on his heavy coat, grabbed his umbrella, and looked for his rain boots before going outside.',question:'What is the weather most likely like?',choices:['Hot and sunny','Cold and rainy','Dry and windy','Snowy and bright'],answer:1,explain:'Coat, umbrella, and rain boots are clues for cold, rainy weather.',support:'Use the objects as clues — this is an inference.'},
+{id:'L-B-03',domain:'Listening',band:'B',level:'WIDA 2.6–4.5',type:'listen-mcq',typeLabel:'Listen & Choose',title:'School Announcement',script:'Attention students: the field trip to the science museum is moved from Friday to Monday because of the rain.',question:'When is the field trip now?',choices:['Friday','Monday','Wednesday','It is cancelled'],answer:1,explain:'It moved from Friday to Monday.',support:'Listen for the change: "moved from … to …"'},
+{id:'L-B-04',domain:'Listening',band:'B',level:'WIDA 2.6–4.5',type:'listen-mcq',typeLabel:'Listen & Solve',title:'Word Problem: Pencils',script:'A store sells pencils for two dollars each. Ana buys three pencils. She pays with a ten dollar bill.',question:'How much do the pencils cost in total?',choices:['$5','$6','$3','$10'],answer:1,explain:'Two dollars times three pencils equals six dollars.',support:'Multiply: 2 × 3.'},
+{id:'L-B-05',domain:'Listening',band:'B',level:'WIDA 2.6–4.5',type:'listen-mcq',typeLabel:'Listen for Main Idea',title:'Why We Recycle',script:'Recycling helps the Earth. When we recycle paper, cans, and bottles, we make less trash and we save trees and energy.',question:'What is the main idea?',choices:['Cans are made of metal','Recycling helps the Earth','Trees are very tall','Bottles are made of glass'],answer:1,explain:'The whole talk is about how recycling helps the Earth.',support:'The main idea is the big point, not one small detail.'},
+{id:'L-B-06',domain:'Listening',band:'B',level:'WIDA 2.6–4.5',type:'order',typeLabel:'Listen & Order',title:'A Simple Experiment',script:'Listen to the steps. First, fill the cup with soil. Next, plant the seed. Then, water the soil. Finally, place the cup in the sun.',question:'Put the experiment steps in order.',items:['Fill the cup with soil','Plant the seed','Water the soil','Place the cup in the sun'],support:'Order words: first, next, then, finally.'},
+{id:'L-B-07',domain:'Listening',band:'B',level:'WIDA 2.6–4.5',type:'listen-mcq',typeLabel:'Listen for Cause',title:'The Late Bus',script:'Because the bridge was closed for repairs, the school bus had to take a different road and arrived ten minutes late.',question:'Why was the bus late?',choices:['The driver was sleeping','The bridge was closed','The bus had no gas','School started early'],answer:1,explain:'The cause is the closed bridge.',support:'Listen for the cause word: "because."'},
+{id:'L-B-08',domain:'Listening',band:'B',level:'WIDA 2.6–4.5',type:'listen-mcq',typeLabel:'Listen for Detail',title:'Mr. Lee\'s Favorite Season',script:'Mr. Lee said the best season is fall because the leaves change color and the air becomes cool and fresh.',question:'Why does Mr. Lee like fall?',choices:['It snows a lot','Leaves change color and the air is cool','Flowers bloom','It is very hot'],answer:1,explain:'He gives two reasons: leaves change and cool air.',support:'Listen for the reasons after "because."'},
+{id:'L-B-09',domain:'Listening',band:'B',level:'WIDA 2.6–4.5',type:'listen-mcq',typeLabel:'Listen for Detail',title:'Library Hours',script:'The school library is open Monday through Thursday from three to five in the afternoon. It is closed on weekends.',question:'When is the library closed?',choices:['Monday','Wednesday','Weekends','At three o\'clock'],answer:2,explain:'It is closed on weekends.',support:'Listen for "closed on …"'},
+{id:'L-B-10',domain:'Listening',band:'B',level:'WIDA 2.6–4.5',type:'order',typeLabel:'Listen & Order',title:'Lost and Found Story',script:'Listen to the story. Sara lost her library book. She looked under her bed. She found it in her backpack. She returned it to the library.',question:'Put the events of the story in order.',items:['Sara lost her library book','She looked under her bed','She found it in her backpack','She returned it to the library'],support:'Retell the story in your head as you listen.'},
+
+/* ===================== READING — Band A (WIDA 1–2.5) ===================== */
+{id:'R-A-01',domain:'Reading',band:'A',level:'WIDA 1–2.5',type:'read-mcq',typeLabel:'Read a Sign',title:'Reading a Sign',passage:'STOP\nDo not enter.',question:'What does this sign tell you to do?',choices:['Come in','Do not go in','Run fast','Sit down'],answer:1,explain:'"Do not enter" means do not go in.',support:'Signs give short, important messages.'},
+{id:'R-A-02',domain:'Reading',band:'A',level:'WIDA 1–2.5',type:'read-mcq',typeLabel:'Read & Choose',title:'Sam\'s Dog',passage:'Sam has a dog. The dog is brown. The dog likes to run in the park.',question:'What color is the dog?',choices:['Black','Brown','White','Gray'],answer:1,explain:'The text says the dog is brown.',support:'Find the color word in the sentence.'},
+{id:'R-A-03',domain:'Reading',band:'A',level:'WIDA 1–2.5',type:'fill',typeLabel:'Word Bank',title:'My Family',sentence:'I have a big ___. My ___ cooks dinner. My ___ reads to me.',bank:['family','mother','father'],answers:['family','mother','father'],support:'Read the whole sentence first, then choose the best word.'},
+{id:'R-A-04',domain:'Reading',band:'A',level:'WIDA 1–2.5',type:'read-mcq',typeLabel:'Read a Schedule',title:'Class Schedule',passage:'Class starts at 8:00. Reading is at 9:00. Lunch is at 12:00.',question:'What time does class start?',choices:['8:00','9:00','12:00','3:00'],answer:0,explain:'Class starts at 8:00.',support:'Match the word "start" to the time.'},
+{id:'R-A-05',domain:'Reading',band:'A',level:'WIDA 1–2.5',type:'read-mcq',typeLabel:'Read & Choose',title:'At the Park',passage:'Ben and Mia go to the park. They play on the swings. Then they eat apples.',question:'What do Ben and Mia eat?',choices:['Pizza','Apples','Bread','Cake'],answer:1,explain:'They eat apples.',support:'Look for the food word.'},
+{id:'R-A-06',domain:'Reading',band:'A',level:'WIDA 1–2.5',type:'fill',typeLabel:'Word Bank',title:'The Weather',sentence:'Today it is ___. I wear a ___. The sky is ___.',bank:['sunny','hat','blue'],answers:['sunny','hat','blue'],support:'Think about what goes together: sky and a color.'},
+{id:'R-A-07',domain:'Reading',band:'A',level:'WIDA 1–2.5',type:'read-mcq',typeLabel:'Vocabulary',title:'Word in Context',passage:'The room was very dark. Lena turned on the lamp. Now the room is bright.',question:'What does "bright" mean here?',choices:['Full of light','Very cold','Very loud','Empty'],answer:0,explain:'After the lamp is on, the room has light — bright means full of light.',support:'Use the words around it: lamp, light.'},
+{id:'R-A-08',domain:'Reading',band:'A',level:'WIDA 1–2.5',type:'order',typeLabel:'Read & Order',title:'A Day at School (Order)',question:'Read the sentences and put the day in order.',items:['I get on the bus.','I learn in class.','I go home.'],support:'Think about the order of a school day.'},
+{id:'R-A-09',domain:'Reading',band:'A',level:'WIDA 1–2.5',type:'read-mcq',typeLabel:'Read Directions',title:'Finding the Library',passage:'Go straight. Turn left at the door. The library is the first room.',question:'Where do you turn left?',choices:['At the stairs','At the door','At the office','At the gym'],answer:1,explain:'You turn left at the door.',support:'Look for the word "left."'},
+{id:'R-A-10',domain:'Reading',band:'A',level:'WIDA 1–2.5',type:'fill',typeLabel:'Word Bank',title:'In the Classroom',sentence:'I write with a ___. I read a ___. I sit at my ___.',bank:['pencil','book','desk'],answers:['pencil','book','desk'],support:'Match each action to the right object.'},
+
+/* ===================== READING — Band B (WIDA 2.6–4.5) ===================== */
+{id:'R-B-01',domain:'Reading',band:'B',level:'WIDA 2.6–4.5',type:'read-mcq',typeLabel:'Main Idea',title:'Bees and Flowers',passage:'Bees are small but very important. When a bee lands on a flower, yellow dust called pollen sticks to its legs. The bee carries the pollen to the next flower. This helps new plants and fruits grow.',question:'What is the main idea of this passage?',choices:['Bees are the color yellow','Bees help plants grow by moving pollen','Flowers are very tall','Bees live in the city'],answer:1,explain:'The passage explains how bees help plants grow.',support:'The main idea connects all the sentences.'},
+{id:'R-B-02',domain:'Reading',band:'B',level:'WIDA 2.6–4.5',type:'read-mcq',typeLabel:'Inference',title:'Reading Between the Lines',passage:'When Tomas opened the door, he smiled and dropped his umbrella. The sun was shining and the clouds were gone.',question:'What can you infer about the weather?',choices:['A storm is coming','The weather got better','It is snowing','It is night time'],answer:1,explain:'Sun shining and no clouds means the weather improved.',support:'An inference uses clues plus what you already know.'},
+{id:'R-B-03',domain:'Reading',band:'B',level:'WIDA 2.6–4.5',type:'read-mcq',typeLabel:'Vocabulary',title:'Context Clues',passage:'The hikers were exhausted after the long climb. They could barely lift their feet and needed to rest.',question:'What does "exhausted" mean?',choices:['Very excited','Very tired','Very hungry','Very fast'],answer:1,explain:'"Barely lift their feet" and "needed to rest" show they are very tired.',support:'Use the clue words around "exhausted."'},
+{id:'R-B-04',domain:'Reading',band:'B',level:'WIDA 2.6–4.5',type:'read-mcq',typeLabel:'Cause & Effect',title:'The Power Outage',passage:'A strong storm knocked down a power line last night. Because of this, the whole street had no electricity until morning.',question:'Why did the street lose electricity?',choices:['Someone forgot to pay','A storm knocked down a power line','The lights were old','It was daytime'],answer:1,explain:'The cause is the storm knocking down the line.',support:'Look for the cause before "because of this."'},
+{id:'R-B-05',domain:'Reading',band:'B',level:'WIDA 2.6–4.5',type:'read-mcq',typeLabel:'Author\'s Purpose',title:'Why Did the Author Write This?',passage:'Brushing your teeth twice a day keeps them clean and healthy. Always brush in the morning and before bed. Do not forget to use a small amount of toothpaste.',question:'Why did the author write this passage?',choices:['To tell a funny story','To teach how to care for your teeth','To sell toothpaste','To describe a dentist'],answer:1,explain:'The author gives instructions to care for teeth.',support:'Ask: is it to inform, entertain, or persuade?'},
+{id:'R-B-06',domain:'Reading',band:'B',level:'WIDA 2.6–4.5',type:'read-mcq',typeLabel:'Detail',title:'The Water Cycle',passage:'The sun heats water in rivers and lakes. The water turns into vapor and rises into the sky. There it cools and forms clouds. When the clouds get heavy, rain falls back to the ground.',question:'What happens right after water turns into vapor?',choices:['It falls as rain','It rises into the sky','It freezes into ice','It becomes a river'],answer:1,explain:'After becoming vapor, the water rises into the sky.',support:'Follow the steps in order in the text.'},
+{id:'R-B-07',domain:'Reading',band:'B',level:'WIDA 2.6–4.5',type:'order',typeLabel:'Sequence',title:'How a Seed Grows',question:'Read the steps and put the plant life cycle in order.',items:['A seed is planted in the soil.','Roots grow down and a stem grows up.','Leaves open and the plant grows tall.','The plant makes a flower.'],support:'Use what you know about how plants grow.'},
+{id:'R-B-08',domain:'Reading',band:'B',level:'WIDA 2.6–4.5',type:'read-mcq',typeLabel:'Compare',title:'Frogs and Toads',passage:'Frogs and toads look alike, but they are different. Frogs have smooth, wet skin and live near water. Toads have dry, bumpy skin and can live far from water.',question:'How is a toad different from a frog?',choices:['It has smooth, wet skin','It has dry, bumpy skin','It always lives in water','It has no legs'],answer:1,explain:'Toads have dry, bumpy skin.',support:'Find the sentence that describes the toad.'},
+{id:'R-B-09',domain:'Reading',band:'B',level:'WIDA 2.6–4.5',type:'fill',typeLabel:'Vocabulary Cloze',title:'Complete the Paragraph',passage:'Read the paragraph. Choose the best word from the bank for each blank.',sentence:'The desert is very ___ during the day. At night it becomes ___. Animals there hide to stay ___ from the hot sun.',bank:['hot','cold','safe'],answers:['hot','cold','safe'],support:'Think about how a desert changes from day to night.'},
+{id:'R-B-10',domain:'Reading',band:'B',level:'WIDA 2.6–4.5',type:'read-mcq',typeLabel:'Theme/Lesson',title:'The Ant and the Grasshopper',passage:'All summer the ant worked hard and saved food. The grasshopper played and saved nothing. When winter came, the ant had plenty to eat, but the grasshopper was hungry and cold.',question:'What is the lesson of this story?',choices:['Playing is bad','It is good to prepare for the future','Ants are stronger than grasshoppers','Winter is fun'],answer:1,explain:'The story teaches us to plan and prepare ahead.',support:'The lesson is the big idea the story teaches.'},
+
+/* ===================== SPEAKING — Band A (WIDA 1–2.5) ===================== */
+{id:'S-A-01',domain:'Speaking',band:'A',level:'WIDA 1–2.5',type:'speak',typeLabel:'Speak: Introduce',title:'Introduce Yourself',prompt:'Tell me about yourself. Say your name, your age, and where you are from.',frames:['My name is ___.','I am ___ years old.','I am from ___.'],wordBank:['name','years old','from','live in','grade'],seconds:45},
+{id:'S-A-02',domain:'Speaking',band:'A',level:'WIDA 1–2.5',type:'speak',typeLabel:'Speak: Describe',title:'Describe Your Classroom',prompt:'Look around. Tell me three things you see in your classroom.',frames:['I see a ___.','There is a ___.','There are many ___.'],wordBank:['desk','board','chair','window','book','clock'],seconds:45},
+{id:'S-A-03',domain:'Speaking',band:'A',level:'WIDA 1–2.5',type:'speak',typeLabel:'Speak: Family',title:'Talk About Your Family',prompt:'Tell me about your family. Who is in your family?',frames:['In my family there is ___.','I have ___ brothers/sisters.','My ___ is kind.'],wordBank:['mother','father','sister','brother','grandmother','family'],seconds:45},
+{id:'S-A-04',domain:'Speaking',band:'A',level:'WIDA 1–2.5',type:'speak',typeLabel:'Speak: Weather',title:'Describe Today\'s Weather',prompt:'What is the weather like today? Tell me and say what you wear.',frames:['Today it is ___.','The sky is ___.','I wear a ___.'],wordBank:['sunny','rainy','cloudy','cold','hot','jacket'],seconds:40},
+{id:'S-A-05',domain:'Speaking',band:'A',level:'WIDA 1–2.5',type:'speak',typeLabel:'Speak: Favorite',title:'My Favorite Food',prompt:'What is your favorite food? Tell me what it is and one word about it.',frames:['My favorite food is ___.','It is ___.','I eat it with ___.'],wordBank:['rice','chicken','sweet','spicy','delicious','fruit'],seconds:40},
+{id:'S-A-06',domain:'Speaking',band:'A',level:'WIDA 1–2.5',type:'speak',typeLabel:'Speak: Picture',title:'Describe a Picture: The Park',prompt:'Imagine a park. Tell me three things people do in a park.',frames:['I see people ___.','A child is ___.','They are ___.'],wordBank:['running','playing','walking','sitting','a dog','a tree'],seconds:45},
+{id:'S-A-07',domain:'Speaking',band:'A',level:'WIDA 1–2.5',type:'speak',typeLabel:'Speak: Routine',title:'My Daily Routine',prompt:'Tell me what you do every morning. Use first, then, and next.',frames:['First, I ___.','Then, I ___.','Next, I ___.'],wordBank:['wake up','eat breakfast','brush my teeth','get dressed','go to school'],seconds:50},
+{id:'S-A-08',domain:'Speaking',band:'A',level:'WIDA 1–2.5',type:'speak',typeLabel:'Speak: Ask & Answer',title:'Where Is It?',prompt:'Ask and answer a question about where something is in the room.',frames:['Where is the ___?','The ___ is on the ___.','It is next to the ___.'],wordBank:['on','under','next to','in','behind','book'],seconds:40},
+{id:'S-A-09',domain:'Speaking',band:'A',level:'WIDA 1–2.5',type:'speak',typeLabel:'Speak: Count',title:'Count and Describe',prompt:'Count five objects in the room and tell me their color.',frames:['I see ___ ___s.','There are ___ ___.','The ___ is ___.'],wordBank:['one','two','three','red','blue','green'],seconds:40},
+{id:'S-A-10',domain:'Speaking',band:'A',level:'WIDA 1–2.5',type:'speak',typeLabel:'Speak: Opinion',title:'I Like / I Don\'t Like',prompt:'Tell me one thing you like and one thing you do not like.',frames:['I like ___.','I do not like ___.','I like ___ because it is ___.'],wordBank:['because','fun','boring','good','soccer','reading'],seconds:40},
+
+/* ===================== SPEAKING — Band B (WIDA 2.6–4.5) ===================== */
+{id:'S-B-01',domain:'Speaking',band:'B',level:'WIDA 2.6–4.5',type:'speak',typeLabel:'Speak: Opinion + Reasons',title:'The Best Season',prompt:'What is the best season? Give your opinion and two reasons.',frames:['I think the best season is ___.','One reason is that ___.','Another reason is that ___.'],wordBank:['because','reason','warm','holidays','enjoy','activities'],seconds:60},
+{id:'S-B-02',domain:'Speaking',band:'B',level:'WIDA 2.6–4.5',type:'speak',typeLabel:'Speak: Compare',title:'Compare Two Animals',prompt:'Compare a cat and a dog. Tell me how they are the same and different.',frames:['A cat and a dog are both ___.','A cat is ___, but a dog is ___.','One difference is ___.'],wordBank:['both','similar','different','however','larger','quieter'],seconds:60},
+{id:'S-B-03',domain:'Speaking',band:'B',level:'WIDA 2.6–4.5',type:'speak',typeLabel:'Speak: Retell',title:'Retell a Story',prompt:'Think of a short story or movie. Retell what happens at the beginning, middle, and end.',frames:['At the beginning, ___.','In the middle, ___.','At the end, ___.'],wordBank:['first','then','after that','finally','character','problem'],seconds:75},
+{id:'S-B-04',domain:'Speaking',band:'B',level:'WIDA 2.6–4.5',type:'speak',typeLabel:'Speak: Explain How',title:'How to Make a Sandwich',prompt:'Explain how to make a simple sandwich. Use sequence words.',frames:['First, you ___.','Next, you ___.','After that, you ___.','Finally, you ___.'],wordBank:['bread','spread','add','place','first','finally'],seconds:60},
+{id:'S-B-05',domain:'Speaking',band:'B',level:'WIDA 2.6–4.5',type:'speak',typeLabel:'Speak: Directions',title:'Give Directions',prompt:'Explain how to get from our classroom to the main office.',frames:['Start by going ___.','Then turn ___ at the ___.','The office is ___.'],wordBank:['straight','left','right','past','next to','hallway'],seconds:55},
+{id:'S-B-06',domain:'Speaking',band:'B',level:'WIDA 2.6–4.5',type:'speak',typeLabel:'Speak: Agree/Disagree',title:'Do You Agree?',prompt:'Statement: "Students should have a longer lunch." Do you agree or disagree? Explain why.',frames:['I agree/disagree that ___.','This is because ___.','For example, ___.'],wordBank:['agree','disagree','because','for example','enough time','rushed'],seconds:60},
+{id:'S-B-07',domain:'Speaking',band:'B',level:'WIDA 2.6–4.5',type:'speak',typeLabel:'Speak: Problem/Solution',title:'A Problem and a Solution',prompt:'Describe a small problem at school and suggest one solution.',frames:['One problem is ___.','This is a problem because ___.','A good solution is to ___.'],wordBank:['problem','solution','could','should','improve','help'],seconds:65},
+{id:'S-B-08',domain:'Speaking',band:'B',level:'WIDA 2.6–4.5',type:'speak',typeLabel:'Speak: Persuade',title:'Recommend a Book',prompt:'Convince a friend to read a book you like. Give two reasons.',frames:['You should read ___.','First, it is ___.','Also, you will ___.'],wordBank:['recommend','exciting','interesting','character','should','enjoy'],seconds:60},
+{id:'S-B-09',domain:'Speaking',band:'B',level:'WIDA 2.6–4.5',type:'speak',typeLabel:'Speak: Compare Places',title:'Two Places I Know',prompt:'Compare two places you know (for example, a city and a town). How are they different?',frames:['___ is bigger than ___.','In ___ there are more ___.','I prefer ___ because ___.'],wordBank:['bigger','smaller','busier','quieter','prefer','because'],seconds:65},
+{id:'S-B-10',domain:'Speaking',band:'B',level:'WIDA 2.6–4.5',type:'speak',typeLabel:'Speak: Cause/Effect',title:'Why Exercise Is Good',prompt:'Explain why exercise is good for you. Give a cause and an effect.',frames:['Exercise is good because ___.','When you exercise, ___.','As a result, ___.'],wordBank:['because','healthy','energy','stronger','as a result','heart'],seconds:60},
+
+/* ===================== WRITING — Band A (WIDA 1–2.5) ===================== */
+{id:'W-A-01',domain:'Writing',band:'A',level:'WIDA 1–2.5',type:'write',typeLabel:'Write: Sentences',title:'All About Me',prompt:'Write three sentences about yourself: your name, your age, and one thing you like.',wordBank:['My name is','I am','years old','I like','from'],organizer:['My name','My age','One thing I like'],minWords:12,checklist:['I started each sentence with a capital letter.','I ended each sentence with a period.','I wrote three sentences.']},
+{id:'W-A-02',domain:'Writing',band:'A',level:'WIDA 1–2.5',type:'write',typeLabel:'Write: Describe',title:'My Favorite Food',prompt:'Write about your favorite food. What is it? What does it taste like? When do you eat it?',wordBank:['My favorite food is','It tastes','sweet','spicy','I eat it'],organizer:['The food','How it tastes','When I eat it'],minWords:15,checklist:['I named the food.','I used a taste word.','I used capital letters and periods.']},
+{id:'W-A-03',domain:'Writing',band:'A',level:'WIDA 1–2.5',type:'write',typeLabel:'Write: Weather',title:'Today\'s Weather',prompt:'Write three sentences about the weather today and what you wear.',wordBank:['Today it is','The sky is','I wear','sunny','cold'],organizer:['The weather','The sky','What I wear'],minWords:12,checklist:['I wrote about the weather.','I said what I wear.','Each sentence has a capital and a period.']},
+{id:'W-A-04',domain:'Writing',band:'A',level:'WIDA 1–2.5',type:'write',typeLabel:'Write: Picture',title:'A Day at the Park',prompt:'Imagine a park. Write three sentences about what people do there.',wordBank:['I see','People are','playing','running','a dog'],organizer:['Something I see','Something people do','One more thing'],minWords:15,checklist:['I wrote three sentences.','I used action words (-ing).','I checked capitals and periods.']},
+{id:'W-A-05',domain:'Writing',band:'A',level:'WIDA 1–2.5',type:'write',typeLabel:'Write: Sequence',title:'My Morning',prompt:'Write about your morning. Use the words first, then, and next.',wordBank:['First','Then','Next','I wake up','I eat'],organizer:['First I…','Then I…','Next I…'],minWords:15,checklist:['I used first, then, and next.','My steps are in order.','I used capitals and periods.']},
+{id:'W-A-06',domain:'Writing',band:'A',level:'WIDA 1–2.5',type:'write',typeLabel:'Write: Family',title:'My Family',prompt:'Write three sentences about your family. Who is in it? What do they do?',wordBank:['In my family','I have','My mother','My father','kind'],organizer:['Who is in my family','What one person does','How I feel about them'],minWords:15,checklist:['I named family members.','I said what someone does.','I used capitals and periods.']},
+{id:'W-A-07',domain:'Writing',band:'A',level:'WIDA 1–2.5',type:'write',typeLabel:'Write: List to Sentences',title:'In My Classroom',prompt:'Write three sentences about things in your classroom.',wordBank:['There is','There are','I see','a desk','a board'],organizer:['One object','Another object','One more object'],minWords:12,checklist:['I named three objects.','I used "There is / There are."','I used capitals and periods.']},
+{id:'W-A-08',domain:'Writing',band:'A',level:'WIDA 1–2.5',type:'write',typeLabel:'Write: Friend',title:'My Friend',prompt:'Write three sentences about a friend. What is their name? What do you do together?',wordBank:['My friend is','We play','We like','funny','together'],organizer:['Friend\'s name','What we do together','Why I like my friend'],minWords:15,checklist:['I named my friend.','I said what we do together.','I used capitals and periods.']},
+{id:'W-A-09',domain:'Writing',band:'A',level:'WIDA 1–2.5',type:'write',typeLabel:'Write: Animal',title:'An Animal I Like',prompt:'Write three sentences about an animal. What is it? What does it look like? What does it eat?',wordBank:['I like the','It is','It eats','big','small'],organizer:['The animal','What it looks like','What it eats'],minWords:15,checklist:['I named the animal.','I described it.','I used capitals and periods.']},
+{id:'W-A-10',domain:'Writing',band:'A',level:'WIDA 1–2.5',type:'write',typeLabel:'Write: Past',title:'Yesterday',prompt:'Write about what you did yesterday. Use past words like went, ate, and played.',wordBank:['Yesterday','I went','I ate','I played','I saw'],organizer:['Where I went','What I ate','What I did'],minWords:15,checklist:['I used past-tense words.','I wrote about yesterday.','I used capitals and periods.']},
+
+/* ===================== WRITING — Band B (WIDA 2.6–4.5) ===================== */
+{id:'W-B-01',domain:'Writing',band:'B',level:'WIDA 2.6–4.5',type:'write',typeLabel:'Write: Opinion',title:'Should Students Have Homework?',prompt:'Write an opinion paragraph: Should students have homework? Give your opinion and two reasons with examples.',wordBank:['In my opinion','I believe','One reason','Another reason','For example','because'],organizer:['My opinion (topic sentence)','Reason 1 + example','Reason 2 + example','Closing sentence'],minWords:50,checklist:['I stated a clear opinion.','I gave two reasons.','I used at least one example.','I wrote a closing sentence.']},
+{id:'W-B-02',domain:'Writing',band:'B',level:'WIDA 2.6–4.5',type:'write',typeLabel:'Write: Narrative',title:'A Time I Felt Proud',prompt:'Write a paragraph about a time you felt proud. Tell what happened in order and how you felt.',wordBank:['One day','First','Then','After that','Finally','I felt'],organizer:['Beginning — what happened first','Middle — what happened next','End — how it turned out','How I felt'],minWords:55,checklist:['I told the events in order.','I used sequence words.','I described my feelings.','I checked my sentences.']},
+{id:'W-B-03',domain:'Writing',band:'B',level:'WIDA 2.6–4.5',type:'write',typeLabel:'Write: Informational',title:'How to Do Something',prompt:'Explain how to do something you know well (a game, a recipe, a chore). Write clear steps.',wordBank:['First','Next','Then','After that','Finally','you need'],organizer:['What you are explaining','Materials/what you need','Steps in order','Final result'],minWords:55,checklist:['I used sequence words.','My steps are clear and in order.','A reader could follow my steps.','I checked spelling.']},
+{id:'W-B-04',domain:'Writing',band:'B',level:'WIDA 2.6–4.5',type:'write',typeLabel:'Write: Compare',title:'Compare Two Things',prompt:'Compare two things (two seasons, two foods, two places). Tell how they are alike and different.',wordBank:['both','alike','similar','however','on the other hand','different'],organizer:['The two things','How they are alike','How they are different','Which I prefer and why'],minWords:55,checklist:['I told one way they are alike.','I told one way they are different.','I used compare words (both, however).','I gave my preference.']},
+{id:'W-B-05',domain:'Writing',band:'B',level:'WIDA 2.6–4.5',type:'write',typeLabel:'Write: Descriptive',title:'A Place I Love',prompt:'Write a descriptive paragraph about a place you love. Use details for what you see, hear, and feel.',wordBank:['I see','I hear','I feel','beautiful','peaceful','favorite'],organizer:['The place','What I see','What I hear','Why I love it'],minWords:55,checklist:['I named the place.','I used sense details (see, hear, feel).','I explained why I love it.','I used describing words.']},
+{id:'W-B-06',domain:'Writing',band:'B',level:'WIDA 2.6–4.5',type:'write',typeLabel:'Write: Persuasive',title:'Convince Your School',prompt:'Write a paragraph to persuade your school to add something (a club, a class, a food). Give two strong reasons.',wordBank:['I think our school should','First','Also','This would help','because','In conclusion'],organizer:['What I want (topic sentence)','Reason 1','Reason 2','Strong closing'],minWords:55,checklist:['I made a clear request.','I gave two reasons.','I used persuasive language.','I wrote a strong closing.']},
+{id:'W-B-07',domain:'Writing',band:'B',level:'WIDA 2.6–4.5',type:'write',typeLabel:'Write: Respond to Text',title:'Main Idea + Detail',prompt:'Read this text: "Sea turtles travel thousands of miles across the ocean, but they always return to the same beach to lay their eggs." Write what the main idea is and one detail that supports it.',wordBank:['The main idea is','One detail is','This shows','supports','For example'],organizer:['Main idea','Supporting detail','Why the detail matters'],minWords:45,checklist:['I stated the main idea.','I gave a supporting detail.','I explained the connection.','I used a topic sentence.']},
+{id:'W-B-08',domain:'Writing',band:'B',level:'WIDA 2.6–4.5',type:'write',typeLabel:'Write: Problem/Solution',title:'Problem and Solution',prompt:'Write a paragraph about a problem in your community or school and a solution you suggest.',wordBank:['One problem is','This is a problem because','A solution is','could','should','As a result'],organizer:['The problem','Why it matters','My solution','The result of my solution'],minWords:55,checklist:['I described a real problem.','I explained why it matters.','I gave a clear solution.','I described the result.']},
+{id:'W-B-09',domain:'Writing',band:'B',level:'WIDA 2.6–4.5',type:'write',typeLabel:'Write: Letter',title:'A Letter to My Teacher',prompt:'Write a short, polite letter to a teacher to ask for help or thank them. Include a greeting and a closing.',wordBank:['Dear','I am writing because','Thank you','I would like','Sincerely','please'],organizer:['Greeting (Dear …)','Reason for writing','Polite request or thank you','Closing (Sincerely, …)'],minWords:50,checklist:['I used a greeting.','I gave a clear reason.','I was polite.','I used a closing.']},
+{id:'W-B-10',domain:'Writing',band:'B',level:'WIDA 2.6–4.5',type:'write',typeLabel:'Write: Cause/Effect',title:'Cause and Effect',prompt:'Write a paragraph that explains a cause and its effects. Example: What happens when you do not get enough sleep?',wordBank:['When','because','as a result','this causes','leads to','therefore'],organizer:['The cause','Effect 1','Effect 2','Closing thought'],minWords:50,checklist:['I named a clear cause.','I explained at least two effects.','I used cause/effect words.','I wrote a closing thought.']}
+]; /*__ACTIVITIES__*/
+var TEACHER = {
+  paths:[
+    {name:'Path 1 · New Newcomer Onboarding (Week 1)',who:'For students new to English (WIDA 1–2). Builds confidence with low-stress, high-support tasks.',steps:[
+      'Day 1: Listening Band A 01–03 (directions, schedule, weather) — model the "Play audio" button, choose together.',
+      'Day 2: Speaking Band A 01 "Introduce Yourself" using the sentence frames; record on any device.',
+      'Day 3: Reading Band A 01–03 (sign, Sam\'s Dog, family cloze).',
+      'Day 4: Writing Band A 01 "All About Me" with the word bank and organizer.',
+      'Day 5: Re-do one favorite activity in each domain to build fluency; celebrate completed badges.']},
+    {name:'Path 2 · Listening & Reading Comprehension Block',who:'For a 45-minute receptive-skills rotation, any band.',steps:[
+      'Warm-up: 1 Listening "Listen & Order" activity projected for the whole class.',
+      'Station A: students complete 3 Listening MCQs at their band, headphones on.',
+      'Station B: students complete 3 Reading MCQs at their band.',
+      'Wrap-up: pairs compare answers and explain one using "I chose ___ because ___."']},
+    {name:'Path 3 · Speaking Fluency Circuit',who:'Productive speaking practice; pairs or small groups, WIDA 2.6–4.5.',steps:[
+      'Open the Speaking Prompt-Card Deck and project one card.',
+      'Partner A speaks for the timer; Partner B listens and checks the sentence frames used.',
+      'Switch roles with the next card.',
+      'Assign 3 Speaking Band B activities for independent practice and self-rating.']},
+    {name:'Path 4 · Writing Process Path',who:'Build a paragraph across the week, WIDA 2.6–4.5.',steps:[
+      'Mon: Choose a Writing Band B prompt; fill the organizer only.',
+      'Tue: Draft the paragraph in the text box using the word bank.',
+      'Wed: Use the checklist to revise; partner gives one "glow" and one "grow."',
+      'Thu: Edit for capitals, periods, and spelling.',
+      'Fri: Submit & save the final draft; teacher reviews saved drafts.']},
+    {name:'Path 5 · Mixed-Level Differentiation',who:'One class, two bands working at once.',steps:[
+      'Set Band toggle to 1–2.5 for newcomers; assign Listening + Writing Band A.',
+      'Set Band toggle to 2.6–4.5 for developing students; assign Reading + Speaking Band B.',
+      'Use the progress bar in each view as an exit check.',
+      'Pair a Band B student with a Band A student for the Speaking deck as peer models.']},
+    {name:'Path 6 · ACCESS Test-Format Familiarization',who:'2 weeks before the test window, all bands.',steps:[
+      'Listening: practice the "Play audio → choose" flow (mirrors the test).',
+      'Reading: practice passage + MCQ and the cloze (fill) format.',
+      'Speaking: practice responding within a timer to a spoken prompt.',
+      'Writing: practice planning with the organizer, then writing to a target length.']}
+  ],
+  subPlans:[
+    {domain:'Listening',title:'Emergency Sub-Day Plan',overview:'No prep needed. Students use the ACCESS Practice Lab on any device, Listening tab. Works with headphones or a single classroom speaker.',
+      blocks:[
+        ['0–5 min','Take attendance. Read the posted goal: "Today we practice careful listening."','Sit, log in to a device, open the Lab to the Listening tab.'],
+        ['5–10 min','Project one "Listen & Order" activity. Press Play audio for the class.','Listen twice, then arrange the steps together; volunteers explain.'],
+        ['10–35 min','Circulate. Remind students to use the "Play again" button.','At their WIDA band, complete at least 5 Listening activities; aim for green check badges.'],
+        ['35–45 min','Lead a quick share-out.','Tell a partner one thing they heard and answered correctly.']],
+      backup:'If devices fail, read any on-screen "Script" aloud slowly twice; students hold up 1/2/3/4 fingers for A/B/C/D.'},
+    {domain:'Reading',title:'Emergency Sub-Day Plan',overview:'No prep needed. Students work in the Reading tab independently or in pairs.',
+      blocks:[
+        ['0–5 min','Attendance. Post goal: "Read carefully and find the answer in the text."','Open the Lab to the Reading tab at their band.'],
+        ['5–12 min','Model one passage: read aloud, underline the question word.','Follow along; find where the answer is in the passage.'],
+        ['12–38 min','Circulate and prompt: "Show me the sentence that proves it."','Complete at least 5 Reading activities, including one cloze (fill).'],
+        ['38–45 min','Cold-call two students to justify an answer.','Use the frame: "The answer is ___ because the text says ___."']],
+      backup:'If devices fail, print is not required — pairs can read the on-screen passages from one shared screen and discuss.'},
+    {domain:'Speaking',title:'Emergency Sub-Day Plan',overview:'No prep needed. Uses the Speaking tab and the Speaking Prompt-Card Deck in the Teacher Hub.',
+      blocks:[
+        ['0–5 min','Attendance. Post goal: "Speak in full sentences using the frames."','Find a partner; open the Lab Speaking tab.'],
+        ['5–12 min','Project one card from the Speaking Prompt-Card Deck; press "Read aloud."','Echo the sentence frames chorally.'],
+        ['12–38 min','Time the room: "Speaker talks until the timer ends, then switch."','In pairs, complete 4 Speaking activities; use the timer and self-rate with stars.'],
+        ['38–45 min','Invite 3 volunteers to share one sentence.','Listen and give a thumbs-up for full sentences.']],
+      backup:'No tech: write one prompt card on the board with its frames; partners take turns speaking and counting full sentences on their fingers.'},
+    {domain:'Writing',title:'Emergency Sub-Day Plan',overview:'No prep needed. Students draft in the Writing tab; drafts auto-save in the browser.',
+      blocks:[
+        ['0–5 min','Attendance. Post goal: "Plan, then write, then check."','Open the Lab Writing tab at their band.'],
+        ['5–12 min','Project one Writing activity; fill the organizer boxes together as a model.','Copy the planning approach for their own prompt.'],
+        ['12–38 min','Circulate. Encourage using the word-bank chips and watching the word counter.','Complete the organizer, write to the target length, run the checklist, then Submit & save.'],
+        ['38–45 min','Ask students to read one sentence to a partner.','Partner gives one compliment using "I liked how you ___."']],
+      backup:'No tech: students plan on scrap paper using the same organizer headings, then write a paragraph by hand.'}
+  ],
+  reviewA:{goal:'One-week ACCESS review for WIDA 1–2.5. Build confidence and core sentence patterns across all four domains with heavy scaffolding. ~30–40 min/day.',
+    days:[
+      {day:'Monday',focus:'Listening',do:'Listening Band A 01–05 (directions, schedule, weather, steps, cafeteria). Use Play/Play-again freely.',exit:'Students answer 4 of 5 MCQs; show green badges.'},
+      {day:'Tuesday',focus:'Reading',do:'Reading Band A 01–05 plus one cloze (03 or 06).',exit:'Students point to the word in the text that proves each answer.'},
+      {day:'Wednesday',focus:'Speaking',do:'Speaking Band A 01, 04, 05 (introduce, weather, favorite food) with frames; use the Speaking Deck warm-up.',exit:'Each student speaks 3 full sentences using a frame.'},
+      {day:'Thursday',focus:'Writing',do:'Writing Band A 01 and 03 (All About Me, Weather) with organizer + word bank.',exit:'Each student submits a 3-sentence draft with capitals and periods.'},
+      {day:'Friday',focus:'Mixed review',do:'Choice board: 1 activity from each domain (any Band A). Finish remaining badges.',exit:'Progress bars at 80%+ in each Band A view.'}
+    ]},
+  reviewB:{goal:'One-week ACCESS review for WIDA 2.6–4.5. Push toward inference, reasons/examples, and paragraph writing across all four domains. ~40–50 min/day.',
+    days:[
+      {day:'Monday',focus:'Listening',do:'Listening Band B 01, 02, 05, 07 (main idea, inference, cause/effect). Listen once, then check.',exit:'Students explain one inference: "I know ___ because I heard ___."'},
+      {day:'Tuesday',focus:'Reading',do:'Reading Band B 01, 03, 05, 10 (main idea, vocabulary, author\'s purpose, theme) + cloze 09.',exit:'Students write one sentence stating a main idea and a supporting detail.'},
+      {day:'Wednesday',focus:'Speaking',do:'Speaking Band B 01, 06, 08 (opinion+reasons, agree/disagree, persuade) using the Speaking Deck.',exit:'Each student gives an opinion with two reasons within the timer.'},
+      {day:'Thursday',focus:'Writing',do:'Writing Band B 01 or 06 (opinion / persuasive). Plan with organizer, draft, run checklist.',exit:'Students submit a 50+ word paragraph with a clear topic sentence and two reasons.'},
+      {day:'Friday',focus:'Integrated review',do:'Reading-into-Writing: Reading B 07 (sea turtles) then Writing B 07 (main idea + detail). Finish badges.',exit:'Progress bars at 80%+ in each Band B view; one polished paragraph submitted.'}
+    ]},
+  speakingCards:[
+    {cat:'Personal · Level 1–2.5',prompt:'Tell me about your weekend. What did you do?',frames:['On the weekend, I ___.','I went to ___.','It was ___.'],level:'WIDA 1–2.5'},
+    {cat:'Describe · Level 1–2.5',prompt:'Describe what you are wearing today.',frames:['I am wearing ___.','My ___ is ___.','I like my ___.'],level:'WIDA 1–2.5'},
+    {cat:'Describe · Level 1–2.5',prompt:'Look out the window. What do you see?',frames:['I see ___.','There is ___.','The ___ is ___.'],level:'WIDA 1–2.5'},
+    {cat:'Personal · Level 1–2.5',prompt:'What do you do after school?',frames:['After school, I ___.','First I ___, then I ___.','I like to ___.'],level:'WIDA 1–2.5'},
+    {cat:'Opinion · Level 1–2.5',prompt:'What is your favorite subject? Why?',frames:['My favorite subject is ___.','I like it because ___.','It is ___.'],level:'WIDA 1–2.5'},
+    {cat:'Picture · Level 1–2.5',prompt:'Describe your favorite place to eat.',frames:['I like to eat at ___.','I eat ___.','It is ___.'],level:'WIDA 1–2.5'},
+    {cat:'Opinion + Reasons · Level 2.6–4.5',prompt:'Should phones be allowed in class? Explain your opinion with two reasons.',frames:['I think phones should ___.','One reason is ___.','Another reason is ___.'],level:'WIDA 2.6–4.5'},
+    {cat:'Compare · Level 2.6–4.5',prompt:'Compare summer and winter. Which do you prefer and why?',frames:['Summer is ___, but winter is ___.','I prefer ___ because ___.','One difference is ___.'],level:'WIDA 2.6–4.5'},
+    {cat:'Explain · Level 2.6–4.5',prompt:'Explain how to get ready for school in the morning.',frames:['First, I ___.','Next, I ___.','Finally, I ___.'],level:'WIDA 2.6–4.5'},
+    {cat:'Narrate · Level 2.6–4.5',prompt:'Tell about a time you helped someone. What happened?',frames:['One day, ___.','Then, ___.','In the end, ___.'],level:'WIDA 2.6–4.5'},
+    {cat:'Persuade · Level 2.6–4.5',prompt:'Convince me to visit your home country or city.',frames:['You should visit ___.','First, ___.','Also, ___.'],level:'WIDA 2.6–4.5'},
+    {cat:'Problem/Solution · Level 2.6–4.5',prompt:'Describe a problem students have and one way to solve it.',frames:['A common problem is ___.','This happens because ___.','One solution is to ___.'],level:'WIDA 2.6–4.5'},
+    {cat:'Cause/Effect · Level 2.6–4.5',prompt:'What happens when a community recycles? Explain a cause and effect.',frames:['When a community recycles, ___.','As a result, ___.','This is important because ___.'],level:'WIDA 2.6–4.5'}
+  ],
+  writingCards:[
+    {cat:'Sentences · Level 1–2.5',prompt:'Write three sentences about your best friend.',frames:['My best friend is ___.','We like to ___.','He/She is ___.'],level:'WIDA 1–2.5'},
+    {cat:'Describe · Level 1–2.5',prompt:'Write about your favorite toy or game.',frames:['My favorite ___ is ___.','I play it with ___.','It is ___.'],level:'WIDA 1–2.5'},
+    {cat:'Sequence · Level 1–2.5',prompt:'Write the steps to brush your teeth. Use first, then, next.',frames:['First, I ___.','Then, I ___.','Next, I ___.'],level:'WIDA 1–2.5'},
+    {cat:'Describe · Level 1–2.5',prompt:'Write about your favorite animal at the zoo.',frames:['My favorite animal is ___.','It is ___.','It can ___.'],level:'WIDA 1–2.5'},
+    {cat:'Personal · Level 1–2.5',prompt:'Write about what makes you happy.',frames:['I am happy when ___.','I like ___.','It makes me feel ___.'],level:'WIDA 1–2.5'},
+    {cat:'List → Sentences · Level 1–2.5',prompt:'Write three sentences about things you do in the summer.',frames:['In summer, I ___.','I also ___.','My favorite thing is ___.'],level:'WIDA 1–2.5'},
+    {cat:'Opinion · Level 2.6–4.5',prompt:'Write an opinion paragraph: Is it better to read a book or watch a movie? Give two reasons.',frames:['In my opinion, ___.','One reason is ___.','Another reason is ___.','In conclusion, ___.'],level:'WIDA 2.6–4.5'},
+    {cat:'Narrative · Level 2.6–4.5',prompt:'Write a paragraph about your first day at this school.',frames:['On my first day, ___.','At first, I felt ___.','Then, ___.','By the end, ___.'],level:'WIDA 2.6–4.5'},
+    {cat:'Informational · Level 2.6–4.5',prompt:'Explain your favorite holiday and how your family celebrates it.',frames:['My favorite holiday is ___.','We celebrate by ___.','One special tradition is ___.'],level:'WIDA 2.6–4.5'},
+    {cat:'Compare · Level 2.6–4.5',prompt:'Compare life in a big city and a small town. Which would you choose?',frames:['A big city is ___, while a small town is ___.','Both ___.','I would choose ___ because ___.'],level:'WIDA 2.6–4.5'},
+    {cat:'Persuasive · Level 2.6–4.5',prompt:'Write to persuade your principal to add a new after-school club.',frames:['Our school should add ___.','First, ___.','Also, ___.','For these reasons, ___.'],level:'WIDA 2.6–4.5'},
+    {cat:'Problem/Solution · Level 2.6–4.5',prompt:'Write about a problem in your neighborhood and a possible solution.',frames:['One problem is ___.','This is a problem because ___.','A good solution would be ___.','As a result, ___.'],level:'WIDA 2.6–4.5'}
+  ]
+};     /*__TEACHER__*/
+
+/* ============================ ENGINE ============================ */
+var state = { domain:'Listening', band:'A' };
+var STORE_KEY='ewl_access_lab_v2';
+var progress = loadProgress();
+function loadProgress(){ try{return JSON.parse(localStorage.getItem(STORE_KEY))||{};}catch(e){return {};} }
+function saveProgress(){ try{localStorage.setItem(STORE_KEY,JSON.stringify(progress));}catch(e){} }
+function markDone(id){ progress[id]=true; saveProgress(); }
+
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function el(html){var t=document.createElement('template');t.innerHTML=html.trim();return t.content.firstChild;}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+
+/* ---- Text to speech ---- */
+function speak(text,btn){
+  if(!('speechSynthesis' in window)){ if(btn){btn.textContent='🔇 Audio not supported';} return; }
+  window.speechSynthesis.cancel();
+  var u=new SpeechSynthesisUtterance(text);
+  u.rate=0.92; u.pitch=1;
+  if(btn){ btn.classList.add('playing'); u.onend=function(){btn.innerHTML='🔊 Play again';}; }
+  window.speechSynthesis.speak(u);
+}
+
+/* ---- Card builders by type ---- */
+function cardShell(a){
+  var c=el('<article class="card" id="card-'+a.id+'"></article>');
+  if(progress[a.id]) c.classList.add('done');
+  c.appendChild(el('<div class="donebadge">✓</div>'));
+  c.appendChild(el('<div class="meta"><span class="lvl">'+esc(a.level)+'</span><span class="typ">'+esc(a.typeLabel||a.type)+'</span></div>'));
+  c.appendChild(el('<h3>'+esc(a.title)+'</h3>'));
+  return c;
+}
+function fbLine(){return el('<div class="fb" role="status"></div>');}
+
+function buildMCQ(a,c,promptText){
+  if(a.script){
+    c.appendChild(el('<button class="btn play">🔊 Play audio</button>')).onclick=function(){speak(a.script,this);};
+    var sb=el('<div class="scriptbox hidden"><b>Script (teacher view):</b><br>'+esc(a.script)+'</div>');
+    var tog=el('<button class="btn ghost" style="align-self:flex-start;font-size:12px">Show/Hide script</button>');
+    tog.onclick=function(){sb.classList.toggle('hidden');};
+    c.appendChild(tog); c.appendChild(sb);
+  }
+  if(a.passage){ c.appendChild(el('<div class="passage">'+esc(a.passage)+'</div>')); }
+  c.appendChild(el('<div class="q">'+esc(a.question)+'</div>'));
+  var ch=el('<div class="choices"></div>');
+  var fb=fbLine();
+  a.choices.forEach(function(opt,i){
+    var b=el('<button class="choice"><span class="k">'+'ABCD'[i]+'.</span><span>'+esc(opt)+'</span></button>');
+    b.onclick=function(){
+      Array.prototype.forEach.call(ch.children,function(x){x.setAttribute('disabled','');});
+      if(i===a.answer){ b.classList.add('correct'); fb.textContent='✓ Correct! '+(a.explain||''); fb.className='fb ok'; markDone(a.id); c.classList.add('done'); refreshProgress(); }
+      else{ b.classList.add('wrong'); ch.children[a.answer].classList.add('correct'); fb.textContent='Not yet — the answer is '+'ABCD'[a.answer]+'. '+(a.explain||''); fb.className='fb no'; }
+    };
+    ch.appendChild(b);
+  });
+  c.appendChild(ch); c.appendChild(fb);
+  if(a.support){ c.appendChild(el('<div class="support"><b>Support:</b> '+esc(a.support)+'</div>')); }
+}
+
+function buildOrder(a,c){
+  if(a.script){ c.appendChild(el('<button class="btn play">🔊 Play audio</button>')).onclick=function(){speak(a.script,this);}; }
+  c.appendChild(el('<div class="q">'+esc(a.question)+'</div>'));
+  var list=el('<div class="ordlist"></div>');
+  var order=shuffle(a.items.map(function(_,i){return i;}));
+  function render(){
+    list.innerHTML='';
+    order.forEach(function(itemIdx,pos){
+      var row=el('<div class="orditem"><span class="num">'+(pos+1)+'</span><span>'+esc(a.items[itemIdx])+'</span><span class="mv"></span></div>');
+      var mv=row.querySelector('.mv');
+      var up=el('<button aria-label="move up">▲</button>'); up.onclick=function(){if(pos>0){var t=order[pos-1];order[pos-1]=order[pos];order[pos]=t;render();}};
+      var dn=el('<button aria-label="move down">▼</button>'); dn.onclick=function(){if(pos<order.length-1){var t=order[pos+1];order[pos+1]=order[pos];order[pos]=t;render();}};
+      mv.appendChild(up); mv.appendChild(dn); list.appendChild(row);
+    });
+  }
+  render();
+  c.appendChild(list);
+  var fb=fbLine();
+  var check=el('<button class="btn tealb">Check order</button>');
+  check.onclick=function(){
+    var ok=order.every(function(v,i){return v===i;});
+    if(ok){fb.textContent='✓ Correct sequence!';fb.className='fb ok';markDone(a.id);c.classList.add('done');refreshProgress();}
+    else{fb.textContent='Not yet — keep arranging. Use ▲ ▼ to reorder.';fb.className='fb no';}
+  };
+  c.appendChild(check); c.appendChild(fb);
+  if(a.support) c.appendChild(el('<div class="support"><b>Support:</b> '+esc(a.support)+'</div>'));
+}
+
+function buildFill(a,c){
+  if(a.passage) c.appendChild(el('<div class="passage">'+esc(a.passage)+'</div>'));
+  c.appendChild(el('<div class="q">'+esc(a.question||'Fill each blank using the word bank.')+'</div>'));
+  var wb=el('<div class="wordbank"></div>');
+  shuffle(a.bank).forEach(function(w){ wb.appendChild(el('<span class="chip muted">'+esc(w)+'</span>')); });
+  c.appendChild(wb);
+  var holder=el('<div class="blanks" style="font-size:14px;line-height:2"></div>');
+  var parts=a.sentence.split('___');
+  var inputs=[];
+  parts.forEach(function(p,i){
+    holder.appendChild(document.createTextNode(p));
+    if(i<parts.length-1){ var inp=el('<input type="text" aria-label="blank '+(i+1)+'">'); inputs.push(inp); holder.appendChild(inp); }
+  });
+  c.appendChild(holder);
+  var fb=fbLine();
+  var check=el('<button class="btn tealb">Check answers</button>');
+  check.onclick=function(){
+    var allok=inputs.every(function(inp,i){return inp.value.trim().toLowerCase()===String(a.answers[i]).toLowerCase();});
+    if(allok){fb.textContent='✓ All correct!';fb.className='fb ok';markDone(a.id);c.classList.add('done');refreshProgress();}
+    else{fb.textContent='Some blanks need another try. Check spelling and the word bank.';fb.className='fb no';}
+  };
+  c.appendChild(check); c.appendChild(fb);
+}
+
+function buildSpeak(a,c){
+  c.appendChild(el('<div class="scriptbox"><b>Prompt:</b> '+esc(a.prompt)+'</div>'));
+  c.appendChild(el('<button class="btn play">🔊 Hear the prompt</button>')).onclick=function(){speak(a.prompt,this);};
+  if(a.frames&&a.frames.length){
+    var fr=el('<div class="frames"></div>');
+    a.frames.forEach(function(f){fr.appendChild(el('<div class="frame">'+esc(f)+'</div>'));});
+    c.appendChild(el('<div class="support"><b>Sentence frames — say it like this:</b></div>'));
+    c.appendChild(fr);
+  }
+  if(a.wordBank&&a.wordBank.length){
+    var wb=el('<div class="wordbank"></div>');
+    a.wordBank.forEach(function(w){wb.appendChild(el('<span class="chip muted">'+esc(w)+'</span>'));});
+    c.appendChild(el('<div class="support"><b>Useful words:</b></div>')); c.appendChild(wb);
+  }
+  /* timer */
+  var secs=a.seconds||60;
+  var t=el('<div class="timer">'+fmt(secs)+'</div>');
+  var ctl=el('<div class="timerctl"></div>');
+  var startB=el('<button class="btn navy" style="background:var(--navy);color:#fff">▶ Start '+secs+'s</button>');
+  var resetB=el('<button class="btn ghost">Reset</button>');
+  var iv=null, left=secs;
+  function fmtUpdate(){t.textContent=fmt(left);}
+  startB.onclick=function(){ if(iv)return; iv=setInterval(function(){left--;fmtUpdate();if(left<=0){clearInterval(iv);iv=null;t.textContent="Time!";}},1000); };
+  resetB.onclick=function(){if(iv){clearInterval(iv);iv=null;}left=secs;fmtUpdate();};
+  ctl.appendChild(startB); ctl.appendChild(resetB);
+  c.appendChild(t); c.appendChild(ctl);
+  /* self rating */
+  c.appendChild(el('<div class="support"><b>Rate your answer:</b> Did you use full sentences and key words?</div>'));
+  var stars=el('<div class="stars" role="radiogroup" aria-label="self rating"></div>');
+  for(var s=1;s<=4;s++){ (function(s){var sp=el('<span data-v="'+s+'">★</span>'); sp.onclick=function(){setStars(stars,s);}; stars.appendChild(sp);})(s); }
+  c.appendChild(stars);
+  var fb=fbLine();
+  var done=el('<button class="btn tealb">I practiced this ✓</button>');
+  done.onclick=function(){markDone(a.id);c.classList.add('done');refreshProgress();fb.textContent='Nice work — marked as practiced.';fb.className='fb ok';};
+  c.appendChild(done); c.appendChild(fb);
+}
+function setStars(box,v){Array.prototype.forEach.call(box.children,function(sp,i){sp.classList.toggle('on',i<v);});}
+function fmt(s){var m=Math.floor(s/60),x=s%60;return m+':'+(x<10?'0':'')+x;}
+
+function buildWrite(a,c){
+  c.appendChild(el('<div class="scriptbox"><b>Writing task:</b> '+esc(a.prompt)+'</div>'));
+  if(a.wordBank&&a.wordBank.length){
+    var wb=el('<div class="wordbank"></div>');
+    var ta;
+    a.wordBank.forEach(function(w){ var ch=el('<button class="chip">'+esc(w)+'</button>'); ch.onclick=function(){ if(ta){ta.value+=(ta.value&&!/\s$/.test(ta.value)?' ':'')+w;ta.dispatchEvent(new Event('input'));ta.focus();} }; wb.appendChild(ch); });
+    c.appendChild(el('<div class="support"><b>Word bank (click to add):</b></div>')); c.appendChild(wb);
+  }
+  if(a.organizer&&a.organizer.length){
+    a.organizer.forEach(function(o){
+      var row=el('<div class="orgrow"><label>'+esc(o)+'</label><input type="text"></div>');
+      c.appendChild(row);
+    });
+  }
+  var ta=el('<textarea class="write" placeholder="Write your response here..."></textarea>');
+  /* connect first word bank to textarea */
+  c.querySelectorAll('.wordbank .chip').forEach(function(){});
+  c.appendChild(ta);
+  /* rebind word bank chips to this textarea */
+  c.querySelectorAll('.wordbank .chip:not(.muted)').forEach(function(ch){ ch.onclick=function(){ ta.value+=(ta.value&&!/\s$/.test(ta.value)?' ':'')+ch.textContent; ta.dispatchEvent(new Event('input')); ta.focus(); }; });
+  var wc=el('<div class="wc">0 words · target '+(a.minWords||30)+'+</div>');
+  ta.addEventListener('input',function(){ var n=ta.value.trim()?ta.value.trim().split(/\s+/).length:0; wc.textContent=n+' words · target '+(a.minWords||30)+'+'; wc.style.color=(n>=(a.minWords||30))?'var(--green)':'var(--navy2)'; });
+  c.appendChild(wc);
+  if(a.checklist&&a.checklist.length){
+    c.appendChild(el('<div class="support"><b>Before you finish — check:</b></div>'));
+    var ul=el('<ul class="checklist"></ul>');
+    a.checklist.forEach(function(item){ ul.appendChild(el('<li><input type="checkbox"><span>'+esc(item)+'</span></li>')); });
+    c.appendChild(ul);
+  }
+  var fb=fbLine();
+  var done=el('<button class="btn tealb">Submit & save draft ✓</button>');
+  done.onclick=function(){ progress['draft_'+a.id]=ta.value; markDone(a.id);c.classList.add('done');refreshProgress();fb.textContent='Saved. Draft length: '+(ta.value.trim()?ta.value.trim().split(/\s+/).length:0)+' words.';fb.className='fb ok'; };
+  c.appendChild(done); c.appendChild(fb);
+  if(progress['draft_'+a.id]) ta.value=progress['draft_'+a.id], ta.dispatchEvent(new Event('input'));
+}
+
+function buildCard(a){
+  var c=cardShell(a);
+  switch(a.type){
+    case 'listen-mcq': case 'read-mcq': buildMCQ(a,c); break;
+    case 'order': buildOrder(a,c); break;
+    case 'fill': buildFill(a,c); break;
+    case 'speak': buildSpeak(a,c); break;
+    case 'write': buildWrite(a,c); break;
+    default: buildMCQ(a,c);
+  }
+  return c;
+}
+
+/* ---- View rendering ---- */
+function refreshProgress(){
+  var list=ACTIVITIES.filter(function(a){return a.domain===state.domain&&a.band===state.band;});
+  var done=list.filter(function(a){return progress[a.id];}).length;
+  var pct=list.length?Math.round(done/list.length*100):0;
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progText').textContent=done+' of '+list.length+' done in this view';
+}
+function renderActivities(){
+  var view=document.getElementById('activityView');
+  view.innerHTML='';
+  var list=ACTIVITIES.filter(function(a){return a.domain===state.domain&&a.band===state.band;});
+  list.forEach(function(a){ view.appendChild(buildCard(a)); });
+  refreshProgress();
+}
+
+/* ---- Teacher hub ---- */
+function renderTeacher(){
+  var v=document.getElementById('teacherView');
+  v.innerHTML='';
+  v.appendChild(el('<div class="teacherhead"><h2>🧑‍🏫 Teacher Hub</h2><p>Assignment paths, emergency sub-day plans, one-week ACCESS review plans, and printable speaking &amp; writing prompt-card decks — all wired to the same activity bank.</p></div>'));
+  v.appendChild(accordion('Assignment Paths', renderPaths(), true));
+  v.appendChild(accordion('Emergency Sub-Day Plans (1 per domain)', renderSubPlans(), false));
+  v.appendChild(accordion('One-Week Review · WIDA 1–2.5', renderReview(TEACHER.reviewA), false));
+  v.appendChild(accordion('One-Week Review · WIDA 2.6–4.5', renderReview(TEACHER.reviewB), false));
+  v.appendChild(accordion('Speaking Prompt-Card Deck', renderDeck(TEACHER.speakingCards,'speak'), false));
+  v.appendChild(accordion('Writing Prompt-Card Deck', renderDeck(TEACHER.writingCards,'write'), false));
+}
+function accordion(title,bodyNode,open){
+  var a=el('<div class="acc'+(open?' open':'')+'"></div>');
+  var h=el('<button class="acchead">'+esc(title)+'<span class="ar">▶</span></button>');
+  var b=el('<div class="accbody"></div>'); b.appendChild(bodyNode);
+  h.onclick=function(){a.classList.toggle('open');};
+  a.appendChild(h); a.appendChild(b); return a;
+}
+function renderPaths(){
+  var wrap=el('<div></div>');
+  TEACHER.paths.forEach(function(p){
+    var d=el('<div class="path"><h4>'+esc(p.name)+'</h4><div class="note">'+esc(p.who)+'</div></div>');
+    var ol=el('<ol class="steps"></ol>');
+    p.steps.forEach(function(s){ol.appendChild(el('<li>'+esc(s)+'</li>'));});
+    d.appendChild(ol); wrap.appendChild(d);
+  });
+  return wrap;
+}
+function renderSubPlans(){
+  var wrap=el('<div></div>');
+  TEACHER.subPlans.forEach(function(p){
+    var d=el('<div class="plan"><h4>'+esc(p.domain)+' — '+esc(p.title)+'</h4><div class="note">'+esc(p.overview)+'</div></div>');
+    var tbl=el('<table><thead><tr><th>Time</th><th>What the sub does</th><th>What students do</th></tr></thead><tbody></tbody></table>');
+    var tb=tbl.querySelector('tbody');
+    p.blocks.forEach(function(b){tb.appendChild(el('<tr><td>'+esc(b[0])+'</td><td>'+esc(b[1])+'</td><td>'+esc(b[2])+'</td></tr>'));});
+    d.appendChild(tbl);
+    d.appendChild(el('<div class="note" style="margin-top:8px"><b>No-tech backup:</b> '+esc(p.backup)+'</div>'));
+    wrap.appendChild(d);
+  });
+  return wrap;
+}
+function renderReview(r){
+  var wrap=el('<div></div>');
+  wrap.appendChild(el('<div class="note"><b>Goal:</b> '+esc(r.goal)+'</div>'));
+  var tbl=el('<table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:10px"><thead><tr><th>Day</th><th>Domain focus</th><th>Do this</th><th>Exit check</th></tr></thead><tbody></tbody></table>');
+  tbl.querySelectorAll('th').forEach(function(th){th.style.cssText='border:1px solid var(--line);padding:7px;background:var(--teal-soft);color:var(--navy);text-align:left';});
+  var tb=tbl.querySelector('tbody');
+  r.days.forEach(function(d){
+    var tr=el('<tr></tr>');
+    [d.day,d.focus,d.do,d.exit].forEach(function(cell){var td=el('<td>'+esc(cell)+'</td>');td.style.cssText='border:1px solid var(--line);padding:7px;vertical-align:top';tr.appendChild(td);});
+    tb.appendChild(tr);
+  });
+  wrap.appendChild(tbl);
+  return wrap;
+}
+function renderDeck(cards,kind){
+  var wrap=el('<div class="deck"></div>');
+  var i=0;
+  var card=el('<div class="promptcard"></div>');
+  function paint(){
+    var c=cards[i];
+    card.innerHTML='';
+    card.appendChild(el('<div class="cat"><span>'+esc(c.cat)+'</span><span>'+(i+1)+' / '+cards.length+'</span></div>'));
+    card.appendChild(el('<div class="big">'+esc(c.prompt)+'</div>'));
+    if(c.frames){var fr=el('<div class="frames"></div>');c.frames.forEach(function(f){fr.appendChild(el('<div class="frame">'+esc(f)+'</div>'));});card.appendChild(fr);}
+    if(c.level)card.appendChild(el('<div class="note" style="margin-top:8px">Best for: '+esc(c.level)+'</div>'));
+  }
+  paint();
+  var ctl=el('<div class="deckctl"></div>');
+  var prev=el('<button class="btn ghost">◀ Prev</button>'); prev.onclick=function(){i=(i-1+cards.length)%cards.length;paint();};
+  var hear=el('<button class="btn amberb">🔊 Read aloud</button>'); hear.onclick=function(){speak(cards[i].prompt);};
+  var next=el('<button class="btn tealb">Next ▶</button>'); next.onclick=function(){i=(i+1)%cards.length;paint();};
+  var rand=el('<button class="btn ghost">🔀 Shuffle</button>'); rand.onclick=function(){i=Math.floor(Math.random()*cards.length);paint();};
+  ctl.appendChild(prev);ctl.appendChild(hear);ctl.appendChild(rand);ctl.appendChild(next);
+  wrap.appendChild(card); wrap.appendChild(ctl);
+  return wrap;
+}
+
+/* ---- Tab + band wiring ---- */
+function selectDomain(domain){
+  state.domain=domain;
+  Array.prototype.forEach.call(document.querySelectorAll('#tabs .tab'),function(t){t.setAttribute('aria-selected', t.dataset.domain===domain?'true':'false');});
+  var isTeacher=domain==='Teacher';
+  document.getElementById('bandbar').classList.toggle('hidden',isTeacher);
+  document.getElementById('activityView').classList.toggle('hidden',isTeacher);
+  document.getElementById('teacherView').classList.toggle('hidden',!isTeacher);
+  if(isTeacher) renderTeacher(); else renderActivities();
+}
+function selectBand(b){
+  state.band=b;
+  Array.prototype.forEach.call(document.querySelectorAll('#bandtoggle button'),function(t){t.setAttribute('aria-pressed', t.dataset.band===b?'true':'false');});
+  renderActivities();
+}
+document.querySelectorAll('#tabs .tab').forEach(function(t){t.onclick=function(){selectDomain(t.dataset.domain);};});
+document.querySelectorAll('#bandtoggle button').forEach(function(t){t.onclick=function(){selectBand(t.dataset.band);};});
+
+/* ---- Boot ---- */
+function boot(){
+  document.getElementById('statTotal').textContent=ACTIVITIES.length+' activities';
+  selectDomain('Listening');
+}
+boot();
+</script>
+</body>
+</html>
