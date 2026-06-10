@@ -15,6 +15,153 @@ function reducedMotion() {
   );
 }
 
+// Inject-once scoped polish styles. All animation/transition rules below are
+// disabled inside a `prefers-reduced-motion: reduce` block, so motion-sensitive
+// students get a static, fully-functional experience. Uses only existing design
+// tokens (--teal, --navy, --success, --line, --radius-md, --ease-spring, etc.).
+const REMEDIATION_STYLE_ID = "remediation-panel-polish";
+function injectStyles() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById(REMEDIATION_STYLE_ID)) return;
+  const style = document.createElement("style");
+  style.id = REMEDIATION_STYLE_ID;
+  style.textContent = `
+.remediation .remediation-step{
+  position:relative;
+}
+/* Pulse highlight on step-card mount */
+.remediation .remediation-step.rp-pulse{
+  animation:rpPulse 0.9s var(--ease-spring) 1;
+}
+@keyframes rpPulse{
+  0%{ box-shadow:0 0 0 0 rgba(20,184,166,0.45); }
+  60%{ box-shadow:0 0 0 8px rgba(20,184,166,0); }
+  100%{ box-shadow:0 0 0 0 rgba(20,184,166,0); }
+}
+/* Micro-animation for staggered reveals (guided steps, list rows) */
+.remediation .rp-reveal{
+  animation:rpReveal 0.32s var(--ease-spring) both;
+}
+@keyframes rpReveal{
+  from{ opacity:0; transform:translateY(8px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+/* Stronger button tap feedback: scale + shadow */
+.remediation .btn{
+  transition:transform var(--duration-fast,150ms) var(--ease-spring),
+             box-shadow var(--duration-fast,150ms) var(--ease-spring);
+}
+.remediation .btn:hover{
+  box-shadow:0 4px 12px rgba(15,23,42,0.14);
+}
+.remediation .btn:active,
+.remediation .btn.rp-tap{
+  transform:scale(0.95);
+  box-shadow:0 1px 4px rgba(15,23,42,0.12);
+}
+/* Success particle burst on remediation completion */
+.remediation .rp-burst{
+  position:absolute;
+  top:0; left:0;
+  width:100%; height:100%;
+  pointer-events:none;
+  overflow:visible;
+  z-index:5;
+}
+.remediation .rp-particle{
+  position:absolute;
+  top:50%; left:50%;
+  width:9px; height:9px;
+  border-radius:2px;
+  opacity:0;
+  will-change:transform,opacity;
+  animation:rpBurst 0.85s var(--ease-spring) forwards;
+}
+@keyframes rpBurst{
+  0%{ opacity:1; transform:translate(-50%,-50%) scale(0.4) rotate(0deg); }
+  70%{ opacity:1; }
+  100%{
+    opacity:0;
+    transform:translate(calc(-50% + var(--rp-dx,0px)),
+                        calc(-50% + var(--rp-dy,0px)))
+              scale(1) rotate(var(--rp-rot,180deg));
+  }
+}
+@media (prefers-reduced-motion: reduce){
+  .remediation .remediation-step.rp-pulse{ animation:none; }
+  .remediation .rp-reveal{ animation:none; }
+  .remediation .btn{ transition:none; }
+  .remediation .btn:active,
+  .remediation .btn.rp-tap{ transform:none; box-shadow:none; }
+  .remediation .rp-burst{ display:none; }
+  .remediation .rp-particle{ animation:none; display:none; }
+}
+`;
+  (document.head || document.documentElement).append(style);
+}
+
+// Pulse highlight when a step card mounts (no-op under reduced motion).
+function pulseMount(card) {
+  if (!card || reducedMotion()) return;
+  card.classList.add("rp-pulse");
+  card.addEventListener(
+    "animationend",
+    () => card.classList.remove("rp-pulse"),
+    { once: true },
+  );
+}
+
+// Stagger a small reveal animation on an element (skipped under reduced motion).
+function revealAnim(el, index = 0) {
+  if (!el || reducedMotion()) return;
+  el.classList.add("rp-reveal");
+  el.style.animationDelay = `${Math.min(index, 6) * 60}ms`;
+  el.addEventListener(
+    "animationend",
+    () => {
+      el.classList.remove("rp-reveal");
+      el.style.animationDelay = "";
+    },
+    { once: true },
+  );
+}
+
+// Brief scale+shadow tap feedback for keyboard/programmatic activation.
+function tapFeedback(btn) {
+  if (!btn || reducedMotion()) return;
+  btn.classList.add("rp-tap");
+  setTimeout(() => btn.classList.remove("rp-tap"), 130);
+}
+
+// Celebratory particle burst on successful recovery (skipped under reduced motion).
+function successBurst(root) {
+  if (!root || reducedMotion() || typeof document === "undefined") return;
+  const burst = document.createElement("div");
+  burst.className = "rp-burst";
+  burst.setAttribute("aria-hidden", "true");
+  const colors = [
+    "var(--teal)",
+    "var(--success)",
+    "var(--navy)",
+    "var(--coral)",
+  ];
+  const count = 14;
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement("span");
+    p.className = "rp-particle";
+    const angle = (Math.PI * 2 * i) / count + Math.random() * 0.4;
+    const dist = 60 + Math.random() * 50;
+    p.style.background = colors[i % colors.length];
+    p.style.setProperty("--rp-dx", `${Math.cos(angle) * dist}px`);
+    p.style.setProperty("--rp-dy", `${Math.sin(angle) * dist}px`);
+    p.style.setProperty("--rp-rot", `${(Math.random() * 360) | 0}deg`);
+    p.style.animationDelay = `${Math.random() * 80}ms`;
+    burst.append(p);
+  }
+  root.append(burst);
+  setTimeout(() => burst.remove(), 1100);
+}
+
 function makeLive(container) {
   const live = document.createElement("div");
   live.className = "remediation-live";
@@ -50,7 +197,10 @@ function continueButton(label, onClick) {
   const btn = document.createElement("button");
   btn.className = "btn btn-primary mt-4";
   btn.textContent = label;
-  btn.addEventListener("click", onClick);
+  btn.addEventListener("click", (e) => {
+    tapFeedback(btn);
+    onClick?.(e);
+  });
   return btn;
 }
 
@@ -62,6 +212,7 @@ export function renderRemediation(
   container,
   { question, state, level, onComplete },
 ) {
+  injectStyles();
   const controller = createRemediation({ question, state, level });
   const root = document.createElement("div");
   root.className = "remediation";
@@ -77,6 +228,7 @@ export function renderRemediation(
   }
 
   function focusStep(card) {
+    pulseMount(card);
     card.focus?.();
   }
 
@@ -101,6 +253,7 @@ export function renderRemediation(
     clearSteps();
     const recovered =
       payload?.recovered !== false && payload?.reason !== "exhausted";
+    if (recovered) successBurst(root);
     announce(
       recovered
         ? "Nice work — you got it. Moving on."
@@ -139,10 +292,11 @@ export function renderRemediation(
     const list = document.createElement("ol");
     list.style.cssText =
       "margin:0 0 var(--sp-3); padding-left:var(--sp-5); display:flex; flex-direction:column; gap:var(--sp-2);";
-    (payload.steps || []).forEach((s) => {
+    (payload.steps || []).forEach((s, i) => {
       const li = document.createElement("li");
       li.innerHTML = `<strong>${esc(s.label)}</strong><div style="font-family:var(--font-mono); margin-top:2px;">${esc(s.work)}</div>`;
       list.append(li);
+      revealAnim(li, i);
     });
     body.append(list);
 
@@ -207,12 +361,14 @@ export function renderRemediation(
       revealBtn.className = "btn btn-secondary";
       revealBtn.textContent = "Reveal this step";
       revealBtn.addEventListener("click", () => {
+        tapFeedback(revealBtn);
         const ans = document.createElement("div");
         ans.setAttribute("role", "status");
         ans.style.cssText =
           "margin-top:var(--sp-2); font-family:var(--font-mono);";
         ans.innerHTML = `<strong>${esc(sp.label)}:</strong> ${esc(sp.answer)}`;
         row.append(ans);
+        revealAnim(ans);
         revealBtn.remove();
         announce(`Step revealed. ${sp.label}: ${sp.answer}`);
         revealed++;
@@ -220,6 +376,7 @@ export function renderRemediation(
       });
       row.append(revealBtn);
       stepsWrap.append(row);
+      revealAnim(row, revealed);
     }
 
     renderGuidedStep();

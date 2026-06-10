@@ -14,10 +14,66 @@
 // If a question is provided, answering it reports correctness; otherwise simply
 // completing the fold reports success.
 
+// Inject-once scoped style block for the additive fold polish. Every animation
+// and transition below is gated by prefers-reduced-motion so the experience is
+// fully static (no easing, glow, shadow drift, or particles) when a student has
+// reduced motion enabled. Uses existing shared CSS vars (--teal, --navy, etc.).
+function ensureNetFolderStyles() {
+  if (document.getElementById("nf-polish-styles")) return;
+  const style = document.createElement("style");
+  style.id = "nf-polish-styles";
+  style.textContent = `
+    .nf-stage { position:relative; }
+    .nf-shadow {
+      position:absolute; left:50%; bottom:14px;
+      width:62%; height:26px; transform:translateX(-50%);
+      border-radius:50%;
+      background:radial-gradient(ellipse at center,
+        rgba(18,53,91,0.34) 0%, rgba(18,53,91,0.16) 55%, transparent 72%);
+      filter:blur(2px); pointer-events:none; z-index:0;
+      transition:transform 0.18s cubic-bezier(0.22,1,0.36,1),
+                 opacity 0.18s cubic-bezier(0.22,1,0.36,1),
+                 filter 0.18s ease;
+    }
+    .nf-scene-wrap { position:relative; z-index:1; }
+    .nf-glow {
+      position:absolute; inset:-18% ;
+      border-radius:var(--radius-md);
+      pointer-events:none; z-index:0; opacity:0;
+      background:radial-gradient(circle at center,
+        rgba(31,166,162,0.30) 0%, rgba(31,166,162,0.10) 45%, transparent 70%);
+      transition:opacity 0.25s cubic-bezier(0.22,1,0.36,1);
+    }
+    .nf-face { transition:transform 0.28s cubic-bezier(0.34,1.3,0.64,1); }
+    .nf-slider-active { box-shadow:0 0 0 3px var(--teal-light, rgba(31,166,162,0.25)); }
+    .nf-burst {
+      position:absolute; top:50%; left:50%; width:8px; height:8px;
+      margin:-4px 0 0 -4px; border-radius:50%; pointer-events:none; z-index:3;
+      opacity:0; will-change:transform,opacity;
+    }
+    @keyframes nf-burst-fly {
+      0%   { opacity:0; transform:translate(0,0) scale(0.4); }
+      12%  { opacity:1; }
+      100% { opacity:0;
+             transform:translate(var(--nf-bx), var(--nf-by)) scale(1); }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .nf-burst { animation:nf-burst-fly 0.7s cubic-bezier(0.22,1,0.36,1) forwards; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .nf-shadow, .nf-glow, .nf-face,
+      .nf-slider-active { transition:none !important; }
+      .nf-burst { display:none !important; }
+    }
+  `;
+  document.head.append(style);
+}
+
 export function renderNetFolder(
   container,
   { instructions, solid = "cube", size, question, onComplete },
 ) {
+  ensureNetFolderStyles();
   const dims = {
     w: size?.w ?? 100,
     h: size?.h ?? 100,
@@ -46,6 +102,7 @@ export function renderNetFolder(
   wrapper.append(live);
 
   const stage = document.createElement("div");
+  stage.className = "nf-stage";
   stage.style.cssText = `
     perspective:900px; height:340px; display:flex; align-items:center;
     justify-content:center; background:var(--cream); border-radius:var(--radius-md);
@@ -56,12 +113,29 @@ export function renderNetFolder(
     `Net of a ${solid.replace("-", " ")} that folds into a 3D solid`,
   );
 
+  // Parallax shadow on the floor of the stage (grows + rotates with the fold).
+  const shadow = document.createElement("div");
+  shadow.className = "nf-shadow";
+  stage.append(shadow);
+
+  // Wrapper that holds the glow highlight behind the 3D scene.
+  const sceneWrap = document.createElement("div");
+  sceneWrap.className = "nf-scene-wrap";
+  sceneWrap.style.cssText = `
+    position:relative; transform-style:preserve-3d;
+    width:${dims.w}px; height:${dims.h}px;
+    display:flex; align-items:center; justify-content:center;`;
+  const glow = document.createElement("div");
+  glow.className = "nf-glow";
+  sceneWrap.append(glow);
+
   const scene = document.createElement("div");
   scene.style.cssText = `
     position:relative; transform-style:preserve-3d;
     transform:rotateX(-22deg) rotateY(28deg);
     width:${dims.w}px; height:${dims.h}px;`;
-  stage.append(scene);
+  sceneWrap.append(scene);
+  stage.append(sceneWrap);
 
   const { w, h, d } = dims;
   const faceBg = (c) =>
@@ -122,6 +196,7 @@ export function renderNetFolder(
 
   const faceEls = faces.map((f) => {
     const el = document.createElement("div");
+    el.className = "nf-face";
     el.style.cssText = `
       position:absolute; left:50%; top:50%; margin-left:${-f.wpx / 2}px; margin-top:${-f.hpx / 2}px;
       width:${f.wpx}px; height:${f.hpx}px; ${faceBg(f.color)}
@@ -130,6 +205,14 @@ export function renderNetFolder(
     return el;
   });
 
+  // Cubic-bezier ease (matches the CSS easing curve used on the polish layers)
+  // so the scene spin, shadow, and glow advance with a smooth, weighted feel.
+  const easeOutBack = (x) => {
+    const c1 = 1.70158;
+    const c3 = c1 + 1;
+    return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
+  };
+
   function applyFold(t) {
     // Interpolate by easing rotation/translation between flat and fold.
     // Simplest robust approach: blend via opacity of two transform states is
@@ -137,11 +220,61 @@ export function renderNetFolder(
     faces.forEach((f, i) => {
       faceEls[i].style.transform = t >= 0.5 ? f.fold : f.flat;
     });
-    // Spin the whole scene a bit as it folds for a satisfying reveal.
-    const spin = 28 + t * 32;
+    // Spin the whole scene a bit as it folds for a satisfying reveal, eased.
+    const e = easeOutBack(Math.max(0, Math.min(1, t)));
+    const spin = 28 + e * 32;
     scene.style.transform = `rotateX(-22deg) rotateY(${spin}deg)`;
+
+    // Shadow parallax: grows and rotates as the net closes into a solid.
+    const sScale = 0.78 + e * 0.5;
+    const sRot = e * 18;
+    shadow.style.transform = `translateX(-50%) scale(${sScale.toFixed(3)}, ${(0.85 + e * 0.4).toFixed(3)}) rotate(${sRot.toFixed(1)}deg)`;
+    shadow.style.opacity = (0.55 + e * 0.4).toFixed(3);
+
+    // Glow highlight ramps up, peaking as the fold completes.
+    glow.style.opacity = (Math.pow(t, 2) * 0.95).toFixed(3);
   }
   applyFold(0);
+
+  // Particle burst fired once when the fold first completes (t >= 0.99).
+  // Tasteful classroom confetti in the shared palette; auto-cleans up and is
+  // fully suppressed under prefers-reduced-motion (see scoped stylesheet).
+  let burstFired = false;
+  function fireBurst() {
+    if (burstFired) return;
+    burstFired = true;
+    if (
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return;
+    }
+    const colors = [
+      "var(--teal)",
+      "var(--success, #2e7d4f)",
+      "rgba(242,193,91,1)",
+      "rgba(217,121,93,1)",
+    ];
+    const count = 14;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement("div");
+      p.className = "nf-burst";
+      const angle = (Math.PI * 2 * i) / count + Math.random() * 0.4;
+      const dist = 46 + Math.random() * 40;
+      p.style.background = colors[i % colors.length];
+      p.style.setProperty(
+        "--nf-bx",
+        `${(Math.cos(angle) * dist).toFixed(1)}px`,
+      );
+      p.style.setProperty(
+        "--nf-by",
+        `${(Math.sin(angle) * dist).toFixed(1)}px`,
+      );
+      p.style.animationDelay = `${(Math.random() * 0.05).toFixed(3)}s`;
+      sceneWrap.append(p);
+      p.addEventListener("animationend", () => p.remove());
+    }
+  }
 
   wrapper.append(stage);
 
@@ -169,11 +302,20 @@ export function renderNetFolder(
     if (t >= 0.99 && !folded) {
       folded = true;
       live.textContent = `The net has folded into a ${solid.replace("-", " ")}.`;
+      fireBurst();
       if (!question) finishOk();
     } else if (t < 0.99) {
       folded = false;
     }
   });
+  // Mobile touch feedback: highlight the slider thumb while actively dragging
+  // so students get a clear "I'm holding it" cue on touchscreens. Purely visual
+  // and suppressed (no transition) under prefers-reduced-motion.
+  const setActive = (on) => slider.classList.toggle("nf-slider-active", on);
+  slider.addEventListener("pointerdown", () => setActive(true));
+  slider.addEventListener("pointerup", () => setActive(false));
+  slider.addEventListener("pointercancel", () => setActive(false));
+  slider.addEventListener("blur", () => setActive(false));
   foldRow.append(foldLbl, slider);
   wrapper.append(foldRow);
 

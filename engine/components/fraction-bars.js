@@ -16,6 +16,8 @@ export function renderFractionBars(
   container,
   { instructions, target, compare, maxParts = 12, onComplete },
 ) {
+  injectFractionBarsStyles();
+
   const wrapper = document.createElement("div");
   wrapper.className = "card";
 
@@ -47,7 +49,12 @@ export function renderFractionBars(
     head.append(title);
 
     const readout = document.createElement("span");
+    readout.className = "fb-readout";
     readout.style.cssText = "font-weight:700; color:var(--teal);";
+    const readoutNum = document.createElement("span");
+    readoutNum.className = "fb-readout-num";
+    const readoutSep = document.createElement("span");
+    readout.append(readoutNum, readoutSep);
     head.append(readout);
 
     let parts = fixedDenominator || 2;
@@ -80,6 +87,7 @@ export function renderFractionBars(
     block.append(head);
 
     const bar = document.createElement("div");
+    bar.className = "fb-bar";
     bar.setAttribute("role", "group");
     bar.setAttribute("aria-label", `${name} fraction bar`);
     bar.style.cssText =
@@ -88,15 +96,19 @@ export function renderFractionBars(
 
     function render() {
       bar.innerHTML = "";
+      const anyShaded = shaded.size > 0;
+      bar.classList.toggle("fb-active", anyShaded);
       for (let i = 0; i < parts; i++) {
+        const isShaded = shaded.has(i);
         const seg = document.createElement("button");
         seg.type = "button";
+        seg.className = `fb-seg${isShaded ? " fb-shaded" : ""}`;
         seg.dataset.i = String(i);
-        seg.setAttribute("aria-pressed", shaded.has(i) ? "true" : "false");
+        seg.setAttribute("aria-pressed", isShaded ? "true" : "false");
         seg.setAttribute("aria-label", `Part ${i + 1} of ${parts}`);
         seg.style.cssText = `
           flex:1; border:none; border-right:${i < parts - 1 ? "1px solid var(--navy)" : "none"};
-          background:${shaded.has(i) ? "var(--teal)" : "white"}; cursor:pointer;`;
+          background-color:${isShaded ? "var(--teal)" : "white"}; cursor:pointer;`;
         seg.addEventListener("click", () => {
           if (shaded.has(i)) shaded.delete(i);
           else shaded.add(i);
@@ -114,8 +126,20 @@ export function renderFractionBars(
       updateReadout();
     }
 
+    let lastReadout = null;
     function updateReadout() {
-      readout.textContent = `${shaded.size}/${parts}`;
+      const key = `${shaded.size}/${parts}`;
+      readoutNum.textContent = String(shaded.size);
+      readoutSep.textContent = `/${parts}`;
+      // Re-trigger the numerator slide-in only when the value actually changes,
+      // so the readout animates on interaction but not on no-op renders.
+      if (key !== lastReadout) {
+        readoutNum.classList.remove("fb-num-in");
+        // Force reflow so removing + re-adding the class restarts the animation.
+        void readoutNum.offsetWidth;
+        readoutNum.classList.add("fb-num-in");
+        lastReadout = key;
+      }
       live.textContent = `${name}: ${shaded.size} of ${parts} parts shaded.`;
     }
 
@@ -212,4 +236,105 @@ function showFb(slot, type, msg) {
   fb.innerHTML = `<span class="feedback-icon">${type === "success" ? "✓" : "💡"}</span><span>${msg}</span>`;
   slot.innerHTML = "";
   slot.append(fb);
+}
+
+// Inject-once decorative polish. Purely additive: animates shading, segment
+// hover, parallax depth on unshaded parts, and the live readout. All motion is
+// disabled under prefers-reduced-motion; none of it changes the DOM contract,
+// interaction handlers, checking, or callbacks.
+let stylesInjected = false;
+function injectFractionBarsStyles() {
+  if (stylesInjected) return;
+  if (typeof document === "undefined") return;
+  if (document.getElementById("fb-engine-styles")) {
+    stylesInjected = true;
+    return;
+  }
+  const style = document.createElement("style");
+  style.id = "fb-engine-styles";
+  style.textContent = `
+    .fb-seg {
+      position: relative;
+      transition: transform 0.14s ease, opacity 0.18s ease, box-shadow 0.14s ease,
+        filter 0.18s ease;
+    }
+    /* Gradient sweep that fills a segment left-to-right when it becomes shaded. */
+    .fb-seg.fb-shaded {
+      background-image: linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--teal) 70%, white) 0%,
+        var(--teal) 55%,
+        color-mix(in srgb, var(--teal) 88%, var(--navy)) 100%
+      );
+      background-size: 200% 100%;
+      background-position: 0% 0;
+      animation: fb-sweep 0.42s cubic-bezier(0.16, 0.8, 0.3, 1) both;
+    }
+    @keyframes fb-sweep {
+      from { background-position: 100% 0; }
+      to   { background-position: 0% 0; }
+    }
+    /* Hover/focus: scale up slightly + highlight border. */
+    .fb-seg:hover {
+      transform: scale(1.08);
+      z-index: 2;
+      box-shadow: 0 0 0 2px var(--teal), 0 4px 10px rgba(15, 23, 42, 0.18);
+    }
+    .fb-seg:focus-visible {
+      outline: 3px solid var(--teal);
+      outline-offset: 2px;
+      transform: scale(1.08);
+      z-index: 2;
+    }
+    /* Parallax depth: when a bar has shaded parts, unshaded segments recede. */
+    .fb-bar.fb-active .fb-seg:not(.fb-shaded) {
+      opacity: 0.3;
+    }
+    .fb-bar.fb-active .fb-seg:not(.fb-shaded):hover {
+      opacity: 1;
+    }
+    /* Live readout: numerator slides in from the left on change. */
+    .fb-readout-num {
+      display: inline-block;
+    }
+    .fb-readout-num.fb-num-in {
+      animation: fb-num-slide 0.3s cubic-bezier(0.16, 0.8, 0.3, 1) both;
+    }
+    @keyframes fb-num-slide {
+      from { transform: translateX(-8px); opacity: 0; }
+      to   { transform: translateX(0); opacity: 1; }
+    }
+    /* Touch devices: taller, easier-to-tap bars and a larger readout. */
+    @media (hover: none) and (pointer: coarse) {
+      .fb-bar {
+        height: 70px !important;
+      }
+      .fb-readout {
+        font-size: 1.15rem;
+      }
+      /* Hover scale is undesirable on touch (sticky :hover); keep depth only. */
+      .fb-seg:hover {
+        transform: none;
+        box-shadow: none;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .fb-seg,
+      .fb-seg.fb-shaded,
+      .fb-readout-num.fb-num-in {
+        transition: none !important;
+        animation: none !important;
+      }
+      .fb-seg:hover,
+      .fb-seg:focus-visible {
+        transform: none;
+      }
+      /* Keep the depth cue (static), drop the gradient sweep + slide motion. */
+      .fb-seg.fb-shaded {
+        background-image: none;
+      }
+    }
+  `;
+  (document.head || document.documentElement).append(style);
+  stylesInjected = true;
 }

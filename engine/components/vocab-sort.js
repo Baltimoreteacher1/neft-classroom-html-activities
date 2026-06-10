@@ -1,5 +1,90 @@
 import { resolveVocabImage, vocabImageAlt } from "../core/vocab-images.js";
 
+// ─────────────────────────────────────────────────────────────────────────
+// Inject-once scoped polish styles. This component renders into 1000s of
+// activities, so the <style> block is added exactly once per document and is
+// purely ADDITIVE — it augments the existing .vocab-sort-item / .vocab-sort-zone
+// classes and the new vs-* hooks WITHOUT changing any layout, interaction,
+// checking, callback, or return value the JS depends on. EVERY animation /
+// transition lives behind `@media (prefers-reduced-motion: reduce)` negation —
+// i.e. it is suppressed for reduced-motion users so they get the original calm
+// experience. The responsive bucket reflow, mobile chip wrap, and keyboard
+// focus ring are layout / accessibility aids (not motion) and apply to everyone.
+const VS_STYLE_ID = "vs-polish-styles";
+function injectVocabSortStyles() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById(VS_STYLE_ID)) return;
+  const style = document.createElement("style");
+  style.id = VS_STYLE_ID;
+  style.textContent = `
+    /* Accessibility aid (not motion): visible focus ring for keyboard users so
+       tabbing through example chips and drop buckets is always legible. */
+    .vocab-sort-item:focus-visible,
+    .vocab-sort-zone:focus-visible {
+      outline: 3px solid var(--teal, #1fa6a2);
+      outline-offset: 2px;
+    }
+
+    /* Layout aid (not motion): keep example chips comfortably tappable and let
+       long example text wrap instead of overflowing the bank on small screens. */
+    .vs-bank {
+      gap: var(--sp-2, 8px);
+    }
+    .vs-bank .vocab-sort-item {
+      max-width: 100%;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      line-height: 1.3;
+    }
+
+    /* Responsive bucket grid (not motion): the JS sets an explicit
+       grid-template-columns for desktop; on narrow screens collapse to a single
+       full-width column so each bucket and its drop target stay big and
+       tappable. !important is scoped to .vs-buckets only. */
+    @media (max-width: 640px) {
+      .vs-buckets {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      /* Reduced-motion users: no celebration pop, no shake — only the instant
+         color/state changes the original component already applied. */
+      .vs-placed.vs-celebrate,
+      .vocab-sort-item.incorrect {
+        animation: none !important;
+      }
+    }
+
+    /* Success celebration micro-animation: a gentle confidence pop when an
+       example lands in the correct bucket. Guarded — suppressed above for
+       reduced-motion users. */
+    .vs-placed.vs-celebrate {
+      animation: vsPop 0.42s var(--ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+    }
+    @keyframes vsPop {
+      0%   { transform: scale(0.85); }
+      55%  { transform: scale(1.06); }
+      100% { transform: scale(1); }
+    }
+
+    /* Error feedback: a short, restrained horizontal shake on a wrong drop.
+       Guarded — suppressed above for reduced-motion users. The original
+       component already toggles the .incorrect class for the same window. */
+    .vocab-sort-item.incorrect {
+      animation: vsShake 0.4s ease-in-out;
+    }
+    @keyframes vsShake {
+      0%, 100% { transform: translateX(0); }
+      20%      { transform: translateX(-5px); }
+      40%      { transform: translateX(5px); }
+      60%      { transform: translateX(-3px); }
+      80%      { transform: translateX(3px); }
+    }
+  `;
+  (document.head || document.documentElement).append(style);
+}
+
 function vocabImageEl(term, definition, max = 96) {
   const img = document.createElement("img");
   img.src = resolveVocabImage(term);
@@ -14,6 +99,8 @@ function vocabImageEl(term, definition, max = 96) {
 }
 
 export function renderVocabSort(container, { terms, onComplete }) {
+  injectVocabSortStyles();
+
   const wrapper = document.createElement("div");
 
   const header = document.createElement("div");
@@ -50,7 +137,7 @@ export function renderVocabSort(container, { terms, onComplete }) {
   wrapper.append(bankLabel);
 
   const bank = document.createElement("div");
-  bank.className = "drag-zone";
+  bank.className = "drag-zone vs-bank";
   bank.style.cssText +=
     "margin-bottom:var(--sp-5); min-height:60px; flex-wrap:wrap;";
 
@@ -85,6 +172,7 @@ export function renderVocabSort(container, { terms, onComplete }) {
   wrapper.append(bank);
 
   const buckets = document.createElement("div");
+  buckets.className = "vs-buckets";
   const cols = terms.length <= 3 ? terms.length : 2;
   buckets.style.cssText = `
     display:grid; grid-template-columns:repeat(${cols}, 1fr);
@@ -174,10 +262,16 @@ export function renderVocabSort(container, { terms, onComplete }) {
 
     if (correct) {
       const placed = document.createElement("span");
-      placed.className = "drag-item correct";
+      placed.className = "drag-item correct vs-placed vs-celebrate";
       placed.textContent = data.text;
       placed.style.cursor = "default";
       dropZone.append(placed);
+      // Clean up the one-shot celebration hook after it plays (or immediately
+      // for reduced-motion users, where the keyframe is suppressed) so the
+      // class never lingers on re-render. Purely cosmetic; no state depends on it.
+      placed.addEventListener("animationend", () => {
+        placed.classList.remove("vs-celebrate");
+      });
 
       chipEl.classList.add("sorted");
       chipEl.style.opacity = "0.2";

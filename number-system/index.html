@@ -10,18 +10,110 @@
     <title>Number System</title>
     <link rel="stylesheet" href="/assets/shared.css" />
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+    <style>
+      /* === Bespoke hub polish (additive only) === */
+      /* Hero parallax background layer that shifts color on scroll */
+      .compact-hero {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+      }
+      .hero-parallax-layer {
+        position: absolute;
+        inset: -20% -10% -20% -10%;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            60% 80% at 18% 20%,
+            rgba(20, 184, 166, 0.18),
+            transparent 70%
+          ),
+          radial-gradient(
+            50% 70% at 85% 30%,
+            rgba(56, 189, 248, 0.16),
+            transparent 72%
+          ),
+          radial-gradient(
+            70% 90% at 50% 110%,
+            rgba(99, 102, 241, 0.14),
+            transparent 70%
+          );
+        /* Scroll-driven color shift via custom prop set in JS */
+        filter: hue-rotate(var(--hero-shift, 0deg));
+        transform: translate3d(0, var(--hero-parallax, 0px), 0);
+        will-change: transform, filter;
+      }
+
+      /* Card hover: scale + shadow lift + teal border glow */
+      .collection-grid .activity-card {
+        transition:
+          transform 0.22s ease,
+          box-shadow 0.22s ease,
+          border-color 0.22s ease;
+        will-change: transform;
+      }
+      @media (hover: hover) and (pointer: fine) {
+        .collection-grid .activity-card:hover {
+          transform: scale(1.02) translateY(-2px);
+          box-shadow:
+            0 14px 30px rgba(13, 148, 136, 0.18),
+            0 4px 10px rgba(15, 23, 42, 0.12);
+          border-color: rgba(20, 184, 166, 0.85);
+        }
+      }
+
+      /* Focus rings on card links for keyboard/tab navigation */
+      .collection-grid .activity-card:focus-visible {
+        outline: 3px solid #0d9488;
+        outline-offset: 3px;
+        border-radius: 14px;
+        box-shadow: 0 0 0 6px rgba(20, 184, 166, 0.22);
+      }
+
+      /* Staggered entrance: cards fade in from bottom */
+      @media (prefers-reduced-motion: no-preference) {
+        .collection-grid .activity-card.card-enter {
+          opacity: 0;
+          transform: translateY(22px);
+        }
+        .collection-grid .activity-card.card-enter.card-in {
+          opacity: 1;
+          transform: translateY(0);
+          transition:
+            opacity 0.5s ease,
+            transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .hero-parallax-layer {
+          transform: none !important;
+          filter: none !important;
+          transition: none !important;
+        }
+        .collection-grid .activity-card {
+          transition: border-color 0.2s ease;
+        }
+      }
+    </style>
+  </head>
   <body>
     <main class="page-shell">
       <nav class="breadcrumb" aria-label="Breadcrumb">
         <a href="/">Home</a><span>/</span><span>Number System</span>
       </nav>
-      <section class="hero compact-hero">
+      <section class="hero compact-hero" data-parallax>
+        <span
+          class="hero-parallax-layer"
+          data-parallax-layer
+          aria-hidden="true"
+        ></span>
         <p class="eyebrow">Organized collection</p>
         <h1>Number System</h1>
         <p class="hero-copy">
@@ -224,10 +316,79 @@
     <script src="/assets/app.js" defer></script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+    <script>
+      // Bespoke hub polish: staggered card entrance + hero scroll parallax.
+      // Additive only — no mechanics on this page (pure navigation hub).
+      (function () {
+        var reduce = window.matchMedia
+          ? window.matchMedia("(prefers-reduced-motion: reduce)")
+          : { matches: false };
+
+        var cards = Array.prototype.slice.call(
+          document.querySelectorAll(".collection-grid .activity-card"),
+        );
+
+        // Staggered entrance via IntersectionObserver (perf-friendly, no thrash).
+        if (
+          !reduce.matches &&
+          cards.length &&
+          "IntersectionObserver" in window
+        ) {
+          cards.forEach(function (card) {
+            card.classList.add("card-enter");
+          });
+          var io = new IntersectionObserver(
+            function (entries, obs) {
+              entries.forEach(function (entry) {
+                if (!entry.isIntersecting) return;
+                var card = entry.target;
+                var idx = cards.indexOf(card);
+                var delay = Math.min(idx, 12) * 100; // 100ms stagger, capped
+                setTimeout(function () {
+                  card.classList.add("card-in");
+                }, delay);
+                obs.unobserve(card);
+              });
+            },
+            { threshold: 0.08 },
+          );
+          cards.forEach(function (card) {
+            io.observe(card);
+          });
+        }
+
+        // Hero scroll parallax: slow translate + gentle hue shift as user scrolls.
+        var heroLayer = document.querySelector(".hero-parallax-layer");
+        if (heroLayer && !reduce.matches) {
+          var ticking = false;
+          var update = function () {
+            var y =
+              window.pageYOffset || document.documentElement.scrollTop || 0;
+            // Cap so the effect stays subtle and never breaks layout.
+            var shift = Math.min(y * 0.08, 40); // px translate
+            var hue = Math.min(y * 0.06, 36); // degrees
+            heroLayer.style.setProperty(
+              "--hero-parallax",
+              shift.toFixed(1) + "px",
+            );
+            heroLayer.style.setProperty("--hero-shift", hue.toFixed(1) + "deg");
+            ticking = false;
+          };
+          var onScroll = function () {
+            if (!ticking) {
+              window.requestAnimationFrame(update);
+              ticking = true;
+            }
+          };
+          window.addEventListener("scroll", onScroll, { passive: true });
+          update();
+        }
+      })();
+    </script>
+  </body>
 </html>

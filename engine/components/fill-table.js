@@ -1,4 +1,103 @@
+const FT_STYLE_ID = "ft-engine-styles";
+
+// Inject the component's scoped polish styles exactly once per document.
+// All motion is additive and gated behind prefers-reduced-motion: reduce.
+// Uses existing design-system CSS vars so it inherits theme/dark-mode.
+function injectFillTableStyles() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById(FT_STYLE_ID)) return;
+
+  const style = document.createElement("style");
+  style.id = FT_STYLE_ID;
+  style.textContent = `
+    /* ---- Fill-table polish (scoped to .ft-root) ---- */
+    .ft-root .ft-table { border-collapse: collapse; }
+
+    /* Striped rows for readability */
+    .ft-root .ft-table tbody tr:nth-child(even) td {
+      background: color-mix(in srgb, var(--line) 28%, transparent);
+    }
+
+    /* Editable input: base look + focus glow + animated underline */
+    .ft-root .ft-input {
+      position: relative;
+      outline: none;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background-image: linear-gradient(var(--teal), var(--teal));
+      background-repeat: no-repeat;
+      background-position: 0 100%;
+      background-size: 0% 2px;
+    }
+    .ft-root .ft-input:hover:not([readonly]) {
+      border-color: color-mix(in srgb, var(--teal) 55%, var(--line));
+    }
+    .ft-root .ft-input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 22%, transparent);
+      background-size: 100% 2px;
+    }
+
+    /* Parallax row lift on hover: row shifts up, shadow grows */
+    .ft-root .ft-table tbody tr {
+      position: relative;
+    }
+    .ft-root .ft-table tbody tr:hover td {
+      background: color-mix(in srgb, var(--teal) 8%, transparent);
+    }
+
+    /* Correct cell scale-up confirmation: 1 -> 1.05 -> 1 */
+    .ft-root .ft-cell-correct {
+      animation: ft-confirm-pop 0.42s ease;
+    }
+    @keyframes ft-confirm-pop {
+      0% { transform: scale(1); }
+      55% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    /* Mobile: responsive font size + larger touch padding */
+    @media (max-width: 560px) {
+      .ft-root .ft-table { font-size: 0.95rem; }
+      .ft-root .ft-input { padding: 10px 12px; font-size: 1rem; }
+    }
+    @media (hover: none) and (pointer: coarse) {
+      .ft-root .ft-input { padding: 11px 13px; }
+    }
+
+    /* Motion + transitions ONLY when the user has not asked to reduce them */
+    @media (prefers-reduced-motion: no-preference) {
+      .ft-root .ft-input {
+        transition:
+          border-color 0.18s ease,
+          box-shadow 0.18s ease,
+          background-size 0.25s ease;
+      }
+      .ft-root .ft-table tbody tr {
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+      .ft-root .ft-table tbody tr:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+        z-index: 1;
+      }
+      .ft-root .ft-table tbody tr td {
+        transition: background 0.2s ease;
+      }
+    }
+
+    /* Under reduced motion: disable the pop animation entirely */
+    @media (prefers-reduced-motion: reduce) {
+      .ft-root .ft-cell-correct { animation: none; }
+    }
+  `;
+  document.head.append(style);
+}
+
 export function renderFillTable(container, config) {
+  injectFillTableStyles();
   // Normalize non-standard authoring shapes into the standard
   // { headers, rows (array of arrays), editableCells:[{row,col,answer}] }
   // shape this component renders. Some lesson configs author fill-tables as
@@ -9,7 +108,7 @@ export function renderFillTable(container, config) {
     normalizeFillTable(config);
 
   const wrapper = document.createElement("div");
-  wrapper.className = "card";
+  wrapper.className = "card ft-root";
 
   // Safety fallback: if we could not build a usable table, never render blank.
   // Show the instructions and any raw items/rows in a readable list so the
@@ -22,7 +121,7 @@ export function renderFillTable(container, config) {
   }
 
   const table = document.createElement("table");
-  table.className = "vocab-table";
+  table.className = "vocab-table ft-table";
   table.style.cssText = "width:100%;";
 
   const thead = document.createElement("thead");
@@ -48,7 +147,7 @@ export function renderFillTable(container, config) {
       if (editable) {
         const input = document.createElement("input");
         input.type = "text";
-        input.className = "text-input";
+        input.className = "text-input ft-input";
         input.style.cssText =
           "padding:6px 8px; font-size:0.9rem; width:100%; min-width:60px;";
         input.placeholder = "?";
@@ -98,6 +197,12 @@ export function renderFillTable(container, config) {
       if (isMatch) {
         correct++;
         input.readOnly = true;
+        // Confirmation pop (1 -> 1.05 -> 1); CSS gates it under reduced motion.
+        // Retrigger reliably by clearing then re-adding the animation class.
+        input.classList.remove("ft-cell-correct");
+        // Force reflow so the animation restarts even on repeated checks.
+        void input.offsetWidth;
+        input.classList.add("ft-cell-correct");
       }
     });
 

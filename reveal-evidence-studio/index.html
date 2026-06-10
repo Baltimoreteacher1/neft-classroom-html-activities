@@ -423,17 +423,181 @@
           border: 1px solid #777;
         }
       }
+
+      /* ===== Bespoke visual polish (additive; motion gated) ===== */
+      /* Hero parallax stage: a soft drifting backdrop behind the title. */
+      .topbar {
+        position: relative;
+        isolation: isolate;
+      }
+
+      .topbar-deco {
+        position: absolute;
+        inset: -24px -12px;
+        z-index: -1;
+        overflow: hidden;
+        border-radius: 14px;
+        pointer-events: none;
+      }
+
+      .topbar-deco::before,
+      .topbar-deco::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(2px);
+        opacity: 0.5;
+        will-change: transform;
+      }
+
+      .topbar-deco::before {
+        width: 220px;
+        height: 220px;
+        top: -90px;
+        left: 8%;
+        background: radial-gradient(
+          circle at 35% 35%,
+          rgba(36, 94, 168, 0.22),
+          rgba(36, 94, 168, 0) 70%
+        );
+      }
+
+      .topbar-deco::after {
+        width: 260px;
+        height: 260px;
+        top: -70px;
+        right: 4%;
+        background: radial-gradient(
+          circle at 60% 40%,
+          rgba(25, 118, 92, 0.18),
+          rgba(25, 118, 92, 0) 70%
+        );
+      }
+
+      /* SVG model entrance: fade + scale when a new model renders. */
+      .svg-frame.model-enter svg {
+        animation: studio-model-in 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+
+      @keyframes studio-model-in {
+        from {
+          opacity: 0;
+          transform: scale(0.8);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      /* Form field focus: gentle background pulse + smooth label scale. */
+      .field-card,
+      .selector .lesson-card,
+      .field-card label,
+      .selector label {
+        transition:
+          background-color 220ms ease,
+          box-shadow 220ms ease,
+          transform 200ms ease;
+      }
+
+      .field-card.is-focused {
+        background: #f3f9ff;
+        box-shadow: 0 0 0 2px rgba(36, 94, 168, 0.18);
+      }
+
+      .field-card.is-focused > label {
+        transform: scale(1.04);
+        transform-origin: left center;
+        color: var(--studio-blue);
+      }
+
+      /* Typing indicator: a soft pulsing dot beside an active CER label. */
+      .typing-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        margin-left: 8px;
+        border-radius: 50%;
+        background: var(--studio-green);
+        vertical-align: middle;
+        opacity: 0;
+        transform: scale(0.6);
+        transition:
+          opacity 160ms ease,
+          transform 160ms ease;
+      }
+
+      .field-card.is-typing .typing-dot {
+        opacity: 1;
+        transform: scale(1);
+        animation: studio-typing 1.05s ease-in-out infinite;
+      }
+
+      @keyframes studio-typing {
+        0%,
+        100% {
+          opacity: 0.45;
+          transform: scale(0.7);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.08);
+        }
+      }
+
+      /* Final submit glow: a one-shot success ring on the status row. */
+      .status.submit-glow {
+        animation: studio-submit-glow 1.4s ease-out 1;
+        border-radius: 8px;
+      }
+
+      @keyframes studio-submit-glow {
+        0% {
+          box-shadow: 0 0 0 0 rgba(25, 118, 92, 0);
+        }
+        25% {
+          box-shadow: 0 0 0 6px rgba(25, 118, 92, 0.22);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(25, 118, 92, 0);
+        }
+      }
+
+      /* Sidebar parallax drift hook (driven by JS scroll, transform only). */
+      .selector {
+        will-change: transform;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .svg-frame.model-enter svg,
+        .field-card.is-typing .typing-dot,
+        .status.submit-glow,
+        .field-card,
+        .field-card label {
+          animation: none !important;
+          transition: none !important;
+        }
+        .topbar-deco {
+          display: none;
+        }
+      }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
     <main class="studio-shell">
-      <header class="topbar">
+      <header class="topbar" data-parallax>
+        <span
+          class="topbar-deco deco"
+          data-parallax-layer
+          aria-hidden="true"
+        ></span>
         <div>
           <p class="eyebrow">Reveal Math Student Tool</p>
           <h1>Evidence Studio</h1>
@@ -579,7 +743,9 @@
             </section>
 
             <section class="field-card">
-              <label for="claim">Claim</label>
+              <label for="claim"
+                >Claim<span class="typing-dot" aria-hidden="true"></span
+              ></label>
               <p>What mathematical idea can you state from this lesson?</p>
               <textarea
                 id="claim"
@@ -589,7 +755,9 @@
             </section>
 
             <section class="field-card">
-              <label for="evidence">Evidence</label>
+              <label for="evidence"
+                >Evidence<span class="typing-dot" aria-hidden="true"></span
+              ></label>
               <p>What numbers, labels, model parts, or patterns support it?</p>
               <textarea
                 id="evidence"
@@ -599,7 +767,9 @@
             </section>
 
             <section class="field-card">
-              <label for="reasoning">Reasoning</label>
+              <label for="reasoning"
+                >Reasoning<span class="typing-dot" aria-hidden="true"></span
+              ></label>
               <p>Explain how the evidence proves or supports your claim.</p>
               <textarea
                 id="reasoning"
@@ -707,6 +877,24 @@
             console.error("Evidence Studio Self-Test Error: ", e.message);
             return false;
           }
+        }
+
+        // Motion gate: respect the OS "reduce motion" preference at runtime.
+        var reduceMotionMQ =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)");
+        function prefersReducedMotion() {
+          return !!(reduceMotionMQ && reduceMotionMQ.matches);
+        }
+
+        // Re-trigger the SVG entrance animation after a model swaps in.
+        function playModelEntrance() {
+          var frame = els.modelFrame;
+          if (!frame || prefersReducedMotion()) return;
+          frame.classList.remove("model-enter");
+          // Force reflow so the animation restarts on identical class re-add.
+          void frame.offsetWidth;
+          frame.classList.add("model-enter");
         }
 
         var STORAGE_PREFIX = "revealEvidenceStudio:";
@@ -1166,6 +1354,7 @@
 
           els.modelKind.textContent = translateText(info.label, lang);
           els.modelFrame.innerHTML = renderSvg(info.kind);
+          playModelEntrance();
 
           els.modelPrompts.innerHTML = info.prompts
             .map(function (prompt) {
@@ -1362,6 +1551,20 @@
           }
           els.modelControls.innerHTML = html;
 
+          // Coalesce SVG redraws to one per animation frame so fast slider
+          // drags never thrash layout (smooth on a Chromebook). Labels still
+          // update synchronously, so the live number tracks the thumb exactly.
+          var svgRafPending = false;
+          function scheduleSvgUpdate() {
+            if (svgRafPending) return;
+            svgRafPending = true;
+            window.requestAnimationFrame(function () {
+              svgRafPending = false;
+              var info = modelInfo(state.cluster, state.lesson);
+              els.modelFrame.innerHTML = renderSvg(info.kind);
+            });
+          }
+
           [
             "ctrl-val1",
             "ctrl-val2",
@@ -1386,8 +1589,7 @@
                         ? "°"
                         : "");
 
-                var info = modelInfo(state.cluster, state.lesson);
-                els.modelFrame.innerHTML = renderSvg(info.kind);
+                scheduleSvgUpdate();
               });
             }
           });
@@ -1949,9 +2151,8 @@
             ".box-content { font-size: 11pt; color: #23364d; white-space: pre-wrap; }" +
             ".big-idea-box { background-color: #f0fdfa; border: 1px solid #ccfbf1; padding: 12px; border-radius: 6px; color: #115e59; font-size: 10.5pt; margin-bottom: 15px; }" +
             ".footer { text-align: center; font-size: 9pt; color: #5c6878; margin-top: 40pt; border-top: 1px solid #d8e1ec; padding-top: 12px; }" +
-            "
-@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
-</style>" +
+            "@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}" +
+            "</style>" +
             "</head>" +
             "<body>" +
             '<div class="eyebrow">Reveal Math Grade 6 • Student Lesson Blueprint</div>' +
@@ -2026,13 +2227,7 @@
             '<div class="footer">' +
             "<p>Generated dynamically by Neft Teacher Reveal Math Evidence Studio. All student progress processed completely offline in compliance with student data privacy standards.</p>" +
             "</div>" +
-            "  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>" +
+            "</body>" +
             "</html>";
 
           var blob = new Blob(["\ufeff" + docHtml], {
@@ -2065,6 +2260,79 @@
           }
         }
 
+        // Sidebar parallax: the lesson picker drifts slightly as the page
+        // scrolls while main content stays put. Transform-only, rAF-coalesced.
+        function setupSidebarParallax() {
+          var sidebar = document.querySelector(".selector");
+          if (!sidebar) return;
+          var ticking = false;
+          function update() {
+            ticking = false;
+            if (prefersReducedMotion()) {
+              sidebar.style.transform = "";
+              return;
+            }
+            // Cap the drift so the sticky panel never leaves its column.
+            var drift = Math.max(-14, Math.min(14, window.scrollY * 0.035));
+            sidebar.style.transform = "translate3d(0, " + drift + "px, 0)";
+          }
+          window.addEventListener(
+            "scroll",
+            function () {
+              if (ticking) return;
+              ticking = true;
+              window.requestAnimationFrame(update);
+            },
+            { passive: true },
+          );
+          update();
+        }
+
+        // Form polish: focus pulse + label scale, plus a typing indicator on
+        // the three CER fields and a one-shot success glow on final submit.
+        var typingTimers = {};
+        function setupFormPolish() {
+          var fields = [els.claim, els.evidence, els.reasoning, els.reflection];
+          fields.forEach(function (field) {
+            if (!field) return;
+            var card = field.closest(".field-card");
+            if (!card) return;
+            field.addEventListener("focus", function () {
+              card.classList.add("is-focused");
+            });
+            field.addEventListener("blur", function () {
+              card.classList.remove("is-focused");
+            });
+          });
+
+          // Typing indicator on Claim / Evidence / Reasoning.
+          [els.claim, els.evidence, els.reasoning].forEach(function (field) {
+            if (!field) return;
+            var card = field.closest(".field-card");
+            if (!card || !card.querySelector(".typing-dot")) return;
+            var key = field.id;
+            field.addEventListener("input", function () {
+              card.classList.add("is-typing");
+              window.clearTimeout(typingTimers[key]);
+              typingTimers[key] = window.setTimeout(function () {
+                card.classList.remove("is-typing");
+              }, 900);
+            });
+          });
+        }
+
+        function flashSubmitGlow() {
+          var status = els.status;
+          if (!status || prefersReducedMotion()) return;
+          status.classList.remove("submit-glow");
+          void status.offsetWidth;
+          status.classList.add("submit-glow");
+          window.clearTimeout(flashSubmitGlow.timer);
+          flashSubmitGlow.timer = window.setTimeout(function () {
+            status.classList.remove("submit-glow");
+          }, 1500);
+        }
+
         function init() {
           state.lessons = asArray(window.REVEAL_MATH_LESSONS);
           state.units = asArray(window.REVEAL_MATH_UNITS);
@@ -2084,8 +2352,12 @@
           });
           els.saveDraft.addEventListener("click", function () {
             saveDraft(true);
+            flashSubmitGlow();
           });
-          els.downloadDocx.addEventListener("click", downloadWordBlueprint);
+          els.downloadDocx.addEventListener("click", function () {
+            downloadWordBlueprint();
+            flashSubmitGlow();
+          });
           els.copyCard.addEventListener("click", copyCard);
           els.printCard.addEventListener("click", function () {
             saveDraft(false);
@@ -2095,11 +2367,20 @@
           els.form.addEventListener("input", function () {
             saveDraft(false);
           });
+
+          setupSidebarParallax();
+          setupFormPolish();
         }
 
         init();
       })();
     </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
     <script src="/assets/nt-page-enhance.js" defer></script>
   </body>
 </html>

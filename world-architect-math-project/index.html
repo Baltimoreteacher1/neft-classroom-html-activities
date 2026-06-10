@@ -1,30 +1,170 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="refresh" content="0; url=/unit-5/world-architect-project/">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      http-equiv="refresh"
+      content="2; url=/unit-5/world-architect-project/"
+    />
     <title>World Architect Geometry Challenge</title>
-    <link rel="stylesheet" href="/assets/shared.css">
-    <script>
-      window.location.replace("/unit-5/world-architect-project/");
-    </script>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      /* Bespoke launcher polish — blueprint-themed fade-in transition + procedural
+         architect background. All motion gated under prefers-reduced-motion. The
+         <meta http-equiv="refresh"> above is the no-JS / reduced-motion fallback
+         (redirect destination unchanged). Additive visuals only. */
+      .wa-launch {
+        opacity: 0;
+        transition: opacity 1.2s ease;
+      }
+      .wa-launch.wa-in {
+        opacity: 1;
+      }
+      .wa-launch.wa-out {
+        opacity: 0;
+      }
+
+      /* Procedural blueprint backdrop (parallax layer lives inside this). */
+      .wa-blueprint {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+        background: radial-gradient(
+          circle at 50% 30%,
+          rgba(59, 125, 216, 0.1),
+          transparent 70%
+        );
+      }
+      .wa-blueprint .wa-bp-layer {
+        position: absolute;
+        inset: -8%;
+        transition: transform 0.18s ease-out;
+        will-change: transform;
+      }
+      /* Drafting grid — fine + bold lines, like graph paper for an architect. */
+      .wa-blueprint .wa-grid {
+        position: absolute;
+        inset: 0;
+        opacity: 0.5;
+        background-image:
+          linear-gradient(rgba(59, 125, 216, 0.1) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59, 125, 216, 0.1) 1px, transparent 1px),
+          linear-gradient(rgba(59, 125, 216, 0.18) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59, 125, 216, 0.18) 1px, transparent 1px);
+        background-size:
+          26px 26px,
+          26px 26px,
+          130px 130px,
+          130px 130px;
+      }
+      /* Floating wireframe geometric solids — cube, pyramid, cylinder outlines. */
+      .wa-blueprint .wa-solid {
+        position: absolute;
+        border: 2px solid rgba(26, 161, 121, 0.3);
+        background: rgba(26, 161, 121, 0.04);
+      }
+      .wa-blueprint .wa-cube {
+        width: 92px;
+        height: 92px;
+        top: 18%;
+        left: 12%;
+        border-color: rgba(59, 125, 216, 0.32);
+        box-shadow: 14px -14px 0 -2px rgba(59, 125, 216, 0.16);
+      }
+      .wa-blueprint .wa-pyramid {
+        width: 0;
+        height: 0;
+        top: 62%;
+        left: 78%;
+        border-left: 52px solid transparent;
+        border-right: 52px solid transparent;
+        border-bottom: 92px solid rgba(240, 164, 0, 0.16);
+        background: transparent;
+      }
+      .wa-blueprint .wa-cyl {
+        width: 78px;
+        height: 110px;
+        top: 66%;
+        left: 16%;
+        border-radius: 50% / 22px;
+        border-color: rgba(155, 93, 229, 0.3);
+      }
+      .wa-blueprint .wa-disc {
+        width: 70px;
+        height: 70px;
+        top: 14%;
+        left: 80%;
+        border-radius: 50%;
+        border-color: rgba(224, 84, 47, 0.28);
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .wa-blueprint .wa-solid {
+          animation: wa-float 9s ease-in-out infinite;
+        }
+        .wa-blueprint .wa-pyramid {
+          animation-duration: 11s;
+        }
+        .wa-blueprint .wa-cyl {
+          animation-duration: 13s;
+        }
+        .wa-blueprint .wa-disc {
+          animation-duration: 10s;
+        }
+        @keyframes wa-float {
+          0%,
+          100% {
+            transform: translateY(0) rotate(0deg);
+          }
+          50% {
+            transform: translateY(-14px) rotate(3deg);
+          }
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .wa-launch {
+          opacity: 1 !important;
+          transition: none;
+        }
+      }
+      /* Keep content above the backdrop. */
+      .page-shell {
+        position: relative;
+        z-index: 1;
+      }
+    </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
-    <div class="page-shell">
+    <div class="wa-blueprint" data-parallax aria-hidden="true">
+      <div class="wa-bp-layer" data-parallax-layer>
+        <div class="wa-grid"></div>
+        <div class="wa-solid wa-cube"></div>
+        <div class="wa-solid wa-pyramid"></div>
+        <div class="wa-solid wa-cyl"></div>
+        <div class="wa-solid wa-disc"></div>
+      </div>
+    </div>
+    <div class="page-shell wa-launch">
       <main class="placeholder-main">
         <section class="placeholder-panel" aria-labelledby="page-title">
           <span class="status-pill">Game launcher</span>
           <h1 id="page-title">World Architect Geometry Challenge</h1>
-          <p>Opening the full geometry challenge with model cards, formulas, calculations, and a classroom-ready report.</p>
+          <p>
+            Opening the full geometry challenge with model cards, formulas,
+            calculations, and a classroom-ready report.
+          </p>
           <div class="button-row">
-            <a class="button-link" href="/unit-5/world-architect-project/">Open the game</a>
+            <a class="button-link" href="/unit-5/world-architect-project/"
+              >Open the game</a
+            >
             <a class="button-link" href="/">Back to homepage</a>
           </div>
         </section>
@@ -33,13 +173,48 @@
         <span>&copy; <span data-current-year></span> Mr. Neft</span>
       </footer>
     </div>
+    <script>
+      /* Polished launcher redirect. Destination unchanged:
+         /unit-5/world-architect-project/. A 1.2s fade-in shows the blueprint
+         placeholder, then we navigate. Reduced-motion users skip the delay; the
+         <meta http-equiv="refresh"> is the no-JS fallback either way. */
+      (function () {
+        "use strict";
+        var DEST = "/unit-5/world-architect-project/";
+        try {
+          var shell = document.querySelector(".wa-launch");
+          var reduce =
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          if (reduce) {
+            window.location.replace(DEST);
+            return;
+          }
+          // Fade the placeholder in over 1.2s, hold briefly, then redirect.
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              if (shell) shell.classList.add("wa-in");
+            });
+          });
+          window.setTimeout(function () {
+            if (shell) shell.classList.add("wa-out");
+            window.setTimeout(function () {
+              window.location.replace(DEST);
+            }, 280);
+          }, 1500);
+        } catch (e) {
+          // Any failure: fall straight through to the destination.
+          window.location.replace(DEST);
+        }
+      })();
+    </script>
     <script src="/assets/app.js" defer></script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

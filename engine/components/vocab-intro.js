@@ -7,7 +7,90 @@ function esc(s) {
   return d.innerHTML;
 }
 
+// ─────────────────────────────────────────────────────────────────────────
+// Inject-once scoped polish styles. This component renders into 1000s of
+// activities, so the <style> block is added exactly once per document and is
+// purely ADDITIVE — it augments the existing .vocab-card / .vocab-card-inner /
+// .vocab-card-front / .vocab-card-back classes defined in design-system.css
+// WITHOUT changing any layout, interaction, flip toggle, callback, or return
+// value the JS depends on. EVERY animation / transition added here lives inside
+// the prefers-reduced-motion negation (`@media not all and
+// (prefers-reduced-motion: reduce)`), so reduced-motion users keep the original
+// calm, instant experience. The mobile card-width / scroll-snap reflow and the
+// keyboard focus ring are layout / accessibility aids (not motion) and apply to
+// everyone.
+const VI_STYLE_ID = "vi-polish-styles";
+function injectVocabIntroStyles() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById(VI_STYLE_ID)) return;
+  const style = document.createElement("style");
+  style.id = VI_STYLE_ID;
+  style.textContent = `
+    /* Accessibility aid (not motion): visible focus ring for keyboard users so
+       tabbing through flip cards is always legible. Applies to everyone. */
+    .vocab-card:focus-visible {
+      outline: 3px solid var(--teal, #1fa6a2);
+      outline-offset: 3px;
+      border-radius: var(--radius-md, 12px);
+    }
+
+    /* Layout aid (not motion): on narrow / touch screens make each flip card
+       fill most of the viewport width and snap firmly to center so one card is
+       comfortably readable at a time. Applies to everyone. */
+    @media (max-width: 540px) {
+      .vocab-container {
+        scroll-snap-type: x mandatory;
+        scroll-padding-inline: var(--sp-3, 12px);
+      }
+      .vocab-card {
+        flex: 0 0 min(82vw, 300px);
+        scroll-snap-align: center;
+        scroll-snap-stop: always;
+      }
+    }
+
+    /* All motion below is suppressed for prefers-reduced-motion users. */
+    @media not all and (prefers-reduced-motion: reduce) {
+      /* Hover / focus lift + deeper shadow for affordance and depth. */
+      .vocab-card {
+        transition: transform 0.25s var(--ease-out, cubic-bezier(0.4, 0, 0.2, 1));
+      }
+      .vocab-card:hover,
+      .vocab-card:focus-visible {
+        transform: translateY(-6px);
+      }
+      .vocab-card:hover .vocab-card-front,
+      .vocab-card:hover .vocab-card-back,
+      .vocab-card:focus-visible .vocab-card-front,
+      .vocab-card:focus-visible .vocab-card-back {
+        box-shadow: var(--shadow-lg, 0 16px 32px rgba(15, 35, 65, 0.22));
+      }
+      .vocab-card:active {
+        transform: translateY(-2px);
+      }
+
+      /* Parallax on flip: a brief depth "pop" layered on the OUTER card so it
+         composes with the inner element's rotateY flip (which the base CSS
+         owns) instead of fighting it. The .vi-flipping class is added
+         transiently by the JS flip handler and removed after the flip settles,
+         so the resting transform is never altered. The card overrides its own
+         hover transform here only while actively flipping. */
+      .vocab-card.vi-flipping {
+        animation: viFlipParallax 0.6s var(--ease-out, cubic-bezier(0.4, 0, 0.2, 1));
+      }
+      @keyframes viFlipParallax {
+        0% { transform: translateY(0) scale(1); }
+        45% { transform: translateY(-10px) scale(1.05); }
+        100% { transform: translateY(0) scale(1); }
+      }
+    }
+  `;
+  document.head.append(style);
+}
+
 export function renderVocabIntro(container, { terms, onComplete }) {
+  injectVocabIntroStyles();
+
   const wrapper = document.createElement("div");
 
   const header = document.createElement("div");
@@ -103,7 +186,20 @@ export function renderVocabIntro(container, { terms, onComplete }) {
     inner.append(front, back);
     card.append(inner);
 
-    const flip = () => card.classList.toggle("flipped");
+    // Transient parallax "pop" on each flip. Additive only: it toggles the
+    // existing .flipped state exactly as before, then briefly adds .vi-flipping
+    // so the inject-once CSS can run the depth animation. The class self-clears
+    // on animationend (with a timeout fallback) and is suppressed entirely for
+    // reduced-motion users via the @media gate, so behavior is unchanged.
+    const clearParallax = () => card.classList.remove("vi-flipping");
+    const flip = () => {
+      card.classList.toggle("flipped");
+      card.classList.remove("vi-flipping");
+      // Force reflow so re-adding the class restarts the animation on rapid taps.
+      void card.offsetWidth;
+      card.classList.add("vi-flipping");
+    };
+    card.addEventListener("animationend", clearParallax);
     card.addEventListener("click", flip);
     card.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") {

@@ -1,4 +1,70 @@
+// ─────────────────────────────────────────────────────────────────────────
+// Inject-once scoped polish styles. Rendered into 1000s of activities, so the
+// <style> block is added exactly once per document and is purely ADDITIVE —
+// it augments the existing .drag-item / .drag-zone classes without changing
+// any layout the JS depends on. EVERY animation/transition/visual effect below
+// lives inside `@media (prefers-reduced-motion: no-preference)`, so users who
+// ask for reduced motion get the original, calm experience with no spring,
+// parallax, glow, or rotation. Mobile single-column reflow (a layout aid, not
+// motion) is the only rule outside that guard.
+const DRAG_SORT_STYLE_ID = "ds-polish-styles";
+function injectDragSortStyles() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById(DRAG_SORT_STYLE_ID)) return;
+  const style = document.createElement("style");
+  style.id = DRAG_SORT_STYLE_ID;
+  style.textContent = `
+    /* Layout aid (not motion): on narrow screens collapse the category grid to
+       a single full-width column so items and drop zones stay big and tappable. */
+    @media (max-width: 560px) {
+      .ds-cat-grid { grid-template-columns: 1fr !important; }
+      .ds-cat-grid .drag-zone { min-height: 84px; }
+      .drag-item { font-size: 1.05rem; padding: 10px 18px; }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      /* Spring bounce when an item lands in a zone. */
+      .drag-item.ds-landed {
+        animation: dsSpringIn 0.42s var(--ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+      }
+      @keyframes dsSpringIn {
+        0%   { transform: scale(0.86); }
+        55%  { transform: scale(1.07); }
+        100% { transform: scale(1); }
+      }
+
+      /* Parallax lift on the hovered category column while a drag is active. */
+      .ds-cat-grid.ds-dragging .ds-col {
+        transition: transform 0.22s ease-out, box-shadow 0.22s ease-out;
+      }
+      .ds-cat-grid.ds-dragging .ds-col.ds-parallax {
+        transform: translateY(-6px);
+      }
+      .ds-cat-grid.ds-dragging .ds-col.ds-parallax .drag-zone {
+        box-shadow: 0 14px 30px rgba(18, 53, 91, 0.14);
+        border-color: var(--teal, #1fa6a2);
+      }
+
+      /* Touch drag clone: glow, rotate, and deepened shadow for tactile feel. */
+      .drag-item.ds-touch-ghost {
+        transition: box-shadow 0.18s ease-out;
+        animation: dsTouchFloat 1.6s ease-in-out infinite;
+        box-shadow:
+          0 12px 30px rgba(18, 53, 91, 0.28),
+          0 0 0 3px var(--teal-light, #dff2ee),
+          0 0 18px rgba(31, 166, 162, 0.45);
+      }
+      @keyframes dsTouchFloat {
+        0%, 100% { transform: scale(1.08) rotate(-2.5deg); }
+        50%      { transform: scale(1.1) rotate(2.5deg); }
+      }
+    }
+  `;
+  (document.head || document.documentElement).append(style);
+}
+
 export function renderDragSort(container, config) {
+  injectDragSortStyles();
   const { items, categories, onComplete } = config;
   // Some lessons author drag-sort WITHOUT a top-level `items` array, nesting the
   // content inside `categories[].items` instead. Left unhandled, `[...items]`
@@ -59,10 +125,13 @@ function renderDragOrder(container, { steps, label, onComplete }) {
   const feedbackSlot = document.createElement("div");
   feedbackSlot.className = "mt-4";
 
+  // Index that just moved, so draw() can spring-animate the landing row.
+  let justMoved = -1;
   function move(i, dir) {
     const j = i + dir;
     if (j < 0 || j >= order.length) return;
     [order[i], order[j]] = [order[j], order[i]];
+    justMoved = j;
     draw();
   }
 
@@ -99,8 +168,10 @@ function renderDragOrder(container, { steps, label, onComplete }) {
       down.addEventListener("click", () => move(i, 1));
       controls.append(up, down);
       row.append(num, txt, controls);
+      if (i === justMoved) row.classList.add("ds-landed");
       list.append(row);
     });
+    justMoved = -1;
   }
   draw();
 
@@ -155,11 +226,13 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
   wrapper.append(bank);
 
   const catGrid = document.createElement("div");
+  catGrid.className = "ds-cat-grid";
   catGrid.style.cssText = `display:grid; grid-template-columns:repeat(${Math.min(categories.length, 3)}, 1fr); gap:var(--sp-4);`;
 
   const zones = [];
   categories.forEach((cat) => {
     const col = document.createElement("div");
+    col.className = "ds-col";
 
     const label = document.createElement("div");
     label.className = "badge badge-teal mb-4";
@@ -179,7 +252,27 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
   wrapper.append(catGrid);
 
   const allZones = [bank, ...zones.map((z) => z.zone)];
-  setupDragDrop(allZones);
+  setupDragDrop(allZones, { catGrid });
+
+  // Parallax: lift the hovered category column while a desktop drag is in
+  // flight. Purely visual and CSS-gated by prefers-reduced-motion. The
+  // `ds-dragging` flag on the grid scopes the effect to active drags only.
+  wrapper.addEventListener("dragstart", () =>
+    catGrid.classList.add("ds-dragging"),
+  );
+  wrapper.addEventListener("dragend", () => {
+    catGrid.classList.remove("ds-dragging");
+    catGrid
+      .querySelectorAll(".ds-col.ds-parallax")
+      .forEach((c) => c.classList.remove("ds-parallax"));
+  });
+  catGrid.querySelectorAll(".ds-col").forEach((col) => {
+    col.addEventListener("dragenter", () => col.classList.add("ds-parallax"));
+    col.addEventListener("dragleave", (e) => {
+      if (!col.contains(e.relatedTarget)) col.classList.remove("ds-parallax");
+    });
+    col.addEventListener("drop", () => col.classList.remove("ds-parallax"));
+  });
 
   const feedbackSlot = document.createElement("div");
   feedbackSlot.className = "mt-4";
@@ -261,9 +354,13 @@ function createDragItem(item) {
     (e) => {
       originZone = el.parentElement;
       touchClone = el.cloneNode(true);
+      // ds-touch-ghost adds the (reduced-motion-gated) glow, rotate, and deep
+      // shadow. The base inline styles keep it functional even when motion is
+      // reduced (the animation/transform simply does not apply).
+      touchClone.classList.add("ds-touch-ghost");
       touchClone.style.cssText = `
-      position:fixed; z-index:1000; pointer-events:none; opacity:0.85;
-      transform:scale(1.08); box-shadow:0 8px 24px rgba(0,0,0,0.2);
+      position:fixed; z-index:1000; pointer-events:none; opacity:0.9;
+      box-shadow:0 8px 24px rgba(18,53,91,0.2);
     `;
       document.body.append(touchClone);
       moveTouchClone(e);
@@ -296,6 +393,7 @@ function createDragItem(item) {
     const target = getDropZoneUnderTouch(e) || originZone;
     if (target && target !== el.parentElement) {
       target.append(el);
+      springBounce(el);
     }
     originZone = null;
   });
@@ -328,7 +426,24 @@ function getDropZoneUnderTouch(e) {
   return elements.find((el) => el.classList.contains("drag-zone")) || null;
 }
 
-function setupDragDrop(zones) {
+// Apply the ease-out spring bounce to an item that just landed. CSS-gated by
+// prefers-reduced-motion, so it is a no-op visual when motion is reduced. The
+// class is removed after the animation so a future drop can replay it.
+function springBounce(el) {
+  if (!el) return;
+  el.classList.remove("ds-landed");
+  // Force reflow so re-adding the class restarts the animation.
+  void el.offsetWidth;
+  el.classList.add("ds-landed");
+  el.addEventListener("animationend", () => el.classList.remove("ds-landed"), {
+    once: true,
+  });
+}
+
+// The optional second argument is accepted for forward-compatible call sites
+// (e.g. parallax context); the bank's setup omits it. It does not alter
+// drop/checking behavior.
+function setupDragDrop(zones, _ctx) {
   zones.forEach((zone) => {
     zone.addEventListener("dragover", (e) => {
       e.preventDefault();
@@ -349,6 +464,7 @@ function setupDragDrop(zones) {
       if (dragEl) {
         dragEl.classList.remove("correct", "incorrect");
         zone.append(dragEl);
+        springBounce(dragEl);
         zone.classList.add("drop-snap");
         zone.addEventListener(
           "animationend",

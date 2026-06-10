@@ -28,6 +28,88 @@ const escHtml = (s) =>
       })[c],
   );
 
+// ── Inject-once scoped polish ─────────────────────────────────────────
+// Additive, classroom-appropriate motion + focus styling for the chooser.
+// Uses only existing design tokens. EVERY animation/transition is disabled
+// under prefers-reduced-motion (the reduce block at the bottom is the gate).
+// Injected once per document; idempotent and side-effect free on behavior.
+const CHOOSER_STYLE_ID = "ac-chooser-polish";
+function ensureChooserStyles() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById(CHOOSER_STYLE_ID)) return;
+  const style = document.createElement("style");
+  style.id = CHOOSER_STYLE_ID;
+  style.textContent = `
+    /* Staggered entry with subtle parallax depth */
+    @keyframes acTileIn {
+      from { opacity: 0; transform: translateY(14px) scale(0.985); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes acViewIn {
+      from { opacity: 0; transform: translateX(16px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes acCounterBump {
+      0%   { transform: translateY(2px); opacity: 0.55; }
+      60%  { transform: translateY(-1px); opacity: 1; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    .activity-chooser .ac-tile {
+      animation: acTileIn 0.42s var(--ease-out) both;
+      animation-delay: calc(var(--ac-i, 0) * 70ms);
+      transition:
+        transform 0.28s var(--ease-spring),
+        box-shadow 0.28s var(--ease-out),
+        border-color 0.28s var(--ease-out);
+      will-change: transform;
+    }
+    .activity-chooser .ac-tile:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--teal);
+    }
+    .activity-chooser .ac-tile:active {
+      transform: translateY(-2px);
+    }
+    /* Parallax depth: icon drifts slightly more than the tile on hover */
+    .activity-chooser .ac-tile .ac-tile-icon {
+      transition: transform 0.28s var(--ease-spring);
+    }
+    .activity-chooser .ac-tile:hover .ac-tile-icon {
+      transform: translateY(-3px) scale(1.06);
+    }
+    /* Focus ring + keyboard nav polish (always visible on keyboard focus) */
+    .activity-chooser .ac-tile:focus-visible,
+    .activity-chooser .ac-back:focus-visible {
+      outline: none;
+      box-shadow: var(--shadow-glow);
+      border-color: var(--teal);
+    }
+    /* Activity transition: slide + fade when launching / returning */
+    .activity-chooser .ac-view {
+      animation: acViewIn 0.34s var(--ease-out) both;
+    }
+    /* Counter micro-animation on step advance */
+    .activity-chooser .ac-counter {
+      animation: acCounterBump 0.34s var(--ease-out) both;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .activity-chooser .ac-tile,
+      .activity-chooser .ac-tile .ac-tile-icon,
+      .activity-chooser .ac-view,
+      .activity-chooser .ac-counter {
+        animation: none !important;
+        transition: none !important;
+      }
+      .activity-chooser .ac-tile:hover { transform: none; }
+      .activity-chooser .ac-tile:hover .ac-tile-icon { transform: none; }
+      .activity-chooser .ac-tile:active { transform: none; }
+    }
+  `;
+  (document.head || document.documentElement).append(style);
+}
+
 export function renderOptionalPracticeOptIn(
   container,
   { onTry, onSkip, activity } = {},
@@ -81,6 +163,7 @@ export function renderOptionalPracticeOptIn(
 // launch the optional Extra Practice items, which use the standard
 // problem-object shape {type, ...props}).
 export function renderActivityChooser(container, { config, renderComponent }) {
+  ensureChooserStyles();
   const terms = Array.isArray(config.vocabulary) ? config.vocabulary : [];
   const hasVocab = terms.length > 0;
   const optional = Array.isArray(config.practice?.optional)
@@ -184,14 +267,14 @@ export function renderActivityChooser(container, { config, renderComponent }) {
 
     tiles.forEach((t, i) => {
       const tile = document.createElement("button");
-      tile.className = "card";
-      tile.style.cssText = `
-        animation: phaseIn 0.3s var(--ease-out) ${i * 0.06}s both;
+      tile.className = "card ac-tile";
+      tile.style.setProperty("--ac-i", String(i));
+      tile.style.cssText += `
         text-align:left; cursor:pointer; border:1px solid var(--line);
         display:flex; flex-direction:column; gap:var(--sp-2);
       `;
       tile.innerHTML = `
-        <div style="font-size:1.8rem;">${t.icon}</div>
+        <div class="ac-tile-icon" style="font-size:1.8rem;">${t.icon}</div>
         <div style="font-family:var(--font-display); font-weight:800; font-size:1.05rem;">${esc(t.title)}</div>
         <div style="color:var(--muted); font-size:0.88rem; line-height:1.5;">${esc(t.desc)}</div>`;
       tile.addEventListener("click", () => launch(t));
@@ -205,13 +288,14 @@ export function renderActivityChooser(container, { config, renderComponent }) {
     wrapper.innerHTML = "";
 
     const back = document.createElement("button");
-    back.className = "btn btn-secondary";
+    back.className = "btn btn-secondary ac-back";
     back.style.cssText = "margin-bottom:var(--sp-4);";
     back.textContent = "← Back to activities";
     back.addEventListener("click", showMenu);
     wrapper.append(back);
 
     const host = document.createElement("div");
+    host.className = "ac-view";
     wrapper.append(host);
 
     let returned = false;
@@ -239,6 +323,7 @@ export function runComponentList(host, items, renderComponent, done) {
     }
     host.innerHTML = "";
     const counter = document.createElement("div");
+    counter.className = "ac-counter";
     counter.style.cssText =
       "font-size:0.82rem; font-weight:700; color:var(--muted); margin-bottom:var(--sp-3);";
     counter.textContent = `Extra Practice ${idx + 1} of ${items.length}`;

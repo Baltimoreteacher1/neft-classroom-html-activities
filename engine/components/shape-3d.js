@@ -47,6 +47,42 @@ function reduceMotion() {
   );
 }
 
+// Inject the polish stylesheet exactly once per document. All animated rules
+// live behind @media (prefers-reduced-motion: no-preference) so reduced-motion
+// users get the static, fully-functional experience untouched.
+const POLISH_STYLE_ID = "shape3d-polish-styles";
+function injectPolishStyles() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById(POLISH_STYLE_ID)) return;
+  const style = document.createElement("style");
+  style.id = POLISH_STYLE_ID;
+  style.textContent = `
+@media (prefers-reduced-motion: no-preference) {
+  .shape3d-face.is-selected {
+    animation: shape3d-face-pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes shape3d-face-pulse {
+    0%, 100% { box-shadow: inset 0 0 0 3px var(--navy), 0 0 0 3px rgba(31,166,162,0.5); }
+    50% { box-shadow: inset 0 0 0 3px var(--navy), 0 0 0 7px rgba(31,166,162,0.18); }
+  }
+  .shape3d-burst {
+    position:absolute; left:50%; top:50%; width:9px; height:9px;
+    margin:-4.5px 0 0 -4.5px; border-radius:50%; pointer-events:none;
+    opacity:0; will-change:transform, opacity;
+    animation: shape3d-burst-fly 0.72s cubic-bezier(0.2,0.7,0.3,1) forwards;
+  }
+  @keyframes shape3d-burst-fly {
+    0% { opacity:1; transform:translate(0,0) scale(0.4); }
+    70% { opacity:1; }
+    100% {
+      opacity:0;
+      transform:translate(var(--bx,0), var(--by,0)) scale(1);
+    }
+  }
+}`;
+  (document.head || document.documentElement).append(style);
+}
+
 // ── Rectangular prism / cube ─────────────────────────────────────────────
 // w (x), h (y), d (z). Six rectangular faces.
 function rectPrism(w, h, d, name) {
@@ -247,6 +283,7 @@ export function renderShape3D(
 ) {
   const def = shapeDef(shape);
   const prefersReduced = reduceMotion();
+  if (!prefersReduced) injectPolishStyles();
 
   const root = document.createElement("div");
   root.className = "shape3d";
@@ -289,6 +326,33 @@ export function renderShape3D(
     filter:blur(2px); pointer-events:none;`;
   stage.append(shadow);
 
+  // ── Celebration particle burst ──
+  // Fired on a correct task answer. Pure decoration: short-lived, aria-hidden,
+  // self-cleaning, and a no-op when reduced motion is requested.
+  const BURST_COLORS = [
+    PALETTE.teal,
+    PALETTE.amber,
+    PALETTE.coral,
+    PALETTE.navy,
+  ];
+  function celebrateBurst() {
+    if (prefersReduced) return;
+    const count = 14;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement("span");
+      p.className = "shape3d-burst";
+      p.setAttribute("aria-hidden", "true");
+      const angle = (i / count) * Math.PI * 2 + Math.random() * 0.4;
+      const dist = 60 + Math.random() * 50;
+      p.style.setProperty("--bx", `${Math.cos(angle) * dist}px`);
+      p.style.setProperty("--by", `${Math.sin(angle) * dist - 18}px`);
+      p.style.background = BURST_COLORS[i % BURST_COLORS.length];
+      p.style.animationDelay = `${Math.random() * 60}ms`;
+      p.addEventListener("animationend", () => p.remove(), { once: true });
+      stage.append(p);
+    }
+  }
+
   // ── Build faces ──
   let netT = 0; // 0 = solid, 1 = net (flat)
   const faceEls = def.faces.map((f, i) => {
@@ -315,10 +379,20 @@ export function renderShape3D(
     return el;
   });
 
+  // Stagger the net unfold/fold so faces peel open in sequence (additive
+  // polish; reduced-motion users get an instant, simultaneous switch).
+  const STAGGER_MS = 70;
   function applyFaceTransforms() {
+    const unfolding = netT >= 0.5;
     def.faces.forEach((f, i) => {
-      const t = netT >= 0.5 && f.net ? f.net : f.solid;
-      faceEls[i].style.transform = t;
+      const el = faceEls[i];
+      if (!prefersReduced) {
+        // Reverse the order when folding back up for a natural close.
+        const order = unfolding ? i : def.faces.length - 1 - i;
+        el.style.transitionDelay = `${order * STAGGER_MS}ms`;
+      }
+      const t = unfolding && f.net ? f.net : f.solid;
+      el.style.transform = t;
     });
   }
   applyFaceTransforms();
@@ -326,8 +400,22 @@ export function renderShape3D(
   // ── Rotation state ──
   let rotX = -22;
   let rotY = 28;
+  // Parallax shadow: shift/soften the ground shadow with the model's tilt so it
+  // reads as a real cast shadow. Purely decorative; skipped for reduced motion.
+  function applyShadowParallax() {
+    if (prefersReduced) return;
+    const dx = Math.sin((rotY * Math.PI) / 180) * 26;
+    const lean = Math.cos((rotX * Math.PI) / 180); // 1 when upright
+    const scaleX = 0.78 + lean * 0.34;
+    const blur = 2 + (1 - lean) * 5;
+    const op = 0.14 + lean * 0.14;
+    shadow.style.transform = `translateX(calc(-50% + ${dx}px)) scaleX(${scaleX})`;
+    shadow.style.filter = `blur(${blur}px)`;
+    shadow.style.opacity = String(op);
+  }
   function applyScene() {
     scene.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+    applyShadowParallax();
   }
   applyScene();
 
@@ -350,6 +438,7 @@ export function renderShape3D(
   }
   function startAuto() {
     if (prefersReduced || rafId) return;
+    stopInertia();
     autoOn = true;
     lastTs = 0;
     rafId = requestAnimationFrame(tick);
@@ -365,10 +454,45 @@ export function renderShape3D(
   let dragging = false;
   let lastX = 0;
   let lastY = 0;
+  // Momentum: track the most recent pointer velocity so a flick keeps spinning
+  // and eases to rest after release. Disabled under reduced motion.
+  let velX = 0;
+  let velY = 0;
+  let inertiaId = null;
+  function stopInertia() {
+    if (inertiaId) cancelAnimationFrame(inertiaId);
+    inertiaId = null;
+  }
+  function runInertia() {
+    if (prefersReduced) return;
+    stopInertia();
+    const step = () => {
+      // If anything else takes over (drag, net, auto-spin), bail out cleanly.
+      if (dragging || netT >= 0.5) {
+        inertiaId = null;
+        return;
+      }
+      rotY += velY;
+      rotX -= velX;
+      rotX = Math.max(-89, Math.min(89, rotX));
+      applyScene();
+      velX *= 0.92;
+      velY *= 0.92;
+      if (Math.abs(velX) < 0.05 && Math.abs(velY) < 0.05) {
+        inertiaId = null;
+        return;
+      }
+      inertiaId = requestAnimationFrame(step);
+    };
+    inertiaId = requestAnimationFrame(step);
+  }
   stage.addEventListener("pointerdown", (e) => {
     if (e.target.classList.contains("shape3d-face")) return; // let clicks select
     dragging = true;
     stopAuto();
+    stopInertia();
+    velX = 0;
+    velY = 0;
     lastX = e.clientX;
     lastY = e.clientY;
     stage.setPointerCapture(e.pointerId);
@@ -376,9 +500,14 @@ export function renderShape3D(
   });
   stage.addEventListener("pointermove", (e) => {
     if (!dragging) return;
-    rotY += (e.clientX - lastX) * 0.5;
-    rotX -= (e.clientY - lastY) * 0.5;
+    const dX = (e.clientX - lastX) * 0.5;
+    const dY = (e.clientY - lastY) * 0.5;
+    rotY += dX;
+    rotX -= dY;
     rotX = Math.max(-89, Math.min(89, rotX));
+    // Smoothed velocity for a natural flick release.
+    velY = velY * 0.6 + dX * 0.4;
+    velX = velX * 0.6 + dY * 0.4;
     lastX = e.clientX;
     lastY = e.clientY;
     if (netT < 0.5) applyScene();
@@ -390,6 +519,13 @@ export function renderShape3D(
     try {
       stage.releasePointerCapture(e.pointerId);
     } catch (_) {}
+    if (
+      !prefersReduced &&
+      netT < 0.5 &&
+      (Math.abs(velX) > 0.3 || Math.abs(velY) > 0.3)
+    ) {
+      runInertia();
+    }
   }
   stage.addEventListener("pointerup", endDrag);
   stage.addEventListener("pointercancel", endDrag);
@@ -417,6 +553,7 @@ export function renderShape3D(
     if (handled) {
       e.preventDefault();
       stopAuto();
+      stopInertia();
       if (netT < 0.5) applyScene();
     }
   });
@@ -461,6 +598,7 @@ export function renderShape3D(
       const idx = Number(selectedEl.dataset.index);
       selectedEl.style.background = hexToRgba(def.faces[idx].color, 0.82);
       selectedEl.style.boxShadow = "inset 0 0 0 1px rgba(18,53,91,0.18)";
+      selectedEl.classList.remove("is-selected");
     }
     selectedEl = null;
     [chipFace, chipEdge, chipVertex].forEach((c) => {
@@ -478,6 +616,7 @@ export function renderShape3D(
     el.style.background = hexToRgba(PALETTE.amber, 0.95);
     el.style.boxShadow =
       "inset 0 0 0 3px var(--navy), 0 0 0 3px rgba(31,166,162,0.5)";
+    el.classList.add("is-selected"); // CSS pulse (reduced-motion: no-op)
     chipFace.style.borderColor = "var(--navy)";
     const msg = `Selected a face. A face is a flat surface of the solid. This ${def.name.toLowerCase()} has ${def.counts.faces} faces, ${def.counts.edges} edges, and ${def.counts.vertices} vertices.`;
     labelBar.textContent =
@@ -604,6 +743,7 @@ export function renderShape3D(
           if (hasNet && netT < 0.5) {
             netT = 1;
             stopAuto();
+            stopInertia();
             clearSelection();
             rotX = 0;
             rotY = 0;
@@ -611,6 +751,7 @@ export function renderShape3D(
             applyFaceTransforms();
           }
         },
+        celebrate: () => celebrateBurst(),
         hasNet,
       }),
     );
@@ -621,6 +762,7 @@ export function renderShape3D(
   return {
     destroy() {
       stopAuto();
+      stopInertia();
     },
   };
 }
@@ -635,6 +777,7 @@ function buildTaskPanel({
   getTappedCount,
   setOnFaceTap,
   unfoldNet,
+  celebrate = () => {},
   hasNet,
 }) {
   const wrap = document.createElement("div");
@@ -670,6 +813,7 @@ function buildTaskPanel({
         `Yes! A ${def.name.toLowerCase()} has ${def.counts.faces} faces.`,
       );
       live.textContent = `Correct: ${def.counts.faces} faces.`;
+      celebrate();
     } else {
       setStatus(
         t1status,
@@ -694,6 +838,7 @@ function buildTaskPanel({
     if (ok) {
       setStatus(t2status, true, `Right! ${def.counts.edges} edges.`);
       live.textContent = `Correct: ${def.counts.edges} edges.`;
+      celebrate();
     } else {
       setStatus(
         t2status,
@@ -712,6 +857,7 @@ function buildTaskPanel({
     if (ok) {
       setStatus(t3status, true, `Exactly! ${def.counts.vertices} vertices.`);
       live.textContent = `Correct: ${def.counts.vertices} vertices.`;
+      celebrate();
     } else {
       setStatus(t3status, false, "Not quite — count the corner points.");
     }
@@ -766,6 +912,7 @@ function buildTaskPanel({
             true,
             `Yes — this net folds into a ${def.name.toLowerCase()}.`,
           );
+          celebrate();
         } else {
           setStatus(
             t4status,

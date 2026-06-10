@@ -13,6 +13,156 @@
 // If a Spanish field is absent we gracefully show English only. We NEVER
 // machine-translate; Spanish is rendered verbatim from config.
 
+// ─────────────────────────────────────────────────────────────────────────
+// Inject-once scoped polish styles. This component renders into 1000s of
+// activities, so the <style> block is added exactly once per document and is
+// purely ADDITIVE — it augments new vet-* hook classes WITHOUT changing any
+// layout, interaction, checking, callback, or return value the existing JS
+// depends on. EVERY animation / transition lives behind a feature class and is
+// SUPPRESSED inside `@media (prefers-reduced-motion: reduce)` so reduced-motion
+// users get the original calm, instant experience. The mobile Yes/No reflow,
+// the step breadcrumb, and focus rings are layout / accessibility aids (not
+// motion) and apply to everyone. Matches the inject-once pattern used by
+// vocab-drag-match.js.
+const VET_STYLE_ID = "vet-polish-styles";
+function injectVocabExploreTaskStyles() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById(VET_STYLE_ID)) return;
+  const style = document.createElement("style");
+  style.id = VET_STYLE_ID;
+  style.textContent = `
+    /* Accessibility aid (not motion): visible focus ring for keyboard users on
+       every interactive vocab-explore control. */
+    .vocab-explore-step .btn:focus-visible,
+    .vet-blank:focus-visible {
+      outline: 3px solid var(--teal, #1fa6a2);
+      outline-offset: 2px;
+    }
+
+    /* Step-navigation breadcrumb (layout, not motion): a small numbered trail
+       at the top of each step so newcomers can see where they are in the
+       1 → 2 → 3 sense-making loop. */
+    .vet-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--muted, #6b7280);
+      list-style: none;
+      padding: 0;
+    }
+    .vet-crumb {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 6px;
+      border-radius: 999px;
+      border: 1px solid var(--line, #e3e6ea);
+      background: #fff;
+      color: var(--muted, #6b7280);
+      line-height: 1;
+    }
+    .vet-crumb[aria-current="step"] {
+      background: var(--teal, #1fa6a2);
+      border-color: var(--teal, #1fa6a2);
+      color: #fff;
+    }
+    .vet-crumb-sep {
+      color: var(--line, #cbd5e1);
+      font-weight: 800;
+    }
+
+    /* Mobile Yes/No layout aid (not motion): on narrow screens the Yes/No pair
+       grows to full-width, side-by-side, big-tap buttons so the choice is easy
+       on a phone. */
+    @media (max-width: 560px) {
+      .vet-yesno-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .vet-yesno-pair {
+        display: flex;
+        gap: var(--sp-2, 8px);
+        width: 100%;
+      }
+      .vet-yesno-pair .btn {
+        flex: 1 1 0;
+        min-height: 48px;
+        font-size: 1rem;
+      }
+      .vet-yesno-why {
+        order: 99;
+      }
+    }
+
+    /* Correct-answer celebration micro-animation: a gentle confidence pop when
+       a choice is marked correct. Guarded — suppressed below for
+       reduced-motion users. */
+    .vet-celebrate {
+      animation: vetPop 0.45s var(--ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+    }
+    @keyframes vetPop {
+      0%   { transform: scale(1); }
+      45%  { transform: scale(1.06); }
+      100% { transform: scale(1); }
+    }
+
+    /* Parallax hint text on the Predict step: a faint drifting prompt that
+       nudges the student to make a real guess. Guarded for reduced motion. */
+    .vet-parallax-hint {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--muted, #6b7280);
+      will-change: transform;
+      transition: transform 0.25s var(--ease-out, ease);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      /* Reduced-motion users: no celebration pop and no parallax drift — only
+         the instant color/state changes the original component already made. */
+      .vet-celebrate {
+        animation: none !important;
+      }
+      .vet-parallax-hint {
+        transform: none !important;
+        transition: none !important;
+      }
+    }`;
+  (document.head || document.documentElement).appendChild(style);
+}
+
+// True only when the user has NOT requested reduced motion. Used to gate the
+// JS-driven parallax listener (the CSS animations are gated by the media query
+// above; this guards the JS that would otherwise still run pointer math).
+function motionAllowed() {
+  return !(
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
+// Fire the celebration pop on an element, then clean up so it can re-trigger.
+// No-op for reduced-motion users (the CSS keyframe is suppressed, and we skip
+// adding the class entirely to avoid layout churn).
+function celebrate(el) {
+  if (!el || !motionAllowed()) return;
+  el.classList.remove("vet-celebrate");
+  // Force reflow so re-adding the class restarts the animation.
+  void el.offsetWidth;
+  el.classList.add("vet-celebrate");
+  el.addEventListener(
+    "animationend",
+    () => el.classList.remove("vet-celebrate"),
+    { once: true },
+  );
+}
+
 // ── Escaping (XSS guard) ────────────────────────────────────────────────────
 export function escapeHtml(s) {
   return String(s == null ? "" : s)
@@ -137,12 +287,15 @@ export function bilingualDefinitionEl(term) {
 // so the orchestrator can reveal/scroll to the next one.
 
 function stepCard(heading, badge) {
+  injectVocabExploreTaskStyles();
   const card = document.createElement("section");
   card.className = "vocab-explore-step";
   card.style.cssText = `
     padding:var(--sp-4); border:1px solid var(--line); border-radius:var(--radius-md);
     background:#fff; display:flex; flex-direction:column; gap:var(--sp-3);
     animation:phaseIn 0.3s var(--ease-out) both;`;
+  const crumb = stepBreadcrumb(badge);
+  if (crumb) card.append(crumb);
   const h = document.createElement("h4");
   h.style.cssText = `
     margin:0; display:flex; align-items:center; gap:var(--sp-2);
@@ -150,6 +303,37 @@ function stepCard(heading, badge) {
   h.innerHTML = `<span aria-hidden="true">${escapeHtml(badge)}</span><span>${escapeHtml(heading)}</span>`;
   card.append(h);
   return card;
+}
+
+// Numbered 1 → 2 → 3 breadcrumb showing the current step. Derived from the
+// step badge so the existing call sites need no new arguments. Returns null
+// when the badge is not a 1..TOTAL step number (e.g. custom badges) so other
+// step types are unaffected. Purely visual / additive.
+const VET_TOTAL_STEPS = 3;
+function stepBreadcrumb(badge) {
+  if (typeof document === "undefined") return null;
+  const current = Number.parseInt(String(badge), 10);
+  if (!Number.isInteger(current) || current < 1 || current > VET_TOTAL_STEPS) {
+    return null;
+  }
+  const nav = document.createElement("ol");
+  nav.className = "vet-breadcrumb";
+  nav.setAttribute("aria-label", `Step ${current} of ${VET_TOTAL_STEPS}`);
+  for (let i = 1; i <= VET_TOTAL_STEPS; i++) {
+    if (i > 1) {
+      const sep = document.createElement("span");
+      sep.className = "vet-crumb-sep";
+      sep.setAttribute("aria-hidden", "true");
+      sep.textContent = "›";
+      nav.append(sep);
+    }
+    const crumb = document.createElement("li");
+    crumb.className = "vet-crumb";
+    crumb.textContent = String(i);
+    if (i === current) crumb.setAttribute("aria-current", "step");
+    nav.append(crumb);
+  }
+  return nav;
 }
 
 function feedbackLine() {
@@ -176,6 +360,26 @@ export function buildPredictReveal(term, { imageEl, onAdvance }) {
     imageEl.style.cssText +=
       ";display:block; width:160px; max-width:100%; aspect-ratio:4/3; object-fit:contain; margin:0 auto; border-radius:var(--radius-sm); border:1px solid var(--line); background:var(--card);";
     card.append(imageEl);
+  }
+
+  // Parallax hint: a faint prompt that drifts slightly with the pointer to
+  // invite a real guess. Drift is suppressed for reduced-motion users (both via
+  // the CSS media query and the motionAllowed() guard on the listener).
+  const hint = document.createElement("p");
+  hint.className = "vet-parallax-hint";
+  hint.textContent = "Use the picture as a clue — your best guess is fine.";
+  card.append(hint);
+  if (motionAllowed()) {
+    card.addEventListener("pointermove", (e) => {
+      const r = card.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      const dx = ((e.clientX - r.left) / r.width - 0.5) * 8;
+      const dy = ((e.clientY - r.top) / r.height - 0.5) * 4;
+      hint.style.transform = `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px)`;
+    });
+    card.addEventListener("pointerleave", () => {
+      hint.style.transform = "translate(0, 0)";
+    });
   }
 
   const fb = feedbackLine();
@@ -207,6 +411,7 @@ export function buildPredictReveal(term, { imageEl, onAdvance }) {
           b.style.borderColor = "var(--teal)";
           b.style.background = "var(--teal-light)";
           setFeedback(fb, true, "Nice prediction! Here's the meaning:");
+          celebrate(b);
         } else {
           b.style.borderColor = "var(--coral, #d9795d)";
           setFeedback(fb, false, "Good guess — here's what it really means:");
@@ -293,6 +498,7 @@ export function buildExampleSort(term, { onAdvance }) {
 
   items.forEach((it) => {
     const row = document.createElement("div");
+    row.className = "vet-yesno-row";
     row.style.cssText = `
       display:flex; flex-wrap:wrap; align-items:center; gap:var(--sp-2);
       padding:var(--sp-2) var(--sp-3); border:1px solid var(--line);
@@ -302,6 +508,7 @@ export function buildExampleSort(term, { onAdvance }) {
     text.textContent = it.text;
 
     const why = document.createElement("span");
+    why.className = "vet-yesno-why";
     why.style.cssText = "flex-basis:100%; font-size:0.85rem; line-height:1.4;";
     why.hidden = true;
 
@@ -312,9 +519,9 @@ export function buildExampleSort(term, { onAdvance }) {
       yes.disabled = true;
       no.disabled = true;
       const ok = saidYes === it.isExample;
-      (saidYes ? yes : no).style.borderColor = ok
-        ? "var(--teal)"
-        : "var(--coral, #d9795d)";
+      const chosen = saidYes ? yes : no;
+      chosen.style.borderColor = ok ? "var(--teal)" : "var(--coral, #d9795d)";
+      if (ok) celebrate(chosen);
       why.hidden = false;
       why.style.color = ok ? "var(--teal)" : "var(--coral, #d9795d)";
       why.textContent = `${ok ? "✅" : "❌"} ${it.why}`;
@@ -335,7 +542,13 @@ export function buildExampleSort(term, { onAdvance }) {
       () => answer(false),
       `No, this is not a ${term.term}`,
     );
-    row.append(text, yes, no, why);
+    // Mobile layout aid: keep the Yes/No pair together so it can reflow to a
+    // full-width, side-by-side big-tap pair on narrow screens (see CSS).
+    const pair = document.createElement("div");
+    pair.className = "vet-yesno-pair";
+    pair.style.cssText = "display:contents;";
+    pair.append(yes, no);
+    row.append(text, pair, why);
     card.append(row);
   });
 
@@ -410,6 +623,7 @@ export function buildUseInContext(term, { onAdvance }) {
           b.style.borderColor = "var(--teal)";
           b.style.background = "var(--teal-light)";
           setFeedback(fb, true, "That's the right way to use it!");
+          celebrate(b);
         } else {
           b.style.borderColor = "var(--coral, #d9795d)";
           setFeedback(
@@ -446,6 +660,7 @@ function buildClozeFill(term, clozeText, onAdvance) {
   const blank = document.createElement("span");
   blank.setAttribute("role", "button");
   blank.tabIndex = 0;
+  blank.className = "vet-blank";
   blank.setAttribute(
     "aria-label",
     "Empty blank. Tap the word below to fill it.",
@@ -477,6 +692,7 @@ function buildClozeFill(term, clozeText, onAdvance) {
     blank.style.borderBottomStyle = "solid";
     blank.setAttribute("aria-label", `Blank filled with ${term.term}`);
     chip.disabled = true;
+    celebrate(blank);
     setFeedback(fb, true, "You used it in a real sentence!");
     if (onAdvance) onAdvance();
   };

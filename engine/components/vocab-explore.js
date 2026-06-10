@@ -33,6 +33,67 @@ import {
   buildConfirmation,
 } from "./vocab-explore-tasks.js";
 
+// ── Inject-once scoped polish ─────────────────────────────────────────────
+// Additive, classroom-appropriate motion + depth for the Explore trigger and
+// explorer panel. Uses only existing design tokens. EVERY animation/transition
+// is disabled under prefers-reduced-motion (the reduce block at the bottom is
+// the single gate). Injected once per document; idempotent and behavior-safe.
+const EXPLORE_STYLE_ID = "vocab-explore-polish";
+function ensureExploreStyles() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById(EXPLORE_STYLE_ID)) return;
+  const style = document.createElement("style");
+  style.id = EXPLORE_STYLE_ID;
+  style.textContent = `
+    /* Explore trigger: hover/focus depth lift (token-driven). */
+    .vocab-explore-trigger {
+      transition: transform var(--duration-fast) var(--ease-out),
+                  box-shadow var(--duration-fast) var(--ease-out),
+                  background var(--duration-fast);
+    }
+    .vocab-explore-trigger:hover,
+    .vocab-explore-trigger:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      background: #fff;
+    }
+    .vocab-explore-trigger:active {
+      transform: translateY(0);
+      box-shadow: var(--shadow-sm, var(--shadow-md));
+    }
+    /* Explorer panel: gentle reveal entrance. */
+    @keyframes vocabExplorePanelIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.99); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .vocab-explore-panel {
+      animation: vocabExplorePanelIn 0.3s var(--ease-out) both;
+    }
+    /* Mobile-friendly panel width: full-bleed, comfortable touch padding. */
+    @media (max-width: 640px) {
+      .vocab-explore-panel {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+    }
+    /* Accessibility gate: disable all added motion under reduced-motion. */
+    @media (prefers-reduced-motion: reduce) {
+      .vocab-explore-trigger {
+        transition: none;
+      }
+      .vocab-explore-trigger:hover,
+      .vocab-explore-trigger:focus-visible,
+      .vocab-explore-trigger:active {
+        transform: none;
+      }
+      .vocab-explore-panel {
+        animation: none;
+      }
+    }`;
+  (document.head || document.documentElement).appendChild(style);
+}
+
 // ── Routing ───────────────────────────────────────────────────────────────
 // Keyword -> 3D solid. Order matters (most specific first).
 const SHAPE_KEYWORDS = [
@@ -82,6 +143,7 @@ export function resolveExplorer(term) {
 
 // ── Explore affordance button ───────────────────────────────────────────────
 export function exploreLabel(term) {
+  ensureExploreStyles();
   const route = resolveExplorer(term);
   const btn = document.createElement("button");
   btn.type = "button";
@@ -102,22 +164,15 @@ export function exploreLabel(term) {
     background:var(--teal-light); color:var(--navy);
     font-family:var(--font-display); font-weight:800; font-size:0.95rem;
     transition:transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out), background var(--duration-fast);`;
-  btn.addEventListener("mouseenter", () => {
-    btn.style.transform = "translateY(-1px)";
-    btn.style.boxShadow = "var(--shadow-md)";
-    btn.style.background = "#fff";
-  });
-  btn.addEventListener("mouseleave", () => {
-    btn.style.transform = "";
-    btn.style.boxShadow = "";
-    btn.style.background = "var(--teal-light)";
-  });
+  // Hover/focus depth is handled by the inject-once .vocab-explore-trigger
+  // rules so it can be gated under prefers-reduced-motion (see ensureExploreStyles).
   return btn;
 }
 
 // ── Explorer panel (inline) ──────────────────────────────────────────────────
 // Renders into `host` (cleared/replaced). Returns { close }.
 export function openExplorer(host, term, { onClose, siblings } = {}) {
+  ensureExploreStyles();
   host.innerHTML = "";
   const route = resolveExplorer(term);
 
@@ -125,8 +180,9 @@ export function openExplorer(host, term, { onClose, siblings } = {}) {
   panel.className = "vocab-explore-panel";
   panel.setAttribute("role", "region");
   panel.setAttribute("aria-label", `Explore ${term.term}`);
+  // Entrance animation + mobile width come from the inject-once
+  // .vocab-explore-panel rules (gated under prefers-reduced-motion).
   panel.style.cssText = `
-    animation:phaseIn 0.3s var(--ease-out) both;
     display:flex; flex-direction:column; gap:var(--sp-3);`;
 
   // Header: bilingual title + Say-it + close.
@@ -169,7 +225,51 @@ export function openExplorer(host, term, { onClose, siblings } = {}) {
 
   host.append(panel);
 
+  // ── Focus trap ─────────────────────────────────────────────────────────
+  // Keep keyboard focus inside the explorer panel while it is open. Tab /
+  // Shift+Tab cycle through the panel's focusable controls; Escape closes.
+  // Listener is bound on the panel and removed in close() — additive, with no
+  // effect on mouse or non-keyboard interaction.
+  const FOCUSABLE =
+    'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+  function focusableEls() {
+    return Array.prototype.filter.call(
+      panel.querySelectorAll(FOCUSABLE),
+      (el) =>
+        el.offsetWidth > 0 ||
+        el.offsetHeight > 0 ||
+        el === document.activeElement,
+    );
+  }
+  function onKeydown(e) {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      close();
+      return;
+    }
+    if (e.key !== "Tab") return;
+    const els = focusableEls();
+    if (els.length === 0) {
+      e.preventDefault();
+      return;
+    }
+    const first = els[0];
+    const last = els[els.length - 1];
+    const active = document.activeElement;
+    if (e.shiftKey) {
+      if (active === first || !panel.contains(active)) {
+        e.preventDefault();
+        last.focus({ preventScroll: true });
+      }
+    } else if (active === last || !panel.contains(active)) {
+      e.preventDefault();
+      first.focus({ preventScroll: true });
+    }
+  }
+  panel.addEventListener("keydown", onKeydown);
+
   function close() {
+    panel.removeEventListener("keydown", onKeydown);
     if (widget && typeof widget.destroy === "function") widget.destroy();
     host.innerHTML = "";
     if (onClose) onClose();

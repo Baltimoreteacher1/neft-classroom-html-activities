@@ -1487,21 +1487,226 @@
         color: #9a6f12;
       }
 
+      /* ===== Bespoke visual polish layer (additive; all motion reduced-motion-gated) ===== */
+
+      /* Hero parallax depth: a soft glow layer that drifts with pointer.
+         Wired via JS adding [data-parallax] to .hero + a [data-parallax-layer]
+         child handled by the shared GameFX kit; this only styles the layer. */
+      .hero {
+        isolation: isolate;
+      }
+      .hero-glow {
+        position: absolute;
+        inset: -18% -12% auto auto;
+        width: 360px;
+        height: 360px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(224, 169, 60, 0.32),
+          rgba(79, 182, 179, 0.14) 55%,
+          transparent 72%
+        );
+        pointer-events: none;
+        z-index: 0;
+        will-change: transform;
+        filter: blur(2px);
+      }
+      .hero > .kicker,
+      .hero > h2,
+      .hero > p {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Group-tab hover: parallax-like lift with a deeper, shifted shadow.
+         Group menu cards get the same treatment for a tactile feel. */
+      .group-card {
+        transition:
+          transform 0.18s cubic-bezier(0.2, 0.7, 0.3, 1),
+          box-shadow 0.18s ease;
+        will-change: transform;
+      }
+      @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+        .group-card:hover,
+        .group-card:focus-within {
+          transform: translateY(-4px);
+          box-shadow:
+            0 16px 30px rgba(16, 40, 63, 0.16),
+            0 4px 10px rgba(36, 124, 127, 0.1);
+        }
+        .group-card:hover .group-num {
+          transform: translateY(-2px) rotate(-3deg);
+        }
+        .group-num {
+          transition: transform 0.18s ease;
+        }
+        .tab-btn.group-tab:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 18px rgba(16, 40, 63, 0.12);
+        }
+      }
+
+      /* Step completion checkmark: bounce-in when a step first turns ✓.
+         The ::after content already exists; we add a one-shot pop animation
+         applied by JS via .just-done, plus a gentle scale on the row badge. */
+      @media (prefers-reduced-motion: no-preference) {
+        .steps li.just-done .step-head span {
+          animation: checkPop 0.5s cubic-bezier(0.18, 1.5, 0.4, 1) both;
+        }
+      }
+      @keyframes checkPop {
+        0% {
+          transform: scale(0.4) rotate(-12deg);
+          opacity: 0.4;
+        }
+        55% {
+          transform: scale(1.22) rotate(4deg);
+        }
+        100% {
+          transform: scale(1) rotate(0);
+          opacity: 1;
+        }
+      }
+
+      /* Tab-panel entrance: fade + slide up when a page becomes active.
+         The base .page already uses @keyframes rise; we strengthen it only
+         for JS-driven tab switches via .page.entering (so first paint stays
+         calm and print is unaffected). */
+      @media (prefers-reduced-motion: no-preference) {
+        html.js .page.active.entering {
+          animation: panelEnter 0.34s cubic-bezier(0.2, 0.7, 0.25, 1) both;
+        }
+      }
+      @keyframes panelEnter {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Auto-save dot: a calm breathing pulse while idle/saved, so the
+         indicator feels alive without the urgent gold "saving" flash.
+         The .saving state (gold, faster) is defined earlier and wins. */
+      @media (prefers-reduced-motion: no-preference) {
+        .save-pill:not(.saving) .dot {
+          animation: breathe 2.8s ease-in-out infinite;
+        }
+      }
+      @keyframes breathe {
+        0%,
+        100% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(79, 182, 179, 0.45);
+        }
+        50% {
+          transform: scale(1.18);
+          box-shadow: 0 0 0 5px rgba(79, 182, 179, 0);
+        }
+      }
+
+      /* Progress-bar shimmer when a group page hits 100% complete. */
+      @media (prefers-reduced-motion: no-preference) {
+        .group-progress.complete .gp-fill {
+          background-size: 200% 100%;
+          background-image: linear-gradient(
+            100deg,
+            var(--gold),
+            #f8dd9a 45%,
+            var(--gold) 70%
+          );
+          animation: sweep 2.4s linear infinite;
+        }
+      }
+      @keyframes sweep {
+        from {
+          background-position: 200% 0;
+        }
+        to {
+          background-position: -200% 0;
+        }
+      }
+
+      /* Mobile: sticky group sub-menu toggle + collapsible group list.
+         On small screens the 6-card group menu is long; a sticky "jump"
+         bar keeps navigation reachable. Desktop is untouched. */
+      .mobile-jump {
+        display: none;
+      }
+      @media (max-width: 640px) {
+        .mobile-jump {
+          display: flex;
+          gap: 8px;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          position: sticky;
+          top: 0;
+          z-index: 15;
+          padding: 8px 0;
+          margin: -4px 0 12px;
+          background: rgba(255, 253, 248, 0.96);
+          backdrop-filter: blur(8px);
+          scrollbar-width: none;
+        }
+        .mobile-jump::-webkit-scrollbar {
+          display: none;
+        }
+        .mobile-jump a {
+          flex: 0 0 auto;
+          border: 1px solid var(--line);
+          background: #fff;
+          color: var(--navy);
+          border-radius: 999px;
+          padding: 8px 13px;
+          font-size: 13px;
+          font-weight: 900;
+          text-decoration: none;
+          white-space: nowrap;
+        }
+        .mobile-jump a.active {
+          background: var(--navy);
+          color: #fff;
+          border-color: var(--navy);
+        }
+      }
+
       /* A11y: screen-reader-only text utility */
-      .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+      .sr-only {
+        position: absolute !important;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
       /* A11y: respect reduced-motion (epilepsy / vestibular safety) */
-      @media (prefers-reduced-motion: reduce){
-        html{scroll-behavior:auto}
-        *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
     <a class="skip-link" href="#launch">Skip to content</a>
     <header class="top">
@@ -4373,19 +4578,169 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
     </script>
     <script>
       // A11y: announce that external links open in a new tab.
-      document.querySelectorAll('a[target="_blank"]').forEach(function(a){
-        if(!a.querySelector('.sr-only')){
-          var n=document.createElement('span');
-          n.className='sr-only';n.textContent=' (opens in new tab)';
+      document.querySelectorAll('a[target="_blank"]').forEach(function (a) {
+        if (!a.querySelector(".sr-only")) {
+          var n = document.createElement("span");
+          n.className = "sr-only";
+          n.textContent = " (opens in new tab)";
           a.appendChild(n);
         }
       });
     </script>
+    <script>
+      // ===== Bespoke visual polish (additive; observes existing DOM state only) =====
+      // Decoupled from the main app: it never changes mechanics, scoring,
+      // answer-checking, or saved values. It only adds motion classes and a
+      // mobile jump bar by watching classes the main script already toggles.
+      (function () {
+        "use strict";
+        var reduce =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        // ---- 1. Hero parallax glow (leverages shared GameFX [data-parallax]) ----
+        function initHeroParallax() {
+          var hero = document.querySelector("#launch .hero");
+          if (!hero || hero.querySelector(".hero-glow")) return;
+          var glow = document.createElement("span");
+          glow.className = "hero-glow deco";
+          glow.setAttribute("data-parallax-layer", "");
+          glow.setAttribute("aria-hidden", "true");
+          hero.insertBefore(glow, hero.firstChild);
+          // GameFX reads [data-parallax] on the container and moves
+          // [data-parallax-layer]/.deco children on pointer move. Reduced
+          // motion is honored inside GameFX as well.
+          if (!reduce) hero.setAttribute("data-parallax", "");
+        }
+
+        // ---- 2. Step checkmark bounce: replay when a step newly turns .done ----
+        function initStepBounce() {
+          if (reduce) return;
+          document
+            .querySelectorAll(".group-page .steps")
+            .forEach(function (ol) {
+              ol.querySelectorAll(":scope > li").forEach(function (li) {
+                // Seed initial state so already-complete steps don't bounce on load.
+                li.dataset.wasDone = li.classList.contains("done") ? "1" : "0";
+              });
+              var obs = new MutationObserver(function (records) {
+                records.forEach(function (rec) {
+                  var li = rec.target;
+                  if (li.tagName !== "LI") return;
+                  var nowDone = li.classList.contains("done");
+                  var wasDone = li.dataset.wasDone === "1";
+                  if (nowDone && !wasDone) {
+                    li.classList.remove("just-done");
+                    // reflow to restart the animation reliably
+                    void li.offsetWidth;
+                    li.classList.add("just-done");
+                    if (
+                      window.GameFX &&
+                      typeof window.GameFX.celebrate === "function"
+                    ) {
+                      var badge = li.querySelector(".step-head span");
+                      if (badge) window.GameFX.celebrate(badge);
+                    }
+                    li.addEventListener(
+                      "animationend",
+                      function handler() {
+                        li.classList.remove("just-done");
+                        li.removeEventListener("animationend", handler);
+                      },
+                      { once: true },
+                    );
+                  }
+                  li.dataset.wasDone = nowDone ? "1" : "0";
+                });
+              });
+              ol.querySelectorAll(":scope > li").forEach(function (li) {
+                obs.observe(li, {
+                  attributes: true,
+                  attributeFilter: ["class"],
+                });
+              });
+            });
+        }
+
+        // ---- 3. Tab-panel entrance: replay fade+slide when a page activates ----
+        function initPanelEntrance() {
+          if (reduce) return;
+          document.querySelectorAll(".page").forEach(function (page) {
+            page.dataset.wasActive = page.classList.contains("active")
+              ? "1"
+              : "0";
+          });
+          var obs = new MutationObserver(function (records) {
+            records.forEach(function (rec) {
+              var page = rec.target;
+              if (!page.classList || !page.classList.contains("page")) return;
+              var nowActive = page.classList.contains("active");
+              var wasActive = page.dataset.wasActive === "1";
+              if (nowActive && !wasActive) {
+                page.classList.remove("entering");
+                void page.offsetWidth;
+                page.classList.add("entering");
+                page.addEventListener(
+                  "animationend",
+                  function handler() {
+                    page.classList.remove("entering");
+                    page.removeEventListener("animationend", handler);
+                  },
+                  { once: true },
+                );
+              }
+              page.dataset.wasActive = nowActive ? "1" : "0";
+            });
+          });
+          document.querySelectorAll(".page").forEach(function (page) {
+            obs.observe(page, {
+              attributes: true,
+              attributeFilter: ["class"],
+            });
+          });
+        }
+
+        // ---- 4. Mobile sticky jump bar on the group menu (small screens only) ----
+        function initMobileJump() {
+          var menu = document.querySelector("#menu .group-menu");
+          if (!menu || document.querySelector("#menu .mobile-jump")) return;
+          var bar = document.createElement("nav");
+          bar.className = "mobile-jump";
+          bar.setAttribute("aria-label", "Jump to a group");
+          for (var i = 1; i <= 6; i += 1) {
+            var a = document.createElement("a");
+            a.href = "#group-" + i;
+            a.setAttribute("data-open-page", "group-" + i);
+            a.textContent = "Group " + i;
+            bar.appendChild(a);
+          }
+          menu.parentNode.insertBefore(bar, menu);
+          // Clicks are handled by the existing delegated [data-open-page] handler.
+        }
+
+        function init() {
+          try {
+            initHeroParallax();
+            initStepBounce();
+            initPanelEntrance();
+            initMobileJump();
+          } catch (err) {
+            /* never break the activity over decorative polish */
+          }
+        }
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", init);
+        } else {
+          init();
+        }
+      })();
+    </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

@@ -788,14 +788,192 @@
         margin-top: auto;
         background: rgba(7, 9, 19, 0.8);
       }
+
+      /* ===== Bespoke visual polish (additive, motion-safe) ===== */
+
+      /* Confetti/star burst canvas overlays the whole page, never blocks input */
+      #fx-confetti {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1800;
+      }
+
+      /* Parallax starfield behind the star-map (gentle drift on pointer) */
+      .work-card {
+        overflow: hidden;
+      }
+      .map-parallax {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        overflow: hidden;
+        border-radius: var(--radius-lg);
+      }
+      .map-parallax .star-layer {
+        position: absolute;
+        inset: -8%;
+        will-change: transform;
+        transform: translate3d(0, 0, 0);
+        transition: transform 0.18s ease-out;
+      }
+      .map-parallax .star-layer.l1 {
+        background-image:
+          radial-gradient(
+            1.4px 1.4px at 20% 30%,
+            rgba(255, 255, 255, 0.5),
+            transparent
+          ),
+          radial-gradient(
+            1.2px 1.2px at 70% 60%,
+            rgba(147, 197, 253, 0.5),
+            transparent
+          ),
+          radial-gradient(
+            1.6px 1.6px at 45% 85%,
+            rgba(255, 255, 255, 0.4),
+            transparent
+          ),
+          radial-gradient(
+            1.2px 1.2px at 85% 20%,
+            rgba(236, 72, 153, 0.35),
+            transparent
+          );
+      }
+      .map-parallax .star-layer.l2 {
+        background-image:
+          radial-gradient(
+            1px 1px at 12% 70%,
+            rgba(255, 255, 255, 0.35),
+            transparent
+          ),
+          radial-gradient(
+            1px 1px at 60% 15%,
+            rgba(16, 185, 129, 0.3),
+            transparent
+          ),
+          radial-gradient(
+            1px 1px at 90% 75%,
+            rgba(255, 255, 255, 0.3),
+            transparent
+          ),
+          radial-gradient(
+            1px 1px at 33% 45%,
+            rgba(245, 158, 11, 0.3),
+            transparent
+          );
+      }
+      .work-card > .work-card-title,
+      .work-card > .svg-viewport {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Active vertex halo breathes (the SVG circle gets this class) */
+      @keyframes haloBreathe {
+        0%,
+        100% {
+          stroke-opacity: 0.25;
+          stroke-width: 2;
+        }
+        50% {
+          stroke-opacity: 0.7;
+          stroke-width: 3.4;
+        }
+      }
+      .svg-halo {
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: haloBreathe 1.9s ease-in-out infinite;
+      }
+
+      /* Mission-3 rect outline marches when the box is nearly right */
+      @keyframes rectMarch {
+        to {
+          stroke-dashoffset: -28;
+        }
+      }
+      .rect-nearly {
+        stroke-dasharray: 7 7;
+        animation: rectMarch 0.9s linear infinite;
+      }
+
+      /* Vocab icon tooltip */
+      .vocab-icon {
+        position: relative;
+      }
+      .vocab-icon[data-tip]::after {
+        content: attr(data-tip);
+        position: absolute;
+        left: 50%;
+        bottom: calc(100% + 8px);
+        transform: translateX(-50%) translateY(4px);
+        min-width: 150px;
+        max-width: 230px;
+        background: #020411;
+        color: var(--gray-300);
+        border: 1px solid rgba(59, 130, 246, 0.4);
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 0.74rem;
+        line-height: 1.35;
+        font-weight: 500;
+        text-align: left;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6);
+        opacity: 0;
+        pointer-events: none;
+        z-index: 50;
+        transition:
+          opacity 0.18s ease,
+          transform 0.18s ease;
+      }
+      .vocab-icon[data-tip]:hover::after,
+      .vocab-icon[data-tip]:focus-visible::after {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      .vocab-icon[data-tip] {
+        cursor: help;
+      }
+
+      @media (max-width: 1024px) {
+        .vocab-icon[data-tip]::after {
+          left: 0;
+          transform: translateX(0) translateY(4px);
+        }
+        .vocab-icon[data-tip]:hover::after,
+        .vocab-icon[data-tip]:focus-visible::after {
+          transform: translateX(0) translateY(0);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .map-parallax .star-layer {
+          transition: none !important;
+          transform: none !important;
+        }
+        .svg-halo {
+          animation: none !important;
+          stroke-opacity: 0.5;
+        }
+        .rect-nearly {
+          animation: none !important;
+        }
+        .vocab-icon[data-tip]::after {
+          transition: opacity 0.1s ease;
+        }
+      }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
     <header>
       <div class="logo-wrap">
@@ -878,6 +1056,11 @@
       <div class="workspace">
         <!-- 4-Quadrant Interactive Plane -->
         <div class="work-card">
+          <!-- Parallax starfield (decorative, pointer-driven, motion-safe) -->
+          <div class="map-parallax" id="map-parallax" aria-hidden="true">
+            <div class="star-layer l1" data-depth="14"></div>
+            <div class="star-layer l2" data-depth="28"></div>
+          </div>
           <div class="work-card-title">
             <svg
               width="20"
@@ -972,6 +1155,9 @@
         Close
       </button>
     </div>
+
+    <!-- Mission-complete particle burst (decorative, non-blocking) -->
+    <canvas id="fx-confetti" aria-hidden="true"></canvas>
 
     <!-- Success toast -->
     <div class="toast" id="toast"><span id="toast-text"></span></div>
@@ -1351,6 +1537,8 @@
               STATE.completedQuests.push(q.id);
               // Celebrate: surface a friendly toast when a mission is finished
               showToast(TRANSLATIONS[STATE.language]["toast-quest"]);
+              // Bespoke particle burst (no-op under reduced motion)
+              FX.burst();
             }
           }
         });
@@ -1466,16 +1654,29 @@
       function renderVocab() {
         const lang = STATE.language;
         const grid = document.getElementById("vocab-grid");
-        grid.innerHTML = VOCAB.map(
-          (v) => `
+        grid.innerHTML = VOCAB.map((v) => {
+          const term = lang === "es" ? v.term_es : v.term;
+          const def = lang === "es" ? v.def_es : v.def;
+          // Hover/focus tooltip restates the term's meaning briefly
+          const tip = escAttr(`${term}: ${def}`);
+          return `
             <div class="vocab-item">
-              <div class="vocab-icon">${v.icon}</div>
+              <div class="vocab-icon" tabindex="0" data-tip="${tip}" aria-label="${tip}">${v.icon}</div>
               <div class="vocab-text">
-                <div class="term">${lang === "es" ? v.term_es : v.term}</div>
-                <div class="def">${lang === "es" ? v.def_es : v.def}</div>
+                <div class="term">${term}</div>
+                <div class="def">${def}</div>
               </div>
-            </div>`,
-        ).join("");
+            </div>`;
+        }).join("");
+      }
+
+      // Escape text for safe use inside an HTML attribute value
+      function escAttr(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/"/g, "&quot;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
       }
 
       function renderQuestList() {
@@ -1644,13 +1845,23 @@
           const tyPos = cy - Math.max(points[0].y, points[2].y) * scale;
           const byPos = cy - Math.min(points[0].y, points[2].y) * scale;
 
-          svg.innerHTML += `<rect x="${lxPos}" y="${tyPos}" width="${rxPos - lxPos}" height="${byPos - tyPos}" fill="rgba(236, 72, 153, 0.08)" stroke="var(--pink)" stroke-width="3" />`;
-
           // Calculate distance parameters
           const w = abX;
           const h = bcY;
           const perimeter = 2 * (w + h);
           const area = w * h;
+
+          // Mission 3 target is perimeter 16. If the box is a valid rectangle but
+          // not yet exactly 16 (within 2 units), march the outline to nudge the
+          // student. Purely visual — does NOT affect the win validator.
+          const m3Done = STATE.completedQuests.includes(3);
+          const nearly =
+            !m3Done &&
+            perimeter !== 16 &&
+            Math.abs(perimeter - 16) <= 2 &&
+            perimeter > 0;
+
+          svg.innerHTML += `<rect class="${nearly ? "rect-nearly" : ""}" x="${lxPos}" y="${tyPos}" width="${rxPos - lxPos}" height="${byPos - tyPos}" fill="rgba(236, 72, 153, 0.08)" stroke="var(--pink)" stroke-width="3" />`;
 
           distMathStr = `Rectangle: Width = ${w}, Height = ${h}<br>Perimeter = 2(${w} + ${h}) = ${perimeter} units<br>Area = ${w} × ${h} = ${area} sq units`;
         }
@@ -1710,7 +1921,7 @@
           const isActive = STATE.activePointId === p.id;
 
           svg.innerHTML += `
-                    ${isActive ? `<circle cx="${px}" cy="${py}" r="14" fill="none" stroke="${p.color}" stroke-width="2" opacity="0.4" />` : ""}
+                    ${isActive ? `<circle class="svg-halo" cx="${px}" cy="${py}" r="14" fill="none" stroke="${p.color}" stroke-width="2" opacity="0.4" />` : ""}
                     <circle class="svg-hit" data-idx="${idx}" cx="${px}" cy="${py}" r="16" fill="transparent" />
                     <circle class="svg-vertex" data-idx="${idx}" cx="${px}" cy="${py}" r="${isActive ? 10 : 8}" fill="${p.color}" stroke="var(--white)" stroke-width="2" pointer-events="none" />
                     <text x="${px + 12}" y="${py - 11}" font-family="var(--font-display)" font-size="13" font-weight="900" fill="${p.color}" pointer-events="none">${p.id}</text>
@@ -1951,17 +2162,199 @@
         }
       }
 
+      // ==========================================
+      // 7. BESPOKE VISUAL FX (additive, motion-safe)
+      //    Confetti/star burst + pointer parallax.
+      //    All motion is gated on prefers-reduced-motion.
+      // ==========================================
+      const FX = (() => {
+        const reduceMQ =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)");
+        const prefersReduce = () => !!(reduceMQ && reduceMQ.matches);
+
+        // ---- Confetti / star burst (procedural canvas) ----
+        let canvas,
+          ctx,
+          particles = [],
+          rafId = null,
+          dpr = 1;
+        const PALETTE = ["#3b82f6", "#10b981", "#f59e0b", "#ec4899", "#ffffff"];
+        const MAX_PARTICLES = 140; // cap for Chromebook smoothness
+
+        function sizeCanvas() {
+          if (!canvas) return;
+          dpr = Math.min(window.devicePixelRatio || 1, 2);
+          canvas.width = Math.floor(window.innerWidth * dpr);
+          canvas.height = Math.floor(window.innerHeight * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        function ensureCanvas() {
+          if (canvas) return;
+          canvas = document.getElementById("fx-confetti");
+          if (!canvas) return;
+          ctx = canvas.getContext("2d");
+          sizeCanvas();
+          window.addEventListener("resize", sizeCanvas, { passive: true });
+        }
+
+        function spawn(cx, cy, count) {
+          for (let i = 0; i < count; i++) {
+            if (particles.length >= MAX_PARTICLES) break;
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 3 + Math.random() * 6;
+            const star = Math.random() < 0.4;
+            particles.push({
+              x: cx,
+              y: cy,
+              vx: Math.cos(angle) * speed,
+              vy: Math.sin(angle) * speed - 4,
+              size: star ? 5 + Math.random() * 5 : 4 + Math.random() * 5,
+              rot: Math.random() * Math.PI,
+              vrot: (Math.random() - 0.5) * 0.3,
+              color: PALETTE[(Math.random() * PALETTE.length) | 0],
+              life: 1,
+              decay: 0.008 + Math.random() * 0.01,
+              star,
+            });
+          }
+        }
+
+        function drawStar(x, y, r, rot) {
+          ctx.beginPath();
+          for (let i = 0; i < 5; i++) {
+            const a = rot + (i * 2 * Math.PI) / 5 - Math.PI / 2;
+            const a2 = a + Math.PI / 5;
+            ctx.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r);
+            ctx.lineTo(
+              x + Math.cos(a2) * r * 0.45,
+              y + Math.sin(a2) * r * 0.45,
+            );
+          }
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        function tick() {
+          if (!ctx) return;
+          ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+          for (let i = particles.length - 1; i >= 0; i--) {
+            const p = particles[i];
+            p.vy += 0.16; // gravity
+            p.vx *= 0.99;
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rot += p.vrot;
+            p.life -= p.decay;
+            if (p.life <= 0 || p.y > window.innerHeight + 40) {
+              particles.splice(i, 1);
+              continue;
+            }
+            ctx.globalAlpha = Math.max(0, Math.min(1, p.life));
+            ctx.fillStyle = p.color;
+            if (p.star) {
+              drawStar(p.x, p.y, p.size, p.rot);
+            } else {
+              ctx.save();
+              ctx.translate(p.x, p.y);
+              ctx.rotate(p.rot);
+              ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+              ctx.restore();
+            }
+          }
+          ctx.globalAlpha = 1;
+          if (particles.length > 0) {
+            rafId = requestAnimationFrame(tick);
+          } else {
+            cancelAnimationFrame(rafId);
+            rafId = null;
+            ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+          }
+        }
+
+        function burst() {
+          if (prefersReduce()) return;
+          ensureCanvas();
+          if (!ctx) return;
+          const cx = window.innerWidth / 2;
+          const cy = window.innerHeight * 0.32;
+          spawn(cx, cy, 90);
+          spawn(cx - 90, cy + 20, 30);
+          spawn(cx + 90, cy + 20, 30);
+          if (!rafId) rafId = requestAnimationFrame(tick);
+        }
+
+        // ---- Pointer parallax for the star-map backdrop ----
+        function initParallax() {
+          const wrap = document.querySelector(".work-card");
+          const host = document.getElementById("map-parallax");
+          if (!wrap || !host) return;
+          const layers = Array.from(host.querySelectorAll(".star-layer"));
+          let targetX = 0,
+            targetY = 0,
+            curX = 0,
+            curY = 0,
+            ticking = false;
+
+          function loop() {
+            curX += (targetX - curX) * 0.12;
+            curY += (targetY - curY) * 0.12;
+            layers.forEach((l) => {
+              const d = parseFloat(l.getAttribute("data-depth")) || 12;
+              l.style.transform = `translate3d(${(curX * d).toFixed(2)}px, ${(curY * d).toFixed(2)}px, 0)`;
+            });
+            if (
+              Math.abs(targetX - curX) > 0.001 ||
+              Math.abs(targetY - curY) > 0.001
+            ) {
+              requestAnimationFrame(loop);
+            } else {
+              ticking = false;
+            }
+          }
+
+          function onMove(e) {
+            if (prefersReduce()) return;
+            const r = wrap.getBoundingClientRect();
+            const px = e.touches ? e.touches[0].clientX : e.clientX;
+            const py = e.touches ? e.touches[0].clientY : e.clientY;
+            // -0.5 .. 0.5 relative to card center
+            targetX = (px - r.left) / r.width - 0.5;
+            targetY = (py - r.top) / r.height - 0.5;
+            if (!ticking) {
+              ticking = true;
+              requestAnimationFrame(loop);
+            }
+          }
+          function onLeave() {
+            targetX = 0;
+            targetY = 0;
+            if (!ticking) {
+              ticking = true;
+              requestAnimationFrame(loop);
+            }
+          }
+
+          wrap.addEventListener("pointermove", onMove, { passive: true });
+          wrap.addEventListener("pointerleave", onLeave, { passive: true });
+        }
+
+        return { burst, initParallax };
+      })();
+
       // Initialize application
       window.addEventListener("DOMContentLoaded", () => {
         renderUI();
         setupDragEvents();
+        FX.initParallax();
       });
     </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

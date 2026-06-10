@@ -670,12 +670,232 @@
         }
       }
 
+      /* ===== Additive visual polish (motion-gated below) ===== */
+
+      /* Parallax depth layer behind the hero crest/title */
+      .museum-hero {
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
+      }
+      .hero-depth {
+        position: absolute;
+        inset: -20% -10%;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            420px 260px at 18% 0%,
+            rgba(18, 108, 120, 0.16),
+            rgba(18, 108, 120, 0) 70%
+          ),
+          radial-gradient(
+            360px 240px at 92% 120%,
+            rgba(185, 130, 26, 0.14),
+            rgba(185, 130, 26, 0) 70%
+          );
+        will-change: transform;
+      }
+
+      /* Subtle gradient depth that shifts as students step forward */
+      body {
+        --depth-shift: 0;
+        transition: background-color 0.6s ease;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        opacity: calc(0.05 + var(--depth-shift) * 0.16);
+        background: linear-gradient(
+          155deg,
+          rgba(18, 108, 120, 0.5),
+          rgba(185, 130, 26, 0.32) 55%,
+          rgba(18, 108, 120, 0) 100%
+        );
+        transition: opacity 0.7s ease;
+      }
+
+      /* Step entrance fade-in + lift */
+      .step.active.step-enter {
+        animation: stepFade 360ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+      }
+      @keyframes stepFade {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      /* Card / block stagger entrance within a step */
+      .step.active.step-enter .frame,
+      .step.active.step-enter .clue-box,
+      .step.active.step-enter .curator-note,
+      .step.active.step-enter .error-grid,
+      .step.active.step-enter .exhibit-card,
+      .step.active.step-enter .info-strip,
+      .step.active.step-enter .starters,
+      .step.active.step-enter .review-card {
+        animation: cardRise 420ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+      }
+      .step.active.step-enter .frame {
+        animation-delay: 60ms;
+      }
+      .step.active.step-enter .clue-box {
+        animation-delay: 360ms;
+      }
+      .step.active.step-enter .curator-note {
+        animation-delay: 60ms;
+      }
+      .step.active.step-enter .error-grid {
+        animation-delay: 360ms;
+      }
+      .step.active.step-enter .exhibit-card {
+        animation-delay: 60ms;
+      }
+      .step.active.step-enter .info-strip {
+        animation-delay: 360ms;
+      }
+      .step.active.step-enter .starters {
+        animation-delay: 60ms;
+      }
+      .step.active.step-enter .review-card:nth-of-type(1) {
+        animation-delay: 60ms;
+      }
+      .step.active.step-enter .review-card:nth-of-type(2) {
+        animation-delay: 180ms;
+      }
+      .step.active.step-enter .review-card:nth-of-type(3) {
+        animation-delay: 300ms;
+      }
+      .step.active.step-enter .review-card:nth-of-type(4) {
+        animation-delay: 420ms;
+      }
+      @keyframes cardRise {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      /* Stepper bubble hover tooltip showing the step title */
+      .step-dot {
+        position: relative;
+      }
+      .step-dot[data-title]::after {
+        content: attr(data-title);
+        position: absolute;
+        bottom: calc(100% + 6px);
+        left: 50%;
+        transform: translateX(-50%) translateY(4px) scale(0.96);
+        z-index: 5;
+        padding: 5px 10px;
+        border-radius: 8px;
+        background: var(--museum-ink);
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 700;
+        white-space: nowrap;
+        letter-spacing: 0.01em;
+        box-shadow: 0 6px 16px rgba(20, 32, 46, 0.28);
+        opacity: 0;
+        pointer-events: none;
+        transition:
+          opacity 0.16s ease,
+          transform 0.16s ease;
+      }
+      .step-dot[data-title]:hover::after,
+      .step-dot[data-title]:focus-visible::after {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1);
+      }
+
+      /* Success juice: checkmark + glow pulse on freshly-completed bubbles */
+      .step-dot.done .bubble {
+        position: relative;
+      }
+      .step-dot.done .bubble::after {
+        content: "✓";
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--museum-green);
+        font-size: 1.25rem;
+        font-weight: 900;
+      }
+      .step-dot.done.just-done .bubble {
+        animation: bubbleGlow 720ms ease-out 1;
+      }
+      .step-dot.done.just-done .bubble::after {
+        animation: checkPop 520ms cubic-bezier(0.2, 1.5, 0.4, 1) 1;
+      }
+      @keyframes bubbleGlow {
+        0% {
+          box-shadow: 0 0 0 0 rgba(31, 107, 72, 0.5);
+        }
+        60% {
+          box-shadow: 0 0 0 10px rgba(31, 107, 72, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(31, 107, 72, 0);
+        }
+      }
+      @keyframes checkPop {
+        0% {
+          transform: scale(0) rotate(-25deg);
+          opacity: 0;
+        }
+        60% {
+          transform: scale(1.25) rotate(6deg);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1) rotate(0);
+          opacity: 1;
+        }
+      }
+
       @media (prefers-reduced-motion: reduce) {
         .skip-link {
           transition: none;
         }
         * {
           scroll-behavior: auto !important;
+        }
+        .hero-depth {
+          display: none;
+        }
+        body,
+        body::before {
+          transition: none;
+        }
+        .step.active.step-enter,
+        .step.active.step-enter .frame,
+        .step.active.step-enter .clue-box,
+        .step.active.step-enter .curator-note,
+        .step.active.step-enter .error-grid,
+        .step.active.step-enter .exhibit-card,
+        .step.active.step-enter .info-strip,
+        .step.active.step-enter .starters,
+        .step.active.step-enter .review-card,
+        .step-dot.done.just-done .bubble,
+        .step-dot.done.just-done .bubble::after {
+          animation: none !important;
+        }
+        .step-dot[data-title]::after {
+          transition: none;
         }
       }
 
@@ -720,16 +940,21 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
     <a class="skip-link" href="#stepRegion">Skip to the museum activity</a>
     <main class="museum-shell">
-      <header class="museum-hero">
+      <header class="museum-hero" data-parallax>
+        <span
+          class="hero-depth deco"
+          data-parallax-layer
+          aria-hidden="true"
+        ></span>
         <svg
           class="crest"
           viewBox="0 0 64 64"
@@ -958,13 +1183,45 @@
               style="min-height: 90px"
             ></textarea>
 
-            <div style="background:#fff9e6; border: 1px solid #ffd8a8; padding: 15px; border-radius: 12px; margin-top: 20px;" class="no-print">
-              <label class="write-label" for="curatorName" style="color:#d9480f; margin-bottom: 4px;">👤 Curator Name (For Certification Badge)</label>
-              <p class="hint" style="margin-bottom:10px;">Enter your name to generate your official, printable certified Gold Star Curator Badge below.</p>
-              <input type="text" id="curatorName" placeholder="Enter your name..." style="width:100%; border: 2px solid var(--museum-line); border-radius:10px; padding: 10px 12px; background: white; color: var(--museum-ink);" />
+            <div
+              style="
+                background: #fff9e6;
+                border: 1px solid #ffd8a8;
+                padding: 15px;
+                border-radius: 12px;
+                margin-top: 20px;
+              "
+              class="no-print"
+            >
+              <label
+                class="write-label"
+                for="curatorName"
+                style="color: #d9480f; margin-bottom: 4px"
+                >👤 Curator Name (For Certification Badge)</label
+              >
+              <p class="hint" style="margin-bottom: 10px">
+                Enter your name to generate your official, printable certified
+                Gold Star Curator Badge below.
+              </p>
+              <input
+                type="text"
+                id="curatorName"
+                placeholder="Enter your name..."
+                style="
+                  width: 100%;
+                  border: 2px solid var(--museum-line);
+                  border-radius: 10px;
+                  padding: 10px 12px;
+                  background: white;
+                  color: var(--museum-ink);
+                "
+              />
             </div>
 
-            <div id="curatorBadgeWrap" style="margin-top: 24px; display: none;"></div>
+            <div
+              id="curatorBadgeWrap"
+              style="margin-top: 24px; display: none"
+            ></div>
 
             <h3 style="margin-top: 24px">📋 Your Finished Exhibit</h3>
             <p class="print-only" id="printClusterTitle"></p>
@@ -1036,6 +1293,22 @@
         var TOTAL_STEPS = 5;
 
         var STEP_LABELS = ["Pick", "Look", "Why", "Fix", "Label"];
+        var STEP_TITLES = [
+          "Step 1 · Pick a Mistake",
+          "Step 2 · Look at the Mistake",
+          "Step 3 · Why It Tricks People",
+          "Step 4 · Fix the Math",
+          "Step 5 · Write a Warning Label",
+        ];
+
+        // Shared reduced-motion guard for all bespoke polish.
+        var reduceMotionMQ =
+          typeof window.matchMedia === "function"
+            ? window.matchMedia("(prefers-reduced-motion: reduce)")
+            : null;
+        function motionOK() {
+          return !(reduceMotionMQ && reduceMotionMQ.matches);
+        }
 
         var ERROR_TYPES = [
           { label: "Wrong operation", emoji: "➕" },
@@ -1706,6 +1979,8 @@
               "<li>",
               '<button type="button" class="step-dot" data-step="' +
                 index +
+                '" data-title="' +
+                escapeHtml(STEP_TITLES[index] || label) +
                 '">',
               '<span class="bubble" aria-hidden="true">' +
                 (index + 1) +
@@ -1721,8 +1996,42 @@
               dot.addEventListener("click", function () {
                 goToStep(Number(dot.getAttribute("data-step")));
               });
+              // Keyboard: Enter/Space steps forward; Shift+Enter steps back;
+              // Arrow keys move focus between stepper bubbles. Tab/Shift+Tab
+              // already traverse the buttons natively.
+              dot.addEventListener("keydown", function (event) {
+                var step = Number(dot.getAttribute("data-step"));
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  goToStep(event.shiftKey ? step - 1 : step + 1);
+                } else if (
+                  event.key === "ArrowRight" ||
+                  event.key === "ArrowDown"
+                ) {
+                  event.preventDefault();
+                  focusStepDot(step + 1);
+                } else if (
+                  event.key === "ArrowLeft" ||
+                  event.key === "ArrowUp"
+                ) {
+                  event.preventDefault();
+                  focusStepDot(step - 1);
+                }
+              });
             },
           );
+        }
+
+        function focusStepDot(index) {
+          if (index < 0 || index > TOTAL_STEPS - 1) {
+            return;
+          }
+          var dot = el.stepper.querySelector(
+            '.step-dot[data-step="' + index + '"]',
+          );
+          if (dot) {
+            dot.focus();
+          }
         }
 
         function renderCluster(cluster) {
@@ -1929,12 +2238,12 @@
         }
 
         function renderCuratorBadge() {
-          var name = el.curatorName.value.trim() || 'Star Curator';
+          var name = el.curatorName.value.trim() || "Star Curator";
           var topic = currentCluster.title;
           var date = new Date().toLocaleDateString();
           var wrap = el.curatorBadgeWrap;
           if (!wrap) return;
-          
+
           var svg = `
             <svg width="100%" height="auto" viewBox="0 0 600 420" xmlns="http://www.w3.org/2000/svg" style="background:#fff; border: 8px solid var(--museum-gold); border-radius: 16px; box-shadow: var(--museum-shadow); display:block; margin:20px auto; max-width:600px;">
               <rect x="15" y="15" width="570" height="390" fill="#fcfaf2" stroke="var(--museum-gold)" stroke-width="2"/>
@@ -1975,7 +2284,7 @@
             </svg>
           `;
           wrap.innerHTML = svg;
-          wrap.style.display = 'block';
+          wrap.style.display = "block";
         }
 
         function refreshReview() {
@@ -1993,11 +2302,11 @@
             el.warningText.value,
             "Not written yet.",
           );
-          
+
           if (el.curatorName && el.curatorName.value.trim()) {
             renderCuratorBadge();
           } else if (el.curatorBadgeWrap) {
-            el.curatorBadgeWrap.style.display = 'none';
+            el.curatorBadgeWrap.style.display = "none";
           }
         }
 
@@ -2019,6 +2328,7 @@
           if (index > TOTAL_STEPS - 1) {
             index = TOTAL_STEPS - 1;
           }
+          var previousStep = currentStep;
           currentStep = index;
           stepSections.forEach(function (section, i) {
             var active = i === index;
@@ -2028,11 +2338,13 @@
           if (index === TOTAL_STEPS - 1) {
             refreshReview();
           }
-          updateStepper();
+          updateStepper(previousStep);
           el.backButton.hidden = index === 0;
           el.nextButton.hidden = index === TOTAL_STEPS - 1;
           el.progressText.textContent =
             "Step " + (index + 1) + " of " + TOTAL_STEPS;
+          playStepEntrance(stepSections[index]);
+          shiftDepth(index);
           stepSections[index].focus();
           stepSections[index].scrollIntoView({
             block: "start",
@@ -2040,19 +2352,71 @@
           });
         }
 
-        function updateStepper() {
+        // Replay the entrance fade/stagger by retriggering the CSS animation.
+        function playStepEntrance(section) {
+          if (!section || !motionOK()) {
+            return;
+          }
+          section.classList.remove("step-enter");
+          // Force reflow so the animation restarts cleanly on each visit.
+          void section.offsetWidth;
+          section.classList.add("step-enter");
+        }
+
+        // Subtle background gradient depth that deepens as students advance.
+        function shiftDepth(index) {
+          if (!motionOK()) {
+            return;
+          }
+          var ratio = TOTAL_STEPS > 1 ? index / (TOTAL_STEPS - 1) : 0;
+          document.body.style.setProperty("--depth-shift", String(ratio));
+        }
+
+        function updateStepper(previousStep) {
           Array.prototype.forEach.call(
             el.stepper.querySelectorAll(".step-dot"),
             function (dot) {
               var step = Number(dot.getAttribute("data-step"));
-              dot.classList.toggle("done", step < currentStep);
+              var wasDone = dot.classList.contains("done");
+              var isDone = step < currentStep;
+              dot.classList.toggle("done", isDone);
               if (step === currentStep) {
                 dot.setAttribute("aria-current", "step");
               } else {
                 dot.removeAttribute("aria-current");
               }
+              // Success juice only on bubbles that just became complete by
+              // moving forward (not on load, jump-back, or replays).
+              if (
+                isDone &&
+                !wasDone &&
+                typeof previousStep === "number" &&
+                currentStep > previousStep
+              ) {
+                celebrateBubble(dot);
+              } else if (!isDone) {
+                dot.classList.remove("just-done");
+              }
             },
           );
+        }
+
+        function celebrateBubble(dot) {
+          if (!motionOK()) {
+            return;
+          }
+          dot.classList.remove("just-done");
+          void dot.offsetWidth;
+          dot.classList.add("just-done");
+          var fx = window.GameFX;
+          if (fx) {
+            var bubble = dot.querySelector(".bubble") || dot;
+            if (typeof fx.celebrate === "function") {
+              fx.celebrate(bubble);
+            } else if (typeof fx.pop === "function") {
+              fx.pop(bubble);
+            }
+          }
         }
 
         // ---- Save / load / copy ----
@@ -2205,7 +2569,8 @@
           );
           el.repairText.addEventListener("input", refreshReview);
           el.warningText.addEventListener("input", refreshReview);
-          if (el.curatorName) el.curatorName.addEventListener("input", refreshReview);
+          if (el.curatorName)
+            el.curatorName.addEventListener("input", refreshReview);
 
           Array.prototype.forEach.call(
             document.querySelectorAll(".chip-row"),
@@ -2242,12 +2607,12 @@
         goToStep(0);
       })();
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>
