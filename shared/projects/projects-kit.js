@@ -468,6 +468,32 @@
     return "pk-tabs:" + (location.pathname || "project");
   }
 
+  /** Direct-child phases under .wrap; reclaim orphans when markup closed .wrap early. */
+  function collectWrapPhases(wrap) {
+    const phases = Array.from(wrap.querySelectorAll(":scope > section.phase"));
+    let node = wrap.nextElementSibling;
+    while (node) {
+      if (node.matches("section.phase")) {
+        wrap.appendChild(node);
+        phases.push(node);
+        node = wrap.nextElementSibling;
+        continue;
+      }
+      if (node.matches("section.pk-visualizer-card, section.pk-dashboard")) {
+        const anchor = phases[phases.length - 1];
+        if (anchor) anchor.appendChild(node);
+        else wrap.appendChild(node);
+        node = wrap.nextElementSibling;
+        continue;
+      }
+      if (node.matches("p.footer, footer")) break;
+      break;
+    }
+    return phases;
+  }
+
+  PK.collectWrapPhases = collectWrapPhases;
+
   PK.initProjectTabs = function (opts) {
     opts = opts || {};
     if (document.body.hasAttribute("data-pk-no-tabs")) return;
@@ -475,7 +501,7 @@
       (opts.wrap && document.querySelector(opts.wrap)) ||
       document.querySelector(".wrap");
     if (!wrap) return;
-    const allPhases = Array.from(wrap.querySelectorAll(":scope > section.phase"));
+    const allPhases = collectWrapPhases(wrap);
     if (allPhases.length < 3) return;
     if (wrap.querySelector(".pk-tabs-wrap")) return;
 

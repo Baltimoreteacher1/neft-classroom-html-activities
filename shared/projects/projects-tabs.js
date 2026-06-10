@@ -301,9 +301,12 @@
     var research = buildResearchPhase();
     if (!research) return;
 
-    var phases = Array.prototype.slice.call(
-      wrap.querySelectorAll(":scope > section.phase"),
-    );
+    var phases =
+      window.PK && typeof window.PK.collectWrapPhases === "function"
+        ? window.PK.collectWrapPhases(wrap)
+        : Array.prototype.slice.call(
+            wrap.querySelectorAll(":scope > section.phase"),
+          );
     if (!phases.length) return;
 
     var vocabPhase = phases[0];
