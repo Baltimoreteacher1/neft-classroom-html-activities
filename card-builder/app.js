@@ -17,7 +17,8 @@
       lessonTitle: "Rates and Unit Rates",
       standard: "6.RP.A.2",
       mainSkill: "compare ratios",
-      lessonSummary: "Students explore how rates appear in real life and learn to compare ratios using unit rates and equivalent ratios.",
+      lessonSummary:
+        "Students explore how rates appear in real life and learn to compare ratios using unit rates and equivalent ratios.",
       studentSupportLevel: "standard",
       includeEsol: false,
       includeSpanishVocab: false,
@@ -35,7 +36,8 @@
       lessonTitle: "Solve One-Step Equations",
       standard: "6.EE.B.7",
       mainSkill: "solve one-step equations",
-      lessonSummary: "Students use inverse operations to solve equations with addition, subtraction, multiplication, and division.",
+      lessonSummary:
+        "Students use inverse operations to solve equations with addition, subtraction, multiplication, and division.",
       studentSupportLevel: "standard",
       includeEsol: false,
       includeSpanishVocab: false,
@@ -53,7 +55,8 @@
       lessonTitle: "Mean, Median, and Mode",
       standard: "6.SP.B.5",
       mainSkill: "find mean median and mode",
-      lessonSummary: "Students collect and analyze data sets to find measures of center.",
+      lessonSummary:
+        "Students collect and analyze data sets to find measures of center.",
       studentSupportLevel: "standard",
       includeEsol: true,
       includeSpanishVocab: true,
@@ -71,7 +74,8 @@
       lessonTitle: "Add Fractions with Unlike Denominators",
       standard: "5.NF.A.1",
       mainSkill: "add fractions with unlike denominators",
-      lessonSummary: "Students find common denominators to add fractions in real-world recipe problems.",
+      lessonSummary:
+        "Students find common denominators to add fractions in real-world recipe problems.",
       studentSupportLevel: "extra-scaffolded",
       includeEsol: true,
       includeSpanishVocab: false,
@@ -89,7 +93,8 @@
       lessonTitle: "Two-Step Equations",
       standard: "7.EE.B.4a",
       mainSkill: "solve two-step equations",
-      lessonSummary: "Students solve equations that require two inverse operations, including equations with parentheses.",
+      lessonSummary:
+        "Students solve equations that require two inverse operations, including equations with parentheses.",
       studentSupportLevel: "standard",
       includeEsol: false,
       includeSpanishVocab: false,
@@ -107,7 +112,8 @@
       lessonTitle: "Linear Functions",
       standard: "8.F.A.3",
       mainSkill: "graph and interpret linear functions",
-      lessonSummary: "Students identify linear relationships, write equations, and interpret slope in context.",
+      lessonSummary:
+        "Students identify linear relationships, write equations, and interpret slope in context.",
       studentSupportLevel: "challenge",
       includeEsol: false,
       includeSpanishVocab: false,
@@ -266,8 +272,7 @@
     },
     {
       test: /solve/i,
-      build: (skill) =>
-        `I can solve problems by ${methodForSkill(skill)}.`,
+      build: (skill) => `I can solve problems by ${methodForSkill(skill)}.`,
     },
     {
       test: /find/i,
@@ -276,8 +281,7 @@
     },
     {
       test: /compare/i,
-      build: (skill) =>
-        `I can compare quantities by ${methodForSkill(skill)}.`,
+      build: (skill) => `I can compare quantities by ${methodForSkill(skill)}.`,
     },
     {
       test: /add|subtract|multiply|divide/i,
@@ -314,12 +318,17 @@
 
   function methodForSkill(skill) {
     const s = cleanSkillPhrase(skill);
-    if (/equation/.test(s)) return "using inverse operations and checking my solution";
-    if (/ratio|rate|percent/.test(s)) return "using equivalent ratios or unit rates";
+    if (/equation/.test(s))
+      return "using inverse operations and checking my solution";
+    if (/ratio|rate|percent/.test(s))
+      return "using equivalent ratios or unit rates";
     if (/fraction/.test(s)) return "using models and common denominators";
-    if (/graph|function|linear/.test(s)) return "creating graphs and interpreting key features";
-    if (/area|volume/.test(s)) return "applying the correct formula and showing my work";
-    if (/data|mean|median|mode/.test(s)) return "organizing data and calculating accurately";
+    if (/graph|function|linear/.test(s))
+      return "creating graphs and interpreting key features";
+    if (/area|volume/.test(s))
+      return "applying the correct formula and showing my work";
+    if (/data|mean|median|mode/.test(s))
+      return "organizing data and calculating accurately";
     return s;
   }
 
@@ -396,7 +405,8 @@
       lessonSummary: document.getElementById("lessonSummary").value.trim(),
       studentSupportLevel: document.getElementById("studentSupportLevel").value,
       includeEsol: document.getElementById("includeEsol").checked,
-      includeSpanishVocab: document.getElementById("includeSpanishVocab").checked,
+      includeSpanishVocab: document.getElementById("includeSpanishVocab")
+        .checked,
       includeTwr: document.getElementById("includeTwr").checked,
       includeChallenge: document.getElementById("includeChallenge").checked,
       includeReadiness: document.getElementById("includeReadiness").checked,
@@ -423,19 +433,20 @@
       data.studentSupportLevel || "standard";
     document.getElementById("includeEsol").checked = Boolean(data.includeEsol);
     document.getElementById("includeSpanishVocab").checked = Boolean(
-      data.includeSpanishVocab
+      data.includeSpanishVocab,
     );
     document.getElementById("includeTwr").checked = Boolean(data.includeTwr);
     document.getElementById("includeChallenge").checked = Boolean(
-      data.includeChallenge
+      data.includeChallenge,
     );
     document.getElementById("extractPath").value = data.extractPath || "";
     syncExtractSelect(data.extractPath || "");
-    document.getElementById("extractSession").value = data.extractSession || "S1";
+    document.getElementById("extractSession").value =
+      data.extractSession || "S1";
     document.getElementById("includeReadiness").checked =
       data.includeReadiness !== false;
     document.getElementById("includeFlagship").checked = Boolean(
-      data.includeFlagship
+      data.includeFlagship,
     );
     document.getElementById("existingLinks").value = data.existingLinks || "";
     if (data.outputMode) {
@@ -534,7 +545,10 @@
     const tags = new Set();
 
     for (const [key, words] of Object.entries(vocabMap)) {
-      if (key.split(" ").some((k) => source.includes(k)) || source.includes(key)) {
+      if (
+        key.split(" ").some((k) => source.includes(k)) ||
+        source.includes(key)
+      ) {
         words.forEach((w) => tags.add(w));
       }
     }
@@ -542,7 +556,11 @@
     const tokens = source
       .replace(/[^a-z0-9\s]/g, " ")
       .split(/\s+/)
-      .filter((w) => w.length > 3 && !["with", "using", "find", "solve", "step", "math"].includes(w));
+      .filter(
+        (w) =>
+          w.length > 3 &&
+          !["with", "using", "find", "solve", "step", "math"].includes(w),
+      );
 
     tokens.slice(0, 4).forEach((t) => tags.add(t));
 
@@ -646,7 +664,7 @@
           className: "support",
           type: "interactive",
           section: "ESOL Supports",
-        }
+        },
       );
       if (data.includeSpanishVocab) {
         resources.push({
@@ -681,7 +699,7 @@
           className: "challenge",
           type: "challenge",
           section: "Challenge Extensions",
-        }
+        },
       );
     }
 
@@ -850,12 +868,12 @@ ${vocabHtml}${resourceHtml}${supportsHtml}</article>`;
         scaffoldCommand: buildScaffoldCommand(
           lesson.lessonNumber,
           exportFile,
-          lesson.data
+          lesson.data,
         ),
         buildPackCommand: buildScaffoldCommand(
           lesson.lessonNumber,
           exportFile,
-          lesson.data
+          lesson.data,
         ),
       },
     };
@@ -879,7 +897,9 @@ ${vocabHtml}${resourceHtml}${supportsHtml}</article>`;
       lesson.description,
       ``,
       `### Vocabulary Tags`,
-      lesson.tags.length ? lesson.tags.map((t) => `- ${t}`).join("\n") : "- (none generated)",
+      lesson.tags.length
+        ? lesson.tags.map((t) => `- ${t}`).join("\n")
+        : "- (none generated)",
       ``,
       `### File Paths / Slugs`,
       `- Lesson ID: \`${lesson.paths.lessonId}\``,
@@ -904,10 +924,12 @@ ${vocabHtml}${resourceHtml}${supportsHtml}</article>`;
       lines.push(
         `- Vocabulary Support: \`${lesson.paths.vocabPath}\``,
         `- Sentence Frames: \`${lesson.paths.sentenceFramesPath}\``,
-        `- Visual Practice: \`${lesson.paths.visualPracticePath}\``
+        `- Visual Practice: \`${lesson.paths.visualPracticePath}\``,
       );
       if (lesson.data.includeSpanishVocab) {
-        lines.push(`- Spanish Vocabulary: \`${lesson.paths.spanishVocabPath}\``);
+        lines.push(
+          `- Spanish Vocabulary: \`${lesson.paths.spanishVocabPath}\``,
+        );
       }
     }
 
@@ -915,7 +937,7 @@ ${vocabHtml}${resourceHtml}${supportsHtml}</article>`;
       lines.push(
         `- Challenge Task: \`${lesson.paths.challengePath}\``,
         `- Error Analysis: \`${lesson.paths.errorAnalysisPath}\``,
-        `- Create Your Own Problem: \`${lesson.paths.createProblemPath}\``
+        `- Create Your Own Problem: \`${lesson.paths.createProblemPath}\``,
       );
     }
 
@@ -930,7 +952,7 @@ ${vocabHtml}${resourceHtml}${supportsHtml}</article>`;
         `### TWR Writing Prompt`,
         `- **Because** ${lesson.twrPrompt.because}`,
         `- **But** ${lesson.twrPrompt.but}`,
-        `- **So** ${lesson.twrPrompt.so}`
+        `- **So** ${lesson.twrPrompt.so}`,
       );
     }
 
@@ -950,9 +972,13 @@ ${vocabHtml}${resourceHtml}${supportsHtml}</article>`;
       warnings.push("Lesson title is missing.");
     } else if (
       titleLower.length < 8 ||
-      VAGUE_TITLES.some((v) => titleLower === v || titleLower.startsWith(v + " "))
+      VAGUE_TITLES.some(
+        (v) => titleLower === v || titleLower.startsWith(v + " "),
+      )
     ) {
-      warnings.push("Lesson title may be too vague — add a specific skill or topic.");
+      warnings.push(
+        "Lesson title may be too vague — add a specific skill or topic.",
+      );
     }
 
     if (!/^i can\b/i.test(lesson.objective)) {
@@ -965,7 +991,9 @@ ${vocabHtml}${resourceHtml}${supportsHtml}</article>`;
     if (!hasPrint) warnings.push("No print-friendly resource is included.");
 
     if (lesson.data.includeEsol && lesson.tags.length === 0) {
-      warnings.push("ESOL support is enabled but no vocabulary tags were generated.");
+      warnings.push(
+        "ESOL support is enabled but no vocabulary tags were generated.",
+      );
     }
 
     const pathValues = Object.values(lesson.paths);
@@ -987,14 +1015,14 @@ ${vocabHtml}${resourceHtml}${supportsHtml}</article>`;
     const objective = generateObjective(
       data.mainSkill || data.lessonTitle,
       data.studentSupportLevel,
-      objectiveVariant
+      objectiveVariant,
     );
     const description = generateDescription(data, objective);
     const tags = extractVocabulary(
       data.mainSkill,
       data.lessonTitle,
       data.includeEsol,
-      data.includeSpanishVocab
+      data.includeSpanishVocab,
     );
     const links = buildResources(data, paths);
     const supports = buildSupports(data, tags);
@@ -1021,7 +1049,7 @@ ${vocabHtml}${resourceHtml}${supportsHtml}</article>`;
       ewlScaffoldCommand: buildScaffoldCommand(
         data.lessonNumber,
         `${data.lessonNumber || "lesson"}-card.json`,
-        data
+        data,
       ),
       generatedAt: new Date().toISOString(),
       data,
@@ -1059,9 +1087,12 @@ ${vocabHtml}${resourceHtml}${supportsHtml}</article>`;
       state.lesson.objective = generateObjective(
         data.mainSkill || data.lessonTitle,
         data.studentSupportLevel,
-        state.objectiveVariant
+        state.objectiveVariant,
       );
-      state.lesson.description = generateDescription(data, state.lesson.objective);
+      state.lesson.description = generateDescription(
+        data,
+        state.lesson.objective,
+      );
     } else {
       state.objectiveVariant = 0;
       state.lesson = buildLesson(data, 0);
@@ -1135,7 +1166,8 @@ ${vocabHtml}${resourceHtml}${supportsHtml}</article>`;
   function updateScaffoldPanel(lesson) {
     const panel = document.getElementById("scaffoldPanel");
     if (!panel || !lesson) return;
-    const cmd = lesson.ewlScaffoldCommand || buildScaffoldCommand(lesson.lessonNumber);
+    const cmd =
+      lesson.ewlScaffoldCommand || buildScaffoldCommand(lesson.lessonNumber);
     panel.hidden = false;
     const lessonId = lesson.data?.includeFlagship
       ? `${lesson.lessonNumber}-flagship`
@@ -1162,7 +1194,7 @@ ${vocabHtml}${resourceHtml}${supportsHtml}</article>`;
         files
           .map(
             (f) =>
-              `<option value="${escapeHtml(f.path)}">${escapeHtml(f.label)} (${escapeHtml(f.kind)})</option>`
+              `<option value="${escapeHtml(f.path)}">${escapeHtml(f.label)} (${escapeHtml(f.kind)})</option>`,
           )
           .join("");
       status.textContent = files.length
@@ -1207,20 +1239,26 @@ ${vocabHtml}${resourceHtml}${supportsHtml}</article>`;
     generateCard(false);
   });
 
-  document.getElementById("regenerateObjectiveBtn").addEventListener("click", () => {
-    if (!state.lesson) {
-      generateCard(false);
-      return;
-    }
-    generateCard(true);
-  });
+  document
+    .getElementById("regenerateObjectiveBtn")
+    .addEventListener("click", () => {
+      if (!state.lesson) {
+        generateCard(false);
+        return;
+      }
+      generateCard(true);
+    });
 
   document.getElementById("resetBtn").addEventListener("click", resetForm);
 
   copyHtmlBtn.addEventListener("click", () => copyText(state.html, "HTML"));
   copyJsonBtn.addEventListener("click", () => copyText(state.json, "JSON"));
-  copyPackBtn.addEventListener("click", () => copyText(state.pack, "Full Pack Plan"));
-  document.getElementById("downloadJsonBtn").addEventListener("click", downloadJson);
+  copyPackBtn.addEventListener("click", () =>
+    copyText(state.pack, "Full Pack Plan"),
+  );
+  document
+    .getElementById("downloadJsonBtn")
+    .addEventListener("click", downloadJson);
 
   document.querySelectorAll(".tab-btn").forEach((btn) => {
     btn.addEventListener("click", () => setActiveTab(btn.dataset.tab));
@@ -1242,18 +1280,188 @@ ${vocabHtml}${resourceHtml}${supportsHtml}</article>`;
     }
   });
 
-  document.getElementById("extractSelect").addEventListener("change", (e) => {
-    const path = e.target.value;
-    if (path) document.getElementById("extractPath").value = path;
+  document
+    .getElementById("extractSelect")
+    .addEventListener("change", async (e) => {
+      const path = e.target.value;
+      document.getElementById("extractPath").value = path || "";
+      if (!path) return;
+      // Served relative extract → fetch and auto-fill the card from its content.
+      if (/^https?:|^\//.test(path) || path.startsWith("data/")) {
+        try {
+          const res = await fetch(path);
+          if (!res.ok) throw new Error("not found");
+          const obj = await res.json();
+          const opt = [...e.target.options].find((o) => o.value === path);
+          applyExtractJson(
+            obj,
+            opt ? opt.textContent.replace(/\s*\(extract\)$/, "") : "",
+          );
+          importInfo("Card filled from extract — review, then Generate Card.");
+        } catch {
+          importInfo("Could not load that extract from the server.", true);
+        }
+      }
+    });
+
+  /* ---------- Build from PPTX / DOCX / _EXTRACT.json (in-browser) ---------- */
+  function importInfo(msg, isErr) {
+    const s = document.getElementById("importStatus");
+    if (!s) return;
+    s.hidden = false;
+    s.textContent = msg;
+    s.style.color = isErr ? "#c2410c" : "";
+  }
+  function decodeXml(s) {
+    return s
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&amp;/g, "&")
+      .replace(/&apos;/g, "'")
+      .replace(/&quot;/g, '"');
+  }
+  async function pptxText(buf) {
+    const zip = await JSZip.loadAsync(buf);
+    const names = Object.keys(zip.files)
+      .filter((n) => /^ppt\/slides\/slide\d+\.xml$/.test(n))
+      .sort((a, b) => +a.match(/(\d+)/)[1] - +b.match(/(\d+)/)[1]);
+    const out = [];
+    for (const n of names) {
+      const xml = await zip.files[n].async("string");
+      out.push(
+        [...xml.matchAll(/<a:t>([\s\S]*?)<\/a:t>/g)]
+          .map((m) => decodeXml(m[1]))
+          .join(" "),
+      );
+    }
+    return out.join("\n");
+  }
+  async function docxText(buf) {
+    const zip = await JSZip.loadAsync(buf);
+    const f = zip.files["word/document.xml"];
+    if (!f) return "";
+    const xml = await f.async("string");
+    return xml
+      .split(/<\/w:p>/)
+      .map((p) =>
+        [...p.matchAll(/<w:t[^>]*>([\s\S]*?)<\/w:t>/g)]
+          .map((m) => decodeXml(m[1]))
+          .join(""),
+      )
+      .join("\n");
+  }
+  const STD_GUESS = {
+    geometry: "6.G.A.1",
+    statistics: "6.SP.A.1",
+    ratio: "6.RP.A.1",
+    ratios: "6.RP.A.1",
+    rate: "6.RP.A.2",
+    percent: "6.RP.A.3",
+    expressions: "6.EE.A.2",
+    equations: "6.EE.B.7",
+    number: "6.NS.A.1",
+    fractions: "6.NS.A.1",
+  };
+  function titleCase(s) {
+    return String(s || "").replace(/\b\w/g, (c) => c.toUpperCase());
+  }
+  function applyExtractJson(obj, label) {
+    const sc = obj.scenario_extract || obj;
+    const s = sc.session1 || sc.session2 || sc;
+    const lt = (s.lesson_type || "").toLowerCase();
+    const skill = s.dv_name
+      ? "find the " + s.dv_name
+      : Array.isArray(s.math_actions)
+        ? s.math_actions.slice(0, 2).join(" and ")
+        : "";
+    const theme = s.context || "";
+    const d = {
+      gradeLevel: "6",
+      subject: "Math",
+      unitTitle: lt ? titleCase(lt) : "",
+      unitTheme: theme,
+      lessonTitle:
+        label || (obj.source && obj.source.title) || "Imported Lesson",
+      standard: STD_GUESS[lt] || "",
+      mainSkill: skill,
+      lessonSummary: theme,
+      studentSupportLevel: "standard",
+      includeEsol: !!(
+        s.content_fingerprint &&
+        s.content_fingerprint.vocabulary_load === "high"
+      ),
+      outputMode: "html",
+      includeReadiness: true,
+    };
+    setFormData(d);
+    generateCard(false);
+  }
+  function deckToForm(text, filename) {
+    const title = (filename || "")
+      .replace(/\.(pptx|docx)$/i, "")
+      .replace(/[_-]+/g, " ")
+      .replace(/\b(editable|lesson|presentation|determine|\(\d+\))\b/gi, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    const m = text.match(
+      /\b(find|calculate|solve|compare|determine|graph|write|evaluate|identify)\b[^.\n]{3,50}/i,
+    );
+    const d = {
+      gradeLevel: "6",
+      subject: "Math",
+      lessonTitle: title || "Imported Lesson",
+      mainSkill: m ? m[0].toLowerCase().trim() : "",
+      unitTheme: text.slice(0, 160).replace(/\s+/g, " ").trim(),
+      lessonSummary: text.slice(0, 220).replace(/\s+/g, " ").trim(),
+      studentSupportLevel: "standard",
+      outputMode: "html",
+      includeReadiness: true,
+    };
+    setFormData(d);
+    generateCard(false);
+  }
+  document.getElementById("deckFile").addEventListener("change", async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    importInfo("Reading " + file.name + "…");
+    try {
+      const name = file.name.toLowerCase();
+      if (name.endsWith(".json")) {
+        applyExtractJson(
+          JSON.parse(await file.text()),
+          file.name.replace(/_EXTRACT\.json$/i, "").replace(/\.json$/i, ""),
+        );
+        importInfo("Built the card from " + file.name + " — review and edit.");
+      } else if (name.endsWith(".pptx")) {
+        if (!window.JSZip) return importInfo("PPTX support unavailable.", true);
+        deckToForm(await pptxText(await file.arrayBuffer()), file.name);
+        importInfo(
+          "Built a starting card from the slide text — review and edit, then Generate.",
+        );
+      } else if (name.endsWith(".docx")) {
+        if (!window.JSZip) return importInfo("DOCX support unavailable.", true);
+        deckToForm(await docxText(await file.arrayBuffer()), file.name);
+        importInfo(
+          "Built a starting card from the doc text — review and edit, then Generate.",
+        );
+      } else {
+        importInfo("Use a .pptx, .docx, or _EXTRACT.json file.", true);
+      }
+    } catch (err) {
+      importInfo("Could not read that file: " + err.message, true);
+    }
+    e.target.value = "";
   });
 
   document.getElementById("extractPath").addEventListener("input", (e) => {
     syncExtractSelect(e.target.value.trim());
   });
 
-  document.getElementById("refreshManifestBtn").addEventListener("click", () => {
-    showToast("Run: ./pipeline.sh refresh");
-  });
+  document
+    .getElementById("refreshManifestBtn")
+    .addEventListener("click", () => {
+      showToast("Run: ./pipeline.sh refresh");
+    });
 
   function exportAllPresetsBundle() {
     const bundle = [];
@@ -1270,7 +1478,9 @@ ${vocabHtml}${resourceHtml}${supportsHtml}</article>`;
     a.download = "presets-bundle.json";
     a.click();
     URL.revokeObjectURL(url);
-    showToast("Downloaded presets-bundle.json — also run: ./pipeline.sh export-presets");
+    showToast(
+      "Downloaded presets-bundle.json — also run: ./pipeline.sh export-presets",
+    );
   }
 
   document
