@@ -15,8 +15,17 @@
   if (window.__ntPageEnhance) return; // idempotent
   window.__ntPageEnhance = true;
 
-  // Safety: clear any dark-mode state a previous version may have applied, so
-  // pages return to their normal look on next load.
+  (function loadProgressBridge() {
+    if (window.CurriculumProgressBridge) return;
+    if (document.querySelector('script[data-nt-progress-bridge]')) return;
+    var s = document.createElement("script");
+    s.src = "/assets/curriculum-progress-bridge.js";
+    s.defer = true;
+    s.setAttribute("data-nt-progress-bridge", "1");
+    document.head.appendChild(s);
+  })();
+
+  // Safety: clear any dark-mode state
   try {
     document.documentElement.classList.remove("nt-dark");
   } catch (e) {}

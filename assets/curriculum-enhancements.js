@@ -35,6 +35,9 @@
 
   var realWorldMap = {};
   var googleSlidesLegacyUrls = {};
+  var lessonStandards = {};
+  var searchIndex = null;
+  var searchDocsById = {};
   var activeFilter = FILTER_ALL;
   var teacherMode = false;
   var progress = {};
@@ -72,6 +75,29 @@
     try {
       localStorage.setItem(STORAGE_PROGRESS, JSON.stringify(progress));
     } catch (e) {}
+  }
+
+  function parseProgressKey(key) {
+    var parts = String(key || "").split("::");
+    if (parts.length < 2) return null;
+    return { lessonId: parts[0], href: parts.slice(1).join("::") };
+  }
+
+  function syncProgressToggle(lessonId, href, completed) {
+    if (window.CurriculumProgressBridge && window.CurriculumProgressBridge.syncToggle) {
+      window.CurriculumProgressBridge.syncToggle(lessonId, href, completed);
+    }
+  }
+
+  function hydrateProgressFromServer(callback) {
+    if (!window.CurriculumProgressBridge || !window.CurriculumProgressBridge.hydrateFromServer) {
+      if (callback) callback(false);
+      return;
+    }
+    window.CurriculumProgressBridge.hydrateFromServer(progress, progressKey).then(function (changed) {
+      if (changed) saveProgress();
+      if (callback) callback(changed);
+    });
   }
 
   function loadTeacherMode() {
@@ -212,11 +238,34 @@
   }
 
   function filterUnitsData(unitsData, query, filter) {
-    var q = (query || "").trim().toLowerCase();
+    var q = (query || "").trim();
+    if (!q && filter === FILTER_ALL) return unitsData;
+
+    if (searchIndex && q.length >= 2) {
+      var hits = searchIndex.search(q, { prefix: true, fuzzy: 0.15 });
+      var lessonIds = {};
+      hits.forEach(function (h) {
+        if (h.id) lessonIds[h.id] = h.score;
+      });
+      return unitsData
+        .map(function (u) {
+          var lessons = (u.lessons || []).filter(function (l) {
+            var lid = l.lessonId || lessonIdFromTitle(l.title);
+            var idMatch = lessonIds[lid] != null;
+            var filterMatch = lessonMatchesFilter(l, filter);
+            return idMatch && filterMatch;
+          });
+          if (!lessons.length) return null;
+          return Object.assign({}, u, { lessons: lessons });
+        })
+        .filter(Boolean);
+    }
+
+    var ql = q.toLowerCase();
     return unitsData
       .map(function (u) {
         var lessons = (u.lessons || []).filter(function (l) {
-          var textMatch = !q || l.dataSearch.indexOf(q) > -1;
+          var textMatch = !ql || l.dataSearch.indexOf(ql) > -1;
           var filterMatch = lessonMatchesFilter(l, filter);
           return textMatch && filterMatch;
         });
@@ -224,6 +273,64 @@
         return Object.assign({}, u, { lessons: lessons });
       })
       .filter(Boolean);
+  }
+
+  function loadSearchIndex() {
+    return loadJson("/data/curriculum-search-index.json").then(function (data) {
+      if (!data || !data.index) return;
+      if (typeof MiniSearch === "undefined") return;
+      searchIndex = MiniSearch.loadJSON(data.index, {
+        fields: data.index.fields || ["title", "standard", "objective", "searchText"],
+        storeFields: data.index.storeFields || ["id", "title", "standard", "unit", "lessonPath"],
+        searchOptions: { boost: { title: 3, standard: 2 }, fuzzy: 0.2, prefix: true },
+      });
+      (data.index.documentCount || 0); // touch for lint silence
+    });
+  }
+
+  function loadLessonStandards() {
+    return loadJson("/data/curriculum-manifest.json").then(function (data) {
+      if (!data || !Array.isArray(data.lessons)) return;
+      data.lessons.forEach(function (l) {
+        if (l.id && l.standard) lessonStandards[l.id] = l.standard;
+      });
+    });
+  }
+
+  function standardForLesson(lessonId) {
+    if (!lessonId) return "";
+    return (
+      lessonStandards[lessonId] ||
+      lessonStandards[lessonId.replace("-flagship", "")] ||
+      ""
+    );
+  }
+
+  function injectStandardBadge(infoBlock, lessonId) {
+    if (!infoBlock || !lessonId) return;
+    var code = standardForLesson(lessonId);
+    var existing = infoBlock.querySelector(".lesson-standard-badge");
+    if (!code) {
+      if (existing) existing.remove();
+      return;
+    }
+    if (existing) {
+      existing.textContent = code;
+      existing.href =
+        "http://corestandards.org/Math/Content/" + code.replace(".", "/");
+      return;
+    }
+    var badge = document.createElement("a");
+    badge.className = "lesson-standard-badge badge badge-cluster";
+    badge.href =
+      "http://corestandards.org/Math/Content/" + code.replace(".", "/");
+    badge.target = "_blank";
+    badge.rel = "noopener noreferrer";
+    badge.title = "Common Core State Standard";
+    badge.textContent = code;
+    var obj = infoBlock.querySelector(".lesson-info-obj");
+    if (obj) infoBlock.insertBefore(badge, obj);
+    else infoBlock.insertBefore(badge, infoBlock.firstChild);
   }
 
   function buildControls() {
@@ -247,6 +354,13 @@
       updateProgressSummary();
     });
     bar.appendChild(modeBtn);
+
+    var dashLink = document.createElement("a");
+    dashLink.href = "/teacher-tools/curriculum-dashboard/";
+    dashLink.className = "hub-mode-toggle";
+    dashLink.textContent = "📊 Teacher Dashboard";
+    dashLink.title = "View class progress summary";
+    bar.appendChild(dashLink);
 
     var hint = document.createElement("p");
     hint.id = "hub-student-hint";
@@ -479,6 +593,18 @@
           item.appendChild(header);
 
           var lessonId = lessonIdFromTitle(l.title);
+          var std = standardForLesson(l.lessonId || lessonId);
+          if (std) {
+            var stdEl = document.createElement("p");
+            stdEl.className = "lesson-standard-line";
+            stdEl.innerHTML =
+              '<a class="lesson-standard-badge badge badge-cluster" href="http://corestandards.org/Math/Content/' +
+              std.replace(".", "/") +
+              '" target="_blank" rel="noopener noreferrer">' +
+              escapeHtml(std) +
+              "</a>";
+            item.appendChild(stdEl);
+          }
           var rw = realWorldMap[lessonId] || realWorldMap[lessonId.replace("-flagship", "")];
           if (rw) {
             var rwEl = document.createElement("p");
@@ -520,6 +646,7 @@
               progress[key] = !progress[key];
               if (!progress[key]) delete progress[key];
               saveProgress();
+              syncProgressToggle(lessonId, act.href, !!progress[key]);
               check.setAttribute("aria-pressed", progress[key] ? "true" : "false");
               check.textContent = progress[key] ? "✓" : "○";
               updateProgressSummary();
@@ -591,6 +718,7 @@
       if (!lesson) return;
 
       var lessonId = lessonIdFromTitle(lesson.title);
+      injectStandardBadge(infoBlock, lesson.lessonId || lessonId);
       var rw = realWorldMap[lessonId] || realWorldMap[lessonId.replace("-flagship", "")];
       var existingRw = infoBlock.querySelector(".lesson-real-world");
       if (rw && !existingRw) {
@@ -642,6 +770,7 @@
           progress[key] = !progress[key];
           if (!progress[key]) delete progress[key];
           saveProgress();
+          syncProgressToggle(lessonId, href, !!progress[key]);
           check.setAttribute("aria-pressed", progress[key] ? "true" : "false");
           check.textContent = progress[key] ? "✓" : "○";
           updateProgressSummary();
@@ -918,6 +1047,19 @@
     wrapRenderSearchResults();
     applyTeacherMode();
     injectJsonLd();
+
+    loadLessonStandards().then(function () {
+      scheduleEnhance();
+    });
+    loadSearchIndex();
+
+    if (window.CurriculumProgressBridge) {
+      window.CurriculumProgressBridge.pushAllLocal(progress, parseProgressKey);
+      hydrateProgressFromServer(function () {
+        scheduleEnhance();
+        updateProgressSummary();
+      });
+    }
 
     if (hubApi.searchBox) {
       var searchTimer = null;

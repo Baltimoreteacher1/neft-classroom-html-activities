@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Curriculum Progress — Teacher Dashboard</title>
+    <link rel="stylesheet" href="/assets/curriculum-enhancements.css" />
+    <style>
+      :root {
+        --bg: #07080e;
+        --card: #11131f;
+        --ink: #f8fafc;
+        --muted: #94a3b8;
+        --teal: #2dd4bf;
+        --line: rgba(255, 255, 255, 0.08);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Hanken Grotesk", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        line-height: 1.5;
+      }
+      .wrap {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 24px 16px 48px;
+      }
+      h1 {
+        font-family: Outfit, system-ui, sans-serif;
+        font-size: 1.75rem;
+        margin: 0 0 8px;
+      }
+      .sub {
+        color: var(--muted);
+        margin: 0 0 24px;
+      }
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: var(--muted);
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: #0f111a;
+        color: var(--ink);
+        font: inherit;
+        margin-bottom: 12px;
+      }
+      button {
+        background: var(--teal);
+        color: #042f2e;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 18px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: wait;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 10px 8px;
+        border-bottom: 1px solid var(--line);
+      }
+      th {
+        color: var(--muted);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .stat {
+        background: #0f111a;
+        border-radius: 12px;
+        padding: 14px;
+        border: 1px solid var(--line);
+      }
+      .stat strong {
+        display: block;
+        font-size: 1.5rem;
+        font-family: Outfit, sans-serif;
+      }
+      .stat span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .err {
+        color: #fca5a5;
+        font-size: 14px;
+      }
+      a.back {
+        color: var(--teal);
+        text-decoration: none;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <p><a class="back" href="/curriculum/">← Curriculum Hub</a></p>
+      <h1>Teacher Progress Dashboard</h1>
+      <p class="sub">
+        Roster completion from D1 progress sync. Students are identified by class
+        number / handle (not legal names).
+      </p>
+
+      <div class="panel">
+        <label for="tenant">Tenant / school slug</label>
+        <input id="tenant" value="harbor-view" autocomplete="off" />
+        <label for="section">Section filter (optional)</label>
+        <input id="section" placeholder="e.g. Period 3" autocomplete="off" />
+        <button type="button" id="load">Refresh roster</button>
+        <p id="err" class="err" hidden></p>
+      </div>
+
+      <div id="stats" class="stat-grid" hidden></div>
+
+      <div class="panel" id="students-panel" hidden>
+        <h2 style="margin: 0 0 12px; font-size: 1.1rem">Students</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Completed</th>
+              <th>Records</th>
+              <th>Avg %</th>
+            </tr>
+          </thead>
+          <tbody id="students"></tbody>
+        </table>
+      </div>
+
+      <div class="panel" id="units-panel" hidden>
+        <h2 style="margin: 0 0 12px; font-size: 1.1rem">By unit</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Unit</th>
+              <th>Completed</th>
+              <th>Records</th>
+            </tr>
+          </thead>
+          <tbody id="units"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        var API =
+          (window.CURRICULUM_SYNC && window.CURRICULUM_SYNC.apiBase) ||
+          "https://neft-school-hub-api.neftjd.workers.dev";
+
+        function $(id) {
+          return document.getElementById(id);
+        }
+
+        function fmtTime(ms) {
+          if (!ms) return "—";
+          return new Date(ms).toLocaleString();
+        }
+
+        function loadSummary() {
+          var tenant = $("tenant").value.trim();
+          var section = $("section").value.trim();
+          $("err").hidden = true;
+          $("load").disabled = true;
+          var params = new URLSearchParams({ tenant_id: tenant });
+          if (section) params.set("section", section);
+          fetch(API.replace(/\/$/, "") + "/api/curriculum/progress/summary?" + params)
+            .then(function (r) {
+              if (!r.ok) throw new Error("HTTP " + r.status);
+              return r.json();
+            })
+            .then(function (data) {
+              var s = data.summary || {};
+              $("stats").hidden = false;
+              $("stats").innerHTML =
+                '<div class="stat"><strong>' +
+                (s.completed_count || 0) +
+                '</strong><span>Activities completed</span></div>' +
+                '<div class="stat"><strong>' +
+                (s.by_student ? s.by_student.length : 0) +
+                '</strong><span>Students tracked</span></div>' +
+                '<div class="stat"><strong>' +
+                (s.average_progress_percent || 0) +
+                '%</strong><span>Average progress</span></div>' +
+                '<div class="stat"><strong>' +
+                fmtTime(s.last_updated) +
+                "</strong><span>Last activity</span></div>";
+
+              var stBody = $("students");
+              stBody.innerHTML = "";
+              (s.by_student || []).forEach(function (row) {
+                var tr = document.createElement("tr");
+                tr.innerHTML =
+                  "<td>" +
+                  (row.student_label || row.student || "—") +
+                  "</td><td>" +
+                  (row.completed || 0) +
+                  "</td><td>" +
+                  (row.records || 0) +
+                  "</td><td>" +
+                  Math.round(row.average_progress_percent || 0) +
+                  "%</td>";
+                stBody.appendChild(tr);
+              });
+              $("students-panel").hidden = !(s.by_student && s.by_student.length);
+
+              var uBody = $("units");
+              uBody.innerHTML = "";
+              (s.by_unit || []).forEach(function (row) {
+                var tr = document.createElement("tr");
+                tr.innerHTML =
+                  "<td>" +
+                  (row.unit_id || "—") +
+                  "</td><td>" +
+                  (row.completed || 0) +
+                  "</td><td>" +
+                  (row.records || 0) +
+                  "</td>";
+                uBody.appendChild(tr);
+              });
+              $("units-panel").hidden = !(s.by_unit && s.by_unit.length);
+            })
+            .catch(function (e) {
+              $("err").textContent = "Could not load summary: " + e.message;
+              $("err").hidden = false;
+            })
+            .finally(function () {
+              $("load").disabled = false;
+            });
+        }
+
+        $("load").addEventListener("click", loadSummary);
+        loadSummary();
+      })();
+    </script>
+  </body>
+</html>

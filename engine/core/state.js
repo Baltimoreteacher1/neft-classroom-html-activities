@@ -10,8 +10,22 @@ export async function loadFromServer(_lessonId, _studentName) {
   return null;
 }
 
-export function syncToServer(_lessonId, _state, _studentName, _studentPeriod) {
-  /* disabled: local-first only, no PII egress */
+export function syncToServer(lessonId, state, studentName, studentPeriod) {
+  if (typeof globalThis === "undefined" || !globalThis.CurriculumProgressBridge) return;
+  const bridge = globalThis.CurriculumProgressBridge;
+  if (!bridge.canSync || !bridge.canSync()) return;
+  const phases = state.phases || [];
+  const done = phases.filter((p) => p.status === "completed").length;
+  const total = phases.length || 1;
+  const allDone = done === total && total > 0;
+  bridge.syncToggle(
+    lessonId,
+    `/lessons/${lessonId}/`,
+    allDone,
+  );
+  if (allDone) {
+    bridge.syncToggle(lessonId, `lesson:${lessonId}:complete`, true);
+  }
 }
 
 export function normalizeStudentId(name) {
