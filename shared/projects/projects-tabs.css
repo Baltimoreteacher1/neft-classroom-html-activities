@@ -1,55 +1,56 @@
 /* ==========================================================================
-   Neft Teacher — Projects TABS / STEPPER layer (shared, progressive)
-   Turns the top-level .phase sections of a `.pk` culminating project into an
-   accessible, tabbed stepper. Loaded AFTER projects-kit.css and
-   projects-premium.css. Reference as /shared/projects/projects-tabs.css
+   Neft Teacher — Projects TABS layer (shared)
+   Sticky top tab bar, progress rail, prev/next nav for PK.initProjectTabs().
+   Loads AFTER projects-kit.css and projects-premium.css.
 
-   PROGRESSIVE ENHANCEMENT CONTRACT:
-   - Panels are only hidden when JS has added `.pk-tabs-on` to <body>.
-     Without JS every .phase stays visible (no CSS-only hiding of content).
-   - @media print removes all tab hiding so a printout shows every phase.
-   Vanilla CSS, zero dependencies, offline-safe (system fonts only).
+   PROGRESSIVE: panels hidden only when body.pk-tabs-on is set by JS.
+   @media print restores all phases.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   1. Sticky tab bar (the stepper rail)
+   1. Sticky tab bar — full-width rail below mission/intro
    -------------------------------------------------------------------------- */
-.pk .pk-tabbar {
+.pk .pk-tabs-wrap {
   position: sticky;
   top: 0;
-  z-index: 40;
-  margin: 18px -20px 22px;
-  padding: 12px 20px 13px;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: saturate(1.4) blur(8px);
-  -webkit-backdrop-filter: saturate(1.4) blur(8px);
+  z-index: 45;
+  margin: 20px -20px 24px;
+  padding: 14px 20px 16px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: saturate(1.5) blur(10px);
+  -webkit-backdrop-filter: saturate(1.5) blur(10px);
   border-bottom: 1px solid var(--pp-line, #e4ebf2);
-  box-shadow: 0 6px 18px rgba(12, 27, 42, 0.06);
+  box-shadow: 0 8px 24px rgba(12, 27, 42, 0.08);
+  border-radius: 0 0 var(--pp-radius, 22px) var(--pp-radius, 22px);
 }
 
-/* Step counter + mini progress ring/bar above the tabs */
 .pk .pk-tabbar-top {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   margin-bottom: 10px;
 }
+
 .pk .pk-step-count {
   font-weight: 900;
   font-size: 0.95rem;
   color: var(--pp-ink, #0c1b2a);
   white-space: nowrap;
 }
+
 .pk .pk-step-count b {
   color: var(--pp-blue, #1763c7);
+  font-size: 1.05em;
 }
+
 .pk .pk-step-bar {
   flex: 1;
-  height: 8px;
+  height: 9px;
   border-radius: 999px;
   background: rgba(12, 27, 42, 0.1);
   overflow: hidden;
 }
+
 .pk .pk-step-bar > i {
   display: block;
   height: 100%;
@@ -60,51 +61,76 @@
     var(--pp-teal, #0e9a8c),
     var(--pp-blue, #1763c7)
   );
-  box-shadow: 0 0 12px rgba(23, 99, 199, 0.4);
-  transition: width 0.45s var(--pp-ease, ease);
+  box-shadow: 0 0 14px rgba(23, 99, 199, 0.35);
+  transition: width 0.45s var(--pp-ease, cubic-bezier(0.22, 1, 0.36, 1));
 }
 
-/* The scrollable tab strip */
+.pk .pk-tab-hint {
+  margin: 0 0 12px;
+  font-size: 0.88rem;
+  color: var(--pp-muted, #54677c);
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+/* Scrollable pill tab strip */
 .pk .pk-tablist {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   overflow-x: auto;
   scrollbar-width: thin;
   padding-bottom: 4px;
   -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
 }
+
+.pk .pk-tablist::-webkit-scrollbar {
+  height: 5px;
+}
+
+.pk .pk-tablist::-webkit-scrollbar-thumb {
+  background: #c5d3e0;
+  border-radius: 999px;
+}
+
 .pk .pk-tab {
   flex: 0 0 auto;
+  scroll-snap-align: start;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
+  min-height: 44px;
   border: 1.5px solid var(--pp-line, #e4ebf2);
   background: #fff;
   color: var(--pp-muted, #54677c);
   border-radius: 999px;
-  padding: 9px 15px;
+  padding: 10px 18px;
   font-family: inherit;
   font-weight: 800;
-  font-size: 0.86rem;
-  line-height: 1.1;
+  font-size: 0.88rem;
+  line-height: 1.15;
   cursor: pointer;
   white-space: nowrap;
   transition:
     background 0.2s ease,
     color 0.2s ease,
     border-color 0.2s ease,
-    transform 0.15s ease;
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
 }
+
 .pk .pk-tab:hover {
   border-color: var(--pp-blue, #1763c7);
   color: var(--pp-ink, #0c1b2a);
   transform: translateY(-1px);
+  box-shadow: var(--pp-shadow-sm, 0 2px 6px rgba(12, 27, 42, 0.06));
 }
+
 .pk .pk-tab .pk-tab-dot {
   display: grid;
   place-items: center;
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: var(--pp-bg, #eef3f8);
   color: var(--pp-muted, #54677c);
@@ -112,6 +138,13 @@
   font-weight: 900;
   flex: 0 0 auto;
 }
+
+.pk .pk-tab .pk-tab-label {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .pk .pk-tab[aria-selected="true"] {
   background: linear-gradient(
     135deg,
@@ -120,38 +153,60 @@
   );
   border-color: transparent;
   color: #fff;
-  box-shadow: 0 8px 18px rgba(12, 63, 134, 0.3);
+  box-shadow: 0 8px 20px rgba(12, 63, 134, 0.32);
+  transform: translateY(-1px);
 }
+
 .pk .pk-tab[aria-selected="true"] .pk-tab-dot {
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.24);
   color: #fff;
 }
+
 .pk .pk-tab.pk-done .pk-tab-dot {
   background: var(--pp-green, #19a35a);
   color: #fff;
 }
+
 .pk .pk-tab.pk-done[aria-selected="true"] .pk-tab-dot {
   background: rgba(255, 255, 255, 0.28);
 }
+
 .pk .pk-tab:focus-visible {
   outline: 3px solid var(--pp-gold, #f4a924);
   outline-offset: 2px;
 }
 
 /* --------------------------------------------------------------------------
-   2. Panels — only hidden once JS is active (progressive)
+   2. Tab panels — progressive hide
    -------------------------------------------------------------------------- */
-.pk-tabs-on .pk .phase[hidden],
-.pk-tabs-on .pk .phase.pk-panel-hidden {
-  display: none;
+.pk-tabs-on .pk .pk-tab-panel[hidden] {
+  display: none !important;
 }
-.pk .phase.pk-panel {
+
+.pk .pk-tab-panels {
+  margin-top: 8px;
+}
+
+.pk .pk-tab-panel {
   animation: pk-panel-in 0.35s var(--pp-ease, ease);
 }
+
+.pk .pk-tab-panel > .phase {
+  margin-top: 22px;
+}
+
+.pk .pk-tab-panel > .phase:first-child {
+  margin-top: 0;
+}
+
+.pk .pk-tab-panel-active > .phase:last-child {
+  margin-bottom: 8px;
+}
+
 @keyframes pk-panel-in {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
@@ -167,27 +222,33 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin: 6px 0 8px;
+  margin: 4px 0 28px;
+  padding: 16px 0 0;
+  border-top: 1px dashed var(--pp-line, #e4ebf2);
 }
+
 .pk .pk-tabnav button {
   font-family: inherit;
   font-weight: 800;
   font-size: 0.95rem;
   border-radius: 999px;
-  padding: 12px 22px;
+  padding: 12px 24px;
   cursor: pointer;
   border: 1.5px solid var(--pp-line, #e4ebf2);
   background: #fff;
   color: var(--pp-ink, #0c1b2a);
+  min-height: 48px;
   transition:
     transform 0.15s ease,
     box-shadow 0.2s ease,
     background 0.2s ease;
-  min-height: 44px;
 }
+
 .pk .pk-tabnav button:hover:not([disabled]) {
   transform: translateY(-1px);
+  box-shadow: var(--pp-shadow-sm, 0 2px 6px rgba(12, 27, 42, 0.06));
 }
+
 .pk .pk-tabnav .pk-next {
   background: linear-gradient(
     135deg,
@@ -196,13 +257,15 @@
   );
   border-color: transparent;
   color: #fff;
-  box-shadow: 0 10px 22px rgba(14, 154, 140, 0.32);
+  box-shadow: 0 10px 22px rgba(14, 154, 140, 0.3);
   margin-left: auto;
 }
+
 .pk .pk-tabnav button[disabled] {
-  opacity: 0.4;
+  opacity: 0.38;
   cursor: not-allowed;
 }
+
 .pk .pk-tabnav .pk-next:focus-visible,
 .pk .pk-tabnav .pk-prev:focus-visible {
   outline: 3px solid var(--pp-gold, #f4a924);
@@ -210,13 +273,51 @@
 }
 
 /* --------------------------------------------------------------------------
-   4. Research tab content
+   4. Mission intro card — always visible above tabs
+   -------------------------------------------------------------------------- */
+.pk .intro-card {
+  border-left: 6px solid var(--pp-gold, #f4a924);
+  padding: 24px 26px;
+}
+
+.pk .intro-card h2 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--pp-ink, #0c1b2a);
+  letter-spacing: -0.02em;
+}
+
+.pk .intro-card p {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--pp-muted, #54677c);
+}
+
+.pk .intro-card p strong {
+  color: var(--pp-ink, #0c1b2a);
+}
+
+/* Progress wrap above mission */
+.pk .progress-wrap {
+  margin-top: 20px;
+}
+
+.pk .progress-label {
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--pp-muted, #54677c);
+  margin-bottom: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   5. Research tab content (data-driven phase)
    -------------------------------------------------------------------------- */
 .pk .pk-research-list {
   display: grid;
   gap: 14px;
   margin-top: 6px;
 }
+
 .pk .pk-research-card {
   display: block;
   border: 1.5px solid var(--pp-line, #e4ebf2);
@@ -231,6 +332,7 @@
     box-shadow 0.2s ease,
     border-color 0.2s ease;
 }
+
 .pk .pk-research-card:hover,
 .pk .pk-research-card:focus-visible {
   transform: translateY(-2px);
@@ -238,25 +340,30 @@
   border-left-color: var(--pp-teal, #0e9a8c);
   outline: none;
 }
+
 .pk .pk-research-card:focus-visible {
   outline: 3px solid var(--pp-gold, #f4a924);
   outline-offset: 2px;
 }
+
 .pk .pk-research-card .pk-rc-top {
   display: flex;
   align-items: center;
   gap: 10px;
 }
+
 .pk .pk-research-card .pk-rc-icon {
   font-size: 1.5rem;
   line-height: 1;
   flex: 0 0 auto;
 }
+
 .pk .pk-research-card .pk-rc-title {
   font-weight: 900;
   font-size: 1.08rem;
   color: var(--pp-blue-deep, #0c3f86);
 }
+
 .pk .pk-research-card .pk-rc-ext {
   margin-left: auto;
   font-size: 0.78rem;
@@ -264,18 +371,22 @@
   color: var(--pp-muted, #54677c);
   white-space: nowrap;
 }
+
 .pk .pk-research-card .pk-rc-find {
   margin: 8px 0 0;
   font-size: 0.98rem;
 }
+
 .pk .pk-research-card .pk-rc-look {
   margin: 6px 0 0;
   font-size: 0.92rem;
   color: var(--pp-muted, #54677c);
 }
+
 .pk .pk-research-card .pk-rc-look b {
   color: var(--pp-ink, #0c1b2a);
 }
+
 .pk .pk-research-safe {
   margin-top: 14px;
   font-size: 0.86rem;
@@ -285,12 +396,12 @@
   padding: 10px 14px;
 }
 
-/* Research Mission — brief, field notes, required math */
 .pk .pk-research-links-title {
   margin: 22px 0 12px;
   font-size: 1.05rem;
   color: var(--pp-ink, #0c1b2a);
 }
+
 .pk .pk-mission-brief {
   margin: 16px 0 20px;
   padding: 18px 20px;
@@ -298,35 +409,43 @@
   border: 2px solid var(--pp-line, #e4ebf2);
   background: linear-gradient(135deg, #f8fbff 0%, #eef6ff 100%);
 }
+
 .pk .pk-mission-brief.pk-mission-detective {
   background: linear-gradient(135deg, #fff8f0 0%, #fdeee0 100%);
   border-color: #e8c89a;
 }
+
 .pk .pk-mission-brief.pk-mission-lab {
   background: linear-gradient(135deg, #f0faf8 0%, #e4f5f3 100%);
   border-color: #9dd4cc;
 }
+
 .pk .pk-mission-brief.pk-mission-mission {
   background: linear-gradient(135deg, #f3f0ff 0%, #e8e4fd 100%);
   border-color: #b8aae8;
 }
+
 .pk .pk-mission-brief h3 {
   margin: 0 0 8px;
   font-size: 1.1rem;
 }
+
 .pk .pk-mission-hook {
   margin: 0 0 12px;
   font-size: 0.98rem;
   line-height: 1.55;
 }
+
 .pk .pk-mission-steps {
   margin: 0;
   padding-left: 1.25rem;
   font-size: 0.92rem;
 }
+
 .pk .pk-mission-steps li {
   margin: 6px 0;
 }
+
 .pk .pk-field-notes {
   margin: 20px 0;
   padding: 18px;
@@ -334,27 +453,32 @@
   background: #fff;
   border: 2px dashed var(--pp-teal, #0e9a8c);
 }
+
 .pk .pk-field-notes h3 {
   margin: 0 0 8px;
   font-size: 1.05rem;
   color: var(--pp-teal, #0e9a8c);
 }
+
 .pk .pk-fn-intro {
   margin: 0 0 14px;
   font-size: 0.92rem;
   color: var(--pp-muted, #54677c);
 }
+
 .pk .pk-fn-row {
   margin: 14px 0;
   padding: 12px 14px;
   border-radius: 10px;
   background: var(--pp-bg, #eef3f8);
 }
+
 .pk .pk-fn-meta .fld {
   display: block;
   font-weight: 700;
   margin-bottom: 4px;
 }
+
 .pk .pk-fn-num {
   display: inline-flex;
   align-items: center;
@@ -367,6 +491,7 @@
   font-size: 0.75rem;
   margin-right: 6px;
 }
+
 .pk .pk-fn-source {
   display: block;
   font-size: 0.8rem;
@@ -374,6 +499,7 @@
   font-weight: 600;
   margin-bottom: 8px;
 }
+
 .pk .pk-fn-input {
   width: 100%;
   padding: 10px 12px;
@@ -382,20 +508,24 @@
   font-family: inherit;
   font-size: 0.95rem;
 }
+
 .pk .pk-fn-hint {
   margin: 6px 0 0;
   font-size: 0.82rem;
   color: var(--pp-muted, #54677c);
   font-style: italic;
 }
+
 .pk .pk-math-tasks {
   margin: 22px 0;
 }
+
 .pk .pk-math-tasks h3 {
   margin: 0 0 8px;
   font-size: 1.05rem;
   color: var(--pp-blue, #1763c7);
 }
+
 .pk .pk-mt-intro {
   margin: 0 0 14px;
   font-size: 0.92rem;
@@ -405,6 +535,7 @@
   border-radius: 10px;
   border-left: 4px solid #d4952a;
 }
+
 .pk .pk-mt-card {
   margin: 14px 0;
   padding: 16px 18px;
@@ -413,14 +544,17 @@
   background: #fff;
   box-shadow: 0 2px 8px rgba(12, 27, 42, 0.05);
 }
+
 .pk .pk-mt-card h4 {
   margin: 0 0 8px;
   font-size: 0.98rem;
 }
+
 .pk .pk-mt-prompt {
   margin: 0 0 10px;
   font-size: 0.94rem;
 }
+
 .pk .pk-mt-card textarea {
   width: 100%;
   padding: 10px 12px;
@@ -431,13 +565,16 @@
   resize: vertical;
   min-height: 72px;
 }
+
 .pk .pk-inv-checklist {
   margin: 18px 0;
 }
+
 .pk .pk-inv-checklist h3 {
   margin: 0 0 10px;
   font-size: 1rem;
 }
+
 .pk .pk-inv-list label {
   flex: 1;
   cursor: pointer;
@@ -445,73 +582,63 @@
 }
 
 /* --------------------------------------------------------------------------
-   5. Responsive — phones / Chromebooks
+   6. Responsive — phones / Chromebooks
    -------------------------------------------------------------------------- */
-@media (max-width: 480px) {
-  .pk .pk-tabbar {
-    margin: 14px -20px 18px;
+@media (max-width: 640px) {
+  .pk .pk-tabs-wrap {
+    margin: 16px -20px 20px;
+    padding: 12px 16px 14px;
   }
+
   .pk .pk-tab {
-    padding: 8px 12px;
-    font-size: 0.8rem;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    min-height: 44px;
   }
+
+  .pk .pk-tab .pk-tab-dot {
+    width: 24px;
+    height: 24px;
+  }
+
   .pk .pk-tabnav button {
-    padding: 11px 16px;
+    padding: 11px 18px;
     font-size: 0.9rem;
+    min-height: 44px;
   }
+
   .pk .pk-tabnav .pk-prev span,
   .pk .pk-tabnav .pk-next span {
     display: none;
   }
+
+  .pk .pk-tab-hint {
+    font-size: 0.82rem;
+  }
 }
 
 /* --------------------------------------------------------------------------
-   6. PRINT — show every phase, hide the interactive chrome
+   7. PRINT — show every phase, hide chrome
    -------------------------------------------------------------------------- */
 @media print {
-  .pk-tabs-on .pk .phase[hidden],
-  .pk-tabs-on .pk .phase.pk-panel-hidden {
+  .pk-tabs-on .pk .pk-tab-panel[hidden] {
     display: block !important;
   }
-  .pk .pk-tabbar,
+
+  .pk .pk-tabs-wrap,
   .pk .pk-tabnav,
-  .site-header,
-  .header-actions,
-  .pk-no-print,
-  button,
-  .btn {
+  .pk-no-print {
     display: none !important;
   }
-  .screen, .phase, section[data-phase], section.screen {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    page-break-after: always !important;
-    break-after: page !important;
-    border: none !important;
-    box-shadow: none !important;
-    background: none !important;
-    padding: 0 !important;
-    margin: 0 0 30px 0 !important;
-  }
-  .grid2 {
-    display: block !important;
-  }
-  input[type="number"], input[type="text"], select {
-    border-bottom: 1px solid #000 !important;
-    border-top: none !important;
-    border-left: none !important;
-    border-right: none !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    padding: 2px !important;
+
+  .pk .pk-tab-panel > .phase {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 }
 
-/* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .pk .phase.pk-panel,
+  .pk .pk-tab-panel,
   .pk .pk-step-bar > i,
   .pk .pk-tab,
   .pk .pk-research-card,

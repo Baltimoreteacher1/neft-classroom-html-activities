@@ -38,7 +38,6 @@
   };
 
   /* ---------------- Level 1 / Level 2 tiers ---------------- */
-  // level: 'level-1' or 'level-2'. Sets body class pk-level-1 / pk-level-2.
   PK.setLevel = function (level, storageKey) {
     document.body.classList.remove("pk-level-1", "pk-level-2");
     if (level === "level-1") document.body.classList.add("pk-level-1");
@@ -56,13 +55,11 @@
         /* ignore storage errors */
       }
     }
-    // Optional per-page callback so a page can pre-fill friendlier numbers.
     if (typeof window.onLevelChange === "function") {
       window.onLevelChange(level);
     }
   };
 
-  // opts: { storageKey, default: 'level-1' }
   PK.initLevel = function (opts) {
     opts = opts || {};
     document.querySelectorAll("[data-level-btn]").forEach((b) => {
@@ -82,8 +79,6 @@
   };
 
   /* ---------------- Self-check ---------------- */
-  // inputId: element to read; correctValue: number or string; tolerance: number
-  // Renders into #<inputId>Fb if present, else returns boolean only.
   PK.checkWork = function (inputId, correctValue, tolerance) {
     const el = $(inputId);
     if (!el) return false;
@@ -109,7 +104,6 @@
   };
 
   /* ---------------- Stat / compare cards ---------------- */
-  // pairs: [[label, value], ...]
   PK.statDiffCards = function (container, pairs) {
     const box = typeof container === "string" ? $(container) : container;
     if (!box) return;
@@ -121,7 +115,6 @@
       .join("");
   };
 
-  // rows: [{ label, me, partner, fmt? }] — renders me / partner / difference
   PK.peerCompare = function (container, rows) {
     const box = typeof container === "string" ? $(container) : container;
     if (!box) return;
@@ -137,7 +130,6 @@
   };
 
   /* ---------------- World meter ---------------- */
-  // sampleArray: numbers; myValue: number; labels: { mean?, me? } optional
   PK.worldMeter = function (container, sampleArray, myValue, labels) {
     const box = typeof container === "string" ? $(container) : container;
     if (!box) return;
@@ -173,7 +165,6 @@
   };
 
   /* ---------------- What-If lab ---------------- */
-  // before/after: objects of { label: value }; labels: optional title
   PK.whatIf = function (container, before, after, title) {
     const box = typeof container === "string" ? $(container) : container;
     if (!box) return;
@@ -223,7 +214,6 @@
     PK.dl(name, "text/plain", box ? box.textContent : "");
   };
 
-  // rows: array of arrays (cells). Header optional as first row.
   PK.downloadCsv = function (name, rows) {
     const esc = (c) => {
       const s = String(c == null ? "" : c);
@@ -234,7 +224,6 @@
   };
 
   /* ---------------- Save / load (localStorage) ---------------- */
-  // Saves every element carrying [data-save]; keyed by storageKey.
   PK.save = function (storageKey, opts) {
     opts = opts || {};
     const data = {};
@@ -284,6 +273,12 @@
     return h2 ? h2.textContent.trim() : "";
   }
 
+  function arcBannerText(section) {
+    return (section.querySelector(".arc-banner")?.textContent || "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
   function isVocabPhase(section) {
     return /Visual Math Notes/i.test(phaseH2(section));
   }
@@ -295,20 +290,25 @@
     return (
       t === "★" ||
       t === "✓" ||
-      /Rubric|Answer Key/i.test(h2)
+      /Rubric|Answer Key|How You Are Scored/i.test(h2)
     );
   }
 
-  function partBannerLabel(section) {
-    const raw = (section.querySelector(".arc-banner")?.textContent || "")
-      .replace(/\s+/g, " ")
-      .trim();
-    const n = raw.match(/part\s*(\d)/i);
-    if (!n) return null;
-    if (n[1] === "1") return "Your Turn";
-    if (n[1] === "2") return "Compare";
-    if (n[1] === "3") return "Real World";
-    return "Part " + n[1];
+  function isSetupPhase(section) {
+    return /project setup/i.test(arcBannerText(section));
+  }
+
+  function partSubLetter(section) {
+    const m = arcBannerText(section).match(/part\s*1\s*([a-e])/i);
+    return m ? m[1].toLowerCase() : null;
+  }
+
+  function partNumber(section) {
+    const raw = arcBannerText(section);
+    if (/part\s*2/i.test(raw)) return 2;
+    if (/part\s*3/i.test(raw)) return 3;
+    if (/part\s*1/i.test(raw)) return 1;
+    return 0;
   }
 
   function hasArcBanner(section) {
@@ -316,39 +316,80 @@
   }
 
   function shortLabel(text, max) {
-    max = max || 26;
+    max = max || 24;
     const clean = text.replace(/\s+/g, " ").trim();
     if (clean.length <= max) return clean;
-    return clean.slice(0, max - 1).trim() + "…";
+    return clean.slice(0, max - 1).replace(/\s+\S*$/, "").trim() + "…";
+  }
+
+  function part1PairLabel(a, b) {
+    const subs = [partSubLetter(a), partSubLetter(b)].filter(Boolean);
+    const letters = subs.join("");
+    if (/a|b/.test(letters)) return "Part 1: Your Idea";
+    if (/c|d/.test(letters)) return "Part 1: Work It Out";
+    if (/e/.test(letters)) return "Part 1: Go Deeper";
+    const h2 = phaseH2(a);
+    if (/plan|setup|start|choose|pick/i.test(h2)) return "Part 1: Your Plan";
+    if (/calc|compute|solve|budget|cost|number/i.test(h2))
+      return "Part 1: Do the Math";
+    if (h2) return "Part 1: " + shortLabel(h2, 18);
+    return "Part 1: Your Turn";
+  }
+
+  function part1SingleLabel(section) {
+    const sub = partSubLetter(section);
+    if (sub === "a" || sub === "b") return "Part 1: Your Idea";
+    if (sub === "c" || sub === "d") return "Part 1: Work It Out";
+    if (sub === "e") return "Part 1: Go Deeper";
+    const h2 = phaseH2(section);
+    if (h2) return "Part 1: " + shortLabel(h2, 18);
+    return "Part 1: Your Turn";
   }
 
   function phaseLabel(section) {
-    const part = partBannerLabel(section);
-    if (part) return part;
+    if (isVocabPhase(section)) return "Get Ready";
+    if (isSetupPhase(section)) return "Start Here";
+    const pn = partNumber(section);
+    if (pn === 2) return "Compare Ideas";
+    if (pn === 3) return "Real World";
+    if (pn === 1) return part1SingleLabel(section);
     const h2 = phaseH2(section);
     if (/Visual Math Notes/i.test(h2)) return "Get Ready";
     if (/Quick-Check Answer Key/i.test(h2)) return "Check Answers";
-    if (/Rubric/i.test(h2)) return "Rubric";
-    if (h2) return shortLabel(h2, 28);
+    if (/Rubric|How You Are Scored/i.test(h2)) return "How You Did";
     const num = section.querySelector(".phase-num");
-    if (num && num.textContent.trim()) {
-      const n = num.textContent.trim();
-      if (n === "★" || n === "✓") return n === "★" ? "Your Project" : "Rubric";
-      return "Step " + n;
-    }
-    return "Step";
+    const t = num ? num.textContent.trim() : "";
+    if (t === "★") return "Finish Strong";
+    if (t === "✓") return "How You Did";
+    if (/research/i.test(h2)) return "Research";
+    if (h2) return shortLabel(h2, 24);
+    return "Next Step";
   }
 
   function pairLabel(a, b) {
+    if (partNumber(a) === 1 || partNumber(b) === 1) return part1PairLabel(a, b);
     const la = phaseLabel(a);
     const lb = phaseLabel(b);
-    const na = a.querySelector(".phase-num");
-    const nb = b.querySelector(".phase-num");
-    const aNum = na && /^\d+$/.test(na.textContent.trim()) ? na.textContent.trim() : null;
-    const bNum = nb && /^\d+$/.test(nb.textContent.trim()) ? nb.textContent.trim() : null;
-    if (aNum && bNum) return "Steps " + aNum + "–" + bNum;
     if (la === lb) return la;
-    return shortLabel(la + " & " + lb, 30);
+    return shortLabel(la + " · " + lb, 28);
+  }
+
+  function shouldPair(a, b) {
+    if (!b) return false;
+    if (hasArcBanner(a) && hasArcBanner(b)) {
+      if (isSetupPhase(a) || isSetupPhase(b)) return false;
+      if (partNumber(a) === 2 || partNumber(a) === 3) return false;
+      if (partNumber(b) === 2 || partNumber(b) === 3) return false;
+      const sa = partSubLetter(a);
+      const sb = partSubLetter(b);
+      if (sa && sb) {
+        const pair = sa + sb;
+        return /ab|cd|de|bc/.test(pair) || (sa === sb && sa === "a");
+      }
+      return false;
+    }
+    if (!hasArcBanner(a) && !hasArcBanner(b)) return true;
+    return false;
   }
 
   function buildTabGroups(phases) {
@@ -368,27 +409,32 @@
     let i = 0;
     while (i < middle.length) {
       const section = middle[i];
-      if (hasArcBanner(section)) {
-        groups.push({ label: phaseLabel(section), sections: [section] });
-        i += 1;
+      const next = middle[i + 1];
+      if (shouldPair(section, next)) {
+        groups.push({
+          label: pairLabel(section, next),
+          sections: [section, next],
+        });
+        i += 2;
         continue;
       }
-      const next = middle[i + 1];
-      if (next && !hasArcBanner(next)) {
-        groups.push({ label: pairLabel(section, next), sections: [section, next] });
-        i += 2;
-      } else {
-        groups.push({ label: phaseLabel(section), sections: [section] });
-        i += 1;
-      }
+      groups.push({ label: phaseLabel(section), sections: [section] });
+      i += 1;
     }
     if (finish.length === 1) {
       groups.push({ label: phaseLabel(finish[0]), sections: finish });
     } else if (finish.length === 2) {
-      groups.push({ label: "Finish Up", sections: finish });
+      const star = finish.find((s) => {
+        const t = s.querySelector(".phase-num")?.textContent.trim();
+        return t === "★";
+      });
+      groups.push({
+        label: star ? "Finish Strong" : phaseLabel(finish[0]),
+        sections: finish,
+      });
     } else if (finish.length > 2) {
-      groups.push({ label: phaseLabel(finish[0]), sections: [finish[0]] });
-      groups.push({ label: "Rubric & Check", sections: finish.slice(1) });
+      groups.push({ label: "Finish Strong", sections: [finish[0]] });
+      groups.push({ label: "How You Did", sections: finish.slice(1) });
     }
     return groups;
   }
@@ -397,7 +443,6 @@
     return "pk-tabs:" + (location.pathname || "project");
   }
 
-  // opts: { wrap?: selector, sticky?: bool, storageKey?: string }
   PK.initProjectTabs = function (opts) {
     opts = opts || {};
     if (document.body.hasAttribute("data-pk-no-tabs")) return;
@@ -415,10 +460,13 @@
     if (groups.length < 2) return;
 
     const storageKey = opts.storageKey || tabStorageKey();
+    const total = groups.length;
     let active = 0;
+    let furthest = 0;
     try {
       const saved = parseInt(sessionStorage.getItem(storageKey), 10);
-      if (!Number.isNaN(saved) && saved >= 0 && saved < groups.length) active = saved;
+      if (!Number.isNaN(saved) && saved >= 0 && saved < total) active = saved;
+      furthest = active;
     } catch (e) {
       /* ignore */
     }
@@ -427,11 +475,21 @@
     tabsWrap.className =
       "pk-tabs-wrap pk-no-print" + (opts.sticky !== false ? " pk-tabs-sticky" : "");
 
+    const topRow = document.createElement("div");
+    topRow.className = "pk-tabbar-top";
+    const stepCount = document.createElement("div");
+    stepCount.className = "pk-step-count";
+    const stepBar = document.createElement("div");
+    stepBar.className = "pk-step-bar";
+    const stepFill = document.createElement("i");
+    stepBar.appendChild(stepFill);
+    topRow.appendChild(stepCount);
+    topRow.appendChild(stepBar);
+
     const hint = document.createElement("p");
     hint.className = "pk-tab-hint";
     hint.textContent =
-      "Work one tab at a time — use the steps across the top to move through the project.";
-    tabsWrap.appendChild(hint);
+      "Take it one step at a time — you've got this! Tap a tab or use Next when you're ready.";
 
     const tablist = document.createElement("div");
     tablist.setAttribute("role", "tablist");
@@ -441,6 +499,19 @@
     const panelsWrap = document.createElement("div");
     panelsWrap.className = "pk-tab-panels";
 
+    const nav = document.createElement("div");
+    nav.className = "pk-tabnav pk-no-print";
+    const prevBtn = document.createElement("button");
+    prevBtn.type = "button";
+    prevBtn.className = "pk-prev";
+    prevBtn.innerHTML = "← <span>Back</span>";
+    const nextBtn = document.createElement("button");
+    nextBtn.type = "button";
+    nextBtn.className = "pk-next";
+    nextBtn.innerHTML = "<span>Next step</span> →";
+    nav.appendChild(prevBtn);
+    nav.appendChild(nextBtn);
+
     const anchor =
       wrap.querySelector(":scope > .intro-card") ||
       wrap.querySelector(":scope > .progress-wrap") ||
@@ -448,23 +519,57 @@
     const tabs = [];
     const panels = [];
 
-    function selectTab(index, focusTab) {
+    function markDone() {
+      tabs.forEach((tab, idx) => {
+        const done = idx < furthest;
+        tab.classList.toggle("pk-done", done);
+        const dot = tab.querySelector(".pk-tab-dot");
+        if (dot) dot.textContent = done ? "✓" : String(idx + 1);
+      });
+    }
+
+    function updateChrome(index) {
+      stepCount.innerHTML =
+        'Step <b>' + (index + 1) + "</b> of " + total;
+      stepFill.style.width = ((index + 1) / total) * 100 + "%";
+      prevBtn.disabled = index === 0;
+      nextBtn.disabled = index === total - 1;
+      markDone();
+    }
+
+    function selectTab(index, focusTarget) {
       active = index;
+      if (index > furthest) furthest = index;
       tabs.forEach((tab, idx) => {
         const on = idx === index;
         tab.setAttribute("aria-selected", on ? "true" : "false");
         tab.tabIndex = on ? 0 : -1;
       });
       panels.forEach((entry, idx) => {
-        entry.el.dataset.active = idx === index ? "true" : "false";
-        entry.el.hidden = idx !== index;
+        const on = idx === index;
+        entry.el.dataset.active = on ? "true" : "false";
+        entry.el.hidden = !on;
+        entry.el.classList.toggle("pk-tab-panel-active", on);
       });
+      updateChrome(index);
       try {
         sessionStorage.setItem(storageKey, String(index));
       } catch (e) {
         /* ignore */
       }
-      if (focusTab && tabs[index]) tabs[index].focus();
+      if (tabs[index] && tabs[index].scrollIntoView) {
+        tabs[index].scrollIntoView({
+          inline: "center",
+          block: "nearest",
+          behavior: "smooth",
+        });
+      }
+      if (focusTarget === "tab" && tabs[index]) tabs[index].focus();
+      if (focusTarget === "panel") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        const panel = panels[index]?.el;
+        if (panel) panel.focus({ preventScroll: true });
+      }
     }
 
     groups.forEach((group, idx) => {
@@ -474,18 +579,30 @@
       tab.setAttribute("role", "tab");
       tab.id = "pk-tab-" + idx;
       tab.setAttribute("aria-controls", "pk-panel-" + idx);
-      tab.textContent = group.label;
-      tab.addEventListener("click", () => selectTab(idx, false));
+      tab.setAttribute("aria-selected", "false");
+      tab.tabIndex = -1;
+
+      const dot = document.createElement("span");
+      dot.className = "pk-tab-dot";
+      dot.textContent = String(idx + 1);
+      const lbl = document.createElement("span");
+      lbl.className = "pk-tab-label";
+      lbl.textContent = group.label;
+      tab.appendChild(dot);
+      tab.appendChild(lbl);
+
+      tab.addEventListener("click", () => selectTab(idx, null));
       tab.addEventListener("keydown", (ev) => {
         let next = null;
-        if (ev.key === "ArrowRight" || ev.key === "ArrowDown") next = (idx + 1) % groups.length;
+        if (ev.key === "ArrowRight" || ev.key === "ArrowDown")
+          next = (idx + 1) % total;
         else if (ev.key === "ArrowLeft" || ev.key === "ArrowUp")
-          next = (idx - 1 + groups.length) % groups.length;
+          next = (idx - 1 + total) % total;
         else if (ev.key === "Home") next = 0;
-        else if (ev.key === "End") next = groups.length - 1;
+        else if (ev.key === "End") next = total - 1;
         if (next !== null) {
           ev.preventDefault();
-          selectTab(next, true);
+          selectTab(next, "tab");
         }
       });
       tablist.appendChild(tab);
@@ -496,27 +613,44 @@
       panel.id = "pk-panel-" + idx;
       panel.setAttribute("role", "tabpanel");
       panel.setAttribute("aria-labelledby", tab.id);
+      panel.setAttribute("tabindex", "-1");
       panelsWrap.appendChild(panel);
       panels.push({ el: panel, sections: group.sections });
     });
 
+    prevBtn.addEventListener("click", () => {
+      if (active > 0) selectTab(active - 1, "panel");
+    });
+    nextBtn.addEventListener("click", () => {
+      if (active < total - 1) selectTab(active + 1, "panel");
+    });
+
+    tabsWrap.appendChild(topRow);
+    tabsWrap.appendChild(hint);
     tabsWrap.appendChild(tablist);
 
     anchor.insertAdjacentElement("afterend", tabsWrap);
     tabsWrap.insertAdjacentElement("afterend", panelsWrap);
+    panelsWrap.insertAdjacentElement("afterend", nav);
+
     panels.forEach((entry) => {
       entry.sections.forEach((section) => entry.el.appendChild(section));
     });
     teacher.forEach((section) => wrap.appendChild(section));
 
-    selectTab(active, false);
-  };
+    document.body.classList.add("pk-tabs-on");
+    selectTab(active, null);
 
-  document.addEventListener("DOMContentLoaded", function () {
-    if (document.body.classList.contains("pk")) {
-      PK.initProjectTabs();
-    }
-  });
+    window.PKTabs = {
+      go: function (n) {
+        selectTab(Math.max(0, Math.min(total - 1, n - 1)), "panel");
+      },
+      count: total,
+      current: function () {
+        return active + 1;
+      },
+    };
+  };
 
   window.PK = PK;
 })();

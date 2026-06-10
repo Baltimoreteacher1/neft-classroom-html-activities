@@ -75,10 +75,16 @@
     var(--pp-bg);
 }
 
-/* Stagger the entrance of the major sections */
+/* Stagger the entrance of the major sections (skip tab chrome) */
 .pk .wrap > section,
-.pk .wrap > .intro-card {
+.pk .wrap > .intro-card,
+.pk .wrap > .progress-wrap {
   animation: pp-rise 0.6s var(--pp-ease) both;
+}
+.pk .wrap > .pk-tabs-wrap,
+.pk .wrap > .pk-tab-panels,
+.pk .wrap > .pk-tabnav {
+  animation: none;
 }
 .pk .wrap > *:nth-child(2) {
   animation-delay: 0.04s;
@@ -228,6 +234,21 @@
 .pk .intro-card {
   border-top: 6px solid transparent;
   border-image: linear-gradient(90deg, var(--pp-gold), var(--pp-coral)) 1;
+  padding: 26px 28px;
+}
+.pk .intro-card h2 {
+  font-size: 1.28rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--pp-ink);
+}
+.pk .intro-card p {
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: var(--pp-muted);
+}
+.pk .intro-card p strong {
+  color: var(--pp-ink);
 }
 
 /* Phase header — bold gradient number badge */
