@@ -1,0 +1,65 @@
+/* Neft Teacher — shared Game FX kit (additive, deploy-safe).
+ *
+ * Universal enterprise-grade polish for interactive games/activities:
+ * keyboard focus rings, reduced-motion safety, success spark bursts, and a
+ * HUD "pop". Injected alongside game-fx.js by tools/inject-game-fx.js. Designed
+ * to NEVER change gameplay — it only adds visual polish, and every motion is
+ * disabled under prefers-reduced-motion.
+ *
+ * All classes/ids are namespaced `gfx-` to avoid colliding with game styles. */
+
+/* Keyboard-only focus rings on interactive elements (does not affect mouse
+ * users thanks to :focus-visible). Scoped to common interactive selectors. */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible,
+.opt:focus-visible,
+.option:focus-visible,
+.choice:focus-visible,
+.answer:focus-visible,
+.tile:focus-visible,
+.card:focus-visible {
+  outline: 3px solid #2f6df0;
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+/* Success spark particle (created by game-fx.js). */
+.gfx-spark {
+  position: fixed;
+  z-index: 9999;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* HUD value emphasis pop. */
+.gfx-pop {
+  animation: gfxPop 0.34s ease;
+}
+@keyframes gfxPop {
+  40% {
+    transform: scale(1.2);
+  }
+}
+
+/* Parallax layers get a smooth return easing. */
+[data-parallax] [data-parallax-layer],
+.ghero .deco {
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gfx-spark,
+  .gfx-pop {
+    animation: none !important;
+    display: none !important;
+  }
+  [data-parallax] [data-parallax-layer],
+  .ghero .deco {
+    transform: none !important;
+  }
+}
