@@ -653,13 +653,17 @@
       </section>
 
       <!-- ===================== PART 1 — SELF ===================== -->
-      <section class="phase">
+      
+      <!-- ===================== PART 1A — SELF ===================== -->
+      <section class="phase" id="phase-1a">
         <div class="phase-head">
-          <div class="phase-num">1</div>
+          <div class="phase-num">1a</div>
           <div>
-            <span class="arc-banner">Part 1 · Self — an app you use</span>
-            <div class="skill">Write &amp; Evaluate · 6.EE.2 · 6.EE.3</div>
-            <h2>Model YOUR App's Cost</h2>
+            <span class="arc-banner">Part 1a · Self — your real plan</span>
+            <h2>📱 Name your app</h2>
+          </div>
+        </div>
+        <h2>Model YOUR App's Cost</h2>
           </div>
         </div>
         <p>
@@ -672,8 +676,7 @@
             ✨ Use example numbers
           </button>
         </p>
-
-        <h3 style="margin-top: 8px">📱 Name your app</h3>
+        
         <label class="fld" for="appName">App you actually use</label>
         <input
           type="text"
@@ -691,9 +694,19 @@
             </div>
           </div>
         </div>
-  <h3 style="margin-top: 24px">
-          💵 Your cost expression (write &amp; evaluate · 6.EE.2)
-        </h3>
+      </section>
+    
+
+      <!-- ===================== PART 1B — SELF ===================== -->
+      <section class="phase" id="phase-1b">
+        <div class="phase-head">
+          <div class="phase-num">1b</div>
+          <div>
+            <span class="arc-banner">Part 1b · Self — your real plan</span>
+            <h2>💵 Your cost expression (write &amp; evaluate · 6.EE.2)</h2>
+          </div>
+        </div>
+        
         <p>
           Set your own <strong>monthly price p</strong> and one-time
           <strong>setup fee</strong>. Your expression is
@@ -718,6 +731,19 @@
               <label class="fld" for="worldCountry">Streaming App Researched</label>
               <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
             </div>
+            
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://en.wikipedia.org/wiki/Streaming_television#Pricing" target="_blank" class="pk-research-inline-link">🔗 Wikipedia: Pricing of major video streaming apps ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the database or check current pricing. Find the standard monthly fee of a Netflix Standard plan. Enter the monthly cost below:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Streaming App Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
             <div>
               <label class="fld" for="cost-p">Monthly price p ($)</label>
               <input
@@ -730,6 +756,9 @@
               oninput="calcCost()"
             />
             </div>
+          </div>
+        </div>
+    
           </div>
         </div>
     
@@ -802,8 +831,19 @@
           </p>
         </details>
       </section>
+    
 
       
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+  
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1421,6 +1461,7 @@
       }
       
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
@@ -1462,6 +1503,7 @@
         
         updateProgress();
       }
+  
   
   
 
@@ -1508,6 +1550,7 @@
       /* ---- What-If: add one more month ---- */
       
       
+      
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
         let sample = worldSample();
@@ -1535,6 +1578,7 @@
       }
   
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
@@ -1542,6 +1586,7 @@
           
           "worldCountry": "Netflix Standard",
           "cost-p": 15.49,
+          
           "worldSize": 15.49,
           appName: "StreamPro",
           "cost-fee": 4.5,
@@ -1551,6 +1596,7 @@
           "cmp-n": 6,
           worldN: 6,
           myWorld: "",
+          
           
         };
         Object.entries(ex).forEach(([k, v]) => {
@@ -1572,6 +1618,61 @@
         worldGo();
       }
     
+
+      
+      function drawVisualizer() {
+        const leftExpr = num("exp-left") || 0;
+        const rightExpr = num("exp-right") || 0;
+        
+        let html = "";
+        const tilt = Math.min(Math.max((leftExpr - rightExpr) * 2, -15), 15);
+        const isBal = (leftExpr === rightExpr && leftExpr > 0);
+        
+        if (leftExpr > 0 || rightExpr > 0) {
+          html = `
+            <g transform="translate(250, 150)">
+              <!-- Balance Stand -->
+              <line x1="0" y1="0" x2="0" y2="60" stroke="#0f2b3c" stroke-width="6" />
+              <polygon points="-30,60 30,60 20,55 -20,55" fill="#0f2b3c" />
+              
+              <!-- Tilted Beam -->
+              <g transform="rotate(${tilt})">
+                <line x1="-120" y1="0" x2="120" y2="0" stroke="#0f2b3c" stroke-width="4" />
+                
+                <!-- Left Pan -->
+                <line x1="-100" y1="0" x2="-100" y2="40" stroke="#5e6e7e" stroke-width="1.5" />
+                <path d="M -130 40 L -70 40 L -80 50 L -120 50 Z" fill="#cbd5e1" stroke="#5e6e7e" stroke-width="1.5" />
+                <text x="-100" y="32" text-anchor="middle" font-size="10" font-weight="bold" fill="#1a6fb5">Left: ${leftExpr}</text>
+                
+                <!-- Right Pan -->
+                <line x1="100" y1="0" x2="100" y2="40" stroke="#5e6e7e" stroke-width="1.5" />
+                <path d="M 70 40 L 130 40 L 120 50 L 80 50 Z" fill="#cbd5e1" stroke="#5e6e7e" stroke-width="1.5" />
+                <text x="100" y="32" text-anchor="middle" font-size="10" font-weight="bold" fill="#0e8a7d">Right: ${rightExpr}</text>
+              </g>
+            </g>
+            
+            ${isBal ? `
+              <text x="250" y="60" text-anchor="middle" font-size="14" font-weight="bold" fill="#2d874b">⚖️ BALANCED EQUALITY!</text>
+            ` : `
+              <text x="250" y="60" text-anchor="middle" font-size="14" font-weight="bold" fill="#c45a3c">⚖️ UNBALANCED EXPRESSIONS</text>
+            `}
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Left & Right expressions to balance scale</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
 
       
       function drawVisualizer() {
@@ -1808,49 +1909,5 @@ function recalcAll() {
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script type="application/json" id="pk-research">
-      {
-        "title": "Research & Resources",
-        "icon": "🔎",
-        "intro": "Use these safe sites to find real app and streaming prices so your pricing engine uses true numbers. Each link opens in a new tab so your project stays open.",
-        "links": [
-          {
-            "icon": "📊",
-            "name": "Khan Academy — Writing Expressions",
-            "url": "https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-equivalent-exp/cc-6th-writing-expressions/v/writing-expressions-with-variables",
-            "find": "How to turn a real price plan into an expression with a variable.",
-            "look": "In Part 1, use this to write your app's expression with its price, setup fee, and number of months."
-          },
-          {
-            "icon": "📊",
-            "name": "Math is Fun — Evaluating Expressions",
-            "url": "https://www.mathsisfun.com/algebra/substitution.html",
-            "find": "How to plug a number in for a variable and find the total.",
-            "look": "In Part 2, evaluate both plans at the same number of months to find the crossover."
-          },
-          {
-            "icon": "📊",
-            "name": "FTC Consumer — Subscriptions (.gov)",
-            "url": "https://consumer.ftc.gov/articles/getting-and-out-free-trials-auto-renewals-and-negative-option-subscriptions",
-            "find": "Official tips on how subscription and setup fees really work.",
-            "look": "For Part 3, compare your plan to fair real-world pricing rules."
-          },
-          {
-            "icon": "📊",
-            "name": "Khan Academy — Equivalent Expressions",
-            "url": "https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-equivalent-exp",
-            "find": "Lessons on showing two expressions are equal.",
-            "look": "In Part 3, prove two pricing expressions are equivalent."
-          },
-          {
-            "icon": "📊",
-            "name": "Math is Fun — Linear Equations & Graphs",
-            "url": "https://www.mathsisfun.com/algebra/linear-equations.html",
-            "find": "How a steady price-per-month makes a straight-line pattern.",
-            "look": "Use this to picture where two plans cross when you design a fairer third plan."
-          }
-        ]
-      }
-    </script>
-  </body>
+    </body>
 </html>

@@ -547,13 +547,17 @@
       </section>
 
       <!-- ===================== PART 1 — SELF ===================== -->
-      <section class="phase">
+      
+      <!-- ===================== PART 1A — SELF ===================== -->
+      <section class="phase" id="phase-1a">
         <div class="phase-head">
-          <div class="phase-num">1</div>
+          <div class="phase-num">1a</div>
           <div>
-            <span class="arc-banner">Part 1 · Self — your real order</span>
-            <div class="skill">Decimals · Division · GCF · 6.NS.2–4</div>
-            <h2>Outfit YOUR Team</h2>
+            <span class="arc-banner">Part 1a · Self — your real plan</span>
+            <h2>✖️ Price the parts order (decimal multiplication)</h2>
+          </div>
+        </div>
+        <h2>Outfit YOUR Team</h2>
           </div>
         </div>
         <p>
@@ -567,9 +571,7 @@
         </p>
 
         <!-- 1a Parts -->
-        <h3 style="margin-top: 8px">
-          ✖️ Price the parts order (decimal multiplication)
-        </h3>
+        
         <table class="parts">
           <tr>
             <th>Part</th>
@@ -673,7 +675,19 @@
             </div>
           </div>
         </div>
-  <h3 style="margin-top: 24px">➗ Split the cost fairly (division)</h3>
+      </section>
+    
+
+      <!-- ===================== PART 1B — SELF ===================== -->
+      <section class="phase" id="phase-1b">
+        <div class="phase-head">
+          <div class="phase-num">1b</div>
+          <div>
+            <span class="arc-banner">Part 1b · Self — your real plan</span>
+            <h2>➗ Split the cost fairly (division)</h2>
+          </div>
+        </div>
+        
         <div class="grid2">
           
         <!-- ===================== INLINE RESEARCH LAB ===================== -->
@@ -681,6 +695,19 @@
           <div class="pk-research-inline-header">
             <span class="pk-research-badge">🔍 Research Required</span>
             <a href="https://education.lego.com/" target="_blank" class="pk-research-inline-link">🔗 LEGO Education SPIKE Prime Catalog ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the LEGO Education website or spike PRIME catalog. Find the retail price of a Spike Prime Core Expansion Set or basic set. Enter the researched price below:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Researched Kit Name</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
+            
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://education.lego.com/en-us/products/lego-education-spike-prime-set/45678/" target="_blank" class="pk-research-inline-link">🔗 LEGO Education SPIKE Prime Catalog ↗</a>
           </div>
           <p class="pk-research-inline-instructions">Open the LEGO Education website or spike PRIME catalog. Find the retail price of a Spike Prime Core Expansion Set or basic set. Enter the researched price below:</p>
           <div class="grid2">
@@ -699,6 +726,9 @@
               oninput="calcSplit()"
             />
             </div>
+          </div>
+        </div>
+    
           </div>
         </div>
     
@@ -727,7 +757,19 @@
         </details>
 
         <!-- 1c GCF kits -->
-        <h3 style="margin-top: 24px">🧰 Organize the toolkit (GCF)</h3>
+      </section>
+    
+
+      <!-- ===================== PART 1C — SELF ===================== -->
+      <section class="phase" id="phase-1c">
+        <div class="phase-head">
+          <div class="phase-num">1c</div>
+          <div>
+            <span class="arc-banner">Part 1c · Self — your real plan</span>
+            <h2>🧰 Organize the toolkit (GCF)</h2>
+          </div>
+        </div>
+        
         <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
           Level 1 tip: try counts that share a factor, like 24 and 36.
         </p>
@@ -781,9 +823,19 @@
         </details>
 
         <!-- 1d Budget -->
-        <h3 style="margin-top: 24px">
-          💵 Are you under budget? (decimal operations)
-        </h3>
+      </section>
+    
+
+      <!-- ===================== PART 1D — SELF ===================== -->
+      <section class="phase" id="phase-1d">
+        <div class="phase-head">
+          <div class="phase-num">1d</div>
+          <div>
+            <span class="arc-banner">Part 1d · Self — your real plan</span>
+            <h2>💵 Are you under budget? (decimal operations)</h2>
+          </div>
+        </div>
+        
         <div class="grid2">
           <div>
             <label class="fld" for="b-budget">Your total budget ($)</label
@@ -851,8 +903,19 @@
         </button>
         <div class="feedback" id="check-tiesFb"></div>
       </section>
+    
 
       
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+  
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1416,6 +1479,7 @@
       }
       
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
@@ -1459,6 +1523,8 @@
       }
   
   
+  
+      
       
       
       function runWhatIf() {
@@ -1488,12 +1554,14 @@
       }
   
   
+  
 
       function useExamples() {
         const ex = {
           
           "worldCountry": "VEX IQ Kit",
           "s-total": 329.95,
+          
           "worldSize": 329.95,
           p1: 18.75,
           q1: 4,
@@ -1509,6 +1577,7 @@
           "b-travel": 210.5,
           "b-snacks": 64.8,
           myWorld: "",
+          
           
         };
         Object.entries(ex).forEach(([k, v]) => {
@@ -1529,6 +1598,67 @@
         worldGo();
       }
     
+
+      
+      function drawVisualizer() {
+        const s = num("f-screws");
+        const b = num("f-bolts");
+        
+        let html = "";
+        if (!isNaN(s) && s > 0 && !isNaN(b) && b > 0) {
+          const g = gcd(s, b);
+          const screwsPer = s / g;
+          const boltsPer = b / g;
+          
+          const numBoxes = Math.min(g, 6);
+          let boxesHtml = "";
+          for (let i = 0; i < numBoxes; i++) {
+            const x = 30 + (i % 3) * 150;
+            const y = 30 + Math.floor(i / 3) * 100;
+            
+            let itemsHtml = "";
+            for (let sc = 0; sc < Math.min(screwsPer, 8); sc++) {
+              const sx = x + 15 + (sc % 4) * 16;
+              const sy = y + 35 + Math.floor(sc / 4) * 16;
+              itemsHtml += `<circle cx="${sx}" cy="${sy}" r="5" fill="#1a6fb5" />`;
+            }
+            for (let bl = 0; bl < Math.min(boltsPer, 8); bl++) {
+              const bx = x + 85 + (bl % 4) * 16;
+              const by = y + 35 + Math.floor(bl / 4) * 16;
+              itemsHtml += `<rect x="${bx - 5}" y="${by - 5}" width="10" height="10" rx="2" fill="#d4952a" />`;
+            }
+            
+            boxesHtml += `
+              <g>
+                <rect x="${x}" y="${y}" width="140" height="80" rx="8" fill="none" stroke="#0e8a7d" stroke-width="2" />
+                <text x="${x + 70}" y="${y + 20}" text-anchor="middle" font-size="10" font-weight="bold" fill="#0e8a7d">Toolkit #${i+1}</text>
+                ${itemsHtml}
+              </g>
+            `;
+          }
+          
+          html = `
+            ${boxesHtml}
+            <text x="250" y="215" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">
+              GCF = ${g} Toolkits | Each gets ${screwsPer} Screws (🔵) & ${boltsPer} Bolts (🟧)
+            </text>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Screws & Bolts amounts to visualize toolkits</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
 
       
       function drawVisualizer() {
@@ -1771,49 +1901,5 @@ function recalcAll() {
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script type="application/json" id="pk-research">
-      {
-        "title": "Research & Resources",
-        "icon": "🔎",
-        "intro": "Use these safe, kid-friendly sites to find real part prices and math help for your robotics team's budget. Each one opens in a new tab so you don't lose your work.",
-        "links": [
-          {
-            "icon": "✖️",
-            "name": "Math is Fun — Multiplying Decimals",
-            "url": "https://www.mathsisfun.com/multiplying-decimals.html",
-            "find": "A clear, ad-light walkthrough of multiplying decimals and counting decimal places.",
-            "look": "Use it in Part 1 when you multiply each part's price × quantity to get your line totals."
-          },
-          {
-            "icon": "➗",
-            "name": "Math is Fun — Long Division",
-            "url": "https://www.mathsisfun.com/long_division.html",
-            "find": "Step-by-step multi-digit long division with worked examples.",
-            "look": "Check your Part 1 work when you split the total cost evenly among your teammates."
-          },
-          {
-            "icon": "🤖",
-            "name": "VEX Robotics — Educational Kits",
-            "url": "https://www.vexrobotics.com/competition",
-            "find": "Official robotics company site listing real classroom kits and their parts.",
-            "look": "Gather real kit prices to compare against your spending in Part 3's kit sample."
-          },
-          {
-            "icon": "🧱",
-            "name": "LEGO Education — SPIKE & Robotics",
-            "url": "https://education.lego.com/en-us/products/",
-            "find": "Official prices and contents for popular school robotics sets.",
-            "look": "Find a real kit price to type into Part 3 and see if your order is a better deal."
-          },
-          {
-            "icon": "🏆",
-            "name": "FIRST — Robotics Cost & Registration",
-            "url": "https://www.firstinspires.org/robotics/frc/pricing-and-payment",
-            "find": "A nonprofit (.org) page about real team budgets and fundraising for robotics.",
-            "look": "Use the budget info to reason about your Part 3 'team budget' comparison and careful-thinking question."
-          }
-        ]
-      }
-    </script>
-  </body>
+    </body>
 </html>

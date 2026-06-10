@@ -561,13 +561,17 @@
       </section>
 
       <!-- ===================== PART 1 — SELF ===================== -->
-      <section class="phase">
+      
+      <!-- ===================== PART 1A — SELF ===================== -->
+      <section class="phase" id="phase-1a">
         <div class="phase-head">
-          <div class="phase-num">1</div>
+          <div class="phase-num">1a</div>
           <div>
-            <span class="arc-banner">Part 1 · Self — your real plan</span>
-            <div class="skill">GCF · LCM · Decimals · Division · 6.NS.2–4</div>
-            <h2>Plan YOUR Block Party</h2>
+            <span class="arc-banner">Part 1a · Self — your real plan</span>
+            <h2>🎁 Build identical goodie bags (GCF)</h2>
+          </div>
+        </div>
+        <h2>Plan YOUR Block Party</h2>
           </div>
         </div>
         <p>
@@ -582,7 +586,7 @@
         </p>
 
         <!-- 1a GCF -->
-        <h3 style="margin-top: 8px">🎁 Build identical goodie bags (GCF)</h3>
+        
         <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
           Level 1 tip: try amounts that share a factor, like 24 and 36.
         </p>
@@ -644,7 +648,19 @@
         </details>
 
         <!-- 1b LCM -->
-        <h3 style="margin-top: 24px">⏱️ Sync the entertainment (LCM)</h3>
+      </section>
+    
+
+      <!-- ===================== PART 1B — SELF ===================== -->
+      <section class="phase" id="phase-1b">
+        <div class="phase-head">
+          <div class="phase-num">1b</div>
+          <div>
+            <span class="arc-banner">Part 1b · Self — your real plan</span>
+            <h2>⏱️ Sync the entertainment (LCM)</h2>
+          </div>
+        </div>
+        
         <div class="grid2">
           <div>
             <label class="fld" for="l-dj"
@@ -693,9 +709,19 @@
             </div>
           </div>
         </div>
-  <h3 style="margin-top: 24px">
-          💵 Track your budget (decimal operations)
-        </h3>
+      </section>
+    
+
+      <!-- ===================== PART 1C — SELF ===================== -->
+      <section class="phase" id="phase-1c">
+        <div class="phase-head">
+          <div class="phase-num">1c</div>
+          <div>
+            <span class="arc-banner">Part 1c · Self — your real plan</span>
+            <h2>💵 Track your budget (decimal operations)</h2>
+          </div>
+        </div>
+        
         <div class="grid2">
           <div>
             <label class="fld" for="c-budget">Your total budget ($)</label>
@@ -722,6 +748,19 @@
               <label class="fld" for="worldCountry">Food Plan Category Researched</label>
               <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
             </div>
+            
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://www.fns.usda.gov/cnpp/usda-food-plans-cost-food-monthly-reports" target="_blank" class="pk-research-inline-link">🔗 USDA: Cost of Food Monthly Reports ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the USDA Cost of Food report. Look up the monthly food cost for an adult on the "Low-Cost Plan". Enter the monthly value below to run the comparison math:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Food Plan Category Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
             <div>
               <label class="fld" for="c-food">Food &amp; drinks ($)</label>
               <input
@@ -734,6 +773,9 @@
               oninput="calcBudget()"
             />
             </div>
+          </div>
+        </div>
+    
           </div>
         </div>
     
@@ -787,7 +829,19 @@
         </details>
 
         <!-- 1d Division -->
-        <h3 style="margin-top: 24px">➗ Fair price per guest (division)</h3>
+      </section>
+    
+
+      <!-- ===================== PART 1D — SELF ===================== -->
+      <section class="phase" id="phase-1d">
+        <div class="phase-head">
+          <div class="phase-num">1d</div>
+          <div>
+            <span class="arc-banner">Part 1d · Self — your real plan</span>
+            <h2>➗ Fair price per guest (division)</h2>
+          </div>
+        </div>
+        
         <div class="grid2">
           <div>
             <label class="fld" for="d-total">Total shared cost ($)</label>
@@ -840,8 +894,19 @@
           4 = 24" → 24.
         </p>
       </section>
+    
 
       
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+  
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1405,6 +1470,7 @@
       }
       
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
@@ -1448,6 +1514,8 @@
       }
   
   
+  
+      
       
       
       function runWhatIf() {
@@ -1477,6 +1545,7 @@
       }
   
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
@@ -1484,6 +1553,7 @@
           
           "worldCountry": "Atlanta, GA",
           "c-food": 210,
+          
           "worldSize": 210,
           "g-stickers": 48,
           "g-bars": 36,
@@ -1496,6 +1566,7 @@
           "d-total": 275.4,
           "d-guests": 36,
           myWorld: "",
+          
           
         };
         Object.entries(ex).forEach(([k, v]) => {
@@ -1517,6 +1588,88 @@
         worldGo();
       }
     
+
+      
+      function drawVisualizer() {
+        const s = num("g-stickers");
+        const b = num("g-bars");
+        const dj = num("l-dj");
+        const bub = num("l-bubble");
+        
+        let vennHtml = "";
+        let lcmHtml = "";
+        
+        if (!isNaN(s) && s > 0 && !isNaN(b) && b > 0) {
+          const g = gcd(s, b);
+          const leftOnly = [];
+          const rightOnly = [];
+          const both = [];
+          for (let i = 1; i <= Math.max(s, b); i++) {
+            if (s % i === 0 && b % i === 0) both.push(i);
+            else if (s % i === 0) leftOnly.push(i);
+            else if (b % i === 0) rightOnly.push(i);
+          }
+          vennHtml = `
+            <circle cx="110" cy="120" r="55" fill="rgba(26, 111, 181, 0.15)" stroke="#1a6fb5" stroke-width="2" />
+            <circle cx="180" cy="120" r="55" fill="rgba(212, 149, 42, 0.15)" stroke="#d4952a" stroke-width="2" />
+            <text x="110" y="52" text-anchor="middle" font-size="10" font-weight="bold" fill="#1a6fb5">${s} Stickers</text>
+            <text x="180" y="52" text-anchor="middle" font-size="10" font-weight="bold" fill="#d4952a">${b} Bars</text>
+            <text x="85" y="125" text-anchor="middle" font-size="11" fill="#0f2b3c">${leftOnly.slice(0, 3).join(', ')}</text>
+            <text x="205" y="125" text-anchor="middle" font-size="11" fill="#0f2b3c">${rightOnly.slice(0, 3).join(', ')}</text>
+            <text x="145" y="120" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">${both.slice(-3).join(', ')}</text>
+            <text x="145" y="195" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">GCF (Bags) = ${g}</text>
+          `;
+        } else {
+          vennHtml = `
+            <text x="145" y="120" text-anchor="middle" font-size="12" fill="#5e6e7e" italic>Enter Sticker & Bar amounts</text>
+          `;
+        }
+        
+        if (!isNaN(dj) && dj > 0 && !isNaN(bub) && bub > 0) {
+          const l = lcm(dj, bub);
+          let ticksDj = "";
+          let ticksBub = "";
+          const maxVal = l * 1.5;
+          for (let i = 0; i <= maxVal; i += dj) {
+            const px = 300 + (i / maxVal) * 170;
+            ticksDj += `<circle cx="${px}" cy="100" r="4" fill="#0e8a7d" />
+                        <text x="${px}" y="90" text-anchor="middle" font-size="8" fill="#5e6e7e">${i}</text>`;
+          }
+          for (let i = 0; i <= maxVal; i += bub) {
+            const px = 300 + (i / maxVal) * 170;
+            ticksBub += `<circle cx="${px}" cy="140" r="4" fill="#c45a3c" />
+                        <text x="${px}" y="155" text-anchor="middle" font-size="8" fill="#5e6e7e">${i}</text>`;
+          }
+          const syncPx = 300 + (l / maxVal) * 170;
+          lcmHtml = `
+            <line x1="300" y1="100" x2="480" y2="100" stroke="#0e8a7d" stroke-width="2" />
+            <line x1="300" y1="140" x2="480" y2="140" stroke="#c45a3c" stroke-width="2" />
+            <text x="290" y="104" text-anchor="end" font-size="10" font-weight="bold" fill="#0e8a7d">DJ (${dj}m)</text>
+            <text x="290" y="144" text-anchor="end" font-size="10" font-weight="bold" fill="#c45a3c">Bub (${bub}m)</text>
+            ${ticksDj}
+            ${ticksBub}
+            <line x1="${syncPx}" y1="80" x2="${syncPx}" y2="160" stroke="#2e7d32" stroke-width="1.5" stroke-dasharray="4,4" />
+            <text x="${syncPx}" y="75" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">Sync: ${l} min</text>
+            <text x="390" y="195" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">LCM (Sync) = ${l} min</text>
+          `;
+        } else {
+          lcmHtml = `
+            <text x="390" y="120" text-anchor="middle" font-size="12" fill="#5e6e7e" italic>Enter DJ & Bubble intervals</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            <line x1="260" y1="20" x2="260" y2="220" stroke="#e2e7ec" stroke-width="1" />
+            ${vennHtml}
+            ${lcmHtml}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
 
       
       function drawVisualizer() {
@@ -1810,49 +1963,5 @@ function recalcAll() {
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script type="application/json" id="pk-research">
-      {
-        "title": "Research & Resources",
-        "icon": "🔎",
-        "intro": "Use these safe, kid-friendly sites to gather real numbers and ideas for your block party plan. Each one opens in a new tab so you don't lose your work.",
-        "links": [
-          {
-            "icon": "🎁",
-            "name": "Math is Fun — Greatest Common Factor",
-            "url": "https://www.mathsisfun.com/greatest-common-factor.html",
-            "find": "A clear, ad-light explanation of GCF with step-by-step examples and a factor calculator.",
-            "look": "Use it in Part 1 to double-check the GCF that decides how many equal goodie bags you can make."
-          },
-          {
-            "icon": "⏱️",
-            "name": "Math is Fun — Least Common Multiple",
-            "url": "https://www.mathsisfun.com/least-common-multiple.html",
-            "find": "How to list multiples and find the LCM, with a built-in LCM tool.",
-            "look": "Check your LCM in Part 1 for when the music and the activity line up at the same minute."
-          },
-          {
-            "icon": "🎈",
-            "name": "Khan Academy — GCF & LCM (Grade 6)",
-            "url": "https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-factors-and-multiples",
-            "find": "Free Grade-6 video lessons and practice on factors, multiples, GCF, and LCM (6.NS.4).",
-            "look": "Watch a quick video if your goodie-bag (GCF) or entertainment-sync (LCM) answer doesn't make sense."
-          },
-          {
-            "icon": "💵",
-            "name": "USDA MyPlate — Healthy Eating on a Budget",
-            "url": "https://www.myplate.gov/eat-healthy/healthy-eating-budget",
-            "find": "Official .gov tips for planning food and snacks without overspending.",
-            "look": "Get realistic food and drink ideas for your Part 1 budget so your decimal totals stay reasonable."
-          },
-          {
-            "icon": "📊",
-            "name": "USDA Food Plans — Monthly Cost of Food",
-            "url": "https://www.fns.usda.gov/cnpp/usda-food-plans-cost-food-monthly-reports",
-            "find": "Government data tables showing typical food costs for different group sizes.",
-            "look": "Use the cost numbers to compare your Part 3 cost-per-guest against real U.S. food prices."
-          }
-        ]
-      }
-    </script>
-  </body>
+    </body>
 </html>

@@ -598,13 +598,17 @@
       </section>
 
       <!-- ===================== PART 1 — SELF ===================== -->
-      <section class="phase">
+      
+      <!-- ===================== PART 1A — SELF ===================== -->
+      <section class="phase" id="phase-1a">
         <div class="phase-head">
-          <div class="phase-num">1</div>
+          <div class="phase-num">1a</div>
           <div>
-            <span class="arc-banner">Part 1 · Self — your real athlete</span>
-            <div class="skill">Ratios · Unit rate · Ratio table · 6.RP.1–3</div>
-            <h2>Scout YOUR Athlete</h2>
+            <span class="arc-banner">Part 1a · Self — your real plan</span>
+            <h2>1️⃣ Scoring unit rate (6.RP.2)</h2>
+          </div>
+        </div>
+        <h2>Scout YOUR Athlete</h2>
           </div>
         </div>
         <p>
@@ -652,7 +656,7 @@
             </div>
           </div>
         </div>
-  <h3 style="margin-top: 18px">1️⃣ Scoring unit rate (6.RP.2)</h3>
+        
         <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
           Level 1 tip: try numbers that divide evenly, like 84 points in 12
           games. The points box is pre-filled to get you started.
@@ -671,6 +675,19 @@
               <label class="fld" for="worldCountry">Professional Player Researched</label>
               <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
             </div>
+            
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://www.nba.com/stats/players/traditional" target="_blank" class="pk-research-inline-link">🔗 NBA Official Player Statistics Database ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the NBA stats portal. Look up the average points per game (PPG) of a professional player of your choice. Enter the details below to compare against your athlete:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Professional Player Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
             <div>
               <label class="fld" for="r-pts">Total points (season)</label>
               <input
@@ -682,6 +699,9 @@
               oninput="calcRate()"
             />
             </div>
+          </div>
+        </div>
+    
           </div>
         </div>
     
@@ -711,9 +731,19 @@
         </details>
 
         <!-- 1b Ratio table / projection -->
-        <h3 style="margin-top: 24px">
-          🟰 Project the season — ratio table (6.RP.3)
-        </h3>
+      </section>
+    
+
+      <!-- ===================== PART 1B — SELF ===================== -->
+      <section class="phase" id="phase-1b">
+        <div class="phase-head">
+          <div class="phase-num">1b</div>
+          <div>
+            <span class="arc-banner">Part 1b · Self — your real plan</span>
+            <h2>🟰 Project the season — ratio table (6.RP.3)</h2>
+          </div>
+        </div>
+        
         <p style="font-size: 14px; color: var(--muted)">
           Use your athlete's unit rate to project points at 10, 20, and 30
           games. All rows are equivalent ratios — the rate stays constant.
@@ -752,8 +782,19 @@
           Level 1 worked step: 20 ÷ 5 = 4 points per game.
         </p>
       </section>
+    
 
       
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+  
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1319,6 +1360,7 @@
       }
       
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
@@ -1362,6 +1404,8 @@
       }
   
   
+  
+      
       
       
       function runWhatIf() {
@@ -1391,6 +1435,7 @@
       }
   
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
@@ -1398,6 +1443,7 @@
           
           "worldCountry": "LeBron James",
           "r-pts": 27.2,
+          
           "worldSize": 27.2,
           "ath-name": "A. Wilson",
           "ath-source": "team website",
@@ -1406,6 +1452,7 @@
           "p-games": 10,
           "p-common": 60,
           myWorld: "",
+          
           
         };
         Object.entries(ex).forEach(([k, v]) => {
@@ -1428,6 +1475,43 @@
         worldGo();
       }
     
+
+      
+      function drawVisualizer() {
+        const pts = num("r-pts");
+        const games = num("r-games");
+        
+        let html = "";
+        if (!isNaN(pts) && pts > 0 && !isNaN(games) && games > 0) {
+          const rate = pts / games;
+          const maxRate = Math.max(rate, 35);
+          const barW = (rate / maxRate) * 320;
+          
+          html = `
+            <rect x="50" y="80" width="350" height="25" rx="5" fill="#f1f5f9" />
+            <rect x="50" y="80" width="${barW}" height="25" rx="5" fill="#1a6fb5" />
+            <text x="55" y="96" font-size="11" font-weight="bold" fill="white">Athlete: ${rate.toFixed(2)} PPG</text>
+            
+            <line x1="50" y1="50" x2="400" y2="50" stroke="#cbd5e1" stroke-width="1" />
+            <text x="225" y="40" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Points per Game comparison</text>
+            <text x="225" y="150" text-anchor="middle" font-size="12" font-weight="bold" fill="#2d874b">Scouting Rate: ${pts} pts / ${games} games</text>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Points & Games to visualize rate</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
 
       
       function drawVisualizer() {
@@ -1622,49 +1706,5 @@ function recalcAll() {
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script type="application/json" id="pk-research">
-      {
-        "title": "Research & Resources",
-        "icon": "🔎",
-        "intro": "These are safe, kid-friendly sites to gather real stats and ideas for your Sports Stats Scout project. Each link opens in a new tab so you keep your work right here.",
-        "links": [
-          {
-            "icon": "📊",
-            "name": "Math is Fun — Rates",
-            "url": "https://www.mathsisfun.com/definitions/rate.html",
-            "find": "Plain-language examples of rates and unit rates with pictures.",
-            "look": "Use this in Part 1 when you find your athlete's scoring unit rate (6.RP.2) — make sure you are dividing to get points per game."
-          },
-          {
-            "icon": "🧮",
-            "name": "Khan Academy — Ratios & Unit Rates",
-            "url": "https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-ratios-prop-topic",
-            "find": "Short videos and practice on unit rates and equivalent ratios.",
-            "look": "Use this to check your points-per-game math in Part 1 and the equivalent ratios you compare with your partner in Part 2."
-          },
-          {
-            "icon": "🏀",
-            "name": "Basketball-Reference",
-            "url": "https://www.basketball-reference.com/",
-            "find": "Real, free stat tables: points, games played, rebounds, and assists for players.",
-            "look": "Use this in Part 1 to pull the real points and games-played numbers for the athlete you scout."
-          },
-          {
-            "icon": "📈",
-            "name": "Pro-Football-Reference",
-            "url": "https://www.pro-football-reference.com/",
-            "find": "Free season stat tables for football players and teams.",
-            "look": "If your athlete plays football, use this to grab the real numbers for your scoring unit rate in Part 1."
-          },
-          {
-            "icon": "🌍",
-            "name": "NCAA Statistics",
-            "url": "https://www.ncaa.com/stats/basketball-men/d1",
-            "find": "Official NCAA.com college sports stats and per-game leaders across many sports.",
-            "look": "Use this in Part 3 (World) to compare your player's per-game rate to real college and youth-level players."
-          }
-        ]
-      }
-    </script>
-  </body>
+    </body>
 </html>

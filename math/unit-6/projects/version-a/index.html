@@ -683,13 +683,17 @@
       </section>
 
       <!-- ===================== PART 1 — SELF ===================== -->
-      <section class="phase">
+      
+      <!-- ===================== PART 1A — SELF ===================== -->
+      <section class="phase" id="phase-1a">
         <div class="phase-head">
-          <div class="phase-num">1</div>
+          <div class="phase-num">1a</div>
           <div>
-            <span class="arc-banner">Part 1 · Self — your own game</span>
-            <div class="skill">Exponents · Write &amp; Evaluate · 6.EE.1–2</div>
-            <h2>Design YOUR Scoring Engine</h2>
+            <span class="arc-banner">Part 1a · Self — your real plan</span>
+            <h2>🎮 Name your game</h2>
+          </div>
+        </div>
+        <h2>Design YOUR Scoring Engine</h2>
           </div>
         </div>
         <p>
@@ -702,8 +706,7 @@
             ✨ Use example numbers
           </button>
         </p>
-
-        <h3 style="margin-top: 8px">🎮 Name your game</h3>
+        
         <label class="fld" for="gameName">Your game's name</label>
         <input
           type="text"
@@ -721,7 +724,19 @@
             </div>
           </div>
         </div>
-  <h3 style="margin-top: 24px">⬆️ Level-up score (exponents · 6.EE.1)</h3>
+      </section>
+    
+
+      <!-- ===================== PART 1B — SELF ===================== -->
+      <section class="phase" id="phase-1b">
+        <div class="phase-head">
+          <div class="phase-num">1b</div>
+          <div>
+            <span class="arc-banner">Part 1b · Self — your real plan</span>
+            <h2>⬆️ Level-up score (exponents · 6.EE.1)</h2>
+          </div>
+        </div>
+        
         <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
           Level 1 tip: start with a small base like 2 or 3 and an exponent of 2
           or 3.
@@ -733,6 +748,19 @@
           <div class="pk-research-inline-header">
             <span class="pk-research-badge">🔍 Research Required</span>
             <a href="https://www.theesa.com/" target="_blank" class="pk-research-inline-link">🔗 ESA: Gaming Industry Economic Data ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the ESA report page. Find the standard retail release price of a standard console video game (typically $60 or $70). Enter the game price below:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Game Title Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
+            
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://www.theesa.com/esa-research/2023-essential-facts-about-the-video-game-industry/" target="_blank" class="pk-research-inline-link">🔗 ESA: Gaming Industry Economic Data ↗</a>
           </div>
           <p class="pk-research-inline-instructions">Open the ESA report page. Find the standard retail release price of a standard console video game (typically $60 or $70). Enter the game price below:</p>
           <div class="grid2">
@@ -752,6 +780,9 @@
               oninput="calcExponent()"
             />
             </div>
+          </div>
+        </div>
+    
           </div>
         </div>
     
@@ -785,9 +816,19 @@
         </details>
 
         <!-- 1b Coin bonus expression -->
-        <h3 style="margin-top: 24px">
-          ✖️ Coin bonus expression (write &amp; evaluate · 6.EE.2)
-        </h3>
+      </section>
+    
+
+      <!-- ===================== PART 1C — SELF ===================== -->
+      <section class="phase" id="phase-1c">
+        <div class="phase-head">
+          <div class="phase-num">1c</div>
+          <div>
+            <span class="arc-banner">Part 1c · Self — your real plan</span>
+            <h2>✖️ Coin bonus expression (write &amp; evaluate · 6.EE.2)</h2>
+          </div>
+        </div>
+        
         <p>
           Set your own <strong>coin rate r</strong> (points per coin) and
           <strong>flat bonus k</strong>. Your expression is
@@ -876,8 +917,19 @@
           </p>
         </details>
       </section>
+    
 
       
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+  
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1531,6 +1583,7 @@
       }
       
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
@@ -1572,6 +1625,7 @@
         
         updateProgress();
       }
+  
   
   
 
@@ -1618,6 +1672,7 @@
       /* ---- What-If: add one more coin ---- */
       
       
+      
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
         let sample = worldSample();
@@ -1645,6 +1700,7 @@
       }
   
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
@@ -1652,6 +1708,7 @@
           
           "worldCountry": "Platformer Game",
           "exp-base": 59.99,
+          
           "worldSize": 59.99,
           gameName: "Quest Blaster",
           "exp-level": 4,
@@ -1663,6 +1720,7 @@
           "cmp-c": 12,
           worldC: 12,
           myWorld: "",
+          
           
         };
         Object.entries(ex).forEach(([k, v]) => {
@@ -1684,6 +1742,57 @@
         worldGo();
       }
     
+
+      
+      function drawVisualizer() {
+        const coef = num("exp-coeff") || 1;
+        const xVal = num("exp-x") || 1;
+        const cVal = num("exp-c") || 0;
+        
+        let html = "";
+        if (coef > 0 && xVal > 0) {
+          let tilesHtml = "";
+          for (let c = 0; c < Math.min(coef, 4); c++) {
+            const y = 60 + c * 35;
+            // Draw x tiles
+            for (let x = 0; x < Math.min(xVal, 5); x++) {
+              const px = 100 + x * 32;
+              tilesHtml += `
+                <rect x="${px}" y="${y}" width="28" height="20" rx="3" fill="rgba(26, 111, 181, 0.2)" stroke="#1a6fb5" />
+                <text x="${px + 14}" y="${y + 13}" text-anchor="middle" font-size="10" font-weight="bold" fill="#1a6fb5">x</text>
+              `;
+            }
+            // Draw constant tiles
+            for (let k = 0; k < Math.min(cVal, 6); k++) {
+              const px = 270 + k * 22;
+              tilesHtml += `
+                <rect x="${px}" y="${y}" width="18" height="20" rx="3" fill="rgba(212, 149, 42, 0.2)" stroke="#d4952a" />
+                <text x="${px + 9}" y="${y + 13}" text-anchor="middle" font-size="9" font-weight="bold" fill="#d4952a">1</text>
+              `;
+            }
+          }
+          html = `
+            ${tilesHtml}
+            <text x="250" y="210" text-anchor="middle" font-size="13" font-weight="bold" fill="#2d874b">
+              Visual Representation of: ${coef}(${xVal}x + ${cVal}) = ${coef * xVal}x + 	h ${coef * cVal}
+            </text>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Expression properties to draw algebra tiles</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
 
       
       function drawVisualizer() {
@@ -1922,49 +2031,5 @@ function recalcAll() {
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script type="application/json" id="pk-research">
-      {
-        "title": "Research & Resources",
-        "icon": "🔎",
-        "intro": "Use these safe sites to gather real facts for your scoring engine — like how real games use exponents and points. Each link opens in a new tab so you keep your project open.",
-        "links": [
-          {
-            "icon": "📊",
-            "name": "Math is Fun — Exponents",
-            "url": "https://www.mathsisfun.com/algebra/exponents-logarithms.html",
-            "find": "Clear examples of how exponents work and grow fast.",
-            "look": "In Part 1, check how your exponent score expression should grow as the input gets bigger."
-          },
-          {
-            "icon": "📊",
-            "name": "Khan Academy — Exponents",
-            "url": "https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-arithmetic-operations/cc-6th-exponents/v/introduction-to-exponents",
-            "find": "Short videos and practice on evaluating powers.",
-            "look": "Use this to double-check the value of your coin-bonus expression in Part 1 before you trade."
-          },
-          {
-            "icon": "📊",
-            "name": "Math is Fun — Order of Operations",
-            "url": "https://www.mathsisfun.com/operation-order-pemdas.html",
-            "find": "How to evaluate an expression in the right order (PEMDAS).",
-            "look": "In Part 2, follow this order when you and your partner evaluate both formulas at the same input."
-          },
-          {
-            "icon": "📊",
-            "name": "Khan Academy — Equivalent Expressions",
-            "url": "https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-equivalent-exp",
-            "find": "Lessons on proving two expressions are equal.",
-            "look": "In Part 3, use these ideas to prove your two scoring formulas are equivalent."
-          },
-          {
-            "icon": "📊",
-            "name": "AbleGamers (.org)",
-            "url": "https://ablegamers.org/",
-            "find": "How real game studios make scoring and play fair for everyone.",
-            "look": "For the Part 3 What-If test, get ideas on making your scoring fair for all players."
-          }
-        ]
-      }
-    </script>
-  </body>
+    </body>
 </html>

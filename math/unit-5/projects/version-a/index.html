@@ -628,17 +628,17 @@
       </section>
 
       <!-- ===================== PART 1 — SELF ===================== -->
-      <section class="phase">
+      
+      <!-- ===================== PART 1A — SELF ===================== -->
+      <section class="phase" id="phase-1a">
         <div class="phase-head">
-          <div class="phase-num">1</div>
+          <div class="phase-num">1a</div>
           <div>
-            <span class="arc-banner"
-              >Part 1 · Self — measure your real room</span
-            >
-            <div class="skill">
-              Parallelogram · Triangle · Composite · 6.G.1
-            </div>
-            <h2>Measure &amp; Calculate YOUR Room</h2>
+            <span class="arc-banner">Part 1a · Self — your real plan</span>
+            <h2>▱ Main floor (parallelogram / rectangle)</h2>
+          </div>
+        </div>
+        <h2>Measure &amp; Calculate YOUR Room</h2>
           </div>
         </div>
         <p>
@@ -667,9 +667,7 @@
             </div>
           </div>
         </div>
-  <h3 style="margin-top: 8px">
-          ▱ Main floor (parallelogram / rectangle)
-        </h3>
+        
         <svg
           class="svg-sketch"
           width="240"
@@ -733,10 +731,40 @@
           <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);">
             <label class="fld">Calculated Bedroom Dimensions (used in calculation)</label>
             <div class="grid2">
+              
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://en.wikipedia.org/wiki/House_plans#Average_size" target="_blank" class="pk-research-inline-link">🔗 Wikipedia House Floor Plan Standards ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Look up standard footprint guidelines for new residential home plans. Find the typical average area footprint of a standard master bedroom (often around 220 square feet). Enter the size below:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Bedroom Design Standard</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Typical Bedroom Footprint (sq ft)</label>
+              <input type="number" id="worldSize" data-save step="any" min="0" placeholder="e.g. 220" oninput="recalcAll()">
+            </div>
+          </div>
+          
+          <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);">
+            <label class="fld">Calculated Bedroom Dimensions (used in calculation)</label>
+            <div class="grid2">
               <div>
                 <label class="fld" for="p1-base">Base Length (ft)</label>
                 <input type="number" id="p1-base" data-save readonly style="background: #f1f5f9; border-color: #cbd5e1;">
               </div>
+              <div>
+                <label class="fld" for="p1-height">Height (ft)</label>
+                <input type="number" id="p1-height" data-save readonly style="background: #f1f5f9; border-color: #cbd5e1;">
+              </div>
+            </div>
+          </div>
+        </div>
+    
               <div>
                 <label class="fld" for="p1-height">Height (ft)</label>
                 <input type="number" id="p1-height" data-save readonly style="background: #f1f5f9; border-color: #cbd5e1;">
@@ -774,7 +802,19 @@
         </details>
 
         <!-- 1b Triangle nook -->
-        <h3 style="margin-top: 24px">🔺 Reading nook (triangle)</h3>
+      </section>
+    
+
+      <!-- ===================== PART 1B — SELF ===================== -->
+      <section class="phase" id="phase-1b">
+        <div class="phase-head">
+          <div class="phase-num">1b</div>
+          <div>
+            <span class="arc-banner">Part 1b · Self — your real plan</span>
+            <h2>🔺 Reading nook (triangle)</h2>
+          </div>
+        </div>
+        
         <svg
           class="svg-sketch"
           width="200"
@@ -851,7 +891,19 @@
         </details>
 
         <!-- 1c Composite -->
-        <h3 style="margin-top: 24px">🧩 L-shaped bonus area (composite)</h3>
+      </section>
+    
+
+      <!-- ===================== PART 1C — SELF ===================== -->
+      <section class="phase" id="phase-1c">
+        <div class="phase-head">
+          <div class="phase-num">1c</div>
+          <div>
+            <span class="arc-banner">Part 1c · Self — your real plan</span>
+            <h2>🧩 L-shaped bonus area (composite)</h2>
+          </div>
+        </div>
+        
         <svg
           class="svg-sketch"
           width="260"
@@ -1054,8 +1106,19 @@
           ></span>
         </div>
       </section>
+    
 
       
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+  
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1841,6 +1904,7 @@
       }
       
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
@@ -1884,6 +1948,8 @@
       }
   
   
+  
+      
       
       
       function runWhatIf() {
@@ -1913,6 +1979,7 @@
       }
   
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
@@ -1920,6 +1987,7 @@
           
           "worldCountry": "United States 🇺🇸",
           "worldSize": 220,
+          
           "p1-base": 12,
           "p1-height": 10,
           "p2-base": 6,
@@ -1928,6 +1996,7 @@
           "p3-a-height": 8,
           "p3-b-base": 6,
           "p3-b-height": 5,
+          
           
         };
         Object.entries(ex).forEach(([k, v]) => {
@@ -1946,6 +2015,79 @@
           $("p1-base").value = 12;
           $("p1-height").value = (val / 12).toFixed(1);
           calcParallelogram();
+        }
+        worldGo();
+      }
+    
+
+      
+      function drawVisualizer() {
+        const p1w = num("p1w") || 0;
+        const p1h = num("p1h") || 0;
+        const p2b = num("p2b") || 0;
+        const p2h = num("p2h") || 0;
+        const p3w = num("p3w") || 0;
+        const p3h = num("p3h") || 0;
+        
+        let html = "";
+        if (p1w > 0 && p1h > 0) {
+          const maxDim = Math.max(p1w, p1h + p2h, p1w + p3w, 1);
+          const scale = 120 / maxDim;
+          
+          const w1 = p1w * scale;
+          const h1 = p1h * scale;
+          const w2 = p2b * scale;
+          const h2 = p2h * scale;
+          const w3 = p3w * scale;
+          const h3 = p3h * scale;
+          
+          const cX1 = 40 + w1;
+          const cY1 = 40 + h1 - h3;
+          
+          html = `
+            <!-- Parallelogram Bed Area -->
+            <polygon points="40,40 40,${40 + h1} ${40 + w1},${40 + h1} ${40 + w1},40" fill="rgba(26, 111, 181, 0.2)" stroke="#1a6fb5" stroke-width="2" />
+            <text x="${40 + w1/2}" y="${40 + h1/2}" text-anchor="middle" font-size="9" font-weight="bold" fill="#1a6fb5">Bed: ${p1w}×${p1h}</text>
+            
+            <!-- Triangular Nook -->
+            ${w2 > 0 && h2 > 0 ? `
+              <polygon points="40,${40 + h1} ${40 + w2},${40 + h1} 40,	h ${40 + h1 + h2}" fill="rgba(212, 149, 42, 0.2)" stroke="#d4952a" stroke-width="2" />
+              <text x="${40 + w2/3}" y="${40 + h1 + h2/3}" text-anchor="middle" font-size="9" font-weight="bold" fill="#d4952a">Nook: ½×${p2b}×${p2h}</text>
+            ` : ""}
+            
+            <!-- Composite Closet -->
+            ${w3 > 0 && h3 > 0 ? `
+              <rect x="${cX1}" y="${cY1}" width="${w3}" height="${h3}" fill="rgba(14, 138, 125, 0.2)" stroke="#0e8a7d" stroke-width="2" />
+              <text x="${cX1 + w3/2}" y="${cY1 + h3/2}" text-anchor="middle" font-size="9" font-weight="bold" fill="#0e8a7d">Closet: ${p3w}×${p3h}</text>
+            ` : ""}
+            
+            <text x="250" y="220" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Scale Blueprint Map View</text>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Room Dimensions to draw floor blueprint</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
+      function syncResearch() {
+        const ws = $("worldSize");
+        if (!ws) return;
+        const val = num("worldSize");
+        if (isNaN(val) || val <= 0) return;
+        if ($("p1-base") && $("p1-height")) {
+          $("p1-base").value = 12;
+          $("p1-height").value = (val / 12).toFixed(1);
+          if (typeof calcParallelogram === 'function') calcParallelogram();
         }
         worldGo();
       }
@@ -2213,49 +2355,5 @@ function recalcAll() {
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script type="application/json" id="pk-research">
-      {
-        "title": "Research & Resources",
-        "icon": "🔎",
-        "intro": "Real designers look up formulas and real measurements before they build. Use these safe, ad-light sites to gather what you need for your Dream Room Designer. Each one opens in a new tab, so your project stays open here.",
-        "links": [
-          {
-            "icon": "📐",
-            "name": "Area of Polygons (Math is Fun)",
-            "url": "https://www.mathsisfun.com/area.html",
-            "find": "Clear area formulas and worked examples for rectangles, triangles, and more.",
-            "look": "the rectangle and triangle formulas so you can find your room's main floor and triangular nook in Part 1."
-          },
-          {
-            "icon": "🔺",
-            "name": "Area of a Triangle (Khan Academy)",
-            "url": "https://www.khanacademy.org/math/basic-geo/basic-geo-area-and-perimeter/area-triangle/v/area-of-a-triangle",
-            "find": "A free, no-ads video lesson on ½ × base × height with practice.",
-            "look": "how to plug in base and height so your triangular nook area is exact before it auto-adds to your total."
-          },
-          {
-            "icon": "🧩",
-            "name": "Area of Composite (Irregular) Shapes (Khan Academy)",
-            "url": "https://www.khanacademy.org/math/basic-geo/basic-geo-area-and-perimeter/area-composite/v/area-of-an-l-shaped-polygon",
-            "find": "How to split an irregular shape into rectangles and add the parts.",
-            "look": "the break-it-into-pieces method so you can find your L-shaped composite area correctly in Part 1."
-          },
-          {
-            "icon": "📏",
-            "name": "Measuring Length & Converting Units (Math is Fun)",
-            "url": "https://www.mathsisfun.com/measure/us-standard-length.html",
-            "find": "A friendly guide to measuring real lengths and converting units.",
-            "look": "how to keep your room measurements in the same unit (all feet or all inches) so your area math is accurate."
-          },
-          {
-            "icon": "🌍",
-            "name": "Average House & Room Sizes (Wikipedia: Home construction)",
-            "url": "https://en.wikipedia.org/wiki/Home_construction",
-            "find": "Reliable data on typical home and room sizes in different countries.",
-            "look": "real average bedroom sizes to compare against your own room in Part 3 (World)."
-          }
-        ]
-      }
-    </script>
-  </body>
+    </body>
 </html>

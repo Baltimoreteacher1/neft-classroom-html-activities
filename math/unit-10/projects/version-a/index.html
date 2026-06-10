@@ -605,17 +605,17 @@
       </section>
 
       <!-- ===================== PART 1 — SELF ===================== -->
-      <section class="phase">
+      
+      <!-- ===================== PART 1A — SELF ===================== -->
+      <section class="phase" id="phase-1a">
         <div class="phase-head">
-          <div class="phase-num">1</div>
+          <div class="phase-num">1a</div>
           <div>
-            <span class="arc-banner"
-              >Part 1 · Self — measure your real box</span
-            >
-            <div class="skill">
-              Volume · Fractional edges · Surface area · 6.G.2 · 6.G.4
-            </div>
-            <h2>Spec Out YOUR Real Box</h2>
+            <span class="arc-banner">Part 1a · Self — your real plan</span>
+            <h2>🧊 Box volume (V = l × w × h)</h2>
+          </div>
+        </div>
+        <h2>Spec Out YOUR Real Box</h2>
           </div>
         </div>
         <p>
@@ -648,12 +648,25 @@
             </div>
           </div>
         </div>
-  <h3 style="margin-top: 18px">🧊 Box volume (V = l × w × h)</h3>
+        
         <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
           Level 1 tip: round each measurement to a whole number of inches first.
         </p>
         <div class="grid3">
           
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza" target="_blank" class="pk-research-inline-link">🔗 Wikipedia: Dimensions of the Great Pyramid of Giza ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the Giza Pyramid page. Find the original base side length in cubits (often 440 cubits). Enter the base side length below to model the scale volume calculations:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Ancient Monument Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
+            
         <!-- ===================== INLINE RESEARCH LAB ===================== -->
         <div class="pk-research-inline-card">
           <div class="pk-research-inline-header">
@@ -678,6 +691,9 @@
               oninput="calcVolume()"
             />
             </div>
+          </div>
+        </div>
+    
           </div>
         </div>
     
@@ -737,9 +753,19 @@
         </details>
 
         <!-- 1b Surface area -->
-        <h3 style="margin-top: 24px">
-          📐 Surface area from the net — SA = 2(lw + lh + wh)
-        </h3>
+      </section>
+    
+
+      <!-- ===================== PART 1B — SELF ===================== -->
+      <section class="phase" id="phase-1b">
+        <div class="phase-head">
+          <div class="phase-num">1b</div>
+          <div>
+            <span class="arc-banner">Part 1b · Self — your real plan</span>
+            <h2>📐 Surface area from the net — SA = 2(lw + lh + wh)</h2>
+          </div>
+        </div>
+        
         <p style="font-size: 14px; color: var(--muted)">
           Uses the same length, width, and height you measured above.
         </p>
@@ -774,7 +800,19 @@
         </details>
 
         <!-- 1c cost -->
-        <h3 style="margin-top: 24px">💵 Cardboard cost (cost = SA × rate)</h3>
+      </section>
+    
+
+      <!-- ===================== PART 1C — SELF ===================== -->
+      <section class="phase" id="phase-1c">
+        <div class="phase-head">
+          <div class="phase-num">1c</div>
+          <div>
+            <span class="arc-banner">Part 1c · Self — your real plan</span>
+            <h2>💵 Cardboard cost (cost = SA × rate)</h2>
+          </div>
+        </div>
+        
         <div class="grid2">
           <div>
             <label class="fld" for="cost-rate">Cost per square unit ($)</label>
@@ -861,8 +899,19 @@
           <div class="readout" id="opt-out"></div>
         </div>
       </section>
+    
 
       
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+  
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1557,6 +1606,7 @@
       }
       
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
@@ -1600,6 +1650,8 @@
       }
   
   
+  
+      
       
       
       function runWhatIf() {
@@ -1629,6 +1681,7 @@
       }
   
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
@@ -1636,12 +1689,14 @@
           
           "worldCountry": "Giza Great Pyramid",
           "v-length": 440,
+          
           "worldSize": 440,
           objName: "my cereal box (example)",
           "v-width": 5,
           "v-height": 3,
           "cost-rate": 0.05,
           myWorld: "",
+          
           
         };
         Object.entries(ex).forEach(([k, v]) => {
@@ -1663,6 +1718,81 @@
         worldGo();
       }
     
+
+      
+      function drawVisualizer() {
+        const l = num("v-length") || 0;
+        const w = num("v-width") || 0;
+        const h = num("v-height") || 0;
+        
+        let html = "";
+        if (l > 0 && w > 0 && h > 0) {
+          const maxDim = Math.max(l, w, h, 1);
+          const scale = 35 / maxDim;
+          
+          const cx = 100, cy = 130;
+          const dxX = 25 * scale, dyX = 12 * scale;
+          const dxY = -25 * scale, dyY = 12 * scale;
+          const dxZ = 0, dyZ = -30 * scale;
+          
+          const p0 = {x: cx, y: cy};
+          const p1 = {x: cx + w*dxX, y: cy + w*dyX};
+          const p2 = {x: cx + w*dxX + l*dxY, y: cy + w*dyX + l*dyY};
+          const p3 = {x: cx + l*dxY, y: cy + l*dyY};
+          
+          const p4 = {x: p0.x, y: p0.y + h*dyZ};
+          const p5 = {x: p1.x, y: p1.y + h*dyZ};
+          const p6 = {x: p2.x, y: p2.y + h*dyZ};
+          const p7 = {x: p3.x, y: p3.y + h*dyZ};
+          
+          const nScale = 14 / maxDim;
+          const nl = l * nScale;
+          const nw = w * nScale;
+          const nh = h * nScale;
+          const nx = 330, ny = 120;
+          
+          html = `
+            <polygon points="${p0.x},${p0.y} ${p1.x},${p1.y} ${p2.x},${p2.y} ${p3.x},${p3.y}" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5" />
+            <polygon points="${p0.x},${p0.y} ${p1.x},${p1.y} ${p5.x},${p5.y} ${p4.x},${p4.y}" fill="rgba(26, 111, 181, 0.15)" stroke="#1a6fb5" stroke-width="2" />
+            <polygon points="${p1.x},${p1.y} ${p2.x},${p2.y} ${p6.x},${p6.y} ${p5.x},${p5.y}" fill="rgba(14, 138, 125, 0.15)" stroke="#0e8a7d" stroke-width="2" />
+            <polygon points="${p4.x},${p4.y} ${p5.x},${p5.y} ${p6.x},${p6.y} ${p7.x},${p7.y}" fill="rgba(212, 149, 42, 0.15)" stroke="#d4952a" stroke-width="2" />
+            <line x1="${p3.x}" y1="${p3.y}" x2="${p7.x}" y2="${p7.y}" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3,3" />
+            <line x1="${p2.x}" y1="${p2.y}" x2="${p7.x}" y2="${p7.y}" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3,3" />
+            <text x="${(p0.x+p1.x)/2}" y="${(p0.y+p1.y)/2 + 15}" font-size="9" font-weight="bold" fill="#1a6fb5" text-anchor="middle">W: ${w}</text>
+            <text x="${(p1.x+p2.x)/2 + 15}" y="${(p1.y+p2.y)/2}" font-size="9" font-weight="bold" fill="#0e8a7d" text-anchor="middle">L: ${l}</text>
+            <text x="${p5.x + 15}" y="${p5.y + h*dyZ/2}" font-size="9" font-weight="bold" fill="#d4952a" text-anchor="middle">H: ${h}</text>
+            <text x="100" y="30" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">3D Wireframe View</text>
+            
+            <g transform="translate(${nx}, ${ny})">
+              <rect x="${-nl/2}" y="${-nw/2}" width="${nl}" height="${nw}" fill="rgba(26, 111, 181, 0.2)" stroke="#1a6fb5" stroke-dasharray="2,2" />
+              <rect x="${-nl/2}" y="${-nw/2 - nh}" width="${nl}" height="${nh}" fill="rgba(212, 149, 42, 0.2)" stroke="#d4952a" />
+              <rect x="${-nl/2}" y="${nw/2}" width="${nl}" height="${nh}" fill="rgba(212, 149, 42, 0.2)" stroke="#d4952a" />
+              <rect x="${-nl/2 - nh}" y="${-nw/2}" width="${nh}" height="${nw}" fill="rgba(14, 138, 125, 0.2)" stroke="#0e8a7d" />
+              <rect x="${nl/2}" y="${-nw/2}" width="${nh}" height="${nw}" fill="rgba(14, 138, 125, 0.2)" stroke="#0e8a7d" />
+              <rect x="${-nl/2}" y="${-nw/2 - 2*nh}" width="${nl}" height="${nh}" fill="rgba(26, 111, 181, 0.2)" stroke="#1a6fb5" />
+              <text x="0" y="0" text-anchor="middle" font-size="9" font-weight="bold" fill="#1a6fb5">2D Net</text>
+            </g>
+            <text x="350" y="30" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Flat Folding Net</text>
+            <text x="250" y="220" text-anchor="middle" font-size="12" font-weight="bold" fill="#2d874b">
+              Volume = ${(l*w*h).toFixed(0)} cu in | Surface Area = ${(2*(l*w + w*h + l*h)).toFixed(0)} sq in
+            </text>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Dimensions to draw 3D net folder</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
 
       
       function drawVisualizer() {
@@ -1962,49 +2092,5 @@ function recalcAll() {
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script type="application/json" id="pk-research">
-      {
-        "title": "Research & Resources",
-        "icon": "🔎",
-        "intro": "Use these safe, ad-light sites to learn nets, volume, and surface area and to find real shipping-box sizes for your design. Each link opens in a new tab so your project stays open.",
-        "links": [
-          {
-            "icon": "📐",
-            "name": "Math is Fun — Nets of Solids",
-            "url": "https://www.mathsisfun.com/geometry/polyhedron-models.html",
-            "find": "Pictures you can fold of nets for cubes and rectangular prisms.",
-            "look": "Match a net to your box before you compute surface area in the net step (6.G.4)."
-          },
-          {
-            "icon": "📦",
-            "name": "Math is Fun — Volume & Surface Area",
-            "url": "https://www.mathsisfun.com/geometry/cuboids-rectangular-prisms.html",
-            "find": "How to find volume (l × w × h) and surface area of a rectangular prism.",
-            "look": "Check the formulas before you compute your box's volume in Part 1 (6.G.2)."
-          },
-          {
-            "icon": "🎬",
-            "name": "Khan Academy — Surface Area Using Nets",
-            "url": "https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-geometry-topic/cc-6th-nets-of-3d-figures/v/finding-surface-area-nets",
-            "find": "Videos and practice on building nets and adding up face areas.",
-            "look": "Practice the net method before checking your own box's surface area."
-          },
-          {
-            "icon": "🚚",
-            "name": "USPS — Boxes & Package Sizes",
-            "url": "https://store.usps.com/store/results/shipping-supplies/free-shipping-supplies/_/N-9y93lv",
-            "find": "Real free USPS boxes with their exact length, width, and height.",
-            "look": "Compare a real shipping box's dimensions to your design in Part 3."
-          },
-          {
-            "icon": "🌐",
-            "name": "NCTM Illuminations — Geometry Tools",
-            "url": "https://www.nctm.org/Classroom-Resources/Illuminations/",
-            "find": "Trusted, ad-free tools for exploring 3-D figures and their measures.",
-            "look": "Explore how changing dimensions changes volume before your partner comparison in Part 2."
-          }
-        ]
-      }
-    </script>
-  </body>
+    </body>
 </html>

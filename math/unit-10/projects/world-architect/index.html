@@ -1680,6 +1680,7 @@
       const DESTINATIONS = [
         {
           id: "india_taj_kite",
+          wikiLink: "https://en.wikipedia.org/wiki/Taj_Mahal#Gardens",
           flag: "🇮🇳",
           country: "India",
           city: "Agra",
@@ -1714,6 +1715,7 @@
         },
         {
           id: "brazil_redeemer",
+          wikiLink: "https://en.wikipedia.org/wiki/Christ_the_Redeemer_(statue)#Structure",
           flag: "🇧🇷",
           country: "Brazil",
           city: "Rio de Janeiro",
@@ -1749,6 +1751,7 @@
         },
         {
           id: "egypt_pyramid",
+          wikiLink: "https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza#Dimensions",
           flag: "🇪🇬",
           country: "Egypt",
           city: "Giza",
@@ -1784,6 +1787,7 @@
         },
         {
           id: "france_louvre",
+          wikiLink: "https://en.wikipedia.org/wiki/Louvre_Pyramid#Design_and_construction",
           flag: "🇫🇷",
           country: "France",
           city: "Paris",
@@ -1818,6 +1822,7 @@
         },
         {
           id: "japan_himeji",
+          wikiLink: "https://en.wikipedia.org/wiki/Himeji_Castle#Design",
           flag: "🇯🇵",
           country: "Japan",
           city: "Himeji",
@@ -1853,6 +1858,7 @@
         },
         {
           id: "australia_opera",
+          wikiLink: "https://en.wikipedia.org/wiki/Sydney_Opera_House#Design_and_construction",
           flag: "🇦🇺",
           country: "Australia",
           city: "Sydney",
@@ -1887,6 +1893,7 @@
         },
         {
           id: "mexico_chichen",
+          wikiLink: "https://en.wikipedia.org/wiki/El_Castillo,_Chichen_Itza#Dimensions",
           flag: "🇲🇽",
           country: "Mexico",
           city: "Yucatán",
@@ -1922,6 +1929,7 @@
         },
         {
           id: "uae_burj",
+          wikiLink: "https://en.wikipedia.org/wiki/Burj_Khalifa#Architecture_and_design",
           flag: "🇦🇪",
           country: "United Arab Emirates",
           city: "Dubai",
@@ -1957,6 +1965,7 @@
         },
         {
           id: "peru_machu",
+          wikiLink: "https://en.wikipedia.org/wiki/Machu_Picchu#Agricultural_terraces",
           flag: "🇵🇪",
           country: "Peru",
           city: "Cusco Region",
@@ -1991,6 +2000,7 @@
         },
         {
           id: "italy_colosseum",
+          wikiLink: "https://en.wikipedia.org/wiki/Colosseum#Physical_description",
           flag: "🇮🇹",
           country: "Italy",
           city: "Rome",
@@ -2026,6 +2036,7 @@
         },
         {
           id: "canada_cn",
+          wikiLink: "https://en.wikipedia.org/wiki/CN_Tower#Height",
           flag: "🇨🇦",
           country: "Canada",
           city: "Toronto",
@@ -2061,6 +2072,7 @@
         },
         {
           id: "southafrica_table",
+          wikiLink: "https://en.wikipedia.org/wiki/Table_Mountain#Features",
           flag: "🇿🇦",
           country: "South Africa",
           city: "Cape Town",
@@ -2580,10 +2592,11 @@
           .join("");
       }
       function mapLinks(d) {
+        const wiki = d.wikiLink ? `<a href="${d.wikiLink}" target="_blank" class="explore-link">📖 Research Dimensions (Wikipedia) ↗</a>` : "";
         return `
-    <span class="explore-link" role="note">Model card data: use the dimensions and shape shown on this screen</span>
+    <span class="explore-link" role="note">Model card data: research the dimensions on Wikipedia and verify them using the range guide</span>
     <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(d.query)}" target="_blank" class="explore-link">🗺️ View on Google Maps ↗</a>
-    <span class="explore-link" role="note">Optional context: add a teacher-approved fact only if it helps your explanation</span>
+    ${wiki}
   `;
       }
       function dataTable(d) {

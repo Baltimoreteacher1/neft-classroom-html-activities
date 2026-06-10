@@ -588,15 +588,17 @@
       </section>
 
       <!-- ===================== PART 1 — SELF ===================== -->
-      <section class="phase">
+      
+      <!-- ===================== PART 1A — SELF ===================== -->
+      <section class="phase" id="phase-1a">
         <div class="phase-head">
-          <div class="phase-num">1</div>
+          <div class="phase-num">1a</div>
           <div>
-            <span class="arc-banner">Part 1 · Self — your real shop</span>
-            <div class="skill">
-              Markup · Discount · Sales Tax · Conversion · 6.RP.3c–d
-            </div>
-            <h2>Price YOUR Product</h2>
+            <span class="arc-banner">Part 1a · Self — your real plan</span>
+            <h2>📈 Set your selling price (markup)</h2>
+          </div>
+        </div>
+        <h2>Price YOUR Product</h2>
           </div>
         </div>
         <p>
@@ -636,7 +638,7 @@
         </div>
 
         <!-- 1a Markup -->
-        <h3 style="margin-top: 18px">📈 Set your selling price (markup)</h3>
+        
         <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
           Level 1 tip: a friendly markup is 25%. Markup amount = cost × 0.25.
         </p>
@@ -684,7 +686,19 @@
         <div class="pk-fb feedback" id="check-sellFb"></div>
 
         <!-- 1b Discount -->
-        <h3 style="margin-top: 24px">🏷️ Run a weekend sale (discount)</h3>
+      </section>
+    
+
+      <!-- ===================== PART 1B — SELF ===================== -->
+      <section class="phase" id="phase-1b">
+        <div class="phase-head">
+          <div class="phase-num">1b</div>
+          <div>
+            <span class="arc-banner">Part 1b · Self — your real plan</span>
+            <h2>🏷️ Run a weekend sale (discount)</h2>
+          </div>
+        </div>
+        
         <label class="fld" for="discount">Your sale discount (%)</label>
         <input
           type="number"
@@ -717,8 +731,32 @@
             </div>
           </div>
         </div>
-  <h3 style="margin-top: 24px">🧾 Add sales tax (final total)</h3>
+      </section>
+    
+
+      <!-- ===================== PART 1C — SELF ===================== -->
+      <section class="phase" id="phase-1c">
+        <div class="phase-head">
+          <div class="phase-num">1c</div>
+          <div>
+            <span class="arc-banner">Part 1c · Self — your real plan</span>
+            <h2>🧾 Add sales tax (final total)</h2>
+          </div>
+        </div>
         
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://taxfoundation.org/data/all-state-sales-tax-rates-and-structure/" target="_blank" class="pk-research-inline-link">🔗 Tax Foundation: State Sales Tax Rates Table ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the Tax Foundation portal. Look up the combined state/local sales tax rate for your home state or a state of choice. Enter the percentage rate below:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">State Name Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
+            
         <!-- ===================== INLINE RESEARCH LAB ===================== -->
         <div class="pk-research-inline-card">
           <div class="pk-research-inline-header">
@@ -744,6 +782,9 @@
           oninput="calcTax()"
         />
             </div>
+          </div>
+        </div>
+    
           </div>
         </div>
     
@@ -778,9 +819,19 @@
         <div class="pk-fb feedback" id="check-totalFb"></div>
 
         <!-- 1d Conversion from a real label -->
-        <h3 style="margin-top: 24px">
-          🔁 Convert a real product-label measurement
-        </h3>
+      </section>
+    
+
+      <!-- ===================== PART 1D — SELF ===================== -->
+      <section class="phase" id="phase-1d">
+        <div class="phase-head">
+          <div class="phase-num">1d</div>
+          <div>
+            <span class="arc-banner">Part 1d · Self — your real plan</span>
+            <h2>🔁 Convert a real product-label measurement</h2>
+          </div>
+        </div>
+        
         <p style="font-size: 14px; color: var(--muted)">
           Read a measurement off a real product you would sell (a candle's
           weight, a drink's volume, a ribbon's length) and convert it using a
@@ -873,8 +924,19 @@
           />
         </div>
       </section>
+    
 
       
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+  
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1228,51 +1290,6 @@
     <!-- Data-driven Research tab. The shared projects-tabs.js reads this and
          builds a "Research & Resources" step. Each unit can supply its own
          links by adding its own #pk-research block — no code changes needed. -->
-    <script type="application/json" id="pk-research">
-      {
-        "title": "Research & Resources",
-        "icon": "🔎",
-        "intro": "Real shop owners look things up before they set a price. Use these safe sites to gather real numbers for your pop-up shop. Each one opens in a new tab, so your project stays open here.",
-        "links": [
-          {
-            "icon": "🧾",
-            "name": "Sales Tax Rates by State (Tax Foundation)",
-            "url": "https://taxfoundation.org/data/all/state/sales-tax-rates/",
-            "find": "A trustworthy table of the real 2026 sales-tax percent for every U.S. state.",
-            "look": "your state's combined rate, plus one high-tax state and one no-tax state (try Oregon) to test your final price in Part 3."
-          },
-          {
-            "icon": "💲",
-            "name": "How to Find a Percent of a Number (Math is Fun)",
-            "url": "https://www.mathsisfun.com/percentage.html",
-            "find": "A clear, ad-light lesson on percentages with worked examples.",
-            "look": "the steps for 'percent of a number' so you can double-check your markup, discount, and tax math."
-          },
-          {
-            "icon": "⚖️",
-            "name": "Unit Price: Which Is the Better Deal? (Math is Fun)",
-            "url": "https://www.mathsisfun.com/measure/unit-price.html",
-            "find": "How to compare prices fairly by finding the price for ONE unit.",
-            "look": "the method for cost ÷ amount, so you can prove your shop is the smarter buy in Part 2."
-          },
-          {
-            "icon": "🛒",
-            "name": "Value for Money: Determining Unit Price (Bank of Canada Museum)",
-            "url": "https://www.bankofcanadamuseum.ca/2025/01/value-for-money-determining-unit-price/",
-            "find": "A kid-friendly walkthrough of comparison shopping from a museum (no ads, no sign-in).",
-            "look": "real examples of reading a shelf label to decide which size is the best value."
-          },
-          {
-            "icon": "🎮",
-            "name": "Unit Price Practice Game (Math is Fun)",
-            "url": "https://www.mathsisfun.com/measure/unit-price-game.html",
-            "find": "A quick game where you pick the better-value product.",
-            "look": "patterns in WHY the cheaper-per-unit option wins — useful for your Part 2 reasoning."
-          }
-        ]
-      }
-    </script>
-
     <script>
       document.getElementById("yr").textContent = new Date().getFullYear();
       const $ = (id) => document.getElementById(id);
@@ -1633,6 +1650,7 @@
       }
       
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
@@ -1676,6 +1694,8 @@
       }
   
   
+  
+      
       
       
       function runWhatIf() {
@@ -1705,6 +1725,7 @@
       }
   
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
@@ -1712,12 +1733,14 @@
           
           "worldCountry": "California",
           "tax-rate": 7.25,
+          
           "worldSize": 7.25,
           item: "hand-poured candle",
           cost: 40.0,
           markup: 25,
           discount: 20,
           "conv-val": 5,
+          
           
         };
         Object.entries(ex).forEach(([k, v]) => {
@@ -1741,6 +1764,56 @@
         worldGo();
       }
     
+
+      
+      function drawVisualizer() {
+        const sub = num("subtotal") || 0;
+        const tax = num("tax-rate") || 0;
+        const tip = num("tip-pct") || 0;
+        
+        let html = "";
+        if (sub > 0) {
+          const taxAmt = sub * (tax / 100);
+          const tipAmt = sub * (tip / 100);
+          const total = sub + taxAmt + tipAmt;
+          
+          html = `
+            <g transform="translate(150, 20)">
+              <!-- Receipt Background -->
+              <rect x="0" y="0" width="200" height="200" fill="#fcfcfc" stroke="#cbd5e1" stroke-width="2" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.05))" />
+              <line x1="10" y1="35" x2="190" y2="35" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3,3" />
+              <text x="100" y="25" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">DINER BILL RECEIPT</text>
+              
+              <text x="20" y="60" font-size="10" fill="#5e6e7e">Subtotal:</text>
+              <text x="180" y="60" text-anchor="end" font-size="10" font-weight="bold" fill="#0f2b3c">$${sub.toFixed(2)}</text>
+              
+              <text x="20" y="85" font-size="10" fill="#5e6e7e">Sales Tax (${tax}%):</text>
+              <text x="180" y="85" text-anchor="end" font-size="10" fill="#0f2b3c">$${taxAmt.toFixed(2)}</text>
+              
+              <text x="20" y="110" font-size="10" fill="#5e6e7e">Tip (${tip}%):</text>
+              <text x="180" y="110" text-anchor="end" font-size="10" fill="#0f2b3c">$${tipAmt.toFixed(2)}</text>
+              
+              <line x1="10" y1="130" x2="190" y2="130" stroke="#cbd5e1" stroke-width="1.5" />
+              <text x="20" y="155" font-size="12" font-weight="bold" fill="#2d874b">GRAND TOTAL:</text>
+              <text x="180" y="155" text-anchor="end" font-size="12" font-weight="bold" fill="#2d874b">$${total.toFixed(2)}</text>
+            </g>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Diner Bill values to print receipt</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
 
       
       function drawVisualizer() {

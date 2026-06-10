@@ -622,15 +622,17 @@
       </section>
 
       <!-- ===================== PART 1 — SELF ===================== -->
-      <section class="phase">
+      
+      <!-- ===================== PART 1A — SELF ===================== -->
+      <section class="phase" id="phase-1a">
         <div class="phase-head">
-          <div class="phase-num">1</div>
+          <div class="phase-num">1a</div>
           <div>
-            <span class="arc-banner">Part 1 · Self — your real recipe</span>
-            <div class="skill">
-              Fraction ÷ Fraction · Whole ÷ Fraction · Mixed ÷ Fraction · 6.NS.1
-            </div>
-            <h2>Bake YOUR Recipe</h2>
+            <span class="arc-banner">Part 1a · Self — your real plan</span>
+            <h2>🍞 Portion control (fraction ÷ fraction)</h2>
+          </div>
+        </div>
+        <h2>Bake YOUR Recipe</h2>
           </div>
         </div>
         <p>
@@ -653,9 +655,7 @@
         />
 
         <!-- 1a Fraction ÷ Fraction -->
-        <h3 style="margin-top: 18px">
-          🍞 Portion control (fraction ÷ fraction)
-        </h3>
+        
         <div class="task">
           <strong>Setup:</strong> You have <em>a/b</em> of a pan of dough. Each
           mini-loaf uses <em>c/d</em> of a pan. How many mini-loaves? Use the
@@ -729,9 +729,19 @@
         </details>
 
         <!-- 1b Whole ÷ unit fraction -->
-        <h3 style="margin-top: 24px">
-          🧁 How many servings? (whole ÷ unit fraction)
-        </h3>
+      </section>
+    
+
+      <!-- ===================== PART 1B — SELF ===================== -->
+      <section class="phase" id="phase-1b">
+        <div class="phase-head">
+          <div class="phase-num">1b</div>
+          <div>
+            <span class="arc-banner">Part 1b · Self — your real plan</span>
+            <h2>🧁 How many servings? (whole ÷ unit fraction)</h2>
+          </div>
+        </div>
+        
         <div class="task">
           <strong>Setup:</strong> You made a whole number of cups of frosting.
           Each cupcake gets 1/(d) cup. How many cupcakes? Formula: whole ÷ (1/d)
@@ -784,7 +794,19 @@
             </div>
           </div>
         </div>
-  <h3 style="margin-top: 24px">🔢 Roll cuts (mixed number ÷ fraction)</h3>
+      </section>
+    
+
+      <!-- ===================== PART 1C — SELF ===================== -->
+      <section class="phase" id="phase-1c">
+        <div class="phase-head">
+          <div class="phase-num">1c</div>
+          <div>
+            <span class="arc-banner">Part 1c · Self — your real plan</span>
+            <h2>🔢 Roll cuts (mixed number ÷ fraction)</h2>
+          </div>
+        </div>
+        
         <div class="task">
           <strong>Setup:</strong> A dough roll is <em>whole + n/d</em> feet
           long. Each piece is <em>c/d</em> of a foot. How many pieces? Step 1:
@@ -851,6 +873,25 @@
             </div>
           </div>
           
+          
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://en.wikipedia.org/wiki/Chicken_egg_sizes#Weight_classes" target="_blank" class="pk-research-inline-link">🔗 USDA FoodData Central Database ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the USDA database. Look up "large egg raw". Note the weight of one large egg in ounces (usually 1.75 oz or 1 3/4 oz). Enter your researched weight below:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Ingredient Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Standard Large Egg Weight (oz)</label>
+              <input type="number" id="worldSize" data-save step="any" min="0" placeholder="e.g. 1.75" oninput="recalcAll()">
+            </div>
+          </div>
+          
           <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);">
             <label class="fld">Equivalent Fraction (used in calculation)</label>
             <div style="display: flex; gap: 8px; align-items: center;">
@@ -860,6 +901,8 @@
               <span>oz</span>
             </div>
           </div>
+        </div>
+    
         </div>
     
           <div>
@@ -910,8 +953,19 @@
           Level 1 worked step: 6 ÷ (2/3) → flip → 6 × (3/2) = 18/2 = 9.
         </p>
       </section>
+    
 
       
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+  
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1628,6 +1682,7 @@
       }
       
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
@@ -1671,6 +1726,8 @@
       }
   
   
+  
+      
       
       
       function runWhatIf() {
@@ -1700,6 +1757,7 @@
       }
   
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
@@ -1707,6 +1765,7 @@
           
           "worldCountry": "Large Egg",
           "worldSize": 1.75,
+          
           recipeName: "classic bake set",
           p1a: 3,
           p1b: 4,
@@ -1719,6 +1778,7 @@
           p3d: 2,
           p3cn: 3,
           p3cd: 4,
+          
           
         };
         Object.entries(ex).forEach(([k, v]) => {
@@ -1755,6 +1815,96 @@
           $("p3cn").value = frac.num;
           $("p3cd").value = frac.den;
           calcPhase3();
+        }
+        worldGo();
+      }
+    
+
+      
+      function drawVisualizer() {
+        const p1a = num("p1a");
+        const p1b = num("p1b");
+        const cups = num("p2-cups");
+        const w = num("p3w") || 0;
+        const n = num("p3n") || 0;
+        const d = num("p3d") || 1;
+        
+        const drawCup = (x, label, fillRatio) => {
+          const clampedRatio = Math.min(Math.max(fillRatio, 0), 1.2);
+          const fillH = clampedRatio * 90;
+          const fillY = 170 - fillH;
+          
+          return `
+            <g>
+              <!-- Liquid Fill -->
+              ${clampedRatio > 0 ? `<path d="M ${x+15} ${fillY} L ${x+85} ${fillY} L ${x+75} 170 L ${x+25} 170 Z" fill="rgba(14, 138, 125, 0.6)" />` : ""}
+              
+              <!-- Cup Outline -->
+              <path d="M ${x+10} 70 L ${x+90} 70 L ${x+80} 170 A 5 5 0 0 1 ${x+75} 175 L ${x+25} 175 A 5 5 0 0 1 ${x+20} 170 Z" fill="none" stroke="#0f2b3c" stroke-width="2" />
+              <!-- Handle -->
+              <path d="M ${x+90} 90 C ${x+115} 90, ${x+115} 150, ${x+80} 150" fill="none" stroke="#0f2b3c" stroke-width="2" />
+              
+              <!-- Scale Ticks -->
+              <line x1="${x+22}" y1="145" x2="${x+35}" y2="145" stroke="#0f2b3c" />
+              <text x="${x+40}" y="148" font-size="8" fill="#5e6e7e">1/4</text>
+              <line x1="${x+25}" y1="120" x2="${x+40}" y2="120" stroke="#0f2b3c" />
+              <text x="${x+45}" y="123" font-size="8" fill="#5e6e7e">1/2</text>
+              <line x1="${x+27}" y1="95" x2="${x+35}" y2="95" stroke="#0f2b3c" />
+              <text x="${x+40}" y="98" font-size="8" fill="#5e6e7e">3/4</text>
+              
+              <text x="${x+50}" y="195" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2b3c">${label}</text>
+              <text x="${x+50}" y="210" text-anchor="middle" font-size="9" fill="#0e8a7d" font-weight="bold">Value: ${fillRatio.toFixed(2)} cups</text>
+            </g>
+          `;
+        };
+        
+        const ratio1 = (!isNaN(p1a) && p1b > 0) ? (p1a / p1b) : 0;
+        const ratio2 = !isNaN(cups) ? cups : 0;
+        const ratio3 = w + (n / d);
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            <text x="250" y="35" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Bakery Ingredient Measuring Labs</text>
+            ${drawCup(50, "Loaf Dough", ratio1)}
+            ${drawCup(200, "Frosting Cups", ratio2 / 4)}
+            ${drawCup(350, "Roll Dough", ratio3 / 4)}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
+      function decimalToFraction(val) {
+        const eps = 0.005;
+        if (Math.abs(val - 1.75) < eps) return { num: 7, den: 4 };
+        if (Math.abs(val - 1.5) < eps) return { num: 3, den: 2 };
+        if (Math.abs(val - 2.0) < eps) return { num: 2, den: 1 };
+        if (Math.abs(val - 1.25) < eps) return { num: 5, den: 4 };
+        if (Math.abs(val - 2.25) < eps) return { num: 9, den: 4 };
+        
+        const len = String(val).split('.')[1]?.length || 0;
+        if (len === 0) return { num: Math.round(val), den: 1 };
+        const den = Math.pow(10, len);
+        const num = Math.round(val * den);
+        const gcdVal = (a, b) => b ? gcdVal(b, a % b) : a;
+        const g = gcdVal(num, den);
+        return { num: num / g, den: den / g };
+      }
+
+      function syncResearch() {
+        const ws = $("worldSize");
+        if (!ws) return;
+        const val = num("worldSize");
+        if (isNaN(val) || val <= 0) return;
+        const frac = decimalToFraction(val);
+        if ($("p3cn") && $("p3cd")) {
+          $("p3cn").value = frac.num;
+          $("p3cd").value = frac.den;
+          if (typeof calcPhase3 === 'function') calcPhase3();
+          else if (typeof recalcAll === 'function') {
+            if (typeof calcBudget === 'function') calcBudget();
+          }
         }
         worldGo();
       }
@@ -2039,49 +2189,5 @@ function recalcAll() {
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script type="application/json" id="pk-research">
-      {
-        "title": "Research & Resources",
-        "icon": "🔎",
-        "intro": "Use these safe sites to gather real facts for your bakery project. Open each one in a new tab so you can keep your recipe and numbers right here.",
-        "links": [
-          {
-            "icon": "📊",
-            "name": "Math is Fun — Dividing Fractions",
-            "url": "https://www.mathsisfun.com/fractions_division.html",
-            "find": "Step-by-step pictures of the 'keep, change, flip' rule with examples.",
-            "look": "Check the 'flip the divisor and multiply' steps so your Bake YOUR Recipe servings are correct."
-          },
-          {
-            "icon": "🎓",
-            "name": "Khan Academy — Dividing Fractions",
-            "url": "https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-arithmetic-operations/cc-6th-dividing-fractions/v/dividing-fractions-example",
-            "find": "Short videos and practice that model dividing a whole amount into fraction-sized shares.",
-            "look": "Watch a worked example, then redo your own divisor to double-check your serving count."
-          },
-          {
-            "icon": "🍞",
-            "name": "USDA FoodData Central",
-            "url": "https://fdc.nal.usda.gov/",
-            "find": "Official U.S. government data on serving sizes and amounts for real foods.",
-            "look": "Search a baked food to compare a real serving size against the share you cut in Part 1."
-          },
-          {
-            "icon": "📏",
-            "name": "NIST — Kitchen Measurement Conversions",
-            "url": "https://www.nist.gov/pml/owm/metric-cooking-resources",
-            "find": "Trusted conversion charts for cups, tablespoons, and teaspoons.",
-            "look": "Use these to keep your recipe amounts and divisor in the same units before you divide."
-          },
-          {
-            "icon": "📋",
-            "name": "Smithsonian — History of Baking",
-            "url": "https://www.si.edu/spotlight/food",
-            "find": "Museum stories and images about food and how recipes are shared.",
-            "look": "Find one fun fact to add color to your Menu Card in the final write-up."
-          }
-        ]
-      }
-    </script>
-  </body>
+    </body>
 </html>

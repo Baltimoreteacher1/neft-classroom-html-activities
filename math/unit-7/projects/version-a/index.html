@@ -759,15 +759,16 @@
       </section>
 
       <!-- ===================== PART 1 — SELF ===================== -->
-      <section class="phase">
+      
+      <!-- ===================== PART 1A — SELF ===================== -->
+      <section class="phase" id="phase-1a">
         <div class="phase-head">
-          <div class="phase-num">1</div>
+          <div class="phase-num">1a</div>
           <div>
-            <span class="arc-banner">Part 1 · Self — map YOUR world</span>
-            <div class="skill">
-              Plot · Quadrants · Reflect · Distance · 6.NS.6 · 6.NS.8
-            </div>
-            
+            <span class="arc-banner">Part 1a · Self — your real plan</span>
+            <h2>🪞 Mirror one of your places (reflection)</h2>
+          </div>
+        </div>
         <div>
               <label class="fld" for="worldSize">Coaster Height (feet)</label>
               <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
@@ -834,6 +835,19 @@
               <label class="fld" for="worldCountry">Roller Coaster Researched</label>
               <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
             </div>
+            
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://rcdb.com/rhr.htm" target="_blank" class="pk-research-inline-link">🔗 Roller Coaster Database (RCDB) ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the RCDB. Look up the height of the tallest steel roller coaster in the world (Kingda Ka). Enter the coaster summit height in feet below:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Roller Coaster Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
             <div>
               <label class="fld" for="a1y">Coaster Height (feet)</label>
               <input
@@ -846,6 +860,9 @@
                 oninput="plotPlaces()"
               />
             </div>
+          </div>
+        </div>
+    
           </div>
         </div>
     
@@ -952,9 +969,7 @@
         </details>
 
         <!-- 1b Reflection -->
-        <h3 style="margin-top: 24px">
-          🪞 Mirror one of your places (reflection)
-        </h3>
+        
         <p style="color: var(--muted); font-size: 14px">
           Reflect a place across an axis to plan a "mirrored" section of your
           map.
@@ -1005,9 +1020,19 @@
         </details>
 
         <!-- 1c Distance -->
-        <h3 style="margin-top: 24px">
-          📏 Measure a walking distance (absolute value)
-        </h3>
+      </section>
+    
+
+      <!-- ===================== PART 1B — SELF ===================== -->
+      <section class="phase" id="phase-1b">
+        <div class="phase-head">
+          <div class="phase-num">1b</div>
+          <div>
+            <span class="arc-banner">Part 1b · Self — your real plan</span>
+            <h2>📏 Measure a walking distance (absolute value)</h2>
+          </div>
+        </div>
+        
         <p style="color: var(--muted); font-size: 14px">
           If two places share an x or a y, the distance is the absolute
           difference of the other coordinate.
@@ -1140,8 +1165,19 @@
           |6| = 6.
         </p>
       </section>
+    
 
       
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+  
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -2014,6 +2050,7 @@
       }
       
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
@@ -2057,6 +2094,8 @@
       }
   
   
+  
+      
       
       
       function runWhatIf() {
@@ -2086,6 +2125,7 @@
       }
   
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
@@ -2093,6 +2133,7 @@
           
           "worldCountry": "Kingda Ka",
           "a1y": 456,
+          
           "worldSize": 456,
           p1name: "Home",
           a1x: 0,
@@ -2112,6 +2153,7 @@
           d2y: -5,
           diagDx: 3,
           diagDy: 4,
+          
           
         };
         Object.entries(ex).forEach(([k, v]) => {
@@ -2133,6 +2175,51 @@
         worldGo();
       }
     
+
+      
+      function drawVisualizer() {
+        const eX = num("p-ent-x"), eY = num("p-ent-y");
+        const cX = num("p-cst-x"), cY = num("p-cst-y");
+        const fX = num("p-fer-x"), fY = num("p-fer-y");
+        const sX = num("p-shp-x"), sY = num("p-shp-y");
+        
+        let points = "";
+        const scale = 10;
+        const cx = 250, cy = 120;
+        
+        const drawDot = (x, y, color, label) => {
+          if (isNaN(x) || isNaN(y)) return "";
+          const px = cx + x * scale;
+          const py = cy - y * scale;
+          return `
+            <circle cx="${px}" cy="${py}" r="6" fill="${color}" />
+            <text x="${px + 8}" y="${py + 4}" font-size="9" font-weight="bold" fill="#0f2b3c">${label} (${x},${y})</text>
+          `;
+        };
+        
+        points += drawDot(eX, eY, "#1a6fb5", "Entrance");
+        points += drawDot(cX, cY, "#d4952a", "Coaster");
+        points += drawDot(fX, fY, "#0e8a7d", "Ferris Wheel");
+        points += drawDot(sX, sY, "#c45a3c", "Shop");
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            <!-- Grid Axes -->
+            <line x1="250" y1="20" x2="250" y2="220" stroke="#cbd5e1" stroke-width="2" />
+            <line x1="50" y1="120" x2="450" y2="120" stroke="#cbd5e1" stroke-width="2" />
+            
+            <text x="440" y="115" font-size="9" fill="#94a3b8">X</text>
+            <text x="255" y="32" font-size="9" fill="#94a3b8">Y</text>
+            
+            ${points}
+            <text x="250" y="235" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Blueprint Map Coordinate Grid Plotter</text>
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
 
       
       function drawVisualizer() {
@@ -2383,49 +2470,5 @@ function recalcAll() {
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script type="application/json" id="pk-research">
-      {
-        "title": "Research & Resources",
-        "icon": "🔎",
-        "intro": "Use these safe sites to find real map coordinates and coaster facts for your theme park map. Each link opens in a new tab so your blueprint stays open.",
-        "links": [
-          {
-            "icon": "📊",
-            "name": "Math is Fun — Coordinate Plane",
-            "url": "https://www.mathsisfun.com/data/cartesian-coordinates.html",
-            "find": "How the x and y grid and the four quadrants work.",
-            "look": "In Part 1, use this to place your real places and name each quadrant correctly."
-          },
-          {
-            "icon": "📊",
-            "name": "Khan Academy — Coordinate Plane",
-            "url": "https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-negative-number-topic/cc-6th-coordinate-plane/v/the-coordinate-plane",
-            "find": "Videos on plotting points and reflecting across an axis.",
-            "look": "In Part 1, check your reflected place and its new coordinates."
-          },
-          {
-            "icon": "📊",
-            "name": "Math is Fun — Distance Between Points",
-            "url": "https://www.mathsisfun.com/algebra/distance-2-points.html",
-            "find": "How to measure the distance between two points on a grid.",
-            "look": "In Part 1, use this to measure the distance between two of your places."
-          },
-          {
-            "icon": "📊",
-            "name": "USGS — The National Map (.gov)",
-            "url": "https://www.usgs.gov/programs/national-geospatial-program/national-map",
-            "find": "Real maps and grids of U.S. cities and places.",
-            "look": "In Part 3, compare your map's layout to real city locations."
-          },
-          {
-            "icon": "📊",
-            "name": "RCDB — Roller Coaster Database",
-            "url": "https://rcdb.com/",
-            "find": "Real coaster heights, drops, and stats around the world.",
-            "look": "In Part 3, pull real coaster heights for your What-If Lab."
-          }
-        ]
-      }
-    </script>
-  </body>
+    </body>
 </html>

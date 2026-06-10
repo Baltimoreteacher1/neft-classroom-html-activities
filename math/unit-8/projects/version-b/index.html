@@ -642,13 +642,17 @@
       </section>
 
       <!-- ===================== PART 1 — SELF ===================== -->
-      <section class="phase">
+      
+      <!-- ===================== PART 1A — SELF ===================== -->
+      <section class="phase" id="phase-1a">
         <div class="phase-head">
-          <div class="phase-num">1</div>
+          <div class="phase-num">1a</div>
           <div>
-            <span class="arc-banner">Part 1 · Self — your real plan</span>
-            <div class="skill">Equations &amp; inequalities · 6.EE.7–8</div>
-            <h2>Plan YOUR Class Fundraiser</h2>
+            <span class="arc-banner">Part 1a · Self — your real plan</span>
+            <h2>💵 How much more do we need? (raised + x = goal)</h2>
+          </div>
+        </div>
+        <h2>Plan YOUR Class Fundraiser</h2>
           </div>
         </div>
         <p>
@@ -693,9 +697,7 @@
             </div>
           </div>
         </div>
-  <h3 style="margin-top: 22px">
-          💵 How much more do we need? (raised + x = goal)
-        </h3>
+        
         <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
           Level 1 tip: keep the goal a round number like $200 so the subtraction
           is friendly.
@@ -725,6 +727,19 @@
               <label class="fld" for="worldCountry">Classroom Project Researched</label>
               <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
             </div>
+            
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://www.donorschoose.org/donors/search.html" target="_blank" class="pk-research-inline-link">🔗 DonorsChoose Classroom Projects Search ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the DonorsChoose page. Search for a local classroom project. Note the total fundraising goal requested (often around $400 for classroom resources). Enter the target goal below:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Classroom Project Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
             <div>
               <label class="fld" for="f1-goal">Your fundraiser goal ($)</label>
               <input
@@ -736,6 +751,9 @@
               oninput="solvePhase1()"
             />
             </div>
+          </div>
+        </div>
+    
           </div>
         </div>
     
@@ -753,7 +771,19 @@
         </details>
 
         <!-- 1b: sales plan (multiplication equation) -->
-        <h3 style="margin-top: 24px">🧮 Plan the sales (price · n = target)</h3>
+      </section>
+    
+
+      <!-- ===================== PART 1B — SELF ===================== -->
+      <section class="phase" id="phase-1b">
+        <div class="phase-head">
+          <div class="phase-num">1b</div>
+          <div>
+            <span class="arc-banner">Part 1b · Self — your real plan</span>
+            <h2>🧮 Plan the sales (price · n = target)</h2>
+          </div>
+        </div>
+        
         <div class="task">
           <strong>Your sales plan:</strong> choose a price per item and a sales
           target. The target must be divisible by the price so the number of
@@ -801,7 +831,19 @@
         </details>
 
         <!-- 1c: goal condition (inequality) -->
-        <h3 style="margin-top: 24px">↔️ Set the goal condition (inequality)</h3>
+      </section>
+    
+
+      <!-- ===================== PART 1C — SELF ===================== -->
+      <section class="phase" id="phase-1c">
+        <div class="phase-head">
+          <div class="phase-num">1c</div>
+          <div>
+            <span class="arc-banner">Part 1c · Self — your real plan</span>
+            <h2>↔️ Set the goal condition (inequality)</h2>
+          </div>
+        </div>
+        
         <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
           Level 1: use ≥ ("at least the goal").
         </p>
@@ -874,8 +916,19 @@
           <div class="readout" id="p3b-out"></div>
         </div>
       </section>
+    
 
       
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+  
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1772,6 +1825,7 @@
       }
       
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
@@ -1815,8 +1869,10 @@
       }
   
   
+  
 
       /* ---- What-If Lab: projected total + x ≥ goal flip ---- */
+      
       
       
       function runWhatIf() {
@@ -1846,6 +1902,7 @@
       }
   
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
@@ -1853,6 +1910,7 @@
           
           "worldCountry": "Math Manipulatives",
           "f1-goal": 400,
+          
           "worldSize": 400,
           cause: "6th grade field trip",
           item: "cupcakes",
@@ -1866,6 +1924,7 @@
           "p-goal": 400,
           "p-raised": 250,
           myWorld: "",
+          
           
         };
         Object.entries(ex).forEach(([k, v]) => {
@@ -1887,6 +1946,39 @@
         worldGo();
       }
     
+
+      
+      function drawVisualizer() {
+        const raised = num("c-raised") || 0;
+        const target = num("worldSize") || 400;
+        
+        const maxH = 140;
+        const fillPct = Math.min(Math.max((raised / target) * 100, 0), 100);
+        const fillH = (fillPct / 100) * maxH;
+        const fillY = 170 - fillH;
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            <text x="250" y="35" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Fundraising Goal Thermometer (${fillPct.toFixed(0)}%)</text>
+            
+            <!-- Thermometer Border -->
+            <rect x="235" y="30" width="30" height="140" rx="15" fill="none" stroke="#5e6e7e" stroke-width="3" />
+            <circle cx="250" cy="180" r="25" fill="#f1f5f9" stroke="#5e6e7e" stroke-width="3" />
+            <rect x="237" y="32" width="26" height="138" rx="13" fill="#f1f5f9" />
+            
+            <!-- Fluid Fill -->
+            <circle cx="250" cy="180" r="23" fill="#ef4444" />
+            <rect x="237" y="${fillY}" width="26" height="${fillH}" fill="#ef4444" />
+            
+            <text x="290" y="105" font-size="11" font-weight="bold" fill="#0f2b3c">Raised: $${raised.toFixed(0)}</text>
+            <text x="290" y="65" font-size="11" font-weight="bold" fill="#c45a3c">Target: $${target.toFixed(0)}</text>
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
 
       
       function drawVisualizer() {
@@ -2099,49 +2191,5 @@ function recalcAll() {
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script type="application/json" id="pk-research">
-      {
-        "title": "Research & Resources",
-        "icon": "🔎",
-        "intro": "Use these safe, ad-light sites to find real fundraiser numbers and to sharpen your equations and inequalities. Each link opens in a new tab so you keep your project page.",
-        "links": [
-          {
-            "icon": "🔢",
-            "name": "Khan Academy — Equations & Inequalities (6.EE)",
-            "url": "https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-equations-and-inequalities",
-            "find": "Free videos and practice on writing equations and inequalities for real situations.",
-            "look": "Practice setting up x + saved = goal, then use it to track your fundraiser's progress."
-          },
-          {
-            "icon": "📐",
-            "name": "Math is Fun — Inequalities",
-            "url": "https://www.mathsisfun.com/algebra/inequality.html",
-            "find": "A clear lesson on >, <, ≥, ≤ with everyday examples and number lines.",
-            "look": "Write an inequality for 'how much more must we raise to reach (or beat) our goal?'"
-          },
-          {
-            "icon": "💵",
-            "name": "Consumer.gov — Managing Your Money",
-            "url": "https://consumer.gov/section/managing-your-money",
-            "find": "Plain-language, login-free guidance on budgeting, saving, and spending.",
-            "look": "Plan realistic prices and costs so your fundraiser goal and totals make sense."
-          },
-          {
-            "icon": "📊",
-            "name": "USA Facts — Education Spending",
-            "url": "https://usafacts.org/topics/education/",
-            "find": "Reliable, neutral data and charts about schools and education in the U.S.",
-            "look": "Find a real cause or need to justify why your class fundraiser goal is worth setting."
-          },
-          {
-            "icon": "🏫",
-            "name": "DonorsChoose — Browse Classroom Projects",
-            "url": "https://www.donorschoose.org/",
-            "find": "Real teacher fundraising projects with actual dollar goals and amounts raised.",
-            "look": "Compare your goal and plan to real school fundraisers in the final compare phase."
-          }
-        ]
-      }
-    </script>
-  </body>
+    </body>
 </html>

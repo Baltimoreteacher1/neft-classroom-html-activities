@@ -630,17 +630,17 @@
       </section>
 
       <!-- ===================== PART 1 — SELF ===================== -->
-      <section class="phase">
+      
+      <!-- ===================== PART 1A — SELF ===================== -->
+      <section class="phase" id="phase-1a">
         <div class="phase-head">
-          <div class="phase-num">1</div>
+          <div class="phase-num">1a</div>
           <div>
-            <span class="arc-banner"
-              >Part 1 · Self — measure your real school</span
-            >
-            <div class="skill">
-              Trapezoid · Triangle · Parallelogram · 6.G.1
-            </div>
-            <h2>Measure &amp; Calculate Your Spaces</h2>
+            <span class="arc-banner">Part 1a · Self — your real plan</span>
+            <h2>⏢ Garden plot (trapezoid)</h2>
+          </div>
+        </div>
+        <h2>Measure &amp; Calculate Your Spaces</h2>
           </div>
         </div>
         <p>
@@ -668,7 +668,7 @@
             </div>
           </div>
         </div>
-  <h3 style="margin-top: 8px">⏢ Garden plot (trapezoid)</h3>
+        
         <svg
           class="svg-sketch"
           width="260"
@@ -774,10 +774,44 @@
                 <label class="fld" for="p1-b2">Base 2 (ft)</label>
                 <input type="number" id="p1-b2" data-save readonly style="background: #f1f5f9; border-color: #cbd5e1; width: 100%;">
               </div>
+              
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://www.almanac.com/raised-garden-bed-dimensions-layout" target="_blank" class="pk-research-inline-link">🔗 Wikipedia: Raised-Bed Gardening Standards ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Research recommended structural standards for raised garden beds. Find the standard width (typically 4 feet to allow reaching from both sides). Enter the standard bed width below:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Garden Design Guideline</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Recommended Bed Width (feet)</label>
+              <input type="number" id="worldSize" data-save step="any" min="0" placeholder="e.g. 4" oninput="recalcAll()">
+            </div>
+          </div>
+          
+          <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);">
+            <label class="fld">Calculated Garden Dimensions (used in calculation)</label>
+            <div class="grid3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+              <div>
+                <label class="fld" for="p1-b1">Base 1 (ft)</label>
+                <input type="number" id="p1-b1" data-save readonly style="background: #f1f5f9; border-color: #cbd5e1; width: 100%;">
+              </div>
+              <div>
+                <label class="fld" for="p1-b2">Base 2 (ft)</label>
+                <input type="number" id="p1-b2" data-save readonly style="background: #f1f5f9; border-color: #cbd5e1; width: 100%;">
+              </div>
               <div>
                 <label class="fld" for="p1-h">Height (ft)</label>
                 <input type="number" id="p1-h" data-save readonly style="background: #f1f5f9; border-color: #cbd5e1; width: 100%;">
               </div>
+            </div>
+          </div>
+        </div>
+    
             </div>
           </div>
         </div>
@@ -796,9 +830,19 @@
         </details>
 
         <!-- 1b Triangle mural + paint cans -->
-        <h3 style="margin-top: 24px">
-          🔺 Mural panel (triangle) &amp; paint cans
-        </h3>
+      </section>
+    
+
+      <!-- ===================== PART 1B — SELF ===================== -->
+      <section class="phase" id="phase-1b">
+        <div class="phase-head">
+          <div class="phase-num">1b</div>
+          <div>
+            <span class="arc-banner">Part 1b · Self — your real plan</span>
+            <h2>🔺 Mural panel (triangle) &amp; paint cans</h2>
+          </div>
+        </div>
+        
         <svg
           class="svg-sketch"
           width="220"
@@ -896,7 +940,19 @@
         </details>
 
         <!-- 1c Parallelogram banner -->
-        <h3 style="margin-top: 24px">▱ School banner (parallelogram)</h3>
+      </section>
+    
+
+      <!-- ===================== PART 1C — SELF ===================== -->
+      <section class="phase" id="phase-1c">
+        <div class="phase-head">
+          <div class="phase-num">1c</div>
+          <div>
+            <span class="arc-banner">Part 1c · Self — your real plan</span>
+            <h2>▱ School banner (parallelogram)</h2>
+          </div>
+        </div>
+        
         <svg
           class="svg-sketch"
           width="240"
@@ -990,8 +1046,19 @@
           ></span>
         </div>
       </section>
+    
 
       
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+  
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1781,6 +1848,7 @@
       }
       
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
@@ -1824,6 +1892,8 @@
       }
   
   
+  
+      
       
       
       function runWhatIf() {
@@ -1853,6 +1923,7 @@
       }
   
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
@@ -1860,6 +1931,7 @@
           
           "worldCountry": "New York, NY",
           "worldSize": 4,
+          
           "p1-b1": 8,
           "p1-b2": 12,
           "p1-h": 6,
@@ -1871,6 +1943,7 @@
           "p4-price1": 4.5,
           "p4-area2": 45,
           "p4-price2": 5.2,
+          
           
         };
         Object.entries(ex).forEach(([k, v]) => {
@@ -1890,6 +1963,80 @@
           $("p1-b2").value = 8;
           $("p1-h").value = (val / 10).toFixed(1);
           calcTrapezoid();
+        }
+        worldGo();
+      }
+    
+
+      
+      function drawVisualizer() {
+        const p1w = num("p1w") || 0;
+        const p1h = num("p1h") || 0;
+        const p2b = num("p2b") || 0;
+        const p2h = num("p2h") || 0;
+        const p3w = num("p3w") || 0;
+        const p3h = num("p3h") || 0;
+        
+        let html = "";
+        if (p1w > 0 && p1h > 0) {
+          const maxDim = Math.max(p1w, p1h + p2h, p1w + p3w, 1);
+          const scale = 120 / maxDim;
+          
+          const w1 = p1w * scale;
+          const h1 = p1h * scale;
+          const w2 = p2b * scale;
+          const h2 = p2h * scale;
+          const w3 = p3w * scale;
+          const h3 = p3h * scale;
+          
+          const cX1 = 40 + w1;
+          const cY1 = 40 + h1 - h3;
+          
+          html = `
+            <!-- Main Plot (Blue) -->
+            <polygon points="40,40 40,${40 + h1} ${40 + w1},	h ${40 + h1} ${40 + w1},40" fill="rgba(26, 111, 181, 0.2)" stroke="#1a6fb5" stroke-width="2" />
+            <text x="${40 + w1/2}" y="${40 + h1/2}" text-anchor="middle" font-size="9" font-weight="bold" fill="#1a6fb5">Bed: ${p1w}×${p1h}</text>
+            
+            <!-- Triangular Crop Patch -->
+            ${w2 > 0 && h2 > 0 ? `
+              <polygon points="40,${40 + h1} ${40 + w2},${40 + h1} 40,	h ${40 + h1 + h2}" fill="rgba(212, 149, 42, 0.2)" stroke="#d4952a" stroke-width="2" />
+              <text x="${40 + w2/3}" y="${40 + h1 + h2/3}" text-anchor="middle" font-size="9" font-weight="bold" fill="#d4952a">Nook: ½×${p2b}×${p2h}</text>
+            ` : ""}
+            
+            <!-- Tool Shed Closet -->
+            ${w3 > 0 && h3 > 0 ? `
+              <rect x="${cX1}" y="${cY1}" width="${w3}" height="${h3}" fill="rgba(14, 138, 125, 0.2)" stroke="#0e8a7d" stroke-width="2" />
+              <text x="${cX1 + w3/2}" y="${cY1 + h3/2}" text-anchor="middle" font-size="9" font-weight="bold" fill="#0e8a7d">Closet: ${p3w}×${p3h}</text>
+            ` : ""}
+            
+            <text x="250" y="220" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Scale Garden Blueprint Map View</text>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Plot Dimensions to draw garden blueprint</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
+      function syncResearch() {
+        const ws = $("worldSize");
+        if (!ws) return;
+        const val = num("worldSize");
+        if (isNaN(val) || val <= 0) return;
+        if ($("p1-b1") && $("p1-b2") && $("p1-h")) {
+          $("p1-b1").value = 12;
+          $("p1-b2").value = 8;
+          $("p1-h").value = (val / 10).toFixed(1);
+          if (typeof calcTrapezoid === 'function') calcTrapezoid();
         }
         worldGo();
       }
@@ -2151,49 +2298,5 @@ function recalcAll() {
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script type="application/json" id="pk-research">
-{
-  "title": "Research & Resources",
-  "icon": "🔎",
-  "intro": "Real planners look up formulas, prices, and community examples before they build. Use these safe, ad-light sites to gather what you need for your Community Mural & Garden Planner. Each one opens in a new tab, so your project stays open here.",
-  "links": [
-    {
-      "icon": "🟦",
-      "name": "Area of a Trapezoid (Math is Fun)",
-      "url": "https://www.mathsisfun.com/geometry/trapezoid.html",
-      "find": "The trapezoid area formula with a clear, labeled diagram.",
-      "look": "the ½ × (a + b) × height formula so you can find your trapezoid garden plot's area in Part 1."
-    },
-    {
-      "icon": "🔺",
-      "name": "Area of a Triangle (Khan Academy)",
-      "url": "https://www.khanacademy.org/math/basic-geo/basic-geo-area-and-perimeter/area-triangle/v/area-of-a-triangle",
-      "find": "A free, no-ads video lesson on ½ × base × height with practice.",
-      "look": "how to plug in base and height so your triangular mural wall area is exact before it auto-adds to your total."
-    },
-    {
-      "icon": "🧩",
-      "name": "Area of Composite (Irregular) Shapes (Math is Fun)",
-      "url": "https://www.mathsisfun.com/geometry/area-irregular-polygons.html",
-      "find": "How to split an irregular shape into simple shapes and add the parts.",
-      "look": "the break-it-into-pieces method so your combined garden + mural + banner areas add up correctly."
-    },
-    {
-      "icon": "🌱",
-      "name": "Garden Activities & Plot Planning (KidsGardening)",
-      "url": "https://www.kidsgardening.org/garden-activities/",
-      "find": "Kid-friendly guides for planning and measuring real garden beds and plots.",
-      "look": "typical raised-bed and plot sizes to compare against your own garden plan in Part 3 (World)."
-    },
-    {
-      "icon": "💲",
-      "name": "How to Find a Percent of a Number (Math is Fun)",
-      "url": "https://www.mathsisfun.com/percentage.html",
-      "find": "A friendly walkthrough of percentages and money math.",
-      "look": "how to check what fraction of your $600 budget each material costs so you stay on budget in your planning brief."
-    }
-  ]
-}
-    </script>
-  </body>
+    </body>
 </html>

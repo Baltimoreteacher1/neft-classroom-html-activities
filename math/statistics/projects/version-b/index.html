@@ -778,14 +778,7 @@
           <div class="phase-num">2</div>
           <div>
             <div class="skill">Measures of Center · 6.SP.3 · 6.SP.5c</div>
-            
-        <div>
-              <label class="fld" for="worldSize">Record High Temp (°F)</label>
-              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
-            </div>
-          </div>
-        </div>
-  <h2>Mean and Median — Compare the Centers</h2>
+            <h2>Mean and Median — Compare the Centers</h2>
           </div>
         </div>
         <p>
@@ -802,32 +795,16 @@
           You can also enter your own data below.
         </div>
 
-        
-        <!-- ===================== INLINE RESEARCH LAB ===================== -->
-        <div class="pk-research-inline-card">
-          <div class="pk-research-inline-header">
-            <span class="pk-research-badge">🔍 Research Required</span>
-            <a href="https://www.climate.gov/maps-data" target="_blank" class="pk-research-inline-link">🔗 NOAA: Climate Maps & Temperature Tables ↗</a>
-          </div>
-          <p class="pk-research-inline-instructions">Open the NOAA database or local temperature charts. Find the record highest temperature ever recorded in your home state (often around 105°F). Enter the state/city name and temperature below:</p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">State/City Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
-            </div>
-            <div>
-              <label class="fld" for="dataset2">Record High Temp (°F)</label>
-              <input
+        <label class="fld" for="dataset2"
+          >Your data set (numbers separated by commas)</label
+        >
+        <input
           type="text"
           id="dataset2"
           data-save
           oninput="calcCenter2()"
           placeholder="Click 'Use Dataset' after choosing a topic, or type your own"
         />
-            </div>
-          </div>
-        </div>
-    
 
         <button class="btn blue" onclick="useTopicData()">
           Use My Topic's Dataset
@@ -836,6 +813,8 @@
           Calculate Mean &amp; Median
         </button>
         <div class="readout" id="center2-out"></div>
+        
+        ${researchCardHtml}
 
         <label class="fld" for="center-compare" style="margin-top: 20px"
           >Compare mean and median: what do the two values tell you about your
@@ -1084,7 +1063,6 @@
         </details>
       </section>
 
-      
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -2022,13 +2000,18 @@
             calcCenter2();
           }
         }
-        worldGo();
+        if (typeof worldGo === "function") worldGo();
       }
-    
+  
 
-      
       function drawVisualizer() {
-        const nums = lastParsed && lastParsed.length ? lastParsed : parseInput(document.getElementById("dataset2b").value);
+        let raw = "";
+        if (document.getElementById("dataset2b") && document.getElementById("dataset2b").value.trim()) {
+          raw = document.getElementById("dataset2b").value;
+        } else if (document.getElementById("dataset2") && document.getElementById("dataset2").value.trim()) {
+          raw = document.getElementById("dataset2").value;
+        }
+        const nums = parseInput(raw);
         if (!nums || nums.length === 0) {
           $("projectVisualizer").innerHTML = '<text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter data set to draw plots</text>';
           return;
@@ -2056,14 +2039,14 @@
         
         const svgString = `
           <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
-            <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Dataset High Temperature Summary Box Plot</text>
+            <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Dataset Statistical Summary Box Plot</text>
             
             <!-- Box -->
-            <rect x="${q1Px}" y="100" width="${q3Px - q1Px}" height="40" fill="rgba(196, 90, 60, 0.2)" stroke="#c45a3c" stroke-width="2" />
+            <rect x="${q1Px}" y="100" width="${q3Px - q1Px}" height="40" fill="rgba(14, 138, 125, 0.2)" stroke="#0e8a7d" stroke-width="2" />
             
             <!-- Whiskers -->
             <line x1="${minPx}" y1="120" x2="${q1Px}" y2="120" stroke="#0f2b3c" stroke-width="1.5" />
-            <line x1="	h ${maxPx}" y1="120" x2="${q3Px}" y2="120" stroke="#0f2b3c" stroke-width="1.5" />
+            <line x1="${maxPx}" y1="120" x2="${q3Px}" y2="120" stroke="#0f2b3c" stroke-width="1.5" />
             <line x1="${minPx}" y1="105" x2="${minPx}" y2="135" stroke="#0f2b3c" stroke-width="1.5" />
             <line x1="${maxPx}" y1="105" x2="${maxPx}" y2="135" stroke="#0f2b3c" stroke-width="1.5" />
             
@@ -2072,9 +2055,9 @@
             
             <!-- Labels -->
             <text x="${minPx}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#5e6e7e">Min: ${min}</text>
-            <text x="${q1Px}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#c45a3c">Q1: ${q1}</text>
+            <text x="${q1Px}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#0e8a7d">Q1: ${q1}</text>
             <text x="${medPx}" y="75" text-anchor="middle" font-size="10" font-weight="bold" fill="#d4952a">Med: ${median}</text>
-            <text x="${q3Px}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#c45a3c">Q3: ${q3}</text>
+            <text x="${q3Px}" y="80" text-anchor="middle" font-weight="bold" fill="#0e8a7d">Q3: ${q3}</text>
             <text x="${maxPx}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#5e6e7e">Max: ${max}</text>
             
             <!-- Axis Line -->
@@ -2082,79 +2065,14 @@
             <text x="80" y="195" text-anchor="middle" font-size="10" fill="#1a2633">${minVal}</text>
             <text x="420" y="195" text-anchor="middle" font-size="10" fill="#1a2633">${maxVal}</text>
             
-            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#2d874b">Mean = 	h ${mean.toFixed(2)} | Range = ${max - min}</text>
+            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#2d874b">Mean = ${mean.toFixed(2)} | Range = dots. </text>
           </svg>
         `;
         $("projectVisualizer").innerHTML = svgString;
       }
-    
   
 
-
-      
-      function drawVisualizer() {
-        const nums = lastParsed && lastParsed.length ? lastParsed : parseInput(document.getElementById("dataset2b").value);
-        if (!nums || nums.length === 0) {
-          $("projectVisualizer").innerHTML = '<text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter data set to draw plots</text>';
-          return;
-        }
-        
-        const min = Math.min(...nums), max = Math.max(...nums);
-        const mean = calcMean(nums);
-        const sorted = sortNums(nums);
-        const median = calcMedian(nums);
-        
-        let q1 = sorted[Math.floor(sorted.length / 4)];
-        let q3 = sorted[Math.floor(sorted.length * 3 / 4)];
-        
-        const maxVal = Math.max(max, 130);
-        const minVal = Math.min(min, 30);
-        const range = maxVal - minVal;
-        
-        const getPx = (v) => 80 + ((v - minVal) / range) * 340;
-        
-        const medPx = getPx(median);
-        const minPx = getPx(min);
-        const maxPx = getPx(max);
-        const q1Px = getPx(q1);
-        const q3Px = getPx(q3);
-        
-        const svgString = `
-          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
-            <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Dataset High Temperature Summary Box Plot</text>
-            
-            <!-- Box -->
-            <rect x="${q1Px}" y="100" width="${q3Px - q1Px}" height="40" fill="rgba(196, 90, 60, 0.2)" stroke="#c45a3c" stroke-width="2" />
-            
-            <!-- Whiskers -->
-            <line x1="${minPx}" y1="120" x2="${q1Px}" y2="120" stroke="#0f2b3c" stroke-width="1.5" />
-            <line x1="	h ${maxPx}" y1="120" x2="${q3Px}" y2="120" stroke="#0f2b3c" stroke-width="1.5" />
-            <line x1="${minPx}" y1="105" x2="${minPx}" y2="135" stroke="#0f2b3c" stroke-width="1.5" />
-            <line x1="${maxPx}" y1="105" x2="${maxPx}" y2="135" stroke="#0f2b3c" stroke-width="1.5" />
-            
-            <!-- Median Line -->
-            <line x1="${medPx}" y1="100" x2="${medPx}" y2="140" stroke="#d4952a" stroke-width="2" />
-            
-            <!-- Labels -->
-            <text x="${minPx}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#5e6e7e">Min: ${min}</text>
-            <text x="${q1Px}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#c45a3c">Q1: ${q1}</text>
-            <text x="${medPx}" y="75" text-anchor="middle" font-size="10" font-weight="bold" fill="#d4952a">Med: ${median}</text>
-            <text x="${q3Px}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#c45a3c">Q3: ${q3}</text>
-            <text x="${maxPx}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#5e6e7e">Max: ${max}</text>
-            
-            <!-- Axis Line -->
-            <line x1="80" y1="180" x2="420" y2="180" stroke="#0f2b3c" stroke-width="1.5" />
-            <text x="80" y="195" text-anchor="middle" font-size="10" fill="#1a2633">${minVal}</text>
-            <text x="420" y="195" text-anchor="middle" font-size="10" fill="#1a2633">${maxVal}</text>
-            
-            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#2d874b">Mean = 	h ${mean.toFixed(2)} | Range = ${max - min}</text>
-          </svg>
-        `;
-        $("projectVisualizer").innerHTML = svgString;
-      }
-    
-  
-function recalcAll() {
+      function recalcAll() {
         if (typeof syncResearch === "function") syncResearch();
         if (document.getElementById("topic").value) {
           loadDataset(true);
@@ -2167,8 +2085,10 @@ function recalcAll() {
         if (document.getElementById("dataset2b").value) {
           drawDotPlot2();
         }
+        if (typeof drawVisualizer === "function") drawVisualizer();
         updateProgress();
       }
+    
 
       // ── Level hook: Level 1 prefills a smaller dataset if empty ──
       window.onLevelChange = function (level) {
@@ -2211,49 +2131,5 @@ function recalcAll() {
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script type="application/json" id="pk-research">
-      {
-        "title": "Research & Resources",
-        "icon": "🔎",
-        "intro": "Use these safe, ad-light sites to choose a real-world dataset (sports, weather, or survey) for your investigation. Each link opens in a new tab so you keep your project page.",
-        "links": [
-          {
-            "icon": "🏀",
-            "name": "ESPN — NBA Player Stats",
-            "url": "https://www.espn.com/nba/stats",
-            "find": "Official, organized tables of real player numbers like points and rebounds per game.",
-            "look": "Pick a sports dataset and pose your statistical question, then list the values to analyze."
-          },
-          {
-            "icon": "🌦️",
-            "name": "NOAA Climate.gov — Maps & Data",
-            "url": "https://www.climate.gov/maps-data",
-            "find": "Official U.S. weather and climate data with clear graphs and tables.",
-            "look": "Choose a weather dataset (like daily high temperatures) to compute mean and median."
-          },
-          {
-            "icon": "📊",
-            "name": "U.S. Census Bureau — Statistics in Schools",
-            "url": "https://www.census.gov/programs-surveys/sis.html",
-            "find": "Login-free, kid-safe survey data and facts about people across the U.S.",
-            "look": "Use survey-style data to measure spread with range and MAD."
-          },
-          {
-            "icon": "📐",
-            "name": "Math is Fun — Statistics (Center, Range & MAD)",
-            "url": "https://www.mathsisfun.com/data/index.html",
-            "find": "Step-by-step lessons on mean, median, range, and mean absolute deviation.",
-            "look": "Verify your formulas before filling each calculator in the four phases."
-          },
-          {
-            "icon": "📈",
-            "name": "Khan Academy — Data Displays (6.SP)",
-            "url": "https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-data-statistics",
-            "find": "Free practice on dot plots, histograms, and box plots and when to use each.",
-            "look": "Choose the best display for your dataset before writing your investigation report."
-          }
-        ]
-      }
-    </script>
-  </body>
+    </body>
 </html>

@@ -587,15 +587,16 @@
       </section>
 
       <!-- ===================== PART 1 — SELF ===================== -->
-      <section class="phase">
+      
+      <!-- ===================== PART 1A — SELF ===================== -->
+      <section class="phase" id="phase-1a">
         <div class="phase-head">
-          <div class="phase-num">1</div>
+          <div class="phase-num">1a</div>
           <div>
-            <span class="arc-banner">Part 1 · Self — your real cart</span>
-            <div class="skill">
-              Unit Price · Conversion · 6.RP.2 · 6.RP.3b · 6.RP.3d
-            </div>
-            
+            <span class="arc-banner">Part 1a · Self — your real plan</span>
+            <h2>🔁 Convert a real product-label measurement</h2>
+          </div>
+        </div>
         <div>
               <label class="fld" for="worldSize">Cost per Gallon of Milk ($)</label>
               <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
@@ -643,6 +644,19 @@
               <label class="fld" for="worldCountry">Researched Item/Region</label>
               <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
             </div>
+            
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://www.bls.gov/charts/consumer-price-index/consumer-price-index-average-price-data.htm" target="_blank" class="pk-research-inline-link">🔗 BLS Consumer Price Index Average Prices ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the BLS database. Find the national average retail price for a gallon of whole milk. Enter the average price below to compute your decimal totals:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Researched Item/Region</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
             <div>
               <label class="fld" for="a-price">Price ($)</label>
               <input
@@ -655,6 +669,9 @@
                 oninput="calcUnitPrice()"
               />
             </div>
+          </div>
+        </div>
+    
           </div>
         </div>
     
@@ -737,9 +754,7 @@
         <div class="pk-fb feedback" id="check-unitAFb"></div>
 
         <!-- conversion from a real label -->
-        <h3 style="margin-top: 24px">
-          🔁 Convert a real product-label measurement
-        </h3>
+        
         <p style="font-size: 14px; color: var(--muted)">
           Read a measurement off a real label (a snack's net weight, a drink's
           volume, a roll's length) and convert it using a rate.
@@ -832,8 +847,19 @@
           <div class="readout" id="stacked-out"></div>
         </div>
       </section>
+    
 
       
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+  
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1479,6 +1505,7 @@
       }
       
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
@@ -1522,6 +1549,8 @@
       }
   
   
+  
+      
       
       
       function runWhatIf() {
@@ -1551,6 +1580,7 @@
       }
   
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
@@ -1558,12 +1588,14 @@
           
           "worldCountry": "Whole Milk (gal)",
           "a-price": 3.98,
+          
           "worldSize": 3.98,
           product: "granola bars",
           "a-units": 12,
           "b-price": 5.25,
           "b-units": 20,
           "conv-val": 5,
+          
           
         };
         Object.entries(ex).forEach(([k, v]) => {
@@ -1587,6 +1619,56 @@
         worldGo();
       }
     
+
+      
+      function drawVisualizer() {
+        const sub = num("subtotal") || 0;
+        const tax = num("tax-rate") || 0;
+        const tip = num("tip-pct") || 0;
+        
+        let html = "";
+        if (sub > 0) {
+          const taxAmt = sub * (tax / 100);
+          const tipAmt = sub * (tip / 100);
+          const total = sub + taxAmt + tipAmt;
+          
+          html = `
+            <g transform="translate(150, 20)">
+              <!-- Receipt Background -->
+              <rect x="0" y="0" width="200" height="200" fill="#fcfcfc" stroke="#cbd5e1" stroke-width="2" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.05))" />
+              <line x1="10" y1="35" x2="190" y2="35" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3,3" />
+              <text x="100" y="25" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">FOOD CART RECEIPT</text>
+              
+              <text x="20" y="60" font-size="10" fill="#5e6e7e">Menu Subtotal:</text>
+              <text x="180" y="60" text-anchor="end" font-size="10" font-weight="bold" fill="#0f2b3c">$${sub.toFixed(2)}</text>
+              
+              <text x="20" y="85" font-size="10" fill="#5e6e7e">Sales Tax (	h ${tax}%):</text>
+              <text x="180" y="85" text-anchor="end" font-size="10" fill="#0f2b3c">$${taxAmt.toFixed(2)}</text>
+              
+              <text x="20" y="110" font-size="10" fill="#5e6e7e">Staff Tip (${tip}%):</text>
+              <text x="180" y="110" text-anchor="end" font-size="10" fill="#0f2b3c">$${tipAmt.toFixed(2)}</text>
+              
+              <line x1="10" y1="130" x2="190" y2="130" stroke="#cbd5e1" stroke-width="1.5" />
+              <text x="20" y="155" font-size="12" font-weight="bold" fill="#2d874b">GRAND TOTAL:</text>
+              <text x="180" y="155" text-anchor="end" font-size="12" font-weight="bold" fill="#2d874b">$${total.toFixed(2)}</text>
+            </g>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Food Cart Bill values to print receipt</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
 
       
       function drawVisualizer() {
@@ -1824,49 +1906,5 @@ function recalcAll() {
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script type="application/json" id="pk-research">
-      {
-        "title": "Research & Resources",
-        "icon": "🔎",
-        "intro": "Smart shoppers look up real prices and averages before they decide. Use these safe, ad-light sites to gather real numbers for your Smart Shopper Showdown. Each one opens in a new tab, so your project stays open here.",
-        "links": [
-          {
-            "icon": "🛒",
-            "name": "Unit Price: Which Is the Better Deal? (Math is Fun)",
-            "url": "https://www.mathsisfun.com/measure/unit-price.html",
-            "find": "A clear lesson on comparing prices by finding the cost for ONE unit.",
-            "look": "the cost ÷ amount method so you can prove the better buy for your two packages in Part 1."
-          },
-          {
-            "icon": "💲",
-            "name": "How to Find a Percent of a Number (Math is Fun)",
-            "url": "https://www.mathsisfun.com/percentage.html",
-            "find": "A friendly walkthrough of percentages with worked examples.",
-            "look": "the 'percent of a number' steps so you can double-check any tax, discount, or tip math in your verdict."
-          },
-          {
-            "icon": "🧾",
-            "name": "Sales Tax Rates by State (Tax Foundation)",
-            "url": "https://taxfoundation.org/data/all/state/sales-tax-rates/",
-            "find": "A trustworthy table of the real sales-tax percent for every U.S. state.",
-            "look": "your state's combined rate to add tax onto your unit-price comparison and final shopping report."
-          },
-          {
-            "icon": "📊",
-            "name": "Average Food Prices, U.S. City Average (U.S. Bureau of Labor Statistics)",
-            "url": "https://www.bls.gov/charts/consumer-price-index/consumer-price-index-by-category-line-chart.htm",
-            "find": "Official .gov data on real average prices for everyday grocery items.",
-            "look": "the national average for an item like yours, so you can compare your unit price to the country in Part 3 (World)."
-          },
-          {
-            "icon": "🍽️",
-            "name": "Tipping in the USA (USA.gov / Consumer Guidance)",
-            "url": "https://www.usa.gov/",
-            "find": "Reliable government guidance on common U.S. costs and money basics (search 'tipping' or 'consumer').",
-            "look": "typical tip percents (like 15–20%) so your Part 3 comparison to tip norms uses real numbers."
-          }
-        ]
-      }
-    </script>
-  </body>
+    </body>
 </html>

@@ -639,17 +639,16 @@
       </section>
 
       <!-- ===================== PART 1 — SELF ===================== -->
-      <section class="phase">
+      
+      <!-- ===================== PART 1A — SELF ===================== -->
+      <section class="phase" id="phase-1a">
         <div class="phase-head">
-          <div class="phase-num">1</div>
+          <div class="phase-num">1a</div>
           <div>
-            <span class="arc-banner"
-              >Part 1 · Self — a channel YOU would run</span
-            >
-            <div class="skill">
-              Variables · Equation · Table · Graph · 6.EE.9
-            </div>
-            
+            <span class="arc-banner">Part 1a · Self — your real plan</span>
+            <h2>✍️ Write your equation (y = kx)</h2>
+          </div>
+        </div>
         <div>
               <label class="fld" for="worldSize">Typical Revenue per 1,000 views ($)</label>
               <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
@@ -693,6 +692,19 @@
               <label class="fld" for="worldCountry">Creator Niche Researched</label>
               <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
             </div>
+            
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://www.youtube.com/creators/" target="_blank" class="pk-research-inline-link">🔗 YouTube Creator Hub: Analytics Guidelines ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Research typical revenue per 1,000 views (RPM) for educational channels (often around $4.50). Enter the researched RPM below to model your earnings:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Creator Niche Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
             <div>
               <label class="fld" for="k-rate">Typical Revenue per 1,000 views ($)</label>
               <input
@@ -705,6 +717,9 @@
               oninput="calcEquation()"
             />
             </div>
+          </div>
+        </div>
+    
           </div>
         </div>
     
@@ -723,7 +738,7 @@
         </p>
 
         <!-- 1a equation -->
-        <h3 style="margin-top: 20px">✍️ Write your equation (y = kx)</h3>
+        
         <button class="btn" type="button" onclick="calcEquation()">
           Write my equation
         </button>
@@ -739,7 +754,19 @@
         </details>
 
         <!-- 1b table -->
-        <h3 style="margin-top: 24px">📊 Build your data table (weeks 0–5)</h3>
+      </section>
+    
+
+      <!-- ===================== PART 1B — SELF ===================== -->
+      <section class="phase" id="phase-1b">
+        <div class="phase-head">
+          <div class="phase-num">1b</div>
+          <div>
+            <span class="arc-banner">Part 1b · Self — your real plan</span>
+            <h2>📊 Build your data table (weeks 0–5)</h2>
+          </div>
+        </div>
+        
         <div class="task">
           <strong>Remember:</strong> y = kx means you multiply your growth rate
           by each x value. At x = 0, y is always 0 (no weeks, no growth yet) —
@@ -760,7 +787,19 @@
         </details>
 
         <!-- 1c graph + readings -->
-        <h3 style="margin-top: 24px">📈 Read your graph</h3>
+      </section>
+    
+
+      <!-- ===================== PART 1C — SELF ===================== -->
+      <section class="phase" id="phase-1c">
+        <div class="phase-head">
+          <div class="phase-num">1c</div>
+          <div>
+            <span class="arc-banner">Part 1c · Self — your real plan</span>
+            <h2>📈 Read your graph</h2>
+          </div>
+        </div>
+        
         <p style="color: var(--muted)">
           Use your equation to find y when you know x, and to work backwards to
           find x when you know y.
@@ -807,7 +846,19 @@
         </details>
 
         <!-- 1d show-your-work grid -->
-        <h3 style="margin-top: 24px">🧮 Show Your Work</h3>
+      </section>
+    
+
+      <!-- ===================== PART 1D — SELF ===================== -->
+      <section class="phase" id="phase-1d">
+        <div class="phase-head">
+          <div class="phase-num">1d</div>
+          <div>
+            <span class="arc-banner">Part 1d · Self — your real plan</span>
+            <h2>🧮 Show Your Work</h2>
+          </div>
+        </div>
+        
         <p style="color: var(--muted)">
           Use <em>your own</em> k to answer all three. Each box is checked
           against your equation.
@@ -865,8 +916,19 @@
           your own k, so check your equation first.
         </p>
       </section>
+    
 
       
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+  
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1583,6 +1645,7 @@
       }
       
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
@@ -1626,6 +1689,8 @@
       }
   
   
+  
+      
       
       
       function runWhatIf() {
@@ -1655,6 +1720,7 @@
       }
   
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
@@ -1662,6 +1728,7 @@
           
           "worldCountry": "Gaming Channel",
           "k-rate": 4.5,
+          
           "worldSize": 4.5,
           topic: "skateboarding tricks",
           "find-x": 7,
@@ -1671,6 +1738,7 @@
           "ch-b": 8,
           "ch-weeks": 10,
           myWorld: 12,
+          
           
         };
         Object.entries(ex).forEach(([key, v]) => {
@@ -1693,6 +1761,52 @@
         worldGo();
       }
     
+
+      
+      function drawVisualizer() {
+        const rpm = num("exp-coeff") || 4.5;
+        
+        let html = "";
+        if (rpm > 0) {
+          const maxViews = 100;
+          const maxEarnings = rpm * maxViews;
+          
+          let points = "";
+          for (let v = 0; v <= maxViews; v += 10) {
+            const px = 100 + (v / maxViews) * 320;
+            const py = 180 - ((v * rpm) / maxEarnings) * 120;
+            points += `${px},${py} `;
+          }
+          
+          html = `
+            <polyline points="${points.trim()}" fill="none" stroke="#1a6fb5" stroke-width="3" />
+            <circle cx="420" cy="60" r="5" fill="#1a6fb5" />
+            <text x="410" y="55" text-anchor="end" font-size="10" font-weight="bold" fill="#1a6fb5">${maxViews}k views: $${maxEarnings.toFixed(2)}</text>
+            
+            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Earnings Linear Growth Line (y = ${rpm}x)</text>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter RPM to draw linear growth graph</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            <!-- Axes -->
+            <line x1="80" y1="60" x2="80" y2="180" stroke="#cbd5e1" stroke-width="2" />
+            <line x1="80" y1="180" x2="450" y2="180" stroke="#cbd5e1" stroke-width="2" />
+            <text x="70" y="65" text-anchor="end" font-size="9" fill="#94a3b8">Earnings ($)</text>
+            <text x="440" y="195" text-anchor="end" font-size="9" fill="#94a3b8">Views (k)</text>
+            
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
 
       
       function drawVisualizer() {
@@ -1915,49 +2029,5 @@ function recalcAll() {
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script type="application/json" id="pk-research">
-      {
-        "title": "Research & Resources",
-        "icon": "🔎",
-        "intro": "Use these safe, ad-light sites to gather real numbers for your channel's growth rate k. They all open in a new tab so you keep your project open.",
-        "links": [
-          {
-            "icon": "📊",
-            "name": "Math is Fun — Linear Equations & Slope",
-            "url": "https://www.mathsisfun.com/algebra/linear-equations.html",
-            "find": "Clear pictures of y = kx lines, slope, and how a bigger number makes a steeper line.",
-            "look": "Review how k controls steepness before you write your equation in Part 1."
-          },
-          {
-            "icon": "📈",
-            "name": "Khan Academy — Proportional Relationships",
-            "url": "https://www.khanacademy.org/math/cc-seventh-grade-math/cc-7th-ratio-proportion/cc-7th-constant-of-proportionality/v/identifying-the-constant-of-proportionality-from-equation",
-            "find": "Short videos and practice on finding the constant of proportionality (your k).",
-            "look": "Check your idea of k against the examples before justifying it in Part 1."
-          },
-          {
-            "icon": "🎬",
-            "name": "Common Sense Media — Creators & Channels",
-            "url": "https://www.commonsensemedia.org/articles/youtube",
-            "find": "Kid-safe, ad-light articles about how online creators grow an audience.",
-            "look": "Get realistic ideas about how fast new channels grow to support your researched k."
-          },
-          {
-            "icon": "🧮",
-            "name": "NCTM Illuminations — Graphing & Tables",
-            "url": "https://www.nctm.org/Classroom-Resources/Illuminations/",
-            "find": "Trusted math tools for building tables and reading graphs.",
-            "look": "Practice reading ordered pairs (x, y) before you build your data table in Part 1."
-          },
-          {
-            "icon": "🌐",
-            "name": "Census Bus Stop — Real Two-Variable Data",
-            "url": "https://www.census.gov/programs-surveys/sis/resources/data-tools.html",
-            "find": "Free, government data sets you can read as tables and graphs.",
-            "look": "See how professionals show one variable depending on another for your Part 3 comparison."
-          }
-        ]
-      }
-    </script>
-  </body>
+    </body>
 </html>
