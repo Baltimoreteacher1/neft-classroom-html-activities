@@ -326,52 +326,68 @@
     const subs = [partSubLetter(a), partSubLetter(b)].filter(Boolean);
     const letters = subs.join("");
     if (/a|b/.test(letters)) return "Part 1: Your Idea";
-    if (/c|d/.test(letters)) return "Part 1: Work It Out";
+    if (/c|d/.test(letters)) return "Part 1: Run the Numbers";
     if (/e/.test(letters)) return "Part 1: Go Deeper";
     const h2 = phaseH2(a);
     if (/plan|setup|start|choose|pick/i.test(h2)) return "Part 1: Your Plan";
     if (/calc|compute|solve|budget|cost|number/i.test(h2))
-      return "Part 1: Do the Math";
+      return "Part 1: Run the Numbers";
     if (h2) return "Part 1: " + shortLabel(h2, 18);
-    return "Part 1: Your Turn";
+    return "Part 1: Your Idea";
   }
 
   function part1SingleLabel(section) {
     const sub = partSubLetter(section);
     if (sub === "a" || sub === "b") return "Part 1: Your Idea";
-    if (sub === "c" || sub === "d") return "Part 1: Work It Out";
+    if (sub === "c" || sub === "d") return "Part 1: Run the Numbers";
     if (sub === "e") return "Part 1: Go Deeper";
     const h2 = phaseH2(section);
     if (h2) return "Part 1: " + shortLabel(h2, 18);
-    return "Part 1: Your Turn";
+    return "Part 1: Your Idea";
   }
 
-  function phaseLabel(section) {
-    if (isVocabPhase(section)) return "Get Ready";
-    if (isSetupPhase(section)) return "Start Here";
-    const pn = partNumber(section);
-    if (pn === 2) return "Compare Ideas";
-    if (pn === 3) return "Real World";
-    if (pn === 1) return part1SingleLabel(section);
-    const h2 = phaseH2(section);
-    if (/Visual Math Notes/i.test(h2)) return "Get Ready";
-    if (/Quick-Check Answer Key/i.test(h2)) return "Check Answers";
-    if (/Rubric|How You Are Scored/i.test(h2)) return "How You Did";
-    const num = section.querySelector(".phase-num");
-    const t = num ? num.textContent.trim() : "";
-    if (t === "★") return "Finish Strong";
-    if (t === "✓") return "How You Did";
-    if (/research/i.test(h2)) return "Research";
-    if (h2) return shortLabel(h2, 24);
-    return "Next Step";
+  function statsPairLabel(a, b) {
+    const text = (phaseH2(a) + " " + phaseH2(b)).toLowerCase();
+    if (/collect|statistical question|your data/.test(text))
+      return "Part 1: Gather Data";
+    if (/mean|median|mode|range|mad|deviation/.test(text))
+      return "Part 1: Analyze It";
+    if (/display|describe|distribution/.test(text)) return "Part 1: Show It";
+    return pairLabelGeneric(a, b);
   }
 
-  function pairLabel(a, b) {
-    if (partNumber(a) === 1 || partNumber(b) === 1) return part1PairLabel(a, b);
+  function pairLabelGeneric(a, b) {
     const la = phaseLabel(a);
     const lb = phaseLabel(b);
     if (la === lb) return la;
     return shortLabel(la + " · " + lb, 28);
+  }
+
+  function phaseLabel(section) {
+    if (isVocabPhase(section)) return "Get Ready";
+    if (isSetupPhase(section)) return "Get Started";
+    if (section.classList.contains("pk-research-phase")) return "Do Research";
+    const pn = partNumber(section);
+    if (pn === 2) return "Part 2: Compare";
+    if (pn === 3) return "Part 3: Real World";
+    if (pn === 1) return part1SingleLabel(section);
+    const h2 = phaseH2(section);
+    if (/Visual Math Notes/i.test(h2)) return "Get Ready";
+    if (/Quick-Check Answer Key/i.test(h2)) return "Check Answers";
+    if (/Rubric|How You Are Scored/i.test(h2)) return "Finish Strong";
+    const num = section.querySelector(".phase-num");
+    const t = num ? num.textContent.trim() : "";
+    if (t === "★") return "Show Your Work";
+    if (t === "✓") return "Finish Strong";
+    if (/research/i.test(h2)) return "Do Research";
+    if (h2) return shortLabel(h2, 24);
+    return "Keep Going";
+  }
+
+  function pairLabel(a, b) {
+    if (partNumber(a) === 1 || partNumber(b) === 1) return part1PairLabel(a, b);
+    if (!hasArcBanner(a) && !hasArcBanner(b)) return statsPairLabel(a, b);
+    return pairLabelGeneric(a, b);
   }
 
   function shouldPair(a, b) {
@@ -424,17 +440,26 @@
     if (finish.length === 1) {
       groups.push({ label: phaseLabel(finish[0]), sections: finish });
     } else if (finish.length === 2) {
-      const star = finish.find((s) => {
+      finish.forEach((section) => {
+        groups.push({ label: phaseLabel(section), sections: [section] });
+      });
+    } else if (finish.length > 2) {
+      const star = finish.filter((s) => {
         const t = s.querySelector(".phase-num")?.textContent.trim();
         return t === "★";
       });
-      groups.push({
-        label: star ? "Finish Strong" : phaseLabel(finish[0]),
-        sections: finish,
+      const rest = finish.filter((s) => {
+        const t = s.querySelector(".phase-num")?.textContent.trim();
+        return t !== "★";
       });
-    } else if (finish.length > 2) {
-      groups.push({ label: "Finish Strong", sections: [finish[0]] });
-      groups.push({ label: "How You Did", sections: finish.slice(1) });
+      star.forEach((section) => {
+        groups.push({ label: "Show Your Work", sections: [section] });
+      });
+      if (rest.length === 1) {
+        groups.push({ label: phaseLabel(rest[0]), sections: rest });
+      } else if (rest.length > 1) {
+        groups.push({ label: "Finish Strong", sections: rest });
+      }
     }
     return groups;
   }
@@ -489,7 +514,7 @@
     const hint = document.createElement("p");
     hint.className = "pk-tab-hint";
     hint.textContent =
-      "Take it one step at a time — you've got this! Tap a tab or use Next when you're ready.";
+      "Work one step at a time — tap a tab across the top when you're ready to move on.";
 
     const tablist = document.createElement("div");
     tablist.setAttribute("role", "tablist");
@@ -530,7 +555,12 @@
 
     function updateChrome(index) {
       stepCount.innerHTML =
-        'Step <b>' + (index + 1) + "</b> of " + total;
+        'Step <b>' +
+        (index + 1) +
+        "</b> of " +
+        total +
+        " · " +
+        groups[index].label;
       stepFill.style.width = ((index + 1) / total) * 100 + "%";
       prevBtn.disabled = index === 0;
       nextBtn.disabled = index === total - 1;

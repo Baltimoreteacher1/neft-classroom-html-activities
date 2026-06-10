@@ -1,13 +1,7 @@
 /* ==========================================================================
-   Neft Teacher — Projects TABS bootstrap (shared)
-   Loads AFTER projects-kit.js. Inserts optional data-driven Research phase,
-   then delegates tab building to PK.initProjectTabs().
-
-   PROGRESSIVE: without JS every .phase stays visible. pk-tabs-on is added only
-   after tabs are built successfully.
-
-   Reference as /shared/projects/projects-tabs.js
-   Pairs with /shared/projects/projects-tabs.css
+   Neft Teacher — Projects tabs bootstrap (shared)
+   Injects optional data-driven Research phase, then calls PK.initProjectTabs()
+   from projects-kit.js. Reference AFTER projects-kit.js with projects-tabs.css.
    ========================================================================== */
 (function () {
   "use strict";
@@ -297,15 +291,19 @@
     return section;
   }
 
-  function insertResearchPhase() {
-    var wrap = document.querySelector(".pk .wrap, body.pk .wrap") || document.querySelector(".wrap");
+  function injectResearchPhase() {
+    if (document.querySelector(".pk-research-phase")) return;
+    var wrap =
+      document.querySelector(".pk .wrap, body.pk .wrap") ||
+      document.querySelector(".wrap");
     if (!wrap) return;
+
     var research = buildResearchPhase();
     if (!research) return;
 
-    var phases = Array.prototype.slice.call(wrap.children).filter(function (n) {
-      return n.classList && n.classList.contains("phase");
-    });
+    var phases = Array.prototype.slice.call(
+      wrap.querySelectorAll(":scope > section.phase"),
+    );
     if (!phases.length) return;
 
     var vocabPhase = phases[0];
@@ -314,26 +312,25 @@
     );
     if (hasVocab && vocabPhase.nextSibling) {
       wrap.insertBefore(research, vocabPhase.nextSibling);
+      return;
+    }
+
+    var last = phases[phases.length - 1];
+    var isRubric = /rubric|how you are scored|scored/i.test(
+      last.textContent.slice(0, 120),
+    );
+    if (isRubric) {
+      wrap.insertBefore(research, last);
     } else {
-      var last = phases[phases.length - 1];
-      var isRubric = /rubric|how you are scored|scored/i.test(
-        last.textContent.slice(0, 120),
-      );
-      if (isRubric) {
-        wrap.insertBefore(research, last);
-      } else {
-        wrap.appendChild(research);
-      }
+      wrap.appendChild(research);
     }
   }
 
-  function bootstrapTabs() {
-    if (!document.body.classList.contains("pk")) return;
-    insertResearchPhase();
+  ready(function () {
+    if (document.body.hasAttribute("data-pk-no-tabs")) return;
+    injectResearchPhase();
     if (window.PK && typeof window.PK.initProjectTabs === "function") {
       window.PK.initProjectTabs();
     }
-  }
-
-  ready(bootstrapTabs);
+  });
 })();
