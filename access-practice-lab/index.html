@@ -222,6 +222,43 @@
         flex-direction: column;
         gap: 6px;
       }
+      .rubric {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin: 2px 0 4px;
+      }
+      .rubrow {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+      }
+      .rubrow .rubl {
+        color: var(--navy2);
+      }
+      .placeov {
+        position: fixed;
+        inset: 0;
+        background: rgba(10, 30, 50, 0.55);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+        padding: 16px;
+      }
+      .placebox {
+        background: #fff;
+        border-radius: 14px;
+        padding: 20px;
+        max-width: 460px;
+        width: 100%;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
       .card .donebadge {
         position: absolute;
         top: -9px;
@@ -714,6 +751,9 @@
           <button data-band="A" aria-pressed="true">Level 1–2.5</button>
           <button data-band="B" aria-pressed="false">Level 2.6–4.5</button>
         </div>
+        <button id="placeBtn" class="btn ghost" style="font-size: 13px">
+          🎯 Find my level
+        </button>
         <div class="progresswrap">
           <div class="progressbar"><i id="progFill"></i></div>
           <small id="progText">0 of 0 done in this view</small>
@@ -5525,7 +5565,7 @@
       }
 
       /* ---- Text to speech ---- */
-      function speak(text, btn) {
+      function speak(text, btn, rate) {
         if (!("speechSynthesis" in window)) {
           if (btn) {
             btn.textContent = "🔇 Audio not supported";
@@ -5534,7 +5574,7 @@
         }
         window.speechSynthesis.cancel();
         var u = new SpeechSynthesisUtterance(text);
-        u.rate = 0.92;
+        u.rate = rate || 0.92;
         u.pitch = 1;
         if (btn) {
           btn.classList.add("playing");
@@ -5572,25 +5612,36 @@
       }
 
       function buildMCQ(a, c, promptText) {
+        var revealHelps = function () {};
         if (a.script) {
-          c.appendChild(
-            el('<button class="btn play">🔊 Play audio</button>'),
-          ).onclick = function () {
+          var playRow = el('<div class="timerctl"></div>');
+          var playB = el('<button class="btn play">🔊 Play</button>');
+          playB.onclick = function () {
             speak(a.script, this);
           };
+          var slowB = el('<button class="btn ghost">🐢 Slow</button>');
+          slowB.onclick = function () {
+            speak(a.script, this, 0.6);
+          };
+          playRow.appendChild(playB);
+          playRow.appendChild(slowB);
+          c.appendChild(playRow);
           var sb = el(
-            '<div class="scriptbox hidden"><b>Script (teacher view):</b><br>' +
+            '<div class="scriptbox hidden">📄 <b>Transcript:</b> ' +
               esc(a.script) +
               "</div>",
           );
           var tog = el(
-            '<button class="btn ghost" style="align-self:flex-start;font-size:12px">Show/Hide script</button>',
+            '<button class="btn ghost" style="display:none;align-self:flex-start;font-size:12px">📄 Show transcript</button>',
           );
           tog.onclick = function () {
             sb.classList.toggle("hidden");
           };
           c.appendChild(tog);
           c.appendChild(sb);
+          revealHelps = function () {
+            tog.style.display = "";
+          };
         }
         if (a.passage) {
           c.appendChild(
@@ -5613,6 +5664,7 @@
             Array.prototype.forEach.call(ch.children, function (x) {
               x.setAttribute("disabled", "");
             });
+            revealHelps();
             if (i === a.answer) {
               b.classList.add("correct");
               fb.textContent = "✓ Correct! " + (a.explain || "");
@@ -6040,6 +6092,42 @@
           });
           c.appendChild(ul);
         }
+        /* WIDA-style self-rating rubric */
+        c.appendChild(
+          el(
+            '<div class="support" style="margin-top:8px"><b>Rate your writing (tap the stars):</b></div>',
+          ),
+        );
+        var rubric = el('<div class="rubric"></div>');
+        [
+          "Vocabulary (good word choice)",
+          "Sentences & grammar",
+          "Organization & details",
+        ].forEach(function (dim, di) {
+          var row = el(
+            '<div class="rubrow"><span class="rubl">' +
+              dim +
+              '</span><span class="stars" role="radiogroup" aria-label="' +
+              esc(dim) +
+              '"></span></div>',
+          );
+          var box = row.querySelector(".stars");
+          for (var s = 1; s <= 4; s++) {
+            (function (s) {
+              var sp = el('<span data-v="' + s + '">★</span>');
+              sp.onclick = function () {
+                setStars(box, s);
+                progress["rub_" + a.id + "_" + di] = s;
+                saveProgress();
+              };
+              box.appendChild(sp);
+            })(s);
+          }
+          if (progress["rub_" + a.id + "_" + di])
+            setStars(box, progress["rub_" + a.id + "_" + di]);
+          rubric.appendChild(row);
+        });
+        c.appendChild(rubric);
         var fb = fbLine();
         var done = el(
           '<button class="btn tealb">Submit & save draft ✓</button>',
@@ -6527,6 +6615,142 @@
           selectBand(t.dataset.band);
         };
       });
+
+      /* ---- Adaptive placement: quick check that recommends a WIDA band ---- */
+      var PLACEMENT = [
+        {
+          passage: "The dog is big.",
+          q: "What is big?",
+          choices: ["The dog", "The cat", "The ball", "The sun"],
+          answer: 0,
+          hard: 1,
+        },
+        {
+          passage: "Maria is happy because it is her birthday.",
+          q: "Why is Maria happy?",
+          choices: [
+            "She is tired",
+            "It is her birthday",
+            "She lost a game",
+            "It is raining",
+          ],
+          answer: 1,
+          hard: 1,
+        },
+        {
+          passage:
+            "The plant turned yellow because it did not get any sunlight.",
+          q: "Why did the plant turn yellow?",
+          choices: [
+            "Too much water",
+            "No sunlight",
+            "It was too cold",
+            "Someone painted it",
+          ],
+          answer: 1,
+          hard: 2,
+        },
+        {
+          passage:
+            "Although the team practiced hard all season, they narrowly lost the championship game.",
+          q: "What happened to the team?",
+          choices: [
+            "They won easily",
+            "They did not practice",
+            "They lost the final game",
+            "They quit the season",
+          ],
+          answer: 2,
+          hard: 2,
+        },
+      ];
+      function runPlacement() {
+        var ov = el('<div class="placeov"></div>');
+        var box = el('<div class="placebox"></div>');
+        var i = 0,
+          hardScore = 0,
+          total = 0;
+        function paint() {
+          box.innerHTML = "";
+          box.appendChild(
+            el('<h3 style="margin:0 0 4px">🎯 Find My Level</h3>'),
+          );
+          box.appendChild(
+            el(
+              '<div class="note">Question ' +
+                (i + 1) +
+                " of " +
+                PLACEMENT.length +
+                "</div>",
+            ),
+          );
+          var item = PLACEMENT[i];
+          box.appendChild(
+            el('<div class="passage">' + esc(item.passage) + "</div>"),
+          );
+          box.appendChild(el('<div class="q">' + esc(item.q) + "</div>"));
+          var ch = el('<div class="choices"></div>');
+          item.choices.forEach(function (opt, ci) {
+            var b = el(
+              '<button class="choice"><span>' + esc(opt) + "</span></button>",
+            );
+            b.onclick = function () {
+              total += ci === item.answer ? 1 : 0;
+              if (ci === item.answer) hardScore += item.hard;
+              i++;
+              if (i < PLACEMENT.length) paint();
+              else finish();
+            };
+            ch.appendChild(b);
+          });
+          box.appendChild(ch);
+        }
+        function finish() {
+          var band = hardScore >= 4 ? "B" : "A";
+          var label = band === "B" ? "Level 2.6–4.5" : "Level 1–2.5";
+          box.innerHTML = "";
+          box.appendChild(
+            el('<h3 style="margin:0 0 6px">🎯 Your suggested level</h3>'),
+          );
+          box.appendChild(
+            el(
+              '<div class="note" style="font-size:15px">You got ' +
+                total +
+                " of " +
+                PLACEMENT.length +
+                " right. We suggest starting at <b>" +
+                label +
+                "</b>. You can switch any time.</div>",
+            ),
+          );
+          var go = el(
+            '<button class="btn tealb" style="margin-top:12px">Start at ' +
+              label +
+              " →</button>",
+          );
+          go.onclick = function () {
+            selectBand(band);
+            ov.remove();
+          };
+          var stay = el(
+            '<button class="btn ghost" style="margin-top:12px">Close</button>',
+          );
+          stay.onclick = function () {
+            ov.remove();
+          };
+          var row = el('<div class="timerctl"></div>');
+          row.appendChild(go);
+          row.appendChild(stay);
+          box.appendChild(row);
+        }
+        paint();
+        ov.appendChild(box);
+        ov.onclick = function (e) {
+          if (e.target === ov) ov.remove();
+        };
+        document.body.appendChild(ov);
+      }
+      document.getElementById("placeBtn").onclick = runPlacement;
 
       /* ---- Boot ---- */
       function boot() {
