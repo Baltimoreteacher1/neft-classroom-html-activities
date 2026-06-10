@@ -238,6 +238,29 @@
       .rubrow .rubl {
         color: var(--navy2);
       }
+      .word {
+        cursor: pointer;
+        border-radius: 3px;
+        padding: 0 1px;
+      }
+      .word:hover,
+      .word:focus {
+        background: #fff3cd;
+        text-decoration: underline;
+      }
+      .rdbtn {
+        padding: 1px 6px;
+        font-size: 13px;
+        margin-right: 6px;
+        vertical-align: middle;
+      }
+      body.bigtext {
+        font-size: 19px;
+      }
+      body.bigtext .card .q,
+      body.bigtext .passage {
+        font-size: 17px;
+      }
       .placeov {
         position: fixed;
         inset: 0;
@@ -715,7 +738,12 @@
           Writing — EduWonderLab
         </div>
       </div>
-      <div class="brandtag" id="statTotal">199 activities</div>
+      <div style="display: flex; align-items: center; gap: 10px">
+        <button id="textSize" class="btn ghost" style="font-size: 13px">
+          🔠 Bigger text
+        </button>
+        <div class="brandtag" id="statTotal">199 activities</div>
+      </div>
     </header>
 
     <div class="wrap">
@@ -5584,6 +5612,39 @@
         }
         window.speechSynthesis.speak(u);
       }
+      /* ESOL read-aloud helpers: a 🔊 button, and tap-any-word in a passage. */
+      function readBtn(text) {
+        var b = el(
+          '<button class="btn ghost rdbtn" title="Read aloud" aria-label="Read aloud">🔊</button>',
+        );
+        b.onclick = function () {
+          speak(text);
+        };
+        return b;
+      }
+      function passageEl(text) {
+        var box = el('<div class="passage"></div>');
+        box.appendChild(readBtn(text));
+        text.split(/(\s+)/).forEach(function (tok) {
+          if (/^\s+$/.test(tok) || !tok) {
+            box.appendChild(document.createTextNode(tok));
+          } else {
+            var sp = el('<span class="word">' + esc(tok) + "</span>");
+            sp.onclick = function () {
+              var w = tok.replace(/[^A-Za-z'’-]/g, "");
+              if (w) speak(w);
+            };
+            box.appendChild(sp);
+          }
+        });
+        return box;
+      }
+      function qEl(text) {
+        var d = el('<div class="q"></div>');
+        d.appendChild(readBtn(text));
+        d.appendChild(document.createTextNode(text));
+        return d;
+      }
 
       /* ---- Card builders by type ---- */
       function cardShell(a) {
@@ -5644,11 +5705,9 @@
           };
         }
         if (a.passage) {
-          c.appendChild(
-            el('<div class="passage">' + esc(a.passage) + "</div>"),
-          );
+          c.appendChild(passageEl(a.passage));
         }
-        c.appendChild(el('<div class="q">' + esc(a.question) + "</div>"));
+        c.appendChild(qEl(a.question));
         var ch = el('<div class="choices"></div>');
         var fb = fbLine();
         var missed = false;
@@ -5707,7 +5766,7 @@
             speak(a.script, this);
           };
         }
-        c.appendChild(el('<div class="q">' + esc(a.question) + "</div>"));
+        c.appendChild(qEl(a.question));
         var list = el('<div class="ordlist"></div>');
         var order = shuffle(
           a.items.map(function (_, i) {
@@ -5782,10 +5841,7 @@
       }
 
       function buildFill(a, c) {
-        if (a.passage)
-          c.appendChild(
-            el('<div class="passage">' + esc(a.passage) + "</div>"),
-          );
+        if (a.passage) c.appendChild(passageEl(a.passage));
         c.appendChild(
           el(
             '<div class="q">' +
@@ -6013,13 +6069,13 @@
       }
 
       function buildWrite(a, c) {
-        c.appendChild(
-          el(
-            '<div class="scriptbox"><b>Writing task:</b> ' +
-              esc(a.prompt) +
-              "</div>",
-          ),
+        var taskBox = el(
+          '<div class="scriptbox"><b>Writing task:</b> ' +
+            esc(a.prompt) +
+            "</div>",
         );
+        taskBox.insertBefore(readBtn(a.prompt), taskBox.firstChild);
+        c.appendChild(taskBox);
         if (a.wordBank && a.wordBank.length) {
           var wb = el('<div class="wordbank"></div>');
           var ta;
@@ -6751,6 +6807,24 @@
         document.body.appendChild(ov);
       }
       document.getElementById("placeBtn").onclick = runPlacement;
+
+      /* ---- Text-size toggle (accessibility) ---- */
+      var TS_KEY = "ewl_access_bigtext";
+      function applyTextSize() {
+        var big = localStorage.getItem(TS_KEY) === "1";
+        document.body.classList.toggle("bigtext", big);
+        document.getElementById("textSize").textContent = big
+          ? "🔠 Normal text"
+          : "🔠 Bigger text";
+      }
+      document.getElementById("textSize").onclick = function () {
+        localStorage.setItem(
+          TS_KEY,
+          localStorage.getItem(TS_KEY) === "1" ? "0" : "1",
+        );
+        applyTextSize();
+      };
+      applyTextSize();
 
       /* ---- Boot ---- */
       function boot() {
