@@ -24,8 +24,16 @@
 
    DATA-DRIVEN RESEARCH: if a `<script type="application/json" id="pk-research">`
    block is present, its links are rendered into a new "Research & Resources"
-   phase/tab. Schema:
+   phase/tab inserted after Visual Math Notes. Schema:
      { "title": "Research & Resources", "intro": "…", "icon": "🔎",
+       "brief": { "title":"…", "hook":"…", "theme":"detective|mission|lab|…",
+                  "steps":["…"] },
+       "fieldNotes": { "title":"…", "intro":"…",
+         "fields":[ { "id":"fn-cost", "label":"…", "source":"…",
+                      "placeholder":"…", "hint":"…" } ] },
+       "mathTasks": [ { "title":"…", "prompt":"…", "workId":"mt1",
+                        "level2":"…" } ],
+       "investigationChecklist": ["…"],
        "links": [ { "name":"…", "url":"https://…", "find":"…", "look":"…",
                     "icon":"🛒" }, … ] }
    ========================================================================== */
@@ -89,6 +97,180 @@
       intro.innerHTML = cfg.intro;
       section.appendChild(intro);
     }
+
+    /* --- Mission brief (TpT-style hook) --- */
+    if (cfg.brief) {
+      var brief = document.createElement("div");
+      brief.className =
+        "pk-mission-brief" +
+        (cfg.brief.theme ? " pk-mission-" + cfg.brief.theme : "");
+      if (cfg.brief.title) {
+        var bt = document.createElement("h3");
+        bt.textContent = cfg.brief.title;
+        brief.appendChild(bt);
+      }
+      if (cfg.brief.hook) {
+        var bh = document.createElement("p");
+        bh.className = "pk-mission-hook";
+        bh.innerHTML = cfg.brief.hook;
+        brief.appendChild(bh);
+      }
+      if (Array.isArray(cfg.brief.steps) && cfg.brief.steps.length) {
+        var ol = document.createElement("ol");
+        ol.className = "pk-mission-steps";
+        cfg.brief.steps.forEach(function (s) {
+          var li = document.createElement("li");
+          li.textContent = s;
+          ol.appendChild(li);
+        });
+        brief.appendChild(ol);
+      }
+      section.appendChild(brief);
+    }
+
+    /* --- Field Notes (data students must collect) --- */
+    if (
+      cfg.fieldNotes &&
+      Array.isArray(cfg.fieldNotes.fields) &&
+      cfg.fieldNotes.fields.length
+    ) {
+      var fnWrap = document.createElement("div");
+      fnWrap.className = "pk-field-notes";
+      var fnTitle = document.createElement("h3");
+      fnTitle.textContent = cfg.fieldNotes.title || "Field Notes — Record What You Find";
+      fnWrap.appendChild(fnTitle);
+      if (cfg.fieldNotes.intro) {
+        var fnIntro = document.createElement("p");
+        fnIntro.className = "pk-fn-intro";
+        fnIntro.innerHTML = cfg.fieldNotes.intro;
+        fnWrap.appendChild(fnIntro);
+      }
+      cfg.fieldNotes.fields.forEach(function (f, idx) {
+        if (!f) return;
+        var row = document.createElement("div");
+        row.className = "pk-fn-row";
+        var meta = document.createElement("div");
+        meta.className = "pk-fn-meta";
+        var lbl = document.createElement("label");
+        lbl.className = "fld";
+        var fid = f.id || "fn-" + idx;
+        lbl.setAttribute("for", fid);
+        lbl.innerHTML =
+          "<span class=\"pk-fn-num\">" +
+          (idx + 1) +
+          "</span> " +
+          escapeHtml(f.label || "Data point");
+        meta.appendChild(lbl);
+        if (f.source) {
+          var src = document.createElement("span");
+          src.className = "pk-fn-source";
+          src.textContent = "Source: " + f.source;
+          meta.appendChild(src);
+        }
+        row.appendChild(meta);
+        var inp = document.createElement("input");
+        inp.type = "text";
+        inp.id = fid;
+        inp.setAttribute("data-save", "");
+        inp.className = "pk-fn-input";
+        if (f.placeholder) inp.placeholder = f.placeholder;
+        row.appendChild(inp);
+        if (f.hint) {
+          var hint = document.createElement("p");
+          hint.className = "pk-fn-hint";
+          hint.textContent = f.hint;
+          row.appendChild(hint);
+        }
+        fnWrap.appendChild(row);
+      });
+      section.appendChild(fnWrap);
+    }
+
+    /* --- Research-required math tasks --- */
+    if (Array.isArray(cfg.mathTasks) && cfg.mathTasks.length) {
+      var mtWrap = document.createElement("div");
+      mtWrap.className = "pk-math-tasks";
+      var mtTitle = document.createElement("h3");
+      mtTitle.textContent = "Apply Your Research — Required Math";
+      mtWrap.appendChild(mtTitle);
+      var mtIntro = document.createElement("p");
+      mtIntro.className = "pk-mt-intro";
+      mtIntro.textContent =
+        "These problems require numbers from your Field Notes above. You cannot skip the research — your answers must use real data you found.";
+      mtWrap.appendChild(mtIntro);
+      cfg.mathTasks.forEach(function (t, idx) {
+        if (!t) return;
+        var card = document.createElement("div");
+        card.className = "pk-mt-card";
+        var th = document.createElement("h4");
+        th.textContent = t.title || "Research Problem " + (idx + 1);
+        card.appendChild(th);
+        if (t.prompt) {
+          var tp = document.createElement("p");
+          tp.className = "pk-mt-prompt";
+          tp.innerHTML = t.prompt;
+          card.appendChild(tp);
+        }
+        var workId = t.workId || "mt-work-" + idx;
+        var ta = document.createElement("textarea");
+        ta.id = workId;
+        ta.setAttribute("data-save", "");
+        ta.rows = 3;
+        ta.placeholder =
+          "Show your work. Cite the Field Note # you used and write the math.";
+        card.appendChild(ta);
+        if (t.level2) {
+          var l2 = document.createElement("div");
+          l2.className = "pk-lvl2 pk-mt-l2";
+          var l2p = document.createElement("p");
+          l2p.innerHTML = "<b>Level 2 extension:</b> " + t.level2;
+          l2.appendChild(l2p);
+          var l2ta = document.createElement("textarea");
+          l2ta.id = workId + "-l2";
+          l2ta.setAttribute("data-save", "");
+          l2ta.rows = 2;
+          l2ta.placeholder = "Level 2 answer with justification…";
+          l2.appendChild(l2ta);
+          card.appendChild(l2);
+        }
+        mtWrap.appendChild(card);
+      });
+      section.appendChild(mtWrap);
+    }
+
+    /* --- Investigation checklist --- */
+    if (
+      Array.isArray(cfg.investigationChecklist) &&
+      cfg.investigationChecklist.length
+    ) {
+      var ckWrap = document.createElement("div");
+      ckWrap.className = "pk-inv-checklist";
+      var ckTitle = document.createElement("h3");
+      ckTitle.textContent = "Investigation Checklist";
+      ckWrap.appendChild(ckTitle);
+      var ul = document.createElement("ul");
+      ul.className = "checklist pk-inv-list";
+      cfg.investigationChecklist.forEach(function (item, idx) {
+        var li = document.createElement("li");
+        var cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.id = "inv-ck-" + idx;
+        cb.setAttribute("data-save", "");
+        var lab = document.createElement("label");
+        lab.setAttribute("for", "inv-ck-" + idx);
+        lab.textContent = item;
+        li.appendChild(cb);
+        li.appendChild(lab);
+        ul.appendChild(li);
+      });
+      ckWrap.appendChild(ul);
+      section.appendChild(ckWrap);
+    }
+
+    var listTitle = document.createElement("h3");
+    listTitle.className = "pk-research-links-title";
+    listTitle.textContent = "Curated Research Links";
+    section.appendChild(listTitle);
 
     var list = document.createElement("div");
     list.className = "pk-research-list";
@@ -165,20 +347,29 @@
     });
     if (phases.length < 2) return; // nothing to tab
 
-    // Insert the optional Research phase before a trailing rubric phase if one
-    // exists, otherwise append it after the work phases.
+    // Insert Research phase after Visual Math Notes (first .phase) so students
+    // gather data BEFORE Part 1 Self work. Fall back to pre-rubric if no vocab.
     var research = buildResearchPhase();
     if (research) {
-      var last = phases[phases.length - 1];
-      var isRubric = /rubric|how you are scored|scored/i.test(
-        last.textContent.slice(0, 120),
+      var vocabPhase = phases[0];
+      var hasVocab = /visual math notes|vocabulary|before you start/i.test(
+        vocabPhase ? vocabPhase.textContent.slice(0, 200) : "",
       );
-      if (isRubric) {
-        wrap.insertBefore(research, last);
-        phases.splice(phases.length - 1, 0, research);
+      if (hasVocab && vocabPhase.nextSibling) {
+        wrap.insertBefore(research, vocabPhase.nextSibling);
+        phases.splice(1, 0, research);
       } else {
-        wrap.appendChild(research);
-        phases.push(research);
+        var last = phases[phases.length - 1];
+        var isRubric = /rubric|how you are scored|scored/i.test(
+          last.textContent.slice(0, 120),
+        );
+        if (isRubric) {
+          wrap.insertBefore(research, last);
+          phases.splice(phases.length - 1, 0, research);
+        } else {
+          wrap.appendChild(research);
+          phases.push(research);
+        }
       }
     }
 
