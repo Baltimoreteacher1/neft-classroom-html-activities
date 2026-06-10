@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ESOL Vocab & Sentence Studio</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      .studio-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-top: 16px;
+      }
+      @media (max-width: 900px) {
+        .studio-container {
+          grid-template-columns: 1fr;
+        }
+      }
+      .panel-card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      }
+      .vocab-list {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .vocab-item {
+        background: #f8fafc;
+        border: 2px dashed #cbd5e1;
+        border-radius: 8px;
+        padding: 12px 16px;
+        cursor: grab;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        user-select: none;
+        transition: all 0.2s ease;
+        font-weight: 700;
+        color: var(--teal-dark);
+      }
+      .vocab-item:hover {
+        background: #f1f5f9;
+        border-color: var(--teal);
+        transform: translateY(-2px);
+      }
+      .vocab-item:active {
+        cursor: grabbing;
+      }
+      .target-slot {
+        background: #f1f5f9;
+        border: 2px dashed #94a3b8;
+        border-radius: 8px;
+        min-height: 54px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: #64748b;
+        transition: all 0.2s ease;
+        padding: 8px;
+      }
+      .target-slot.dragover {
+        background: #e2e8f0;
+        border-color: var(--teal);
+        color: var(--teal-dark);
+      }
+      .target-slot.correct {
+        background: #f0fdf4;
+        border: 2px solid #22c55e;
+        color: #15803d;
+      }
+      .scramble-box {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        min-height: 60px;
+        padding: 12px;
+        background: #f8fafc;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        margin-bottom: 16px;
+        align-items: center;
+      }
+      .word-tile {
+        padding: 8px 14px;
+        border-radius: 6px;
+        font-weight: 700;
+        cursor: pointer;
+        user-select: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transition: all 0.15s ease;
+        border: 1px solid rgba(0,0,0,0.1);
+      }
+      .word-tile:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      }
+      .word-tile.noun { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+      .word-tile.verb { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+      .word-tile.prep { background: #fff7ed; color: #c2410c; border-color: #ffedd5; }
+      .word-tile.adj { background: #faf5ff; color: #6b21a8; border-color: #f3e8ff; }
+      .word-tile.other { background: #f1f5f9; color: #475569; border-color: #e2e8f0; }
+
+      .bilingual-hint {
+        font-size: 0.9rem;
+        color: var(--muted);
+        line-height: 1.4;
+        margin-top: 4px;
+        border-left: 3px solid var(--gold);
+        padding-left: 8px;
+      }
+      .audio-btn {
+        background: #f1f5f9;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+      }
+      .audio-btn:hover {
+        background: #e2e8f0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="breadcrumb">
+        <a href="/">Dashboard</a> &raquo; <a href="/esol-reading-writing/">ESOL Hub</a> &raquo; Vocab &amp; Sentence Studio
+      </header>
+
+      <section class="hero compact-hero">
+        <p class="eyebrow">Language &amp; Mathematics</p>
+        <h1>Vocab &amp; Sentence Studio</h1>
+        <p class="hero-copy">
+          Speak, match, and organize your math vocabulary to build strong explanations in English and Spanish.
+        </p>
+      </section>
+
+      <div class="studio-container">
+        <!-- Panel 1: Vocab Definition Matcher -->
+        <div class="panel-card">
+          <h2 style="font-size: 1.3rem; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <span>📐 Term &amp; Diagram Matching</span>
+            <span style="font-size: 0.85rem; background: var(--teal-dark); color: white; padding: 4px 10px; border-radius: 999px;" id="vocab-score">Score: 0 / 4</span>
+          </h2>
+          <p class="card-copy" style="margin-bottom: 16px;">Drag each math term on the left and drop it into its matching definition slot on the right.</p>
+
+          <div style="display: grid; grid-template-columns: 1fr 1.3fr; gap: 16px;">
+            <div class="vocab-list" id="draggable-terms-container">
+              <!-- Draggables will be drawn here -->
+            </div>
+            <div class="vocab-list" id="definition-slots-container">
+              <!-- Target slots will be drawn here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 2: Sentence Scrambler -->
+        <div class="panel-card" style="display: flex; flex-direction: column;">
+          <h2 style="font-size: 1.3rem; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <span>✍️ Sentence Builder</span>
+            <button class="audio-btn" onclick="Controller.speakSentence()" title="Listen to Sentence">🔊</button>
+          </h2>
+          <p class="card-copy" style="margin-bottom: 16px;">Rearrange the color-coded grammar blocks below to construct a correct mathematical explanation.</p>
+
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 16px;">
+            <!-- Active sentence constructor slot -->
+            <div>
+              <span class="eyebrow">Your Sentence</span>
+              <div class="scramble-box" id="scramble-target" style="border-color: var(--teal); background: #f0fdf4;"></div>
+            </div>
+
+            <!-- Pool of scrambled blocks -->
+            <div>
+              <span class="eyebrow">Word Pool</span>
+              <div class="scramble-box" id="scramble-pool"></div>
+            </div>
+
+            <!-- Sentence starters/hints -->
+            <div id="sentence-hint-box" style="margin-top: auto; padding-top: 12px; border-top: 1px solid var(--line);">
+              <!-- Hints will be drawn here -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 16px;">
+        <button class="button-link" onclick="Controller.nextRound()" id="next-btn" style="display: none;">Next Round &rarr;</button>
+      </div>
+
+      <footer class="site-footer">
+        <span>Neft Teacher · Vocab &amp; Sentence Studio</span>
+        <span>Bilingual ESOL Support · <span data-current-year></span></span>
+      </footer>
+    </div>
+
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+    <!-- nsr-injected:end -->
+
+    <script>
+      // 1. CONFIG Block
+      const CONFIG = {
+        rounds: [
+          {
+            vocab: [
+              { term: "Perimeter", def: "The total distance around the edge of a flat shape.", es: "El perímetro es la distancia total alrededor del borde.", id: "p1" },
+              { term: "Area", def: "The amount of space inside a flat two-dimensional boundary.", es: "El área es la cantidad de espacio dentro de una figura plana.", id: "p2" },
+              { term: "Volume", def: "The total three-dimensional space enclosed by a container.", es: "El volumen es el espacio tridimensional total de un cuerpo.", id: "p3" },
+              { term: "Net", def: "A flat 2D pattern that can be folded to make a 3D figure.", es: "Una plantilla 2D que se dobla para formar una figura 3D.", id: "p4" }
+            ],
+            sentence: {
+              scrambled: [
+                { text: "The perimeter", pos: "noun" },
+                { text: "measures", pos: "verb" },
+                { text: "the distance", pos: "noun" },
+                { text: "around", pos: "prep" },
+                { text: "a flat shape", pos: "noun" },
+                { text: "in units", pos: "other" }
+              ],
+              correct: "The perimeter measures the distance around a flat shape in units",
+              hintEn: "Sentence starter: The perimeter measures...",
+              hintEs: "Oración inicial: El perímetro mide la distancia..."
+            }
+          },
+          {
+            vocab: [
+              { term: "Coordinate", def: "A set of numbers (x, y) that shows an exact location on a grid.", id: "c1" },
+              { term: "X-Axis", def: "The horizontal number line on a coordinate plane.", id: "c2" },
+              { term: "Y-Axis", def: "The vertical number line on a coordinate plane.", id: "c3" },
+              { term: "Origin", def: "The starting point (0,0) where the two axes cross.", id: "c4" }
+            ],
+            sentence: {
+              scrambled: [
+                { text: "The coordinate", pos: "noun" },
+                { text: "gives", pos: "verb" },
+                { text: "the exact position", pos: "noun" },
+                { text: "on", pos: "prep" },
+                { text: "the grid", pos: "noun" },
+                { text: "using numbers", pos: "other" }
+              ],
+              correct: "The coordinate gives the exact position on the grid using numbers",
+              hintEn: "Sentence starter: The coordinate gives...",
+              hintEs: "Oración inicial: La coordenada da la posición..."
+            }
+          }
+        ],
+        validateConfig() {
+          if (!Array.isArray(this.rounds) || this.rounds.length === 0) {
+            throw new Error("CONFIG: Invalid rounds collection.");
+          }
+          this.rounds.forEach((r, idx) => {
+            if (!r.vocab || r.vocab.length !== 4) {
+              throw new Error(`CONFIG: Round ${idx} must have exactly 4 vocabulary items.`);
+            }
+            if (!r.sentence || !r.sentence.correct || !Array.isArray(r.sentence.scrambled)) {
+              throw new Error(`CONFIG: Round ${idx} has invalid sentence structures.`);
+            }
+          });
+        }
+      };
+
+      // 2. Repository Layer (State Management)
+      const Repository = {
+        state: {
+          currentRound: 0,
+          vocabScores: {}, // id -> boolean
+          sentenceOrder: [], // list of word texts in targeted container
+          logHistory: []
+        },
+        log(msg) {
+          const timestamp = new Date().toISOString();
+          this.state.logHistory.push(`[${timestamp}] ${msg}`);
+          console.log(`[ESOL Vocab] ${msg}`);
+        },
+        getStateSummary() {
+          return {
+            round: this.state.currentRound,
+            vocabScore: Object.values(this.state.vocabScores).filter(Boolean).length,
+            sentenceComplete: this.checkSentenceCorrect()
+          };
+        },
+        checkSentenceCorrect() {
+          const round = CONFIG.rounds[this.state.currentRound];
+          const playerText = this.state.sentenceOrder.join(" ");
+          return playerText === round.sentence.correct;
+        }
+      };
+
+      // 3. Service Layer (Audio and Speech Synthesis)
+      const Service = {
+        audioCtx: null,
+        initAudio() {
+          if (!this.audioCtx) {
+            this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          }
+        },
+        playSynthSound(freq, type, duration) {
+          try {
+            this.initAudio();
+            const osc = this.audioCtx.createOscillator();
+            const gain = this.audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+            
+            gain.gain.setValueAtTime(0.15, this.audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + duration);
+
+            osc.connect(gain);
+            gain.connect(this.audioCtx.destination);
+
+            osc.start();
+            osc.stop(this.audioCtx.currentTime + duration);
+          } catch (e) {
+            console.warn("Web Audio API not supported or blocked:", e);
+          }
+        },
+        playSuccess() {
+          this.playSynthSound(523.25, "sine", 0.15); // C5
+          setTimeout(() => this.playSynthSound(659.25, "sine", 0.25), 150); // E5
+        },
+        playFailure() {
+          this.playSynthSound(220.00, "sawtooth", 0.3); // A3
+        },
+        speakText(text, lang = "en-US") {
+          if ("speechSynthesis" in window) {
+            window.speechSynthesis.cancel(); // Cancel running speaking queues
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            window.speechSynthesis.speak(utterance);
+          } else {
+            console.warn("Speech Synthesis not supported by this browser.");
+          }
+        }
+      };
+
+      // 4. Controller Layer (Event Handling & Diagnostics)
+      const Controller = {
+        draggedElementId: null,
+
+        init() {
+          CONFIG.validateConfig();
+          this.loadRound(Repository.state.currentRound);
+          Repository.log("Application initialized.");
+        },
+
+        loadRound(roundIdx) {
+          Repository.state.currentRound = roundIdx;
+          Repository.state.vocabScores = {};
+          Repository.state.sentenceOrder = [];
+          
+          const round = CONFIG.rounds[roundIdx];
+          
+          // Render Draggables (scrambled)
+          const scrambledVocab = [...round.vocab].sort(() => Math.random() - 0.5);
+          UI.drawVocabDraggables(scrambledVocab);
+
+          // Render Definition Targets
+          const scrambledDefs = [...round.vocab].sort(() => Math.random() - 0.5);
+          UI.drawDefinitionSlots(scrambledDefs);
+
+          // Render Sentence Builder
+          const scrambledWords = [...round.sentence.scrambled].sort(() => Math.random() - 0.5);
+          UI.drawSentencePool(scrambledWords);
+          UI.clearSentenceTarget();
+          UI.drawHints(round.sentence);
+
+          UI.updateScoreDisplay();
+          document.getElementById("next-btn").style.display = "none";
+        },
+
+        handleDragStart(e, termId) {
+          this.draggedElementId = termId;
+          e.dataTransfer.setData("text/plain", termId);
+          Repository.log(`Drag started: ${termId}`);
+        },
+
+        handleDrop(e, targetId) {
+          e.preventDefault();
+          const termId = this.draggedElementId || e.dataTransfer.getData("text/plain");
+          this.draggedElementId = null;
+
+          const round = CONFIG.rounds[Repository.state.currentRound];
+          const matchedItem = round.vocab.find(v => v.id === termId);
+          
+          if (matchedItem && matchedItem.id === targetId) {
+            Repository.state.vocabScores[termId] = true;
+            Service.playSynthSound(440, "sine", 0.1); // Quick high tone
+            UI.markSlotCorrect(targetId, matchedItem.term);
+            UI.updateScoreDisplay();
+            Repository.log(`Correct match: ${matchedItem.term}`);
+            this.checkRoundComplete();
+          } else {
+            Service.playSynthSound(180, "triangle", 0.25); // Low error tone
+            Repository.log(`Incorrect match tried for slot: ${targetId}`);
+          }
+        },
+
+        handleWordClick(wordText, pos, fromTarget = false) {
+          if (fromTarget) {
+            // Remove word from target, put back in pool
+            Repository.state.sentenceOrder = Repository.state.sentenceOrder.filter(w => w !== wordText);
+            UI.moveWordToPool(wordText, pos);
+          } else {
+            // Add word to target
+            if (!Repository.state.sentenceOrder.includes(wordText)) {
+              Repository.state.sentenceOrder.push(wordText);
+              UI.moveWordToTarget(wordText, pos);
+            }
+          }
+          this.checkSentenceMatch();
+        },
+
+        checkSentenceMatch() {
+          const isCorrect = Repository.checkSentenceCorrect();
+          if (isCorrect) {
+            Service.playSuccess();
+            UI.markSentenceCorrect();
+            Repository.log("Sentence built correctly.");
+            this.checkRoundComplete();
+          }
+        },
+
+        checkRoundComplete() {
+          const round = CONFIG.rounds[Repository.state.currentRound];
+          const allVocabMatched = round.vocab.every(v => Repository.state.vocabScores[v.id]);
+          const sentenceCorrect = Repository.checkSentenceCorrect();
+
+          if (allVocabMatched && sentenceCorrect) {
+            Repository.log("Round completed successfully.");
+            if (Repository.state.currentRound < CONFIG.rounds.length - 1) {
+              document.getElementById("next-btn").style.display = "inline-block";
+            } else {
+              Repository.log("All rounds completed!");
+              alert("Congratulations! You completed all language lessons!");
+            }
+          }
+        },
+
+        nextRound() {
+          if (Repository.state.currentRound < CONFIG.rounds.length - 1) {
+            this.loadRound(Repository.state.currentRound + 1);
+          }
+        },
+
+        speakSentence() {
+          const round = CONFIG.rounds[Repository.state.currentRound];
+          Service.speakText(round.sentence.correct, "en-US");
+        },
+
+        selfTest() {
+          Repository.log("Running selfTest...");
+          CONFIG.validateConfig();
+          
+          // Test round switching boundaries
+          if (Repository.state.currentRound < 0 || Repository.state.currentRound >= CONFIG.rounds.length) {
+            throw new Error("selfTest: currentRound state is out of bounds.");
+          }
+          Repository.log("selfTest: Config and state validations passed.");
+          return true;
+        }
+      };
+
+      // 5. UI Rendering Layer
+      const UI = {
+        drawVocabDraggables(items) {
+          const container = document.getElementById("draggable-terms-container");
+          container.innerHTML = "";
+          items.forEach(item => {
+            const div = document.createElement("div");
+            div.className = "vocab-item";
+            div.id = `drag-${item.id}`;
+            div.draggable = true;
+            div.innerHTML = `<span>${item.term}</span> <span>☰</span>`;
+            div.ondragstart = (e) => Controller.handleDragStart(e, item.id);
+            container.appendChild(div);
+          });
+        },
+
+        drawDefinitionSlots(items) {
+          const container = document.getElementById("definition-slots-container");
+          container.innerHTML = "";
+          items.forEach(item => {
+            const slot = document.createElement("div");
+            slot.className = "target-slot";
+            slot.id = `slot-${item.id}`;
+            slot.innerText = item.def;
+            
+            slot.ondragover = (e) => {
+              e.preventDefault();
+              slot.classList.add("dragover");
+            };
+            slot.ondragleave = () => slot.classList.remove("dragover");
+            slot.ondrop = (e) => {
+              slot.classList.remove("dragover");
+              Controller.handleDrop(e, item.id);
+            };
+            container.appendChild(slot);
+          });
+        },
+
+        markSlotCorrect(id, termText) {
+          const slot = document.getElementById(`slot-${id}`);
+          slot.className = "target-slot correct";
+          slot.innerHTML = `<strong>${termText}</strong>: ${slot.innerText}`;
+          
+          // Hide draggable term card
+          const drag = document.getElementById(`drag-${id}`);
+          if (drag) drag.style.display = "none";
+        },
+
+        drawSentencePool(words) {
+          const pool = document.getElementById("scramble-pool");
+          pool.innerHTML = "";
+          words.forEach(w => {
+            const tile = document.createElement("div");
+            tile.className = `word-tile ${w.pos}`;
+            tile.id = `pool-word-${w.text.replace(/\s+/g, "-")}`;
+            tile.innerText = w.text;
+            tile.onclick = () => Controller.handleWordClick(w.text, w.pos, false);
+            pool.appendChild(tile);
+          });
+        },
+
+        clearSentenceTarget() {
+          document.getElementById("scramble-target").innerHTML = "";
+        },
+
+        moveWordToTarget(wordText, pos) {
+          const target = document.getElementById("scramble-target");
+          
+          const tile = document.createElement("div");
+          tile.className = `word-tile ${pos}`;
+          tile.id = `target-word-${wordText.replace(/\s+/g, "-")}`;
+          tile.innerText = wordText;
+          tile.onclick = () => Controller.handleWordClick(wordText, pos, true);
+          target.appendChild(tile);
+
+          // Hide in pool
+          const poolItem = document.getElementById(`pool-word-${wordText.replace(/\s+/g, "-")}`);
+          if (poolItem) poolItem.style.display = "none";
+        },
+
+        moveWordToPool(wordText, pos) {
+          // Remove from target
+          const targetItem = document.getElementById(`target-word-${wordText.replace(/\s+/g, "-")}`);
+          if (targetItem) targetItem.remove();
+
+          // Show in pool
+          const poolItem = document.getElementById(`pool-word-${wordText.replace(/\s+/g, "-")}`);
+          if (poolItem) poolItem.style.display = "inline-block";
+        },
+
+        markSentenceCorrect() {
+          const target = document.getElementById("scramble-target");
+          target.style.background = "#dcfce7";
+          target.style.borderColor = "#22c55e";
+        },
+
+        drawHints(sentence) {
+          const container = document.getElementById("sentence-hint-box");
+          container.innerHTML = `
+            <p class="bilingual-hint">🇬🇧 ${sentence.hintEn}</p>
+            <p class="bilingual-hint" style="border-left-color: var(--teal); margin-top: 8px;">🇪🇸 ${sentence.hintEs}</p>
+          `;
+        },
+
+        updateScoreDisplay() {
+          const round = CONFIG.rounds[Repository.state.currentRound];
+          const matched = Object.values(Repository.state.vocabScores).filter(Boolean).length;
+          document.getElementById("vocab-score").innerText = `Score: ${matched} / ${round.vocab.length}`;
+        }
+      };
+
+      // Start the application
+      window.addEventListener("load", () => {
+        Controller.init();
+        Controller.selfTest();
+      });
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
+</html>

@@ -502,6 +502,51 @@
         </div>
       </section>
 
+      <!-- 6. Administrative Dashboards (Asset Analyzer & Student Progress) -->
+      <section id="admin-dashboards" style="display: none; margin-top: 32px; border-top: 2px solid var(--line); padding-top: 24px;">
+        <div class="section-heading">
+          <p class="eyebrow">Admin & Analytics</p>
+          <h2>Platform Analytics</h2>
+          <p>Analyze server file composition and monitor real-time student activity logs.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 16px;">
+          <!-- Card: Student Progress Monitor -->
+          <div class="note-panel" style="background: white; border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+              <h3 style="font-size: 1.1rem; margin: 0; color: var(--navy); display: flex; align-items: center; gap: 6px;">👥 Student Save/Resume Monitor</h3>
+              <input type="text" id="progress-search" placeholder="Search by name, code, or class..." oninput="filterProgressTable()" style="padding: 6px 12px; font-size: 0.85rem; border: 1px solid var(--line); border-radius: 6px; width: 220px; outline: none; background: var(--surface);">
+            </div>
+            <div style="overflow-x: auto;">
+              <table id="progress-table" style="width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left;">
+                <thead>
+                  <tr style="border-bottom: 2px solid var(--line); color: var(--muted); font-weight: 700;">
+                    <th style="padding: 8px 12px;">Class Section</th>
+                    <th style="padding: 8px 12px;">Student</th>
+                    <th style="padding: 8px 12px;">Resume Code</th>
+                    <th style="padding: 8px 12px;">Progress</th>
+                    <th style="padding: 8px 12px;">Last Saved</th>
+                  </tr>
+                </thead>
+                <tbody id="progress-table-body">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Card: Build & Asset Size Analyzer -->
+          <div class="note-panel" style="background: white; border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+            <h3 style="font-size: 1.1rem; margin: 0 0 16px; color: var(--navy); display: flex; align-items: center; gap: 6px;">📦 Workspace Asset Size Analyzer</h3>
+            <div style="overflow-x: auto;">
+              <div id="bundle-analyzer-chart" style="display: flex; flex-direction: column; gap: 12px;">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <footer class="site-footer">
         <span>Neft Teacher · Math Command Center</span>
         <span>Grade 6 Teacher Workspace · <span data-current-year></span></span>
@@ -513,6 +558,7 @@
     <script>
       const SERVER_URL = "http://localhost:3030";
       let eventSource = null;
+      let studentProgressCache = [];
 
       async function checkServerConnection() {
         try {
@@ -547,8 +593,9 @@
         setActionCardActive("card-package", "Package Downloads", () => runScript("generate-downloads"));
         setActionCardActive("card-qa", "Run QA Loop", () => runScript("qa:loop"));
 
-        // Show dropdown selector panel
+        // Show dropdown selector panel and analytics section
         document.getElementById("tool-selector-section").style.display = "block";
+        document.getElementById("admin-dashboards").style.display = "block";
 
         // Populate script select
         const scriptSelect = document.getElementById("script-select");
@@ -557,9 +604,11 @@
           scriptSelect.innerHTML += `<option value="${script}">${script}</option>`;
         });
 
-        // Load logs lists and lessons lists
+        // Load logs lists, lessons lists, progress, and bundle sizes
         fetchRecentLogs();
         fetchLessons();
+        fetchStudentProgress();
+        fetchBundleSizes();
       }
 
       function onServerDisconnected() {
@@ -582,6 +631,95 @@
         setActionCardDisabled("card-qa");
 
         document.getElementById("tool-selector-section").style.display = "none";
+        document.getElementById("admin-dashboards").style.display = "none";
+      }
+
+      async function fetchStudentProgress() {
+        try {
+          const res = await fetch(`${SERVER_URL}/api/student-progress`);
+          if (res.ok) {
+            const data = await res.json();
+            studentProgressCache = data.students || [];
+            renderProgressTable(studentProgressCache);
+          }
+        } catch (e) {
+          console.error("Failed to load student progress:", e);
+        }
+      }
+
+      function renderProgressTable(students) {
+        const body = document.getElementById("progress-table-body");
+        body.innerHTML = "";
+        if (students.length === 0) {
+          body.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 12px; color: var(--muted);">No students found matching your criteria.</td></tr>`;
+          return;
+        }
+        students.forEach(student => {
+          const lastSavedStr = new Date(student.lastSaved).toLocaleTimeString();
+          body.innerHTML += `
+            <tr style="border-bottom: 1px solid var(--line);">
+              <td style="padding: 10px 12px;"><code>${student.section}</code></td>
+              <td style="padding: 10px 12px; font-weight: 600; color: var(--navy);">${student.name}</td>
+              <td style="padding: 10px 12px;"><span style="background: #eff6ff; color: #1d4ed8; padding: 3px 8px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.82rem; font-weight: 700; border: 1px solid rgba(29, 78, 216, 0.15);">${student.code}</span></td>
+              <td style="padding: 10px 12px; min-width: 140px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <div style="flex: 1; height: 6px; background: #e4e4e7; border-radius: 3px; overflow: hidden;">
+                    <div style="width: ${student.progress}%; height: 100%; background: ${student.progress === 100 ? '#22c55e' : '#3b82f6'};"></div>
+                  </div>
+                  <span style="font-weight: 600; font-size: 0.8rem; width: 35px; text-align: right;">${student.progress}%</span>
+                </div>
+              </td>
+              <td style="padding: 10px 12px; color: var(--muted);">${lastSavedStr}</td>
+            </tr>
+          `;
+        });
+      }
+
+      function filterProgressTable() {
+        const query = document.getElementById("progress-search").value.toLowerCase();
+        const filtered = studentProgressCache.filter(student => 
+          student.name.toLowerCase().includes(query) ||
+          student.code.toLowerCase().includes(query) ||
+          student.section.toLowerCase().includes(query)
+        );
+        renderProgressTable(filtered);
+      }
+
+      async function fetchBundleSizes() {
+        try {
+          const res = await fetch(`${SERVER_URL}/api/bundle-size`);
+          if (res.ok) {
+            const data = await res.json();
+            const list = data.directories || [];
+            const container = document.getElementById("bundle-analyzer-chart");
+            container.innerHTML = "";
+            
+            if (list.length === 0) {
+              container.innerHTML = `<p style="font-size:0.85rem; color:var(--muted);">No asset directory statistics found.</p>`;
+              return;
+            }
+
+            const maxSize = Math.max(...list.map(d => d.size));
+
+            list.forEach(dir => {
+              const sizeMB = (dir.size / (1024 * 1024)).toFixed(2);
+              const percent = maxSize > 0 ? (dir.size / maxSize * 100).toFixed(1) : 0;
+              container.innerHTML += `
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom: 4px;">
+                    <span>📂 <strong>${dir.name}</strong> <small style="color:var(--muted);">(${dir.count} files)</small></span>
+                    <span style="font-weight: 600; color: var(--navy);">${sizeMB} MB</span>
+                  </div>
+                  <div style="height: 14px; background: #e4e4e7; border-radius: 4px; overflow: hidden; border: 1px solid var(--line);">
+                    <div style="width: ${percent}%; height: 100%; background: linear-gradient(90deg, var(--teal), #0fa958); border-radius: 4px;"></div>
+                  </div>
+                </div>
+              `;
+            });
+          }
+        } catch (e) {
+          console.error("Failed to load bundle sizes:", e);
+        }
       }
 
       function setActionCardActive(id, btnText, clickHandler) {

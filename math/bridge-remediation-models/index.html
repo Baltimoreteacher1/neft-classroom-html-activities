@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bridge to Grade 6 Remediation Models</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      .bridge-container {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        gap: 24px;
+        margin-top: 16px;
+      }
+      @media (max-width: 900px) {
+        .bridge-container {
+          grid-template-columns: 1fr;
+        }
+      }
+      .nav-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .nav-btn {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+        text-align: left;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+      .nav-btn:hover {
+        border-color: var(--teal);
+        color: var(--teal-dark);
+        transform: translateX(3px);
+      }
+      .nav-btn.active {
+        background: #fdf3e7;
+        border-color: var(--gold);
+        color: var(--gold);
+        box-shadow: 0 4px 12px rgba(183, 121, 31, 0.1);
+      }
+      .model-viewport {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        min-height: 480px;
+        display: flex;
+        flex-direction: column;
+      }
+      .canvas-element {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        display: block;
+        margin: 16px auto 0;
+      }
+      .controls-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-top: 16px;
+        align-items: center;
+        background: #f8fafc;
+        padding: 16px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+      }
+      .control-box {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 1;
+        min-width: 140px;
+      }
+      .control-label {
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: var(--muted);
+        text-transform: uppercase;
+      }
+      .input-element {
+        width: 100%;
+        accent-color: var(--gold);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="breadcrumb">
+        <a href="/">Dashboard</a> &raquo; <a href="/bridge-to-grade-6/">Bridge Hub</a> &raquo; Remediation Models
+      </header>
+
+      <section class="hero compact-hero" style="border-top-color: var(--gold);">
+        <p class="eyebrow" style="color: var(--gold);">Foundational Skill Building</p>
+        <h1>Remediation Models</h1>
+        <p class="hero-copy">
+          Interactive visual models to master whole number division, fractions, decimal math, factors, and coordinate grid geometry.
+        </p>
+      </section>
+
+      <div class="bridge-container">
+        <!-- Sidebar Navigation Models -->
+        <div class="nav-menu">
+          <button class="nav-btn active" onclick="Controller.switchModel('r1')" id="btn-r1">
+            <span>➗</span>
+            <div>
+              <div style="font-size: 0.95rem;">Unit R1: Division</div>
+              <small style="font-weight: 400; color: #64748b;">Partial Quotients Grid</small>
+            </div>
+          </button>
+          <button class="nav-btn" onclick="Controller.switchModel('r2')" id="btn-r2">
+            <span>🍰</span>
+            <div>
+              <div style="font-size: 0.95rem;">Unit R2: Fractions</div>
+              <small style="font-weight: 400; color: #64748b;">Equivalence Circle Matcher</small>
+            </div>
+          </button>
+          <button class="nav-btn" onclick="Controller.switchModel('r3')" id="btn-r3">
+            <span>💵</span>
+            <div>
+              <div style="font-size: 0.95rem;">Unit R3: Decimals</div>
+              <small style="font-weight: 400; color: #64748b;">Decimal Multiplication Grid</small>
+            </div>
+          </button>
+          <button class="nav-btn" onclick="Controller.switchModel('r4')" id="btn-r4">
+            <span>🌳</span>
+            <div>
+              <div style="font-size: 0.95rem;">Unit R4: Factors</div>
+              <small style="font-weight: 400; color: #64748b;">Factor Tree Builder</small>
+            </div>
+          </button>
+          <button class="nav-btn" onclick="Controller.switchModel('r5')" id="btn-r5">
+            <span>📐</span>
+            <div>
+              <div style="font-size: 0.95rem;">Unit R5: Pre-Algebra</div>
+              <small style="font-weight: 400; color: #64748b;">Coordinate Perimeter Builder</small>
+            </div>
+          </button>
+        </div>
+
+        <!-- Interactive Screen Viewport -->
+        <div class="model-viewport">
+          <h2 style="font-size: 1.25rem; margin-bottom: 4px; color: var(--gold);" id="model-title">Model</h2>
+          <p class="card-copy" id="model-desc" style="font-size: 0.9rem;">Description of the remediation model</p>
+
+          <!-- SVG Visual Math Engine -->
+          <svg id="model-canvas" class="canvas-element" width="560" height="340" viewBox="0 0 560 340" style="background:white;"></svg>
+
+          <!-- Interactive controls -->
+          <div class="controls-row" id="model-controls">
+            <!-- Populated dynamically per model -->
+          </div>
+        </div>
+      </div>
+
+      <footer class="site-footer">
+        <span>Neft Teacher · Remediation Models</span>
+        <span>Remediation Tracks · <span data-current-year></span></span>
+      </footer>
+    </div>
+
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+    <!-- nsr-injected:end -->
+
+    <script>
+      // 1. CONFIG Block
+      const CONFIG = {
+        r1: { title: "R1 Whole Operations: Area Division Model", desc: "Use the grid model to visualize quotients. Adjust Divisor and Dividend to see the area grids and remainder." },
+        r2: { title: "R2 Fraction Foundations: Circle Equivalence", desc: "Compare equivalent fraction slices. Click fraction buttons to watch the circle slices overlap." },
+        r3: { title: "R3 Decimals & Money: Multiplication Grid", desc: "Visualize decimal products. Adjust Factor A and Factor B to overlap shading on the 10x10 grid." },
+        r4: { title: "R4 Factors & Multiples: Prime Tree", desc: "Select a number to build its prime factorization tree. Factor down branches into prime multipliers." },
+        r5: { title: "R5 Pre-Algebra & Geometry: Boundary Perimeter", desc: "Draw shape coordinates to measure boundaries. Adjust Width and Height to see perimeter and area." },
+        validateConfig() {
+          if (!this.r1 || !this.r2 || !this.r3 || !this.r4 || !this.r5) {
+            throw new Error("CONFIG: Remediation units are missing configured descriptions.");
+          }
+        }
+      };
+
+      // 2. Repository Layer (State Management)
+      const Repository = {
+        state: {
+          activeModel: "r1",
+          r1Input: { dividend: 36, divisor: 6 },
+          r2Input: 2, // represents 2/4
+          r3Input: { factorA: 0.6, factorB: 0.4 },
+          r4Input: 24,
+          r5Input: { width: 5, height: 4 },
+          logHistory: []
+        },
+        log(msg) {
+          const timestamp = new Date().toISOString();
+          this.state.logHistory.push(`[${timestamp}] ${msg}`);
+          console.log(`[Remediation Model] ${msg}`);
+        }
+      };
+
+      // 3. Service Layer (Audio Synthesizer & Logic)
+      const Service = {
+        audioCtx: null,
+        initAudio() {
+          if (!this.audioCtx) {
+            this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          }
+        },
+        playTone(freq, duration) {
+          try {
+            this.initAudio();
+            const osc = this.audioCtx.createOscillator();
+            const gain = this.audioCtx.createGain();
+            osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, this.audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(this.audioCtx.destination);
+            osc.start();
+            osc.stop(this.audioCtx.currentTime + duration);
+          } catch (e) {}
+        }
+      };
+
+      // 4. Controller Layer (Events & Models Control)
+      const Controller = {
+        init() {
+          CONFIG.validateConfig();
+          this.switchModel(Repository.state.activeModel);
+          Repository.log("Remediation controller initialized.");
+        },
+
+        switchModel(modelKey) {
+          Repository.state.activeModel = modelKey;
+          Repository.log(`Switching model view to: ${modelKey}`);
+
+          document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
+          const activeBtn = document.getElementById(`btn-${modelKey}`);
+          if (activeBtn) activeBtn.classList.add("active");
+
+          const data = CONFIG[modelKey];
+          document.getElementById("model-title").innerText = data.title;
+          document.getElementById("model-desc").innerText = data.desc;
+
+          UI.renderControls(modelKey);
+          this.drawModelCanvas();
+        },
+
+        updateInput(key, val) {
+          const m = Repository.state.activeModel;
+          if (m === "r1" || m === "r3" || m === "r5") {
+            Repository.state[`${m}Input`][key] = parseFloat(val);
+          } else {
+            Repository.state[`${m}Input`] = parseInt(val);
+          }
+          Service.playTone(330, 0.08); // Feedback click tone
+          this.drawModelCanvas();
+        },
+
+        drawModelCanvas() {
+          const m = Repository.state.activeModel;
+          if (m === "r1") {
+            UI.drawDivision(Repository.state.r1Input);
+          } else if (m === "r2") {
+            UI.drawFractions(Repository.state.r2Input);
+          } else if (m === "r3") {
+            UI.drawDecimals(Repository.state.r3Input);
+          } else if (m === "r4") {
+            UI.drawFactors(Repository.state.r4Input);
+          } else if (m === "r5") {
+            UI.drawGeometry(Repository.state.r5Input);
+          }
+        },
+
+        selfTest() {
+          Repository.log("Running selfTest checks...");
+          CONFIG.validateConfig();
+          if (typeof Repository.state.r2Input !== "number" || !Repository.state.r1Input) {
+            throw new Error("selfTest: State structures invalid.");
+          }
+          Repository.log("selfTest: All sanity assertions passed.");
+          return true;
+        }
+      };
+
+      // 5. UI Layer (SVG Visual Geometry)
+      const UI = {
+        renderControls(modelKey) {
+          const row = document.getElementById("model-controls");
+          row.innerHTML = "";
+
+          if (modelKey === "r1") {
+            row.innerHTML = `
+              <div class="control-box">
+                <span class="control-label">Dividend (Total Items)</span>
+                <input type="range" class="input-element" min="10" max="60" step="1" value="${Repository.state.r1Input.dividend}" oninput="Controller.updateInput('dividend', this.value)">
+              </div>
+              <div class="control-box">
+                <span class="control-label">Divisor (Group Size)</span>
+                <input type="range" class="input-element" min="2" max="10" step="1" value="${Repository.state.r1Input.divisor}" oninput="Controller.updateInput('divisor', this.value)">
+              </div>
+            `;
+          } else if (modelKey === "r2") {
+            row.innerHTML = `
+              <div class="control-box">
+                <span class="control-label">Fractions slice selector</span>
+                <div style="display: flex; gap: 10px;">
+                  <button class="button-link" onclick="Controller.updateInput(null, 1)" style="flex:1; margin:0;">1 / 2</button>
+                  <button class="button-link" onclick="Controller.updateInput(null, 2)" style="flex:1; margin:0;">2 / 4</button>
+                  <button class="button-link" onclick="Controller.updateInput(null, 3)" style="flex:1; margin:0;">4 / 8</button>
+                </div>
+              </div>
+            `;
+          } else if (modelKey === "r3") {
+            row.innerHTML = `
+              <div class="control-box">
+                <span class="control-label">Factor A (Width)</span>
+                <input type="range" class="input-element" min="0.1" max="1.0" step="0.1" value="${Repository.state.r3Input.factorA}" oninput="Controller.updateInput('factorA', this.value)">
+              </div>
+              <div class="control-box">
+                <span class="control-label">Factor B (Height)</span>
+                <input type="range" class="input-element" min="0.1" max="1.0" step="0.1" value="${Repository.state.r3Input.factorB}" oninput="Controller.updateInput('factorB', this.value)">
+              </div>
+            `;
+          } else if (modelKey === "r4") {
+            row.innerHTML = `
+              <div class="control-box">
+                <span class="control-label">Tree Number</span>
+                <div style="display: flex; gap: 10px;">
+                  <button class="button-link" onclick="Controller.updateInput(null, 12)" style="flex:1; margin:0;">12</button>
+                  <button class="button-link" onclick="Controller.updateInput(null, 24)" style="flex:1; margin:0;">24</button>
+                  <button class="button-link" onclick="Controller.updateInput(null, 36)" style="flex:1; margin:0;">36</button>
+                </div>
+              </div>
+            `;
+          } else if (modelKey === "r5") {
+            row.innerHTML = `
+              <div class="control-box">
+                <span class="control-label">Boundary Width</span>
+                <input type="range" class="input-element" min="1" max="10" step="1" value="${Repository.state.r5Input.width}" oninput="Controller.updateInput('width', this.value)">
+              </div>
+              <div class="control-box">
+                <span class="control-label">Boundary Height</span>
+                <input type="range" class="input-element" min="1" max="10" step="1" value="${Repository.state.r5Input.height}" oninput="Controller.updateInput('height', this.value)">
+              </div>
+            `;
+          }
+        },
+
+        drawDivision(val) {
+          const svg = document.getElementById("model-canvas");
+          const quotient = Math.floor(val.dividend / val.divisor);
+          const remainder = val.dividend % val.divisor;
+
+          svg.innerHTML = `
+            <!-- Drawing Dividend Grid -->
+            <rect x="80" y="80" width="${quotient * 30}" height="${val.divisor * 20}" fill="rgba(183, 121, 31, 0.15)" stroke="var(--gold)" stroke-width="2"/>
+            <text x="${80 + (quotient * 15)}" y="50" font-size="14" fill="var(--gold)" font-weight="700" text-anchor="middle">Quotient: ${quotient}</text>
+            <text x="50" y="${80 + (val.divisor * 10)}" font-size="14" fill="var(--muted)" font-weight="700">Divisor: ${val.divisor}</text>
+
+            <!-- Remainder drawing -->
+            ${remainder > 0 ? `
+              <rect x="${80 + quotient * 30 + 10}" y="80" width="30" height="${remainder * 20}" fill="rgba(194, 65, 12, 0.15)" stroke="var(--coral)" stroke-dasharray="3"/>
+              <text x="${80 + quotient * 30 + 25}" y="70" font-size="11" fill="var(--coral)" font-weight="700" text-anchor="middle">Rem: ${remainder}</text>
+            ` : ''}
+          `;
+        },
+
+        drawFractions(val) {
+          const svg = document.getElementById("model-canvas");
+          let paths = "";
+          const totalSlices = val === 1 ? 2 : val === 2 ? 4 : 8;
+          const activeSlices = val === 1 ? 1 : val === 2 ? 2 : 4;
+
+          for (let i = 0; i < totalSlices; i++) {
+            const startAngle = (i * 360) / totalSlices;
+            const endAngle = ((i + 1) * 360) / totalSlices;
+            
+            const radStart = (startAngle - 90) * Math.PI / 180;
+            const radEnd = (endAngle - 90) * Math.PI / 180;
+
+            const x1 = 280 + 100 * Math.cos(radStart);
+            const y1 = 170 + 100 * Math.sin(radStart);
+            const x2 = 280 + 100 * Math.cos(radEnd);
+            const y2 = 170 + 100 * Math.sin(radEnd);
+
+            const isFilled = i < activeSlices;
+            const fill = isFilled ? "rgba(183, 121, 31, 0.25)" : "none";
+            const stroke = "var(--gold)";
+
+            paths += `<path d="M 280 170 L ${x1} ${y1} A 100 100 0 0 1 ${x2} ${y2} Z" fill="${fill}" stroke="${stroke}" stroke-width="2"/>`;
+          }
+
+          svg.innerHTML = `
+            ${paths}
+            <text x="280" y="50" font-size="16" fill="var(--gold)" font-weight="700" text-anchor="middle">Equivalent Fraction: ${activeSlices} / ${totalSlices} = 1/2</text>
+          `;
+        },
+
+        drawDecimals(val) {
+          const svg = document.getElementById("model-canvas");
+          const width = val.factorA * 200;
+          const height = val.factorB * 200;
+          const product = (val.factorA * val.factorB).toFixed(2);
+
+          svg.innerHTML = `
+            <!-- 10x10 Grid base -->
+            <rect x="180" y="70" width="200" height="200" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            
+            <!-- Factor A (Vertical overlay) -->
+            <rect x="180" y="70" width="${width}" height="200" fill="rgba(37, 99, 235, 0.1)"/>
+            <!-- Factor B (Horizontal overlay) -->
+            <rect x="180" y="70" width="200" height="${height}" fill="rgba(183, 121, 31, 0.1)"/>
+
+            <!-- Intersection product -->
+            <rect x="180" y="70" width="${width}" height="${height}" fill="rgba(183, 121, 31, 0.3)" stroke="var(--gold)" stroke-width="2"/>
+
+            <text x="280" y="45" font-size="14" fill="var(--gold)" font-weight="700" text-anchor="middle">${val.factorA} x ${val.factorB} = ${product}</text>
+          `;
+        },
+
+        drawFactors(val) {
+          const svg = document.getElementById("model-canvas");
+          
+          let tree = "";
+          if (val === 12) {
+            tree = `
+              <text x="280" y="80" font-size="16" fill="var(--gold)" font-weight="700" text-anchor="middle">12</text>
+              <line x1="280" y1="90" x2="220" y2="150" stroke="#cbd5e1" stroke-width="2"/>
+              <line x1="280" y1="90" x2="340" y2="150" stroke="#cbd5e1" stroke-width="2"/>
+              <text x="220" y="170" font-size="14" fill="var(--coral)" font-weight="700" text-anchor="middle">2 (Prime)</text>
+              <text x="340" y="170" font-size="14" fill="var(--gold)" font-weight="700" text-anchor="middle">6</text>
+              
+              <line x1="340" y1="180" x2="310" y2="240" stroke="#cbd5e1" stroke-width="2"/>
+              <line x1="340" y1="180" x2="370" y2="240" stroke="#cbd5e1" stroke-width="2"/>
+              <text x="310" y="260" font-size="14" fill="var(--coral)" font-weight="700" text-anchor="middle">2</text>
+              <text x="370" y="260" font-size="14" fill="var(--coral)" font-weight="700" text-anchor="middle">3</text>
+            `;
+          } else if (val === 24) {
+            tree = `
+              <text x="280" y="80" font-size="16" fill="var(--gold)" font-weight="700" text-anchor="middle">24</text>
+              <line x1="280" y1="90" x2="200" y2="150" stroke="#cbd5e1" stroke-width="2"/>
+              <line x1="280" y1="90" x2="360" y2="150" stroke="#cbd5e1" stroke-width="2"/>
+              <text x="200" y="170" font-size="14" fill="var(--coral)" font-weight="700" text-anchor="middle">2 (Prime)</text>
+              <text x="360" y="170" font-size="14" fill="var(--gold)" font-weight="700" text-anchor="middle">12</text>
+            `;
+          } else {
+            tree = `
+              <text x="280" y="80" font-size="16" fill="var(--gold)" font-weight="700" text-anchor="middle">36</text>
+              <line x1="280" y1="90" x2="200" y2="150" stroke="#cbd5e1" stroke-width="2"/>
+              <line x1="280" y1="90" x2="360" y2="150" stroke="#cbd5e1" stroke-width="2"/>
+              <text x="200" y="170" font-size="14" fill="var(--coral)" font-weight="700" text-anchor="middle">2 (Prime)</text>
+              <text x="360" y="170" font-size="14" fill="var(--gold)" font-weight="700" text-anchor="middle">18</text>
+            `;
+          }
+
+          svg.innerHTML = tree;
+        },
+
+        drawGeometry(val) {
+          const svg = document.getElementById("model-canvas");
+          const width = val.width * 25;
+          const height = val.height * 20;
+          const perimeter = 2 * (val.width + val.height);
+          const area = val.width * val.height;
+
+          svg.innerHTML = `
+            <!-- Coordinate boundary layout -->
+            <rect x="${280 - width/2}" y="${170 - height/2}" width="${width}" height="${height}" fill="none" stroke="var(--gold)" stroke-width="4" rx="4"/>
+            <text x="280" y="${170 - height/2 - 16}" font-size="13" fill="var(--gold)" font-weight="700" text-anchor="middle">Width: ${val.width}</text>
+            <text x="${280 - width/2 - 36}" y="174" font-size="13" fill="var(--gold)" font-weight="700">Height: ${val.height}</text>
+
+            <text x="280" y="290" font-size="14" fill="var(--teal-dark)" font-weight="700" text-anchor="middle">Perimeter = ${perimeter} units  |  Area = ${area} sq units</text>
+          `;
+        }
+      };
+
+      // Start application
+      window.addEventListener("load", () => {
+        Controller.init();
+        Controller.selfTest();
+      });
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
+</html>

@@ -203,6 +203,71 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Endpoint: GET /api/bundle-size
+  if (pathname === "/api/bundle-size" && req.method === "GET") {
+    try {
+      const getDirInfo = (dirPath) => {
+        let size = 0;
+        let count = 0;
+        const walk = (d) => {
+          if (!fs.existsSync(d)) return;
+          const files = fs.readdirSync(d);
+          for (const f of files) {
+            if (f === "node_modules" || f === ".git" || f === ".wrangler" || f === ".claude") continue;
+            const full = path.join(d, f);
+            const stat = fs.statSync(full);
+            if (stat.isDirectory()) {
+              walk(full);
+            } else {
+              size += stat.size;
+              count++;
+            }
+          }
+        };
+        walk(dirPath);
+        return { size, count };
+      };
+
+      const topDirs = fs.readdirSync(rootDir).filter(f => {
+        const full = path.join(rootDir, f);
+        return fs.statSync(full).isDirectory() && !f.startsWith(".") && f !== "node_modules";
+      });
+
+      const report = topDirs.map(d => {
+        const info = getDirInfo(path.join(rootDir, d));
+        return { name: d, ...info };
+      }).sort((a, b) => b.size - a.size);
+
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ directories: report }));
+    } catch (e) {
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  // Endpoint: GET /api/student-progress
+  if (pathname === "/api/student-progress" && req.method === "GET") {
+    try {
+      const mockData = [
+        { code: "MATH-7KQ2", name: "J.D.", section: "Period 1 Math", progress: 85, lastSaved: Date.now() - 50000 },
+        { code: "DATA-M9P4", name: "M.A.", section: "Period 1 Math", progress: 60, lastSaved: Date.now() - 3600000 },
+        { code: "GEOM-H3B5", name: "K.L.", section: "Period 3 ESOL", progress: 95, lastSaved: Date.now() - 86400000 },
+        { code: "RATIO-A1X9", name: "S.V.", section: "Period 3 ESOL", progress: 40, lastSaved: Date.now() - 600000 },
+        { code: "ALGE-P6K3", name: "R.T.", section: "Period 1 Math", progress: 100, lastSaved: Date.now() - 10000 },
+        { code: "MCAP-D4F2", name: "A.N.", section: "Period 5 Math", progress: 20, lastSaved: Date.now() - 1800000 }
+      ];
+      
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ students: mockData }));
+    } catch (e) {
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
   // Fallback 404
   res.writeHead(404, { "Content-Type": "application/json" });
   res.end(JSON.stringify({ error: "Endpoint not found." }));
