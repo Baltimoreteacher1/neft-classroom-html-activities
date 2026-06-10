@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Algebra Balance Scale: Solve equations visually in a 3D physics simulation. Balance variable blocks and unit weights by performing mathematical operations on both sides.">
+    <title>Algebra Balance Scale | Solve Equations Visually</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --space-bg: #090812;
+            --space-card: rgba(18, 16, 35, 0.75);
+            --border-glow: rgba(255, 255, 255, 0.08);
+            --border-active: rgba(16, 185, 129, 0.4);
+            
+            --primary: #10b981; /* Neon Green */
+            --primary-glow: rgba(16, 185, 129, 0.35);
+            --secondary: #3b82f6; /* Blue */
+            --secondary-glow: rgba(59, 130, 246, 0.35);
+            --accent: #f59e0b; /* Amber */
+            --accent-glow: rgba(245, 158, 11, 0.35);
+            --pink: #ec4899;
+            --pink-glow: rgba(236, 72, 153, 0.35);
+            --danger: #ef4444;
+            --white: #ffffff;
+            
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --text-dark: #0f172a;
+            
+            --font-display: 'Outfit', sans-serif;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 10px;
+            
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: 0 16px 45px rgba(0, 0, 0, 0.6), 0 0 30px rgba(16, 185, 129, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--space-bg);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.03) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        header {
+            background: rgba(18, 16, 35, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-glow);
+            padding: 16px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            filter: drop-shadow(0 0 8px var(--primary-glow));
+            animation: pulse-slow 4s infinite ease-in-out;
+        }
+
+        .logo-title {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--white) 30%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-glow);
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(4px);
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #064e3b 100%);
+            border: none;
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        }
+
+        .btn-secondary {
+            border-color: rgba(59, 130, 246, 0.3);
+            color: #60a5fa;
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--secondary);
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        /* Layout Grid */
+        .app-grid {
+            display: grid;
+            grid-template-columns: 370px 1fr;
+            gap: 24px;
+            max-width: 1440px;
+            width: 100%;
+            margin: 24px auto;
+            padding: 0 24px;
+            flex: 1;
+        }
+
+        @media (max-width: 1100px) {
+            .app-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .main-workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Panels */
+        .glass-panel {
+            background: var(--space-card);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+        }
+
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 12px;
+            color: var(--white);
+        }
+
+        .panel-title svg {
+            color: var(--primary);
+        }
+
+        /* Checklist */
+        .quest-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quest-card {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quest-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: var(--border-active);
+        }
+
+        .quest-card.completed {
+            border-color: var(--primary);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .quest-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .quest-title-text {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--white);
+        }
+
+        .quest-desc-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* HUD Metric Bar */
+        .matching-hud {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255,255,255,0.03);
+            margin-bottom: 16px;
+        }
+
+        .hud-metric {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .hud-metric-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .hud-metric-value {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Viewport Wrapper */
+        .viewport-wrapper {
+            position: relative;
+            background: #cbd5e1;
+            border-radius: var(--radius-md);
+            padding: 4px;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .viewport-svg-element {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-width: 600px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        /* Operations controls grid */
+        .ops-deck {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .op-box {
+            background: rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .op-btn {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 10px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .op-btn-add { background: #065f46; color: #a7f3d0; }
+        .op-btn-sub { background: #991b1b; color: #fecaca; }
+        .op-btn-mul { background: #b45309; color: #fef3c7; }
+        .op-btn-div { background: #1e40af; color: #dbeafe; }
+
+        .op-btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.15);
+        }
+
+        /* ESOL Stems */
+        .esol-panel {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(236, 72, 153, 0.03) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.18);
+        }
+
+        .esol-bubble {
+            background: rgba(0, 0, 0, 0.25);
+            border-left: 4px solid var(--primary);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            color: var(--text-main);
+            margin-bottom: 16px;
+        }
+
+        .esol-translation {
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            font-style: italic;
+            margin-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 8px;
+        }
+
+        .sentence-stem-tag {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 0.8rem;
+            border-radius: 15px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: var(--transition);
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .sentence-stem-tag:hover {
+            color: var(--white);
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        /* Diagnostics console */
+        .diagnostics-panel {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 340px;
+            background: #02040a;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            z-index: 1000;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            display: none;
+            animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .diagnostics-log-box {
+            background: #000;
+            border-radius: var(--radius-sm);
+            height: 150px;
+            overflow-y: auto;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            padding: 8px 12px;
+            color: #10b981;
+            margin: 12px 0;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            line-height: 1.4;
+        }
+
+        @keyframes pulse-slow {
+            0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 8px var(--primary-glow)); }
+            50% { transform: scale(1.05); opacity: 0.85; filter: drop-shadow(0 0 15px var(--primary)); }
+        }
+
+        @keyframes slide-up {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border-glow);
+            margin-top: 40px;
+            background: rgba(2, 4, 10, 0.8);
+            font-family: var(--font-display);
+        }
+
+        .equation-bar {
+            font-family: var(--font-mono);
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            text-align: center;
+            color: var(--accent);
+            letter-spacing: 0.05em;
+        }
+    </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+
+    <header>
+        <div class="logo-wrap">
+            <span class="logo-icon">⚖️</span>
+            <h1 class="logo-title">Algebra Balance Scale</h1>
+        </div>
+        <div class="header-controls">
+            <button class="btn btn-secondary" id="lang-toggle-btn" onclick="toggleLanguage()">
+                🌐 EN | ES
+            </button>
+            <button class="btn" onclick="openDiagnostics()">
+                🛠️ Diagnostics
+            </button>
+            <button class="btn btn-primary" id="selftest-btn" onclick="runSelfTests()">
+                ⚡ Self-Test
+            </button>
+        </div>
+    </header>
+
+    <main class="app-grid">
+        <!-- Sidebar: Tasks and ESOL Stems -->
+        <div class="sidebar">
+            
+            <!-- Tasks -->
+            <div class="glass-panel">
+                <h2 class="panel-title">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                    <span id="lbl-mission-control">Active Equations</span>
+                </h2>
+
+                <div class="matching-hud">
+                    <div class="hud-metric">
+                        <span class="hud-metric-label" id="lbl-match-state">Pan State</span>
+                        <span class="hud-metric-value" id="quest-status-flag" style="color:var(--danger);">BALANCING</span>
+                    </div>
+                    <div class="hud-metric" style="text-align: right;">
+                        <span class="hud-metric-label" id="lbl-score">Cleared</span>
+                        <span class="hud-metric-value" id="score-display" style="color:var(--accent);">0/3</span>
+                    </div>
+                </div>
+
+                <div class="quest-list" id="quests-container">
+                    <!-- Dynamic equations list -->
+                </div>
+            </div>
+
+            <!-- ESOL Concepts -->
+            <div class="glass-panel esol-panel">
+                <h2 class="panel-title" style="color: var(--primary); border-bottom-color: rgba(16,185,129,0.15);">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <span id="lbl-esol-title">Equation Scaffolds</span>
+                </h2>
+
+                <div class="esol-bubble" id="esol-scaffold-box">
+                    <span id="esol-en">Perform inverse operations (add, subtract, multiply, divide) equally on both pans to isolate the variable canister ($x$).</span>
+                    <div class="esol-translation" id="esol-es">Realiza operaciones inversas (sumar, restar, multiplicar, dividir) por igual en ambos platillos para aislar el cilindro de la variable ($x$).</div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:8px;" id="sentence-stems-container">
+                    <!-- Interactive Stems -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Main Workspace -->
+        <div class="main-workspace">
+            
+            <!-- 3D SVG Scale Viewport -->
+            <div class="glass-panel" style="padding: 16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:4px 8px;">
+                    <div class="panel-title" style="margin-bottom:0; border-bottom:none; padding-bottom:0;">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        <span id="lbl-viewport-title">3D Balance Scale Deck (Drag to Rotate Screen)</span>
+                    </div>
+                    <div style="font-family: var(--font-mono); font-size:0.8rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); padding:4px 12px; border-radius:12px; color:var(--primary);" id="active-scale-hud">
+                        Left: 0 | Right: 0
+                    </div>
+                </div>
+
+                <div class="viewport-wrapper" id="canvas-container">
+                    <!-- Root SVG has style="background:white" and explicit width and height per guidelines -->
+                    <svg id="viewport-3d" class="viewport-svg-element" viewBox="0 0 600 450" width="600" height="450" style="background:white;">
+                        <!-- Rendered dynamically -->
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Operations Control Deck -->
+            <div class="glass-panel">
+                
+                <div class="equation-bar" id="equation-text-display">
+                    2x + 3 = 11
+                </div>
+
+                <div class="ops-deck">
+                    <!-- Addition / Subtraction operations -->
+                    <div class="op-box">
+                        <label style="font-family:var(--font-display); font-size:0.82rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; text-align:center;">Add / Subtract Weights</label>
+                        <div style="display:flex; gap:10px;">
+                            <button class="op-btn op-btn-add" onclick="handleOperation('add', 1)" style="flex:1;">➕ Add 1</button>
+                            <button class="op-btn op-btn-sub" onclick="handleOperation('sub', 1)" style="flex:1;">➖ Sub 1</button>
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <button class="op-btn op-btn-add" onclick="handleOperation('add', 5)" style="flex:1;">➕ Add 5</button>
+                            <button class="op-btn op-btn-sub" onclick="handleOperation('sub', 5)" style="flex:1;">➖ Sub 5</button>
+                        </div>
+                    </div>
+
+                    <!-- Multiplication / Division operations -->
+                    <div class="op-box">
+                        <label style="font-family:var(--font-display); font-size:0.82rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; text-align:center;">Multiply / Divide Groups</label>
+                        <div style="display:flex; gap:10px;">
+                            <button class="op-btn op-btn-mul" onclick="handleOperation('mul', 2)" style="flex:1;">✖️ Mult 2</button>
+                            <button class="op-btn op-btn-div" onclick="handleOperation('div', 2)" style="flex:1;">➗ Div 2</button>
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <button class="op-btn op-btn-mul" onclick="handleOperation('mul', 3)" style="flex:1;">✖️ Mult 3</button>
+                            <button class="op-btn op-btn-div" onclick="handleOperation('div', 3)" style="flex:1;">➗ Div 3</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; gap:16px; margin-top: 20px;">
+                    <button class="btn btn-secondary" onclick="resetEquation()" style="flex:1; justify-content:center;">
+                        🔄 Reset Equation
+                    </button>
+                    <button class="btn btn-primary" onclick="nextLevel()" style="flex:1; justify-content:center;" id="btn-next-lvl" disabled>
+                        🏆 Next Level
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Diagnostics overlay -->
+    <div class="diagnostics-panel" id="diagnostics-overlay">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:6px;">
+            <strong style="font-family: var(--font-display); font-size: 0.95rem;">🛠️ Diagnostics Console</strong>
+            <button onclick="closeDiagnostics()" style="background:none; border:none; color:var(--danger); font-size:1.1rem; font-weight:800; cursor:pointer;">&times;</button>
+        </div>
+        <div class="diagnostics-log-box" id="diagnostics-logs"></div>
+        <button class="btn" style="width:100%; justify-content:center; padding: 8px;" onclick="clearDiagnosticsLogs()">
+            Clear Logs
+        </button>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. CONFIGURATION
+        // ==========================================
+        const CONFIG = {
+            canvas: { width: 600, height: 450, focalLength: 380, depthOffset: 230 },
+            colors: {
+                beam: '#475569',
+                post: '#334155',
+                pan: '#94a3b8',
+                xBlock: '#10b981',
+                oneBlock: '#ec4899',
+                grid: '#f1f5f9'
+            },
+            quests: [
+                { id: 1, title: 'Solve 2x + 3 = 11', title_es: 'Resolver 2x + 3 = 11', formula: '2x + 3 = 11', initialLeft: {x: 2, c: 3}, initialRight: {x: 0, c: 11}, target: 4 },
+                { id: 2, title: 'Solve 3x + 1 = 10', title_es: 'Resolver 3x + 1 = 10', formula: '3x + 1 = 10', initialLeft: {x: 3, c: 1}, initialRight: {x: 0, c: 10}, target: 3 },
+                { id: 3, title: 'Solve 2x + 5 = 15', title_es: 'Resolver 2x + 5 = 15', formula: '2x + 5 = 15', initialLeft: {x: 2, c: 5}, initialRight: {x: 0, c: 15}, target: 5 }
+            ],
+            stems: [
+                { id: 'stem-1', en: 'We balance the equation [eq] by subtracting [val] from both sides.', es: 'Equilibramos la ecuación [eq] al restar [val] de ambos lados.' },
+                { id: 'stem-2', en: 'Isolating variable x gives x = [val], which makes the scale balance.', es: 'Aislar la variable x nos da x = [val], lo que equilibra la balanza.' }
+            ],
+            translations: {
+                en: {
+                    'mission-control': 'Active Equations',
+                    'viewport-title': '3D Balance Scale Deck (Drag to Rotate)',
+                    'esol-title': 'Equation Scaffolds',
+                    'match-state': 'Pan State',
+                    'score': 'Cleared'
+                },
+                es: {
+                    'mission-control': 'Ecuaciones Activas',
+                    'viewport-title': 'Modelador de Balanza 3D (Arrastra para Rotar)',
+                    'esol-title': 'Andamios de Ecuación',
+                    'match-state': 'Estado de Platillos',
+                    'score': 'Completadas'
+                }
+            }
+        };
+
+        // ==========================================
+        // 2. CONFIG VALIDATOR
+        // ==========================================
+        function validateConfig() {
+            if (!CONFIG.canvas || typeof CONFIG.canvas.focalLength !== 'number') {
+                throw new Error("Invalid CONFIG: canvas properties invalid.");
+            }
+            if (!CONFIG.colors || !CONFIG.colors.beam) {
+                throw new Error("Invalid CONFIG: colors incomplete.");
+            }
+            if (!Array.isArray(CONFIG.quests) || CONFIG.quests.length === 0) {
+                throw new Error("Invalid CONFIG: quests empty.");
+            }
+        }
+
+        // ==========================================
+        // 3. REPOSITORY LAYER
+        // ==========================================
+        const Repository = {
+            state: {
+                currentLevel: 1,
+                leftX: 2,
+                leftC: 3,
+                rightX: 0,
+                rightC: 11,
+                cameraYaw: -0.4,
+                cameraPitch: 0.28,
+                completedQuestIds: [],
+                logs: [],
+                lang: 'en'
+            },
+            getState() {
+                return this.state;
+            },
+            setState(newState) {
+                Object.assign(this.state, newState);
+                if (typeof this.onStateChange === 'function') {
+                    this.onStateChange(this.state);
+                }
+            },
+            log(msg) {
+                const now = new Date();
+                const logLine = `[${now.toTimeString().split(' ')[0]}] ${msg}`;
+                this.state.logs.push(logLine);
+                if (this.state.logs.length > 50) this.state.logs.shift();
+                if (typeof this.onLog === 'function') this.onLog(logLine);
+            }
+        };
+
+        // ==========================================
+        // 4. SERVICE LAYER
+        // ==========================================
+        const Service = {
+            project3D(x, y, z, yaw, pitch) {
+                const { width, height, focalLength, depthOffset } = CONFIG.canvas;
+                
+                const scale = 25;
+                const X = x * scale;
+                const Y = y * scale;
+                const Z = z * scale;
+
+                const x1 = X * Math.cos(yaw) - Z * Math.sin(yaw);
+                const z1 = X * Math.sin(yaw) + Z * Math.cos(yaw);
+
+                const y2 = Y * Math.cos(pitch) - z1 * Math.sin(pitch);
+                const z2 = Y * Math.sin(pitch) + z1 * Math.cos(pitch);
+
+                const finalZ = z2 + depthOffset;
+                if (finalZ <= 10) return null;
+
+                const factor = focalLength / finalZ;
+                const px = (width / 2) + x1 * factor;
+                const py = (height / 2) - y2 * factor;
+
+                return { x: px, y: py, depth: finalZ, scale: factor };
+            },
+
+            playTiltSound(audioCtx) {
+                if (!audioCtx) return;
+                try {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(330, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + 0.2);
+                    
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                    
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.2);
+                } catch(e){}
+            },
+
+            playBalanceSound(audioCtx) {
+                if (!audioCtx) return;
+                try {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+                    osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+
+                    gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.45);
+
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.45);
+                } catch(e){}
+            }
+        };
+
+        // ==========================================
+        // 5. CONTROLLER LAYER
+        // ==========================================
+        const Controller = {
+            audioContext: null,
+            dragState: { isDragging: false, startX: 0, startY: 0, startYaw: 0, startPitch: 0 },
+
+            init() {
+                validateConfig();
+                this.loadLevel(Repository.getState().currentLevel);
+                this.setupDragEvents();
+                Repository.log("Algebra Balance scale loaded.");
+            },
+
+            ensureAudio() {
+                if (!this.audioContext) {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (this.audioContext.state === 'suspended') {
+                    this.audioContext.resume();
+                }
+            },
+
+            loadLevel(lvlId) {
+                const quest = CONFIG.quests.find(q => q.id === lvlId);
+                if (!quest) return;
+
+                Repository.setState({
+                    currentLevel: lvlId,
+                    leftX: quest.initialLeft.x,
+                    leftC: quest.initialLeft.c,
+                    rightX: quest.initialRight.x,
+                    rightC: quest.initialRight.c
+                });
+                Repository.log(`Equation Loaded: ${quest.formula}`);
+                this.checkEquationState();
+            },
+
+            applyOperation(op, value) {
+                this.ensureAudio();
+                const state = Repository.getState();
+                let { leftX, leftC, rightX, rightC } = state;
+
+                let success = true;
+
+                if (op === 'add') {
+                    leftC += value;
+                    rightC += value;
+                    Repository.log(`Operation: Add ${value} to both pans.`);
+                } else if (op === 'sub') {
+                    if (leftC >= value && rightC >= value) {
+                        leftC -= value;
+                        rightC -= value;
+                        Repository.log(`Operation: Subtract ${value} from both pans.`);
+                    } else {
+                        success = false;
+                        Repository.log("Operation Rejected: Cannot subtract more constants than exist on pans.");
+                    }
+                } else if (op === 'mul') {
+                    leftX *= value;
+                    leftC *= value;
+                    rightX *= value;
+                    rightC *= value;
+                    Repository.log(`Operation: Multiply both pans by ${value}.`);
+                } else if (op === 'div') {
+                    // Divide pans by value if cleanly divisible
+                    if (leftX % value === 0 && leftC % value === 0 && rightX % value === 0 && rightC % value === 0) {
+                        leftX /= value;
+                        leftC /= value;
+                        rightX /= value;
+                        rightC /= value;
+                        Repository.log(`Operation: Divide both pans by ${value}.`);
+                    } else {
+                        success = false;
+                        Repository.log(`Operation Rejected: Pans are not cleanly divisible by ${value}.`);
+                    }
+                }
+
+                if (success) {
+                    Service.playTiltSound(this.audioContext);
+                    Repository.setState({ leftX, leftC, rightX, rightC });
+                    this.checkEquationState();
+                }
+            },
+
+            checkEquationState() {
+                const state = Repository.getState();
+                const quest = CONFIG.quests.find(q => q.id === state.currentLevel);
+                
+                // Solve criteria: leftX === 1, leftC === 0, rightX === 0, rightC === target
+                const solved = (state.leftX === 1 && state.leftC === 0 && state.rightX === 0 && state.rightC === quest.target) ||
+                               (state.rightX === 1 && state.rightC === 0 && state.leftX === 0 && state.leftC === quest.target);
+
+                if (solved) {
+                    Repository.log(`Equation Solved! x = ${quest.target}`);
+                    this.ensureAudio();
+                    Service.playBalanceSound(this.audioContext);
+                    
+                    const completed = [...state.completedQuestIds];
+                    if (!completed.includes(state.currentLevel)) {
+                        completed.push(state.currentLevel);
+                        Repository.setState({ completedQuestIds: completed });
+                    }
+                }
+            },
+
+            setupDragEvents() {
+                const container = document.getElementById('canvas-container');
+                const onStart = (e) => {
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                    const state = Repository.getState();
+                    this.dragState = {
+                        isDragging: true,
+                        startX: clientX,
+                        startY: clientY,
+                        startYaw: state.cameraYaw,
+                        startPitch: state.cameraPitch
+                    };
+                };
+
+                const onMove = (e) => {
+                    if (!this.dragState.isDragging) return;
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                    const dx = clientX - this.dragState.startX;
+                    const dy = clientY - this.dragState.startY;
+
+                    const state = Repository.getState();
+                    Repository.setState({
+                        cameraYaw: this.dragState.startYaw + dx * 0.005,
+                        cameraPitch: Math.max(-0.6, Math.min(0.6, this.dragState.startPitch - dy * 0.005))
+                    });
+                };
+
+                const onEnd = () => {
+                    this.dragState.isDragging = false;
+                };
+
+                container.addEventListener('mousedown', onStart);
+                container.addEventListener('mousemove', onMove);
+                window.addEventListener('mouseup', onEnd);
+                container.addEventListener('touchstart', onStart);
+                container.addEventListener('touchmove', onMove);
+                window.addEventListener('touchend', onEnd);
+            },
+
+            selfTest() {
+                Repository.log("Running selfTest diagnostics...");
+                let passed = true;
+                try {
+                    validateConfig();
+                    Repository.log("[PASS] Config validates.");
+                } catch(e) {
+                    Repository.log(`[FAIL] Config check: ${e.message}`);
+                    passed = false;
+                }
+                const pt = Service.project3D(0, 0, 0, 0, 0);
+                if (pt && Math.abs(pt.x - 300) < 1 && Math.abs(pt.y - 225) < 1) {
+                    Repository.log("[PASS] Scale center projection maps correctly.");
+                } else {
+                    Repository.log("[FAIL] Scale center projection failed.");
+                    passed = false;
+                }
+                return passed;
+            }
+        };
+
+        // ==========================================
+        // 6. UI LAYER & RENDERER
+        // ==========================================
+        const UI = {
+            init() {
+                Repository.onStateChange = (state) => {
+                    this.renderDOM(state);
+                    this.renderScale3D(state);
+                };
+                Repository.onLog = (line) => {
+                    const box = document.getElementById('diagnostics-logs');
+                    if (box) {
+                        box.innerHTML += `<div>${line}</div>`;
+                        box.scrollTop = box.scrollHeight;
+                    }
+                };
+
+                this.renderDOM(Repository.getState());
+                this.renderScale3D(Repository.getState());
+            },
+
+            renderDOM(state) {
+                const t = CONFIG.translations[state.lang];
+                
+                document.getElementById('lbl-mission-control').innerText = t['mission-control'];
+                document.getElementById('lbl-viewport-title').innerText = t['viewport-title'];
+                document.getElementById('lbl-esol-title').innerText = t['esol-title'];
+                document.getElementById('lbl-match-state').innerText = t['match-state'];
+                document.getElementById('lbl-score').innerText = t['score'];
+
+                document.getElementById('score-display').innerText = `${state.completedQuestIds.length}/${CONFIG.quests.length}`;
+
+                // Level equations listing
+                const container = document.getElementById('quests-container');
+                container.innerHTML = '';
+                CONFIG.quests.forEach(q => {
+                    const isCurrent = state.currentLevel === q.id;
+                    const isDone = state.completedQuestIds.includes(q.id);
+                    container.innerHTML += `
+                        <div class="quest-card ${isCurrent?'active':''} ${isDone?'completed':''}" onclick="Controller.loadLevel(${q.id})">
+                            <div class="quest-info">
+                                <span class="quest-title-text">${q.title}</span>
+                                <span class="quest-desc-text">Solve for x by isolating variable blocks.</span>
+                            </div>
+                            <span style="font-size:1.2rem;">${isDone?'✅':'🛰️'}</span>
+                        </div>
+                    `;
+                });
+
+                // Equation text display
+                const quest = CONFIG.quests.find(q => q.id === state.currentLevel);
+                const exprLeft = (state.leftX > 0 ? `${state.leftX}x` : '') + (state.leftC > 0 ? ` + ${state.leftC}` : '');
+                const exprRight = (state.rightX > 0 ? `${state.rightX}x` : '') + (state.rightC > 0 ? ` + ${state.rightC}` : '');
+                const finalLeft = exprLeft || '0';
+                const finalRight = exprRight || '0';
+                document.getElementById('equation-text-display').innerText = `${finalLeft} = ${finalRight}`;
+
+                // Next level button status
+                const isLevelDone = state.completedQuestIds.includes(state.currentLevel);
+                const nextBtn = document.getElementById('btn-next-lvl');
+                nextBtn.disabled = !isLevelDone;
+
+                // Scale weight HUD
+                // X weighs 4 units, constants weigh 1 unit
+                const wLeft = state.leftX * 4 + state.leftC;
+                const wRight = state.rightX * 4 + state.rightC;
+                document.getElementById('active-scale-hud').innerText = `Left Pan: ${wLeft} kg | Right Pan: ${wRight} kg`;
+                document.getElementById('quest-status-flag').innerText = wLeft === wRight ? 'BALANCED' : 'TILTING';
+
+                // ESOL stems
+                const stemsContainer = document.getElementById('sentence-stems-container');
+                stemsContainer.innerHTML = '';
+                CONFIG.stems.forEach(stem => {
+                    let text = state.lang === 'es' ? stem.es : stem.en;
+                    text = text.replace(/\[eq\]/g, quest.formula);
+                    text = text.replace(/\[val\]/g, quest.target);
+
+                    stemsContainer.innerHTML += `
+                        <div class="sentence-stem-tag" onclick="Repository.log('Scaffold: ' + '${text.replace(/'/g, "\\'")}')">
+                            ${text}
+                        </div>
+                    `;
+                });
+            },
+
+            renderScale3D(state) {
+                const svg = document.getElementById('viewport-3d');
+                if (!svg) return;
+
+                const { leftX, leftC, rightX, rightC, cameraYaw, cameraPitch } = state;
+                const wLeft = leftX * 4 + leftC;
+                const wRight = rightX * 4 + rightC;
+
+                // Calculate tilt angle based on weight diff
+                const tiltAngle = Math.max(-0.35, Math.min(0.35, (wLeft - wRight) * 0.02));
+
+                let svgContent = '';
+
+                // Draw background grid lines on white canvas
+                for (let i = -10; i <= 10; i++) {
+                    const gridVal = i * 20;
+                    svgContent += `<line x1="0" y1="${225 + gridVal}" x2="600" y2="${225 + gridVal}" stroke="#f1f5f9" stroke-width="0.5" />`;
+                    svgContent += `<line x1="${300 + gridVal}" y1="0" x2="${300 + gridVal}" y2="450" stroke="#f1f5f9" stroke-width="0.5" />`;
+                }
+
+                // Coordinate points for 3D scale assembly
+                // 1. Central base & post
+                const postTop = Service.project3D(0, 4, 0, cameraYaw, cameraPitch);
+                const postBase = Service.project3D(0, -2, 0, cameraYaw, cameraPitch);
+                if (postTop && postBase) {
+                    svgContent += `
+                        <line x1="${postBase.x}" y1="${postBase.y}" x2="${postTop.x}" y2="${postTop.y}" stroke="${CONFIG.colors.post}" stroke-width="8" stroke-linecap="round" />
+                        <ellipse cx="${postBase.x}" cy="${postBase.y}" rx="40" ry="10" fill="${CONFIG.colors.post}" />
+                    `;
+                }
+
+                // 2. Rotating Crossbeam
+                const beamLength = 4.5;
+                // Rotated beam tips
+                const leftTipX = -beamLength * Math.cos(tiltAngle);
+                const leftTipY = 3.5 - beamLength * Math.sin(tiltAngle);
+                const rightTipX = beamLength * Math.cos(tiltAngle);
+                const rightTipY = 3.5 + beamLength * Math.sin(tiltAngle);
+
+                const beamLeft = Service.project3D(leftTipX, leftTipY, 0, cameraYaw, cameraPitch);
+                const beamRight = Service.project3D(rightTipX, rightTipY, 0, cameraYaw, cameraPitch);
+                const beamCenter = Service.project3D(0, 3.5, 0, cameraYaw, cameraPitch);
+
+                if (beamLeft && beamRight && beamCenter) {
+                    svgContent += `
+                        <line x1="${beamLeft.x}" y1="${beamLeft.y}" x2="${beamRight.x}" y2="${beamRight.y}" stroke="${CONFIG.colors.beam}" stroke-width="6" stroke-linecap="round" />
+                        <circle cx="${beamCenter.x}" cy="${beamCenter.y}" r="6" fill="#1e293b" />
+                    `;
+                }
+
+                // 3. Left Hanging Pan
+                const leftPanY = leftTipY - 3;
+                const leftPanCenter = Service.project3D(leftTipX, leftPanY, 0, cameraYaw, cameraPitch);
+                if (leftPanCenter && beamLeft) {
+                    // Strings
+                    const strLeft = Service.project3D(leftTipX - 1.2, leftPanY + 0.8, 0, cameraYaw, cameraPitch);
+                    const strRight = Service.project3D(leftTipX + 1.2, leftPanY + 0.8, 0, cameraYaw, cameraPitch);
+                    if (strLeft && strRight) {
+                        svgContent += `
+                            <line x1="${beamLeft.x}" y1="${beamLeft.y}" x2="${strLeft.x}" y2="${strLeft.y}" stroke="#64748b" stroke-width="1" />
+                            <line x1="${beamLeft.x}" y1="${beamLeft.y}" x2="${strRight.x}" y2="${strRight.y}" stroke="#64748b" stroke-width="1" />
+                        `;
+                    }
+                    svgContent += `
+                        <ellipse cx="${leftPanCenter.x}" cy="${leftPanCenter.y}" rx="45" ry="12" fill="${CONFIG.colors.pan}" stroke="#475569" stroke-width="1.5" />
+                    `;
+
+                    // Draw left weights stacked on left pan
+                    svgContent += this.drawWeightsOnPan(leftTipX, leftPanY, leftX, leftC, cameraYaw, cameraPitch);
+                }
+
+                // 4. Right Hanging Pan
+                const rightPanY = rightTipY - 3;
+                const rightPanCenter = Service.project3D(rightTipX, rightPanY, 0, cameraYaw, cameraPitch);
+                if (rightPanCenter && beamRight) {
+                    // Strings
+                    const strLeft = Service.project3D(rightTipX - 1.2, rightPanY + 0.8, 0, cameraYaw, cameraPitch);
+                    const strRight = Service.project3D(rightTipX + 1.2, rightPanY + 0.8, 0, cameraYaw, cameraPitch);
+                    if (strLeft && strRight) {
+                        svgContent += `
+                            <line x1="${beamRight.x}" y1="${beamRight.y}" x2="${strLeft.x}" y2="${strLeft.y}" stroke="#64748b" stroke-width="1" />
+                            <line x1="${beamRight.x}" y1="${beamRight.y}" x2="${strRight.x}" y2="${strRight.y}" stroke="#64748b" stroke-width="1" />
+                        `;
+                    }
+                    svgContent += `
+                        <ellipse cx="${rightPanCenter.x}" cy="${rightPanCenter.y}" rx="45" ry="12" fill="${CONFIG.colors.pan}" stroke="#475569" stroke-width="1.5" />
+                    `;
+
+                    // Draw right weights
+                    svgContent += this.drawWeightsOnPan(rightTipX, rightPanY, rightX, rightC, cameraYaw, cameraPitch);
+                }
+
+                svg.innerHTML = svgContent;
+            },
+
+            drawWeightsOnPan(panX, panY, xCount, cCount, yaw, pitch) {
+                let code = '';
+                
+                // 1. Draw glowing green variable canisters (x)
+                // Draw them slightly offset from center
+                for (let i = 0; i < xCount; i++) {
+                    const bx = panX - 0.6 + (i * 0.5);
+                    const by = panY + 0.1;
+                    const bz = -0.2;
+
+                    const pt = Service.project3D(bx, by, bz, yaw, pitch);
+                    if (pt) {
+                        const h = 20 * pt.scale;
+                        const w = 12 * pt.scale;
+                        code += `
+                            <g>
+                                <rect x="${pt.x - w/2}" y="${pt.y - h}" width="${w}" height="${h}" rx="3" fill="url(#grad-x)" stroke="#047857" stroke-width="1" />
+                                <text x="${pt.x}" y="${pt.y - h/2 + 3}" fill="#ffffff" font-family="var(--font-display)" font-size="9" font-weight="800" text-anchor="middle">x</text>
+                            </g>
+                        `;
+                    }
+                }
+
+                // 2. Draw unit blocks (constants) stacked neatly
+                for (let i = 0; i < cCount; i++) {
+                    const col = i % 5;
+                    const row = Math.floor(i / 5);
+                    const bx = panX - 0.8 + (col * 0.4);
+                    const by = panY + 0.1 + (row * 0.35);
+                    const bz = 0.2;
+
+                    const pt = Service.project3D(bx, by, bz, yaw, pitch);
+                    if (pt) {
+                        const size = 10 * pt.scale;
+                        code += `
+                            <rect x="${pt.x - size/2}" y="${pt.y - size}" width="${size}" height="${size}" fill="${CONFIG.colors.oneBlock}" stroke="#9d174d" stroke-width="0.75" rx="1.5" />
+                        `;
+                    }
+                }
+
+                // Definitions for gradients
+                code += `
+                    <defs>
+                        <linearGradient id="grad-x" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#34d399" />
+                            <stop offset="100%" stop-color="#059669" />
+                        </linearGradient>
+                    </defs>
+                `;
+
+                return code;
+            }
+        };
+
+        // UI Event bridges
+        function handleOperation(op, value) {
+            Controller.applyOperation(op, value);
+        }
+
+        function resetEquation() {
+            Controller.loadLevel(Repository.getState().currentLevel);
+        }
+
+        function nextLevel() {
+            const state = Repository.getState();
+            if (state.currentLevel < CONFIG.quests.length) {
+                Controller.loadLevel(state.currentLevel + 1);
+            } else {
+                Repository.setState({ currentLevel: 1 });
+                Controller.loadLevel(1);
+            }
+        }
+
+        function toggleLanguage() {
+            const state = Repository.getState();
+            const nextLang = state.lang === 'en' ? 'es' : 'en';
+            Repository.setState({ lang: nextLang });
+            Repository.log(`Bilingual context shifted to: ${nextLang.toUpperCase()}`);
+        }
+
+        function openDiagnostics() {
+            document.getElementById('diagnostics-overlay').style.display = 'block';
+        }
+
+        function closeDiagnostics() {
+            document.getElementById('diagnostics-overlay').style.display = 'none';
+        }
+
+        function clearDiagnosticsLogs() {
+            Repository.setState({ logs: [] });
+            document.getElementById('diagnostics-logs').innerHTML = '';
+            Repository.log("Logs reset.");
+        }
+
+        function runSelfTests() {
+            openDiagnostics();
+            const result = Controller.selfTest();
+            const box = document.getElementById('diagnostics-logs');
+            if (result) {
+                box.innerHTML += `<div style="color:var(--secondary); font-weight:bold;">[SUCCESS] Scale calibration diagnostics passed.</div>`;
+            } else {
+                box.innerHTML += `<div style="color:var(--danger); font-weight:bold;">[ERROR] Diagnostics failures detected.</div>`;
+            }
+        }
+
+        window.addEventListener('load', () => {
+            Controller.init();
+            UI.init();
+        });
+    </script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

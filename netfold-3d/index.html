@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="3D Net Folder & Surface Area Visualizer: An interactive mathematics activity for exploring geometric nets, folding 3D prisms, and calculating surface areas.">
+    <title>3D Net Folder | Surface Area Visualizer</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --space-bg: #0b0f19;
+            --space-card: rgba(22, 28, 45, 0.75);
+            --border-glow: rgba(255, 255, 255, 0.08);
+            --border-active: rgba(59, 130, 246, 0.4);
+            
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.35);
+            --secondary: #10b981;
+            --secondary-glow: rgba(16, 185, 129, 0.35);
+            --accent: #f59e0b;
+            --accent-glow: rgba(245, 158, 11, 0.35);
+            --pink: #ec4899;
+            --pink-glow: rgba(236, 72, 153, 0.35);
+            --danger: #ef4444;
+            --white: #ffffff;
+            
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --text-dark: #0f172a;
+            
+            --font-display: 'Outfit', sans-serif;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 10px;
+            
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: 0 16px 45px rgba(0, 0, 0, 0.6), 0 0 30px rgba(59, 130, 246, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--space-bg);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.03) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        header {
+            background: rgba(22, 28, 45, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-glow);
+            padding: 16px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            filter: drop-shadow(0 0 8px var(--primary-glow));
+            animation: pulse-slow 4s infinite ease-in-out;
+        }
+
+        .logo-title {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--white) 30%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-glow);
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(4px);
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%);
+            border: none;
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+
+        .btn-secondary {
+            border-color: rgba(236, 72, 153, 0.3);
+            color: #f472b6;
+            background: rgba(236, 72, 153, 0.08);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--pink);
+            background: rgba(236, 72, 153, 0.15);
+            box-shadow: 0 0 10px rgba(236, 72, 153, 0.15);
+        }
+
+        /* Layout Grid */
+        .app-grid {
+            display: grid;
+            grid-template-columns: 370px 1fr;
+            gap: 24px;
+            max-width: 1440px;
+            width: 100%;
+            margin: 24px auto;
+            padding: 0 24px;
+            flex: 1;
+        }
+
+        @media (max-width: 1100px) {
+            .app-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .main-workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Panels */
+        .glass-panel {
+            background: var(--space-card);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+        }
+
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 12px;
+            color: var(--white);
+        }
+
+        .panel-title svg {
+            color: var(--primary);
+        }
+
+        /* Checklist styles */
+        .quest-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quest-card {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quest-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: var(--border-active);
+        }
+
+        .quest-card.active {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.08);
+            box-shadow: inset 0 0 12px rgba(59, 130, 246, 0.1);
+        }
+
+        .quest-card.completed {
+            border-color: var(--secondary);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .quest-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .quest-title-text {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--white);
+        }
+
+        .quest-desc-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* HUD Metric Bar */
+        .matching-hud {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255,255,255,0.03);
+            margin-bottom: 16px;
+        }
+
+        .hud-metric {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .hud-metric-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .hud-metric-value {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        /* 3D Viewport styling */
+        .viewport-wrapper {
+            position: relative;
+            background: #e2e8f0;
+            border-radius: var(--radius-md);
+            padding: 4px;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .viewport-svg-element {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-width: 600px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        /* Sliders Deck */
+        .sliders-deck {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .control-channel {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .channel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .channel-label {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .channel-value-display {
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .range-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            cursor: pointer;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 8px var(--primary);
+            cursor: pointer;
+        }
+
+        /* ESOL Panels */
+        .esol-panel {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(236, 72, 153, 0.03) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.18);
+        }
+
+        .esol-bubble {
+            background: rgba(0, 0, 0, 0.25);
+            border-left: 4px solid var(--primary);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            color: var(--text-main);
+            margin-bottom: 16px;
+        }
+
+        .esol-translation {
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            font-style: italic;
+            margin-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 8px;
+        }
+
+        .sentence-stem-tag {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 0.8rem;
+            border-radius: 15px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: var(--transition);
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .sentence-stem-tag:hover {
+            color: var(--white);
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        /* Diagnostics logs console */
+        .diagnostics-panel {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 340px;
+            background: #02040a;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            z-index: 1000;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            display: none;
+            animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .diagnostics-log-box {
+            background: #000;
+            border-radius: var(--radius-sm);
+            height: 150px;
+            overflow-y: auto;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            padding: 8px 12px;
+            color: #3b82f6;
+            margin: 12px 0;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            line-height: 1.4;
+        }
+
+        @keyframes pulse-slow {
+            0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 8px var(--primary-glow)); }
+            50% { transform: scale(1.05); opacity: 0.85; filter: drop-shadow(0 0 15px var(--primary)); }
+        }
+
+        @keyframes slide-up {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border-glow);
+            margin-top: 40px;
+            background: rgba(2, 4, 10, 0.8);
+            font-family: var(--font-display);
+        }
+
+        .math-scaffold-formula {
+            font-family: var(--font-mono);
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            text-align: center;
+            color: var(--accent);
+            line-height: 1.4;
+        }
+    </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+
+    <header>
+        <div class="logo-wrap">
+            <span class="logo-icon">📦</span>
+            <h1 class="logo-title">3D Net Folder &amp; Surface Area</h1>
+        </div>
+        <div class="header-controls">
+            <button class="btn btn-secondary" id="lang-toggle-btn" onclick="toggleLanguage()">
+                🌐 EN | ES
+            </button>
+            <button class="btn" onclick="openDiagnostics()">
+                🛠️ Diagnostics
+            </button>
+            <button class="btn btn-primary" id="selftest-btn" onclick="runSelfTests()">
+                ⚡ Self-Test
+            </button>
+        </div>
+    </header>
+
+    <main class="app-grid">
+        <!-- Sidebar: Objective list & ESOL Stems -->
+        <div class="sidebar">
+            
+            <!-- Quests -->
+            <div class="glass-panel">
+                <h2 class="panel-title">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                    <span id="lbl-mission-control">Shape Tasks</span>
+                </h2>
+
+                <div class="matching-hud">
+                    <div class="hud-metric">
+                        <span class="hud-metric-label" id="lbl-match-state">Analyzer State</span>
+                        <span class="hud-metric-value" id="quest-status-flag" style="color:var(--secondary);">CALIBRATING</span>
+                    </div>
+                    <div class="hud-metric" style="text-align: right;">
+                        <span class="hud-metric-label" id="lbl-score">Total Progress</span>
+                        <span class="hud-metric-value" id="score-display" style="color:var(--accent);">0%</span>
+                    </div>
+                </div>
+
+                <div class="quest-list" id="quests-container">
+                    <!-- Dynamic quest list -->
+                </div>
+            </div>
+
+            <!-- ESOL Panel -->
+            <div class="glass-panel esol-panel">
+                <h2 class="panel-title" style="color: var(--pink); border-bottom-color: rgba(236,72,153,0.15);">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
+                    <span id="lbl-esol-title">ESOL Concept Support</span>
+                </h2>
+
+                <div class="esol-bubble" id="esol-scaffold-box">
+                    <span id="esol-en">Fold and unfold the 3D net. Measure the area of each face to calculate the total Surface Area.</span>
+                    <div class="esol-translation" id="esol-es">Dobla y despliega la plantilla 3D. Mide el área de cada cara para calcular el Área Superficial total.</div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:8px;" id="sentence-stems-container">
+                    <!-- Interactive Stems -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Main Workspace -->
+        <div class="main-workspace">
+            
+            <!-- 3D SVG Viewport -->
+            <div class="glass-panel" style="padding: 16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:4px 8px;">
+                    <div class="panel-title" style="margin-bottom:0; border-bottom:none; padding-bottom:0;">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"></path></svg>
+                        <span id="lbl-viewport-title">3D Net Folding Sandbox (Drag to Rotate Screen)</span>
+                    </div>
+                    <div style="font-family: var(--font-mono); font-size:0.8rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); padding:4px 12px; border-radius:12px; color:var(--primary);" id="active-shape-hud">
+                        Shape: Rectangular Prism
+                    </div>
+                </div>
+
+                <div class="viewport-wrapper" id="canvas-container">
+                    <!-- Root SVG uses style="background:white" with explicit width and height per guidelines -->
+                    <svg id="viewport-3d" class="viewport-svg-element" viewBox="0 0 600 450" width="600" height="450" style="background:white;">
+                        <!-- Rendered dynamically -->
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Parameters and formulas -->
+            <div class="glass-panel">
+                
+                <!-- Sliders -->
+                <div class="sliders-deck">
+                    <div class="control-channel">
+                        <div class="channel-header">
+                            <span class="channel-label" id="lbl-fold">Folding Progress</span>
+                            <span class="channel-value-display" id="val-fold">0%</span>
+                        </div>
+                        <input type="range" class="range-slider" id="slider-fold" min="0" max="100" value="0" step="1" oninput="handleSlider('fold', this.value)">
+                    </div>
+
+                    <div class="control-channel">
+                        <div class="channel-header">
+                            <span class="channel-label" id="lbl-width">Base Width (A)</span>
+                            <span class="channel-value-display" id="val-width">3</span>
+                        </div>
+                        <input type="range" class="range-slider" id="slider-width" min="2" max="5" value="3" step="0.5" oninput="handleSlider('width', this.value)">
+                    </div>
+
+                    <div class="control-channel">
+                        <div class="channel-header">
+                            <span class="channel-label" id="lbl-height">Base Length (B)</span>
+                            <span class="channel-value-display" id="val-length">4</span>
+                        </div>
+                        <input type="range" class="range-slider" id="slider-length" min="2" max="5" value="4" step="0.5" oninput="handleSlider('length', this.value)">
+                    </div>
+
+                    <div class="control-channel">
+                        <div class="channel-header">
+                            <span class="channel-label" id="lbl-depth">Prism Height (C)</span>
+                            <span class="channel-value-display" id="val-depth">3</span>
+                        </div>
+                        <input type="range" class="range-slider" id="slider-depth" min="2" max="5" value="3" step="0.5" oninput="handleSlider('depth', this.value)">
+                    </div>
+                </div>
+
+                <div class="sliders-deck" style="grid-template-columns: 1fr 2fr; align-items: center; margin-bottom: 0;">
+                    <div>
+                        <select class="btn" id="shape-select" onchange="handleShapeSelect(this.value)" style="width: 100%; justify-content: space-between; background: var(--space-bg); border-color: var(--border-glow);">
+                            <option value="prism" selected>Rectangular Prism</option>
+                            <option value="triangular">Triangular Prism</option>
+                            <option value="pyramid">Square Pyramid</option>
+                        </select>
+                    </div>
+                    
+                    <div class="math-scaffold-formula" id="formula-display">
+                        SA = 2(ab + bc + ac) = 66.0 sq units
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Diagnostics Console -->
+    <div class="diagnostics-panel" id="diagnostics-overlay">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:6px;">
+            <strong style="font-family: var(--font-display); font-size: 0.95rem;">🛠️ Diagnostics Console</strong>
+            <button onclick="closeDiagnostics()" style="background:none; border:none; color:var(--danger); font-size:1.1rem; font-weight:800; cursor:pointer;">&times;</button>
+        </div>
+        <div class="diagnostics-log-box" id="diagnostics-logs"></div>
+        <button class="btn" style="width:100%; justify-content:center; padding: 8px;" onclick="clearDiagnosticsLogs()">
+            Clear Logs
+        </button>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. CONFIGURATION
+        // ==========================================
+        const CONFIG = {
+            canvas: { width: 600, height: 450, focalLength: 350, depthOffset: 250 },
+            colors: {
+                faces: ['#93c5fd', '#34d399', '#fca5a5', '#fde047', '#c084fc', '#2dd4bf'],
+                grid: '#cbd5e1',
+                text: '#0f172a',
+                border: '#475569'
+            },
+            quests: [
+                { id: 1, shape: 'prism', foldTarget: 0, width: 3, length: 4, depth: 3, title: 'Prism Layout Flat', title_es: 'Prisma Plano', desc: 'Completely unfold the rectangular prism net (Fold=0%) and adjust dimensions to width=3, length=4, depth=3.', desc_es: 'Despliega el prisma rectangular (Doblado=0%) y ajusta las dimensiones a 3, 4, 3.' },
+                { id: 2, shape: 'prism', foldTarget: 100, width: 4, length: 4, depth: 4, title: 'Fold a Perfect Cube', title_es: 'Doblar un Cubo Perfecto', desc: 'Fold the shape completely (Fold=100%) and set all dimensions to 4 to form a perfect cube.', desc_es: 'Dobla el prisma al 100% y establece todas las dimensiones a 4 para formar un cubo.' },
+                { id: 3, shape: 'triangular', foldTarget: 0, width: 3, length: 4, depth: 3, title: 'Triangular Net Area', title_es: 'Área de Prisma Triangular', desc: 'Select the Triangular Prism, unfold it to 0%, and adjust dimensions to width=3, length=4, depth=3.', desc_es: 'Selecciona el prisma triangular, despliégalo al 0% y ajusta las dimensiones a 3, 4, 3.' },
+                { id: 4, shape: 'pyramid', foldTarget: 100, width: 4, length: 4, depth: 4, title: 'Assemble Pyramid', title_es: 'Construir Pirámide', desc: 'Choose the Square Pyramid, fold it to 100%, and adjust parameters to width=4, length=4, depth=4.', desc_es: 'Elige la pirámide cuadrangular, dóblala al 100% y ajusta los parámetros a 4, 4, 4.' }
+            ],
+            stems: [
+                { id: 'stem-1', en: 'A [shape] net is composed of flat 2D polygons that fold into a 3D solid.', es: 'La plantilla de un [shape] se compone de polígonos 2D planos que se doblan para formar un sólido 3D.' },
+                { id: 'stem-2', en: 'The total Surface Area of the [shape] is the sum of the areas of all [count] faces: [sa] square units.', es: 'El Área Superficial total del [shape] es la suma de las áreas de sus [count] caras: [sa] unidades cuadradas.' }
+            ],
+            translations: {
+                en: {
+                    'mission-control': 'Shape Tasks',
+                    'viewport-title': '3D Net Folding Sandbox (Drag to Rotate)',
+                    'esol-title': 'ESOL Concept Support',
+                    'fold': 'Folding Progress',
+                    'width': 'Base Width (A)',
+                    'height': 'Base Length (B)',
+                    'depth': 'Prism Height (C)',
+                    'match-state': 'Analyzer State',
+                    'score': 'Total Progress'
+                },
+                es: {
+                    'mission-control': 'Tareas de Figuras',
+                    'viewport-title': 'Modelador de Plantilla 3D (Arrastra para Rotar)',
+                    'esol-title': 'Soporte de Concepto ESOL',
+                    'fold': 'Progreso de Doblado',
+                    'width': 'Ancho de Base (A)',
+                    'height': 'Largo de Base (B)',
+                    'depth': 'Altura de Prisma (C)',
+                    'match-state': 'Estado de Análisis',
+                    'score': 'Progreso Total'
+                }
+            }
+        };
+
+        // ==========================================
+        // 2. CONFIG VALIDATOR
+        // ==========================================
+        function validateConfig() {
+            if (!CONFIG.canvas || typeof CONFIG.canvas.focalLength !== 'number') {
+                throw new Error("Invalid CONFIG: canvas properties invalid.");
+            }
+            if (!CONFIG.colors || CONFIG.colors.faces.length < 5) {
+                throw new Error("Invalid CONFIG: colors configuration incomplete.");
+            }
+            if (!Array.isArray(CONFIG.quests) || CONFIG.quests.length === 0) {
+                throw new Error("Invalid CONFIG: quests list empty.");
+            }
+        }
+
+        // ==========================================
+        // 3. REPOSITORY LAYER
+        // ==========================================
+        const Repository = {
+            state: {
+                activeShape: 'prism',
+                foldVal: 0, // 0 to 100
+                dimA: 3,
+                dimB: 4,
+                dimC: 3,
+                cameraYaw: -0.4,
+                cameraPitch: 0.35,
+                completedQuests: [],
+                logs: [],
+                lang: 'en'
+            },
+            getState() {
+                return this.state;
+            },
+            setState(newState) {
+                Object.assign(this.state, newState);
+                if (typeof this.onStateChange === 'function') {
+                    this.onStateChange(this.state);
+                }
+            },
+            log(msg) {
+                const now = new Date();
+                const logLine = `[${now.toTimeString().split(' ')[0]}] ${msg}`;
+                this.state.logs.push(logLine);
+                if (this.state.logs.length > 50) this.state.logs.shift();
+                if (typeof this.onLog === 'function') this.onLog(logLine);
+            }
+        };
+
+        // ==========================================
+        // 4. SERVICE LAYER
+        // ==========================================
+        const Service = {
+            // Project 3D vector to 2D screen coordinate
+            project3D(x, y, z, yaw, pitch) {
+                const { width, height, focalLength, depthOffset } = CONFIG.canvas;
+                
+                // Scale factor for display
+                const scale = 32;
+                const X = x * scale;
+                const Y = y * scale;
+                const Z = z * scale;
+
+                // Yaw (Y axis) rotation
+                const x1 = X * Math.cos(yaw) - Z * Math.sin(yaw);
+                const z1 = X * Math.sin(yaw) + Z * Math.cos(yaw);
+
+                // Pitch (Rotated X axis) rotation
+                const y2 = Y * Math.cos(pitch) - z1 * Math.sin(pitch);
+                const z2 = Y * Math.sin(pitch) + z1 * Math.cos(pitch);
+
+                const finalZ = z2 + depthOffset;
+                if (finalZ <= 10) return null;
+
+                const factor = focalLength / finalZ;
+                const px = (width / 2) + x1 * factor;
+                const py = (height / 2) - y2 * factor;
+
+                return { x: px, y: py, depth: finalZ };
+            },
+
+            // Web Audio sound generators
+            playWhooshSound(audioCtx) {
+                if (!audioCtx) return;
+                try {
+                    const osc = audioCtx.createOscillator();
+                    const filter = audioCtx.createBiquadFilter();
+                    const gain = audioCtx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(320, audioCtx.currentTime + 0.3);
+
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(400, audioCtx.currentTime);
+                    filter.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.3);
+
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+
+                    osc.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                } catch (e) {
+                    console.warn(e);
+                }
+            },
+
+            playClickSound(audioCtx) {
+                if (!audioCtx) return;
+                try {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(400, audioCtx.currentTime + 0.05);
+
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.08);
+                } catch (e) {
+                    console.warn(e);
+                }
+            }
+        };
+
+        // ==========================================
+        // 5. CONTROLLER LAYER
+        // ==========================================
+        const Controller = {
+            audioContext: null,
+            dragState: { isDragging: false, startX: 0, startY: 0, startYaw: 0, startPitch: 0 },
+
+            init() {
+                validateConfig();
+                this.setupDragEvents();
+                Repository.log("Geometry Engine Initialized.");
+            },
+
+            ensureAudio() {
+                if (!this.audioContext) {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (this.audioContext.state === 'suspended') {
+                    this.audioContext.resume();
+                }
+            },
+
+            updateSlider(param, value) {
+                const val = parseFloat(value);
+                const updates = {};
+                if (param === 'fold') {
+                    updates.foldVal = val;
+                    this.ensureAudio();
+                    if (val === 100 || val === 0) {
+                        Service.playClickSound(this.audioContext);
+                    } else if (val % 20 === 0) {
+                        Service.playWhooshSound(this.audioContext);
+                    }
+                }
+                if (param === 'width') updates.dimA = val;
+                if (param === 'length') updates.dimB = val;
+                if (param === 'depth') updates.dimC = val;
+
+                Repository.setState(updates);
+                this.checkQuestMilestones();
+            },
+
+            updateShape(shapeName) {
+                Repository.setState({ activeShape: shapeName });
+                Repository.log(`Switched to active net layout: ${shapeName}`);
+                this.checkQuestMilestones();
+            },
+
+            checkQuestMilestones() {
+                const state = Repository.getState();
+                const quests = CONFIG.quests;
+                const completed = [...state.completedQuests];
+
+                quests.forEach(q => {
+                    if (completed.includes(q.id)) return;
+                    
+                    const isShapeMatch = state.activeShape === q.shape;
+                    const isFoldMatch = Math.abs(state.foldVal - q.foldTarget) < 1;
+                    const isA = state.dimA === q.width;
+                    const isB = state.dimB === q.length;
+                    const isC = state.dimC === q.depth;
+
+                    if (isShapeMatch && isFoldMatch && isA && isB && isC) {
+                        completed.push(q.id);
+                        Repository.setState({ completedQuests: completed });
+                        Repository.log(`QUEST COMPLETED: ${q.title}`);
+                        this.ensureAudio();
+                        Service.playClickSound(this.audioContext);
+                    }
+                });
+            },
+
+            setupDragEvents() {
+                const container = document.getElementById('canvas-container');
+                const onStart = (e) => {
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                    const state = Repository.getState();
+                    this.dragState = {
+                        isDragging: true,
+                        startX: clientX,
+                        startY: clientY,
+                        startYaw: state.cameraYaw,
+                        startPitch: state.cameraPitch
+                    };
+                };
+
+                const onMove = (e) => {
+                    if (!this.dragState.isDragging) return;
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                    const dx = clientX - this.dragState.startX;
+                    const dy = clientY - this.dragState.startY;
+
+                    const state = Repository.getState();
+                    Repository.setState({
+                        cameraYaw: this.dragState.startYaw + dx * 0.005,
+                        cameraPitch: Math.max(-0.6, Math.min(0.6, this.dragState.startPitch - dy * 0.005))
+                    });
+                };
+
+                const onEnd = () => {
+                    this.dragState.isDragging = false;
+                };
+
+                container.addEventListener('mousedown', onStart);
+                container.addEventListener('mousemove', onMove);
+                window.addEventListener('mouseup', onEnd);
+                container.addEventListener('touchstart', onStart);
+                container.addEventListener('touchmove', onMove);
+                window.addEventListener('touchend', onEnd);
+            },
+
+            selfTest() {
+                Repository.log("Running selfTest validation checks...");
+                let passed = true;
+
+                // Test 1: Config check
+                try {
+                    validateConfig();
+                    Repository.log("[PASS] Configuration validations correct.");
+                } catch(e) {
+                    Repository.log(`[FAIL] Configuration validations failed: ${e.message}`);
+                    passed = false;
+                }
+
+                // Test 2: Midpoint projection check
+                const pt = Service.project3D(0, 0, 0, 0, 0);
+                if (pt && Math.abs(pt.x - 300) < 1 && Math.abs(pt.y - 225) < 1) {
+                    Repository.log("[PASS] 3D Vector projection matches center.");
+                } else {
+                    Repository.log("[FAIL] 3D Vector projection failed to center.");
+                    passed = false;
+                }
+
+                return passed;
+            }
+        };
+
+        // ==========================================
+        // 6. UI LAYER & RENDERER
+        // ==========================================
+        const UI = {
+            init() {
+                Repository.onStateChange = (state) => {
+                    this.renderDOM(state);
+                    this.render3DNet(state);
+                };
+                Repository.onLog = (line) => {
+                    const logs = document.getElementById('diagnostics-logs');
+                    if (logs) {
+                        logs.innerHTML += `<div>${line}</div>`;
+                        logs.scrollTop = logs.scrollHeight;
+                    }
+                };
+
+                this.renderDOM(Repository.getState());
+                this.render3DNet(Repository.getState());
+            },
+
+            renderDOM(state) {
+                const t = CONFIG.translations[state.lang];
+
+                document.getElementById('lbl-mission-control').innerText = t['mission-control'];
+                document.getElementById('lbl-viewport-title').innerText = t['viewport-title'];
+                document.getElementById('lbl-esol-title').innerText = t['esol-title'];
+                document.getElementById('lbl-fold').innerText = t['fold'];
+                document.getElementById('lbl-width').innerText = t['width'];
+                document.getElementById('lbl-height').innerText = t['height'];
+                document.getElementById('lbl-depth').innerText = t['depth'];
+                document.getElementById('lbl-match-state').innerText = t['match-state'];
+                
+                document.getElementById('val-fold').innerText = Math.round(state.foldVal) + '%';
+                document.getElementById('val-width').innerText = state.dimA;
+                document.getElementById('val-length').innerText = state.dimB;
+                document.getElementById('val-depth').innerText = state.dimC;
+
+                // Total progress calculation
+                const progressPct = Math.round((state.completedQuests.length / CONFIG.quests.length) * 100);
+                document.getElementById('score-display').innerText = `${progressPct}%`;
+                document.getElementById('quest-status-flag').innerText = progressPct === 100 ? 'CALIBRATED' : 'ONLINE';
+
+                // Shapes name HUD
+                const shapeNames = { 'prism': 'Rectangular Prism', 'triangular': 'Triangular Prism', 'pyramid': 'Square Pyramid' };
+                document.getElementById('active-shape-hud').innerText = `Shape: ${shapeNames[state.activeShape]}`;
+
+                // Quest lists update
+                const questsContainer = document.getElementById('quests-container');
+                questsContainer.innerHTML = '';
+                CONFIG.quests.forEach(q => {
+                    const isDone = state.completedQuests.includes(q.id);
+                    const title = state.lang === 'es' ? q.title_es : q.title;
+                    const desc = state.lang === 'es' ? q.desc_es : q.desc;
+
+                    questsContainer.innerHTML += `
+                        <div class="quest-card ${isDone?'completed':''}">
+                            <div class="quest-info">
+                                <span class="quest-title-text">${title}</span>
+                                <span class="quest-desc-text">${desc}</span>
+                            </div>
+                            <span style="font-size:1.2rem;">${isDone?'✅':'🛰️'}</span>
+                        </div>
+                    `;
+                });
+
+                // Formulas text calculator display
+                const formulaDisplay = document.getElementById('formula-display');
+                if (state.activeShape === 'prism') {
+                    const sa = 2 * (state.dimA * state.dimB + state.dimB * state.dimC + state.dimA * state.dimC);
+                    formulaDisplay.innerText = `SA = 2(ab + bc + ac) = ${sa.toFixed(1)} sq units`;
+                } else if (state.activeShape === 'triangular') {
+                    // Triangular Prism: 2 triangular bases + 3 rectangular side panels
+                    const sa = (state.dimA * state.dimB) + (state.dimC * (state.dimA + state.dimB + Math.sqrt(state.dimA * state.dimA + state.dimB * state.dimB)));
+                    formulaDisplay.innerText = `SA = bh + c(a + b + d) = ${sa.toFixed(1)} sq units`;
+                } else {
+                    // Square Pyramid: square base + 4 triangular sides
+                    const sa = (state.dimA * state.dimA) + 2 * (state.dimA * Math.sqrt((state.dimA/2)*(state.dimA/2) + state.dimC*state.dimC));
+                    formulaDisplay.innerText = `SA = b² + 2bH = ${sa.toFixed(1)} sq units`;
+                }
+
+                // Sentence stems update
+                const stemsContainer = document.getElementById('sentence-stems-container');
+                stemsContainer.innerHTML = '';
+                CONFIG.stems.forEach(stem => {
+                    let text = state.lang === 'es' ? stem.es : stem.en;
+                    
+                    const countFaces = state.activeShape === 'prism' ? 6 : (state.activeShape === 'triangular' ? 5 : 5);
+                    let saVal = 0;
+                    if (state.activeShape === 'prism') {
+                        saVal = 2 * (state.dimA * state.dimB + state.dimB * state.dimC + state.dimA * state.dimC);
+                    } else if (state.activeShape === 'triangular') {
+                        saVal = (state.dimA * state.dimB) + (state.dimC * (state.dimA + state.dimB + Math.sqrt(state.dimA*state.dimA + state.dimB*state.dimB)));
+                    } else {
+                        saVal = (state.dimA * state.dimA) + 2 * (state.dimA * Math.sqrt((state.dimA/2)*(state.dimA/2) + state.dimC*state.dimC));
+                    }
+
+                    text = text.replace(/\[shape\]/g, shapeNames[state.activeShape]);
+                    text = text.replace(/\[count\]/g, countFaces);
+                    text = text.replace(/\[sa\]/g, saVal.toFixed(1));
+
+                    stemsContainer.innerHTML += `
+                        <div class="sentence-stem-tag" onclick="Repository.log('Scaffold Stem: ' + '${text.replace(/'/g, "\\'")}')">
+                            ${text}
+                        </div>
+                    `;
+                });
+            },
+
+            // 3D Geometry vertices rendering engine
+            render3DNet(state) {
+                const svg = document.getElementById('viewport-3d');
+                if (!svg) return;
+
+                const { activeShape, foldVal, dimA, dimB, dimC, cameraYaw, cameraPitch } = state;
+                const theta = (foldVal / 100) * (Math.PI / 2); // Fold angle 0 to 90 degrees
+                
+                let svgContent = '';
+
+                // Draw helper grid on white SVG background
+                for (let i = -10; i <= 10; i++) {
+                    const lineVal = i * 20;
+                    svgContent += `<line x1="0" y1="${225 + lineVal}" x2="600" y2="${225 + lineVal}" stroke="#f1f5f9" stroke-width="0.5" />`;
+                    svgContent += `<line x1="${300 + lineVal}" y1="0" x2="${300 + lineVal}" y2="450" stroke="#f1f5f9" stroke-width="0.5" />`;
+                }
+
+                // Generates vertices, folds them, and projects them
+                let faces = [];
+
+                if (activeShape === 'prism') {
+                    // Rectangular Prism Net: 6 faces
+                    // Base face 0 (stays flat at Y = 0)
+                    // Vertices: [x, y, z]
+                    const w = dimA / 2;
+                    const l = dimB / 2;
+                    const h = dimC;
+
+                    // Face 0: Bottom base (Center)
+                    faces.push({
+                        pts: [ [-w, 0, -l], [w, 0, -l], [w, 0, l], [-w, 0, l] ],
+                        color: CONFIG.colors.faces[0], label: 'Base'
+                    });
+
+                    // Face 1: Right panel (folds around +X base edge)
+                    // Edge rotation: x = w. Rotate points around Z-axis by +theta
+                    faces.push({
+                        pts: [
+                            [w, 0, -l],
+                            [w + h * Math.cos(theta), h * Math.sin(theta), -l],
+                            [w + h * Math.cos(theta), h * Math.sin(theta), l],
+                            [w, 0, l]
+                        ],
+                        color: CONFIG.colors.faces[1], label: 'Right'
+                    });
+
+                    // Face 2: Left panel (folds around -X base edge)
+                    faces.push({
+                        pts: [
+                            [-w, 0, l],
+                            [-w - h * Math.cos(theta), h * Math.sin(theta), l],
+                            [-w - h * Math.cos(theta), h * Math.sin(theta), -l],
+                            [-w, 0, -l]
+                        ],
+                        color: CONFIG.colors.faces[2], label: 'Left'
+                    });
+
+                    // Face 3: Front panel (folds around +Z base edge)
+                    faces.push({
+                        pts: [
+                            [-w, 0, l],
+                            [w, 0, l],
+                            [w, h * Math.sin(theta), l + h * Math.cos(theta)],
+                            [-w, h * Math.sin(theta), l + h * Math.cos(theta)]
+                        ],
+                        color: CONFIG.colors.faces[3], label: 'Front'
+                    });
+
+                    // Face 4: Back panel (folds around -Z base edge)
+                    faces.push({
+                        pts: [
+                            [w, 0, -l],
+                            [-w, 0, -l],
+                            [-w, h * Math.sin(theta), -l - h * Math.cos(theta)],
+                            [w, h * Math.sin(theta), -l - h * Math.cos(theta)]
+                        ],
+                        color: CONFIG.colors.faces[4], label: 'Back'
+                    });
+
+                    // Face 5: Top lid (folds attached to the back panel, so folds double)
+                    // Folds by theta around the back panel edge, plus theta itself
+                    const backZ = -l - h * Math.cos(theta);
+                    const backY = h * Math.sin(theta);
+                    const doubleTheta = theta * 2;
+                    faces.push({
+                        pts: [
+                            [-w, backY, backZ],
+                            [w, backY, backZ],
+                            [w, backY + (2*w) * Math.sin(doubleTheta), backZ - (2*w) * Math.cos(doubleTheta)],
+                            [-w, backY + (2*w) * Math.sin(doubleTheta), backZ - (2*w) * Math.cos(doubleTheta)]
+                        ],
+                        color: CONFIG.colors.faces[5], label: 'Top'
+                    });
+                } else if (activeShape === 'triangular') {
+                    // Triangular Prism Net
+                    const w = dimA / 2;
+                    const h = dimB; // triangular height
+                    const depth = dimC / 2; // prism length
+
+                    // Face 0: Bottom central rectangle
+                    faces.push({
+                        pts: [ [-w, 0, -depth], [w, 0, -depth], [w, 0, depth], [-w, 0, depth] ],
+                        color: CONFIG.colors.faces[0], label: 'Base'
+                    });
+
+                    // Face 1: Front Triangle (folds around +Z edge)
+                    faces.push({
+                        pts: [
+                            [-w, 0, depth],
+                            [w, 0, depth],
+                            [0, h * Math.sin(theta), depth + h * Math.cos(theta)]
+                        ],
+                        color: CONFIG.colors.faces[1], label: 'Tri-Front'
+                    });
+
+                    // Face 2: Back Triangle (folds around -Z edge)
+                    faces.push({
+                        pts: [
+                            [w, 0, -depth],
+                            [-w, 0, -depth],
+                            [0, h * Math.sin(theta), -depth - h * Math.cos(theta)]
+                        ],
+                        color: CONFIG.colors.faces[2], label: 'Tri-Back'
+                    });
+
+                    // Face 3: Right Side panel
+                    faces.push({
+                        pts: [
+                            [w, 0, -depth],
+                            [w + 2*w * Math.cos(theta), 2*w * Math.sin(theta), -depth],
+                            [w + 2*w * Math.cos(theta), 2*w * Math.sin(theta), depth],
+                            [w, 0, depth]
+                        ],
+                        color: CONFIG.colors.faces[3], label: 'Side Rect'
+                    });
+
+                    // Face 4: Left Side panel
+                    faces.push({
+                        pts: [
+                            [-w, 0, depth],
+                            [-w - 2*w * Math.cos(theta), 2*w * Math.sin(theta), depth],
+                            [-w - 2*w * Math.cos(theta), 2*w * Math.sin(theta), -depth],
+                            [-w, 0, -depth]
+                        ],
+                        color: CONFIG.colors.faces[4], label: 'Side Rect'
+                    });
+                } else {
+                    // Square Pyramid Net
+                    const w = dimA / 2;
+                    const h = dimC; // pyramid height/slant height
+
+                    // Center Square Base
+                    faces.push({
+                        pts: [ [-w, 0, -w], [w, 0, -w], [w, 0, w], [-w, 0, w] ],
+                        color: CONFIG.colors.faces[0], label: 'Square Base'
+                    });
+
+                    // 4 Triangular lateral faces
+                    faces.push({
+                        pts: [ [w, 0, -w], [w, 0, w], [w + h * Math.cos(theta), h * Math.sin(theta), 0] ],
+                        color: CONFIG.colors.faces[1], label: 'Triangle'
+                    });
+                    faces.push({
+                        pts: [ [-w, 0, w], [-w, 0, -w], [-w - h * Math.cos(theta), h * Math.sin(theta), 0] ],
+                        color: CONFIG.colors.faces[2], label: 'Triangle'
+                    });
+                    faces.push({
+                        pts: [ [-w, 0, w], [w, 0, w], [0, h * Math.sin(theta), w + h * Math.cos(theta)] ],
+                        color: CONFIG.colors.faces[3], label: 'Triangle'
+                    });
+                    faces.push({
+                        pts: [ [w, 0, -w], [-w, 0, -w], [0, h * Math.sin(theta), -w - h * Math.cos(theta)] ],
+                        color: CONFIG.colors.faces[4], label: 'Triangle'
+                    });
+                }
+
+                // Render faces projected onto screen
+                faces.forEach(f => {
+                    const screenPts = [];
+                    let valid = true;
+                    
+                    f.pts.forEach(p => {
+                        const pt = Service.project3D(p[0], p[1], p[2], cameraYaw, cameraPitch);
+                        if (pt) screenPts.push(pt);
+                        else valid = false;
+                    });
+
+                    if (valid && screenPts.length >= 3) {
+                        const pathStr = screenPts.map((p, i) => `${i===0?'M':'L'}${p.x},${p.y}`).join(' ') + ' Z';
+                        
+                        // Render shaded face with border lines
+                        svgContent += `<path d="${pathStr}" fill="${f.color}" stroke="${CONFIG.colors.border}" stroke-width="1.5" stroke-linejoin="round" fill-opacity="0.85" />`;
+                        
+                        // Centroid calculation for face label positioning
+                        const midX = screenPts.reduce((acc, p) => acc + p.x, 0) / screenPts.length;
+                        const midY = screenPts.reduce((acc, p) => acc + p.y, 0) / screenPts.length;
+                        svgContent += `<text x="${midX}" y="${midY + 4}" fill="${CONFIG.colors.text}" font-family="var(--font-display)" font-size="10" font-weight="700" text-anchor="middle">${f.label}</text>`;
+                    }
+                });
+
+                svg.innerHTML = svgContent;
+            }
+        };
+
+        // Interactive Handlers
+        function handleSlider(param, val) {
+            Controller.updateSlider(param, val);
+        }
+
+        function handleShapeSelect(shape) {
+            Controller.updateShape(shape);
+        }
+
+        function toggleLanguage() {
+            const state = Repository.getState();
+            const nextLang = state.lang === 'en' ? 'es' : 'en';
+            Repository.setState({ lang: nextLang });
+            Repository.log(`Bilingual context shifted to: ${nextLang.toUpperCase()}`);
+        }
+
+        function openDiagnostics() {
+            document.getElementById('diagnostics-overlay').style.display = 'block';
+        }
+
+        function closeDiagnostics() {
+            document.getElementById('diagnostics-overlay').style.display = 'none';
+        }
+
+        function clearDiagnosticsLogs() {
+            Repository.setState({ logs: [] });
+            document.getElementById('diagnostics-logs').innerHTML = '';
+            Repository.log("Logs reset.");
+        }
+
+        function runSelfTests() {
+            openDiagnostics();
+            const result = Controller.selfTest();
+            const box = document.getElementById('diagnostics-logs');
+            if (result) {
+                box.innerHTML += `<div style="color:var(--secondary); font-weight:bold;">[SUCCESS] Net folder validations completed successfully.</div>`;
+            } else {
+                box.innerHTML += `<div style="color:var(--danger); font-weight:bold;">[ERROR] Self-test failures detected.</div>`;
+            }
+        }
+
+        window.addEventListener('load', () => {
+            Controller.init();
+            UI.init();
+        });
+    </script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

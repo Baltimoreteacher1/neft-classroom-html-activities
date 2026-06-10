@@ -91,7 +91,7 @@ for (const id of lessonIds) {
     }
   }
 
-  const script = html.match(/<script>([\s\S]*)<\/script>/i)?.[1];
+  const script = html.match(/<script>([\s\S]*?)<\/script>/i)?.[1];
   if (!script) {
     issues.push({ id, level: "CRITICAL", msg: "Missing inline script" });
   } else {

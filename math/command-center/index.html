@@ -194,7 +194,10 @@
         color: var(--muted);
       }
     </style>
-  </head>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
   <body class="tools-page">
     <main class="page-shell">
       <!-- 1. Hero -->
@@ -372,95 +375,130 @@
       <section aria-labelledby="cc-launch-heading">
         <div class="section-heading">
           <p class="eyebrow">Launch &amp; Actions</p>
-          <h2 id="cc-launch-heading">Start a Workflow</h2>
+          <h2 id="cc-launch-heading">Command Console</h2>
           <p>
-            These actions run as a guided build workflow. The live in-browser
-            buttons below are <strong>previews</strong> — they will connect once
-            the Command Center backend is wired up.
+            Trigger repository scripts, build lesson resources, package worksheets, and review QA tests directly from this page.
           </p>
         </div>
-        <div class="note-panel" role="note">
+        
+        <!-- Status Indicator Panel -->
+        <div id="status-panel" class="note-panel" role="note">
           <p>
-            <strong>Status:</strong> The Command Center build/audit/package
-            engine is a local teacher workflow and is
-            <strong>not yet connected to this page</strong>. The buttons below
-            are placeholders so nothing here pretends to be live. Use the
-            <a href="/math/finder/">Activities Finder</a> and
-            <a href="/directory/">Full Directory</a> for materials that are
-            ready to use right now.
+            <strong>Status:</strong> Connecting to the local Command Center server...
           </p>
         </div>
+
         <div
           class="activity-grid"
           aria-label="Command Center actions"
           style="margin-top: 16px"
         >
+          <!-- Card 1: Build -->
           <div class="cc-action-card">
-            <span class="cc-preview-pill">Preview</span>
+            <span class="cc-preview-pill" id="card-build-pill">Preview</span>
             <h3>🛠️ Build a Math Resource</h3>
             <p>
-              Start from an idea and generate a packet, notes, worksheet, or
-              game.
+              Compile lesson maps, registries, and build search indexes for lesson launchers.
             </p>
-            <span class="cc-action-foot"
-              ><span class="cc-disabled-btn" aria-disabled="true"
-                >Not yet connected</span
-              ></span
-            >
+            <span class="cc-action-foot" id="card-build-foot">
+              <span class="cc-disabled-btn" aria-disabled="true">Not yet connected</span>
+            </span>
           </div>
+
+          <!-- Card 2: Audit -->
           <div class="cc-action-card">
-            <span class="cc-preview-pill">Preview</span>
+            <span class="cc-preview-pill" id="card-audit-pill">Preview</span>
             <h3>🔍 Audit a Resource</h3>
             <p>
-              Check a worksheet's math, answer key, and readability for errors.
+              Check curriculum config settings and run alignment checks on lesson plans.
             </p>
-            <span class="cc-action-foot"
-              ><span class="cc-disabled-btn" aria-disabled="true"
-                >Not yet connected</span
-              ></span
-            >
+            <span class="cc-action-foot" id="card-audit-foot">
+              <span class="cc-disabled-btn" aria-disabled="true">Not yet connected</span>
+            </span>
           </div>
+
+          <!-- Card 3: Package -->
           <div class="cc-action-card">
-            <span class="cc-preview-pill">Preview</span>
+            <span class="cc-preview-pill" id="card-package-pill">Preview</span>
             <h3>📦 Package a Resource</h3>
             <p>
-              Bundle a finished resource into DOCX, PDF, and answer-key files.
+              Export and compile notes, editable DOCX templates, and PDFs for print.
             </p>
-            <span class="cc-action-foot"
-              ><span class="cc-disabled-btn" aria-disabled="true"
-                >Not yet connected</span
-              ></span
-            >
+            <span class="cc-action-foot" id="card-package-foot">
+              <span class="cc-disabled-btn" aria-disabled="true">Not yet connected</span>
+            </span>
           </div>
+
+          <!-- Card 5: QA -->
           <div class="cc-action-card">
-            <span class="cc-preview-pill">Preview</span>
-            <h3>🗂️ View Recent Outputs</h3>
-            <p>Browse the materials most recently built and packaged.</p>
-            <span class="cc-action-foot"
-              ><span class="cc-disabled-btn" aria-disabled="true"
-                >Not yet connected</span
-              ></span
-            >
+            <span class="cc-preview-pill" id="card-qa-pill">Preview</span>
+            <h3>📋 Run QA Loop</h3>
+            <p>
+              Execute the full QA test loop to verify links, Reveal Math launchers, and pages.
+            </p>
+            <span class="cc-action-foot" id="card-qa-foot">
+              <span class="cc-disabled-btn" aria-disabled="true">Not yet connected</span>
+            </span>
           </div>
-          <div class="cc-action-card">
-            <span class="cc-preview-pill">Preview</span>
-            <h3>📋 Open QA Reports</h3>
-            <p>Review answer-key and quality checks from recent audits.</p>
-            <span class="cc-action-foot"
-              ><span class="cc-disabled-btn" aria-disabled="true"
-                >Not yet connected</span
-              ></span
-            >
-          </div>
+
+          <!-- Card 6: Back Link -->
           <a class="activity-card" href="/math/">
             <span class="card-kicker">Live now</span>
             <h3>← Back to Math Hub</h3>
             <p>
-              Return to the Grade 6 Reveal Math curriculum hub and ready-to-use
-              tools.
+              Return to the Grade 6 Reveal Math curriculum hub and ready-to-use tools.
             </p>
             <span class="button-link">Open Math Hub</span>
           </a>
+        </div>
+
+        <!-- Custom Tool Selector Section -->
+        <div id="tool-selector-section" style="display: none; margin-top: 24px; padding: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);">
+          <h3 style="margin-bottom: 16px; font-size: 1.15rem;">⚡ Advanced Shell Controls</h3>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <!-- Run Script Dropdown -->
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; color: var(--teal-dark); margin-bottom: 6px;">Execute package.json Script</label>
+              <div style="display: flex; gap: 8px;">
+                <select id="script-select" style="flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); font-size: 0.92rem; outline: none; background: var(--surface);">
+                  <!-- Populated dynamically -->
+                </select>
+                <button class="button-link" onclick="runSelectedScript()" style="margin: 0; padding: 8px 16px; font-size: 0.92rem;">Execute</button>
+              </div>
+            </div>
+
+            <!-- Generate Slides Selector -->
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; color: var(--teal-dark); margin-bottom: 6px;">Trigger Bulk Google Slides Gen</label>
+              <div style="display: flex; gap: 8px;">
+                <select id="lesson-select" style="flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); font-size: 0.92rem; outline: none; background: var(--surface);">
+                  <!-- Populated dynamically -->
+                </select>
+                <button class="button-link" onclick="runScript('generate-slides')" style="margin: 0; padding: 8px 16px; font-size: 0.92rem;">Bulk Sync</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent QA logs view -->
+          <div style="margin-top: 20px; border-top: 1px solid var(--line); padding-top: 16px;">
+            <h4 style="font-size: 0.9rem; font-weight: 800; text-transform: uppercase; color: var(--muted); margin-bottom: 10px;">Recent QA Log Output Files</h4>
+            <ul id="logs-list" style="margin: 0; padding: 0; list-style: none;">
+              <!-- Populated dynamically -->
+            </ul>
+          </div>
+        </div>
+
+        <!-- Terminal Log Box Display -->
+        <div id="terminal-section" style="display: none; margin-top: 24px;">
+          <h3 style="font-size: 1.05rem; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <span>🖥️ Live Console Terminal Output</span>
+            <div style="display: flex; gap: 8px;">
+              <button class="button-link" id="btn-stop-script" onclick="stopRunningScript()" style="font-size: 0.75rem; padding: 4px 10px; margin: 0; background: #fee2e2; color: #991b1b; border-color: #fca5a5; display: none;">Stop Process</button>
+              <button class="button-link" onclick="clearTerminal()" style="font-size: 0.75rem; padding: 4px 10px; margin: 0;">Clear Logs</button>
+            </div>
+          </h3>
+          <pre id="terminal-output" style="background: #02040a; color: #34d399; font-family: var(--font-mono); font-size: 0.8rem; padding: 16px; border-radius: var(--radius); max-height: 400px; overflow-y: auto; white-space: pre-wrap; border: 1px solid var(--line); line-height: 1.45; box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);"></pre>
         </div>
       </section>
 
@@ -471,5 +509,246 @@
     </main>
     <script src="/assets/app.js" defer></script>
     <script src="/assets/nt-page-enhance.js" defer></script>
-  </body>
+    
+    <script>
+      const SERVER_URL = "http://localhost:3030";
+      let eventSource = null;
+
+      async function checkServerConnection() {
+        try {
+          const res = await fetch(`${SERVER_URL}/api/status`);
+          if (res.ok) {
+            const data = await res.json();
+            onServerConnected(data);
+          } else {
+            onServerDisconnected();
+          }
+        } catch (e) {
+          onServerDisconnected();
+        }
+      }
+
+      function onServerConnected(data) {
+        const statusPanel = document.getElementById("status-panel");
+        statusPanel.style.borderLeft = "5px solid #22c55e";
+        statusPanel.style.background = "#f0fdf4";
+        statusPanel.innerHTML = `
+          <p style="color: #166534; font-weight: 700; font-size: 0.95rem;">
+            🟢 Local Command Server Connected (Branch: <code>${data.branch}</code>${data.isDirty ? ' - <span style="color:#b91c1c;">*Dirty Changes Present</span>' : ''})
+          </p>
+          <p style="font-size: 0.88rem; margin-top: 4px; color: #166534; line-height:1.4;">
+            Local Node server is online on port 3030. You can now execute build tasks, run audits, and package handouts directly from your browser.
+          </p>
+        `;
+
+        // Update cards to trigger runs
+        setActionCardActive("card-build", "Run Build", () => runScript("build"));
+        setActionCardActive("card-audit", "Run Audit", () => runScript("audit"));
+        setActionCardActive("card-package", "Package Downloads", () => runScript("generate-downloads"));
+        setActionCardActive("card-qa", "Run QA Loop", () => runScript("qa:loop"));
+
+        // Show dropdown selector panel
+        document.getElementById("tool-selector-section").style.display = "block";
+
+        // Populate script select
+        const scriptSelect = document.getElementById("script-select");
+        scriptSelect.innerHTML = "";
+        data.scripts.sort().forEach(script => {
+          scriptSelect.innerHTML += `<option value="${script}">${script}</option>`;
+        });
+
+        // Load logs lists and lessons lists
+        fetchRecentLogs();
+        fetchLessons();
+      }
+
+      function onServerDisconnected() {
+        const statusPanel = document.getElementById("status-panel");
+        statusPanel.style.borderLeft = "5px solid var(--coral)";
+        statusPanel.style.background = "#fdf3e7";
+        statusPanel.innerHTML = `
+          <p style="color: #c2410c; font-weight: 700; font-size: 0.95rem;">
+            ⚠️ Local Command Server Offline
+          </p>
+          <p style="font-size: 0.88rem; margin-top: 4px; color: var(--muted); line-height:1.4;">
+            The command engine is currently offline. Start the server in your local directory to enable live builds, logs, and packagers:
+            <code style="display:block; margin-top:6px; padding:6px; background:#f4f4f5; border:1px solid #e4e4e7; border-radius:4px; font-family:var(--font-mono);">node tools/command-center-server.mjs</code>
+          </p>
+        `;
+
+        setActionCardDisabled("card-build");
+        setActionCardDisabled("card-audit");
+        setActionCardDisabled("card-package");
+        setActionCardDisabled("card-qa");
+
+        document.getElementById("tool-selector-section").style.display = "none";
+      }
+
+      function setActionCardActive(id, btnText, clickHandler) {
+        const foot = document.getElementById(`${id}-foot`);
+        foot.innerHTML = `<button class="button-link" style="margin: 0; width: 100%; text-align: center;">${btnText}</button>`;
+        foot.querySelector("button").onclick = clickHandler;
+
+        const pill = document.getElementById(`${id}-pill`);
+        if (pill) {
+          pill.innerText = "Live";
+          pill.style.background = "#ecfdf5";
+          pill.style.color = "#059669";
+          pill.style.borderColor = "rgba(5, 150, 105, 0.25)";
+        }
+      }
+
+      function setActionCardDisabled(id) {
+        const foot = document.getElementById(`${id}-foot`);
+        foot.innerHTML = `<span class="cc-disabled-btn" aria-disabled="true">Not yet connected</span>`;
+
+        const pill = document.getElementById(`${id}-pill`);
+        if (pill) {
+          pill.innerText = "Preview";
+          pill.style.background = "#fdf3e7";
+          pill.style.color = "var(--coral)";
+          pill.style.borderColor = "rgba(194, 65, 12, 0.25)";
+        }
+      }
+
+      function runScript(scriptName) {
+        const termSec = document.getElementById("terminal-section");
+        termSec.style.display = "block";
+        termSec.scrollIntoView({ behavior: "smooth" });
+
+        const termOut = document.getElementById("terminal-output");
+        termOut.innerText = `>>> [LOCAL COMMAND ENGINE] npm run ${scriptName}\n>>> Starting process...\n\n`;
+
+        document.getElementById("btn-stop-script").style.display = "inline-block";
+
+        if (eventSource) {
+          eventSource.close();
+        }
+
+        eventSource = new EventSource(`${SERVER_URL}/api/run?script=${scriptName}`);
+
+        eventSource.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            if (data.type === "stdout" || data.type === "stderr") {
+              // Strip ANSI escape color codes
+              const clean = data.text.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, "");
+              termOut.innerText += clean;
+              termOut.scrollTop = termOut.scrollHeight;
+            } else if (data.type === "exit") {
+              termOut.innerText += `\n\n>>> Process finished with exit code: ${data.code}\n`;
+              termOut.scrollTop = termOut.scrollHeight;
+              cleanupScriptProcess();
+              fetchRecentLogs();
+            }
+          } catch (e) {
+            console.error("Failed to parse logs event stream:", e);
+          }
+        };
+
+        eventSource.onerror = () => {
+          termOut.innerText += `\n\n>>> [ERROR] Connection lost or process terminated by server.\n`;
+          termOut.scrollTop = termOut.scrollHeight;
+          cleanupScriptProcess();
+        };
+      }
+
+      function stopRunningScript() {
+        if (eventSource) {
+          const termOut = document.getElementById("terminal-output");
+          termOut.innerText += `\n\n>>> Terminating process by request...\n`;
+          eventSource.close();
+          eventSource = null;
+          cleanupScriptProcess();
+          Repository.log("Script execution terminated manually.");
+        }
+      }
+
+      function cleanupScriptProcess() {
+        if (eventSource) {
+          eventSource.close();
+          eventSource = null;
+        }
+        document.getElementById("btn-stop-script").style.display = "none";
+      }
+
+      function clearTerminal() {
+        document.getElementById("terminal-output").innerText = "";
+      }
+
+      function runSelectedScript() {
+        const script = document.getElementById("script-select").value;
+        if (script) {
+          runScript(script);
+        }
+      }
+
+      async function fetchRecentLogs() {
+        try {
+          const res = await fetch(`${SERVER_URL}/api/logs`);
+          if (res.ok) {
+            const data = await res.json();
+            const list = document.getElementById("logs-list");
+            list.innerHTML = "";
+            if (data.logs.length === 0) {
+              list.innerHTML = `<li style="font-size:0.85rem; color:var(--muted); padding:8px 0;">No recent QA log files available.</li>`;
+              return;
+            }
+            data.logs.slice(0, 5).forEach(log => {
+              const date = new Date(log.time).toLocaleString();
+              const size = (log.size / 1024).toFixed(1);
+              list.innerHTML += `
+                <li style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--line); font-size:0.88rem;">
+                  <span>📝 <code>${log.name}</code> (${size} KB) - <small style="color:var(--muted);">${date}</small></span>
+                  <button class="button-link" onclick="viewLogFile('${log.name}')" style="font-size:0.75rem; padding:4px 10px; margin:0;">Open</button>
+                </li>
+              `;
+            });
+          }
+        } catch (e) {
+          console.error("Failed to load logs:", e);
+        }
+      }
+
+      async function viewLogFile(fileName) {
+        try {
+          const res = await fetch(`${SERVER_URL}/api/view-log?file=${fileName}`);
+          if (res.ok) {
+            const text = await res.text();
+            const termSec = document.getElementById("terminal-section");
+            termSec.style.display = "block";
+            termSec.scrollIntoView({ behavior: "smooth" });
+            document.getElementById("terminal-output").innerText = `>>> Loading log file: ${fileName}...\n\n${text}`;
+          }
+        } catch (e) {
+          console.error("Failed to open log:", e);
+        }
+      }
+
+      async function fetchLessons() {
+        try {
+          const res = await fetch(`${SERVER_URL}/api/lessons`);
+          if (res.ok) {
+            const data = await res.json();
+            const select = document.getElementById("lesson-select");
+            select.innerHTML = "";
+            data.lessons.forEach(l => {
+              select.innerHTML += `<option value="${l.id}">${l.id} - ${l.title}</option>`;
+            });
+          }
+        } catch (e) {
+          console.error("Failed to load lessons:", e);
+        }
+      }
+
+      // Poll connection status on page load and every 5 seconds
+      window.addEventListener("load", () => {
+        checkServerConnection();
+        setInterval(checkServerConnection, 5000);
+      });
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
 </html>
