@@ -240,11 +240,50 @@
         color: var(--muted);
         font-size: 15px;
       }
+      /* --- Enterprise polish (additive, deploy-safe) --- */
+      .opt:focus-visible,
+      .btn:focus-visible {
+        outline: 3px solid var(--blue);
+        outline-offset: 3px;
+      }
+      .ghero .deco {
+        transition: transform 0.25s ease-out;
+        will-change: transform;
+      }
+      .hud-pop {
+        animation: hudPop 0.34s ease;
+      }
+      @keyframes hudPop {
+        40% {
+          transform: scale(1.22);
+        }
+      }
+      .rr-spark {
+        position: fixed;
+        z-index: 60;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        pointer-events: none;
+        will-change: transform, opacity;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .ghero .deco {
+          transform: none !important;
+          transition: none;
+        }
+        .opt.right,
+        .opt.wrong,
+        .hud-pop,
+        .rr-spark {
+          animation: none !important;
+        }
+      }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <header class="ghero">
       <div class="deco">⚖️</div>
@@ -628,6 +667,7 @@
             state.q.why +
             (state.streak > 1 ? "  🔥 Streak ×" + state.streak : "");
           fb.className = "feedback ok";
+          burst(btn);
         } else {
           state.streak = 0;
           state.lives--;
@@ -658,6 +698,8 @@
         document.getElementById("streak").textContent = state.streak;
         document.getElementById("lives").textContent =
           state.lives > 0 ? "❤".repeat(state.lives) : "—";
+        popEl("score");
+        if (state.streak > 1) popEl("streak");
       }
       function endGame() {
         clearInterval(state.timer);
@@ -687,6 +729,70 @@
             });
         } catch (e) {}
       }
+      var rrReduce =
+        window.matchMedia &&
+        matchMedia("(prefers-reduced-motion: reduce)").matches;
+      function burst(el) {
+        if (rrReduce || !el || !el.getBoundingClientRect) return;
+        var r = el.getBoundingClientRect();
+        var cx = r.left + r.width / 2,
+          cy = r.top + r.height / 2;
+        var colors = ["#1aa179", "#f0a400", "#3b7dd8", "#e0542f"];
+        for (var i = 0; i < 12; i++) {
+          var s = document.createElement("div");
+          s.className = "rr-spark";
+          s.style.left = cx + "px";
+          s.style.top = cy + "px";
+          s.style.background = colors[i % colors.length];
+          document.body.appendChild(s);
+          var ang = (Math.PI * 2 * i) / 12,
+            dist = 36 + Math.random() * 32;
+          var tx = Math.cos(ang) * dist,
+            ty = Math.sin(ang) * dist;
+          s.animate(
+            [
+              { transform: "translate(-50%,-50%) scale(1)", opacity: 1 },
+              {
+                transform:
+                  "translate(calc(-50% + " +
+                  tx +
+                  "px), calc(-50% + " +
+                  ty +
+                  "px)) scale(0)",
+                opacity: 0,
+              },
+            ],
+            { duration: 600, easing: "cubic-bezier(.3,.7,.4,1)" },
+          ).onfinish = (function (node) {
+            return function () {
+              node.remove();
+            };
+          })(s);
+        }
+      }
+      function popEl(id) {
+        if (rrReduce) return;
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.classList.remove("hud-pop");
+        void el.offsetWidth;
+        el.classList.add("hud-pop");
+      }
+      (function () {
+        var hero = document.querySelector(".ghero");
+        var deco = document.querySelector(".ghero .deco");
+        if (!hero || !deco || rrReduce) return;
+        hero.addEventListener("pointermove", function (e) {
+          var r = hero.getBoundingClientRect();
+          var dx = (e.clientX - r.left) / r.width - 0.5;
+          var dy = (e.clientY - r.top) / r.height - 0.5;
+          deco.style.transform =
+            "translate(" + dx * 18 + "px," + dy * 18 + "px)";
+        });
+        hero.addEventListener("pointerleave", function () {
+          deco.style.transform = "";
+        });
+      })();
       document.getElementById("startBtn").onclick = startGame;
       document.getElementById("againBtn").onclick = startGame;
       document.getElementById("nextBtn").onclick = function () {
@@ -697,7 +803,7 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
 </html>
