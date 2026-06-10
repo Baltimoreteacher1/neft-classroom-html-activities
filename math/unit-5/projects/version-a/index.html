@@ -788,10 +788,40 @@
           <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);">
             <label class="fld">Calculated Bedroom Dimensions (used in calculation)</label>
             <div class="grid2">
+              
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://en.wikipedia.org/wiki/House_plans#Average_size" target="_blank" class="pk-research-inline-link">🔗 Wikipedia House Floor Plan Standards ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Look up standard footprint guidelines for new residential home plans. Find the typical average area footprint of a standard master bedroom (often around 220 square feet). Enter the size below:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Bedroom Design Standard</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Typical Bedroom Footprint (sq ft)</label>
+              <input type="number" id="worldSize" data-save step="any" min="0" placeholder="e.g. 220" oninput="recalcAll()">
+            </div>
+          </div>
+          
+          <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);">
+            <label class="fld">Calculated Bedroom Dimensions (used in calculation)</label>
+            <div class="grid2">
               <div>
                 <label class="fld" for="p1-base">Base Length (ft)</label>
                 <input type="number" id="p1-base" data-save readonly style="background: #f1f5f9; border-color: #cbd5e1;">
               </div>
+              <div>
+                <label class="fld" for="p1-height">Height (ft)</label>
+                <input type="number" id="p1-height" data-save readonly style="background: #f1f5f9; border-color: #cbd5e1;">
+              </div>
+            </div>
+          </div>
+        </div>
+    
               <div>
                 <label class="fld" for="p1-height">Height (ft)</label>
                 <input type="number" id="p1-height" data-save readonly style="background: #f1f5f9; border-color: #cbd5e1;">
@@ -1175,13 +1205,57 @@
         <div id="projectVisualizer"></div>
       </section>
   
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+  
       <!-- ===================== PART 2 — PEER ===================== -->
-      <section class="phase">
+      
+      <!-- ===================== PROJECT SETUP ===================== -->
+      <section class="phase" id="phase-setup" data-phase>
         <div class="phase-head">
-          <div class="phase-num" style="background: var(--teal)">2</div>
+          <div class="phase-num" style="background: var(--blue)">S</div>
           <div>
-            <span class="arc-banner">Part 2 · Peer — compare rooms</span>
-            <div class="skill">Compare areas &amp; reason · 6.G.1</div>
+            <span class="arc-banner">Project Setup</span>
+            <h2>Compare With a Partner</h2>
+          </div>
+        </div>
+        
+        <div class="grid2">
+          <div>
+            <p style="font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 20px;">
+              Welcome! Read the scenario below and select your level to begin your design plan.
+            </p>
+            <div style="margin-top: 16px;">
+              
+    <svg width="100%" height="220" viewBox="0 0 500 220" style="background:white; border-radius:12px; border: 1px solid #e2e8f0; max-width: 480px; margin: 0 auto; display: block;" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="setup-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ffffff" />
+          <stop offset="100%" stop-color="#f8fafc" />
+        </linearGradient>
+      </defs>
+      
+      <rect x="20" y="20" width="460" height="200" rx="15" fill="url(#setup-grad)" stroke="#2d874b" stroke-width="2"/>
+      <text x="250" y="60" text-anchor="middle" font-size="20" font-weight="bold" fill="#0f2b3c">BLUEPRINT FLOOR PLAN</text>
+      <path d="M50,80 H450 M50,110 H450 M50,140 H450 M50,170 H450 M100,70 V180 M200,70 V180 M300,70 V180 M400,70 V180" stroke="#e2e7ec" stroke-width="1"/>
+      <rect x="120" y="90" width="140" height="70" fill="rgba(45,135,75,0.15)" stroke="#2d874b" stroke-width="2" stroke-dasharray="4,4"/>
+    
+    </svg>
+  
+            </div>
+          </div>
+          
+          <div style="background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 20px; box-shadow: var(--shadow);">
+            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
+              <span>📋</span> Scenario &amp; Level Options
+            </h3>
             <h2>Compare With a Partner</h2>
           </div>
         </div>
@@ -1191,8 +1265,47 @@
           and by how much.
         </p>
         <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
-          <h3>Interview Sentence Frames</h3>
-          <p>"What is your main floor base and height?"</p>
+            
+            <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line);">
+              <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">
+                You can type your own numbers as you go, or click below to start with our example numbers:
+              </p>
+              <button class="btn ghost" type="button" onclick="useExamples()" style="width: 100%; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                ✨ Use Example Numbers
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+  
+
+      <!-- ===================== PART 1A — SELF ===================== -->
+      <section class="phase" id="phase-1a" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">1a</div>
+          <div>
+            <span class="arc-banner">Part 1a · Self — your real plan</span>
+            <h2>Interview Sentence Frames</h2>
+          </div>
+        </div>
+        
+        <div class="grid2">
+          <div>
+            
+    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
+      <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px;" xmlns="http://www.w3.org/2000/svg">
+        
+      <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Area Shape Geometry Guide</text>
+      <polygon points="180,140 320,140 280,80 200,80" fill="rgba(45,135,75,0.15)" stroke="#2d874b" stroke-width="2"/>
+      <line x1="200" y1="80" x2="200" y2="140" stroke="#c45a3c" stroke-width="1.5" stroke-dasharray="3,3"/>
+      <text x="192" y="115" font-size="9" fill="#c45a3c" font-weight="bold">h</text>
+      <text x="250" y="155" text-anchor="middle" font-size="9" fill="#2d874b" font-weight="bold">base (b)</text>
+      <text x="250" y="185" text-anchor="middle" font-size="11" font-weight="bold" fill="#2d874b">Area = base &times; height</text>
+    
+      </svg>
+    </div>
+  
+            <p>"What is your main floor base and height?"</p>
           <p>"What is your total room area in square feet?"</p>
           <p>"How did you find the area of your nook?"</p>
           <p class="pk-es">"¿Cuál es el área total de tu cuarto en pies²?"</p>
@@ -1262,7 +1375,30 @@
           data-save
           placeholder="My room is ___ sq ft and my partner's is ___ sq ft, so mine is larger / smaller by ___ sq ft."
         ></textarea>
+          </div>
+          
+          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
+            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
+              <span>💡</span> Guided Steps &amp; Help
+            </h3>
+            
+      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
+        <strong>Finding Area of 2D Polygons on a Floor Plan:</strong>
+      </p>
+      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
+        <li>**Parallelogram/Rectangle**: $\text{Area} = \text{base} \times \text{height}$.</li>
+        <li>**Triangle**: $\text{Area} = \frac{1}{2} \times \text{base} \times \text{height}$ (multiply base and height, then divide by 2).</li>
+        <li>**Trapezoid**: $\text{Area} = \frac{1}{2} \times (b_1 + b_2) \times h$ (add both parallel bases, multiply by the height, and divide by 2).</li>
+        <li>**Composite Shapes**: Split the irregular layout into standard shapes, calculate each area, and add them together.</li>
+      </ol>
+      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
+        💡 <b>Formula Check:</b> Trapezoid bases of 6ft and 10ft, height of 4ft. Area = $\frac{1}{2} \times (6 + 10) \times 4 = 8 \times 4 = \mathbf{32}$ sq ft.
+      </div>
+    
+          </div>
+        </div>
       </section>
+    
 
       <!-- ===================== PART 3 — WORLD ===================== -->
       <section class="phase">
@@ -1949,6 +2085,7 @@
           .join("");
       }
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
@@ -1991,6 +2128,8 @@
         updateProgress();
       }
   
+  
+      
       
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
@@ -2018,6 +2157,7 @@
         );
       }
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
@@ -2025,6 +2165,7 @@
           
           "worldCountry": "United States 🇺🇸",
           "worldSize": 220,
+          
           "p1-base": 12,
           "p1-height": 10,
           "p2-base": 6,
@@ -2034,6 +2175,7 @@
           "p3-b-base": 6,
           "p3-b-height": 5,
           
+          
         };
         Object.entries(ex).forEach(([k, v]) => {
           if ($(k)) $(k).value = v;
@@ -2042,6 +2184,25 @@
       }
 
       
+      function syncResearch() {
+        const ws = $("worldSize");
+        if (!ws) return;
+        const val = num("worldSize");
+        if (isNaN(val) || val <= 0) return;
+        if ($("p1-base") && $("p1-height")) {
+          $("p1-base").value = 12;
+          $("p1-height").value = (val / 12).toFixed(1);
+          if (typeof calcParallelogram === 'function') calcParallelogram();
+        }
+        worldGo();
+      }
+    
+
+      
+      
+    
+  
+
       function syncResearch() {
         const ws = $("worldSize");
         if (!ws) return;

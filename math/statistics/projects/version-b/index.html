@@ -1105,6 +1105,16 @@
         <div id="projectVisualizer"></div>
       </section>
     
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+    
       <!-- DELIVERABLE -->
       <section class="phase">
         <div class="phase-head">
@@ -2036,6 +2046,28 @@
       }
     
 
+      
+    
+
+        
+      function syncResearch() {
+        const ws = $("worldSize");
+        if (!ws) return;
+        const val = num("worldSize");
+        if (isNaN(val) || val <= 0) return;
+        if ($("dataset2")) {
+          const raw = $("dataset2").value.trim();
+          const clean = raw.split(",").map(x => x.trim()).filter(Boolean);
+          if (!clean.includes(String(val))) {
+            clean.push(val);
+            $("dataset2").value = clean.join(", ");
+            calcCenter2();
+          }
+        }
+        if (typeof worldGo === "function") worldGo();
+      }
+    
+
       function drawVisualizer() {
         let raw = "";
         if (document.getElementById("dataset2b") && document.getElementById("dataset2b").value.trim()) {
@@ -2120,6 +2152,7 @@
           if (typeof drawVisualizer === "function") drawVisualizer();
           updateProgress();
         }
+      
       
 
       // ── Level hook: Level 1 prefills a smaller dataset if empty ──

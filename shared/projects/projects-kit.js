@@ -98,6 +98,9 @@
     }
     const fb = $(inputId + "Fb");
     if (fb) {
+      if (raw && ok && typeof PK.playSuccess === "function") {
+        PK.playSuccess();
+      }
       fb.innerHTML = raw
         ? ok
           ? '<span class="pk-ok">✅ Correct</span>'
@@ -275,6 +278,202 @@
   };
   PK.mean = function (arr) {
     return arr.length ? PK.sum(arr) / arr.length : 0;
+  };
+
+  /* ---------------- Sound FX engine (Web Audio API) ---------------- */
+  let audioCtx = null;
+  function getAudioCtx() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    return audioCtx;
+  }
+
+  PK.playSuccess = function () {
+    try {
+      const ctx = getAudioCtx();
+      const now = ctx.currentTime;
+      const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+      notes.forEach((freq, index) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, now + index * 0.08);
+        gain.gain.setValueAtTime(0.1, now + index * 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.08 + 0.3);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + index * 0.08);
+        osc.stop(now + index * 0.08 + 0.3);
+      });
+    } catch (e) {}
+  };
+
+  PK.playClick = function () {
+    try {
+      const ctx = getAudioCtx();
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(120, now);
+      osc.frequency.exponentialRampToValueAtTime(60, now + 0.04);
+      gain.gain.setValueAtTime(0.06, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.04);
+    } catch (e) {}
+  };
+
+  // Auto-wire click sounds on interactive items
+  document.addEventListener('click', (e) => {
+    const el = e.target.closest('button, .pk-tab, .btn, .pk-research-inline-link');
+    if (el) {
+      PK.playClick();
+    }
+  });
+
+  /* ---------------- Dynamic Vocabulary Tooltips (ELL/ESOL) ---------------- */
+  PK.initVocabTooltips = function () {
+    const terms = [];
+    document.querySelectorAll(".pk-term").forEach((el) => {
+      const b = el.querySelector("b");
+      const p = el.querySelector("p");
+      if (b && p) {
+        terms.push({
+          word: b.textContent.trim(),
+          definition: p.textContent.trim(),
+          icon: el.querySelector(".pk-icon")?.textContent.trim() || "💡"
+        });
+      }
+    });
+
+    if (!terms.length) return;
+
+    const phases = Array.from(document.querySelectorAll(".phase")).slice(1);
+    terms.sort((a, b) => b.word.length - a.word.length);
+
+    phases.forEach((phase) => {
+      walkTextNodes(phase, (node) => {
+        let text = node.nodeValue;
+        let replaced = false;
+        
+        for (const term of terms) {
+          const regex = new RegExp(`\\b(${escapeRegExp(term.word)})\\b`, "gi");
+          if (regex.test(text)) {
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = text.replace(regex, (match) => {
+              return `<span class="pk-tooltip" data-tooltip="${term.icon} ${term.word}: ${term.definition}">${match}</span>`;
+            });
+            
+            const fragment = document.createDocumentFragment();
+            while (tempDiv.firstChild) {
+              fragment.appendChild(tempDiv.firstChild);
+            }
+            node.parentNode.replaceChild(fragment, node);
+            replaced = true;
+            break;
+          }
+        }
+      });
+    });
+  };
+
+  function walkTextNodes(node, callback) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      callback(node);
+      return;
+    }
+    if (["SCRIPT", "STYLE", "INPUT", "TEXTAREA", "BUTTON", "SELECT", "A"].includes(node.nodeName)) {
+      return;
+    }
+    if (node.classList && node.classList.contains("pk-tooltip")) {
+      return;
+    }
+    const children = Array.from(node.childNodes);
+    children.forEach((child) => walkTextNodes(child, callback));
+  }
+
+  function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  // Scan tooltips when page is loaded
+  window.addEventListener('DOMContentLoaded', () => {
+    PK.initVocabTooltips();
+    if (typeof PK.updateTabVisuals === 'function') {
+      PK.updateTabVisuals();
+    }
+  });
+
+  // Listen for input changes to drive interactive tab visualizers
+  document.addEventListener('input', () => {
+    if (typeof PK.updateTabVisuals === 'function') {
+      PK.updateTabVisuals();
+    }
+  });
+
+  /* ---------------- Interactive Tab visualizers ---------------- */
+  PK.updateTabVisuals = function () {
+    const $ = (id) => document.getElementById(id);
+    
+    // 1. GCF Venn Diagram
+    const stickersEl = document.querySelector('input[id$="-stickers"], input[id$="stickers"]');
+    const barsEl = document.querySelector('input[id$="-bars"], input[id$="bars"]');
+    if (stickersEl && barsEl && $("gcf-svg-center")) {
+      const s = parseInt(stickersEl.value) || 0;
+      const b = parseInt(barsEl.value) || 0;
+      if (s > 0 && b > 0) {
+        const gcdVal = (x, y) => y ? gcdVal(y, x % y) : x;
+        const g = gcdVal(s, b);
+        $("gcf-svg-left").textContent = `${s} (each: ${s/g})`;
+        $("gcf-svg-right").textContent = `${b} (each: ${b/g})`;
+        $("gcf-svg-center").textContent = `GCF: ${g}`;
+      } else {
+        $("gcf-svg-left").textContent = "Stickers";
+        $("gcf-svg-right").textContent = "Bars";
+        $("gcf-svg-center").textContent = "GCF";
+      }
+    }
+
+    // 2. LCM Timeline
+    const djEl = document.querySelector('input[id$="-dj"], input[id$="dj"]');
+    const bubbleEl = document.querySelector('input[id$="-bubble"], input[id$="bubble"]');
+    if (djEl && bubbleEl && $("lcm-svg-text")) {
+      const d = parseInt(djEl.value) || 0;
+      const b = parseInt(bubbleEl.value) || 0;
+      if (d > 0 && b > 0) {
+        const gcdVal = (x, y) => y ? gcdVal(y, x % y) : x;
+        const lcmVal = (x, y) => (x * y) / gcdVal(x, y);
+        const l = lcmVal(d, b);
+        $("lcm-svg-text").textContent = `LCM: syncs every ${l} mins!`;
+      } else {
+        $("lcm-svg-text").textContent = "Enter DJ & Activity intervals";
+      }
+    }
+
+    // 3. Fraction Division
+    const totalEl = document.querySelector('input[id$="-total"], input[id$="total"]');
+    const partEl = document.querySelector('input[id$="-size"], input[id$="size"], input[id$="-servings"]');
+    if (totalEl && partEl && $("frac-svg-text") && $("frac-svg-bar-total")) {
+      const t = parseFloat(totalEl.value) || 0;
+      const p = parseFloat(partEl.value) || 0;
+      if (t > 0) {
+        const maxWidth = 300;
+        const scale = maxWidth / Math.max(t, p || 1, 1);
+        $("frac-svg-bar-total").setAttribute("width", Math.min(maxWidth, t * scale));
+        if (p > 0) {
+          $("frac-svg-bar-part").setAttribute("width", Math.min(maxWidth, p * scale));
+          const fits = (t / p).toFixed(1);
+          $("frac-svg-text").textContent = `Fits exactly ${fits} times!`;
+        }
+      }
+    }
   };
 
   window.PK = PK;

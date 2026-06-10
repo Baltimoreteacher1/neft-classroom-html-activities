@@ -1191,6 +1191,16 @@
         <div id="projectVisualizer"></div>
       </section>
     
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+    
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase" data-phase>
         <div class="phase-head">
@@ -2135,6 +2145,7 @@
 
       // ── What-If Lab: add a value, show before/after ──
       
+        
         function runWhatIf() {
           const v = parseFloat($("whatIfVal").value);
           let sample = worldSample();
@@ -2160,6 +2171,7 @@
             "Adding a value of " + vStr + " to the sample:"
           );
         }
+      
       
 
       // ── Part 2 Peer: compare my data vs partner's ──
@@ -2236,6 +2248,14 @@
           return [28, 35, 22, 18, 16, 24, 26, 30];
         }
 
+        
+        function worldSample() {
+          if (typeof world !== 'undefined') {
+            return world.map(r => r[1]);
+          }
+          return [28, 35, 22, 18, 16, 24, 26, 30];
+        }
+
         function worldGo() {
           const my = num("myWorld");
           const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
@@ -2274,6 +2294,7 @@
           
           updateProgress();
         }
+      
       
 
       // ── Report + export ──
@@ -2353,6 +2374,9 @@
       }
 
       
+      
+    
+
       function drawVisualizer() {
         const nums = lastParsed && lastParsed.length ? lastParsed : parseDataset();
         if (!nums || nums.length === 0) {

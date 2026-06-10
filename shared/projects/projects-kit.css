@@ -340,3 +340,48 @@
   margin-right: auto;
 }
 
+/* ---- Tooltips for vocabulary guidance ---- */
+.pk-tooltip {
+  border-bottom: 2px dashed var(--pk-teal);
+  cursor: help;
+  position: relative;
+  display: inline-block;
+  color: var(--pk-teal);
+  font-weight: 700;
+}
+.pk-tooltip:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.95);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  width: 220px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  line-height: 1.4;
+  pointer-events: none;
+  font-family: "DM Sans", sans-serif;
+  text-transform: none;
+  letter-spacing: normal;
+}
+.pk-tooltip:hover::before {
+  content: "";
+  position: absolute;
+  bottom: 115%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(15, 23, 42, 0.95) transparent transparent transparent;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+
