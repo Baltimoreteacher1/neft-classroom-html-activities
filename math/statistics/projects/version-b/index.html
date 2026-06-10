@@ -773,48 +773,80 @@
       </section>
 
       <!-- PHASE 2: MEAN AND MEDIAN -->
-      <section class="phase" data-phase>
+      <section class="phase" id="phase-2" data-phase>
         <div class="phase-head">
           <div class="phase-num">2</div>
           <div>
+            <span class="arc-banner">Phase 2 · Center &amp; Outliers</span>
             <div class="skill">Measures of Center · 6.SP.3 · 6.SP.5c</div>
             <h2>Mean and Median — Compare the Centers</h2>
           </div>
         </div>
-        <p>
-          Compute the <strong>mean</strong> and <strong>median</strong> for your
-          selected dataset, then compare them. Are they close? What does that
-          tell you about the shape of the distribution?
-        </p>
-
-        <div class="task teal">
-          <strong
-            >Selected dataset will appear here after you choose a topic in Phase
-            1.</strong
-          >
-          You can also enter your own data below.
-        </div>
-
-        <label class="fld" for="dataset2"
-          >Your data set (numbers separated by commas)</label
-        >
-        <input
-          type="text"
-          id="dataset2"
-          data-save
-          oninput="calcCenter2()"
-          placeholder="Click 'Use Dataset' after choosing a topic, or type your own"
-        />
-
-        <button class="btn blue" onclick="useTopicData()">
-          Use My Topic's Dataset
-        </button>
-        <button class="btn" onclick="calcCenter2()" style="margin-left: 8px">
-          Calculate Mean &amp; Median
-        </button>
-        <div class="readout" id="center2-out"></div>
         
-        ${researchCardHtml}
+        <div class="grid2">
+          <div>
+            <p style="font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 20px;">
+              Compute the <strong>mean</strong> and <strong>median</strong> for your selected dataset, then compare them. Are they close? What does that tell you about the shape of the distribution?
+            </p>
+            <div style="margin-top: 16px;">
+              
+    <svg width="100%" height="220" viewBox="0 0 500 220" style="background:white; border-radius:12px; border: 1px solid #e2e8f0; max-width: 480px; margin: 0 auto; display: block;" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="setup-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ffffff" />
+          <stop offset="100%" stop-color="#f8fafc" />
+        </linearGradient>
+      </defs>
+      
+      <rect x="20" y="20" width="460" height="200" rx="15" fill="url(#setup-grad)" stroke="#0e8a7d" stroke-width="2"/>
+      <text x="250" y="60" text-anchor="middle" font-size="20" font-weight="bold" fill="#0f2b3c">DATA ANALYSIS HUB</text>
+      <rect x="100" y="100" width="300" height="20" fill="#e2e8f0" rx="4"/>
+      <rect x="150" y="100" width="120" height="20" fill="#0e8a7d" rx="4"/>
+    
+    </svg>
+  
+            </div>
+          </div>
+          
+          <div style="background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 20px; box-shadow: var(--shadow);">
+            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
+              <span>📊</span> Data Calculations
+            </h3>
+            
+            <div class="task teal" style="margin-bottom: 12px;">
+              <strong style="font-size: 12px;">Selected dataset will appear here after you choose a topic in Phase 1.</strong>
+            </div>
+
+            <label class="fld" for="dataset2">Your data set (comma-separated)</label>
+            <input type="text" id="dataset2" data-save oninput="calcCenter2()" placeholder="Click 'Use Dataset' after choosing a topic" style="margin-bottom: 12px;"/>
+
+            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+              <button class="btn blue" onclick="useTopicData()" style="flex: 1;">Use Topic Data</button>
+              <button class="btn" onclick="calcCenter2()" style="flex: 1;">Calculate</button>
+            </div>
+            
+            <div class="readout" id="center2-out" style="margin-bottom: 15px;"></div>
+            
+            <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card" style="margin-top: 15px;">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/national/rankings" target="_blank" class="pk-research-inline-link">🔗 NOAA: Climate Maps & Temperature Tables ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the NOAA database or local temperature charts. Find the record highest temperature ever recorded in your home state (often around 105°F). Enter the state/city name and temperature below:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">State/City Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. Arizona" oninput="recalcAll()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Record High Temp (°F)</label>
+              <input type="number" id="worldSize" data-save placeholder="e.g. 115" oninput="recalcAll()">
+            </div>
+          </div>
+        </div>
+          </div>
+        </div>
 
         <label class="fld" for="center-compare" style="margin-top: 20px"
           >Compare mean and median: what do the two values tell you about your
@@ -1072,7 +1104,7 @@
         </p>
         <div id="projectVisualizer"></div>
       </section>
-  
+    
       <!-- DELIVERABLE -->
       <section class="phase">
         <div class="phase-head">
@@ -2002,7 +2034,7 @@
         }
         if (typeof worldGo === "function") worldGo();
       }
-  
+    
 
       function drawVisualizer() {
         let raw = "";
@@ -2065,30 +2097,30 @@
             <text x="80" y="195" text-anchor="middle" font-size="10" fill="#1a2633">${minVal}</text>
             <text x="420" y="195" text-anchor="middle" font-size="10" fill="#1a2633">${maxVal}</text>
             
-            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#2d874b">Mean = ${mean.toFixed(2)} | Range = dots. </text>
+            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#2d874b">Mean = ${mean.toFixed(2)} | Range = ${max - min}</text>
           </svg>
         `;
         $("projectVisualizer").innerHTML = svgString;
       }
-  
-
-      function recalcAll() {
-        if (typeof syncResearch === "function") syncResearch();
-        if (document.getElementById("topic").value) {
-          loadDataset(true);
-        }
-        if (document.getElementById("dataset2").value) {
-          calcCenter2();
-          calcSpread();
-          drawDotPlot();
-        }
-        if (document.getElementById("dataset2b").value) {
-          drawDotPlot2();
-        }
-        if (typeof drawVisualizer === "function") drawVisualizer();
-        updateProgress();
-      }
     
+
+        function recalcAll() {
+          if (typeof syncResearch === "function") syncResearch();
+          if (document.getElementById("topic").value) {
+            loadDataset(true);
+          }
+          if (document.getElementById("dataset2").value) {
+            calcCenter2();
+            calcSpread();
+            drawDotPlot();
+          }
+          if (document.getElementById("dataset2b").value) {
+            drawDotPlot2();
+          }
+          if (typeof drawVisualizer === "function") drawVisualizer();
+          updateProgress();
+        }
+      
 
       // ── Level hook: Level 1 prefills a smaller dataset if empty ──
       window.onLevelChange = function (level) {

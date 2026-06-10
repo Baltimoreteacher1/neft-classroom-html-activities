@@ -825,9 +825,6 @@
             />
           </div>
         </div>
-        
-        ${researchCardHtml}
-        
         <div class="readout" id="collect-out"></div>
       </section>
 
@@ -1193,7 +1190,7 @@
         </p>
         <div id="projectVisualizer"></div>
       </section>
-  
+    
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase" data-phase>
         <div class="phase-head">
@@ -2138,32 +2135,32 @@
 
       // ── What-If Lab: add a value, show before/after ──
       
-      function runWhatIf() {
-        const v = parseFloat($("whatIfVal").value);
-        let sample = worldSample();
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
-        }
-        if (isNaN(v)) {
-          $("whatIfBox").textContent = "Enter a number first.";
-          return;
-        }
-        const before = PK.mean(sample);
-        const after = PK.mean(sample.concat([v]));
-        
-        let beforeStr = before.toFixed(2) + "%";
-        let afterStr = after.toFixed(2) + "%";
-        let vStr = v + "%";
+        function runWhatIf() {
+          const v = parseFloat($("whatIfVal").value);
+          let sample = worldSample();
+          const customSize = $("worldSize") ? num("worldSize") : NaN;
+          if (!isNaN(customSize) && customSize > 0) {
+            sample = [...sample, customSize];
+          }
+          if (isNaN(v)) {
+            $("whatIfBox").textContent = "Enter a number first.";
+            return;
+          }
+          const before = PK.mean(sample);
+          const after = PK.mean(sample.concat([v]));
+          
+          let beforeStr = before.toFixed(2) + "%";
+          let afterStr = after.toFixed(2) + "%";
+          let vStr = v + "%";
 
-        PK.whatIf(
-          "whatIfBox",
-          { average: beforeStr },
-          { average: afterStr },
-          "Adding a value of " + vStr + " to the sample:"
-        );
-      }
-    
+          PK.whatIf(
+            "whatIfBox",
+            { average: beforeStr },
+            { average: afterStr },
+            "Adding a value of " + vStr + " to the sample:"
+          );
+        }
+      
 
       // ── Part 2 Peer: compare my data vs partner's ──
       function comparePeer() {
@@ -2232,52 +2229,52 @@
       }
 
       
-      function worldSample() {
-        if (typeof world !== 'undefined') {
-          return world.map(r => r[1]);
+        function worldSample() {
+          if (typeof world !== 'undefined') {
+            return world.map(r => r[1]);
+          }
+          return [28, 35, 22, 18, 16, 24, 26, 30];
         }
-        return [28, 35, 22, 18, 16, 24, 26, 30];
-      }
 
-      function worldGo() {
-        const my = num("myWorld");
-        const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
-        
-        let sample = worldSample();
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
-        }
-        
-        const labels = { mean: "City avg", me: "Me" };
-            
-        PK.worldMeter("worldMeter", sample, my, labels);
-        
-        const fb = $("worldMeter");
-        if (!isNaN(customSize) && customSize > 0 && customName) {
-          const ratio = (my / customSize).toFixed(2);
-          const pct = Math.round((my / customSize) * 100);
-          const diff = Math.abs(my - customSize).toFixed(2);
+        function worldGo() {
+          const my = num("myWorld");
+          const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
+          const customSize = $("worldSize") ? num("worldSize") : NaN;
           
-          let myValStr = my + "%";
-          let custValStr = customSize + "%";
-          let diffStr = Number(diff).toFixed(2) + "%";
+          let sample = worldSample();
+          if (!isNaN(customSize) && customSize > 0) {
+            sample = [...sample, customSize];
+          }
+          
+          const labels = { mean: "City avg", me: "Me" };
+              
+          PK.worldMeter("worldMeter", sample, my, labels);
+          
+          const fb = $("worldMeter");
+          if (!isNaN(customSize) && customSize > 0 && customName) {
+            const ratio = (my / customSize).toFixed(2);
+            const pct = Math.round((my / customSize) * 100);
+            const diff = Math.abs(my - customSize).toFixed(2);
+            
+            let myValStr = my + "%";
+            let custValStr = customSize + "%";
+            let diffStr = Number(diff).toFixed(2) + "%";
 
-          const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
-          const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
-            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
-            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
-            `</div>`;
-          fb.innerHTML += desc;
+            const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
+            const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
+              `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
+              `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
+              `</div>`;
+            fb.innerHTML += desc;
+          }
+          
+          if (typeof drawVisualizer === 'function') {
+            drawVisualizer();
+          }
+          
+          updateProgress();
         }
-        
-        if (typeof drawVisualizer === 'function') {
-          drawVisualizer();
-        }
-        
-        updateProgress();
-      }
-    
+      
 
       // ── Report + export ──
       function reportText() {
@@ -2406,8 +2403,6 @@
             <text x="${q3Px}" y="80" text-anchor="middle" font-weight="bold" fill="#0e8a7d">Q3: ${q3}</text>
             <text x="${maxPx}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#5e6e7e">Max: ${max}</text>
             
-            <!-- Axis Line -->
-            <line x1="80" y1="180" x2="420" y2="180" stroke="#0f2b3c" stroke-width="1.5" />
             <text x="80" y="195" text-anchor="middle" font-size="10" fill="#1a2633">${minVal}</text>
             <text x="420" y="195" text-anchor="middle" font-size="10" fill="#1a2633">${maxVal}</text>
             
@@ -2416,7 +2411,7 @@
         `;
         $("projectVisualizer").innerHTML = svgString;
       }
-  
+    
 function recalcAll() {
         collectData();
         calcCenter();
