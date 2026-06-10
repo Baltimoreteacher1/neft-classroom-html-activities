@@ -43,6 +43,47 @@
         color: #fff;
         text-align: center;
         padding: 30px 20px 26px;
+        position: relative;
+        overflow: hidden;
+      }
+      /* Bespoke: floating wireframe cubes drift behind the hero (volume theme) */
+      .ghero .prism-field {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.5;
+      }
+      .ghero > *:not(.prism-field) {
+        position: relative;
+        z-index: 1;
+      }
+      .prism-field .cube {
+        position: absolute;
+        border: 1.5px solid rgba(255, 255, 255, 0.6);
+        border-radius: 3px;
+        animation: cubeDrift 14s linear infinite;
+      }
+      .prism-field .cube::after {
+        content: "";
+        position: absolute;
+        top: -7px;
+        left: -7px;
+        right: 0;
+        bottom: 0;
+        border: 1.5px solid rgba(255, 255, 255, 0.35);
+        border-radius: 3px;
+      }
+      @keyframes cubeDrift {
+        0% {
+          transform: translateY(8px) rotate(0deg);
+        }
+        50% {
+          transform: translateY(-12px) rotate(8deg);
+        }
+        100% {
+          transform: translateY(8px) rotate(0deg);
+        }
       }
       .ghero .deco {
         font-size: 48px;
@@ -171,6 +212,84 @@
           transform: translateX(6px);
         }
       }
+      /* Staggered option-button entrance (volume blocks dropping in) */
+      .opt.enter {
+        opacity: 0;
+        animation: optDrop 0.34s ease both;
+        animation-delay: var(--optd, 0s);
+      }
+      @keyframes optDrop {
+        0% {
+          opacity: 0;
+          transform: translateY(-14px) scale(0.94);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      /* Streak milestone: HUD streak value flares at every 3rd correct in a row */
+      .hud .val.streak-flare {
+        animation: streakFlare 0.7s ease;
+        color: var(--gold);
+      }
+      @keyframes streakFlare {
+        0% {
+          transform: scale(1);
+          text-shadow: none;
+        }
+        40% {
+          transform: scale(1.45);
+          text-shadow: 0 0 14px rgba(212, 149, 42, 0.8);
+        }
+        100% {
+          transform: scale(1);
+          text-shadow: none;
+        }
+      }
+      /* Floating "Streak ×N!" badge on milestones */
+      .streak-badge {
+        position: fixed;
+        left: 50%;
+        top: 38%;
+        transform: translate(-50%, -50%);
+        z-index: 60;
+        font-size: clamp(28px, 7vw, 46px);
+        font-weight: 900;
+        color: var(--gold);
+        text-shadow:
+          0 2px 0 #fff,
+          0 0 18px rgba(212, 149, 42, 0.6);
+        pointer-events: none;
+        animation: streakBadge 1.1s ease forwards;
+      }
+      @keyframes streakBadge {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, -30%) scale(0.6);
+        }
+        25% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1.1);
+        }
+        70% {
+          opacity: 1;
+          transform: translate(-50%, -52%) scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -85%) scale(0.95);
+        }
+      }
+      /* Cubic-unit particle burst on correct answer (canvas overlay) */
+      #fxCanvas {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 55;
+      }
       .feedback {
         min-height: 26px;
         margin-top: 16px;
@@ -240,16 +359,47 @@
         color: var(--muted);
         font-size: 15px;
       }
+      /* Focus polish: clear keyboard ring on all interactive elements */
+      .opt:focus-visible,
+      .btn:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+        border-color: var(--gold);
+      }
+      /* Reduced-motion: disable/flatten every additive animation added here */
+      @media (prefers-reduced-motion: reduce) {
+        .prism-field {
+          display: none;
+        }
+        .opt.enter,
+        .opt.right,
+        .opt.wrong,
+        .hud .val.streak-flare,
+        .streak-badge,
+        .ghero,
+        .card {
+          animation: none !important;
+          transition: none !important;
+        }
+        .opt.enter {
+          opacity: 1;
+        }
+        .streak-badge {
+          opacity: 1;
+        }
+      }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
-    <header class="ghero">
+    <canvas id="fxCanvas" aria-hidden="true"></canvas>
+    <header class="ghero" data-parallax>
+      <div class="prism-field" data-parallax-layer aria-hidden="true"></div>
       <div class="deco">📦</div>
       <h1>Volume Blast</h1>
       <p>
@@ -290,7 +440,7 @@
       </section>
 
       <section id="playScreen" class="hidden">
-        <div class="hud">
+        <div class="hud" data-parallax>
           <div>
             <span class="lbl">Score</span><span class="val" id="score">0</span>
           </div>
@@ -525,10 +675,14 @@
         document.getElementById("nextBtn").classList.add("hidden");
         var box = document.getElementById("opts");
         box.innerHTML = "";
-        state.q.opts.forEach(function (o) {
+        state.q.opts.forEach(function (o, idx) {
           var b = document.createElement("button");
           b.type = "button";
           b.className = "opt";
+          if (!FX_REDUCED) {
+            b.classList.add("enter");
+            b.style.setProperty("--optd", idx * 0.07 + "s");
+          }
           b.textContent = o;
           b.onclick = function () {
             answer(o, b);
@@ -574,6 +728,10 @@
             state.q.why +
             (state.streak > 1 ? "  🔥 Streak ×" + state.streak : "");
           fb.className = "feedback ok";
+          // Bespoke visual feedback (purely additive — no effect on state)
+          burstCubes(btn);
+          if (window.GameFX && GameFX.pop) GameFX.pop(scoreEl());
+          if (state.streak >= 3 && state.streak % 3 === 0) streakMilestone();
         } else {
           state.streak = 0;
           state.lives--;
@@ -639,14 +797,162 @@
         state.i++;
         nextQuestion();
       };
+
+      /* ===========================================================
+         BESPOKE VISUAL FX (additive only — no gameplay/scoring ties)
+         Theme: cubic units / rectangular prisms (6.G.2 volume).
+         All motion gated by prefers-reduced-motion.
+         =========================================================== */
+      var FX_MQ = window.matchMedia
+        ? window.matchMedia("(prefers-reduced-motion: reduce)")
+        : { matches: false, addEventListener: function () {} };
+      var FX_REDUCED = FX_MQ.matches;
+      if (FX_MQ.addEventListener) {
+        FX_MQ.addEventListener("change", function (e) {
+          FX_REDUCED = e.matches;
+        });
+      }
+
+      function scoreEl() {
+        return document.getElementById("score");
+      }
+
+      // Build drifting wireframe cubes behind the hero (procedural, no assets).
+      (function buildPrismField() {
+        var field = document.querySelector(".prism-field");
+        if (!field) return;
+        var n = 7;
+        for (var i = 0; i < n; i++) {
+          var c = document.createElement("div");
+          c.className = "cube";
+          var size = 18 + Math.round(Math.random() * 34);
+          c.style.width = size + "px";
+          c.style.height = size + "px";
+          c.style.left = Math.round(Math.random() * 92) + "%";
+          c.style.top = Math.round(Math.random() * 78) + "%";
+          c.style.animationDelay = (-Math.random() * 14).toFixed(2) + "s";
+          c.style.animationDuration = (11 + Math.random() * 7).toFixed(2) + "s";
+          field.appendChild(c);
+        }
+      })();
+
+      // Floating "Streak ×N!" badge at every 3rd consecutive correct answer.
+      function streakMilestone() {
+        var sv = document.getElementById("streak");
+        if (sv && !FX_REDUCED) {
+          sv.classList.remove("streak-flare");
+          // reflow to restart animation
+          void sv.offsetWidth;
+          sv.classList.add("streak-flare");
+        }
+        if (FX_REDUCED) return;
+        var badge = document.createElement("div");
+        badge.className = "streak-badge";
+        badge.textContent = "🔥 Streak ×" + state.streak + "!";
+        document.body.appendChild(badge);
+        setTimeout(function () {
+          if (badge.parentNode) badge.parentNode.removeChild(badge);
+        }, 1200);
+      }
+
+      // Procedural canvas burst of little 3D-looking cubes from the chosen tile.
+      var fxCanvas = document.getElementById("fxCanvas");
+      var fxCtx = fxCanvas ? fxCanvas.getContext("2d") : null;
+      var fxParticles = [];
+      var fxRunning = false;
+
+      function sizeCanvas() {
+        if (!fxCanvas) return;
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        fxCanvas.width = Math.floor(window.innerWidth * dpr);
+        fxCanvas.height = Math.floor(window.innerHeight * dpr);
+        if (fxCtx) fxCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      sizeCanvas();
+      window.addEventListener("resize", sizeCanvas);
+
+      var FX_COLORS = ["#2d874b", "#0e8a7d", "#d4952a", "#1a6fb5"];
+
+      function burstCubes(originEl) {
+        if (FX_REDUCED || !fxCtx) return;
+        var x = window.innerWidth / 2,
+          y = window.innerHeight / 2;
+        if (originEl && originEl.getBoundingClientRect) {
+          var r = originEl.getBoundingClientRect();
+          x = r.left + r.width / 2;
+          y = r.top + r.height / 2;
+        }
+        var count = 16; // capped for Chromebook performance
+        for (var i = 0; i < count; i++) {
+          var ang = (Math.PI * 2 * i) / count + Math.random() * 0.4;
+          var spd = 2.5 + Math.random() * 3.5;
+          fxParticles.push({
+            x: x,
+            y: y,
+            vx: Math.cos(ang) * spd,
+            vy: Math.sin(ang) * spd - 2,
+            size: 6 + Math.random() * 8,
+            rot: Math.random() * Math.PI,
+            vr: (Math.random() - 0.5) * 0.25,
+            life: 1,
+            color: FX_COLORS[(Math.random() * FX_COLORS.length) | 0],
+          });
+        }
+        if (!fxRunning) {
+          fxRunning = true;
+          requestAnimationFrame(fxTick);
+        }
+      }
+
+      function drawCube(p) {
+        var s = p.size;
+        fxCtx.save();
+        fxCtx.translate(p.x, p.y);
+        fxCtx.rotate(p.rot);
+        fxCtx.globalAlpha = Math.max(0, p.life);
+        // front face
+        fxCtx.fillStyle = p.color;
+        fxCtx.fillRect(-s / 2, -s / 2, s, s);
+        // top edge highlight (fake 3D)
+        fxCtx.fillStyle = "rgba(255,255,255,0.35)";
+        fxCtx.fillRect(-s / 2, -s / 2, s, s * 0.28);
+        fxCtx.restore();
+      }
+
+      function fxTick() {
+        if (!fxCtx) {
+          fxRunning = false;
+          return;
+        }
+        fxCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        for (var i = fxParticles.length - 1; i >= 0; i--) {
+          var p = fxParticles[i];
+          p.vy += 0.18; // gravity
+          p.x += p.vx;
+          p.y += p.vy;
+          p.rot += p.vr;
+          p.life -= 0.022;
+          if (p.life <= 0) {
+            fxParticles.splice(i, 1);
+            continue;
+          }
+          drawCube(p);
+        }
+        if (fxParticles.length > 0) {
+          requestAnimationFrame(fxTick);
+        } else {
+          fxCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+          fxRunning = false;
+        }
+      }
     </script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

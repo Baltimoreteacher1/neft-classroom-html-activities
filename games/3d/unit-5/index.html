@@ -23,6 +23,7 @@
       #game {
         position: fixed;
         inset: 0;
+        z-index: 2; /* above the decorative blueprint backdrop */
       }
       .e3d-intro {
         position: absolute;
@@ -52,6 +53,86 @@
         opacity: 0.85;
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
       }
+      /* ----- Bespoke overlay polish (DOM/CSS only — never touches the WebGL
+         scene, render loop, camera, or controls). Purely additive backdrop +
+         entrance motion for the HUD overlay; all motion is reduced-motion
+         gated. ------------------------------------------------------------- */
+      .e3d-blueprint {
+        position: fixed;
+        inset: 0;
+        z-index: 1; /* behind the canvas (#game is its own stacking ctx) */
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .e3d-blueprint-grid {
+        position: absolute;
+        /* slightly oversized so parallax translation never reveals an edge */
+        inset: -24px;
+        background-image:
+          linear-gradient(rgba(63, 127, 191, 0.16) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(63, 127, 191, 0.16) 1px, transparent 1px);
+        background-size: 38px 38px;
+        -webkit-mask-image: radial-gradient(
+          ellipse 70% 70% at 50% 38%,
+          #000 0%,
+          rgba(0, 0, 0, 0.25) 70%,
+          transparent 100%
+        );
+        mask-image: radial-gradient(
+          ellipse 70% 70% at 50% 38%,
+          #000 0%,
+          rgba(0, 0, 0, 0.25) 70%,
+          transparent 100%
+        );
+        will-change: transform;
+        transition: transform 0.18s ease-out;
+      }
+      /* Title + directions entrance (reduced-motion gated below). */
+      @media (prefers-reduced-motion: no-preference) {
+        .e3d-boot-title {
+          animation: e3d-fade-down 0.7s ease-out both;
+        }
+        .e3d-intro {
+          animation: e3d-fade-up 0.7s ease-out 0.25s both;
+        }
+        @keyframes e3d-fade-down {
+          from {
+            opacity: 0;
+            transform: translate(-50%, -10px);
+          }
+          to {
+            opacity: 0.85;
+            transform: translate(-50%, 0);
+          }
+        }
+        @keyframes e3d-fade-up {
+          from {
+            opacity: 0;
+            transform: translate(-50%, 10px);
+          }
+          to {
+            opacity: 0.78;
+            transform: translate(-50%, 0);
+          }
+        }
+      }
+      /* Mobile: keep overlay text readable and out of the way on narrow
+         (<360px) Chromebooks/phones — the WebGL grid scaling itself is
+         engine-owned and untouched. */
+      @media (max-width: 360px) {
+        .e3d-boot-title {
+          font-size: 13px;
+          max-width: 94%;
+          text-align: center;
+        }
+        .e3d-intro {
+          font-size: 12px;
+          bottom: 10px;
+        }
+        .e3d-blueprint-grid {
+          background-size: 30px 30px;
+        }
+      }
       .e3d-fallback {
         position: fixed;
         inset: 0;
@@ -75,10 +156,16 @@
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
+    <!-- Decorative architect-blueprint backdrop. Sits BEHIND the WebGL canvas
+         (pointer-events:none, lower z-index) and only adds ambient depth +
+         GameFX pointer parallax — it drives nothing in the 3D scene. -->
+    <div class="e3d-blueprint" data-parallax aria-hidden="true">
+      <div class="e3d-blueprint-grid" data-parallax-layer></div>
+    </div>
     <div
       id="game"
       role="application"
@@ -135,7 +222,7 @@
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

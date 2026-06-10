@@ -39,12 +39,12 @@
       });
     </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
     <div id="game"></div>
     <script>
@@ -62,6 +62,42 @@
       const W = 1024,
         H = 768;
       const LS_KEY = "volumevault_packer_hi";
+
+      // ── Reduced-motion: gate every ADDITIVE visual effect below. Gameplay
+      //    (loop, controls, scoring, answer-checking) is untouched either way.
+      const RM = (function () {
+        try {
+          return (
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          );
+        } catch (e) {
+          return false;
+        }
+      })();
+
+      // ── aria-live HUD mirror: a visually-hidden DOM region that announces the
+      //    live packed/target volume for screen-reader + assistive users. This
+      //    is purely additive (the on-canvas HUD is unchanged).
+      const a11yLive = (function () {
+        try {
+          const d = document.createElement("div");
+          d.setAttribute("aria-live", "polite");
+          d.setAttribute("role", "status");
+          d.id = "vv-aria-live";
+          d.style.cssText =
+            "position:absolute;width:1px;height:1px;margin:-1px;padding:0;" +
+            "overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;";
+          (document.body || document.documentElement).appendChild(d);
+          return d;
+        } catch (e) {
+          return null;
+        }
+      })();
+      function announce(msg) {
+        if (a11yLive && a11yLive.textContent !== msg)
+          a11yLive.textContent = msg;
+      }
 
       // ── Web Audio SFX ──
       class SFX {
@@ -296,6 +332,7 @@
         }
         create() {
           this.cameras.main.setBackgroundColor("#0c1733");
+          this.buildBackdrop(); // ADDITIVE: parallax warehouse-rack depth
           this.score = 0;
           this.floor = 1;
           this.lives = 3;
@@ -336,18 +373,26 @@
             .setOrigin(0.5, 0)
             .setDepth(20);
 
-          // live volume equation display
+          // live volume equation display (high-contrast: white on deep navy
+          // with a border so it stays readable on a classroom projector)
           this.eq = this.add
             .text(W / 2, 58, "", {
               fontFamily: "Consolas, monospace",
               fontSize: "26px",
               fontStyle: "700",
               color: "#ffffff",
-              backgroundColor: "#11224a",
-              padding: { x: 14, y: 6 },
+              backgroundColor: "#0a1838",
+              padding: { x: 16, y: 7 },
+              stroke: "#000000",
+              strokeThickness: 0,
             })
             .setOrigin(0.5, 0)
             .setDepth(20);
+
+          // ── ADDITIVE: animated layer-fill gauge (packed vs target). A vertical
+          //    bar on the left that fills as cubes are packed; turns green at the
+          //    exact target. Mechanic-neutral readout of cubesInCrate / target.
+          this.buildFillGauge();
 
           // crate container (slides left/right)
           this.crate = this.add.container(W / 2, this.crateY).setDepth(10);
@@ -363,9 +408,139 @@
               this.halfCrate,
               W - this.halfCrate,
             );
+            this._pointerX = p.x; // ADDITIVE: drives backdrop parallax
           });
 
           this.startFloor();
+        }
+
+        // ── ADDITIVE: vertical layer-fill gauge. Frame + animated fill rect +
+        //    a "TARGET" tick at 100%. Reflects cubesInCrate/target only.
+        buildFillGauge() {
+          const gx = 38,
+            gy = 150,
+            gw = 30,
+            gh = 420;
+          this.gauge = { x: gx, y: gy, w: gw, h: gh };
+          // frame
+          this.add
+            .rectangle(gx, gy, gw + 8, gh + 8, 0x0a1838)
+            .setOrigin(0, 0)
+            .setStrokeStyle(2, 0x3b5bdb, 0.8)
+            .setDepth(19);
+          // animated fill (origin at bottom so it grows upward)
+          this.gaugeFill = this.add
+            .rectangle(gx + 4, gy + 4 + gh, gw, 0, 0xffe066)
+            .setOrigin(0, 1)
+            .setDepth(20);
+          // target line at the top of the usable area
+          this.add
+            .rectangle(gx + 4, gy + 4, gw, 3, 0x51cf66)
+            .setOrigin(0, 0)
+            .setDepth(21);
+          this.add
+            .text(gx + gw + 12, gy, "TARGET", {
+              fontFamily: "Segoe UI",
+              fontSize: "13px",
+              fontStyle: "700",
+              color: "#51cf66",
+            })
+            .setDepth(21);
+          this.add
+            .text(gx, gy + gh + 16, "PACKED", {
+              fontFamily: "Segoe UI",
+              fontSize: "13px",
+              fontStyle: "700",
+              color: "#ffe066",
+            })
+            .setOrigin(0, 0)
+            .setDepth(21);
+        }
+
+        // Update the gauge to reflect packed/target. Animated unless reduced.
+        updateFillGauge() {
+          if (!this.gaugeFill || !this.level) return;
+          const frac = Phaser.Math.Clamp(
+            this.cubesInCrate / this.level.target,
+            0,
+            1,
+          );
+          const targetH = this.gauge.h * frac;
+          const exact = this.cubesInCrate === this.level.target;
+          const color = exact ? 0x51cf66 : 0xffe066;
+          this.gaugeFill.fillColor = color;
+          if (RM) {
+            this.gaugeFill.height = targetH;
+          } else {
+            this.tweens.add({
+              targets: this.gaugeFill,
+              height: targetH,
+              duration: 160,
+              ease: "Quad.out",
+            });
+          }
+        }
+
+        // ── ADDITIVE: parallax warehouse rack giving z-axis depth behind the
+        //    falling cubes. Pure visuals (low depth, behind cubes/crate). Drift
+        //    is disabled under reduced-motion. Drawn once with Graphics so there
+        //    is no per-frame layout cost — only the container x shifts in update.
+        buildBackdrop() {
+          const bg = this.add.container(0, 0).setDepth(1);
+          this.backdrop = bg;
+          const g = this.add.graphics();
+
+          // Vanishing-point perspective floor + ceiling rails (rack depth).
+          const vpx = W / 2;
+          const horizon = H * 0.42;
+          g.lineStyle(2, 0x1c2c57, 0.55);
+          for (let i = -6; i <= 6; i++) {
+            const fx = vpx + i * 150;
+            g.beginPath();
+            g.moveTo(vpx, horizon);
+            g.lineTo(fx, H + 40); // floor fan
+            g.strokePath();
+            g.beginPath();
+            g.moveTo(vpx, horizon);
+            g.lineTo(fx, -40); // ceiling fan
+            g.strokePath();
+          }
+          // Horizontal rack shelves receding toward the horizon.
+          g.lineStyle(2, 0x223a6e, 0.5);
+          for (let r = 1; r <= 7; r++) {
+            const t = r / 8;
+            const y1 = horizon + (H + 40 - horizon) * (t * t);
+            const spread = 60 + 900 * (t * t);
+            g.beginPath();
+            g.moveTo(vpx - spread, y1);
+            g.lineTo(vpx + spread, y1);
+            g.strokePath();
+          }
+          bg.add(g);
+
+          // Upright rack posts (warehouse pillars) — solid, high enough contrast
+          // to read on a projector but dim enough not to fight the cubes.
+          this.rackPosts = [];
+          for (let i = 0; i < 6; i++) {
+            const px = 70 + i * 180;
+            const post = this.add
+              .rectangle(px, H / 2, 16, H, 0x16244a, 0.55)
+              .setStrokeStyle(2, 0x2c447e, 0.5);
+            bg.add(post);
+            this.rackPosts.push(post);
+          }
+          // Floating dust motes for atmosphere (capped, reduced-motion safe).
+          this.motes = [];
+          if (!RM) {
+            for (let i = 0; i < 18; i++) {
+              const m = this.add
+                .circle(randInt(0, W), randInt(60, H - 40), 2, 0x3b5bdb, 0.35)
+                .setDepth(2);
+              m.vy = Phaser.Math.FloatBetween(0.15, 0.5);
+              this.motes.push(m);
+            }
+          }
+          this._bgBaseX = 0;
         }
 
         startFloor() {
@@ -452,6 +627,7 @@
             // lead cube jams the works
             sfx.jam();
             this.cameras.main.shake(180, 0.01);
+            this.jamSpray(spr.x, this.crateY - 40); // ADDITIVE: red shard spray
             this.loseLife();
             this.flashEq("#ff6b6b");
             return;
@@ -476,12 +652,37 @@
           this.crate.add(cube);
           this.cells.push(cube);
           this.colHeights[col]++;
-          this.tweens.add({
-            targets: cube,
-            y: cy,
-            duration: 180,
-            ease: "Bounce.out",
-          });
+          if (RM) {
+            // Reduced motion: place instantly, no drop/tumble animation.
+            cube.y = cy;
+            cube.angle = 0;
+          } else {
+            // ADDITIVE: tumble settle — the cube spins in then eases upright
+            //   as it drops into its cell, then a quick squash-pop on landing.
+            cube.angle = Phaser.Math.Between(-32, 32);
+            this.tweens.add({
+              targets: cube,
+              y: cy,
+              duration: 200,
+              ease: "Bounce.out",
+            });
+            this.tweens.add({
+              targets: cube,
+              angle: 0,
+              duration: 240,
+              ease: "Back.out",
+            });
+            this.tweens.add({
+              targets: cube,
+              scaleX: 1.05,
+              scaleY: 0.78,
+              duration: 110,
+              yoyo: true,
+              delay: 150,
+              ease: "Quad.out",
+              onComplete: () => cube.setScale(0.9),
+            });
+          }
           sfx.catch();
           this.score += 5;
 
@@ -493,6 +694,7 @@
             // overfilled — crate jams
             sfx.jam();
             this.cameras.main.shake(200, 0.012);
+            this.jamSpray(this.crate.x, this.crateY - 60); // ADDITIVE: spray
             this.flashEq("#ff6b6b");
             this.loseLife();
             // remove the overflow cube
@@ -500,6 +702,33 @@
             if (extra) extra.destroy();
             this.cubesInCrate--;
             this.colHeights[col]--;
+          }
+        }
+
+        // ── ADDITIVE: capped red shard spray when the crate jams (hazard cube
+        //    or overfill). Pure feedback — emits at most 14 short-lived rects in
+        //    screen space and is fully skipped under reduced motion.
+        jamSpray(x, y) {
+          if (RM) return;
+          const COUNT = 14;
+          for (let i = 0; i < COUNT; i++) {
+            const sz = randInt(3, 6);
+            const shard = this.add
+              .rectangle(x, y, sz, sz, i % 2 ? 0xff6b6b : 0xffa94d)
+              .setDepth(41);
+            const ang =
+              (Math.PI * 2 * i) / COUNT + Phaser.Math.FloatBetween(-0.3, 0.3);
+            const dist = randInt(60, 150);
+            this.tweens.add({
+              targets: shard,
+              x: x + Math.cos(ang) * dist,
+              y: y + Math.sin(ang) * dist - 30,
+              angle: randInt(-180, 180),
+              alpha: 0,
+              duration: 520,
+              ease: "Quad.out",
+              onComplete: () => shard.destroy(),
+            });
           }
         }
 
@@ -569,6 +798,12 @@
               `PACKED ${this.cubesInCrate}  /  TARGET ${this.level.target}` +
                 `   (need ${remaining} more)`,
             );
+            this.updateFillGauge(); // ADDITIVE: animated fill gauge
+            // ADDITIVE: aria-live announcement for assistive tech.
+            announce(
+              `Packed ${this.cubesInCrate} of ${this.level.target} cubic units, ` +
+                `${remaining} more needed.`,
+            );
           }
         }
 
@@ -588,6 +823,45 @@
 
         update(time, delta) {
           if (this.gameOver) return;
+
+          // ── ADDITIVE: backdrop parallax + drifting motes (reduced-motion off).
+          if (!RM && this.backdrop) {
+            // Rack drifts opposite the crate/pointer for a subtle z-axis sense.
+            const focus =
+              this._pointerX != null ? this._pointerX : this.crate.x;
+            const targetShift = ((focus - W / 2) / (W / 2)) * -22;
+            this._bgBaseX = Phaser.Math.Linear(
+              this._bgBaseX || 0,
+              targetShift,
+              0.06,
+            );
+            this.backdrop.x = this._bgBaseX;
+            if (this.motes) {
+              for (let m = 0; m < this.motes.length; m++) {
+                const mo = this.motes[m];
+                mo.y += mo.vy;
+                if (mo.y > H - 30) {
+                  mo.y = 50;
+                  mo.x = randInt(0, W);
+                }
+              }
+            }
+          }
+
+          // ── ADDITIVE: hazard "lead" cubes pulse a warning flash so students
+          //    can spot and avoid them. Visual only — does not change which
+          //    cubes are hazards or how catching them is scored.
+          if (!RM) {
+            for (let i = 0; i < this.fallingCubes.length; i++) {
+              const fc = this.fallingCubes[i];
+              if (fc.getData("bad")) {
+                const pulse = 0.55 + 0.45 * Math.sin(time / 90);
+                fc.setAlpha(pulse);
+                fc.setTint(0xffffff, 0xffffff, 0xff4d4d, 0xff4d4d);
+              }
+            }
+          }
+
           // slide crate
           if (!this.crateLocked) {
             let dir = 0;
@@ -722,10 +996,10 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

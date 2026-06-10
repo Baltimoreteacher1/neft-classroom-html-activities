@@ -39,13 +39,45 @@
         padding: 0 18px 60px;
       }
       .ghero {
+        position: relative;
+        overflow: hidden;
         background: linear-gradient(135deg, #6b3fa0, #1a6fb5);
         color: #fff;
         text-align: center;
         padding: 30px 20px 26px;
       }
+      .ghero > * {
+        position: relative;
+        z-index: 1;
+      }
+      /* Procedural floating-equation backdrop (parallax layer for GameFX) */
+      .ghero-layer {
+        position: absolute;
+        inset: -8%;
+        z-index: 0;
+        pointer-events: none;
+        will-change: transform;
+      }
+      .ghero-layer span {
+        position: absolute;
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.12);
+        font-family: var(--font);
+        user-select: none;
+        animation: floatEq 9s ease-in-out infinite;
+      }
+      @keyframes floatEq {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-14px);
+        }
+      }
       .ghero .deco {
         font-size: 48px;
+        display: inline-block;
       }
       .ghero h1 {
         margin: 8px 0 6px;
@@ -127,6 +159,7 @@
         }
       }
       .opt {
+        position: relative;
         padding: 16px;
         border: 2px solid var(--line);
         border-radius: 14px;
@@ -136,12 +169,33 @@
         cursor: pointer;
         font-family: inherit;
         color: var(--ink);
+        box-shadow: 0 1px 2px rgba(15, 43, 60, 0.06);
         transition:
-          transform 0.06s,
-          border-color 0.15s;
+          transform 0.12s ease,
+          box-shadow 0.15s ease,
+          border-color 0.15s ease,
+          background 0.15s ease;
       }
       .opt:hover {
         border-color: var(--blue);
+        background: #f3f9ff;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 18px rgba(26, 111, 181, 0.18);
+      }
+      .opt:focus-visible {
+        border-color: var(--blue);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(26, 111, 181, 0.2);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .opt,
+        .opt:hover,
+        .opt:focus-visible {
+          transform: none;
+          transition:
+            border-color 0.15s ease,
+            background 0.15s ease;
+        }
       }
       .opt:active {
         transform: scale(0.97);
@@ -208,12 +262,86 @@
         border-radius: 50px;
         overflow: hidden;
         margin: 14px 0 2px;
+        transform-origin: center;
+      }
+      .bar.tick {
+        animation: barTick 0.18s ease;
+      }
+      @keyframes barTick {
+        50% {
+          transform: scaleY(1.6);
+        }
+      }
+      .bar.low > div {
+        background: linear-gradient(90deg, var(--coral), #b3402a);
+      }
+      .bar.low {
+        animation: barPulse 0.5s ease infinite;
+      }
+      @keyframes barPulse {
+        50% {
+          transform: scaleY(1.25);
+        }
       }
       .bar > div {
         height: 100%;
         width: 100%;
         background: linear-gradient(90deg, var(--gold), var(--coral));
         transition: width 0.25s linear;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .bar.tick,
+        .bar.low {
+          animation: none;
+          transform: none;
+        }
+      }
+      /* First-attempt equation-solving micro-tutorial */
+      .steps {
+        text-align: left;
+        max-width: 460px;
+        margin: 0 auto 16px;
+        background: #eef6fb;
+        border: 1px solid #cfe4f2;
+        border-left: 4px solid var(--blue);
+        border-radius: 12px;
+        padding: 12px 14px 12px 16px;
+        font-size: 14px;
+        color: var(--ink);
+        animation: stepsIn 0.4s ease;
+      }
+      @keyframes stepsIn {
+        from {
+          opacity: 0;
+          transform: translateY(-8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .steps .steps-h {
+        font-weight: 800;
+        color: var(--blue);
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .steps ol {
+        margin: 0;
+        padding-left: 20px;
+      }
+      .steps li {
+        margin: 3px 0;
+      }
+      .steps li b {
+        color: var(--teal);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .steps {
+          animation: none;
+        }
       }
       .hidden {
         display: none;
@@ -242,14 +370,15 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
-    <header class="ghero">
+    <header class="ghero" data-parallax>
+      <div class="ghero-layer" data-parallax-layer aria-hidden="true"></div>
       <div class="deco">🧩</div>
       <h1>Equation Quest</h1>
       <p>
@@ -307,11 +436,12 @@
             ><span class="val" id="qnum">1</span>
           </div>
         </div>
-        <div class="bar"><div id="timebar"></div></div>
+        <div class="bar" id="bar"><div id="timebar"></div></div>
         <div class="card" style="margin-top: 14px">
           <span class="mode-tag" id="modeTag"></span>
           <div class="prompt" id="prompt"></div>
           <p class="sub" id="sub"></p>
+          <div class="steps hidden" id="steps"></div>
           <div class="opts" id="opts"></div>
           <div class="feedback" id="feedback"></div>
           <button class="btn hidden" id="nextBtn" type="button">Next ▶</button>
@@ -351,6 +481,48 @@
       var TOTAL = 12,
         TIME = 12;
       var state = {};
+
+      // Honor reduced-motion at runtime (in addition to CSS guards).
+      var REDUCE =
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      try {
+        var mq =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)");
+        if (mq && mq.addEventListener) {
+          mq.addEventListener("change", function (e) {
+            REDUCE = e.matches;
+          });
+        }
+      } catch (e) {}
+
+      // Build the procedural floating-equation parallax backdrop once.
+      (function buildHeroLayer() {
+        var layer = document.querySelector(".ghero-layer");
+        if (!layer) return;
+        var toks = [
+          "x + 5 = 8",
+          "3x = 12",
+          "x − 4 = 9",
+          "x = ?",
+          "÷",
+          "x + a = b",
+          "2x = 10",
+          "x − 7 = 1",
+          "=",
+        ];
+        for (var n = 0; n < toks.length; n++) {
+          var s = document.createElement("span");
+          s.textContent = toks[n];
+          s.style.left = rnd(2, 86) + "%";
+          s.style.top = rnd(4, 78) + "%";
+          s.style.fontSize = rnd(15, 34) + "px";
+          s.style.animationDelay = (rnd(0, 80) / 10).toFixed(1) + "s";
+          if (REDUCE) s.style.animation = "none";
+          layer.appendChild(s);
+        }
+      })();
 
       function distinctOpts(correct, makeWrong, fmt) {
         var set = {};
@@ -398,6 +570,11 @@
             sub: "What value of x makes this true?",
             opts: o.opts,
             correct: o.correct,
+            steps: [
+              "Start with <b>x + " + a + " = " + b + "</b>",
+              "Undo + " + a + " by subtracting " + a + " from both sides",
+              "x = " + b + " − " + a,
+            ],
             why:
               "x + " +
               a +
@@ -430,6 +607,11 @@
             sub: "Divide both sides by " + a2 + ".",
             opts: o2.opts,
             correct: o2.correct,
+            steps: [
+              "Start with <b>" + a2 + "x = " + b2 + "</b>",
+              "Undo × " + a2 + " by dividing both sides by " + a2,
+              "x = " + b2 + " ÷ " + a2,
+            ],
             why:
               a2 + "x = " + b2 + " → x = " + b2 + " ÷ " + a2 + " = " + x2 + ".",
           };
@@ -451,6 +633,11 @@
           sub: "Add " + a3 + " to both sides.",
           opts: o3.opts,
           correct: o3.correct,
+          steps: [
+            "Start with <b>x − " + a3 + " = " + b3 + "</b>",
+            "Undo − " + a3 + " by adding " + a3 + " to both sides",
+            "x = " + b3 + " + " + a3,
+          ],
           why:
             "x − " +
             a3 +
@@ -486,30 +673,82 @@
         document.getElementById("feedback").textContent = "";
         document.getElementById("feedback").className = "feedback";
         document.getElementById("nextBtn").classList.add("hidden");
+        showSteps(state.i === 0 ? state.q.steps : null);
         var box = document.getElementById("opts");
         box.innerHTML = "";
-        state.q.opts.forEach(function (o) {
+        state.q.opts.forEach(function (o, idx) {
           var b = document.createElement("button");
           b.type = "button";
           b.className = "opt";
           b.textContent = o;
+          b.setAttribute("aria-label", "Answer choice " + (idx + 1) + ": " + o);
           b.onclick = function () {
             answer(o, b);
           };
           box.appendChild(b);
         });
+        // Move focus to first option for keyboard play (skip if reduced-motion
+        // users prefer no scroll jump — focus is still keyboard-accessible).
+        var first = box.querySelector(".opt");
+        if (first && typeof first.focus === "function") {
+          try {
+            first.focus({ preventScroll: true });
+          } catch (e) {
+            first.focus();
+          }
+        }
         startTimer();
+      }
+      // First-attempt micro-tutorial: show the solve steps, hide on later Qs.
+      function showSteps(steps) {
+        var el = document.getElementById("steps");
+        if (!el) return;
+        if (!steps || !steps.length) {
+          el.classList.add("hidden");
+          el.innerHTML = "";
+          return;
+        }
+        var items = steps
+          .map(function (s) {
+            return "<li>" + s + "</li>";
+          })
+          .join("");
+        el.innerHTML =
+          '<div class="steps-h">🧭 How to solve a one-step equation</div>' +
+          "<ol>" +
+          items +
+          "</ol>";
+        el.classList.remove("hidden");
       }
       function startTimer() {
         var t = TIME,
-          bar = document.getElementById("timebar");
+          bar = document.getElementById("timebar"),
+          barWrap = document.getElementById("bar"),
+          lastSec = Math.ceil(TIME);
         bar.style.width = "100%";
+        if (barWrap) barWrap.classList.remove("low");
         clearInterval(state.timer);
         state.timer = setInterval(function () {
           t -= 0.1;
           bar.style.width = Math.max(0, (t / TIME) * 100) + "%";
+          // Satisfying scale-bounce once per whole-second tick.
+          var sec = Math.ceil(t);
+          if (barWrap && sec !== lastSec && t > 0) {
+            lastSec = sec;
+            if (!REDUCE) {
+              barWrap.classList.remove("tick");
+              // force reflow so the animation can replay
+              void barWrap.offsetWidth;
+              barWrap.classList.add("tick");
+            }
+          }
+          if (barWrap) {
+            if (t <= 4) barWrap.classList.add("low");
+            else barWrap.classList.remove("low");
+          }
           if (t <= 0) {
             clearInterval(state.timer);
+            if (barWrap) barWrap.classList.remove("low", "tick");
             if (!state.locked) {
               timeUp();
             }
@@ -537,6 +776,13 @@
             state.q.why +
             (state.streak > 1 ? "  🔥 Streak ×" + state.streak : "");
           fb.className = "feedback ok";
+          // GameFX: spark-burst auto-fires on the .right class; add a pop too.
+          try {
+            if (window.GameFX) {
+              if (btn && GameFX.pop) GameFX.pop(btn);
+              if (state.streak >= 3 && GameFX.celebrate) GameFX.celebrate(btn);
+            }
+          } catch (e) {}
         } else {
           state.streak = 0;
           state.lives--;
@@ -544,7 +790,20 @@
           fb.className = "feedback no";
         }
         updateHud();
-        document.getElementById("nextBtn").classList.remove("hidden");
+        revealNext();
+      }
+      // Reveal the Next button and move keyboard focus to it so a player can
+      // press Enter to continue without reaching for the mouse.
+      function revealNext() {
+        var nb = document.getElementById("nextBtn");
+        nb.classList.remove("hidden");
+        if (typeof nb.focus === "function") {
+          try {
+            nb.focus({ preventScroll: true });
+          } catch (e) {
+            nb.focus();
+          }
+        }
       }
       function timeUp() {
         state.locked = true;
@@ -560,7 +819,7 @@
         fb.textContent = "⏰ Time! " + state.q.why + "  (−1 ❤)";
         fb.className = "feedback no";
         updateHud();
-        document.getElementById("nextBtn").classList.remove("hidden");
+        revealNext();
       }
       function updateHud() {
         document.getElementById("score").textContent = state.score;
@@ -586,6 +845,12 @@
           "Final score: " +
           state.score +
           ".";
+        // GameFX celebration on a strong finish.
+        try {
+          if (window.GameFX && GameFX.celebrate && state.score >= 120) {
+            GameFX.celebrate(document.getElementById("finalScore"));
+          }
+        } catch (e) {}
         try {
           window.EduPulse &&
             EduPulse.record({
@@ -606,10 +871,10 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

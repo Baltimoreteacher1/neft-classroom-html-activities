@@ -15,13 +15,88 @@
         overflow: hidden;
         font-family: "Segoe UI", system-ui, sans-serif;
       }
+      /* ── Parallax prime-chain backdrop (bespoke depth behind the canvas) ──
+         Sits behind #game-container; GameFX moves [data-parallax-layer] on
+         pointer move, and disables it under prefers-reduced-motion. */
+      #fx-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+        background: radial-gradient(circle at 50% 18%, #16164a 0%, #0a0a2e 60%);
+      }
+      #fx-backdrop .deco {
+        position: absolute;
+        inset: -6%;
+        will-change: transform;
+        opacity: 0.5;
+      }
+      /* far layer: slow-drifting prime-chain glyphs */
+      #fx-chains {
+        font:
+          800 30px/1 "Arial Black",
+          system-ui,
+          sans-serif;
+        color: #2a2a72;
+        white-space: pre;
+        letter-spacing: 6px;
+        animation: fxDrift 46s linear infinite;
+      }
+      /* near layer: scrolling factor reference cards */
+      #fx-cards {
+        animation: fxDriftR 64s linear infinite;
+      }
+      #fx-cards span {
+        position: absolute;
+        padding: 6px 12px;
+        border-radius: 10px;
+        font:
+          700 15px/1.2 "Arial",
+          system-ui,
+          sans-serif;
+        color: #aab6ee;
+        background: rgba(34, 34, 104, 0.45);
+        border: 1px solid rgba(90, 90, 170, 0.4);
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+      }
+      @keyframes fxDrift {
+        from {
+          transform: translateY(0);
+        }
+        to {
+          transform: translateY(-46px);
+        }
+      }
+      @keyframes fxDriftR {
+        from {
+          transform: translateY(0);
+        }
+        to {
+          transform: translateY(38px);
+        }
+      }
       #game-container {
         margin: 0 auto;
         position: relative;
+        z-index: 1;
       }
       canvas {
         display: block;
         margin: 0 auto;
+        max-width: 100%;
+        border-radius: 10px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+      }
+      /* Respect reduced-motion: freeze every backdrop drift. */
+      @media (prefers-reduced-motion: reduce) {
+        #fx-chains,
+        #fx-cards {
+          animation: none !important;
+        }
+        #fx-backdrop .deco {
+          transform: none !important;
+        }
       }
     </style>
     <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
@@ -45,11 +120,64 @@
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
+    <!-- Parallax prime-chain backdrop (GameFX pointer-parallax target; both
+         layers freeze under prefers-reduced-motion via CSS + the FX kit). -->
+    <div id="fx-backdrop" data-parallax aria-hidden="true">
+      <div id="fx-chains" class="deco" data-parallax-layer></div>
+      <div id="fx-cards" class="deco" data-parallax-layer></div>
+    </div>
     <div id="game-container"></div>
+    <script>
+      // Populate the parallax backdrop with procedural prime-factor chains and
+      // floating factor reference cards. Purely decorative; no gameplay impact.
+      (function buildBackdrop() {
+        try {
+          var chains = document.getElementById("fx-chains");
+          var cards = document.getElementById("fx-cards");
+          if (!chains || !cards) return;
+          var rows = [];
+          var samples = [
+            "12 = 2·2·3",
+            "18 = 2·3·3",
+            "24 = 2·2·2·3",
+            "30 = 2·3·5",
+            "36 = 2·2·3·3",
+            "2 · 3 · 5 · 7 · 11 · 13",
+            "GCF · LCM · PRIME",
+          ];
+          for (var r = 0; r < 16; r++) {
+            rows.push(samples[r % samples.length]);
+          }
+          chains.textContent = rows.join("\n");
+          // scattered factor cards
+          var facts = [
+            "8 = 2³",
+            "20 = 2²·5",
+            "45 = 3²·5",
+            "60 = 2²·3·5",
+            "42 = 2·3·7",
+            "27 = 3³",
+            "50 = 2·5²",
+            "70 = 2·5·7",
+          ];
+          var frag = document.createDocumentFragment();
+          for (var i = 0; i < facts.length; i++) {
+            var s = document.createElement("span");
+            s.textContent = facts[i];
+            s.style.left = 4 + ((i * 137) % 86) + "%";
+            s.style.top = 6 + ((i * 91) % 84) + "%";
+            frag.appendChild(s);
+          }
+          cards.appendChild(frag);
+        } catch (e) {
+          /* decorative only — never block the game */
+        }
+      })();
+    </script>
     <script>
       (() => {
         // ════════════════════════════════════════════════════════════════
@@ -108,6 +236,21 @@
             setTimeout(() => beep(f, 0.14), i * 90),
           );
         const sfxClick = () => beep(440, 0.05, "sine", 0.09);
+
+        // ─── MOTION PREFERENCE ───
+        // Single source of truth for "should we animate?" Every bespoke tween
+        // and particle burst below checks this so the game honors the OS
+        // prefers-reduced-motion setting (kept live via a change listener).
+        const reduceQuery =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)");
+        let REDUCE_MOTION = !!(reduceQuery && reduceQuery.matches);
+        if (reduceQuery && reduceQuery.addEventListener) {
+          reduceQuery.addEventListener(
+            "change",
+            (e) => (REDUCE_MOTION = e.matches),
+          );
+        }
 
         // ─── LAYOUT + PALETTE ───
         const W = 960,
@@ -1021,6 +1164,7 @@
               "#bff7cf",
               1400,
             );
+            this.checkZonePulse();
           }
 
           unseat(obj) {
@@ -1034,28 +1178,117 @@
             obj.seatedIn = null;
             this.arrangeZone(zone);
             if (zone.seated.length === 0) zone.rect.setStrokeStyle(3, C.stroke);
+            this.checkZonePulse();
           }
 
           arrangeZone(zone) {
-            // stack seated tiles bottom-up (towers) or left-right (overlap)
+            // stack seated tiles bottom-up (towers) or left-right (overlap).
+            // Tiles ease into their slot (cubic/elastic) for a tactile "snap";
+            // under reduced-motion the position is set instantly.
             const isTower = zone.targetPrime != null;
             zone.seated.forEach((t, i) => {
+              let tx, ty;
               if (isTower) {
-                t.x = zone.x;
-                t.y = zone.y + zone.h / 2 - 32 - i * 50;
+                tx = zone.x;
+                ty = zone.y + zone.h / 2 - 32 - i * 50;
               } else {
                 const perRow = 4;
                 const col = i % perRow,
                   row = Math.floor(i / perRow);
-                t.x = zone.x - 84 + col * 56;
-                t.y = zone.y - 26 + row * 56;
+                tx = zone.x - 84 + col * 56;
+                ty = zone.y - 26 + row * 56;
               }
+              this.easeTileTo(t, tx, ty);
             });
+          }
+
+          // smooth seat/unseat motion with a settle bounce; respects motion pref
+          easeTileTo(t, tx, ty) {
+            if (REDUCE_MOTION) {
+              this.tweens.killTweensOf(t);
+              t.x = tx;
+              t.y = ty;
+              return;
+            }
+            this.tweens.killTweensOf(t);
+            this.tweens.add({
+              targets: t,
+              x: tx,
+              y: ty,
+              duration: 320,
+              ease: "Back.easeOut",
+              easeParams: [1.6],
+            });
+          }
+
+          // glow + scale pulse on a zone when its seated tiles hit the target
+          // product/height (GCF match or a full LCM tower). Visual only.
+          pulseZone(zone) {
+            if (!zone || !zone.rect) return;
+            zone.rect.setStrokeStyle(4, C.gold);
+            if (REDUCE_MOTION) return;
+            this.tweens.killTweensOf(zone.rect);
+            this.tweens.add({
+              targets: zone.rect,
+              scaleX: 1.06,
+              scaleY: 1.06,
+              duration: 160,
+              yoyo: true,
+              ease: "Sine.easeInOut",
+              onComplete: () => {
+                zone.rect.setScale(1);
+                zone.rect.setStrokeStyle(3, C.gold);
+              },
+            });
+            // aura ring that expands and fades out
+            const aura = this.add
+              .rectangle(zone.x, zone.y, zone.w + 10, zone.h + 10, 0x000000, 0)
+              .setStrokeStyle(3, C.gold, 0.9);
+            this.boardLayer.add(aura);
+            this.tweens.add({
+              targets: aura,
+              scaleX: 1.18,
+              scaleY: 1.18,
+              alpha: 0,
+              duration: 520,
+              ease: "Cubic.easeOut",
+              onComplete: () => aura.destroy(),
+            });
+          }
+
+          // after a seat/unseat, pulse zones that exactly reach their target
+          checkZonePulse() {
+            const r = this.round;
+            if (!r) return;
+            if (r.type === "gcf") {
+              const ring = this.zones[0];
+              if (ring && product(ring.seated.map((t) => t.prime)) === r.gcf)
+                this.pulseZone(ring);
+            } else if (r.type === "lcm" && this.lcmZones) {
+              Object.keys(this.lcmZones).forEach((p) => {
+                const z = this.lcmZones[p];
+                if (z && z.seated.length === z.need && z.need > 0)
+                  this.pulseZone(z);
+              });
+            }
           }
 
           bounceBack(obj, zone) {
             // visible rejection: shove the tile back to its home with a shake
             zone.rect.setStrokeStyle(3, C.red);
+            const restore = () =>
+              zone.rect.setStrokeStyle(
+                3,
+                zone.seated.length ? C.green : C.stroke,
+              );
+            if (REDUCE_MOTION) {
+              this.tweens.killTweensOf(obj);
+              obj.x = obj.home.x;
+              obj.y = obj.home.y;
+              this.time.delayedCall(220, restore);
+              return;
+            }
+            this.tweens.killTweensOf(obj);
             this.tweens.add({
               targets: obj,
               x: obj.home.x,
@@ -1069,15 +1302,18 @@
               x: zone.x + 6,
               yoyo: true,
               repeat: 3,
-              onComplete: () =>
-                zone.rect.setStrokeStyle(
-                  3,
-                  zone.seated.length ? C.green : C.stroke,
-                ),
+              onComplete: restore,
             });
           }
 
           returnHome(obj) {
+            if (REDUCE_MOTION) {
+              this.tweens.killTweensOf(obj);
+              obj.x = obj.home.x;
+              obj.y = obj.home.y;
+              return;
+            }
+            this.tweens.killTweensOf(obj);
             this.tweens.add({
               targets: obj,
               x: obj.home.x,
@@ -1309,6 +1545,22 @@
           }
 
           celebrate() {
+            // Honor reduced-motion: no canvas confetti, no DOM spark burst.
+            if (REDUCE_MOTION) return;
+            // Mirror the win with the shared GameFX spark burst over the canvas
+            // (DOM-level, so it also obeys the kit's own reduced-motion guard).
+            try {
+              const cv =
+                this.game &&
+                this.game.canvas &&
+                this.game.canvas.getBoundingClientRect();
+              if (window.GameFX && cv)
+                window.GameFX.burst(
+                  cv.left + cv.width / 2,
+                  cv.top + cv.height * 0.42,
+                );
+            } catch (e) {}
+            // capped canvas confetti (smooth on a Chromebook)
             for (let i = 0; i < 22; i++) {
               const col = pick([C.gold, C.green, 0x0072b2, 0xd55e00, 0x56b4e9]);
               const p = this.add.circle(W / 2, 300, 3 + Math.random() * 3, col);
@@ -1528,24 +1780,27 @@
             menu.on("pointerover", () => menu.setScale(1.05));
             menu.on("pointerout", () => menu.setScale(1));
 
-            for (let i = 0; i < 28; i++) {
-              const p = this.add
-                .circle(
-                  Math.random() * W,
-                  Math.random() * H,
-                  2 + Math.random() * 3,
-                  pick([C.gold, 0x0072b2, 0xd55e00, C.green]),
-                )
-                .setAlpha(0.7);
-              this.tweens.add({
-                targets: p,
-                y: p.y - 200 - Math.random() * 300,
-                alpha: 0,
-                duration: 2000 + Math.random() * 2000,
-                delay: Math.random() * 1000,
-                repeat: -1,
-                ease: "Power1",
-              });
+            // ambient rising motes — skipped entirely under reduced-motion
+            if (!REDUCE_MOTION) {
+              for (let i = 0; i < 28; i++) {
+                const p = this.add
+                  .circle(
+                    Math.random() * W,
+                    Math.random() * H,
+                    2 + Math.random() * 3,
+                    pick([C.gold, 0x0072b2, 0xd55e00, C.green]),
+                  )
+                  .setAlpha(0.7);
+                this.tweens.add({
+                  targets: p,
+                  y: p.y - 200 - Math.random() * 300,
+                  alpha: 0,
+                  duration: 2000 + Math.random() * 2000,
+                  delay: Math.random() * 1000,
+                  repeat: -1,
+                  ease: "Power1",
+                });
+              }
             }
           }
         }
@@ -1572,7 +1827,7 @@
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

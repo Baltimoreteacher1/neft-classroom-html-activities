@@ -64,6 +64,91 @@
         color: #fff;
         text-align: center;
       }
+
+      /* ── Bespoke additive overlay polish (DOM/CSS only; never touches the
+         three.js canvas, scene, camera, controls, or render loop). ──────── */
+
+      /* Procedural star-map backdrop, painted purely with CSS radial gradients
+         behind the WebGL canvas. Gives the "observatory" theme a sense of depth
+         and is the parallax layer GameFX nudges with pointer movement. */
+      #e3d-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 0; /* behind #game (the canvas mount) */
+        pointer-events: none;
+        overflow: hidden;
+        background:
+          radial-gradient(
+            120% 90% at 50% -10%,
+            rgba(53, 224, 214, 0.1),
+            rgba(10, 19, 38, 0) 60%
+          ),
+          radial-gradient(
+            90% 80% at 80% 110%,
+            rgba(185, 139, 255, 0.1),
+            rgba(10, 19, 38, 0) 55%
+          );
+      }
+      #e3d-stars {
+        position: absolute;
+        /* Oversized so parallax translation never reveals an edge. */
+        inset: -40px;
+        will-change: transform;
+        transition: transform 0.18s ease-out;
+        /* Three tiers of procedural stars at different sizes/opacities. */
+        background-image:
+          radial-gradient(1.4px 1.4px at 12% 22%, #cfe9ff 50%, transparent 51%),
+          radial-gradient(1.2px 1.2px at 28% 68%, #b9d8ff 50%, transparent 51%),
+          radial-gradient(1.6px 1.6px at 47% 14%, #ffffff 50%, transparent 51%),
+          radial-gradient(1.1px 1.1px at 63% 52%, #aee9ff 50%, transparent 51%),
+          radial-gradient(1.5px 1.5px at 78% 32%, #e6f1ff 50%, transparent 51%),
+          radial-gradient(1.2px 1.2px at 88% 74%, #c8ddff 50%, transparent 51%),
+          radial-gradient(1px 1px at 8% 84%, #9fc6ff 50%, transparent 51%),
+          radial-gradient(1.3px 1.3px at 36% 40%, #ffffff 50%, transparent 51%),
+          radial-gradient(1.1px 1.1px at 55% 88%, #bcd6ff 50%, transparent 51%),
+          radial-gradient(1.4px 1.4px at 70% 8%, #d6e8ff 50%, transparent 51%),
+          radial-gradient(1.2px 1.2px at 93% 18%, #ffffff 50%, transparent 51%),
+          radial-gradient(1px 1px at 20% 95%, #a8cdff 50%, transparent 51%);
+        background-repeat: no-repeat;
+        opacity: 0.7;
+        animation: e3d-twinkle 7s ease-in-out infinite alternate;
+      }
+      @keyframes e3d-twinkle {
+        from {
+          opacity: 0.5;
+        }
+        to {
+          opacity: 0.82;
+        }
+      }
+
+      /* Gentle entrance for the overlay HUD text so the theme reads as polished
+         without interfering with gameplay timing. */
+      .e3d-boot-title,
+      .e3d-intro {
+        animation: e3d-rise 0.6s ease-out both;
+      }
+      .e3d-intro {
+        animation-delay: 0.12s;
+      }
+      @keyframes e3d-rise {
+        from {
+          opacity: 0;
+          transform: translateX(-50%) translateY(6px);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        #e3d-stars {
+          animation: none;
+          transition: none;
+          transform: none !important;
+        }
+        .e3d-boot-title,
+        .e3d-intro {
+          animation: none;
+        }
+      }
     </style>
     <script type="importmap">
       {
@@ -74,12 +159,12 @@
       }
     </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
     <div
       id="game"
@@ -101,8 +186,20 @@
           This game needs a browser with WebGL turned on. Try refreshing once,
           or open it in a different browser or on another device.
         </p>
-        <p class="e3d-fallback-2d" style="margin-top:14px;">
-          <a href="/games/unit9-coordinate-quest.html" style="display:inline-block;padding:10px 18px;border-radius:10px;background:#1fa6a2;color:#fff;font-weight:600;text-decoration:none;">Play the 2D version instead →</a>
+        <p class="e3d-fallback-2d" style="margin-top: 14px">
+          <a
+            href="/games/unit9-coordinate-quest.html"
+            style="
+              display: inline-block;
+              padding: 10px 18px;
+              border-radius: 10px;
+              background: #1fa6a2;
+              color: #fff;
+              font-weight: 600;
+              text-decoration: none;
+            "
+            >Play the 2D version instead →</a
+          >
         </p>
       </div>
     </div>
@@ -122,10 +219,10 @@
       }
     </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

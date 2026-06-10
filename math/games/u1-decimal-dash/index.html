@@ -43,9 +43,46 @@
         color: #fff;
         text-align: center;
         padding: 30px 20px 26px;
+        position: relative;
+        overflow: hidden;
+      }
+      /* Bespoke "dash" speed-lines behind the hero. Sits under the content,
+         drifts with pointer parallax (the GameFX kit moves [data-parallax-layer]),
+         and streaks continuously to sell the "race the clock" theme. */
+      .ghero .speedlines {
+        position: absolute;
+        inset: -20% -10%;
+        z-index: 0;
+        pointer-events: none;
+        background-image: repeating-linear-gradient(
+          115deg,
+          rgba(255, 255, 255, 0.14) 0 3px,
+          rgba(255, 255, 255, 0) 3px 26px
+        );
+        opacity: 0.55;
+        will-change: transform, background-position;
+        animation: dashStreak 0.9s linear infinite;
+      }
+      @keyframes dashStreak {
+        to {
+          background-position: 120px 0;
+        }
+      }
+      .ghero > .deco,
+      .ghero > h1,
+      .ghero > p {
+        position: relative;
+        z-index: 1;
       }
       .ghero .deco {
         font-size: 48px;
+        display: inline-block;
+        animation: heroBob 2.4s ease-in-out infinite;
+      }
+      @keyframes heroBob {
+        50% {
+          transform: translateY(-6px);
+        }
       }
       .ghero h1 {
         margin: 8px 0 6px;
@@ -212,8 +249,21 @@
       .bar > div {
         height: 100%;
         width: 100%;
-        background: linear-gradient(90deg, var(--gold), var(--coral));
-        transition: width 0.25s linear;
+        /* Color is driven by JS (green→yellow→red) as time runs out; this is a
+           safe fallback if scripting is disabled. */
+        background: linear-gradient(90deg, var(--green), var(--gold));
+        transition:
+          width 0.12s linear,
+          background-color 0.3s linear;
+      }
+      /* Urgent pulse when the timer bar runs low (toggled from JS). */
+      .bar.low > div {
+        animation: timerPulse 0.55s ease-in-out infinite;
+      }
+      @keyframes timerPulse {
+        50% {
+          filter: brightness(1.25);
+        }
       }
       .hidden {
         display: none;
@@ -241,6 +291,49 @@
         font-size: 15px;
       }
 
+      /* Bespoke correct-answer celebration: the whole question card gives a
+         confident scale-bounce + green glow when the student answers correctly.
+         Toggled from JS (answer()), removed on the next question. */
+      .card.correct-flash {
+        animation: cardBounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow:
+          0 6px 22px rgba(15, 43, 60, 0.08),
+          0 0 0 3px rgba(45, 135, 75, 0.45);
+      }
+      @keyframes cardBounce {
+        0% {
+          transform: scale(1);
+        }
+        45% {
+          transform: scale(1.04);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      /* HUD value emphasis pop (staggered from JS for score/streak/lives). */
+      .hud .val.bump {
+        animation: hudBump 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      @keyframes hudBump {
+        50% {
+          transform: scale(1.28);
+        }
+      }
+      .hud .val {
+        display: inline-block;
+        transition: color 0.2s;
+      }
+      /* Confetti canvas for high-score wins on the result screen. */
+      #confetti {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 60;
+      }
+
       @media (prefers-reduced-motion: reduce) {
         html {
           scroll-behavior: auto;
@@ -252,17 +345,32 @@
           animation-iteration-count: 1 !important;
           transition-duration: 0.001ms !important;
         }
+        /* Fully neutralize the bespoke continuous/decorative motion. */
+        .ghero .speedlines,
+        .ghero .deco,
+        .bar.low > div,
+        .hud .val.bump,
+        .card.correct-flash {
+          animation: none !important;
+        }
+        .ghero .speedlines {
+          opacity: 0.3;
+        }
+        #confetti {
+          display: none !important;
+        }
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
-    <header class="ghero">
+    <header class="ghero" data-parallax>
+      <div class="speedlines" data-parallax-layer aria-hidden="true"></div>
       <div class="deco">💨</div>
       <h1>Decimal Dash</h1>
       <p>
@@ -315,8 +423,8 @@
             ><span class="val" id="qnum">1</span>
           </div>
         </div>
-        <div class="bar"><div id="timebar"></div></div>
-        <div class="card" style="margin-top: 14px">
+        <div class="bar" id="timebarWrap"><div id="timebar"></div></div>
+        <div class="card" id="qcard" style="margin-top: 14px">
           <span class="mode-tag" id="modeTag"></span>
           <div class="prompt" id="prompt"></div>
           <p class="sub" id="sub"></p>
@@ -327,6 +435,7 @@
       </section>
 
       <section class="card hidden" id="resultScreen">
+        <canvas id="confetti" class="hidden" aria-hidden="true"></canvas>
         <p class="mode-tag">Game Over</p>
         <div class="big-score" id="finalScore">0</div>
         <p id="resultMsg" style="font-weight: 700"></p>
@@ -365,6 +474,40 @@
       var TOTAL = 12,
         TIME = 12;
       var state = {};
+
+      // ---- Visual-polish helpers (additive only; never touch gameplay) ----
+      function prefersReducedMotion() {
+        return !!(
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        );
+      }
+      // Restart a CSS animation class reliably (remove → reflow → add).
+      function flashClass(el, cls) {
+        if (!el || prefersReducedMotion()) return;
+        el.classList.remove(cls);
+        void el.offsetWidth;
+        el.classList.add(cls);
+      }
+      // Staggered HUD value pop — emphasizes which stat just changed.
+      function bumpHud(id, delay) {
+        if (prefersReducedMotion()) return;
+        var el = document.getElementById(id);
+        if (!el) return;
+        setTimeout(function () {
+          flashClass(el, "bump");
+          if (window.GameFX && GameFX.pop) GameFX.pop(el);
+        }, delay || 0);
+      }
+      // Timer bar color: green (lots of time) → yellow → red (almost out).
+      function colorTimer(frac) {
+        var bar = document.getElementById("timebar"),
+          wrap = document.getElementById("timebarWrap");
+        if (!bar) return;
+        var hue = Math.max(0, Math.min(120, frac * 120)); // 120=green, 0=red
+        bar.style.background = "hsl(" + hue + ",72%,46%)";
+        if (wrap) wrap.classList.toggle("low", frac <= 0.25);
+      }
 
       function distinctOpts(correct, makeWrong, fmt) {
         var set = {};
@@ -494,6 +637,9 @@
       }
 
       function startGame() {
+        if (state.confettiRaf) cancelAnimationFrame(state.confettiRaf);
+        var cf = document.getElementById("confetti");
+        if (cf) cf.classList.add("hidden");
         state = { i: 0, score: 0, streak: 0, lives: 3, locked: false };
         document.getElementById("startScreen").classList.add("hidden");
         document.getElementById("resultScreen").classList.add("hidden");
@@ -512,6 +658,7 @@
         document.getElementById("sub").textContent = state.q.sub;
         document.getElementById("feedback").textContent = "";
         document.getElementById("feedback").className = "feedback";
+        document.getElementById("qcard").classList.remove("correct-flash");
         document.getElementById("nextBtn").classList.add("hidden");
         var box = document.getElementById("opts");
         box.innerHTML = "";
@@ -531,10 +678,13 @@
         var t = TIME,
           bar = document.getElementById("timebar");
         bar.style.width = "100%";
+        colorTimer(1); // start green
         clearInterval(state.timer);
         state.timer = setInterval(function () {
           t -= 0.1;
-          bar.style.width = Math.max(0, (t / TIME) * 100) + "%";
+          var frac = Math.max(0, t / TIME);
+          bar.style.width = frac * 100 + "%";
+          colorTimer(frac); // green → yellow → red as time drains
           if (t <= 0) {
             clearInterval(state.timer);
             if (!state.locked) {
@@ -564,13 +714,22 @@
             state.q.why +
             (state.streak > 1 ? "  🔥 Streak ×" + state.streak : "");
           fb.className = "feedback ok";
+          // Bespoke correct-answer celebration: bounce the question card.
+          // (The chosen option's spark-burst is handled automatically by the
+          //  GameFX kit when it gains the `right` class.)
+          flashClass(document.getElementById("qcard"), "correct-flash");
+          updateHud();
+          // Staggered HUD pop: score first, then streak.
+          bumpHud("score", 0);
+          if (state.streak > 1) bumpHud("streak", 110);
         } else {
           state.streak = 0;
           state.lives--;
           fb.textContent = "✗ " + state.q.why + "  (−1 ❤)";
           fb.className = "feedback no";
+          updateHud();
+          bumpHud("lives", 0); // emphasize the life lost
         }
-        updateHud();
         document.getElementById("nextBtn").classList.remove("hidden");
       }
       function timeUp() {
@@ -587,6 +746,7 @@
         fb.textContent = "⏰ Time! " + state.q.why + "  (−1 ❤)";
         fb.className = "feedback no";
         updateHud();
+        bumpHud("lives", 0);
         document.getElementById("nextBtn").classList.remove("hidden");
       }
       function updateHud() {
@@ -613,6 +773,10 @@
           "Final score: " +
           state.score +
           ".";
+        // Bespoke high-score celebration: confetti shower for strong finishes.
+        if (state.score >= 120) {
+          launchConfetti(state.score >= 180 ? 1 : 0.7);
+        }
         try {
           window.EduPulse &&
             EduPulse.record({
@@ -623,6 +787,68 @@
             });
         } catch (e) {}
       }
+      // Self-contained canvas confetti for high-score wins. Capped particle
+      // count + rAF; disabled entirely under prefers-reduced-motion.
+      function launchConfetti(intensity) {
+        var canvas = document.getElementById("confetti");
+        if (!canvas || !canvas.getContext) return;
+        if (prefersReducedMotion()) return;
+        if (state.confettiRaf) cancelAnimationFrame(state.confettiRaf);
+        canvas.classList.remove("hidden");
+        var ctx = canvas.getContext("2d");
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        function size() {
+          canvas.width = window.innerWidth * dpr;
+          canvas.height = window.innerHeight * dpr;
+        }
+        size();
+        var colors = ["#1aa179", "#f0a400", "#3b7dd8", "#e0542f", "#9b5de5"];
+        var COUNT = Math.round(120 * (intensity || 1)); // capped for Chromebooks
+        var W = canvas.width,
+          H = canvas.height,
+          parts = [];
+        for (var i = 0; i < COUNT; i++) {
+          parts.push({
+            x: Math.random() * W,
+            y: -Math.random() * H * 0.5,
+            r: (4 + Math.random() * 5) * dpr,
+            vx: (Math.random() - 0.5) * 2.4 * dpr,
+            vy: (2 + Math.random() * 3) * dpr,
+            rot: Math.random() * Math.PI,
+            vr: (Math.random() - 0.5) * 0.25,
+            c: colors[i % colors.length],
+          });
+        }
+        var start = performance.now(),
+          DURATION = 2600;
+        function frame(now) {
+          var elapsed = now - start;
+          ctx.clearRect(0, 0, W, H);
+          for (var j = 0; j < parts.length; j++) {
+            var p = parts[j];
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.03 * dpr; // gentle gravity
+            p.rot += p.vr;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rot);
+            ctx.globalAlpha = Math.max(0, 1 - elapsed / DURATION);
+            ctx.fillStyle = p.c;
+            ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r * 0.6);
+            ctx.restore();
+          }
+          if (elapsed < DURATION) {
+            state.confettiRaf = requestAnimationFrame(frame);
+          } else {
+            ctx.clearRect(0, 0, W, H);
+            canvas.classList.add("hidden");
+            state.confettiRaf = null;
+          }
+        }
+        state.confettiRaf = requestAnimationFrame(frame);
+      }
+
       document.getElementById("startBtn").onclick = startGame;
       document.getElementById("againBtn").onclick = startGame;
       document.getElementById("nextBtn").onclick = function () {
@@ -633,10 +859,10 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

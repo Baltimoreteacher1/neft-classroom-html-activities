@@ -38,12 +38,12 @@
       });
     </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
     <div id="game"></div>
     <script>
@@ -64,6 +64,21 @@
         H = 768;
       const LS_KEY = "discountdash_runner_hi";
       const LANES = [W / 2 - 240, W / 2, W / 2 + 240];
+
+      // ── Reduced-motion guard (bespoke FX respect prefers-reduced-motion) ──
+      // Live-tracked so an OS-level toggle is honored without a reload.
+      const RM = { reduce: false };
+      try {
+        const _mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+        RM.reduce = !!_mq.matches;
+        const _onRM = (e) => {
+          RM.reduce = !!e.matches;
+        };
+        _mq.addEventListener
+          ? _mq.addEventListener("change", _onRM)
+          : _mq.addListener && _mq.addListener(_onRM);
+      } catch (e) {}
+      const reducedMotion = () => RM.reduce;
 
       class SFX {
         constructor() {
@@ -255,6 +270,18 @@
           this.rowGap = 360;
           this.distSinceRow = 0;
 
+          // ── Parallax mall storefront background (multi-speed layers) ──
+          // Three depth bands of procedural storefronts scroll DOWN with the
+          // aisle at different speeds (far = slow). Pure decoration behind the
+          // play surface; never intercepts input. Honors reduced-motion.
+          this.bgLayers = this.buildStorefronts();
+          // Subtle pointer parallax sway of the whole mall (skybox feel).
+          this.bgSwayX = 0;
+          this.input.on("pointermove", (p) => {
+            if (reducedMotion()) return;
+            this.bgSwayX = ((p.x / W) * 2 - 1) * 18;
+          });
+
           // scrolling floor stripes
           this.stripes = [];
           for (let i = 0; i < 14; i++) {
@@ -322,6 +349,89 @@
           this.updateHUD();
         }
 
+        // Build procedural mall storefronts in three parallax bands. Returns
+        // an array of {container, speed, baseX} ready for the scroll loop.
+        buildStorefronts() {
+          const cfg = [
+            {
+              speed: 0.18,
+              depth: -12,
+              alpha: 0.5,
+              fill: 0x102a4d,
+              w: 120,
+              h: 90,
+              gap: 30,
+            },
+            {
+              speed: 0.34,
+              depth: -11,
+              alpha: 0.7,
+              fill: 0x163a66,
+              w: 150,
+              h: 130,
+              gap: 26,
+            },
+            {
+              speed: 0.55,
+              depth: -10,
+              alpha: 0.85,
+              fill: 0x1d4a80,
+              w: 190,
+              h: 180,
+              gap: 22,
+            },
+          ];
+          const accent = [0xffe066, 0x74c0fc, 0xff7eb6, 0x51cf66];
+          const layers = [];
+          cfg.forEach((band, bi) => {
+            const cont = this.add.container(0, 0).setDepth(band.depth);
+            const unit = band.w + band.gap;
+            const count = Math.ceil(W / unit) + 2;
+            const baseY = 50 + (2 - bi) * 12;
+            // Vertical wrap distance: one band tall + breathing room. Two
+            // stacked copies (one a full span above) make the downward scroll
+            // seamless — copy A leaves the top exactly as copy B arrives.
+            const span = band.h + 70;
+            const drawShop = (x, y, i) => {
+              const shop = this.add
+                .rectangle(x, y, band.w, band.h, band.fill, band.alpha)
+                .setOrigin(0.5, 0);
+              cont.add(shop);
+              // awning stripe (accent) — the classic mall storefront cue
+              const aw = this.add
+                .rectangle(
+                  x,
+                  y + band.h,
+                  band.w + 6,
+                  10,
+                  accent[(i + bi) % accent.length],
+                  band.alpha,
+                )
+                .setOrigin(0.5, 0);
+              cont.add(aw);
+              // lit "window"
+              const wq = this.add
+                .rectangle(
+                  x,
+                  y + band.h * 0.45,
+                  band.w * 0.6,
+                  band.h * 0.4,
+                  0x0a1830,
+                  Math.min(1, band.alpha + 0.1),
+                )
+                .setOrigin(0.5, 0.5);
+              cont.add(wq);
+            };
+            for (let i = 0; i < count; i++) {
+              const x = i * unit + band.w / 2;
+              drawShop(x, baseY, i); // copy B (on-screen)
+              drawShop(x, baseY - span, i); // copy A (one span above)
+            }
+            layers.push({ cont, speed: band.speed, span });
+          });
+          return layers;
+        }
+
         move(dir) {
           const nl = Phaser.Math.Clamp(this.lane + dir, 0, 2);
           if (nl !== this.lane) {
@@ -364,6 +474,24 @@
               })
               .setOrigin(0.5);
             c.add([pad, emo, wasT, pctT]);
+            // ── Deal card eased rotation/flip on approach ──
+            // Each pad flips open (scaleY 0→1) with a small lean as the row
+            // appears, then settles flat. Cosmetic only: the y-scroll in
+            // update() owns position, so we only animate scaleY/angle here.
+            if (reducedMotion()) {
+              c.setScale(1).setAngle(0);
+            } else {
+              c.setScale(1, 0.05);
+              c.setAngle(i === 0 ? -8 : i === 2 ? 8 : 0);
+              this.tweens.add({
+                targets: c,
+                scaleY: 1,
+                angle: 0,
+                duration: 360,
+                delay: i * 70,
+                ease: "Back.out",
+              });
+            }
             return c;
           });
           this.rows.push({ data, cells, y, scored: false });
@@ -371,37 +499,54 @@
 
         grabCell(row, laneIdx) {
           row.scored = true;
+          const rm = reducedMotion();
           const isBest = laneIdx === row.data.bestIdx;
           if (isBest) {
             const saved = row.data.base - row.data.cells[laneIdx].sale;
             this.combo++;
             const pts = 100 + this.combo * 15;
             this.score += pts;
+            const prevSav = this.savings;
             this.savings += saved;
             sfx.grab();
             this.popText(
               "BEST DEAL!  saved " + money(saved) + "  +" + pts,
               "#51cf66",
             );
-            // sparkle
-            for (let i = 0; i < 10; i++) {
-              const s = this.add
-                .rectangle(this.player.x, this.player.y, 4, 4, 0xffe066)
-                .setDepth(15);
-              this.tweens.add({
-                targets: s,
-                x: this.player.x + randInt(-90, 90),
-                y: this.player.y + randInt(-90, 20),
-                alpha: 0,
-                duration: 500,
-                onComplete: () => s.destroy(),
-              });
+            // ── Best-deal lane gold glow (revealed only AFTER the grab, so it
+            // never gives away the answer) — pulses around the grabbed pad. ──
+            this.flashBestLane(row.cells[laneIdx]);
+            // Animated savings ticker counts the HUD up to the new total.
+            this.tickSavings(prevSav, this.savings);
+            // Combo multiplier badge scaling pop.
+            this.popCombo();
+            // DOM-level spark burst over the canvas via the shared FX kit.
+            try {
+              window.GameFX && window.GameFX.celebrate(this.game.canvas);
+            } catch (e) {}
+            // sparkle (capped; skipped under reduced-motion)
+            if (!rm) {
+              for (let i = 0; i < 10; i++) {
+                const s = this.add
+                  .rectangle(this.player.x, this.player.y, 4, 4, 0xffe066)
+                  .setDepth(15);
+                this.tweens.add({
+                  targets: s,
+                  x: this.player.x + randInt(-90, 90),
+                  y: this.player.y + randInt(-90, 20),
+                  alpha: 0,
+                  duration: 500,
+                  onComplete: () => s.destroy(),
+                });
+              }
             }
           } else {
             this.combo = 0;
             this.lives--;
             sfx.bad();
-            this.cameras.main.shake(160, 0.008);
+            if (!rm) this.cameras.main.shake(160, 0.008);
+            // ── Wrong-deal brief red flash overlay ──
+            this.wrongFlash();
             const best = row.data.cells[row.data.bestIdx];
             this.popText(
               "Overpaid! Best was " +
@@ -414,6 +559,109 @@
           }
           this.updateHUD();
           if (this.lives <= 0) this.endGame();
+        }
+
+        // Gold glow + quick pop around the pad the player correctly grabbed.
+        flashBestLane(cell) {
+          if (!cell || !cell.active) return;
+          if (reducedMotion()) {
+            // static, readable confirmation outline only
+            const g = this.add
+              .rectangle(cell.x, cell.y, 224, 174, 0xffe066, 0.18)
+              .setStrokeStyle(4, 0xffe066, 0.9)
+              .setDepth(4);
+            this.time.delayedCall(450, () => g.destroy());
+            return;
+          }
+          const glow = this.add
+            .rectangle(cell.x, cell.y, 220, 170, 0xffe066, 0.0)
+            .setStrokeStyle(5, 0xffe066, 0.95)
+            .setDepth(4);
+          // keep the glow pinned to the (still-scrolling) grabbed pad
+          const follow = () => {
+            if (cell.active) glow.y = cell.y;
+          };
+          this.events.on("update", follow);
+          this.tweens.add({
+            targets: glow,
+            scaleX: 1.18,
+            scaleY: 1.18,
+            fillAlpha: 0.28,
+            alpha: 0,
+            duration: 620,
+            ease: "Quad.out",
+            onComplete: () => {
+              this.events.off("update", follow);
+              glow.destroy();
+            },
+          });
+          if (cell.active) {
+            this.tweens.add({
+              targets: cell,
+              scaleX: 1.12,
+              scaleY: 1.12,
+              yoyo: true,
+              duration: 150,
+              ease: "Quad.out",
+            });
+          }
+        }
+
+        // Animated savings ticker — eases the SAVED HUD value upward.
+        tickSavings(from, to) {
+          if (this.savTween) this.savTween.remove();
+          if (reducedMotion()) {
+            this.savHud.setText("SAVED  " + money(to));
+            return;
+          }
+          const obj = { v: from };
+          this.savTween = this.tweens.add({
+            targets: obj,
+            v: to,
+            duration: 500,
+            ease: "Cubic.out",
+            onUpdate: () => this.savHud.setText("SAVED  " + money(obj.v)),
+            onComplete: () => this.savHud.setText("SAVED  " + money(to)),
+          });
+          try {
+            window.GameFX && window.GameFX.pop(this.game.canvas);
+          } catch (e) {}
+        }
+
+        // Combo multiplier badge scaling — bigger pop for bigger combos.
+        popCombo() {
+          if (this.combo < 2 || reducedMotion()) return;
+          const k = Math.min(1.6, 1.2 + this.combo * 0.05);
+          this.comboHud.setScale(1);
+          this.tweens.add({
+            targets: this.comboHud,
+            scaleX: k,
+            scaleY: k,
+            yoyo: true,
+            duration: 170,
+            ease: "Back.out",
+          });
+        }
+
+        // Brief full-screen red flash on a wrong (overpaid) grab.
+        wrongFlash() {
+          const f = this.add
+            .rectangle(
+              W / 2,
+              H / 2,
+              W,
+              H,
+              0xff3b3b,
+              reducedMotion() ? 0.12 : 0.3,
+            )
+            .setDepth(30);
+          this.tweens.add({
+            targets: f,
+            alpha: 0,
+            duration: reducedMotion() ? 220 : 320,
+            ease: "Quad.out",
+            onComplete: () => f.destroy(),
+          });
         }
 
         popText(msg, color) {
@@ -444,7 +692,11 @@
               "    " +
               "♥".repeat(Math.max(0, this.lives)),
           );
-          this.savHud.setText("SAVED  " + money(this.savings));
+          // Skip while the savings ticker tween is mid-count so it isn't
+          // clobbered; it lands on the exact total in its onComplete.
+          if (!(this.savTween && this.savTween.isPlaying())) {
+            this.savHud.setText("SAVED  " + money(this.savings));
+          }
           this.comboHud.setText(
             "ROUND " + this.round + (this.combo > 1 ? "   x" + this.combo : ""),
           );
@@ -471,6 +723,21 @@
           if (this.gameOver) return;
           const dt = delta / 16.67;
           const v = this.speed * dt;
+          const rm = reducedMotion();
+
+          // ── Parallax storefront drift (far layers move slower) ──
+          // Under reduced-motion we freeze the drift but keep the scenery.
+          if (this.bgLayers) {
+            const swayTarget = rm ? 0 : this.bgSwayX || 0;
+            this.bgLayers.forEach((L) => {
+              if (!rm) {
+                L.cont.y += v * L.speed;
+                if (L.cont.y >= L.span) L.cont.y -= L.span;
+              }
+              // ease container x toward parallax sway target
+              L.cont.x += (swayTarget * L.speed - L.cont.x) * 0.08;
+            });
+          }
 
           // scroll stripes
           this.stripes.forEach((s) => {
@@ -596,10 +863,10 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

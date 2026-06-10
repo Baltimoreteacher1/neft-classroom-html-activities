@@ -18,6 +18,82 @@
         background: #0f172a;
         font-family: "Segoe UI", system-ui, sans-serif;
       }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      /* --- On-screen touch controls (mobile / touch devices) --- */
+      #touch-controls {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 50;
+        display: none;
+        justify-content: space-between;
+        align-items: flex-end;
+        padding: 12px 14px calc(12px + env(safe-area-inset-bottom, 0px));
+        pointer-events: none;
+      }
+      body.touch-active #touch-controls {
+        display: flex;
+      }
+      .tc-cluster {
+        display: flex;
+        gap: 10px;
+        pointer-events: auto;
+      }
+      .tc-btn {
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+        user-select: none;
+        appearance: none;
+        border: 2px solid #475569;
+        background: rgba(15, 23, 42, 0.82);
+        color: #e2e8f0;
+        width: 58px;
+        height: 58px;
+        border-radius: 14px;
+        font-size: 26px;
+        font-weight: 700;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      }
+      .tc-btn.tc-action {
+        width: 96px;
+        border-color: #f87171;
+        background: rgba(239, 68, 68, 0.92);
+        color: #fff;
+        font-size: 16px;
+        letter-spacing: 0.05em;
+      }
+      .tc-btn:active {
+        background: rgba(251, 191, 36, 0.9);
+        border-color: #fbbf24;
+        color: #0f172a;
+      }
+      .tc-btn:focus-visible {
+        outline: 3px solid #fbbf24;
+        outline-offset: 2px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .tc-btn {
+          transition: none;
+        }
+      }
     </style>
     <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
     <script>
@@ -37,13 +113,47 @@
       });
     </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
+    <!-- On-screen touch controls: mirror the existing keyboard scheme.
+         Left = navigate answers, right = action (select/answer). Shown only
+         on touch devices; fully keyboard/AT accessible (ARIA labels + focus). -->
+    <div id="touch-controls" role="group" aria-label="Game touch controls">
+      <div class="tc-cluster">
+        <button
+          type="button"
+          class="tc-btn"
+          data-key="ArrowLeft"
+          aria-label="Previous answer"
+        >
+          &#8592;
+        </button>
+        <button
+          type="button"
+          class="tc-btn"
+          data-key="ArrowRight"
+          aria-label="Next answer"
+        >
+          &#8594;
+        </button>
+      </div>
+      <div class="tc-cluster">
+        <button
+          type="button"
+          class="tc-btn tc-action"
+          data-key="Enter"
+          aria-label="Select or answer"
+        >
+          SELECT
+        </button>
+      </div>
+    </div>
+    <span id="sr-status" aria-live="polite" class="sr-only"></span>
     <script>
       // Stats Slam — Sports Manager
       // Grade 6: 6.SP.1–6.SP.5 (Statistical questions & data)
@@ -52,6 +162,28 @@
       const W = 1024,
         H = 768;
       const LS_KEY = "statsSlam_highScore";
+
+      // --- Reduced-motion guard (additive polish only) ---
+      // When the user prefers reduced motion we disable screenshakes, sprite
+      // bobbing, ball tweens and other purely-decorative motion. Live so a
+      // mid-session OS toggle is respected.
+      const RM_QUERY =
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)");
+      const RM = { on: !!(RM_QUERY && RM_QUERY.matches) };
+      if (RM_QUERY) {
+        const _rmUpdate = (e) => {
+          RM.on = e.matches;
+        };
+        if (RM_QUERY.addEventListener)
+          RM_QUERY.addEventListener("change", _rmUpdate);
+        else if (RM_QUERY.addListener) RM_QUERY.addListener(_rmUpdate);
+      }
+      // Safe camera-shake wrapper: no-op under reduced motion.
+      function safeShake(scene, dur, intensity) {
+        if (RM.on) return;
+        scene.cameras.main.shake(dur, intensity);
+      }
 
       // --- SFX ---
       class SFX {
@@ -498,34 +630,38 @@
             false,
           );
           ball.strokePath();
-          this.tweens.add({
-            targets: ball,
-            y: 295,
-            duration: 500,
-            yoyo: true,
-            repeat: -1,
-            ease: "Bounce.easeOut",
-          });
-          this.tweens.add({
-            targets: ball,
-            angle: 360,
-            duration: 3000,
-            repeat: -1,
-            ease: "Linear",
-          });
+          if (!RM.on) {
+            this.tweens.add({
+              targets: ball,
+              y: 295,
+              duration: 500,
+              yoyo: true,
+              repeat: -1,
+              ease: "Bounce.easeOut",
+            });
+            this.tweens.add({
+              targets: ball,
+              angle: 360,
+              duration: 3000,
+              repeat: -1,
+              ease: "Linear",
+            });
+          }
 
           // Ball shadow
           const shadow = this.add
             .ellipse(cx, 360, 60, 12, 0x000000, 0.2)
             .setDepth(0);
-          this.tweens.add({
-            targets: shadow,
-            scaleX: 0.8,
-            duration: 500,
-            yoyo: true,
-            repeat: -1,
-            ease: "Bounce.easeOut",
-          });
+          if (!RM.on) {
+            this.tweens.add({
+              targets: shadow,
+              scaleX: 0.8,
+              duration: 500,
+              yoyo: true,
+              repeat: -1,
+              ease: "Bounce.easeOut",
+            });
+          }
 
           // Title with pulse animation
           const titleStats = this.add
@@ -545,25 +681,27 @@
             })
             .setOrigin(0.5);
 
-          this.tweens.add({
-            targets: titleStats,
-            scaleX: 1.05,
-            scaleY: 1.05,
-            duration: 1200,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut",
-          });
-          this.tweens.add({
-            targets: titleSlam,
-            scaleX: 1.04,
-            scaleY: 1.04,
-            duration: 1800,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut",
-            delay: 400,
-          });
+          if (!RM.on) {
+            this.tweens.add({
+              targets: titleStats,
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 1200,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.easeInOut",
+            });
+            this.tweens.add({
+              targets: titleSlam,
+              scaleX: 1.04,
+              scaleY: 1.04,
+              duration: 1800,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.easeInOut",
+              delay: 400,
+            });
+          }
 
           this.add
             .text(cx, 210, "Sports Manager", {
@@ -616,14 +754,16 @@
             this.add
               .text(px, py + 12, p.sub, { fontSize: "12px", color: "#94a3b8" })
               .setOrigin(0.5);
-            this.tweens.add({
-              targets: box,
-              y: py - 3,
-              duration: 1400 + i * 300,
-              yoyo: true,
-              repeat: -1,
-              ease: "Sine.easeInOut",
-            });
+            if (!RM.on) {
+              this.tweens.add({
+                targets: box,
+                y: py - 3,
+                duration: 1400 + i * 300,
+                yoyo: true,
+                repeat: -1,
+                ease: "Sine.easeInOut",
+              });
+            }
           });
 
           // Scoreboard
@@ -646,16 +786,18 @@
           const btnGlow = this.add
             .rectangle(cx, 620, 260, 68, 0xef4444, 0.3)
             .setDepth(0);
-          this.tweens.add({
-            targets: btnGlow,
-            scaleX: 1.1,
-            scaleY: 1.15,
-            alpha: 0.15,
-            duration: 1000,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut",
-          });
+          if (!RM.on) {
+            this.tweens.add({
+              targets: btnGlow,
+              scaleX: 1.1,
+              scaleY: 1.15,
+              alpha: 0.15,
+              duration: 1000,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.easeInOut",
+            });
+          }
 
           const btn = this.add
             .rectangle(cx, 620, 250, 60, 0xef4444)
@@ -802,23 +944,53 @@
 
         // Screen shake scaled to streak
         streakShake() {
+          if (RM.on) return;
           const intensity = Math.min(0.003 + this.streak * 0.002, 0.015);
           const dur = Math.min(100 + this.streak * 25, 300);
           this.cameras.main.shake(dur, intensity);
         }
 
         buildCourt() {
-          // Court floor
-          this.add.rectangle(W / 2, H - 80, W, 160, 0x8b4513, 0.08).setDepth(0);
+          // --- Parallax court floor layer ---
+          // A container holds the floor + markings so it can drift subtly with
+          // the pointer (and gently sway under reduced motion = static).
+          this.courtLayer = this.add.container(0, 0).setDepth(0);
+          const floor = this.add.rectangle(
+            W / 2,
+            H - 80,
+            W + 120,
+            160,
+            0x8b4513,
+            0.08,
+          );
+          this.courtLayer.add(floor);
+          // Receding floorboard lines for depth (procedural)
+          for (let i = 0; i < 7; i++) {
+            const ly = H - 150 + i * 22;
+            const line = this.add
+              .rectangle(W / 2, ly, W + 120, 1, 0xfbbf24, 0.05 + i * 0.012)
+              .setOrigin(0.5);
+            this.courtLayer.add(line);
+          }
           // Court markings
-          this.add
-            .rectangle(W / 2, H - 80, W - 40, 140, 0x000000, 0)
-            .setStrokeStyle(1, 0xfbbf24, 0.15)
-            .setDepth(0);
-          this.add
-            .circle(W / 2, H - 80, 40, 0x000000, 0)
-            .setStrokeStyle(1, 0xfbbf24, 0.15)
-            .setDepth(0);
+          this.courtLayer.add(
+            this.add
+              .rectangle(W / 2, H - 80, W - 40, 140, 0x000000, 0)
+              .setStrokeStyle(1, 0xfbbf24, 0.15),
+          );
+          this.courtLayer.add(
+            this.add
+              .circle(W / 2, H - 80, 40, 0x000000, 0)
+              .setStrokeStyle(1, 0xfbbf24, 0.15),
+          );
+
+          // --- Dynamic arena lighting (procedural spotlight sweep) ---
+          // A soft radial-ish glow drawn with graphics that drifts left/right
+          // across the court. Purely decorative; frozen under reduced motion.
+          this.spotlight = this.add.graphics().setDepth(0);
+          this._spotPhase = 0;
+          this.drawSpotlight(W / 2);
+
           // Hoop
           this.add.rectangle(W - 60, H - 180, 6, 60, 0x64748b).setDepth(0);
           this.add.rectangle(W - 60, H - 210, 40, 3, 0xef4444).setDepth(0);
@@ -854,17 +1026,45 @@
             pg.fillStyle(0x64748b);
             pg.fillRect(-6, 15, 5, 12);
             pg.fillRect(1, 15, 5, 12);
-            this.tweens.add({
-              targets: pg,
-              y: py - 5,
-              x: px + Phaser.Math.Between(-10, 10),
-              duration: 800 + i * 200,
-              yoyo: true,
-              repeat: -1,
-              ease: "Sine.easeInOut",
-            });
+            if (!RM.on) {
+              this.tweens.add({
+                targets: pg,
+                y: py - 5,
+                x: px + Phaser.Math.Between(-10, 10),
+                duration: 800 + i * 200,
+                yoyo: true,
+                repeat: -1,
+                ease: "Sine.easeInOut",
+              });
+            }
             this.courtPlayers.push(pg);
           }
+
+          // Pointer parallax for the court layer (bespoke, in-canvas).
+          this._parallaxTarget = { x: 0 };
+          this.input.on("pointermove", (p) => {
+            if (RM.on) return;
+            // Drift up to ~14px based on horizontal pointer position.
+            this._parallaxTarget.x = ((p.x / W) * 2 - 1) * 14;
+          });
+        }
+
+        // Draw the procedural court spotlight glow centered at sx.
+        drawSpotlight(sx) {
+          if (!this.spotlight) return;
+          const g = this.spotlight;
+          g.clear();
+          const cy = H - 80;
+          // Layered translucent ellipses fake a soft radial light pool.
+          const rings = [
+            { rx: 260, ry: 90, a: 0.05 },
+            { rx: 190, ry: 66, a: 0.06 },
+            { rx: 120, ry: 42, a: 0.07 },
+          ];
+          rings.forEach((r) => {
+            g.fillStyle(0xfde68a, r.a);
+            g.fillEllipse(sx, cy, r.rx * 2, r.ry * 2);
+          });
         }
 
         buildHUD() {
@@ -1269,6 +1469,15 @@
             this.answerBtns.push({ bg, txt, num, optText: opt });
           });
 
+          // Announce the question + options to assistive tech (non-visual).
+          try {
+            const sr = document.getElementById("sr-status");
+            if (sr) {
+              const opts = q.options.map((o, i) => `${i + 1}. ${o}`).join(". ");
+              sr.textContent = `Question ${this.qIndex + 1} of ${this.totalQ}. ${q.text}${q.data ? " Data: " + q.data + "." : ""} Options: ${opts}.`;
+            }
+          } catch (e) {}
+
           // Power-up buttons
           this.buildPowerUpButtons();
 
@@ -1442,8 +1651,8 @@
           this.fbObj.setColor("#ef4444");
           sfx.miss();
           sfx.glassBreak();
-          this.cameras.main.shake(300, 0.02);
-          this.cameras.main.flash(200, 255, 0, 0, true);
+          safeShake(this, 300, 0.02);
+          if (!RM.on) this.cameras.main.flash(200, 255, 0, 0, true);
           this.showFloatingText(
             W / 2,
             H / 2 - 50,
@@ -1565,34 +1774,41 @@
             sfx.buzzer();
             if (this.streak < 3) sfx.crowd();
 
-            // Basketball animation
-            const ball = this.add
-              .circle(W / 2, H - 100, 15, 0xf97316)
-              .setDepth(9);
+            // Basketball animation (skip the tween under reduced motion,
+            // but still reward the make with the hoop particle burst).
             sfx.swoosh();
-            this.tweens.add({
-              targets: ball,
-              x: W - 40,
-              y: H - 210,
-              duration: 600,
-              ease: "Quad.easeOut",
-              onComplete: () => {
-                // Hoop particles
-                this.add
-                  .particles(W - 40, H - 210, "__WHITE", {
-                    speed: { min: 30, max: 120 },
-                    angle: { min: 0, max: 360 },
-                    scale: { start: 0.4, end: 0 },
-                    lifespan: 500,
-                    tint: [0xfbbf24, 0xef4444, 0x22c55e],
-                    quantity: 12,
-                    emitting: false,
-                    blendMode: "ADD",
-                  })
-                  .explode(18);
-                ball.destroy();
-              },
-            });
+            const hoopBurst = () => {
+              this.add
+                .particles(W - 40, H - 210, "__WHITE", {
+                  speed: { min: 30, max: 120 },
+                  angle: { min: 0, max: 360 },
+                  scale: { start: 0.4, end: 0 },
+                  lifespan: 500,
+                  tint: [0xfbbf24, 0xef4444, 0x22c55e],
+                  quantity: 12,
+                  emitting: false,
+                  blendMode: "ADD",
+                })
+                .explode(18);
+            };
+            if (RM.on) {
+              hoopBurst();
+            } else {
+              const ball = this.add
+                .circle(W / 2, H - 100, 15, 0xf97316)
+                .setDepth(9);
+              this.tweens.add({
+                targets: ball,
+                x: W - 40,
+                y: H - 210,
+                duration: 600,
+                ease: "Quad.easeOut",
+                onComplete: () => {
+                  hoopBurst();
+                  ball.destroy();
+                },
+              });
+            }
 
             // Screen shake scaled to streak
             this.streakShake();
@@ -1632,20 +1848,24 @@
               "22px",
             );
 
-            // Heavy screen shake + red flash
-            this.cameras.main.shake(400, 0.025);
-            this.cameras.main.flash(300, 255, 0, 0, true);
+            // Heavy screen shake + red flash (gated for reduced motion)
+            safeShake(this, 400, 0.025);
+            if (!RM.on) this.cameras.main.flash(300, 255, 0, 0, true);
 
             // Red vignette overlay
             const vignette = this.add
               .rectangle(W / 2, H / 2, W, H, 0xff0000, 0.15)
               .setDepth(15);
-            this.tweens.add({
-              targets: vignette,
-              alpha: 0,
-              duration: 800,
-              onComplete: () => vignette.destroy(),
-            });
+            if (RM.on) {
+              this.time.delayedCall(400, () => vignette.destroy());
+            } else {
+              this.tweens.add({
+                targets: vignette,
+                alpha: 0,
+                duration: 800,
+                onComplete: () => vignette.destroy(),
+              });
+            }
           }
           this.updateHUD();
           this.time.delayedCall(correct ? 1500 : 2500, () => {
@@ -1754,8 +1974,25 @@
           }
         }
 
-        update() {
+        update(time) {
           this.updateHUD();
+
+          // Smoothly ease the court parallax layer toward the pointer target.
+          if (this.courtLayer && this._parallaxTarget) {
+            const target = RM.on ? 0 : this._parallaxTarget.x;
+            this.courtLayer.x += (target - this.courtLayer.x) * 0.08;
+          }
+
+          // Animate the dynamic spotlight sweep (frozen under reduced motion).
+          if (this.spotlight) {
+            if (RM.on) {
+              this.drawSpotlight(W / 2);
+            } else {
+              this._spotPhase = (time || 0) * 0.0004;
+              const sx = W / 2 + Math.sin(this._spotPhase) * 220;
+              this.drawSpotlight(sx);
+            }
+          }
         }
 
         endGame() {
@@ -1955,13 +2192,32 @@
           this.add
             .rectangle(cx, 200, 300, 60, 0x1e293b)
             .setStrokeStyle(2, 0xef4444);
-          this.add
-            .text(cx, 190, `${d.wins}W — ${d.losses}L`, {
+          // Win/Loss record with animated stat counter (tween 0 -> actual).
+          const recordText = this.add
+            .text(cx, 190, `0W — 0L`, {
               fontSize: "28px",
               color: "#e2e8f0",
               fontStyle: "bold",
             })
             .setOrigin(0.5);
+          const setRecord = (w, l) => {
+            recordText.setText(`${Math.round(w)}W — ${Math.round(l)}L`);
+          };
+          if (RM.on) {
+            setRecord(d.wins, d.losses);
+          } else {
+            const rec = { w: 0, l: 0 };
+            this.tweens.add({
+              targets: rec,
+              w: d.wins,
+              l: d.losses,
+              duration: 900,
+              delay: 400,
+              ease: "Cubic.easeOut",
+              onUpdate: () => setRecord(rec.w, rec.l),
+              onComplete: () => setRecord(d.wins, d.losses),
+            });
+          }
           this.add
             .text(cx, 215, "Season Record", {
               fontSize: "12px",
@@ -1982,17 +2238,21 @@
             .text(cx, 315, "Accuracy", { fontSize: "12px", color: "#64748b" })
             .setOrigin(0.5);
 
-          let counter = { val: 0 };
-          this.tweens.add({
-            targets: counter,
-            val: pct,
-            duration: 1500,
-            delay: 500,
-            ease: "Power2",
-            onUpdate: () => {
-              scoreText.setText(Math.round(counter.val) + "%");
-            },
-          });
+          if (RM.on) {
+            scoreText.setText(pct + "%");
+          } else {
+            let counter = { val: 0 };
+            this.tweens.add({
+              targets: counter,
+              val: pct,
+              duration: 1500,
+              delay: 500,
+              ease: "Power2",
+              onUpdate: () => {
+                scoreText.setText(Math.round(counter.val) + "%");
+              },
+            });
+          }
 
           const stats = [
             { l: "Points", v: d.score, c: "#fbbf24" },
@@ -2146,15 +2406,76 @@
         },
         input: { keyboard: true, mouse: true, touch: true },
       });
+
+      // --- Touch control wiring ---
+      // Translates on-screen button presses into the SAME synthetic key events
+      // the game already listens for (ArrowLeft/Right + Enter), so no game
+      // mechanic, scoring, or answer-checking path changes. Additive only.
+      (function () {
+        const pad = document.getElementById("touch-controls");
+        if (!pad) return;
+        const isTouch =
+          "ontouchstart" in window ||
+          (navigator.maxTouchPoints || 0) > 0 ||
+          (window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
+        if (isTouch) document.body.classList.add("touch-active");
+
+        function fireKey(key) {
+          // Phaser's keyboard plugin listens on window; dispatch both down/up.
+          const opts = { key: key, bubbles: true, cancelable: true };
+          window.dispatchEvent(new KeyboardEvent("keydown", opts));
+          window.dispatchEvent(new KeyboardEvent("keyup", opts));
+        }
+
+        // Label the Phaser canvas for assistive tech once it mounts.
+        const labelCanvas = () => {
+          const c = document.querySelector("canvas");
+          if (c) {
+            c.setAttribute("role", "img");
+            c.setAttribute(
+              "aria-label",
+              "Stats Slam basketball statistics quiz game. Use the on-screen or arrow keys to choose an answer, then Select. Number keys 1 to 4 also answer.",
+            );
+          } else {
+            requestAnimationFrame(labelCanvas);
+          }
+        };
+        labelCanvas();
+
+        pad.querySelectorAll(".tc-btn").forEach((btn) => {
+          const key = btn.getAttribute("data-key");
+          // pointerdown gives the snappiest, most reliable response on touch.
+          btn.addEventListener(
+            "pointerdown",
+            (e) => {
+              e.preventDefault();
+              fireKey(key);
+              // Leverage the shared FX kit for tactile button feedback.
+              try {
+                if (window.GameFX && typeof GameFX.pop === "function")
+                  GameFX.pop(btn);
+              } catch (err) {}
+            },
+            { passive: false },
+          );
+          // Keyboard activation of the on-screen buttons themselves.
+          btn.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              fireKey(key);
+            }
+          });
+        });
+      })();
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

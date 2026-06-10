@@ -240,16 +240,134 @@
         color: var(--muted);
         font-size: 15px;
       }
+
+      /* --- Bespoke Area Attack polish (additive, motion-safe) --- */
+      /* Hero parallax grid layer */
+      .ghero {
+        position: relative;
+        overflow: hidden;
+      }
+      .ghero-grid {
+        position: absolute;
+        inset: -12% -12% -12% -12%;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+        background-size: 34px 34px;
+        pointer-events: none;
+        will-change: transform;
+      }
+      .ghero .deco,
+      .ghero h1,
+      .ghero p {
+        position: relative;
+      }
+
+      /* Geometry diagram hint */
+      .geo-card {
+        position: relative;
+        overflow: hidden;
+      }
+      .geo-stage {
+        display: flex;
+        justify-content: center;
+        margin: 4px 0 2px;
+        will-change: transform;
+      }
+      .geo-diagram svg {
+        width: 100%;
+        max-width: 240px;
+        height: auto;
+      }
+      .geo-shape {
+        fill: rgba(26, 111, 181, 0.12);
+        stroke: var(--blue);
+        stroke-width: 2.5;
+        stroke-linejoin: round;
+      }
+      .geo-tri {
+        fill: rgba(14, 138, 125, 0.12);
+        stroke: var(--teal);
+      }
+      .geo-trap {
+        fill: rgba(212, 149, 42, 0.14);
+        stroke: var(--gold);
+      }
+      .geo-dim {
+        stroke: var(--muted);
+        stroke-width: 1.5;
+        stroke-dasharray: 4 3;
+      }
+      .geo-label {
+        font: 700 13px var(--font);
+        fill: var(--ink);
+      }
+      /* Animated draw-on of the shape outline */
+      .geo-shape.geo-anim {
+        stroke-dasharray: 600;
+        stroke-dashoffset: 600;
+        animation: geoDraw 0.6s ease-out forwards;
+      }
+      @keyframes geoDraw {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+
+      /* Animated area calculation sequence */
+      .calc-seq {
+        min-height: 22px;
+        margin: 2px 0 12px;
+        font-weight: 800;
+        font-size: 17px;
+        color: var(--muted);
+        letter-spacing: 0.01em;
+      }
+      .calc-seq .calc-tok {
+        display: inline-block;
+        opacity: 0;
+        transform: translateY(4px);
+        animation: calcIn 0.28s ease-out forwards;
+      }
+      .calc-seq .calc-ans {
+        color: var(--green);
+        font-size: 20px;
+      }
+      @keyframes calcIn {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .ghero-grid {
+          transform: none !important;
+        }
+        .geo-stage {
+          transform: none !important;
+        }
+        .geo-shape.geo-anim {
+          animation: none;
+          stroke-dashoffset: 0;
+        }
+        .calc-seq .calc-tok {
+          animation: none;
+          opacity: 1;
+          transform: none;
+        }
+      }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
-    <header class="ghero">
+    <header class="ghero" data-parallax>
+      <div class="ghero-grid" data-parallax-layer aria-hidden="true"></div>
       <div class="deco">📐</div>
       <h1>Area Attack</h1>
       <p>
@@ -307,10 +425,14 @@
           </div>
         </div>
         <div class="bar"><div id="timebar"></div></div>
-        <div class="card" style="margin-top: 14px">
+        <div class="card geo-card" style="margin-top: 14px" data-parallax>
           <span class="mode-tag" id="modeTag"></span>
+          <div class="geo-stage" data-parallax-layer aria-hidden="true">
+            <div class="geo-diagram" id="geoDiagram"></div>
+          </div>
           <div class="prompt" id="prompt"></div>
           <p class="sub" id="sub"></p>
+          <div class="calc-seq" id="calcSeq" aria-live="polite"></div>
           <div class="opts" id="opts"></div>
           <div class="feedback" id="feedback"></div>
           <button class="btn hidden" id="nextBtn" type="button">Next ▶</button>
@@ -398,6 +520,9 @@
             correct: o.correct,
             why:
               shape + " area = " + b + " × " + h + " = " + ans + " sq units.",
+            shape: shape === "Parallelogram" ? "parallelogram" : "rectangle",
+            dims: { b: b, h: h },
+            calc: [String(b), "×", String(h), "=", String(ans)],
           };
         }
         if (round === 2) {
@@ -423,6 +548,9 @@
               " = " +
               ans2 +
               " sq units.",
+            shape: "triangle",
+            dims: { b: b2, h: h2 },
+            calc: ["½", "×", String(b2), "×", String(h2), "=", String(ans2)],
           };
         }
         // Round 3: trapezoid: area = ½ × (b1+b2) × h (ensure whole: make (b1+b2) even)
@@ -461,7 +589,111 @@
             " = " +
             ans3 +
             " sq units.",
+          shape: "trapezoid",
+          dims: { b1: b1, b2: b2t, h: h3 },
+          calc: [
+            "½",
+            "×",
+            "(" + b1 + "+" + b2t + ")",
+            "×",
+            String(h3),
+            "=",
+            String(ans3),
+          ],
         };
+      }
+
+      var REDUCE =
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      // --- Bespoke: inline SVG geometry diagram hint (purely visual) ---
+      function svgWrap(inner) {
+        return (
+          '<svg viewBox="0 0 200 140" role="img" aria-hidden="true">' +
+          inner +
+          "</svg>"
+        );
+      }
+      function dimLabel(x, y, txt, anchor) {
+        return (
+          '<text class="geo-label" x="' +
+          x +
+          '" y="' +
+          y +
+          '" text-anchor="' +
+          (anchor || "middle") +
+          '">' +
+          txt +
+          "</text>"
+        );
+      }
+      function renderDiagram(q) {
+        var el = document.getElementById("geoDiagram");
+        if (!el) return;
+        var d = q.dims || {},
+          svg = "";
+        var anim = REDUCE ? "" : " geo-anim";
+        if (q.shape === "rectangle") {
+          svg = svgWrap(
+            '<rect class="geo-shape' +
+              anim +
+              '" x="40" y="35" width="120" height="70" rx="2"/>' +
+              dimLabel(100, 124, "base = " + d.b) +
+              dimLabel(28, 74, "h " + d.h, "end"),
+          );
+        } else if (q.shape === "parallelogram") {
+          svg = svgWrap(
+            '<polygon class="geo-shape' +
+              anim +
+              '" points="60,35 170,35 140,105 30,105"/>' +
+              dimLabel(100, 124, "base = " + d.b) +
+              dimLabel(178, 74, "h " + d.h, "start"),
+          );
+        } else if (q.shape === "triangle") {
+          svg = svgWrap(
+            '<polygon class="geo-shape geo-tri' +
+              anim +
+              '" points="30,105 170,105 95,30"/>' +
+              '<line class="geo-dim" x1="95" y1="30" x2="95" y2="105"/>' +
+              dimLabel(100, 124, "base = " + d.b) +
+              dimLabel(108, 70, "h " + d.h, "start"),
+          );
+        } else if (q.shape === "trapezoid") {
+          svg = svgWrap(
+            '<polygon class="geo-shape geo-trap' +
+              anim +
+              '" points="55,35 145,35 175,105 25,105"/>' +
+              dimLabel(100, 28, "b₁ = " + d.b1) +
+              dimLabel(100, 124, "b₂ = " + d.b2) +
+              dimLabel(186, 74, "h " + d.h, "start"),
+          );
+        }
+        el.innerHTML = svg;
+      }
+
+      // --- Bespoke: animated area calculation sequence (reveal on answer) ---
+      function showCalc(q) {
+        var el = document.getElementById("calcSeq");
+        if (!el || !q.calc) return;
+        el.innerHTML = "";
+        q.calc.forEach(function (tok, idx) {
+          var span = document.createElement("span");
+          var isAns = idx === q.calc.length - 1;
+          span.className = "calc-tok" + (isAns ? " calc-ans" : "");
+          span.textContent = tok;
+          if (!REDUCE) {
+            span.style.animationDelay = idx * 0.12 + "s";
+          }
+          el.appendChild(span);
+          if (idx < q.calc.length - 1) {
+            el.appendChild(document.createTextNode(" "));
+          }
+        });
+      }
+      function clearCalc() {
+        var el = document.getElementById("calcSeq");
+        if (el) el.innerHTML = "";
       }
 
       function startGame() {
@@ -481,6 +713,8 @@
         document.getElementById("modeTag").textContent = state.q.tag;
         document.getElementById("prompt").textContent = state.q.prompt;
         document.getElementById("sub").textContent = state.q.sub;
+        renderDiagram(state.q);
+        clearCalc();
         document.getElementById("feedback").textContent = "";
         document.getElementById("feedback").className = "feedback";
         document.getElementById("nextBtn").classList.add("hidden");
@@ -541,7 +775,15 @@
           fb.textContent = "✗ " + state.q.why + "  (−1 ❤)";
           fb.className = "feedback no";
         }
+        showCalc(state.q);
         updateHud();
+        if (correct) {
+          try {
+            window.GameFX &&
+              GameFX.pop &&
+              GameFX.pop(document.getElementById("score"));
+          } catch (e) {}
+        }
         document.getElementById("nextBtn").classList.remove("hidden");
       }
       function timeUp() {
@@ -557,6 +799,7 @@
         var fb = document.getElementById("feedback");
         fb.textContent = "⏰ Time! " + state.q.why + "  (−1 ❤)";
         fb.className = "feedback no";
+        showCalc(state.q);
         updateHud();
         document.getElementById("nextBtn").classList.remove("hidden");
       }
@@ -604,10 +847,10 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

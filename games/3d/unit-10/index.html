@@ -62,6 +62,185 @@
         color: #fff;
         text-align: center;
       }
+
+      /* =====================================================================
+         Bespoke Volume Vault overlay polish (additive, DOM/CSS only).
+         These layers sit OVER the 3D canvas; none of them touch the WebGL
+         scene, mechanics, scoring, or the engine HUD logic. They react to the
+         engine HUD's own DOM (timer text + message banner tone) to add
+         game-specific feedback. Every animation is gated by
+         prefers-reduced-motion below.
+         ===================================================================== */
+
+      /* Ambient vault-light backdrop. Parallax driven by the shared GameFX kit
+         (it moves the [data-parallax-layer] child on pointer move). Very low
+         opacity + pointer-events:none so it never obscures gameplay. */
+      .vv-ambient {
+        position: fixed;
+        inset: -8%;
+        z-index: 2;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .vv-ambient-layer {
+        position: absolute;
+        inset: 0;
+        transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+        background:
+          radial-gradient(
+            32% 38% at 22% 16%,
+            rgba(242, 193, 91, 0.1),
+            transparent 70%
+          ),
+          radial-gradient(
+            36% 42% at 82% 80%,
+            rgba(53, 201, 195, 0.09),
+            transparent 72%
+          );
+      }
+
+      /* Full-frame alert / cheer vignette. Opacity is toggled by class; the
+         border-glow color is set per state. Sits above the canvas, below the
+         clarity overlays (z 30) and HUD task card. */
+      .vv-frame {
+        position: fixed;
+        inset: 0;
+        z-index: 14;
+        pointer-events: none;
+        opacity: 0;
+        box-shadow: inset 0 0 0 0 rgba(0, 0, 0, 0);
+        transition: opacity 0.5s ease;
+      }
+      .vv-frame.is-alert {
+        opacity: 1;
+        box-shadow:
+          inset 0 0 120px 12px rgba(255, 90, 70, 0.42),
+          inset 0 0 0 4px rgba(255, 126, 107, 0.55);
+        animation: vvAlertPulse 0.6s ease-out;
+      }
+      .vv-frame.is-cheer {
+        opacity: 1;
+        box-shadow:
+          inset 0 0 160px 18px rgba(255, 217, 122, 0.4),
+          inset 0 0 0 4px rgba(242, 193, 91, 0.5);
+        animation: vvCheerBloom 0.85s ease-out;
+      }
+      @keyframes vvAlertPulse {
+        0% {
+          box-shadow:
+            inset 0 0 0 0 rgba(255, 90, 70, 0),
+            inset 0 0 0 0 rgba(255, 126, 107, 0);
+        }
+        30% {
+          box-shadow:
+            inset 0 0 140px 20px rgba(255, 90, 70, 0.55),
+            inset 0 0 0 6px rgba(255, 126, 107, 0.7);
+        }
+      }
+      @keyframes vvCheerBloom {
+        0% {
+          box-shadow:
+            inset 0 0 0 0 rgba(255, 217, 122, 0),
+            inset 0 0 0 0 rgba(242, 193, 91, 0);
+        }
+        35% {
+          box-shadow:
+            inset 0 0 200px 28px rgba(255, 217, 122, 0.5),
+            inset 0 0 0 6px rgba(242, 193, 91, 0.65);
+        }
+      }
+
+      /* Screen shake applied to the whole stage on an overstack/spill alert. */
+      @keyframes vvShake {
+        0%,
+        100% {
+          transform: translate(0, 0);
+        }
+        20% {
+          transform: translate(-4px, 2px);
+        }
+        40% {
+          transform: translate(4px, -2px);
+        }
+        60% {
+          transform: translate(-3px, -1px);
+        }
+        80% {
+          transform: translate(3px, 1px);
+        }
+      }
+      body.vv-shake #game {
+        animation: vvShake 0.36s ease;
+      }
+
+      /* Timer "red creep": as time runs low the engine HUD timer text escalates
+         teal → amber → red and gains an intensifying pulse. Driven by classes
+         added in JS (parsing the timer's own m:ss text). */
+      .e3d-hud-timer {
+        border-radius: 999px;
+        padding: 1px 9px;
+        transition:
+          color 0.35s ease,
+          background-color 0.35s ease,
+          box-shadow 0.35s ease;
+      }
+      .e3d-hud-timer.vv-time-warn {
+        color: #ffd97a;
+        background: rgba(242, 193, 91, 0.16);
+      }
+      .e3d-hud-timer.vv-time-danger {
+        color: #ffb4a6;
+        background: rgba(255, 90, 70, 0.22);
+        box-shadow: 0 0 0 1px rgba(255, 126, 107, 0.55);
+        animation: vvTimerPulse 0.85s ease-in-out infinite;
+      }
+      .e3d-hud-timer.vv-time-critical {
+        color: #fff;
+        background: rgba(255, 70, 54, 0.78);
+        box-shadow: 0 0 14px 2px rgba(255, 90, 70, 0.7);
+        animation: vvTimerPulse 0.45s ease-in-out infinite;
+      }
+      @keyframes vvTimerPulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.13);
+        }
+      }
+
+      /* Score emphasis pop (paired with GameFX.pop fallback). */
+      @keyframes vvScorePop {
+        40% {
+          transform: scale(1.22);
+        }
+      }
+      .e3d-hud-score.vv-score-pop {
+        animation: vvScorePop 0.34s ease;
+        display: inline-block;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .vv-ambient-layer {
+          transition: none !important;
+          transform: none !important;
+        }
+        .vv-frame,
+        .vv-frame.is-alert,
+        .vv-frame.is-cheer {
+          animation: none !important;
+          transition: opacity 0.2s ease;
+        }
+        body.vv-shake #game {
+          animation: none !important;
+        }
+        .e3d-hud-timer.vv-time-danger,
+        .e3d-hud-timer.vv-time-critical,
+        .e3d-hud-score.vv-score-pop {
+          animation: none !important;
+        }
+      }
     </style>
     <script type="importmap">
       {
@@ -75,10 +254,17 @@
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
+    <!-- Ambient vault-light backdrop (parallax via shared GameFX kit). Purely
+         decorative, behind the HUD, pointer-events:none. -->
+    <div class="vv-ambient" data-parallax aria-hidden="true">
+      <div class="vv-ambient-layer" data-parallax-layer></div>
+    </div>
+    <!-- Full-frame alert (overstack) / cheer (vault packed) vignette. -->
+    <div class="vv-frame" id="vv-frame" aria-hidden="true"></div>
     <div
       id="game"
       role="application"
@@ -133,11 +319,179 @@
         document.getElementById("fallback").style.display = "flex";
       }
     </script>
+
+    <!-- =====================================================================
+         Bespoke overlay feedback (additive, DOM-only). This observes the
+         engine HUD's own elements (timer text + message banner tone) and adds
+         Volume-Vault-specific polish: timer red-creep, an overstack red-alert
+         vignette + shake, a vault-packed cheer bloom, and a score pop. It does
+         NOT import or touch the game module, the three.js scene, mechanics, or
+         scoring — it only reads HUD DOM and toggles overlay classes. Wrapped in
+         a guard so any failure is silent and never blocks the game.
+         ===================================================================== -->
+    <script>
+      (function () {
+        "use strict";
+        var reduce = !!(
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        );
+        var frame = document.getElementById("vv-frame");
+        if (!frame) return;
+
+        // --- Full-frame flash (alert = overstack/spill, cheer = vault packed) ---
+        var frameTimer = null;
+        function flashFrame(kind) {
+          frame.classList.remove("is-alert", "is-cheer");
+          // force reflow so the animation restarts even on rapid repeats
+          void frame.offsetWidth;
+          frame.classList.add(kind === "cheer" ? "is-cheer" : "is-alert");
+          if (frameTimer) clearTimeout(frameTimer);
+          frameTimer = setTimeout(
+            function () {
+              frame.classList.remove("is-alert", "is-cheer");
+            },
+            reduce ? 260 : 900,
+          );
+        }
+        function shakeStage() {
+          if (reduce || !document.body) return;
+          document.body.classList.remove("vv-shake");
+          void document.body.offsetWidth;
+          document.body.classList.add("vv-shake");
+          setTimeout(function () {
+            document.body.classList.remove("vv-shake");
+          }, 400);
+        }
+
+        // --- Timer "red creep": parse the HUD timer m:ss and escalate styling.
+        // Thresholds in seconds; class set is idempotent (no per-frame thrash).
+        function timerSeconds(text) {
+          if (!text) return null;
+          var m = /(\d+):(\d{1,2})/.exec(text);
+          if (!m) return null;
+          return parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+        }
+        var lastTimerClass = "";
+        function styleTimer(el) {
+          var secs = timerSeconds(el.textContent);
+          var cls;
+          if (secs == null || secs > 10) cls = "";
+          else if (secs > 6) cls = "vv-time-warn";
+          else if (secs > 3) cls = "vv-time-danger";
+          else cls = "vv-time-critical";
+          if (cls === lastTimerClass) return;
+          lastTimerClass = cls;
+          el.classList.remove(
+            "vv-time-warn",
+            "vv-time-danger",
+            "vv-time-critical",
+          );
+          if (cls) el.classList.add(cls);
+        }
+
+        // --- Score pop on change (GameFX.pop if present, CSS fallback otherwise).
+        var lastScore = null;
+        function popScore(el) {
+          var v = el.textContent;
+          if (v === lastScore) return;
+          var first = lastScore === null;
+          lastScore = v;
+          if (first || reduce) return;
+          if (window.GameFX && typeof window.GameFX.pop === "function") {
+            window.GameFX.pop(el);
+          } else {
+            el.classList.remove("vv-score-pop");
+            void el.offsetWidth;
+            el.classList.add("vv-score-pop");
+          }
+        }
+
+        // The HUD mounts asynchronously inside #game after the module boots, so
+        // poll briefly for its elements, then attach observers.
+        var wired = false;
+        function wire() {
+          if (wired) return false;
+          var timerEl = document.querySelector(".e3d-hud-timer");
+          var msgEl = document.querySelector(".e3d-hud-msg");
+          var scoreEl = document.querySelector(".e3d-hud-score");
+          if (!timerEl && !msgEl && !scoreEl) return false;
+          wired = true;
+
+          if (timerEl) {
+            styleTimer(timerEl);
+            new MutationObserver(function () {
+              styleTimer(timerEl);
+            }).observe(timerEl, {
+              childList: true,
+              characterData: true,
+              subtree: true,
+            });
+          }
+
+          if (scoreEl) {
+            lastScore = scoreEl.textContent;
+            new MutationObserver(function () {
+              popScore(scoreEl);
+            }).observe(scoreEl, {
+              childList: true,
+              characterData: true,
+              subtree: true,
+            });
+          }
+
+          if (msgEl) {
+            var reactMsg = function () {
+              if (msgEl.hidden) return;
+              var tone = msgEl.dataset ? msgEl.dataset.tone : null;
+              // "warn" tone covers spills, overstacks, time-outs, wrong answers.
+              if (tone === "warn") {
+                // Overstack/spill/time-out/wrong answer -> red alert + shake.
+                flashFrame("alert");
+                shakeStage();
+              } else if (tone === "ok") {
+                // Vault packed / correct volume -> golden cheer bloom + sparks.
+                flashFrame("cheer");
+                if (
+                  !reduce &&
+                  window.GameFX &&
+                  typeof window.GameFX.celebrate === "function"
+                ) {
+                  var sc = document.querySelector(".e3d-hud-score");
+                  if (sc) window.GameFX.celebrate(sc);
+                }
+              }
+            };
+            new MutationObserver(reactMsg).observe(msgEl, {
+              attributes: true,
+              attributeFilter: ["hidden", "data-tone"],
+              childList: true,
+              characterData: true,
+              subtree: true,
+            });
+          }
+          return true;
+        }
+
+        try {
+          if (!wire()) {
+            var tries = 0;
+            var iv = setInterval(function () {
+              tries++;
+              if (wire() || tries > 60) clearInterval(iv);
+            }, 250);
+          }
+        } catch (e) {
+          /* overlay polish is non-essential — never block the game */
+        }
+      })();
+    </script>
+
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

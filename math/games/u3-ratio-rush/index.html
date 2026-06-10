@@ -267,16 +267,151 @@
         pointer-events: none;
         will-change: transform, opacity;
       }
+      /* --- Bespoke Ratio Rush polish (additive) --- */
+      .ghero {
+        position: relative;
+        overflow: hidden;
+      }
+      .ghero > * {
+        position: relative;
+        z-index: 1;
+      }
+      /* Parallax layer: faint ratio-colon "field" behind the hero */
+      .ghero-bg {
+        position: absolute;
+        inset: -12% -12% -12% -12%;
+        z-index: 0;
+        pointer-events: none;
+        background-image:
+          radial-gradient(
+            circle at 18% 30%,
+            rgba(255, 255, 255, 0.16) 0 3px,
+            transparent 4px
+          ),
+          radial-gradient(
+            circle at 18% 60%,
+            rgba(255, 255, 255, 0.16) 0 3px,
+            transparent 4px
+          ),
+          radial-gradient(
+            circle at 80% 25%,
+            rgba(255, 255, 255, 0.12) 0 3px,
+            transparent 4px
+          ),
+          radial-gradient(
+            circle at 80% 55%,
+            rgba(255, 255, 255, 0.12) 0 3px,
+            transparent 4px
+          ),
+          radial-gradient(
+            circle at 50% 80%,
+            rgba(255, 255, 255, 0.1) 0 3px,
+            transparent 4px
+          ),
+          radial-gradient(
+            circle at 50% 50%,
+            rgba(255, 255, 255, 0.1) 0 3px,
+            transparent 4px
+          );
+      }
+      /* Mode-specific card gradients + accent hierarchy on the play card */
+      .qcard {
+        position: relative;
+        overflow: hidden;
+        transition:
+          background 0.3s ease,
+          border-color 0.3s ease;
+        border-top: 4px solid var(--rr-accent, var(--teal));
+        background: radial-gradient(
+          120% 80% at 50% -10%,
+          var(--rr-tint, rgba(14, 138, 125, 0.08)) 0%,
+          #fff 60%
+        );
+      }
+      .qcard[data-mode="1"] {
+        --rr-accent: #0e8a7d;
+        --rr-tint: rgba(14, 138, 125, 0.1);
+      }
+      .qcard[data-mode="2"] {
+        --rr-accent: #6b3fa0;
+        --rr-tint: rgba(107, 63, 160, 0.1);
+      }
+      .qcard[data-mode="3"] {
+        --rr-accent: #d4952a;
+        --rr-tint: rgba(212, 149, 42, 0.12);
+      }
+      .qcard .mode-tag {
+        color: var(--rr-accent, var(--teal));
+      }
+      .prompt {
+        position: relative;
+        display: inline-block;
+        color: var(--ink);
+      }
+      /* Burst flourish: the prompt "snaps" when a ratio simplifies correctly */
+      .prompt.rr-simplify {
+        animation: rrSimplify 0.5s cubic-bezier(0.3, 0.8, 0.3, 1);
+      }
+      @keyframes rrSimplify {
+        0% {
+          transform: scale(1);
+          color: var(--ink);
+        }
+        45% {
+          transform: scale(0.82);
+          color: var(--rr-accent, var(--green));
+        }
+        100% {
+          transform: scale(1);
+          color: var(--ink);
+        }
+      }
+      /* Ring pulse emitted from the prompt on a correct answer */
+      .rr-ring {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 24px;
+        height: 24px;
+        margin: -12px 0 0 -12px;
+        border-radius: 50%;
+        border: 3px solid var(--rr-accent, var(--green));
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+      .rr-ring.go {
+        animation: rrRing 0.6s ease-out forwards;
+      }
+      @keyframes rrRing {
+        0% {
+          opacity: 0.7;
+          transform: scale(0.4);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(5);
+        }
+      }
       @media (prefers-reduced-motion: reduce) {
         .ghero .deco {
           transform: none !important;
           transition: none;
         }
+        .ghero-bg {
+          transform: none !important;
+        }
         .opt.right,
         .opt.wrong,
         .hud-pop,
-        .rr-spark {
+        .rr-spark,
+        .prompt.rr-simplify,
+        .rr-ring.go {
           animation: none !important;
+        }
+        .qcard {
+          transition: none;
         }
       }
     </style>
@@ -284,11 +419,12 @@
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
-    <header class="ghero">
+    <header class="ghero" data-parallax>
+      <div class="ghero-bg" data-parallax-layer aria-hidden="true"></div>
       <div class="deco">⚖️</div>
       <h1>Ratio Rush</h1>
       <p>
@@ -345,9 +481,15 @@
           </div>
         </div>
         <div class="bar"><div id="timebar"></div></div>
-        <div class="card" style="margin-top: 14px">
+        <div
+          class="card qcard"
+          id="qcard"
+          data-mode="1"
+          data-parallax
+          style="margin-top: 14px"
+        >
           <span class="mode-tag" id="modeTag"></span>
-          <div class="prompt" id="prompt"></div>
+          <div class="prompt" id="prompt" data-parallax-layer></div>
           <p class="sub" id="sub"></p>
           <div class="opts" id="opts"></div>
           <div class="feedback" id="feedback"></div>
@@ -612,9 +754,14 @@
         }
         state.locked = false;
         state.q = buildQuestion(state.i);
+        var mode = state.i < 4 ? 1 : state.i < 8 ? 2 : 3;
+        var qcard = document.getElementById("qcard");
+        if (qcard) qcard.setAttribute("data-mode", String(mode));
         document.getElementById("qnum").textContent = state.i + 1 + "/" + TOTAL;
         document.getElementById("modeTag").textContent = state.q.tag;
-        document.getElementById("prompt").textContent = state.q.prompt;
+        var promptEl = document.getElementById("prompt");
+        promptEl.classList.remove("rr-simplify");
+        promptEl.textContent = state.q.prompt;
         document.getElementById("sub").textContent = state.q.sub;
         document.getElementById("feedback").textContent = "";
         document.getElementById("feedback").className = "feedback";
@@ -671,6 +818,7 @@
             (state.streak > 1 ? "  🔥 Streak ×" + state.streak : "");
           fb.className = "feedback ok";
           burst(btn);
+          simplifyFlourish();
         } else {
           state.streak = 0;
           state.lives--;
@@ -697,12 +845,66 @@
         document.getElementById("nextBtn").classList.remove("hidden");
       }
       function updateHud() {
-        document.getElementById("score").textContent = state.score;
-        document.getElementById("streak").textContent = state.streak;
+        countTo("score", state.score);
+        countTo("streak", state.streak);
         document.getElementById("lives").textContent =
           state.lives > 0 ? "❤".repeat(state.lives) : "—";
         popEl("score");
         if (state.streak > 1) popEl("streak");
+      }
+      // Animated counter increment for HUD values (score, streak).
+      var rrCounters = {};
+      function countTo(id, target) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        var from = parseInt(el.textContent, 10);
+        if (isNaN(from)) from = 0;
+        if (rrCounters[id]) {
+          cancelAnimationFrame(rrCounters[id]);
+          rrCounters[id] = 0;
+        }
+        if (rrReduce || from === target) {
+          el.textContent = target;
+          return;
+        }
+        var start = null,
+          dur = 420;
+        function step(ts) {
+          if (start === null) start = ts;
+          var p = Math.min(1, (ts - start) / dur);
+          var v = Math.round(from + (target - from) * (1 - Math.pow(1 - p, 3)));
+          el.textContent = v;
+          if (p < 1) {
+            rrCounters[id] = requestAnimationFrame(step);
+          } else {
+            el.textContent = target;
+            rrCounters[id] = 0;
+          }
+        }
+        rrCounters[id] = requestAnimationFrame(step);
+      }
+      // Bespoke flourish on a correct answer: the prompt "snaps" to simplest
+      // form and emits an accent-colored ring pulse from the question card.
+      function simplifyFlourish() {
+        var promptEl = document.getElementById("prompt");
+        if (!promptEl) return;
+        if (window.GameFX && typeof GameFX.celebrate === "function") {
+          try {
+            GameFX.celebrate(promptEl);
+          } catch (e) {}
+        }
+        if (rrReduce) return;
+        promptEl.classList.remove("rr-simplify");
+        void promptEl.offsetWidth;
+        promptEl.classList.add("rr-simplify");
+        var ring = document.createElement("span");
+        ring.className = "rr-ring";
+        promptEl.appendChild(ring);
+        void ring.offsetWidth;
+        ring.classList.add("go");
+        ring.addEventListener("animationend", function () {
+          ring.remove();
+        });
       }
       function endGame() {
         clearInterval(state.timer);
@@ -809,7 +1011,7 @@
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

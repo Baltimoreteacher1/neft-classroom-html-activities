@@ -39,13 +39,45 @@
         padding: 0 18px 60px;
       }
       .ghero {
+        position: relative;
+        overflow: hidden;
         background: linear-gradient(135deg, #c45a3c, #d4952a);
         color: #fff;
         text-align: center;
         padding: 30px 20px 26px;
       }
+      .ghero > *:not(.ghero-bg) {
+        position: relative;
+        z-index: 1;
+      }
       .ghero .deco {
         font-size: 48px;
+      }
+      /* Bespoke parallax layer: floating fraction glyphs behind the title */
+      .ghero-bg {
+        position: absolute;
+        inset: -12px;
+        z-index: 0;
+        pointer-events: none;
+        will-change: transform;
+      }
+      .ghero-bg .float-frac {
+        position: absolute;
+        font-size: clamp(22px, 5vw, 40px);
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.16);
+        animation: fracdrift 7s ease-in-out infinite;
+      }
+      .ghero-bg .float-frac:nth-child(2n) {
+        animation-duration: 9s;
+      }
+      .ghero-bg .float-frac:nth-child(3n) {
+        animation-duration: 11s;
+      }
+      @keyframes fracdrift {
+        50% {
+          transform: translateY(-10px) rotate(6deg);
+        }
       }
       .ghero h1 {
         margin: 8px 0 6px;
@@ -127,6 +159,7 @@
         }
       }
       .opt {
+        position: relative;
         padding: 16px;
         border: 2px solid var(--line);
         border-radius: 14px;
@@ -136,15 +169,46 @@
         cursor: pointer;
         font-family: inherit;
         color: var(--ink);
+        /* per-option parallax tilt vars (set from JS pointermove) */
+        --tx: 0px;
+        --ty: 0px;
+        --tilt: 0deg;
+        transform: perspective(600px) translate(var(--tx), var(--ty))
+          rotateX(calc(var(--tilt) * -1)) rotateY(var(--tilt)) scale(1);
         transition:
-          transform 0.06s,
-          border-color 0.15s;
+          transform 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+          border-color 0.15s,
+          box-shadow 0.16s ease;
+        will-change: transform;
       }
       .opt:hover {
         border-color: var(--blue);
+        box-shadow: 0 6px 18px rgba(26, 111, 181, 0.18);
+        transform: perspective(600px) translate(var(--tx), var(--ty))
+          rotateX(calc(var(--tilt) * -1)) rotateY(var(--tilt)) scale(1.04);
       }
       .opt:active {
-        transform: scale(0.97);
+        transform: perspective(600px) scale(0.97);
+      }
+      /* Bespoke fraction-bar accent that fills on hover (the divide-line motif) */
+      .opt::after {
+        content: "";
+        position: absolute;
+        left: 14px;
+        right: 14px;
+        bottom: 7px;
+        height: 3px;
+        border-radius: 3px;
+        background: var(--round-accent, var(--blue));
+        transform: scaleX(0);
+        transform-origin: left center;
+        opacity: 0.55;
+        transition:
+          transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+          opacity 0.2s;
+      }
+      .opt:hover::after {
+        transform: scaleX(1);
       }
       .opt.right {
         border-color: var(--green);
@@ -171,6 +235,137 @@
           transform: translateX(6px);
         }
       }
+
+      /* ===== Bespoke: color-coded rounds + background tints ===== */
+      /* Each of the 3 fraction-division rounds gets its own color identity.
+         Applied to #playScreen via data-round; tints the card + accents. */
+      #playScreen {
+        --round-accent: var(--blue);
+        --round-tint: #f7f9fb;
+        transition:
+          background 0.4s ease,
+          box-shadow 0.4s ease;
+        border-radius: 18px;
+        padding: 4px;
+        background: var(--round-tint);
+      }
+      #playScreen[data-round="1"] {
+        --round-accent: #1a6fb5; /* blue — Whole ÷ Unit Fraction */
+        --round-tint: #eef5fb;
+      }
+      #playScreen[data-round="2"] {
+        --round-accent: #0e8a7d; /* teal — Fraction ÷ Unit Fraction */
+        --round-tint: #e9f6f3;
+      }
+      #playScreen[data-round="3"] {
+        --round-accent: #c45a3c; /* coral — Unit Fraction ÷ Whole */
+        --round-tint: #fdefe9;
+      }
+      #playScreen .mode-tag {
+        color: var(--round-accent);
+      }
+      /* Round pip indicator row */
+      .round-dots {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin: 0 0 4px;
+      }
+      .round-dots .pip {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: var(--line);
+        border: 2px solid var(--line);
+        transition:
+          background 0.25s ease,
+          transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .round-dots .pip[data-r="1"].on {
+        background: #1a6fb5;
+        border-color: #1a6fb5;
+      }
+      .round-dots .pip[data-r="2"].on {
+        background: #0e8a7d;
+        border-color: #0e8a7d;
+      }
+      .round-dots .pip[data-r="3"].on {
+        background: #c45a3c;
+        border-color: #c45a3c;
+      }
+      .round-dots .pip.active {
+        transform: scale(1.5);
+      }
+      /* time bar recolors per round */
+      #playScreen .bar > div {
+        background: linear-gradient(90deg, var(--round-accent), var(--gold));
+      }
+
+      /* ===== Bespoke particle: "pizza-slice" confetti for correct fractions =====
+         A canvas overlay draws triangular slices (the fraction-of-a-whole motif)
+         bursting from the chosen tile. Caps at a small count for Chromebooks. */
+      #fxCanvas {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 60;
+      }
+
+      /* ===== Accessibility: focus-visible rings + high contrast ===== */
+      .opt:focus-visible,
+      .btn:focus-visible {
+        outline: 3px solid #11324a;
+        outline-offset: 3px;
+        box-shadow: 0 0 0 5px rgba(212, 149, 42, 0.45);
+      }
+      @media (forced-colors: active) {
+        .opt,
+        .btn {
+          border: 2px solid ButtonText;
+        }
+        .opt.right {
+          outline: 3px solid Highlight;
+        }
+        .round-dots .pip.on {
+          forced-color-adjust: none;
+        }
+      }
+
+      /* ===== prefers-reduced-motion: disable/flatten all added motion ===== */
+      @media (prefers-reduced-motion: reduce) {
+        .opt,
+        .opt:hover,
+        .opt:active,
+        .opt.right,
+        .opt.wrong,
+        .opt::after,
+        .round-dots .pip,
+        #playScreen,
+        #playScreen .bar > div {
+          transition: none !important;
+          animation: none !important;
+        }
+        .opt,
+        .opt:hover {
+          transform: none !important;
+        }
+        .opt:hover::after,
+        .opt::after {
+          transform: scaleX(1);
+        }
+        .round-dots .pip.active {
+          transform: none;
+        }
+        .ghero-bg .float-frac {
+          animation: none !important;
+        }
+        #fxCanvas {
+          display: none;
+        }
+      }
+
       .feedback {
         min-height: 26px;
         margin-top: 16px;
@@ -242,14 +437,21 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
-    <header class="ghero">
+    <header class="ghero" data-parallax>
+      <div class="ghero-bg" data-parallax-layer aria-hidden="true">
+        <span class="float-frac" style="left: 8%; top: 22%">½</span>
+        <span class="float-frac" style="left: 78%; top: 16%">⅓</span>
+        <span class="float-frac" style="left: 22%; top: 64%">¼</span>
+        <span class="float-frac" style="left: 88%; top: 68%">⅛</span>
+        <span class="float-frac" style="left: 52%; top: 80%">÷</span>
+      </div>
       <div class="deco">🍕</div>
       <h1>Fraction Frenzy</h1>
       <p>
@@ -307,6 +509,16 @@
             ><span class="val" id="qnum">1</span>
           </div>
         </div>
+        <div
+          class="round-dots"
+          id="roundDots"
+          role="img"
+          aria-label="Current round indicator"
+        >
+          <span class="pip" data-r="1"></span>
+          <span class="pip" data-r="2"></span>
+          <span class="pip" data-r="3"></span>
+        </div>
         <div class="bar"><div id="timebar"></div></div>
         <div class="card" style="margin-top: 14px">
           <span class="mode-tag" id="modeTag"></span>
@@ -334,6 +546,8 @@
       </section>
     </div>
 
+    <canvas id="fxCanvas" aria-hidden="true"></canvas>
+
     <script>
       function rnd(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -349,6 +563,146 @@
       }
       function round2(n) {
         return Math.round(n * 100) / 100;
+      }
+
+      /* ===== Bespoke visual FX (additive only — no gameplay impact) ===== */
+      var RM_QUERY =
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)");
+      function reducedMotion() {
+        return !!(RM_QUERY && RM_QUERY.matches);
+      }
+
+      // Per-round accent colors used by the pizza-slice particle burst.
+      var ROUND_COLORS = {
+        1: ["#1a6fb5", "#3b7dd8", "#7fb0e0"],
+        2: ["#0e8a7d", "#1aa179", "#5fc4b3"],
+        3: ["#c45a3c", "#e0542f", "#d4952a"],
+      };
+
+      // Lightweight canvas particle system: triangular "pizza slices" that burst
+      // from the chosen tile when a fraction is answered correctly. Capped count,
+      // single shared rAF loop, auto-stops when idle (Chromebook-friendly).
+      var FX = (function () {
+        var canvas, ctx, dpr, slices, raf, last;
+        function ensure() {
+          if (canvas) return;
+          canvas = document.getElementById("fxCanvas");
+          if (!canvas) return;
+          ctx = canvas.getContext("2d");
+          resize();
+          window.addEventListener("resize", resize);
+        }
+        function resize() {
+          if (!canvas) return;
+          dpr = Math.min(window.devicePixelRatio || 1, 2);
+          canvas.width = Math.floor(window.innerWidth * dpr);
+          canvas.height = Math.floor(window.innerHeight * dpr);
+        }
+        function drawSlice(s) {
+          ctx.save();
+          ctx.translate(s.x * dpr, s.y * dpr);
+          ctx.rotate(s.rot);
+          ctx.globalAlpha = Math.max(0, s.life);
+          ctx.fillStyle = s.color;
+          var r = s.size * dpr;
+          // a thin wedge = a fraction of a circle (the "slice" motif)
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.arc(0, 0, r, -0.45, 0.45);
+          ctx.closePath();
+          ctx.fill();
+          ctx.restore();
+        }
+        function loop(t) {
+          if (!last) last = t;
+          var dt = Math.min((t - last) / 1000, 0.05);
+          last = t;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          var alive = false;
+          for (var i = 0; i < slices.length; i++) {
+            var s = slices[i];
+            if (s.life <= 0) continue;
+            alive = true;
+            s.vy += 900 * dt; // gravity
+            s.x += s.vx * dt;
+            s.y += s.vy * dt;
+            s.rot += s.vr * dt;
+            s.life -= dt * 1.25;
+            drawSlice(s);
+          }
+          if (alive) {
+            raf = requestAnimationFrame(loop);
+          } else {
+            cancelAnimationFrame(raf);
+            raf = null;
+            last = 0;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          }
+        }
+        function burst(x, y, round) {
+          if (reducedMotion()) return;
+          ensure();
+          if (!ctx) return;
+          if (!slices) slices = [];
+          var colors = ROUND_COLORS[round] || ROUND_COLORS[1];
+          var N = 16; // capped particle count
+          for (var i = 0; i < N; i++) {
+            var ang = -Math.PI / 2 + (Math.random() - 0.5) * 2.4;
+            var spd = 220 + Math.random() * 260;
+            slices.push({
+              x: x,
+              y: y,
+              vx: Math.cos(ang) * spd,
+              vy: Math.sin(ang) * spd,
+              rot: Math.random() * Math.PI * 2,
+              vr: (Math.random() - 0.5) * 10,
+              size: 10 + Math.random() * 12,
+              color: colors[i % colors.length],
+              life: 1,
+            });
+          }
+          // keep the working set small
+          if (slices.length > 80) slices = slices.slice(-80);
+          if (!raf) {
+            last = 0;
+            raf = requestAnimationFrame(loop);
+          }
+        }
+        return { burst: burst };
+      })();
+
+      // Pointer-tracking parallax tilt on the option tiles (delegated, light).
+      function attachOptTilt(box) {
+        if (reducedMotion()) return;
+        box.addEventListener("pointermove", function (e) {
+          var t = e.target.closest && e.target.closest(".opt");
+          if (!t || !box.contains(t)) return;
+          var r = t.getBoundingClientRect();
+          var px = (e.clientX - r.left) / r.width - 0.5;
+          var py = (e.clientY - r.top) / r.height - 0.5;
+          t.style.setProperty("--tx", (px * 6).toFixed(1) + "px");
+          t.style.setProperty("--ty", (py * 6).toFixed(1) + "px");
+          t.style.setProperty("--tilt", (px * 5).toFixed(2) + "deg");
+        });
+        box.addEventListener("pointerout", function (e) {
+          var t = e.target.closest && e.target.closest(".opt");
+          if (!t) return;
+          t.style.setProperty("--tx", "0px");
+          t.style.setProperty("--ty", "0px");
+          t.style.setProperty("--tilt", "0deg");
+        });
+      }
+
+      function updateRoundUI(round) {
+        var play = document.getElementById("playScreen");
+        if (play) play.setAttribute("data-round", String(round));
+        var pips = document.querySelectorAll("#roundDots .pip");
+        Array.prototype.forEach.call(pips, function (p) {
+          var r = +p.getAttribute("data-r");
+          p.classList.toggle("on", r <= round);
+          p.classList.toggle("active", r === round);
+        });
       }
 
       var TOTAL = 12,
@@ -504,6 +858,8 @@
         }
         state.locked = false;
         state.q = buildQuestion(state.i);
+        state.round = state.i < 4 ? 1 : state.i < 8 ? 2 : 3;
+        updateRoundUI(state.round);
         document.getElementById("qnum").textContent = state.i + 1 + "/" + TOTAL;
         document.getElementById("modeTag").textContent = state.q.tag;
         document.getElementById("prompt").textContent = state.q.prompt;
@@ -523,6 +879,7 @@
           };
           box.appendChild(b);
         });
+        attachOptTilt(box);
         startTimer();
       }
       function startTimer() {
@@ -562,6 +919,23 @@
             state.q.why +
             (state.streak > 1 ? "  🔥 Streak ×" + state.streak : "");
           fb.className = "feedback ok";
+          // Bespoke pizza-slice particle burst from the chosen tile.
+          try {
+            var br = btn.getBoundingClientRect();
+            FX.burst(
+              br.left + br.width / 2,
+              br.top + br.height / 2,
+              state.round,
+            );
+          } catch (e) {}
+          // HUD emphasis via shared kit when available.
+          try {
+            if (window.GameFX && GameFX.pop) {
+              GameFX.pop(document.getElementById("score"));
+              if (state.streak > 1)
+                GameFX.pop(document.getElementById("streak"));
+            }
+          } catch (e2) {}
         } else {
           state.streak = 0;
           state.lives--;
@@ -631,10 +1005,10 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

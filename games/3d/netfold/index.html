@@ -23,6 +23,7 @@
       #game {
         position: fixed;
         inset: 0;
+        z-index: 1;
       }
       .e3d-intro {
         position: absolute;
@@ -62,6 +63,145 @@
         color: #fff;
         text-align: center;
       }
+
+      /* ---------------------------------------------------------------
+         BESPOKE NetFold overlay polish (additive, deploy-safe).
+         Pure DOM/CSS layer that sits BEHIND the 3D canvas (#game) and the
+         HUD text. It never touches the three.js scene, camera, controls,
+         scoring, or answer checking — it only paints ambiance.
+         Every animation is disabled under prefers-reduced-motion.
+         --------------------------------------------------------------- */
+
+      /* Holographic depth backdrop. z-index below #game's WebGL canvas so it
+         only shows through the transparent areas / edges and reads as fog. */
+      .nf-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+      }
+      /* GameFX pointer-parallax moves [data-parallax-layer] children. */
+      .nf-fog {
+        position: absolute;
+        inset: -12%;
+        background:
+          radial-gradient(
+            42% 38% at 32% 28%,
+            rgba(58, 125, 216, 0.32),
+            transparent 70%
+          ),
+          radial-gradient(
+            46% 40% at 72% 66%,
+            rgba(240, 164, 0, 0.18),
+            transparent 72%
+          ),
+          radial-gradient(
+            38% 34% at 60% 18%,
+            rgba(26, 161, 121, 0.18),
+            transparent 70%
+          );
+        will-change: transform;
+        animation: nf-fog-drift 26s ease-in-out infinite alternate;
+      }
+      @keyframes nf-fog-drift {
+        from {
+          transform: translate3d(-1.4%, -1%, 0) scale(1.02);
+        }
+        to {
+          transform: translate3d(1.6%, 1.2%, 0) scale(1.06);
+        }
+      }
+
+      /* Faint procedural "net grid" — evokes unfolded flat nets/fold lines.
+         Two layers at different depths give parallax separation. */
+      .nf-grid {
+        position: absolute;
+        inset: -20%;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+        background-size: 56px 56px;
+        mask-image: radial-gradient(
+          70% 60% at 50% 42%,
+          #000 0%,
+          transparent 78%
+        );
+        -webkit-mask-image: radial-gradient(
+          70% 60% at 50% 42%,
+          #000 0%,
+          transparent 78%
+        );
+        will-change: transform;
+        animation: nf-grid-pan 40s linear infinite;
+      }
+      @keyframes nf-grid-pan {
+        from {
+          background-position:
+            0 0,
+            0 0;
+        }
+        to {
+          background-position:
+            56px 112px,
+            56px 112px;
+        }
+      }
+
+      /* Holographic shimmer sweep on the title — "target hologram" feel. */
+      .e3d-boot-title {
+        background: linear-gradient(
+          100deg,
+          #ffffff 0%,
+          #ffffff 38%,
+          #ffe9a8 50%,
+          #ffffff 62%,
+          #ffffff 100%
+        );
+        background-size: 280% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        animation: nf-title-shimmer 7s ease-in-out infinite;
+      }
+      @keyframes nf-title-shimmer {
+        0%,
+        70% {
+          background-position: 130% 0;
+        }
+        100% {
+          background-position: -30% 0;
+        }
+      }
+
+      /* Gentle breathing glow on the goal line so the directions feel alive. */
+      .e3d-intro {
+        animation: nf-intro-breathe 5.5s ease-in-out infinite;
+      }
+      @keyframes nf-intro-breathe {
+        0%,
+        100% {
+          opacity: 0.74;
+        }
+        50% {
+          opacity: 0.92;
+        }
+      }
+
+      /* Reduced-motion + no-JS-parallax fallback: freeze everything. */
+      @media (prefers-reduced-motion: reduce) {
+        .nf-fog,
+        .nf-grid,
+        .e3d-boot-title,
+        .e3d-intro {
+          animation: none !important;
+        }
+        .e3d-boot-title {
+          background: none;
+          -webkit-background-clip: border-box;
+          background-clip: border-box;
+          color: #fff;
+        }
+      }
     </style>
     <script type="importmap">
       {
@@ -72,13 +212,21 @@
       }
     </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
+    <!-- Holographic depth backdrop (decorative). data-parallax lets the shared
+         GameFX kit add subtle pointer parallax to the [data-parallax-layer]
+         children. Sits behind the WebGL canvas; aria-hidden so it adds no
+         screen-reader noise. Pure DOM/CSS — does not touch the 3D scene. -->
+    <div class="nf-backdrop" data-parallax aria-hidden="true">
+      <div class="nf-fog" data-parallax-layer></div>
+      <div class="nf-grid" data-parallax-layer></div>
+    </div>
     <div
       id="game"
       role="application"
@@ -119,10 +267,10 @@
       }
     </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

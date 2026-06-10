@@ -18,6 +18,88 @@
       canvas {
         display: block;
         margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+      /* Keyboard focus ring on the game canvas (keyboard users only). */
+      canvas:focus-visible {
+        outline: 3px solid #2f6df0;
+        outline-offset: 4px;
+        border-radius: 8px;
+      }
+      canvas:focus:not(:focus-visible) {
+        outline: none;
+      }
+      /* ── Bespoke animated parallax cityscape behind the Phaser canvas ──
+         Sits behind the canvas (z-index 0), never intercepts pointer input. */
+      #aa-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+        background: radial-gradient(
+          120% 80% at 50% 0%,
+          #142c4a 0%,
+          #0a1a2e 60%,
+          #06101d 100%
+        );
+      }
+      #aa-bg-layer {
+        position: absolute;
+        inset: -6% -6%;
+        will-change: transform;
+        transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+      }
+      .aa-twinkle {
+        position: absolute;
+        border-radius: 50%;
+        background: #aaccff;
+        opacity: 0.5;
+        animation: aaTwinkle var(--tw, 3s) ease-in-out infinite;
+      }
+      .aa-tower {
+        position: absolute;
+        bottom: 0;
+        opacity: 0.55;
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+      }
+      .aa-tower::after {
+        content: "";
+        position: absolute;
+        inset: 8px 6px auto 6px;
+        height: 5px;
+        border-radius: 2px;
+        background: repeating-linear-gradient(
+          90deg,
+          rgba(255, 221, 136, 0.55) 0 4px,
+          transparent 4px 12px
+        );
+        box-shadow:
+          0 14px rgba(255, 221, 136, 0.4),
+          0 28px rgba(255, 221, 136, 0.3);
+      }
+      @keyframes aaTwinkle {
+        0%,
+        100% {
+          opacity: 0.15;
+          transform: scale(0.85);
+        }
+        50% {
+          opacity: 0.7;
+          transform: scale(1.15);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #aa-bg-layer {
+          transition: none !important;
+          transform: none !important;
+        }
+        .aa-twinkle {
+          animation: none !important;
+          opacity: 0.4 !important;
+        }
       }
     </style>
     <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
@@ -38,13 +120,127 @@
       });
     </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
+    <!-- Bespoke animated parallax cityscape (behind the Phaser canvas).
+         Decorative only: aria-hidden, pointer-events:none, reduced-motion safe. -->
+    <div id="aa-bg" data-parallax aria-hidden="true">
+      <div id="aa-bg-layer" data-parallax-layer></div>
+    </div>
+    <script>
+      // ── Parallax cityscape builder + pointer driver (additive, gameplay-neutral) ──
+      // Procedurally builds a layered skyline of CSS towers + twinkling lights
+      // behind the canvas, then drifts it with pointer/device motion. All motion
+      // is gated by prefers-reduced-motion (rebuilt static if the user prefers).
+      (function () {
+        "use strict";
+        var reduceMQ =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)");
+        var layer = document.getElementById("aa-bg-layer");
+        if (!layer) return;
+
+        var TOWER_COLORS = [
+          "#1a3366",
+          "#224488",
+          "#2a4f93",
+          "#16294a",
+          "#1f3a6e",
+        ];
+
+        function rnd(a, b) {
+          return a + Math.random() * (b - a);
+        }
+
+        function buildSkyline() {
+          layer.textContent = "";
+          var reduce = !!(reduceMQ && reduceMQ.matches);
+          var vw = window.innerWidth || 800;
+          var vh = window.innerHeight || 600;
+          // Twinkling stars (top band).
+          var starCount = reduce ? 14 : 28;
+          for (var s = 0; s < starCount; s++) {
+            var st = document.createElement("div");
+            st.className = "aa-twinkle";
+            var sz = rnd(1.5, 3.5);
+            st.style.width = st.style.height = sz.toFixed(1) + "px";
+            st.style.left = rnd(0, 100).toFixed(2) + "%";
+            st.style.top = rnd(0, 45).toFixed(2) + "%";
+            st.style.setProperty("--tw", rnd(2.2, 5).toFixed(2) + "s");
+            st.style.animationDelay = "-" + rnd(0, 4).toFixed(2) + "s";
+            layer.appendChild(st);
+          }
+          // Two depth bands of towers for a parallax feel.
+          var count = Math.max(10, Math.round(vw / 70));
+          for (var i = 0; i < count; i++) {
+            var t = document.createElement("div");
+            t.className = "aa-tower";
+            var w = rnd(36, 84);
+            var h = rnd(vh * 0.18, vh * 0.6);
+            t.style.width = w.toFixed(0) + "px";
+            t.style.height = h.toFixed(0) + "px";
+            t.style.left = ((i / count) * 100 + rnd(-3, 3)).toFixed(2) + "%";
+            t.style.background =
+              TOWER_COLORS[Math.floor(Math.random() * TOWER_COLORS.length)];
+            t.style.opacity = (0.4 + Math.random() * 0.3).toFixed(2);
+            layer.appendChild(t);
+          }
+        }
+
+        buildSkyline();
+
+        // Pointer parallax drift — only when motion is allowed. We listen on
+        // window (passive) because the Phaser canvas sits above the background
+        // and would otherwise swallow the pointer events; we never call
+        // preventDefault, so gameplay input is fully preserved.
+        var driverAttached = false;
+        function onPointer(e) {
+          var dx = e.clientX / (window.innerWidth || 1) - 0.5;
+          var dy = e.clientY / (window.innerHeight || 1) - 0.5;
+          layer.style.transform =
+            "translate3d(" +
+            (dx * 22).toFixed(2) +
+            "px," +
+            (dy * 14).toFixed(2) +
+            "px,0)";
+        }
+        function attachDriver() {
+          if (driverAttached || (reduceMQ && reduceMQ.matches)) return;
+          driverAttached = true;
+          window.addEventListener("pointermove", onPointer, { passive: true });
+        }
+        function detachDriver() {
+          if (!driverAttached) return;
+          driverAttached = false;
+          window.removeEventListener("pointermove", onPointer);
+          layer.style.transform = "";
+        }
+
+        attachDriver();
+        if (reduceMQ) {
+          var onChange = function () {
+            buildSkyline();
+            if (reduceMQ.matches) detachDriver();
+            else attachDriver();
+          };
+          if (reduceMQ.addEventListener)
+            reduceMQ.addEventListener("change", onChange);
+          else if (reduceMQ.addListener) reduceMQ.addListener(onChange);
+        }
+
+        // Rebuild skyline on resize/orientation (debounced) so it stays full-bleed.
+        var rt;
+        window.addEventListener("resize", function () {
+          clearTimeout(rt);
+          rt = setTimeout(buildSkyline, 200);
+        });
+      })();
+    </script>
     <script>
       // ── AREA ARCHITECT — City Builder / Tetris Hybrid ──
       // Phaser 3 — Grade 6 Math — Area of 2D Shapes
@@ -802,6 +998,12 @@
 
       GameScene.prototype.init = function (data) {
         this.difficulty = data.difficulty || "easy";
+        // Accessibility: respect the OS "reduce motion" preference. Used only to
+        // soften purely-decorative drop animations (no gameplay/timing change).
+        this.reduceMotion = !!(
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        );
         this.score = 0;
         this.combo = 0;
         this.maxCombo = 0;
@@ -1005,8 +1207,11 @@
           const by = 390 + row * 55;
           const btn = this.add
             .rectangle(bx + 55, by + 18, 120, 42, 0x1a3355)
-            .setInteractive({ useHandCursor: true })
             .setStrokeStyle(2, 0x2a5577);
+          // Mobile tap-zone expansion: enlarge the hit area beyond the visible
+          // 120x42 box (the 15px/13px gaps to neighbors keep zones non-overlapping)
+          // so small fingers register taps reliably. Visuals are unchanged.
+          this.makeAnswerInteractive(btn);
           const ltr = this.add
             .text(bx + 10, by + 18, String.fromCharCode(65 + i), {
               fontSize: "12px",
@@ -1043,7 +1248,20 @@
               });
             }
           });
-          btn.on("pointerdown", () => this.selectAnswer(i));
+          btn.on("pointerdown", () => {
+            // Tactile touch feedback: quick squash before resolving the answer
+            // (skipped under reduced motion). Does not gate or change scoring.
+            if (!this.answered && !this.reduceMotion) {
+              this.tweens.add({
+                targets: btn,
+                scaleX: { from: 0.93, to: 1 },
+                scaleY: { from: 0.93, to: 1 },
+                duration: 140,
+                ease: "Back.easeOut",
+              });
+            }
+            this.selectAnswer(i);
+          });
           this.answerBtns.push(btn);
           this.answerTexts.push(txt);
           this.answerLetters.push(ltr);
@@ -1166,6 +1384,26 @@
         this.cameras.main.fadeIn(500);
       };
 
+      // Enable an answer button with an enlarged touch hit area. The visible
+      // rectangle stays 120x42; the hit zone is padded ~8px on every side so
+      // taps near the edge still register on Chromebooks/touchscreens. Falls
+      // back to the default hit area if the custom geometry can't be built.
+      GameScene.prototype.makeAnswerInteractive = function (btn) {
+        const padX = 8,
+          padY = 7;
+        const w = 120 + padX * 2,
+          h = 42 + padY * 2;
+        try {
+          btn.setInteractive(
+            new Phaser.Geom.Rectangle(-padX, -padY, w, h),
+            Phaser.Geom.Rectangle.Contains,
+          );
+          if (btn.input) btn.input.cursor = "pointer";
+        } catch (e) {
+          btn.setInteractive({ useHandCursor: true });
+        }
+      };
+
       GameScene.prototype.activatePowerUp = function (key) {
         if (!this.showingQuestion || this.answered) return;
         if (this.powerUps[key] <= 0) return;
@@ -1276,8 +1514,10 @@
           this.answerBtns[i]
             .setFillStyle(0x1a3355)
             .setStrokeStyle(2, 0x2a5577)
-            .setScale(1)
-            .setInteractive({ useHandCursor: true });
+            .setScale(1);
+          // Re-apply the expanded mobile tap zone (plain re-enable would reset
+          // the hit area to the visible box).
+          this.makeAnswerInteractive(this.answerBtns[i]);
         });
         this.feedbackText.setAlpha(0);
         this.speedText.setAlpha(0);
@@ -1616,12 +1856,16 @@
           this.gridSprites[targetRow][c] = block;
 
           SFX.drop();
+          // Easing refinement: a weighty settle (back-out overshoot tuned so
+          // the block "lands" without the jittery multi-bounce). Under reduced
+          // motion, fall straight in with a gentle decelerate and no overshoot.
           this.tweens.add({
             targets: block,
             y: py + CELL / 2 - 1,
-            duration: 300 + targetRow * 30,
-            ease: "Bounce.easeOut",
-            delay: c * 50,
+            duration: this.reduceMotion ? 200 : 340 + targetRow * 26,
+            ease: this.reduceMotion ? "Cubic.easeOut" : "Back.easeOut",
+            easeParams: this.reduceMotion ? undefined : [1.6],
+            delay: this.reduceMotion ? 0 : c * 50,
           });
 
           if (correct) {
@@ -2038,16 +2282,40 @@
         this.cameras.main.fadeIn(600);
       };
 
-      new Phaser.Game(config);
+      const aaGame = new Phaser.Game(config);
+
+      // ── Canvas accessibility (additive) ──
+      // The whole game renders into one Phaser <canvas>. Give assistive tech a
+      // label and make the canvas keyboard-focusable so the existing keyboard
+      // controls (number keys, Q/W, Space) are discoverable. Does not alter any
+      // game logic — purely descriptive attributes + a focus affordance.
+      aaGame.events.once("ready", function () {
+        try {
+          var cv = aaGame.canvas;
+          if (!cv) return;
+          cv.setAttribute("role", "application");
+          cv.setAttribute(
+            "aria-label",
+            "Area Architect city builder math game. " +
+              "Calculate the area of each shape to construct your city. " +
+              "Use number keys 1 to 4 to choose an answer, Q for the 50/50 " +
+              "power-up, W for double points, and Space to start.",
+          );
+          cv.setAttribute("aria-roledescription", "math game");
+          if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
+        } catch (e) {
+          /* a11y wiring failed — non-fatal, game still plays */
+        }
+      });
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

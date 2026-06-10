@@ -24,31 +24,95 @@
         position: fixed;
         inset: 0;
       }
+      /* Keyboard focus state: visible ring only for keyboard users, never on
+         pointer focus. Purely visual; does not affect controls. */
+      #game:focus-visible {
+        outline: 3px solid rgba(255, 214, 102, 0.95);
+        outline-offset: -3px;
+        box-shadow: inset 0 0 0 6px rgba(255, 214, 102, 0.22);
+      }
+      #game:focus:not(:focus-visible) {
+        outline: none;
+      }
+
+      /* ---- Parallax depth backdrop (behind the WebGL canvas) ---------------
+         Pure CSS/DOM ambient layer. pointer-events:none and z-index:0 keep it
+         strictly decorative and well clear of the game canvas + HUD. The
+         shared GameFX kit drives the parallax offset via [data-parallax] +
+         [data-parallax-layer]; motion is additionally gated below. */
+      .e3d-backdrop {
+        position: fixed;
+        inset: -8%;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .e3d-backdrop-layer {
+        position: absolute;
+        inset: 0;
+        will-change: transform;
+        background:
+          radial-gradient(
+            42% 38% at 18% 24%,
+            rgba(255, 174, 122, 0.16),
+            transparent 70%
+          ),
+          radial-gradient(
+            38% 34% at 82% 30%,
+            rgba(122, 196, 255, 0.14),
+            transparent 70%
+          ),
+          radial-gradient(
+            54% 48% at 50% 96%,
+            rgba(255, 122, 196, 0.12),
+            transparent 72%
+          );
+      }
+      .e3d-backdrop-layer.is-far {
+        background:
+          radial-gradient(
+            30% 30% at 70% 14%,
+            rgba(255, 224, 138, 0.1),
+            transparent 70%
+          ),
+          radial-gradient(
+            26% 26% at 26% 78%,
+            rgba(160, 138, 255, 0.1),
+            transparent 70%
+          );
+        opacity: 0.85;
+      }
+
       .e3d-intro {
         position: absolute;
         left: 50%;
-        bottom: 14px;
+        bottom: max(14px, env(safe-area-inset-bottom, 0px));
         transform: translateX(-50%);
         color: #fff;
-        font-size: 13px;
+        font-size: clamp(11px, 2.6vw, 13px);
+        line-height: 1.35;
         opacity: 0.78;
         z-index: 16;
         pointer-events: none;
         text-align: center;
-        max-width: 92%;
+        max-width: min(92%, 640px);
+        box-sizing: border-box;
+        padding: 0 10px;
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
       }
       .e3d-boot-title {
         position: absolute;
-        top: 10px;
+        top: max(10px, env(safe-area-inset-top, 0px));
         left: 50%;
         transform: translateX(-50%);
         color: #fff;
         z-index: 16;
         pointer-events: none;
+        max-width: 92%;
+        text-align: center;
         font-family: var(--font-display, system-ui, sans-serif);
         font-weight: 700;
-        font-size: 15px;
+        font-size: clamp(13px, 3.4vw, 15px);
         opacity: 0.85;
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
       }
@@ -61,6 +125,65 @@
         padding: 24px;
         color: #fff;
         text-align: center;
+        z-index: 40;
+      }
+
+      /* ---- Idle + success motion (all gated by prefers-reduced-motion) ----
+         When students are reading and nothing is being placed, the backdrop
+         drifts and the title gives a soft glow pulse — bespoke ambient life
+         that never touches the canvas. The serve-flash class is a CSS-only
+         success micro-animation (scale boost + warm color flash) available to
+         the GameFX success hook below. */
+      @media (prefers-reduced-motion: no-preference) {
+        .e3d-backdrop-layer {
+          animation: e3dDrift 22s ease-in-out infinite alternate;
+        }
+        .e3d-backdrop-layer.is-far {
+          animation-duration: 34s;
+          animation-direction: alternate-reverse;
+        }
+        .e3d-boot-title {
+          animation: e3dTitleGlow 6.5s ease-in-out infinite;
+        }
+        .serve-flash {
+          animation: e3dServeFlash 0.6s ease-out;
+        }
+      }
+      @keyframes e3dDrift {
+        from {
+          transform: translate3d(-1.2%, -0.8%, 0) scale(1.02);
+        }
+        to {
+          transform: translate3d(1.4%, 1%, 0) scale(1.05);
+        }
+      }
+      @keyframes e3dTitleGlow {
+        0%,
+        100% {
+          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        50% {
+          text-shadow:
+            0 1px 2px rgba(0, 0, 0, 0.5),
+            0 0 14px rgba(255, 214, 102, 0.55);
+        }
+      }
+      @keyframes e3dServeFlash {
+        0% {
+          transform: translateX(-50%) scale(1);
+          color: #fff;
+        }
+        40% {
+          transform: translateX(-50%) scale(1.16);
+          color: #b6ffd0;
+          text-shadow:
+            0 1px 2px rgba(0, 0, 0, 0.5),
+            0 0 18px rgba(120, 255, 168, 0.85);
+        }
+        100% {
+          transform: translateX(-50%) scale(1);
+          color: #fff;
+        }
       }
     </style>
     <script type="importmap">
@@ -75,10 +198,17 @@
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
+    <!-- Decorative parallax backdrop. Sits behind the WebGL canvas; the shared
+         GameFX kit offsets [data-parallax-layer] children on pointer move for a
+         depth cue. Purely cosmetic, aria-hidden, pointer-events:none. -->
+    <div class="e3d-backdrop" data-parallax aria-hidden="true">
+      <div class="e3d-backdrop-layer" data-parallax-layer></div>
+      <div class="e3d-backdrop-layer is-far" data-parallax-layer></div>
+    </div>
     <div
       id="game"
       role="application"
@@ -134,11 +264,64 @@
         document.getElementById("fallback").style.display = "flex";
       }
     </script>
+    <!-- Bespoke success micro-animation hook (additive, read-only). Watches the
+         same success-class convention the GameFX kit uses and flashes the boot
+         title with a scale + warm-glow pulse. Never mutates game state, scoring,
+         or the WebGL scene; fully gated by prefers-reduced-motion. -->
+    <script>
+      (function () {
+        try {
+          var reduce =
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          if (reduce || !window.MutationObserver) return;
+          var title = document.querySelector(".e3d-boot-title");
+          if (!title) return;
+          var SUCCESS =
+            /(^|\s)(right|correct|is-correct|is-right|ok|success|won|gfx-correct)(\s|$)/i;
+          var flashing = false;
+          function flash() {
+            if (flashing) return;
+            flashing = true;
+            title.classList.remove("serve-flash");
+            void title.offsetWidth;
+            title.classList.add("serve-flash");
+            if (window.GameFX && window.GameFX.celebrate)
+              window.GameFX.celebrate(title);
+            window.setTimeout(function () {
+              title.classList.remove("serve-flash");
+              flashing = false;
+            }, 650);
+          }
+          var obs = new MutationObserver(function (muts) {
+            for (var i = 0; i < muts.length; i++) {
+              var t = muts[i].target;
+              if (
+                t &&
+                t.nodeType === 1 &&
+                typeof t.className === "string" &&
+                SUCCESS.test(t.className)
+              ) {
+                flash();
+                return;
+              }
+            }
+          });
+          obs.observe(document.body, {
+            subtree: true,
+            attributes: true,
+            attributeFilter: ["class"],
+          });
+        } catch (e) {
+          /* non-fatal: success flash is cosmetic */
+        }
+      })();
+    </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

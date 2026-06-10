@@ -23,6 +23,66 @@
       #game {
         position: fixed;
         inset: 0;
+        z-index: 1;
+      }
+      /* Ambient procedural backdrop — sits BEHIND the WebGL canvas and never
+         receives pointer events, so it can't interfere with the game's
+         tap/raycast controls or the three.js scene. Pure CSS radial glows that
+         drift slowly; fully frozen under prefers-reduced-motion. */
+      .e3d-ambient {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+        background: var(--navy, #12355b);
+      }
+      .e3d-ambient::before,
+      .e3d-ambient::after {
+        content: "";
+        position: absolute;
+        width: 70vmax;
+        height: 70vmax;
+        border-radius: 50%;
+        filter: blur(40px);
+        opacity: 0.45;
+        will-change: transform;
+      }
+      .e3d-ambient::before {
+        top: -22vmax;
+        left: -14vmax;
+        background: radial-gradient(
+          circle,
+          rgba(31, 166, 162, 0.55),
+          rgba(31, 166, 162, 0) 70%
+        );
+        animation: e3dDriftA 26s ease-in-out infinite alternate;
+      }
+      .e3d-ambient::after {
+        right: -16vmax;
+        bottom: -20vmax;
+        background: radial-gradient(
+          circle,
+          rgba(155, 120, 224, 0.5),
+          rgba(155, 120, 224, 0) 70%
+        );
+        animation: e3dDriftB 32s ease-in-out infinite alternate;
+      }
+      @keyframes e3dDriftA {
+        from {
+          transform: translate(0, 0) scale(1);
+        }
+        to {
+          transform: translate(6vmax, 4vmax) scale(1.12);
+        }
+      }
+      @keyframes e3dDriftB {
+        from {
+          transform: translate(0, 0) scale(1.05);
+        }
+        to {
+          transform: translate(-5vmax, -4vmax) scale(0.95);
+        }
       }
       .e3d-intro {
         position: absolute;
@@ -37,6 +97,11 @@
         text-align: center;
         max-width: 92%;
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        padding: 6px 14px;
+        border-radius: 999px;
+        background: rgba(13, 27, 51, 0.42);
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(3px);
       }
       .e3d-boot-title {
         position: absolute;
@@ -51,6 +116,21 @@
         font-size: 15px;
         opacity: 0.85;
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        /* Gentle emissive "engine warming up" breathe on the title. */
+        animation: e3dTitleGlow 4.6s ease-in-out infinite;
+      }
+      @keyframes e3dTitleGlow {
+        0%,
+        100% {
+          text-shadow:
+            0 1px 2px rgba(0, 0, 0, 0.5),
+            0 0 6px rgba(31, 166, 162, 0);
+        }
+        50% {
+          text-shadow:
+            0 1px 2px rgba(0, 0, 0, 0.5),
+            0 0 14px rgba(31, 166, 162, 0.6);
+        }
       }
       .e3d-fallback {
         position: fixed;
@@ -62,6 +142,29 @@
         color: #fff;
         text-align: center;
       }
+      /* Small screens: enlarge the on-canvas DOM text so directions stay
+         readable on phones/small Chromebooks. (The 3D blocks themselves are
+         WebGL geometry sized by the scene; this affects only the HTML overlay.) */
+      @media (max-width: 560px) {
+        .e3d-boot-title {
+          font-size: 17px;
+          top: 8px;
+        }
+        .e3d-intro {
+          font-size: 15px;
+          bottom: 10px;
+          line-height: 1.35;
+        }
+      }
+      /* Hard gate: freeze every overlay animation when the user prefers reduced
+         motion. The ambient backdrop becomes a static glow. */
+      @media (prefers-reduced-motion: reduce) {
+        .e3d-ambient::before,
+        .e3d-ambient::after,
+        .e3d-boot-title {
+          animation: none !important;
+        }
+      }
     </style>
     <script type="importmap">
       {
@@ -72,13 +175,14 @@
       }
     </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
+    <div class="e3d-ambient" aria-hidden="true"></div>
     <div
       id="game"
       role="application"
@@ -98,8 +202,20 @@
           This game needs a browser with WebGL turned on. Try refreshing once,
           or open it in a different browser or on another device.
         </p>
-        <p class="e3d-fallback-2d" style="margin-top:14px;">
-          <a href="/games/unit6-expression-engine.html" style="display:inline-block;padding:10px 18px;border-radius:10px;background:#1fa6a2;color:#fff;font-weight:600;text-decoration:none;">Play the 2D version instead →</a>
+        <p class="e3d-fallback-2d" style="margin-top: 14px">
+          <a
+            href="/games/unit6-expression-engine.html"
+            style="
+              display: inline-block;
+              padding: 10px 18px;
+              border-radius: 10px;
+              background: #1fa6a2;
+              color: #fff;
+              font-weight: 600;
+              text-decoration: none;
+            "
+            >Play the 2D version instead →</a
+          >
         </p>
       </div>
     </div>
@@ -119,10 +235,10 @@
       }
     </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

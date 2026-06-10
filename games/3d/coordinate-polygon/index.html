@@ -41,19 +41,137 @@
         max-width: 92%;
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
       }
-      .e3d-boot-title {
+      /* Blueprint-style chrome group. Pointer-events stay off so it never
+         steals input from the 3D controls; GameFX parallax nudges it gently. */
+      .e3d-chrome {
         position: absolute;
         top: 10px;
         left: 50%;
         transform: translateX(-50%);
-        color: #fff;
         z-index: 16;
         pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        max-width: 92%;
+      }
+      .e3d-boot-title {
+        position: relative;
+        color: #fff;
         font-family: var(--font-display, system-ui, sans-serif);
         font-weight: 700;
         font-size: 15px;
-        opacity: 0.85;
+        letter-spacing: 0.2px;
+        padding: 5px 16px;
+        border-radius: 999px;
+        text-align: center;
+        background: linear-gradient(
+          180deg,
+          rgba(18, 53, 91, 0.55),
+          rgba(10, 19, 38, 0.55)
+        );
+        border: 1px solid rgba(120, 180, 255, 0.35);
+        box-shadow:
+          0 2px 10px rgba(0, 0, 0, 0.35),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.05);
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        /* Faint isometric blueprint hatch receding behind the title. */
+        background-image:
+          repeating-linear-gradient(
+            60deg,
+            rgba(140, 195, 255, 0.07) 0,
+            rgba(140, 195, 255, 0.07) 1px,
+            transparent 1px,
+            transparent 9px
+          ),
+          repeating-linear-gradient(
+            -60deg,
+            rgba(140, 195, 255, 0.07) 0,
+            rgba(140, 195, 255, 0.07) 1px,
+            transparent 1px,
+            transparent 9px
+          ),
+          linear-gradient(
+            180deg,
+            rgba(18, 53, 91, 0.55),
+            rgba(10, 19, 38, 0.55)
+          );
+      }
+      /* Animated blueprint sweep along the title border edge. */
+      .e3d-boot-title::after {
+        content: "";
+        position: absolute;
+        inset: -1px;
+        border-radius: inherit;
+        pointer-events: none;
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          rgba(150, 205, 255, 0.55) 50%,
+          transparent 100%
+        );
+        -webkit-mask:
+          linear-gradient(#000 0 0) content-box,
+          linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask:
+          linear-gradient(#000 0 0) content-box,
+          linear-gradient(#000 0 0);
+        mask-composite: exclude;
+        padding: 1px;
+        background-size: 220% 100%;
+        opacity: 0;
+      }
+      .e3d-chip {
+        display: inline-block;
+        color: #cfe6ff;
+        font-family: var(--font-body, system-ui, sans-serif);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.4px;
+        opacity: 0.72;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      }
+      /* Entrance: chrome eases down + fades in once on boot. */
+      @keyframes e3dChromeIn {
+        from {
+          opacity: 0;
+          transform: translateX(-50%) translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0);
+        }
+      }
+      /* Border sweep loop for the blueprint feel. */
+      @keyframes e3dSweep {
+        0% {
+          opacity: 0;
+          background-position: 120% 0;
+        }
+        12% {
+          opacity: 0.9;
+        }
+        60% {
+          opacity: 0;
+          background-position: -20% 0;
+        }
+        100% {
+          opacity: 0;
+          background-position: -20% 0;
+        }
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .e3d-chrome {
+          animation: e3dChromeIn 600ms cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        .e3d-boot-title::after {
+          animation: e3dSweep 5.5s ease-in-out 1.2s infinite;
+        }
+        .e3d-intro {
+          animation: e3dChromeIn 700ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both;
+        }
       }
       .e3d-fallback {
         position: fixed;
@@ -75,12 +193,12 @@
       }
     </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
     <div
       id="game"
@@ -89,7 +207,12 @@
       aria-label="Coordinate Polygon — Blueprint Builder. Interactive 3D math game about drawing polygons in the coordinate plane from their vertices and finding side lengths and perimeter."
       aria-describedby="e3d-intro"
     ></div>
-    <div class="e3d-boot-title">Coordinate Polygon — Blueprint Builder</div>
+    <div class="e3d-chrome" data-parallax aria-hidden="true">
+      <div class="e3d-boot-title" data-parallax-layer>
+        Coordinate Polygon — Blueprint Builder
+      </div>
+      <span class="e3d-chip">PLOT · MEASURE · PERIMETER</span>
+    </div>
     <p class="e3d-intro" id="e3d-intro">
       Move the beacon: arrow keys / WASD, the D-pad, or tap. Left and right
       change x. Up and down change y. Press Space, Enter, the ● button, or tap
@@ -120,10 +243,10 @@
       }
     </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

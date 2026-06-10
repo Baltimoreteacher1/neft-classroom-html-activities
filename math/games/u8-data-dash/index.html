@@ -43,6 +43,14 @@
         color: #fff;
         text-align: center;
         padding: 30px 20px 26px;
+        position: relative;
+        overflow: hidden;
+      }
+      .ghero > .deco,
+      .ghero > h1,
+      .ghero > p {
+        position: relative;
+        z-index: 1;
       }
       .ghero .deco {
         font-size: 48px;
@@ -240,16 +248,134 @@
         color: var(--muted);
         font-size: 15px;
       }
+      /* --- bespoke: inline data visualization --- */
+      .dataviz {
+        margin: 14px auto 4px;
+        max-width: 460px;
+      }
+      .dataviz svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .viz-bar {
+        fill: var(--blue);
+      }
+      .viz-bar-label {
+        font: 700 12px var(--font);
+        fill: var(--ink);
+      }
+      .viz-base {
+        stroke: var(--line);
+        stroke-width: 1.5;
+      }
+      /* colored marker lines that draw in for the stat being asked */
+      .viz-marker {
+        stroke-width: 2.5;
+        stroke-dasharray: 4 3;
+        opacity: 0;
+      }
+      .viz-dot {
+        fill: var(--navy);
+      }
+      .viz-axis {
+        font: 600 10px var(--font);
+        fill: var(--muted);
+      }
+      /* colored glyphs: mean (teal), median (gold), range (coral) */
+      .stat-glyph {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 800;
+      }
+      .glyph-chip {
+        display: inline-grid;
+        place-items: center;
+        width: 22px;
+        height: 22px;
+        border-radius: 7px;
+        color: #fff;
+        font-size: 13px;
+        line-height: 1;
+      }
+      .glyph-mean {
+        background: var(--teal);
+      }
+      .glyph-median {
+        background: var(--gold);
+      }
+      .glyph-range {
+        background: var(--coral);
+      }
+      .feedback .chose {
+        display: block;
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .dataviz .viz-bar {
+          transform-box: fill-box;
+          transform-origin: bottom;
+          animation: vizGrow 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+        .dataviz.show-marker .viz-marker {
+          animation: vizMark 0.5s ease forwards;
+        }
+      }
+      @keyframes vizGrow {
+        from {
+          transform: scaleY(0.02);
+        }
+        to {
+          transform: scaleY(1);
+        }
+      }
+      @keyframes vizMark {
+        from {
+          opacity: 0;
+          stroke-dashoffset: 12;
+        }
+        to {
+          opacity: 1;
+          stroke-dashoffset: 0;
+        }
+      }
+      /* score increment count-up: marker shown immediately when reduced motion */
+      @media (prefers-reduced-motion: reduce) {
+        .dataviz.show-marker .viz-marker {
+          opacity: 1;
+        }
+      }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
-    <header class="ghero">
+    <header class="ghero" data-parallax>
+      <div
+        class="deco"
+        data-parallax-layer
+        aria-hidden="true"
+        style="
+          position: absolute;
+          inset: 0;
+          font-size: 48px;
+          pointer-events: none;
+          opacity: 0.16;
+          display: flex;
+          align-items: center;
+          justify-content: space-around;
+        "
+      >
+        <span>📈</span><span>📉</span><span>📊</span>
+      </div>
       <div class="deco">📊</div>
       <h1>Data Dash</h1>
       <p>Race the clock on mean, median, and range of real data sets.</p>
@@ -309,6 +435,7 @@
           <span class="mode-tag" id="modeTag"></span>
           <div class="prompt" id="prompt"></div>
           <p class="sub" id="sub"></p>
+          <div class="dataviz" id="dataviz"></div>
           <div class="opts" id="opts"></div>
           <div class="feedback" id="feedback"></div>
           <button class="btn hidden" id="nextBtn" type="button">Next ▶</button>
@@ -349,6 +476,194 @@
       var TOTAL = 12,
         TIME = 12;
       var state = {};
+
+      function prefersReducedMotion() {
+        return (
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        );
+      }
+
+      // Colored glyph chips: mean=teal Σ̄, median=gold |, range=coral ↔
+      var GLYPHS = {
+        mean: { cls: "glyph-mean", sym: "x̄", color: "#0e8a7d", label: "mean" },
+        median: {
+          cls: "glyph-median",
+          sym: "|",
+          color: "#d4952a",
+          label: "median",
+        },
+        range: {
+          cls: "glyph-range",
+          sym: "↔",
+          color: "#c45a3c",
+          label: "range",
+        },
+      };
+
+      function svgEl(name, attrs) {
+        var el = document.createElementNS("http://www.w3.org/2000/svg", name);
+        for (var k in attrs) el.setAttribute(k, attrs[k]);
+        return el;
+      }
+
+      // Render an inline bar chart of the data set, with a colored marker
+      // line for the stat being asked (mean / median / range span).
+      function renderViz(q) {
+        var host = document.getElementById("dataviz");
+        host.innerHTML = "";
+        host.classList.remove("show-marker");
+        if (!q || !q.nums || !q.nums.length) return;
+        var nums = q.nums;
+        var W = 460,
+          H = 150,
+          padX = 14,
+          padTop = 14,
+          baseY = 120;
+        var maxV = Math.max.apply(null, nums);
+        var n = nums.length;
+        var gap = 10;
+        var bw = (W - padX * 2 - gap * (n - 1)) / n;
+        var scale = (baseY - padTop) / (maxV || 1);
+        var svg = svgEl("svg", {
+          viewBox: "0 0 " + W + " " + H,
+          role: "img",
+          "aria-label": q.statType + " data chart of values " + nums.join(", "),
+        });
+        // baseline
+        svg.appendChild(
+          svgEl("line", {
+            x1: padX,
+            y1: baseY,
+            x2: W - padX,
+            y2: baseY,
+            class: "viz-base",
+          }),
+        );
+        // bars + value labels
+        for (var i = 0; i < n; i++) {
+          var v = nums[i];
+          var h = Math.max(2, v * scale);
+          var x = padX + i * (bw + gap);
+          var y = baseY - h;
+          var bar = svgEl("rect", {
+            x: x,
+            y: y,
+            width: bw,
+            height: h,
+            rx: 3,
+            class: "viz-bar",
+          });
+          bar.style.animationDelay = i * 0.05 + "s";
+          svg.appendChild(bar);
+          var lbl = svgEl("text", {
+            x: x + bw / 2,
+            y: y - 5,
+            "text-anchor": "middle",
+            class: "viz-bar-label",
+          });
+          lbl.textContent = v;
+          svg.appendChild(lbl);
+        }
+        // colored stat marker
+        var g = GLYPHS[q.statType];
+        if (q.statType === "range") {
+          // draw a coral span bracket from min to max along the baseline
+          var yMark = baseY + 16;
+          // find x-centers of min and max bars
+          var minIdx = nums.indexOf(q.statMin),
+            maxIdx = nums.indexOf(q.statMax);
+          var cx = function (idx) {
+            return padX + idx * (bw + gap) + bw / 2;
+          };
+          var mk = svgEl("line", {
+            x1: cx(minIdx),
+            y1: yMark,
+            x2: cx(maxIdx),
+            y2: yMark,
+            stroke: g.color,
+            class: "viz-marker",
+          });
+          svg.appendChild(mk);
+          var t = svgEl("text", {
+            x: (cx(minIdx) + cx(maxIdx)) / 2,
+            y: yMark + 14,
+            "text-anchor": "middle",
+            class: "viz-axis",
+            fill: g.color,
+          });
+          t.textContent = "range = " + q.statVal;
+          svg.appendChild(t);
+        } else {
+          // horizontal dashed line at the stat value (mean or median)
+          var yv = baseY - q.statVal * scale;
+          var mk2 = svgEl("line", {
+            x1: padX,
+            y1: yv,
+            x2: W - padX,
+            y2: yv,
+            stroke: g.color,
+            class: "viz-marker",
+          });
+          svg.appendChild(mk2);
+          var t2 = svgEl("text", {
+            x: W - padX,
+            y: yv - 4,
+            "text-anchor": "end",
+            class: "viz-axis",
+            fill: g.color,
+          });
+          t2.textContent = g.label + " = " + q.statVal;
+          svg.appendChild(t2);
+        }
+        host.appendChild(svg);
+      }
+
+      // reveal the colored stat marker (called after an answer)
+      function revealVizMarker() {
+        document.getElementById("dataviz").classList.add("show-marker");
+      }
+
+      // build a colored glyph chip + text for feedback
+      function glyphHTML(statType) {
+        var g = GLYPHS[statType];
+        if (!g) return "";
+        return (
+          '<span class="stat-glyph"><span class="glyph-chip ' +
+          g.cls +
+          '">' +
+          g.sym +
+          "</span>" +
+          g.label +
+          "</span>"
+        );
+      }
+
+      // eased count-up animation for the score (cubic ease-out)
+      function animateScore(from, to) {
+        var el = document.getElementById("score");
+        if (from === to) {
+          el.textContent = to;
+          return;
+        }
+        if (prefersReducedMotion()) {
+          el.textContent = to;
+          return;
+        }
+        var dur = 420,
+          start = null;
+        function ease(t) {
+          return 1 - Math.pow(1 - t, 3);
+        }
+        function step(ts) {
+          if (start === null) start = ts;
+          var p = Math.min(1, (ts - start) / dur);
+          el.textContent = Math.round(from + (to - from) * ease(p));
+          if (p < 1) requestAnimationFrame(step);
+          else el.textContent = to;
+        }
+        requestAnimationFrame(step);
+      }
 
       function distinctOpts(correct, makeWrong, fmt) {
         var set = {};
@@ -432,6 +747,9 @@
         );
         return {
           tag: "Mean",
+          statType: "mean",
+          nums: nums.slice(),
+          statVal: finalMean,
           prompt: "Mean of " + setStr + " = ?",
           sub:
             "Add all values, then divide by the count (" +
@@ -477,6 +795,9 @@
         );
         return {
           tag: "Median",
+          statType: "median",
+          nums: nums.slice(),
+          statVal: median,
           prompt: "Median of " + setStr + " = ?",
           sub: "Sort the values and find the middle one (5 numbers).",
           opts: o.opts,
@@ -514,6 +835,11 @@
         );
         return {
           tag: "Range",
+          statType: "range",
+          nums: nums.slice(),
+          statVal: range,
+          statMin: mn,
+          statMax: mx,
           prompt: "Range of " + display + " = ?",
           sub: "Subtract the minimum from the maximum.",
           opts: o.opts,
@@ -546,6 +872,9 @@
 
       function startGame() {
         state = { i: 0, score: 0, streak: 0, lives: 3, locked: false };
+        document.getElementById("score").textContent = "0";
+        document.getElementById("streak").textContent = "0";
+        document.getElementById("lives").textContent = "❤❤❤";
         document.getElementById("startScreen").classList.add("hidden");
         document.getElementById("resultScreen").classList.add("hidden");
         document.getElementById("playScreen").classList.remove("hidden");
@@ -564,15 +893,29 @@
         document.getElementById("feedback").textContent = "";
         document.getElementById("feedback").className = "feedback";
         document.getElementById("nextBtn").classList.add("hidden");
+        renderViz(state.q);
         var box = document.getElementById("opts");
         box.innerHTML = "";
-        state.q.opts.forEach(function (o) {
+        state.q.opts.forEach(function (o, idx) {
           var b = document.createElement("button");
           b.type = "button";
           b.className = "opt";
           b.textContent = o;
+          b.setAttribute("aria-label", "Answer " + o);
           b.onclick = function () {
             answer(o, b);
+          };
+          b.onkeydown = function (e) {
+            var btns = Array.prototype.slice.call(box.querySelectorAll(".opt"));
+            var cur = btns.indexOf(b),
+              ni = cur;
+            if (e.key === "ArrowRight" || e.key === "ArrowDown")
+              ni = (cur + 1) % btns.length;
+            else if (e.key === "ArrowLeft" || e.key === "ArrowUp")
+              ni = (cur - 1 + btns.length) % btns.length;
+            else return;
+            e.preventDefault();
+            btns[ni].focus();
           };
           box.appendChild(b);
         });
@@ -594,12 +937,30 @@
           }
         }, 100);
       }
+      // explain which value the student chose and why it is not the stat
+      function whyWrong(choice, q) {
+        var g = GLYPHS[q.statType];
+        var label = g ? g.label : "answer";
+        return (
+          '<span class="chose">You chose <strong>' +
+          choice +
+          "</strong>, but the " +
+          label +
+          " is <strong>" +
+          q.statVal +
+          "</strong>. " +
+          q.why +
+          "</span>"
+        );
+      }
       function answer(choice, btn) {
         if (state.locked) return;
         state.locked = true;
         clearInterval(state.timer);
+        revealVizMarker();
         var fb = document.getElementById("feedback"),
           correct = choice === state.q.correct;
+        var prevScore = state.score;
         Array.prototype.forEach.call(
           document.querySelectorAll(".opt"),
           function (b) {
@@ -607,27 +968,38 @@
             else if (b === btn) b.classList.add("wrong");
           },
         );
+        var glyph = glyphHTML(state.q.statType);
         if (correct) {
           state.streak++;
           state.score += 10 + Math.min(state.streak, 5) * 2;
-          fb.textContent =
-            "✓ Correct! " +
+          fb.innerHTML =
+            glyph +
+            " ✓ Correct! " +
             state.q.why +
             (state.streak > 1 ? "  🔥 Streak ×" + state.streak : "");
           fb.className = "feedback ok";
+          // The shared FX kit auto-fires a spark-burst when .opt gains
+          // `.right`; we only add a tactile pop here to avoid doubling
+          // particle bursts.
+          try {
+            if (window.GameFX && GameFX.pop && btn) GameFX.pop(btn);
+          } catch (e) {}
         } else {
           state.streak = 0;
           state.lives--;
-          fb.textContent = "✗ " + state.q.why + "  (−1 ❤)";
+          fb.innerHTML =
+            glyph + " ✗ Not quite. (−1 ❤)" + whyWrong(choice, state.q);
           fb.className = "feedback no";
         }
-        updateHud();
+        updateHud(prevScore);
         document.getElementById("nextBtn").classList.remove("hidden");
       }
       function timeUp() {
         state.locked = true;
         state.streak = 0;
         state.lives--;
+        revealVizMarker();
+        var prevScore = state.score;
         Array.prototype.forEach.call(
           document.querySelectorAll(".opt"),
           function (b) {
@@ -635,13 +1007,27 @@
           },
         );
         var fb = document.getElementById("feedback");
-        fb.textContent = "⏰ Time! " + state.q.why + "  (−1 ❤)";
+        fb.innerHTML =
+          glyphHTML(state.q.statType) +
+          " ⏰ Time! The " +
+          (GLYPHS[state.q.statType]
+            ? GLYPHS[state.q.statType].label
+            : "answer") +
+          " is " +
+          state.q.statVal +
+          ". " +
+          state.q.why +
+          "  (−1 ❤)";
         fb.className = "feedback no";
-        updateHud();
+        updateHud(prevScore);
         document.getElementById("nextBtn").classList.remove("hidden");
       }
-      function updateHud() {
-        document.getElementById("score").textContent = state.score;
+      function updateHud(prevScore) {
+        if (typeof prevScore === "number" && prevScore !== state.score) {
+          animateScore(prevScore, state.score);
+        } else {
+          document.getElementById("score").textContent = state.score;
+        }
         document.getElementById("streak").textContent = state.streak;
         document.getElementById("lives").textContent =
           state.lives > 0 ? "❤".repeat(state.lives) : "—";
@@ -684,10 +1070,10 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

@@ -243,16 +243,137 @@
         color: var(--muted);
         font-size: 15px;
       }
+
+      /* ---- Bespoke math visualizations ---- */
+      .ghero {
+        position: relative;
+        overflow: hidden;
+      }
+      .ghero-grid {
+        position: absolute;
+        inset: -20%;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+        background-size: 32px 32px;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .ghero .deco,
+      .ghero h1,
+      .ghero p {
+        position: relative;
+        z-index: 1;
+      }
+      .viz {
+        margin: 4px auto 18px;
+        max-width: 460px;
+      }
+      .viz:empty {
+        display: none;
+      }
+      .viz svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .viz .vz-line {
+        stroke: var(--line);
+      }
+      .viz .vz-axis {
+        stroke: #9fb0bd;
+      }
+      .viz .vz-tick {
+        stroke: #c4ced7;
+      }
+      .viz .vz-tlabel {
+        fill: var(--muted);
+        font: 600 11px var(--font);
+        text-anchor: middle;
+      }
+      .viz .vz-zero {
+        fill: var(--ink);
+        font: 800 12px var(--font);
+        text-anchor: middle;
+      }
+      .viz .vz-quad-fill {
+        opacity: 0.16;
+      }
+      .viz .vz-quad-label {
+        fill: var(--muted);
+        font: 800 12px var(--font);
+        text-anchor: middle;
+      }
+      .viz .vz-pt {
+        fill: var(--coral);
+        stroke: #fff;
+        stroke-width: 2;
+      }
+      .viz .vz-dot {
+        fill: var(--blue);
+      }
+      .viz .vz-dot.least {
+        fill: var(--green);
+      }
+      .viz .vz-num {
+        font: 800 12px var(--font);
+        text-anchor: middle;
+      }
+      .viz .vz-span {
+        stroke: var(--gold);
+        stroke-width: 3;
+        stroke-linecap: round;
+      }
+      .viz .vz-mag {
+        fill: var(--gold);
+        font: 800 12px var(--font);
+        text-anchor: middle;
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .viz .vz-draw {
+          stroke-dasharray: var(--len, 200);
+          stroke-dashoffset: var(--len, 200);
+          animation: vzDraw 0.5s ease-out forwards;
+        }
+        .viz .vz-grow {
+          transform-box: fill-box;
+          transform-origin: center;
+          animation: vzGrow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        .viz .vz-fade {
+          opacity: 0;
+          animation: vzFade 0.45s ease-out forwards;
+        }
+      }
+      @keyframes vzDraw {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+      @keyframes vzGrow {
+        from {
+          transform: scale(0);
+        }
+        to {
+          transform: scale(1);
+        }
+      }
+      @keyframes vzFade {
+        to {
+          opacity: 1;
+        }
+      }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
-    <header class="ghero">
+    <header class="ghero" data-parallax>
+      <div class="ghero-grid" data-parallax-layer aria-hidden="true"></div>
       <div class="deco">&#x1F9ED;</div>
       <h1>Integer &amp; Coordinate Quest</h1>
       <p>
@@ -317,6 +438,7 @@
           <span class="mode-tag" id="modeTag"></span>
           <div class="prompt" id="prompt"></div>
           <p class="sub" id="sub"></p>
+          <div class="viz" id="viz" aria-hidden="true"></div>
           <div class="opts" id="opts"></div>
           <div class="feedback" id="feedback"></div>
           <button class="btn hidden" id="nextBtn" type="button">
@@ -400,6 +522,7 @@
             sub: "What is the distance from zero?",
             opts: o.opts,
             correct: o.correct,
+            viz: { type: "abs", value: neg, mag: n },
             why:
               "|−" + n + "| = " + n + " (distance from 0 is always positive).",
           };
@@ -465,6 +588,7 @@
             sub: "Think about the number line.",
             opts: optsArr,
             correct: minStr,
+            viz: { type: "order", nums: [a, b, c], min: minVal },
             why:
               String(minVal) +
               " is the least because it is farthest left on the number line.",
@@ -499,6 +623,7 @@
           sub: "Think about the signs of x and y.",
           opts: quadrantOpts,
           correct: quadrant,
+          viz: { type: "quad", x: x, y: y, quadrant: quadrant },
           why:
             "(" +
             displayX +
@@ -512,6 +637,331 @@
             (y > 0 ? "positive" : "negative") +
             ").",
         };
+      }
+
+      // ---- Bespoke math visualizations (additive, decorative) ----
+      var REDUCE_MOTION =
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      try {
+        var _mm = window.matchMedia("(prefers-reduced-motion: reduce)");
+        if (_mm.addEventListener) {
+          _mm.addEventListener("change", function (e) {
+            REDUCE_MOTION = e.matches;
+          });
+        }
+      } catch (e) {}
+      var anim = function (cls) {
+        return REDUCE_MOTION ? "" : " " + cls;
+      };
+
+      function renderViz(v) {
+        var box = document.getElementById("viz");
+        if (!box) return;
+        if (!v) {
+          box.innerHTML = "";
+          return;
+        }
+        if (v.type === "abs") box.innerHTML = vizAbs(v);
+        else if (v.type === "order") box.innerHTML = vizOrder(v);
+        else if (v.type === "quad") box.innerHTML = vizQuad(v);
+        else box.innerHTML = "";
+      }
+
+      // Number line for absolute value: 0 and the negative value, arc span = distance.
+      function vizAbs(v) {
+        var W = 440,
+          H = 96,
+          pad = 26,
+          midY = 60;
+        var span = Math.max(10, Math.abs(v.value));
+        var lo = Math.min(0, v.value) - 2,
+          hi = Math.max(0, v.value) + 2;
+        var range = hi - lo;
+        var sx = function (n) {
+          return pad + ((n - lo) / range) * (W - 2 * pad);
+        };
+        var x0 = sx(0),
+          xv = sx(v.value);
+        var ticks = "";
+        for (var t = Math.ceil(lo); t <= Math.floor(hi); t++) {
+          var tx = sx(t);
+          ticks +=
+            '<line class="vz-tick" x1="' +
+            tx +
+            '" y1="' +
+            (midY - 5) +
+            '" x2="' +
+            tx +
+            '" y2="' +
+            (midY + 5) +
+            '"/>';
+          if (t % 5 === 0 || t === v.value || t === 0) {
+            ticks +=
+              '<text class="vz-tlabel" x="' +
+              tx +
+              '" y="' +
+              (midY + 20) +
+              '">' +
+              (t < 0 ? "−" + Math.abs(t) : t) +
+              "</text>";
+          }
+        }
+        var len = Math.abs(xv - x0) + 1;
+        var arcLeft = Math.min(x0, xv),
+          arcRight = Math.max(x0, xv);
+        var arc =
+          '<path class="vz-span' +
+          anim("vz-draw") +
+          '" style="--len:' +
+          len +
+          '" d="M ' +
+          arcLeft +
+          " " +
+          (midY - 14) +
+          " Q " +
+          (arcLeft + arcRight) / 2 +
+          " " +
+          (midY - 38) +
+          " " +
+          arcRight +
+          " " +
+          (midY - 14) +
+          '" fill="none"/>';
+        return (
+          '<svg viewBox="0 0 ' +
+          W +
+          " " +
+          H +
+          '" role="img">' +
+          '<line class="vz-axis" x1="' +
+          pad +
+          '" y1="' +
+          midY +
+          '" x2="' +
+          (W - pad) +
+          '" y2="' +
+          midY +
+          '"/>' +
+          ticks +
+          arc +
+          '<text class="vz-mag" x="' +
+          (arcLeft + arcRight) / 2 +
+          '" y="' +
+          (midY - 42) +
+          '">' +
+          Math.abs(v.value) +
+          " units</text>" +
+          '<circle class="vz-dot' +
+          anim("vz-grow") +
+          '" cx="' +
+          x0 +
+          '" cy="' +
+          midY +
+          '" r="6"/>' +
+          '<circle class="vz-dot' +
+          anim("vz-grow") +
+          '" cx="' +
+          xv +
+          '" cy="' +
+          midY +
+          '" r="6" fill="var(--coral)"/>' +
+          "</svg>"
+        );
+      }
+
+      // Number line showing the three integers; least highlighted green.
+      function vizOrder(v) {
+        var W = 440,
+          H = 84,
+          pad = 26,
+          midY = 50;
+        var lo = Math.min.apply(null, v.nums) - 2,
+          hi = Math.max.apply(null, v.nums) + 2;
+        var range = hi - lo;
+        var sx = function (n) {
+          return pad + ((n - lo) / range) * (W - 2 * pad);
+        };
+        var ticks = "";
+        for (var t = Math.ceil(lo); t <= Math.floor(hi); t++) {
+          var tx = sx(t);
+          ticks +=
+            '<line class="vz-tick" x1="' +
+            tx +
+            '" y1="' +
+            (midY - 4) +
+            '" x2="' +
+            tx +
+            '" y2="' +
+            (midY + 4) +
+            '"/>';
+        }
+        var zx = sx(0);
+        var zero =
+          lo <= 0 && hi >= 0
+            ? '<text class="vz-zero" x="' +
+              zx +
+              '" y="' +
+              (midY + 22) +
+              '">0</text>'
+            : "";
+        var pts = "";
+        v.nums.forEach(function (n) {
+          var px = sx(n),
+            isMin = n === v.min;
+          pts +=
+            '<circle class="vz-dot' +
+            (isMin ? " least" : "") +
+            anim("vz-grow") +
+            '" cx="' +
+            px +
+            '" cy="' +
+            midY +
+            '" r="' +
+            (isMin ? 8 : 6) +
+            '"/>' +
+            '<text class="vz-num" x="' +
+            px +
+            '" y="' +
+            (midY - 12) +
+            '" fill="' +
+            (isMin ? "var(--green)" : "var(--blue)") +
+            '">' +
+            (n < 0 ? "−" + Math.abs(n) : n) +
+            "</text>";
+        });
+        return (
+          '<svg viewBox="0 0 ' +
+          W +
+          " " +
+          H +
+          '" role="img">' +
+          '<line class="vz-axis" x1="' +
+          pad +
+          '" y1="' +
+          midY +
+          '" x2="' +
+          (W - pad) +
+          '" y2="' +
+          midY +
+          '"/>' +
+          ticks +
+          zero +
+          pts +
+          "</svg>"
+        );
+      }
+
+      // Mini coordinate plane with the point plotted and quadrants tinted.
+      function vizQuad(v) {
+        var S = 220,
+          c = S / 2,
+          pad = 18,
+          unit = (c - pad) / 11;
+        var px = c + v.x * unit,
+          py = c - v.y * unit;
+        var quadColors = [
+          ["var(--teal)", c, 0, c, c],
+          ["var(--blue)", 0, 0, c, c],
+          ["var(--gold)", 0, c, c, c],
+          ["var(--coral)", c, c, c, c],
+        ];
+        var active = {
+          "Quadrant I": 0,
+          "Quadrant II": 1,
+          "Quadrant III": 2,
+          "Quadrant IV": 3,
+        }[v.quadrant];
+        var fills = "";
+        quadColors.forEach(function (q, i) {
+          fills +=
+            '<rect class="vz-quad-fill" x="' +
+            q[1] +
+            '" y="' +
+            q[2] +
+            '" width="' +
+            q[3] +
+            '" height="' +
+            q[4] +
+            '" fill="' +
+            q[0] +
+            '" opacity="' +
+            (i === active ? 0.28 : 0.08) +
+            '"/>';
+        });
+        var labelPos = [
+          [c + (c - pad) / 2, pad + 12],
+          [pad + (c - pad) / 2, pad + 12],
+          [pad + (c - pad) / 2, S - pad],
+          [c + (c - pad) / 2, S - pad],
+        ];
+        var romans = ["I", "II", "III", "IV"];
+        var labels = "";
+        labelPos.forEach(function (lp, i) {
+          labels +=
+            '<text class="vz-quad-label" x="' +
+            lp[0] +
+            '" y="' +
+            lp[1] +
+            '"' +
+            (i === active ? ' fill="var(--ink)"' : "") +
+            ">" +
+            romans[i] +
+            "</text>";
+        });
+        return (
+          '<svg viewBox="0 0 ' +
+          S +
+          " " +
+          S +
+          '" role="img" style="max-width:240px;margin:0 auto;">' +
+          fills +
+          labels +
+          '<line class="vz-axis" x1="' +
+          pad +
+          '" y1="' +
+          c +
+          '" x2="' +
+          (S - pad) +
+          '" y2="' +
+          c +
+          '"/>' +
+          '<line class="vz-axis" x1="' +
+          c +
+          '" y1="' +
+          pad +
+          '" x2="' +
+          c +
+          '" y2="' +
+          (S - pad) +
+          '"/>' +
+          '<line class="vz-line" x1="' +
+          px +
+          '" y1="' +
+          c +
+          '" x2="' +
+          px +
+          '" y2="' +
+          py +
+          '" stroke-dasharray="3 3"/>' +
+          '<line class="vz-line" x1="' +
+          c +
+          '" y1="' +
+          py +
+          '" x2="' +
+          px +
+          '" y2="' +
+          py +
+          '" stroke-dasharray="3 3"/>' +
+          '<circle class="vz-pt' +
+          anim("vz-grow") +
+          '" cx="' +
+          px +
+          '" cy="' +
+          py +
+          '" r="6"/>' +
+          "</svg>"
+        );
       }
 
       function startGame() {
@@ -531,16 +981,18 @@
         document.getElementById("modeTag").textContent = state.q.tag;
         document.getElementById("prompt").textContent = state.q.prompt;
         document.getElementById("sub").textContent = state.q.sub;
+        renderViz(state.q.viz);
         document.getElementById("feedback").textContent = "";
         document.getElementById("feedback").className = "feedback";
         document.getElementById("nextBtn").classList.add("hidden");
         var box = document.getElementById("opts");
         box.innerHTML = "";
-        state.q.opts.forEach(function (o) {
+        state.q.opts.forEach(function (o, idx) {
           var b = document.createElement("button");
           b.type = "button";
           b.className = "opt";
           b.textContent = o;
+          b.setAttribute("aria-label", "Choice " + (idx + 1) + ": " + o);
           b.onclick = function () {
             answer(o, b);
           };
@@ -585,6 +1037,12 @@
             state.q.why +
             (state.streak > 1 ? "  🔥 Streak \xD7" + state.streak : "");
           fb.className = "feedback ok";
+          try {
+            if (window.GameFX) {
+              if (state.streak >= 3 && GameFX.celebrate) GameFX.celebrate(btn);
+              else if (GameFX.pop) GameFX.pop(btn);
+            }
+          } catch (e) {}
         } else {
           state.streak = 0;
           state.lives--;
@@ -650,14 +1108,39 @@
         state.i++;
         nextQuestion();
       };
+
+      // Keyboard support: 1–4 select an option, Enter/Space advances to next.
+      document.addEventListener("keydown", function (e) {
+        var playing = !document
+          .getElementById("playScreen")
+          .classList.contains("hidden");
+        if (!playing) return;
+        var nextBtn = document.getElementById("nextBtn");
+        var nextVisible = !nextBtn.classList.contains("hidden");
+        if ((e.key === "Enter" || e.key === " ") && nextVisible) {
+          var tag = (e.target && e.target.tagName) || "";
+          if (tag === "BUTTON") return; // let native button activation handle it
+          e.preventDefault();
+          nextBtn.click();
+          return;
+        }
+        if (!state.locked && /^[1-4]$/.test(e.key)) {
+          var opts = document.querySelectorAll("#opts .opt");
+          var idx = parseInt(e.key, 10) - 1;
+          if (opts[idx]) {
+            e.preventDefault();
+            opts[idx].click();
+          }
+        }
+      });
     </script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

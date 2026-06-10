@@ -240,16 +240,204 @@
         color: var(--muted);
         font-size: 15px;
       }
+
+      /* ---- Bespoke Percent Power visual upgrades (additive polish only) ---- */
+
+      /* Hero: floating $ / % symbol parallax layer (driven by GameFX [data-parallax]). */
+      .ghero {
+        position: relative;
+        overflow: hidden;
+      }
+      .pp-symbols {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .pp-symbols span {
+        position: absolute;
+        font-weight: 900;
+        color: rgba(255, 255, 255, 0.16);
+        font-size: 40px;
+        line-height: 1;
+        user-select: none;
+        animation: ppFloat 6s ease-in-out infinite;
+      }
+      .pp-symbols span:nth-child(1) {
+        left: 6%;
+        top: 18%;
+        font-size: 54px;
+        animation-delay: 0s;
+      }
+      .pp-symbols span:nth-child(2) {
+        left: 22%;
+        top: 60%;
+        font-size: 32px;
+        animation-delay: -1.2s;
+      }
+      .pp-symbols span:nth-child(3) {
+        left: 74%;
+        top: 14%;
+        font-size: 46px;
+        animation-delay: -2.4s;
+      }
+      .pp-symbols span:nth-child(4) {
+        left: 88%;
+        top: 58%;
+        font-size: 36px;
+        animation-delay: -3.6s;
+      }
+      .pp-symbols span:nth-child(5) {
+        left: 50%;
+        top: 72%;
+        font-size: 28px;
+        animation-delay: -4.8s;
+      }
+      .pp-symbols span:nth-child(6) {
+        left: 40%;
+        top: 8%;
+        font-size: 30px;
+        animation-delay: -0.6s;
+      }
+      @keyframes ppFloat {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+      /* Keep hero text/decoration above the symbol field. */
+      .ghero .deco,
+      .ghero h1,
+      .ghero p {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Percent visual scale bar: shows the question's percent in a 0–100% context. */
+      .pp-scale {
+        margin: 4px auto 16px;
+        max-width: 420px;
+        text-align: left;
+      }
+      .pp-scale-cap {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 4px;
+      }
+      .pp-scale-cap .pp-scale-pct {
+        color: var(--teal);
+        font-weight: 900;
+      }
+      .pp-scale-track {
+        position: relative;
+        height: 18px;
+        border-radius: 9px;
+        background: #eef2f5;
+        border: 1px solid var(--line);
+        overflow: hidden;
+      }
+      .pp-scale-fill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 0%;
+        border-radius: 9px 0 0 9px;
+        background: linear-gradient(90deg, var(--teal), var(--gold));
+        transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .pp-scale-ticks {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+      .pp-scale-ticks i {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background: rgba(15, 43, 60, 0.12);
+      }
+      .pp-scale-ticks i:nth-child(1) {
+        left: 25%;
+      }
+      .pp-scale-ticks i:nth-child(2) {
+        left: 50%;
+      }
+      .pp-scale-ticks i:nth-child(3) {
+        left: 75%;
+      }
+
+      /* Coin-drop + confetti particles for a correct sale price (Round 2). */
+      .pp-particle {
+        position: fixed;
+        z-index: 9998;
+        pointer-events: none;
+        will-change: transform, opacity;
+      }
+      .pp-coin {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle at 35% 30%,
+          #ffe07a,
+          var(--gold) 70%
+        );
+        border: 2px solid #b87b1d;
+        font-size: 11px;
+        font-weight: 900;
+        color: #8a5a12;
+        text-align: center;
+        line-height: 16px;
+      }
+      .pp-confetti {
+        width: 9px;
+        height: 14px;
+        border-radius: 2px;
+      }
+
+      /* Slight emphasis when a HUD number counts up. */
+      .hud .val.pp-counting {
+        color: var(--teal);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .pp-symbols span {
+          animation: none !important;
+          transform: none !important;
+        }
+        .pp-scale-fill {
+          transition: none !important;
+        }
+        .pp-particle {
+          display: none !important;
+        }
+      }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
-    <header class="ghero">
+    <header class="ghero" data-parallax>
+      <div class="pp-symbols" data-parallax-layer aria-hidden="true">
+        <span>%</span>
+        <span>$</span>
+        <span>%</span>
+        <span>$</span>
+        <span>%</span>
+        <span>$</span>
+      </div>
       <div class="deco">💯</div>
       <h1>Percent Power</h1>
       <p>
@@ -312,6 +500,16 @@
           <span class="mode-tag" id="modeTag"></span>
           <div class="prompt" id="prompt"></div>
           <p class="sub" id="sub"></p>
+          <div class="pp-scale" id="ppScale" aria-hidden="true">
+            <div class="pp-scale-cap">
+              <span id="ppScaleLabel">Percent</span>
+              <span class="pp-scale-pct" id="ppScalePct">0%</span>
+            </div>
+            <div class="pp-scale-track">
+              <div class="pp-scale-fill" id="ppScaleFill"></div>
+              <div class="pp-scale-ticks"><i></i><i></i><i></i></div>
+            </div>
+          </div>
           <div class="opts" id="opts"></div>
           <div class="feedback" id="feedback"></div>
           <button class="btn hidden" id="nextBtn" type="button">Next ▶</button>
@@ -354,6 +552,132 @@
       var TOTAL = 12,
         TIME = 12;
       var state = {};
+
+      // Honor reduced-motion for all bespoke JS-driven motion. Re-read live so a
+      // mid-session OS change is respected; GameFX exposes the same flag too.
+      function motionReduced() {
+        try {
+          return !!(
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          );
+        } catch (e) {
+          return false;
+        }
+      }
+
+      // Render the percent visual scale bar for the current question (context
+      // only — never affects answers). Hidden when there is no percent to show.
+      function renderScale(q) {
+        var wrap = document.getElementById("ppScale");
+        if (!wrap) return;
+        var pct = q && typeof q.scalePct === "number" ? q.scalePct : null;
+        if (pct === null) {
+          wrap.style.display = "none";
+          return;
+        }
+        wrap.style.display = "";
+        var clamped = Math.max(0, Math.min(100, pct));
+        document.getElementById("ppScaleLabel").textContent =
+          q.scaleLabel || "Percent";
+        document.getElementById("ppScalePct").textContent = pct + "%";
+        var fill = document.getElementById("ppScaleFill");
+        if (motionReduced()) {
+          fill.style.width = clamped + "%";
+        } else {
+          // Animate from 0 so the bar visibly "fills up" to the percent.
+          fill.style.width = "0%";
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              fill.style.width = clamped + "%";
+            });
+          });
+        }
+      }
+
+      // Count a HUD number up to its new value with requestAnimationFrame.
+      function animateCount(el, from, to) {
+        if (!el) return;
+        if (motionReduced() || from === to) {
+          el.textContent = to;
+          return;
+        }
+        if (el._ppRaf) cancelAnimationFrame(el._ppRaf);
+        var start = null,
+          dur = 420;
+        el.classList.add("pp-counting");
+        function step(ts) {
+          if (start === null) start = ts;
+          var p = Math.min(1, (ts - start) / dur);
+          var eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.round(from + (to - from) * eased);
+          if (p < 1) {
+            el._ppRaf = requestAnimationFrame(step);
+          } else {
+            el.textContent = to;
+            el._ppRaf = null;
+            el.classList.remove("pp-counting");
+          }
+        }
+        el._ppRaf = requestAnimationFrame(step);
+      }
+
+      // Coin-drop + confetti burst near an element, themed for a correct sale
+      // price (Round 2). Purely cosmetic; capped and reduced-motion gated.
+      function coinDrop(anchor) {
+        if (motionReduced() || !anchor || !anchor.getBoundingClientRect) return;
+        var r = anchor.getBoundingClientRect();
+        var cx = r.left + r.width / 2;
+        var topY = r.top;
+        var COIN_COLORS = ["#1aa179", "#f0a400", "#3b7dd8", "#e0542f"];
+        var TOTAL_P = 10; // capped particle count for Chromebook smoothness
+        for (var i = 0; i < TOTAL_P; i++) {
+          var coin = i < 5;
+          var p = document.createElement("div");
+          p.className = "pp-particle " + (coin ? "pp-coin" : "pp-confetti");
+          if (coin) {
+            p.textContent = "$";
+          } else {
+            p.style.background = COIN_COLORS[i % COIN_COLORS.length];
+          }
+          var startX = cx + (Math.random() * 80 - 40);
+          p.style.left = startX + "px";
+          p.style.top = topY + "px";
+          document.body.appendChild(p);
+          var driftX = Math.random() * 70 - 35;
+          var fallY = 90 + Math.random() * 80;
+          var rot = Math.random() * 540 - 270 + "deg";
+          try {
+            var anim = p.animate(
+              [
+                { transform: "translate(-50%,-50%) rotate(0deg)", opacity: 1 },
+                {
+                  transform:
+                    "translate(calc(-50% + " +
+                    driftX +
+                    "px), calc(-50% + " +
+                    fallY +
+                    "px)) rotate(" +
+                    rot +
+                    ")",
+                  opacity: 0,
+                },
+              ],
+              {
+                duration: 700 + Math.random() * 300,
+                easing: "cubic-bezier(.3,.6,.4,1)",
+              },
+            );
+            anim.onfinish = (function (node) {
+              return function () {
+                if (node.parentNode) node.parentNode.removeChild(node);
+              };
+            })(p);
+          } catch (e) {
+            if (p.parentNode) p.parentNode.removeChild(p);
+          }
+        }
+      }
 
       // Round 1 question bank: percent of a number — all give whole answers
       var R1_BANK = [
@@ -498,6 +822,8 @@
             opts: shuffle(opts),
             correct: String(correct),
             why: entry.pct + "% of " + entry.base + " = " + correct + ".",
+            scalePct: entry.pct,
+            scaleLabel: "How much of the whole?",
           };
         }
 
@@ -546,6 +872,9 @@
               " = $" +
               correct2 +
               ".",
+            scalePct: entry2.disc,
+            scaleLabel: "Discount taken off",
+            isSale: true,
           };
         }
 
@@ -553,6 +882,9 @@
         var ri3 = i - 8;
         var entry3 = R3_BANK[r3idx[ri3]];
         var opts3 = shuffle([entry3.correct].concat(entry3.wrong));
+        // Show the scale bar only when the prompt starts with a whole percent
+        // (e.g. "50% as a decimal = ?"); decimal→percent prompts hide it.
+        var pctMatch = /^(\d+(?:\.\d+)?)%/.exec(entry3.prompt);
         return {
           tag: "Percent ↔ Decimal",
           prompt: entry3.prompt,
@@ -560,12 +892,18 @@
           opts: opts3,
           correct: entry3.correct,
           why: entry3.prompt.replace(" = ?", "") + " = " + entry3.correct + ".",
+          scalePct: pctMatch ? parseFloat(pctMatch[1]) : null,
+          scaleLabel: "Percent on the 0–100 scale",
         };
       }
 
       function startGame() {
         prepBanks();
         state = { i: 0, score: 0, streak: 0, lives: 3, locked: false };
+        // Reset the HUD display so a replay's counters animate up from zero.
+        document.getElementById("score").textContent = "0";
+        document.getElementById("streak").textContent = "0";
+        document.getElementById("lives").textContent = "❤❤❤";
         document.getElementById("startScreen").classList.add("hidden");
         document.getElementById("resultScreen").classList.add("hidden");
         document.getElementById("playScreen").classList.remove("hidden");
@@ -581,6 +919,7 @@
         document.getElementById("modeTag").textContent = state.q.tag;
         document.getElementById("prompt").textContent = state.q.prompt;
         document.getElementById("sub").textContent = state.q.sub;
+        renderScale(state.q);
         document.getElementById("feedback").textContent = "";
         document.getElementById("feedback").className = "feedback";
         document.getElementById("nextBtn").classList.add("hidden");
@@ -635,6 +974,10 @@
             state.q.why +
             (state.streak > 1 ? "  🔥 Streak ×" + state.streak : "");
           fb.className = "feedback ok";
+          // Sale-price wins get a coin-drop + confetti celebration (Round 2);
+          // the generic success spark-burst is already handled by GameFX via
+          // the `.right` class on the chosen option.
+          if (state.q.isSale && btn) coinDrop(btn);
         } else {
           state.streak = 0;
           state.lives--;
@@ -661,8 +1004,25 @@
         document.getElementById("nextBtn").classList.remove("hidden");
       }
       function updateHud() {
-        document.getElementById("score").textContent = state.score;
-        document.getElementById("streak").textContent = state.streak;
+        // Count the score/streak HUD numbers up to their new values. The final
+        // textContent always equals the true state value (no scoring change).
+        var scoreEl = document.getElementById("score");
+        var streakEl = document.getElementById("streak");
+        animateCount(
+          scoreEl,
+          parseInt(scoreEl.textContent, 10) || 0,
+          state.score,
+        );
+        animateCount(
+          streakEl,
+          parseInt(streakEl.textContent, 10) || 0,
+          state.streak,
+        );
+        if (window.GameFX && GameFX.pop) {
+          try {
+            GameFX.pop(scoreEl);
+          } catch (e) {}
+        }
         document.getElementById("lives").textContent =
           state.lives > 0 ? "❤".repeat(state.lives) : "—";
       }
@@ -704,10 +1064,10 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

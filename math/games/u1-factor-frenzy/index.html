@@ -43,9 +43,51 @@
         color: #fff;
         text-align: center;
         padding: 30px 20px 26px;
+        position: relative;
+        overflow: hidden;
+      }
+      /* Bespoke: drifting factor-grid backdrop behind the hero (parallax layer). */
+      .ghero .ff-grid {
+        position: absolute;
+        inset: -20% -20% -20% -20%;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.16;
+        background-image:
+          repeating-linear-gradient(
+            0deg,
+            rgba(255, 255, 255, 0.5) 0,
+            rgba(255, 255, 255, 0.5) 1px,
+            transparent 1px,
+            transparent 38px
+          ),
+          repeating-linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.5) 0,
+            rgba(255, 255, 255, 0.5) 1px,
+            transparent 1px,
+            transparent 38px
+          );
+        animation: ff-grid-drift 18s linear infinite;
+      }
+      @keyframes ff-grid-drift {
+        to {
+          transform: translate(38px, 38px);
+        }
+      }
+      .ghero > * {
+        position: relative;
+        z-index: 1;
       }
       .ghero .deco {
         font-size: 48px;
+        display: inline-block;
+        animation: ff-deco-bob 3.2s ease-in-out infinite;
+      }
+      @keyframes ff-deco-bob {
+        50% {
+          transform: translateY(-6px) rotate(-4deg);
+        }
       }
       .ghero h1 {
         margin: 8px 0 6px;
@@ -156,7 +198,15 @@
         border-color: var(--coral);
         background: #fdeee9;
         color: var(--coral);
-        animation: shake 0.3s;
+        animation: shake 0.4s;
+      }
+      /* Bespoke: dim the un-chosen wrong options once an answer is locked. */
+      .opts.answered .opt:not(.right):not(.wrong) {
+        opacity: 0.5;
+      }
+      /* Bespoke: the correct option keeps a gentle highlight glow. */
+      .opt.right {
+        box-shadow: 0 0 0 3px rgba(45, 135, 75, 0.25);
       }
       @keyframes pop {
         50% {
@@ -164,11 +214,37 @@
         }
       }
       @keyframes shake {
-        25% {
-          transform: translateX(-6px);
+        10%,
+        90% {
+          transform: translateX(-5px);
         }
-        75% {
+        30%,
+        70% {
           transform: translateX(6px);
+        }
+        50% {
+          transform: translateX(-7px);
+        }
+      }
+      /* Bespoke: brief red flash on the question card for a wrong/timeout answer. */
+      .card.ff-miss {
+        animation: ff-miss-flash 0.45s ease-out;
+      }
+      @keyframes ff-miss-flash {
+        0% {
+          box-shadow:
+            0 6px 22px rgba(15, 43, 60, 0.08),
+            0 0 0 0 rgba(196, 90, 60, 0.55);
+        }
+        40% {
+          box-shadow:
+            0 6px 22px rgba(15, 43, 60, 0.08),
+            0 0 0 6px rgba(196, 90, 60, 0.35);
+        }
+        100% {
+          box-shadow:
+            0 6px 22px rgba(15, 43, 60, 0.08),
+            0 0 0 0 rgba(196, 90, 60, 0);
         }
       }
       .feedback {
@@ -213,7 +289,25 @@
         height: 100%;
         width: 100%;
         background: linear-gradient(90deg, var(--gold), var(--coral));
-        transition: width 0.25s linear;
+        transition:
+          width 0.15s linear,
+          background-color 0.4s linear;
+      }
+      /* Bespoke: dynamic timer color gradient — calm → warning → danger. */
+      #timebar.ff-calm {
+        background: linear-gradient(90deg, #2d874b, #0e8a7d);
+      }
+      #timebar.ff-warn {
+        background: linear-gradient(90deg, var(--gold), #e0a93f);
+      }
+      #timebar.ff-danger {
+        background: linear-gradient(90deg, var(--coral), #e0533a);
+        animation: ff-bar-pulse 0.6s ease-in-out infinite;
+      }
+      @keyframes ff-bar-pulse {
+        50% {
+          filter: brightness(1.25);
+        }
       }
       .hidden {
         display: none;
@@ -241,6 +335,63 @@
         font-size: 15px;
       }
 
+      /* Bespoke: factor/multiple visual hint — animated dot rows under the prompt
+         so students SEE why a number is prime/composite or how multiples line up.
+         Purely illustrative; does not change the answer or scoring. */
+      .ff-hint {
+        margin: 4px auto 14px;
+        max-width: 460px;
+        min-height: 0;
+      }
+      .ff-hint .ff-row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px;
+        margin: 4px 0;
+      }
+      .ff-hint .ff-row-label {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 2px;
+      }
+      .ff-dot {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--blue);
+        opacity: 0;
+        transform: scale(0.4);
+        animation: ff-dot-in 0.32s ease-out forwards;
+      }
+      .ff-dot.teal {
+        background: var(--teal);
+      }
+      .ff-dot.gold {
+        background: var(--gold);
+      }
+      /* Shared multiple (where two multiple-rows meet) gets a ring. */
+      .ff-dot.shared {
+        box-shadow: 0 0 0 3px rgba(212, 149, 42, 0.45);
+      }
+      @keyframes ff-dot-in {
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      /* Bespoke: visible focus rings on every interactive control (complements
+         the FX kit's :focus-visible; this guarantees a ring even on older paths). */
+      .btn:focus-visible,
+      .opt:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+
       @media (prefers-reduced-motion: reduce) {
         html {
           scroll-behavior: auto;
@@ -252,17 +403,29 @@
           animation-iteration-count: 1 !important;
           transition-duration: 0.001ms !important;
         }
+        /* Kill ambient/looping bespoke motion entirely; keep final states. */
+        .ghero .ff-grid,
+        .ghero .deco,
+        #timebar.ff-danger {
+          animation: none !important;
+        }
+        .ff-dot {
+          opacity: 1 !important;
+          transform: none !important;
+          animation: none !important;
+        }
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
-    <header class="ghero">
+    <header class="ghero" data-parallax>
+      <div class="ff-grid" data-parallax-layer aria-hidden="true"></div>
       <div class="deco">🧮</div>
       <h1>Factor Frenzy</h1>
       <p>
@@ -319,6 +482,7 @@
           <span class="mode-tag" id="modeTag"></span>
           <div class="prompt" id="prompt"></div>
           <p class="sub" id="sub"></p>
+          <div class="ff-hint" id="hint" aria-hidden="true"></div>
           <div class="opts" id="opts"></div>
           <div class="feedback" id="feedback"></div>
           <button class="btn hidden" id="nextBtn" type="button">Next ▶</button>
@@ -378,6 +542,91 @@
         TIME = 9; // seconds per question
       var state = {};
 
+      // --- Bespoke visual polish helpers (additive; no gameplay impact) ---
+      var reduceMotion = false;
+      try {
+        var _mm = window.matchMedia("(prefers-reduced-motion: reduce)");
+        reduceMotion = _mm.matches;
+        if (_mm.addEventListener) {
+          _mm.addEventListener("change", function (e) {
+            reduceMotion = e.matches;
+          });
+        }
+      } catch (e) {}
+
+      // Build a small dot for the factor/multiple hint.
+      function makeDot(cls, delay) {
+        var d = document.createElement("span");
+        d.className = "ff-dot" + (cls ? " " + cls : "");
+        if (!reduceMotion && delay) d.style.animationDelay = delay + "ms";
+        return d;
+      }
+      function labeledRow(label, cells) {
+        var wrap = document.createElement("div");
+        var lab = document.createElement("div");
+        lab.className = "ff-row-label";
+        lab.textContent = label;
+        wrap.appendChild(lab);
+        var row = document.createElement("div");
+        row.className = "ff-row";
+        cells.forEach(function (c) {
+          row.appendChild(c);
+        });
+        wrap.appendChild(row);
+        return wrap;
+      }
+
+      // Render a question-specific visual hint. Derived purely from the same
+      // numbers used to generate the question; never alters answer/scoring.
+      function renderHint(hint) {
+        var host = document.getElementById("hint");
+        host.innerHTML = "";
+        if (!hint) return;
+        var step = 28; // staggered reveal (ms); ignored under reduced motion
+        if (hint.kind === "factors") {
+          // Show n as a single row of dots so students can mentally try to
+          // arrange them into equal groups (composite) vs. only 1×n (prime).
+          var n = hint.n;
+          var cap = Math.min(n, 24); // cap rendered dots for performance/layout
+          var cells = [];
+          for (var k = 0; k < cap; k++) {
+            cells.push(makeDot("teal", k * step));
+          }
+          host.appendChild(labeledRow("Counting " + n, cells));
+        } else if (hint.kind === "gcf") {
+          // Two rows: dots for a and b; shared factors highlighted by ringing
+          // the first g dots in each (the common group size).
+          host.appendChild(factorRow("blue", hint.a, hint.g, step));
+          host.appendChild(factorRow("gold", hint.b, hint.g, step));
+        } else if (hint.kind === "lcm") {
+          // Skip-count rows for a and b up to the LCM; the meeting point rings.
+          host.appendChild(multipleRow("teal", hint.a, hint.l, step));
+          host.appendChild(multipleRow("gold", hint.b, hint.l, step));
+        }
+      }
+      function factorRow(color, num, shared, step) {
+        var cap = Math.min(num, 24);
+        var cells = [];
+        for (var k = 0; k < cap; k++) {
+          var isShared = k < shared;
+          cells.push(makeDot(color + (isShared ? " shared" : ""), k * step));
+        }
+        return labeledRow(num + " (shares " + shared + ")", cells);
+      }
+      function multipleRow(color, base, target, step) {
+        // Dots at each multiple of base up to target; the LCM dot rings.
+        var cells = [];
+        var count = Math.min(Math.floor(target / base), 12);
+        for (var k = 1; k <= count; k++) {
+          var v = base * k;
+          var isMeet = v === target;
+          cells.push(
+            makeDot(color + (isMeet ? " shared" : ""), (k - 1) * step),
+          );
+        }
+        return labeledRow("Multiples of " + base, cells);
+      }
+
       function buildQuestion(i) {
         var round = i < 4 ? 1 : i < 8 ? 2 : 3;
         if (round === 1) {
@@ -397,6 +646,7 @@
             why: prime
               ? n + " is prime — its only factors are 1 and " + n + "."
               : n + " is composite — it has more than two factors.",
+            hint: { kind: "factors", n: n },
           };
         }
         if (round === 2) {
@@ -417,6 +667,7 @@
             opts: shuffle(Array.from(opts)).map(String),
             correct: String(g),
             why: "GCF(" + a + ", " + b + ") = " + g + ".",
+            hint: { kind: "gcf", a: a, b: b, g: g },
           };
         }
         // round 3 LCM
@@ -444,6 +695,7 @@
           opts: arr.map(String),
           correct: String(l),
           why: "LCM(" + a2 + ", " + b2 + ") = " + l + ".",
+          hint: { kind: "lcm", a: a2, b: b2, l: l },
         };
       }
 
@@ -468,7 +720,11 @@
         document.getElementById("feedback").textContent = "";
         document.getElementById("feedback").className = "feedback";
         document.getElementById("nextBtn").classList.add("hidden");
+        var playCard = document.querySelector("#playScreen .card");
+        if (playCard) playCard.classList.remove("ff-miss");
+        renderHint(state.q.hint);
         var box = document.getElementById("opts");
+        box.classList.remove("answered");
         box.innerHTML = "";
         state.q.opts.forEach(function (o) {
           var b = document.createElement("button");
@@ -483,14 +739,27 @@
         startTimer();
       }
 
+      function setBarState(bar, frac) {
+        // Dynamic timer color gradient: calm > warn > danger as time drains.
+        var cls =
+          frac > 0.5 ? "ff-calm" : frac > 0.25 ? "ff-warn" : "ff-danger";
+        if (bar.dataset.ffState !== cls) {
+          bar.classList.remove("ff-calm", "ff-warn", "ff-danger");
+          bar.classList.add(cls);
+          bar.dataset.ffState = cls;
+        }
+      }
       function startTimer() {
         var t = TIME,
           bar = document.getElementById("timebar");
         bar.style.width = "100%";
+        setBarState(bar, 1);
         clearInterval(state.timer);
         state.timer = setInterval(function () {
           t -= 0.1;
-          bar.style.width = Math.max(0, (t / TIME) * 100) + "%";
+          var frac = Math.max(0, t / TIME);
+          bar.style.width = frac * 100 + "%";
+          setBarState(bar, frac);
           if (t <= 0) {
             clearInterval(state.timer);
             if (!state.locked) {
@@ -506,6 +775,7 @@
         clearInterval(state.timer);
         var fb = document.getElementById("feedback");
         var correct = choice === state.q.correct;
+        document.getElementById("opts").classList.add("answered");
         Array.prototype.forEach.call(
           document.querySelectorAll(".opt"),
           function (b) {
@@ -522,20 +792,52 @@
             state.q.why +
             (state.streak > 1 ? "  🔥 Streak ×" + state.streak : "");
           fb.className = "feedback ok";
+          // Streak milestone (3+): bigger celebration than the auto spark-burst.
+          if (state.streak >= 3) celebrateStreak();
         } else {
           state.streak = 0;
           state.lives--;
           fb.textContent = "✗ " + state.q.why + "  (−1 ❤)";
           fb.className = "feedback no";
+          flagMiss();
         }
         updateHud();
         document.getElementById("nextBtn").classList.remove("hidden");
+      }
+
+      // Secondary feedback for a wrong answer / timeout: red card flash + a
+      // brief HUD pop on Lives so the deduction reads clearly.
+      function flagMiss() {
+        var playCard = document.querySelector("#playScreen .card");
+        if (playCard && !reduceMotion) {
+          playCard.classList.remove("ff-miss");
+          // reflow to restart the animation reliably
+          void playCard.offsetWidth;
+          playCard.classList.add("ff-miss");
+        }
+        try {
+          if (window.GameFX && GameFX.pop) {
+            GameFX.pop(document.getElementById("lives"));
+          }
+        } catch (e) {}
+      }
+
+      // Streak milestone celebration via the shared FX kit.
+      function celebrateStreak() {
+        try {
+          if (window.GameFX) {
+            var streakEl = document.getElementById("streak");
+            if (GameFX.celebrate) GameFX.celebrate(streakEl);
+            else if (GameFX.pop) GameFX.pop(streakEl);
+          }
+        } catch (e) {}
       }
 
       function timeUp() {
         state.locked = true;
         state.streak = 0;
         state.lives--;
+        document.getElementById("opts").classList.add("answered");
         Array.prototype.forEach.call(
           document.querySelectorAll(".opt"),
           function (b) {
@@ -545,6 +847,7 @@
         var fb = document.getElementById("feedback");
         fb.textContent = "⏰ Time! " + state.q.why + "  (−1 ❤)";
         fb.className = "feedback no";
+        flagMiss();
         updateHud();
         document.getElementById("nextBtn").classList.remove("hidden");
       }
@@ -597,10 +900,10 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

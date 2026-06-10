@@ -18,6 +18,82 @@
         background: #020617;
         font-family: "Segoe UI", system-ui, sans-serif;
       }
+
+      /* On-screen navigation pad (mobile / touch). Hidden by default; shown
+         only when JS detects a touch/coarse-pointer device. Fixed to the
+         bottom so it never overlaps the Phaser-scaled canvas content area. */
+      #nav-pad {
+        position: fixed;
+        bottom: max(12px, env(safe-area-inset-bottom));
+        left: 0;
+        right: 0;
+        z-index: 30;
+        display: none;
+        justify-content: center;
+        gap: 14px;
+        pointer-events: none;
+      }
+      #nav-pad.show {
+        display: flex;
+      }
+      #nav-pad button {
+        pointer-events: auto;
+        width: 62px;
+        height: 62px;
+        border-radius: 16px;
+        border: 2px solid #7c3aed;
+        background: rgba(15, 23, 42, 0.92);
+        color: #e2e8f0;
+        font-size: 26px;
+        font-weight: 700;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+        transition:
+          transform 0.08s ease,
+          background 0.12s ease;
+      }
+      #nav-pad button.select {
+        width: 96px;
+        border-color: #22d3ee;
+        color: #22d3ee;
+        font-size: 18px;
+      }
+      #nav-pad button:active {
+        transform: scale(0.92);
+        background: rgba(30, 41, 59, 0.98);
+      }
+      /* High-contrast keyboard focus ring (mirrors the shared GameFX kit). */
+      #nav-pad button:focus-visible {
+        outline: 3px solid #fbbf24;
+        outline-offset: 3px;
+      }
+      /* Visually hidden live region for screen-reader announcements of the
+         current question and answer choices (canvas content is invisible to AT). */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #nav-pad button {
+          transition: none;
+        }
+        #nav-pad button:active {
+          transform: none;
+        }
+      }
     </style>
     <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
     <script>
@@ -37,13 +113,39 @@
       });
     </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
+    <!-- Screen-reader live region: announces the current question + answer
+         choices (the Phaser canvas itself is not accessible to AT). -->
+    <div
+      id="sr-live"
+      class="sr-only"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+    <!-- On-screen navigation pad for touch devices. Drives the SAME answer-
+         selection logic as the keyboard (previous / next / select). -->
+    <div id="nav-pad" role="group" aria-label="Answer navigation controls">
+      <button type="button" id="nav-prev" aria-label="Previous answer choice">
+        &#9650;
+      </button>
+      <button
+        type="button"
+        id="nav-select"
+        class="select"
+        aria-label="Select highlighted answer"
+      >
+        Select
+      </button>
+      <button type="button" id="nav-next" aria-label="Next answer choice">
+        &#9660;
+      </button>
+    </div>
     <script>
       // Coordinate Quest — Space Navigation
       // Grade 6: 6.NS.5–6.NS.8 (Coordinate plane, integers, absolute value)
@@ -52,6 +154,41 @@
       const W = 1024,
         H = 768;
       const LS_KEY = "coordquest_highscore";
+
+      // --- REDUCED MOTION (accessibility) ---
+      // Single source of truth: respects the OS "reduce motion" setting and the
+      // shared GameFX kit's reduced-motion gate. Used to disable screenshakes,
+      // ship pulse, waypoint pulse, and parallax drift. Updates live if the user
+      // toggles the setting mid-session.
+      const RM_QUERY =
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)");
+      const RM = { reduced: !!(RM_QUERY && RM_QUERY.matches) };
+      if (RM_QUERY) {
+        const _onRM = (e) => {
+          RM.reduced = e.matches;
+        };
+        if (RM_QUERY.addEventListener)
+          RM_QUERY.addEventListener("change", _onRM);
+        else if (RM_QUERY.addListener) RM_QUERY.addListener(_onRM);
+      }
+      function reducedMotion() {
+        return RM.reduced;
+      }
+
+      // --- Screen-reader announcement helper ---
+      // Pushes text into the polite live region so assistive tech can follow
+      // the game (the Phaser canvas is opaque to AT). Purely additive; never
+      // touches game state.
+      function announce(msg) {
+        const el = document.getElementById("sr-live");
+        if (!el) return;
+        // Toggle to guarantee re-announcement of identical strings.
+        el.textContent = "";
+        window.requestAnimationFrame(() => {
+          el.textContent = msg;
+        });
+      }
 
       // --- SFX ---
       class SFX {
@@ -349,23 +486,63 @@
       }
 
       // --- STARS BACKGROUND ---
+      // Depth-parallax starfield: stars are sorted into 3 depth layers that
+      // scroll downward at different speeds (near = fast, far = slow), creating
+      // a sense of forward flight. Scrolling is gated by reduced-motion.
       function createStarfield(scene) {
-        for (let i = 0; i < 120; i++) {
-          const x = Phaser.Math.Between(0, W),
-            y = Phaser.Math.Between(0, H);
-          const s = Math.random() * 2 + 0.5;
-          const star = scene.add
-            .circle(x, y, s, 0xffffff, Math.random() * 0.5 + 0.3)
-            .setDepth(0);
-          scene.tweens.add({
-            targets: star,
-            alpha: Math.random() * 0.3 + 0.1,
-            duration: Phaser.Math.Between(1000, 3000),
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut",
-          });
-        }
+        const layers = [
+          { speed: 14, radius: [1.4, 2.2], alpha: [0.5, 0.85], count: 32 },
+          { speed: 8, radius: [0.9, 1.5], alpha: [0.35, 0.6], count: 44 },
+          { speed: 4, radius: [0.5, 1.0], alpha: [0.2, 0.45], count: 44 },
+        ];
+        const stars = [];
+        layers.forEach((layer) => {
+          for (let i = 0; i < layer.count; i++) {
+            const x = Phaser.Math.Between(0, W),
+              y = Phaser.Math.Between(0, H);
+            const s = Phaser.Math.FloatBetween(
+              layer.radius[0],
+              layer.radius[1],
+            );
+            const a = Phaser.Math.FloatBetween(layer.alpha[0], layer.alpha[1]);
+            const star = scene.add.circle(x, y, s, 0xffffff, a).setDepth(0);
+            star._driftSpeed = layer.speed;
+            stars.push(star);
+            // Twinkle still uses tweens (gentle alpha pulse). Harmless under
+            // reduced motion but kept subtle.
+            if (!reducedMotion()) {
+              scene.tweens.add({
+                targets: star,
+                alpha: a * Phaser.Math.FloatBetween(0.4, 0.7),
+                duration: Phaser.Math.Between(1000, 3000),
+                yoyo: true,
+                repeat: -1,
+                ease: "Sine.easeInOut",
+              });
+            }
+          }
+        });
+
+        // Per-frame downward scroll with wrap-around. Uses delta time so it is
+        // frame-rate independent and smooth on a Chromebook. Disabled entirely
+        // when the user prefers reduced motion.
+        const onUpdate = (_time, deltaMs) => {
+          if (reducedMotion()) return;
+          const dt = deltaMs / 1000;
+          for (let i = 0; i < stars.length; i++) {
+            const st = stars[i];
+            st.y += st._driftSpeed * dt;
+            if (st.y > H + 4) {
+              st.y = -4;
+              st.x = Phaser.Math.Between(0, W);
+            }
+          }
+        };
+        scene.events.on("update", onUpdate);
+        scene.events.once("shutdown", () =>
+          scene.events.off("update", onUpdate),
+        );
+
         // Nebula patches
         for (let i = 0; i < 3; i++) {
           const nx = Phaser.Math.Between(100, W - 100),
@@ -695,6 +872,62 @@
           this.buildPowerUpButtons();
           this.loadQuestion();
           this.input.keyboard.on("keydown", this.handleKey, this);
+
+          // Expose this scene to the on-screen nav pad (touch controls). The
+          // pad calls navStep()/navSelect() which reuse the exact keyboard
+          // logic — no separate answer-checking path. Cleared on shutdown.
+          window.__cqActiveGame = this;
+          if (window.__cqNavPad) window.__cqNavPad.show();
+          this.events.once("shutdown", () => {
+            if (window.__cqActiveGame === this) window.__cqActiveGame = null;
+            if (window.__cqNavPad) window.__cqNavPad.hide();
+          });
+        }
+
+        // --- On-screen nav pad bridge (reuses keyboard navigation logic) ---
+        navStep(dir) {
+          if (this.answered || !this.answerBtns) return;
+          if (dir > 0) {
+            do {
+              this.selectedIdx = Math.min(
+                this.selectedIdx + 1,
+                this.answerBtns.length - 1,
+              );
+            } while (
+              this.answerBtns[this.selectedIdx].eliminated &&
+              this.selectedIdx < this.answerBtns.length - 1
+            );
+            if (this.selectedIdx < 0) this.selectedIdx = 0;
+          } else {
+            do {
+              this.selectedIdx = Math.max(this.selectedIdx - 1, 0);
+            } while (
+              this.answerBtns[this.selectedIdx].eliminated &&
+              this.selectedIdx > 0
+            );
+          }
+          this.highlightSel();
+          this.announceSelection();
+        }
+
+        navSelect() {
+          if (this.answered || !this.answerBtns) return;
+          if (this.selectedIdx < 0) {
+            // Nothing highlighted yet: highlight the first available choice.
+            this.navStep(1);
+            return;
+          }
+          if (!this.answerBtns[this.selectedIdx].eliminated)
+            this.submitAnswer(this.selectedIdx);
+        }
+
+        announceSelection() {
+          if (this.selectedIdx < 0 || !this.answerBtns) return;
+          const b = this.answerBtns[this.selectedIdx];
+          if (b)
+            announce(
+              `Choice ${this.selectedIdx + 1}: ${b.optText}. Press select to answer.`,
+            );
         }
 
         buildGrid() {
@@ -717,6 +950,43 @@
             )
             .setStrokeStyle(1, 0x1e293b)
             .setDepth(1);
+
+          // Animated quadrant backgrounds: subtle per-quadrant shading (QI–QIV)
+          // tinted to match each quadrant's label color. Sits above the grid
+          // panel (depth 1) but below the grid lines (depth 2) so the axes stay
+          // crisp. A gentle, staggered alpha pulse breathes life into each
+          // quadrant; the pulse is disabled under reduced motion (static tint).
+          const half = gr * gs;
+          const quadTints = [
+            { dx: 1, dy: -1, color: 0x22c55e }, // QI  (+x, +y) → green
+            { dx: -1, dy: -1, color: 0x3b82f6 }, // QII (−x, +y) → blue
+            { dx: -1, dy: 1, color: 0xf59e0b }, // QIII(−x, −y) → amber
+            { dx: 1, dy: 1, color: 0xef4444 }, // QIV (+x, −y) → red
+          ];
+          quadTints.forEach((q, i) => {
+            const baseAlpha = 0.045;
+            const shade = this.add
+              .rectangle(
+                gx + (q.dx * half) / 2,
+                gy + (q.dy * half) / 2,
+                half,
+                half,
+                q.color,
+                baseAlpha,
+              )
+              .setDepth(1.5);
+            if (!reducedMotion()) {
+              this.tweens.add({
+                targets: shade,
+                alpha: baseAlpha + 0.05,
+                duration: 2000 + i * 350,
+                yoyo: true,
+                repeat: -1,
+                ease: "Sine.easeInOut",
+              });
+            }
+          });
+
           for (let i = -gr; i <= gr; i++) {
             const alpha = i === 0 ? 0.6 : 0.15;
             const color = i === 0 ? 0x64748b : 0x334155;
@@ -818,13 +1088,19 @@
             .setText(`(${coord.x},${coord.y})`)
             .setPosition(px + 10, py - 12);
           if (this.wpTween) this.wpTween.remove();
-          this.wpTween = this.tweens.add({
-            targets: this.waypoint,
-            alpha: 0.4,
-            duration: 600,
-            yoyo: true,
-            repeat: -1,
-          });
+          // Waypoint pulse — skipped under reduced motion (waypoint stays at
+          // full opacity so it's still clearly visible).
+          if (!reducedMotion()) {
+            this.wpTween = this.tweens.add({
+              targets: this.waypoint,
+              alpha: 0.4,
+              duration: 600,
+              yoyo: true,
+              repeat: -1,
+            });
+          } else {
+            this.waypoint.setAlpha(1);
+          }
         }
 
         moveShipToGrid(coord) {
@@ -1044,10 +1320,20 @@
             );
             if (this.powerUps.doublePoints <= 0) this.pu2bg.setAlpha(0.4);
             this.showFloatingText(540, H - 50, "DOUBLE POINTS!", "#fbbf24", 18);
-            // Glow effect
-            this.cameras.main.flash(200, 251, 191, 36, false, (_, progress) => {
-              if (progress >= 1) this.doublePointsActive = true;
-            });
+            // Glow effect — purely cosmetic (doublePointsActive is already set
+            // above); skipped under reduced motion.
+            if (!reducedMotion()) {
+              this.cameras.main.flash(
+                200,
+                251,
+                191,
+                36,
+                false,
+                (_, progress) => {
+                  if (progress >= 1) this.doublePointsActive = true;
+                },
+              );
+            }
           }
         }
 
@@ -1136,6 +1422,14 @@
           }
           this.answered = false;
           this.selectedIdx = -1;
+          // Clear any lingering focus ring from the previous question.
+          if (this.focusRing) {
+            if (this.focusRingTween) {
+              this.focusRingTween.remove();
+              this.focusRingTween = null;
+            }
+            this.focusRing.clear();
+          }
           this.questionStartTime = Date.now();
           const q = this.questions[this.qIndex];
 
@@ -1315,6 +1609,13 @@
             .setDepth(8);
           this.qGroup.add(this.hintObj);
 
+          // Announce the question + choices for screen-reader users.
+          announce(
+            `Mission ${this.qIndex + 1} of ${this.totalQ}. ${q.text} ` +
+              q.options.map((o, i) => `Choice ${i + 1}: ${o}.`).join(" ") +
+              " Use the navigation buttons or number keys to answer.",
+          );
+
           // Reset double points indicator
           if (!this.doublePointsActive) {
             // nothing to reset
@@ -1411,7 +1712,7 @@
               );
               sfx.streakMilestone(3);
               sfx.crowdCheer(7);
-              this.cameras.main.flash(300, 100, 50, 200);
+              if (!reducedMotion()) this.cameras.main.flash(300, 100, 50, 200);
             }
 
             let fbText = "WAYPOINT REACHED! +" + pts;
@@ -1444,21 +1745,25 @@
               .setDepth(8);
             spark.explode(particleCount);
 
-            // Screen shake scales with streak
-            const shakeIntensity = 0.003 + this.streak * 0.001;
-            this.cameras.main.shake(
-              100 + this.streak * 20,
-              Math.min(shakeIntensity, 0.015),
-            );
+            // Screen shake scales with streak — disabled under reduced motion.
+            if (!reducedMotion()) {
+              const shakeIntensity = 0.003 + this.streak * 0.001;
+              this.cameras.main.shake(
+                100 + this.streak * 20,
+                Math.min(shakeIntensity, 0.015),
+              );
+            }
 
-            // Ship pulse
-            this.tweens.add({
-              targets: this.ship,
-              scaleX: 1.15,
-              scaleY: 1.15,
-              duration: 150,
-              yoyo: true,
-            });
+            // Ship pulse — disabled under reduced motion.
+            if (!reducedMotion()) {
+              this.tweens.add({
+                targets: this.ship,
+                scaleX: 1.15,
+                scaleY: 1.15,
+                duration: 150,
+                yoyo: true,
+              });
+            }
 
             // Update streak display
             this.updateStreakDisplay();
@@ -1495,20 +1800,30 @@
             sfx.glassBreak();
             sfx.alarm();
 
-            // More dramatic wrong answer effects
-            this.cameras.main.shake(350, 0.02);
-            this.cameras.main.flash(200, 255, 50, 50);
+            // More dramatic wrong answer effects — screenshake + camera flash
+            // are disabled under reduced motion.
+            if (!reducedMotion()) {
+              this.cameras.main.shake(350, 0.02);
+              this.cameras.main.flash(200, 255, 50, 50);
+            }
 
-            // Red vignette pulse
+            // Red vignette pulse. Under reduced motion, show a brief static
+            // red wash instead of an animated fade so the "wrong" feedback is
+            // still clear without continuous motion.
             const vignette = this.add
               .rectangle(W / 2, H / 2, W, H, 0xff0000, 0.15)
               .setDepth(25);
-            this.tweens.add({
-              targets: vignette,
-              alpha: 0,
-              duration: 600,
-              onComplete: () => vignette.destroy(),
-            });
+            if (!reducedMotion()) {
+              this.tweens.add({
+                targets: vignette,
+                alpha: 0,
+                duration: 600,
+                onComplete: () => vignette.destroy(),
+              });
+            } else {
+              vignette.setAlpha(0.12);
+              this.time.delayedCall(500, () => vignette.destroy());
+            }
 
             // Ship damage flash
             this.drawShipDamaged();
@@ -1623,7 +1938,47 @@
               }
             }
           });
+          this.drawFocusRing();
           sfx.click();
+        }
+
+        // High-visibility keyboard/touch focus ring drawn around the currently
+        // selected answer (amber, matching the DOM nav-pad focus outline). This
+        // is the in-canvas equivalent of a :focus-visible ring. A gentle pulse
+        // plays unless reduced motion is requested.
+        drawFocusRing() {
+          if (!this.focusRing) {
+            this.focusRing = this.add.graphics().setDepth(9);
+          }
+          const ring = this.focusRing;
+          ring.clear();
+          ring.setAlpha(1);
+          if (this.focusRingTween) {
+            this.focusRingTween.remove();
+            this.focusRingTween = null;
+          }
+          const b =
+            this.selectedIdx >= 0 && this.answerBtns
+              ? this.answerBtns[this.selectedIdx]
+              : null;
+          if (!b || b.eliminated) return;
+          const bg = b.bg;
+          const w = bg.width + 12,
+            h = bg.height + 12;
+          const x = bg.x - w / 2,
+            y = bg.y - h / 2;
+          ring.lineStyle(3, 0xfbbf24, 0.95);
+          ring.strokeRoundedRect(x, y, w, h, 8);
+          if (!reducedMotion()) {
+            this.focusRingTween = this.tweens.add({
+              targets: ring,
+              alpha: 0.4,
+              duration: 700,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.easeInOut",
+            });
+          }
         }
 
         updateHUD() {
@@ -2048,15 +2403,56 @@
         },
         input: { keyboard: true, mouse: true, touch: true },
       });
+
+      // --- ON-SCREEN NAV PAD CONTROLLER (touch devices) ---
+      // Bridges the DOM arrow/select buttons to the active GameScene's
+      // navStep()/navSelect(), which reuse the exact keyboard navigation +
+      // answer-checking path. Shown only on coarse-pointer (touch) devices and
+      // only while a question is on screen.
+      (function setupNavPad() {
+        const pad = document.getElementById("nav-pad");
+        const prev = document.getElementById("nav-prev");
+        const next = document.getElementById("nav-next");
+        const select = document.getElementById("nav-select");
+        if (!pad || !prev || !next || !select) return;
+
+        const isTouch =
+          (window.matchMedia &&
+            window.matchMedia("(pointer: coarse)").matches) ||
+          "ontouchstart" in window ||
+          navigator.maxTouchPoints > 0;
+
+        window.__cqNavPad = {
+          show() {
+            if (isTouch) pad.classList.add("show");
+          },
+          hide() {
+            pad.classList.remove("show");
+          },
+        };
+
+        prev.addEventListener("click", () => {
+          const g = window.__cqActiveGame;
+          if (g && g.navStep) g.navStep(-1);
+        });
+        next.addEventListener("click", () => {
+          const g = window.__cqActiveGame;
+          if (g && g.navStep) g.navStep(1);
+        });
+        select.addEventListener("click", () => {
+          const g = window.__cqActiveGame;
+          if (g && g.navSelect) g.navSelect();
+        });
+      })();
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

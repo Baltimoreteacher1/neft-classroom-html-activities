@@ -62,6 +62,138 @@
         color: #fff;
         text-align: center;
       }
+
+      /* ---- Bespoke DOM/CSS overlay polish (additive only) ----------------
+         These styles decorate ONLY the boot title + intro caption overlays
+         that sit above the WebGL canvas. They never touch the three.js scene,
+         render loop, camera, or any game mechanic. Every animation below is
+         disabled under prefers-reduced-motion (see the @media block at the
+         end of this style sheet). Decorative layer is wired to window.GameFX
+         pointer-parallax via data-parallax / [data-parallax-layer]. */
+
+      /* Factory ambience: a faint procedural conveyor-light wash behind the
+         HUD overlays. Pointer-events:none so it never intercepts gameplay. */
+      .e3d-ambience {
+        position: fixed;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .e3d-ambience .deco {
+        position: absolute;
+        inset: -8%;
+        will-change: transform;
+        background:
+          radial-gradient(
+            42% 60% at 18% 0%,
+            rgba(95, 208, 138, 0.1),
+            transparent 70%
+          ),
+          radial-gradient(
+            46% 64% at 84% 6%,
+            rgba(91, 160, 236, 0.1),
+            transparent 72%
+          );
+      }
+      /* Slow conveyor-belt light sweep stripes along the bottom edge. */
+      .e3d-ambience .deco::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 30%;
+        background: repeating-linear-gradient(
+          115deg,
+          rgba(242, 193, 91, 0.045) 0 22px,
+          rgba(242, 193, 91, 0) 22px 56px
+        );
+        mask-image: linear-gradient(to top, #000, transparent);
+        -webkit-mask-image: linear-gradient(to top, #000, transparent);
+        animation: e3dConveyor 9s linear infinite;
+      }
+      @keyframes e3dConveyor {
+        to {
+          background-position: 112px 0;
+        }
+      }
+
+      /* Boot title: animated emissive sheen sweeping across the wordmark,
+         echoing the belt's glowing guide rails. */
+      .e3d-boot-title {
+        background: linear-gradient(
+          100deg,
+          #fff 0%,
+          #fff 38%,
+          #ffe6a8 50%,
+          #fff 62%,
+          #fff 100%
+        );
+        background-size: 240% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        animation: e3dTitleSheen 6.5s ease-in-out infinite;
+      }
+      @keyframes e3dTitleSheen {
+        0%,
+        62% {
+          background-position: 140% 0;
+        }
+        100% {
+          background-position: -40% 0;
+        }
+      }
+
+      /* Intro caption: a gentle idle bob so the wait state feels alive, plus a
+         soft pulsing glow on the word "glowing bay" cue via box-shadow line. */
+      .e3d-intro {
+        animation: e3dIntroBob 5s ease-in-out infinite;
+      }
+      @keyframes e3dIntroBob {
+        0%,
+        100% {
+          transform: translateX(-50%) translateY(0);
+        }
+        50% {
+          transform: translateX(-50%) translateY(-3px);
+        }
+      }
+
+      /* GameFX pop hook (the kit toggles .gfx-pop; this is a local fallback
+         scale so a celebrate/pop call always reads on the overlay). */
+      .e3d-pop {
+        animation: e3dPop 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) 1;
+      }
+      @keyframes e3dPop {
+        0% {
+          transform: translateX(-50%) scale(1);
+        }
+        45% {
+          transform: translateX(-50%) scale(1.07);
+        }
+        100% {
+          transform: translateX(-50%) scale(1);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .e3d-ambience .deco::after,
+        .e3d-boot-title,
+        .e3d-intro,
+        .e3d-pop {
+          animation: none !important;
+        }
+        .e3d-boot-title {
+          background: none;
+          -webkit-background-clip: initial;
+          background-clip: initial;
+          color: #fff;
+        }
+        .e3d-ambience .deco {
+          transform: none !important;
+        }
+      }
     </style>
     <script type="importmap">
       {
@@ -72,13 +204,19 @@
       }
     </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
+    <!-- Decorative ambience layer (behind the WebGL canvas overlays). Wired to
+         window.GameFX pointer-parallax via data-parallax + [data-parallax-layer].
+         Purely cosmetic, pointer-events:none, hidden from assistive tech. -->
+    <div class="e3d-ambience" data-parallax aria-hidden="true">
+      <div class="deco" data-parallax-layer></div>
+    </div>
     <div
       id="game"
       role="application"
@@ -98,12 +236,69 @@
           This game needs a browser with WebGL turned on. Try refreshing once,
           or open it in a different browser or on another device.
         </p>
-        <p class="e3d-fallback-2d" style="margin-top:14px;">
-          <a href="/games/unit4-discount-dash.html" style="display:inline-block;padding:10px 18px;border-radius:10px;background:#1fa6a2;color:#fff;font-weight:600;text-decoration:none;">Play the 2D version instead →</a>
+        <p class="e3d-fallback-2d" style="margin-top: 14px">
+          <a
+            href="/games/unit4-discount-dash.html"
+            style="
+              display: inline-block;
+              padding: 10px 18px;
+              border-radius: 10px;
+              background: #1fa6a2;
+              color: #fff;
+              font-weight: 600;
+              text-decoration: none;
+            "
+            >Play the 2D version instead →</a
+          >
         </p>
       </div>
     </div>
 
+    <!-- Overlay-only ambience parallax. The shared GameFX kit wires parallax on
+         pointermove of the [data-parallax] container, but that container is
+         pointer-events:none and sits under the WebGL canvas, so it never
+         receives the event. This window-level listener drives the same
+         [data-parallax-layer] translate so the cosmetic depth effect works,
+         without touching the three.js scene, render loop, camera, or controls.
+         Fully gated by prefers-reduced-motion and rAF-throttled (no layout
+         thrash). Guarded so it can never break game boot. -->
+    <script>
+      (function () {
+        try {
+          var mq =
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)");
+          if (mq && mq.matches) return;
+          var layer = document.querySelector(
+            ".e3d-ambience [data-parallax-layer]",
+          );
+          if (!layer) return;
+          var tx = 0,
+            ty = 0,
+            queued = false;
+          function apply() {
+            queued = false;
+            layer.style.transform =
+              "translate(" + tx.toFixed(1) + "px," + ty.toFixed(1) + "px)";
+          }
+          window.addEventListener(
+            "pointermove",
+            function (e) {
+              if (mq && mq.matches) return;
+              tx = (e.clientX / window.innerWidth - 0.5) * 18;
+              ty = (e.clientY / window.innerHeight - 0.5) * 18;
+              if (!queued) {
+                queued = true;
+                requestAnimationFrame(apply);
+              }
+            },
+            { passive: true },
+          );
+        } catch (e) {
+          /* cosmetic only — never block game boot */
+        }
+      })();
+    </script>
     <script type="module">
       import { mountGame } from "/games/engine3d/index.js";
       import unit4FactoryLine from "/games/3d/unit-4/game.js";
@@ -119,10 +314,10 @@
       }
     </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

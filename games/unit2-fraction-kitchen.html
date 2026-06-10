@@ -38,12 +38,12 @@
       });
     </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
     <div id="game"></div>
     <script>
@@ -63,6 +63,15 @@
       const W = 1024,
         H = 768;
       const LS_KEY = "fractionkitchen_pour_hi";
+      // Respect the OS "reduce motion" setting for every bespoke animation
+      // below (liquid ripple, pour tilt, target pulse, parallax, splash,
+      // hint glow). Gameplay/scoring is identical either way — only the
+      // decorative motion is dialled down. Re-checked live so toggling the
+      // OS setting mid-session is honoured.
+      const RM = window.matchMedia
+        ? window.matchMedia("(prefers-reduced-motion: reduce)")
+        : { matches: false };
+      const reduceMotion = () => !!RM.matches;
 
       class SFX {
         constructor() {
@@ -264,6 +273,49 @@
           this.pouring = false;
           this.fill = 0; // 0..1 of jug
           this.locked = false;
+          this.tiltCur = 0; // smoothed jug pour-spout tilt (degrees)
+          this.tiltTarget = 0;
+
+          // ── Parallax floating recipe card (background decoration) ─────────
+          // A softly drifting "order ticket" pinned behind the jug. It also
+          // nudges toward the pointer for a subtle depth effect. Purely
+          // decorative; the live order text lives on the HUD as before.
+          this.bgCard = this.add.container(W - 230, 330).setDepth(1);
+          const cardBg = this.add
+            .rectangle(0, 0, 240, 300, 0x2e2150, 0.55)
+            .setStrokeStyle(3, 0x6b53a8, 0.7);
+          const cardPin = this.add.circle(0, -150, 9, 0xff7eb6, 0.85);
+          const cardTitle = this.add
+            .text(0, -118, "RECIPE", {
+              fontFamily: "Segoe UI",
+              fontSize: "20px",
+              fontStyle: "800",
+              color: "#cdbce8",
+            })
+            .setOrigin(0.5);
+          this.bgCardLines = [];
+          for (let i = 0; i < 5; i++) {
+            const ln = this.add.rectangle(
+              0,
+              -70 + i * 30,
+              170 - (i % 2) * 40,
+              7,
+              0x6b53a8,
+              0.5,
+            );
+            this.bgCardLines.push(ln);
+            this.bgCard.add(ln);
+          }
+          this.bgCard.add([cardBg, cardPin, cardTitle]);
+          this.bgCardBaseX = this.bgCard.x;
+          this.bgCardBaseY = this.bgCard.y;
+          this.bgCardT = 0;
+          // Track pointer for parallax (no per-frame layout cost).
+          this.ptr = { x: W / 2, y: H / 2 };
+          this.input.on("pointermove", (p) => {
+            this.ptr.x = p.x;
+            this.ptr.y = p.y;
+          });
 
           // Jug geometry
           this.jugX = W / 2;
@@ -284,21 +336,30 @@
             .setStrokeStyle(4, 0xbcd0ff)
             .setDepth(2);
 
-          this.liquid = this.add
-            .rectangle(this.jugX, this.jugBottom, this.jugW - 8, 0, 0xffd166)
-            .setOrigin(0.5, 1)
-            .setDepth(3);
+          // ── Animated liquid with a sine-wave / ripple surface ───────────
+          // Replaces the flat rectangle with a redrawn Graphics body so the
+          // top surface ripples while pouring and gently settles when still.
+          // `this.fill` (0..1) still drives the level exactly as before, so
+          // the math/answer check in release() is untouched.
+          this.liquidW = this.jugW - 8;
+          this.liquid = this.add.graphics().setDepth(3);
+          this.liquidPhase = 0;
+          this.liquidAmp = 0; // surface wave amplitude (px), eased
 
-          this.stream = this.add
-            .rectangle(this.jugX, this.jugTop - 60, 10, 70, 0xffe08a, 0)
-            .setOrigin(0.5, 0)
-            .setDepth(4);
+          // Pour stream rendered as a Graphics ribbon so it can wobble.
+          this.stream = this.add.graphics().setDepth(4);
+          this.streamPhase = 0;
           this.jug2 = this.add
             .text(this.jugX, this.jugTop - 95, "🫗", { fontSize: "54px" })
             .setOrigin(0.5)
             .setDepth(4);
 
           this.gradGroup = this.add.container(0, 0).setDepth(5);
+          // Glow behind the target line (pulses before the pour, fades once
+          // the player commits). Drawn as a soft band under the crisp line.
+          this.targetGlow = this.add
+            .rectangle(this.jugX, 0, this.jugW + 40, 22, 0x51cf66, 0)
+            .setDepth(5);
           this.targetBand = this.add
             .rectangle(this.jugX, 0, this.jugW, 6, 0x51cf66, 0)
             .setDepth(6);
@@ -330,6 +391,18 @@
             })
             .setOrigin(1, 0)
             .setDepth(20);
+          // Equivalent-fraction hint (animated in nextOrder()).
+          this.equivHint = this.add
+            .text(W / 2, 98, "", {
+              fontFamily: "Segoe UI",
+              fontSize: "19px",
+              fontStyle: "700",
+              color: "#ffe08a",
+              align: "center",
+            })
+            .setOrigin(0.5, 0)
+            .setAlpha(0)
+            .setDepth(20);
 
           const down = () => {
             if (!this.locked) this.pouring = true;
@@ -350,7 +423,11 @@
           this.fill = 0;
           this.pouring = false;
           this.locked = false;
-          this.liquid.height = 0;
+          this.liquidAmp = 0;
+          this.drawLiquid();
+          this.tiltCur = 0;
+          this.tiltTarget = 0;
+          this.jug2.angle = 0;
 
           this.gradGroup.removeAll(true);
           const den = this.order.jugDen;
@@ -373,28 +450,186 @@
           const ty = this.jugBottom - this.order.fraction * this.jugH;
           this.targetY = ty;
           this.targetBand.y = ty;
+          this.targetGlow.y = ty;
           this.targetBand.setFillStyle(0x51cf66, 0.9);
+          this.targetGlow.setFillStyle(0x51cf66, 0.35);
+          // Target line glow + pulse BEFORE the pour. Both stop the moment the
+          // player commits (handled in release()/spill()).
           this.tweens.killTweensOf(this.targetBand);
-          this.tweens.add({
-            targets: this.targetBand,
-            alpha: { from: 0.4, to: 0.95 },
-            duration: 500,
-            yoyo: true,
-            repeat: -1,
-          });
+          this.tweens.killTweensOf(this.targetGlow);
+          if (reduceMotion()) {
+            this.targetBand.setAlpha(0.95);
+            this.targetGlow.setAlpha(0.35);
+          } else {
+            this.tweens.add({
+              targets: this.targetBand,
+              alpha: { from: 0.4, to: 0.95 },
+              duration: 500,
+              yoyo: true,
+              repeat: -1,
+            });
+            this.tweens.add({
+              targets: this.targetGlow,
+              alpha: { from: 0.12, to: 0.5 },
+              scaleY: { from: 0.7, to: 1.35 },
+              duration: 700,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.inOut",
+            });
+          }
 
           const o = this.order;
-          let ask = `${o.food}   —   fill to  ${o.shownNum}/${o.shownDen}`;
-          if (o.equiv) ask += `\n(jug is in ${o.jugDen}ths — convert it!)`;
-          this.orderText.setText(ask);
+          this.orderText.setText(
+            `${o.food}   —   fill to  ${o.shownNum}/${o.shownDen}`,
+          );
+
+          // Equivalent-fraction hint: dedicated text that scales + glows so
+          // students notice they must convert against the jug's gradations.
+          this.equivHint.setText(
+            o.equiv ? `jug is in ${o.jugDen}ths — convert it!` : "",
+          );
+          this.tweens.killTweensOf(this.equivHint);
+          this.equivHint.setScale(1).setAlpha(o.equiv ? 1 : 0);
+          this.equivHint.setShadow(0, 0, "#ffd166", 0, true, true);
+          if (o.equiv && !reduceMotion()) {
+            this.equivHint.setScale(0.6);
+            this.tweens.add({
+              targets: this.equivHint,
+              scale: 1,
+              duration: 420,
+              ease: "Back.out",
+            });
+            this.equivGlowTween = this.tweens.add({
+              targets: this.equivHint,
+              alpha: { from: 0.7, to: 1 },
+              duration: 650,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.inOut",
+              onUpdate: (tw) => {
+                const b = 4 + 10 * tw.getValue();
+                this.equivHint.setShadow(0, 0, "#ffd166", b, true, true);
+              },
+            });
+          } else if (o.equiv) {
+            this.equivHint.setShadow(0, 0, "#ffd166", 8, true, true);
+          }
           this.updateHUD();
+        }
+
+        // Draw the liquid body with a sine-wave ripple along its top surface.
+        // Called every frame from update() and once per order from nextOrder().
+        drawLiquid() {
+          const g = this.liquid;
+          g.clear();
+          const h = this.fill * this.jugH;
+          if (h <= 0.5) return;
+          const topY = this.jugBottom - h;
+          const left = this.jugX - this.liquidW / 2;
+          const amp = this.liquidAmp;
+          const segs = 22;
+          // Body fill.
+          g.fillStyle(0xffd166, 1);
+          g.beginPath();
+          g.moveTo(left, this.jugBottom);
+          g.lineTo(left, topY);
+          for (let i = 0; i <= segs; i++) {
+            const x = left + (this.liquidW * i) / segs;
+            const wave =
+              amp > 0.05
+                ? Math.sin(this.liquidPhase + (i / segs) * Math.PI * 3) * amp +
+                  Math.sin(this.liquidPhase * 0.6 + i) * amp * 0.4
+                : 0;
+            g.lineTo(x, topY + wave);
+          }
+          g.lineTo(left + this.liquidW, this.jugBottom);
+          g.closePath();
+          g.fillPath();
+          // Lighter crest line on the surface for a glossy meniscus.
+          g.lineStyle(2, 0xfff0b8, amp > 0.05 ? 0.9 : 0.5);
+          g.beginPath();
+          for (let i = 0; i <= segs; i++) {
+            const x = left + (this.liquidW * i) / segs;
+            const wave =
+              amp > 0.05
+                ? Math.sin(this.liquidPhase + (i / segs) * Math.PI * 3) * amp +
+                  Math.sin(this.liquidPhase * 0.6 + i) * amp * 0.4
+                : 0;
+            if (i === 0) g.moveTo(x, topY + wave);
+            else g.lineTo(x, topY + wave);
+          }
+          g.strokePath();
+        }
+
+        // Draw the pour stream as a wobbling ribbon from spout to surface.
+        drawStream(active) {
+          const g = this.stream;
+          g.clear();
+          if (!active) return;
+          const topY = this.jugTop - 60;
+          const surfaceY = this.jugBottom - this.fill * this.jugH;
+          const wob = reduceMotion() ? 0 : 4;
+          g.fillStyle(0xffe08a, 0.9);
+          g.beginPath();
+          const segs = 10;
+          const pts = [];
+          for (let i = 0; i <= segs; i++) {
+            const t = i / segs;
+            const y = topY + (surfaceY - topY) * t;
+            const x =
+              this.jugX + Math.sin(this.streamPhase + t * 6) * wob * (1 - t);
+            pts.push([x, y]);
+          }
+          // left edge down, right edge up = ribbon ~6px wide.
+          g.moveTo(pts[0][0] - 5, pts[0][1]);
+          for (let i = 0; i <= segs; i++) g.lineTo(pts[i][0] - 5, pts[i][1]);
+          for (let i = segs; i >= 0; i--) g.lineTo(pts[i][0] + 5, pts[i][1]);
+          g.closePath();
+          g.fillPath();
+        }
+
+        // Spill splash: a capped procedural particle burst over the jug rim.
+        splash(x, y) {
+          if (reduceMotion()) return;
+          const N = 14; // capped particle count for Chromebook smoothness
+          for (let i = 0; i < N; i++) {
+            const drop = this.add
+              .circle(x, y, 3 + Math.random() * 3, 0xffd166, 0.95)
+              .setDepth(7);
+            const ang = -Math.PI / 2 + (Math.random() - 0.5) * 2.2;
+            const spd = 120 + Math.random() * 180;
+            this.tweens.add({
+              targets: drop,
+              x: x + Math.cos(ang) * spd,
+              y: y + Math.sin(ang) * spd * 0.6 + 160, // gravity-ish arc down
+              alpha: 0,
+              scale: 0.3,
+              duration: 650 + Math.random() * 250,
+              ease: "Quad.in",
+              onComplete: () => drop.destroy(),
+            });
+          }
+        }
+
+        // Stop the pre-pour target pulse/glow and reset pour visuals once the
+        // player commits. Purely cosmetic.
+        stopPourFx() {
+          this.tweens.killTweensOf(this.targetBand);
+          this.tweens.killTweensOf(this.targetGlow);
+          this.targetGlow.setAlpha(0);
+          this.tweens.killTweensOf(this.equivHint);
+          this.tiltTarget = 0;
+          this.tiltCur = 0;
+          this.jug2.angle = 0;
+          this.liquidAmp = 0;
+          this.drawStream(false);
         }
 
         release() {
           this.pouring = false;
           this.locked = true;
-          this.stream.setAlpha(0);
-          this.jug2.angle = 0;
+          this.stopPourFx();
           const err = Math.abs(this.fill - this.order.fraction);
           const tol = 1 / this.order.jugDen;
           let pts = 0,
@@ -434,12 +669,13 @@
         spill() {
           this.locked = true;
           this.pouring = false;
-          this.stream.setAlpha(0);
-          this.jug2.angle = 0;
+          this.stopPourFx();
           this.combo = 0;
           this.lives--;
           sfx.spill();
-          this.cameras.main.shake(200, 0.01);
+          // Splash particle burst over the jug rim on overfill.
+          this.splash(this.jugX, this.jugTop + 6);
+          if (!reduceMotion()) this.cameras.main.shake(200, 0.01);
           this.flashLabel("SPILLED! 💦", "#ff6b6b", 0);
           this.updateHUD();
           this.time.delayedCall(1300, () => {
@@ -498,23 +734,67 @@
         }
 
         update(time, delta) {
-          if (this.locked) return;
-          if (this.pouring) {
-            const rate = (0.00028 + this.round * 0.00003) * delta;
-            this.fill += rate;
-            this.stream.setAlpha(0.85);
-            this.jug2.angle = -28;
-            sfx.pour();
-            if (this.fill >= 1) {
-              this.fill = 1;
-              this.liquid.height = this.jugH;
-              return this.spill();
+          const rm = reduceMotion();
+          const dt = delta / 16.67; // normalize to ~60fps steps
+
+          // ── Always-on cosmetic motion (safe while locked too) ───────────
+          // Parallax floating recipe card: idle drift + gentle pointer pull.
+          if (this.bgCard) {
+            if (rm) {
+              this.bgCard.x = this.bgCardBaseX;
+              this.bgCard.y = this.bgCardBaseY;
+            } else {
+              this.bgCardT += delta * 0.0012;
+              const px = (this.ptr.x - W / 2) * 0.02;
+              const py = (this.ptr.y - H / 2) * 0.02;
+              this.bgCard.x =
+                this.bgCardBaseX + Math.sin(this.bgCardT) * 10 + px;
+              this.bgCard.y =
+                this.bgCardBaseY + Math.cos(this.bgCardT * 0.8) * 8 + py;
+              this.bgCard.rotation = Math.sin(this.bgCardT * 0.7) * 0.02;
             }
-          } else {
-            this.jug2.angle = 0;
-            this.stream.setAlpha(0);
           }
-          this.liquid.height = this.fill * this.jugH;
+
+          // Advance ripple/stream phases.
+          if (!rm) {
+            this.liquidPhase += dt * 0.18;
+            this.streamPhase += dt * 0.35;
+          }
+
+          // ── Gameplay (UNCHANGED rate + overfill rule) ───────────────────
+          if (!this.locked) {
+            if (this.pouring) {
+              const rate = (0.00028 + this.round * 0.00003) * delta;
+              this.fill += rate;
+              this.tiltTarget = -28; // spout tilts as it pours
+              sfx.pour();
+              if (this.fill >= 1) {
+                this.fill = 1;
+                this.liquidAmp = 0;
+                this.drawLiquid();
+                return this.spill();
+              }
+            } else {
+              this.tiltTarget = 0;
+            }
+          }
+
+          // Ease the pour-spout tilt toward its target (smooth pour-in/out).
+          if (rm) {
+            this.jug2.angle = this.tiltTarget;
+          } else {
+            this.tiltCur +=
+              (this.tiltTarget - this.tiltCur) * Math.min(1, 0.18 * dt);
+            this.jug2.angle = this.tiltCur;
+          }
+
+          // Ripple amplitude swells while pouring, settles when not.
+          const ampTarget = !this.locked && this.pouring && !rm ? 6 : 0;
+          this.liquidAmp +=
+            (ampTarget - this.liquidAmp) * Math.min(1, 0.12 * dt);
+
+          this.drawLiquid();
+          this.drawStream(!this.locked && this.pouring);
         }
       }
 
@@ -600,10 +880,10 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

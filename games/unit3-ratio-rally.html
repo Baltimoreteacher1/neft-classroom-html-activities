@@ -38,12 +38,12 @@
       });
     </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
     <script>
       // ── RATIO RALLY — Top-Down Racing Game (Enhanced) ──
@@ -450,6 +450,38 @@
         g.generateTexture("glow", 16, 16);
         g.clear();
 
+        // ── Bespoke visual assets (additive) ──
+
+        // Soft elliptical car shadow (radial-ish: stacked fading ellipses)
+        for (let r = 0; r < 8; r++) {
+          const a = 0.06 + r * 0.02;
+          g.fillStyle(0x000000, a);
+          g.fillEllipse(24, 10, 44 - r * 4, 18 - r * 1.6);
+        }
+        g.generateTexture("carShadow", 48, 22);
+        g.clear();
+
+        // Brake glow (red soft ellipse for rear brake lights)
+        for (let r = 0; r < 8; r++) {
+          const a = 0.07 + r * 0.03;
+          g.fillStyle(0xff2222, a);
+          g.fillEllipse(24, 12, 46 - r * 4, 22 - r * 2);
+        }
+        g.generateTexture("brakeGlow", 48, 24);
+        g.clear();
+
+        // Skid-mark tyre streak (thin dark vertical line)
+        g.fillStyle(0x111111, 0.6);
+        g.fillRect(1, 0, 2, 26);
+        g.generateTexture("skid", 4, 26);
+        g.clear();
+
+        // Distant horizon star / city-light dot for parallax layer
+        g.fillStyle(0xffffff, 0.9);
+        g.fillCircle(2, 2, 2);
+        g.generateTexture("farDot", 4, 4);
+        g.clear();
+
         g.destroy();
         this.scene.start("Title");
       };
@@ -820,13 +852,37 @@
         this.questionStartTime = 0;
         this.crowdLevel = 0;
         this.lastCrowdTime = 0;
+        // ── Bespoke visual-polish state (additive only) ──
+        this.prevSpeed = this.speed;
+        this.prevPlayerX = W / 2;
+        this.brakeGlowLevel = 0;
+        this.lastSkidTime = 0;
       };
+
+      // Respect the OS "reduce motion" setting for all NEW decorative motion.
+      function gfxReducedMotion() {
+        try {
+          return (
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          );
+        } catch (e) {
+          return false;
+        }
+      }
 
       GameScene.prototype.create = function () {
         const scene = this;
 
         // Environment background
         this.add.rectangle(W / 2, H / 2, W, H, this.envColors.grass);
+
+        // ── Bespoke: parallax depth layers (purely decorative, behind road) ──
+        this.reducedMotion = gfxReducedMotion();
+        this.buildParallaxBackground();
+
+        // ── Bespoke: road perspective taper overlay (converging guide lines) ──
+        this.buildRoadPerspective();
 
         // Ambient background particles
         const ambientTint =
@@ -870,10 +926,25 @@
           this.scenery.push(t);
         }
 
+        // ── Bespoke: skid-mark layer (sits on the road, beneath cars) ──
+        this.skidMarks = [];
+
+        // ── Bespoke: brake glow + car shadow (render beneath the player car) ──
+        this.brakeGlow = this.add
+          .image(W / 2, H - 120 + 26, "brakeGlow")
+          .setDepth(2)
+          .setAlpha(0)
+          .setScale(1.1);
+        this.carShadow = this.add
+          .image(W / 2, H - 120 + 22, "carShadow")
+          .setDepth(2)
+          .setAlpha(0.55);
+
         // Player car
         this.player = this.physics.add
           .image(W / 2, H - 120, "car_player")
           .setScale(1.3);
+        this.player.setDepth(3);
         this.player.setCollideWorldBounds(true);
         this.player.body.setSize(24, 40);
 
@@ -1063,6 +1134,108 @@
         this.cameras.main.fadeIn(400);
       };
 
+      // ── Bespoke: distant parallax layers that scroll slower than the road ──
+      // Layer 0 = farthest (horizon band + dots), Layer 1 = mid skyline silhouette.
+      GameScene.prototype.buildParallaxBackground = function () {
+        this.parallaxLayers = [];
+
+        // Far horizon glow band near the top (gives a sense of distance/sky).
+        const horizonColor =
+          this.difficulty === "easy"
+            ? 0xe8b878
+            : this.difficulty === "medium"
+              ? 0x4a5a72
+              : 0x2a1a55;
+        this.add.rectangle(W / 2, 70, W, 140, horizonColor, 0.35).setDepth(0);
+
+        // Farthest layer: scattered star / city-light dots (slowest scroll).
+        const farTint =
+          this.difficulty === "hard"
+            ? [0xffffff, 0xaaccff, 0xffeeaa]
+            : this.difficulty === "medium"
+              ? [0xffdd88, 0xfff0c0, 0xcce0ff]
+              : [0xfff4d8, 0xffe0a0];
+        const farDots = [];
+        for (let i = 0; i < 28; i++) {
+          const d = this.add
+            .image(randInt(0, W), randInt(0, 150), "farDot")
+            .setTint(farTint[i % farTint.length])
+            .setScale(randInt(5, 11) / 10)
+            .setAlpha(randInt(35, 80) / 100)
+            .setDepth(0);
+          farDots.push(d);
+        }
+        this.parallaxLayers.push({ items: farDots, factor: 0.12, wrap: 150 });
+
+        // Mid layer: silhouette mountains (easy/hard) or building blocks (city).
+        const midItems = [];
+        const midColor =
+          this.difficulty === "easy"
+            ? 0xb07840
+            : this.difficulty === "medium"
+              ? 0x2c3850
+              : 0x1a0e3a;
+        for (let i = 0; i < 9; i++) {
+          const bx = i * (W / 8) + randInt(-20, 20);
+          const isCity = this.difficulty === "medium";
+          const bw = isCity ? randInt(40, 70) : randInt(90, 150);
+          const bh = isCity ? randInt(60, 150) : randInt(50, 100);
+          const by = 150 - bh / 2;
+          const shape = this.add
+            .rectangle(bx, by, bw, bh, midColor, 0.5)
+            .setDepth(0);
+          midItems.push(shape);
+        }
+        this.parallaxLayers.push({ items: midItems, factor: 0.28, wrap: W });
+      };
+
+      // ── Bespoke: faint converging guide lines for a stronger 3D road taper ──
+      GameScene.prototype.buildRoadPerspective = function () {
+        const g = this.add.graphics().setDepth(1);
+        const horizonX = W / 2;
+        const horizonY = 90; // vanishing point
+        // Lane edges + center converge toward the vanishing point.
+        const xs = [
+          ROAD_LEFT,
+          ROAD_LEFT + LANE_W,
+          ROAD_LEFT + LANE_W * 2,
+          ROAD_LEFT + LANE_W * 3,
+          ROAD_LEFT + ROAD_W,
+        ];
+        g.lineStyle(2, 0xffffff, 0.08);
+        xs.forEach((x) => {
+          g.lineBetween(x, H, horizonX + (x - horizonX) * 0.18, horizonY);
+        });
+        // Subtle far-end haze that brightens the horizon for depth.
+        g.fillStyle(0xffffff, 0.05);
+        g.fillTriangle(ROAD_LEFT, H, ROAD_LEFT + ROAD_W, H, horizonX, horizonY);
+        this.roadPerspective = g;
+      };
+
+      // ── Bespoke: brief tyre skid streaks on hard, fast lane changes ──
+      GameScene.prototype.spawnSkid = function (x) {
+        if (this.reducedMotion) return;
+        if (this.skidMarks.length > 16) return; // particle/object cap
+        const offsets = [-9, 9];
+        offsets.forEach((off) => {
+          const mark = this.add
+            .image(x + off, this.player.y + 6, "skid")
+            .setDepth(1)
+            .setAlpha(0.55);
+          this.skidMarks.push(mark);
+          this.tweens.add({
+            targets: mark,
+            alpha: 0,
+            duration: 700,
+            onComplete: () => {
+              const idx = this.skidMarks.indexOf(mark);
+              if (idx >= 0) this.skidMarks.splice(idx, 1);
+              mark.destroy();
+            },
+          });
+        });
+      };
+
       GameScene.prototype.doCountdown = function () {
         const nums = ["3", "2", "1", "GO!"];
         const colors = ["#ff4444", "#ffaa00", "#22cc66", "#00ccff"];
@@ -1141,6 +1314,18 @@
           }
         });
 
+        // ── Bespoke: parallax layers drift slower than the road (depth) ──
+        // Gated by reduced-motion: stays static if the user opts out of motion.
+        if (this.parallaxLayers && !this.reducedMotion) {
+          this.parallaxLayers.forEach((layer) => {
+            const dy = this.speed * 60 * dt * layer.factor;
+            layer.items.forEach((it) => {
+              it.y += dy;
+              if (it.y > layer.wrap + 20) it.y = -20;
+            });
+          });
+        }
+
         // Player movement
         const moveSpeed = 250;
         if (this.cursors.left.isDown) {
@@ -1165,6 +1350,58 @@
 
         // Exhaust
         this.exhaustParticles.emitParticleAt(this.player.x, this.player.y + 25);
+
+        // ── Bespoke: car shadow follows the player and tilts with it ──
+        if (this.carShadow) {
+          this.carShadow.x = this.player.x;
+          this.carShadow.y = this.player.y + 22;
+          this.carShadow.angle = this.player.angle;
+        }
+
+        // ── Bespoke: brake-light glow intensifies when decelerating ──
+        // Detect deceleration (braking input or any speed loss this frame).
+        const decelerating =
+          this.cursors.down.isDown || this.speed < this.prevSpeed - 0.001;
+        const targetGlow = decelerating ? 1 : 0;
+        // Smoothly approach the target so the glow fades in/out, not pops.
+        this.brakeGlowLevel +=
+          (targetGlow - this.brakeGlowLevel) *
+          Math.min(1, dt * (decelerating ? 12 : 6));
+        if (this.brakeGlow) {
+          this.brakeGlow.x = this.player.x;
+          this.brakeGlow.y = this.player.y + 26;
+          this.brakeGlow.angle = this.player.angle;
+          // Reduced-motion: still show a steady brake tint, just no pulsing.
+          const pulse = this.reducedMotion
+            ? 1
+            : 0.85 + Math.sin(time * 0.02) * 0.15;
+          this.brakeGlow.setAlpha(this.brakeGlowLevel * 0.85 * pulse);
+        }
+
+        // ── Bespoke: skid marks on hard, fast swerves ──
+        const dx = this.player.x - this.prevPlayerX;
+        const swerveFast =
+          Math.abs(dx) > 2.4 && this.speed >= this.baseSpeed + 0.5;
+        if (swerveFast && time - this.lastSkidTime > 110) {
+          this.lastSkidTime = time;
+          this.spawnSkid(this.player.x);
+        }
+        // Skid marks scroll with the road so they appear to stay on the ground.
+        if (this.skidMarks && this.skidMarks.length) {
+          const sdy = this.speed * 60 * dt;
+          for (let i = this.skidMarks.length - 1; i >= 0; i--) {
+            const m = this.skidMarks[i];
+            m.y += sdy;
+            if (m.y > H + 30) {
+              m.destroy();
+              this.skidMarks.splice(i, 1);
+            }
+          }
+        }
+
+        // Track previous-frame state for next-frame deltas (visual only).
+        this.prevPlayerX = this.player.x;
+        this.prevSpeed = this.speed;
 
         // Boost timer
         if (this.boostTimer > 0) {
@@ -1998,10 +2235,10 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>
