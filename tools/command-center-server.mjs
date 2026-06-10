@@ -250,6 +250,23 @@ const server = http.createServer(async (req, res) => {
   // Endpoint: GET /api/student-progress
   if (pathname === "/api/student-progress" && req.method === "GET") {
     try {
+      // Helper to retrieve the Google Sheets Apps Script URL
+      const getCentralRecordEndpoint = () => {
+        if (process.env.CENTRAL_RECORD_URL) {
+          return process.env.CENTRAL_RECORD_URL;
+        }
+        // Try reading it from shared/save-resume/save-resume-engine.js
+        const enginePath = path.join(rootDir, "shared/save-resume/save-resume-engine.js");
+        if (fs.existsSync(enginePath)) {
+          const content = fs.readFileSync(enginePath, "utf8");
+          const match = content.match(/endpoint:\s*["'](https:\/\/script\.google\.com\/macros\/s\/[^"']+\/exec)["']/);
+          if (match) {
+            return match[1];
+          }
+        }
+        return null;
+      };
+
       const mockData = [
         { code: "MATH-7KQ2", name: "J.D.", section: "Period 1 Math", progress: 85, lastSaved: Date.now() - 50000 },
         { code: "DATA-M9P4", name: "M.A.", section: "Period 1 Math", progress: 60, lastSaved: Date.now() - 3600000 },
@@ -258,6 +275,32 @@ const server = http.createServer(async (req, res) => {
         { code: "ALGE-P6K3", name: "R.T.", section: "Period 1 Math", progress: 100, lastSaved: Date.now() - 10000 },
         { code: "MCAP-D4F2", name: "A.N.", section: "Period 5 Math", progress: 20, lastSaved: Date.now() - 1800000 }
       ];
+
+      const endpoint = getCentralRecordEndpoint();
+      if (endpoint && typeof fetch !== "undefined") {
+        console.log(`[Command Server] Fetching live student progress from Sheets: ${endpoint}`);
+        try {
+          const response = await fetch(endpoint + "?action=list");
+          if (response.ok) {
+            const data = await response.json();
+            if (data && data.ok && Array.isArray(data.records)) {
+              // Map records to expected client schema
+              const students = data.records.map(rec => ({
+                code: rec.saveCode,
+                name: rec.studentName || "Anonymous",
+                section: rec.section || "General",
+                progress: rec.progressPercent || 0,
+                lastSaved: rec.updatedAt ? new Date(rec.updatedAt).getTime() : Date.now()
+              }));
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ students }));
+              return;
+            }
+          }
+        } catch (fetchErr) {
+          console.warn("[Command Server] Failed to fetch live telemetry, falling back to mock data:", fetchErr.message);
+        }
+      }
       
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ students: mockData }));

@@ -92,7 +92,10 @@
     try {
       synth.cancel();
       var u = new SpeechSynthesisUtterance(text);
-      u.lang = lang === "es" ? "es-ES" : "en-US";
+      if (lang === "es") u.lang = "es-ES";
+      else if (lang === "vi") u.lang = "vi-VN";
+      else if (lang === "ar") u.lang = "ar-SA";
+      else u.lang = "en-US";
       u.rate = 0.92;
       synth.speak(u);
     } catch (e) {
@@ -157,12 +160,17 @@
 
   /* ---------------- language classes ---------------- */
   function langClass() {
-    if (state.lang === "en") return "lang-hide-es";
-    if (state.lang === "es") return "lang-hide-en";
+    if (state.lang === "en") return "lang-hide-es lang-hide-vi lang-hide-ar";
+    if (state.lang === "es") return "lang-hide-en lang-hide-vi lang-hide-ar";
+    if (state.lang === "vi") return "lang-hide-en lang-hide-es lang-hide-ar";
+    if (state.lang === "ar") return "lang-hide-en lang-hide-es lang-hide-vi";
+    if (state.lang === "both") return "lang-hide-vi lang-hide-ar";
+    if (state.lang === "vi_both") return "lang-hide-es lang-hide-ar";
+    if (state.lang === "ar_both") return "lang-hide-es lang-hide-vi";
     return "";
   }
 
-  function sayButtons(enText, esText) {
+  function sayButtons(enText, esText, viText, arText) {
     var row = el("div", "say-row");
     if (enText) {
       var b = el("button", "say-btn en", "🔊 EN");
@@ -183,6 +191,26 @@
         say(esText, "es");
       });
       row.appendChild(b2);
+    }
+    if (viText) {
+      var b3 = el("button", "say-btn vi", "🔊 VI");
+      b3.type = "button";
+      b3.setAttribute("aria-label", "Đọc to bằng tiếng Việt: " + viText);
+      b3.addEventListener("click", function (ev) {
+        ev.stopPropagation();
+        say(viText, "vi");
+      });
+      row.appendChild(b3);
+    }
+    if (arText) {
+      var b4 = el("button", "say-btn ar", "🔊 AR");
+      b4.type = "button";
+      b4.setAttribute("aria-label", "القراءة بصوت عالي بالعربية: " + arText);
+      b4.addEventListener("click", function (ev) {
+        ev.stopPropagation();
+        say(arText, "ar");
+      });
+      row.appendChild(b4);
     }
     return row;
   }
@@ -278,9 +306,17 @@
           " " +
           it.termEs +
           " " +
+          (it.termVi || "") +
+          " " +
+          (it.termAr || "") +
+          " " +
           it.definition +
           " " +
-          it.definitionEs
+          it.definitionEs +
+          " " +
+          (it.definitionVi || "") +
+          " " +
+          (it.definitionAr || "")
         ).toLowerCase();
         if (hay.indexOf(browseFilter.q) === -1) return false;
       }
@@ -308,10 +344,21 @@
       card.appendChild(img);
       card.appendChild(el("div", "term-en", esc(it.term)));
       if (it.termEs) card.appendChild(el("div", "term-es", esc(it.termEs)));
+      if (it.termVi) card.appendChild(el("div", "term-vi", esc(it.termVi)));
+      if (it.termAr) card.appendChild(el("div", "term-ar", esc(it.termAr)));
       card.appendChild(el("div", "def-en", esc(it.definition)));
       if (it.definitionEs)
         card.appendChild(el("div", "def-es", esc(it.definitionEs)));
-      card.appendChild(sayButtons(it.term, it.termEs || it.definition));
+      if (it.definitionVi)
+        card.appendChild(el("div", "def-vi", esc(it.definitionVi)));
+      if (it.definitionAr)
+        card.appendChild(el("div", "def-ar", esc(it.definitionAr)));
+      card.appendChild(sayButtons(
+        it.term,
+        it.termEs || it.definition,
+        it.termVi || it.definitionVi,
+        it.termAr || it.definitionAr
+      ));
       var tags = el("div", "card-tags");
       it.units.forEach(function (u) {
         tags.appendChild(el("span", "tag", "Unit " + u));
@@ -400,8 +447,17 @@
     if (c) c.classList.toggle("flipped", fc.flipped);
     var it = fc.order[fc.idx];
     if (it) {
-      if (fc.flipped) say(it.definition, "en");
-      else say(it.term, "en");
+      if (fc.flipped) {
+        if (state.lang === "es") say(it.definitionEs || it.definition, "es");
+        else if (state.lang === "vi") say(it.definitionVi || it.definition, "vi");
+        else if (state.lang === "ar") say(it.definitionAr || it.definition, "ar");
+        else say(it.definition, "en");
+      } else {
+        if (state.lang === "es") say(it.termEs || it.term, "es");
+        else if (state.lang === "vi") say(it.termVi || it.term, "vi");
+        else if (state.lang === "ar") say(it.termAr || it.term, "ar");
+        else say(it.term, "en");
+      }
     }
   }
 
@@ -454,6 +510,12 @@
       (it.termEs
         ? '<div class="fc-term-es term-es">' + esc(it.termEs) + "</div>"
         : "") +
+      (it.termVi
+        ? '<div class="fc-term-vi term-vi">' + esc(it.termVi) + "</div>"
+        : "") +
+      (it.termAr
+        ? '<div class="fc-term-ar term-ar">' + esc(it.termAr) + "</div>"
+        : "") +
       '<div class="fc-hint">Tap / Space to flip · Toca para voltear</div>' +
       "</div>";
     var back =
@@ -470,6 +532,12 @@
       "</div>" +
       (it.definitionEs
         ? '<div class="fc-def-es def-es">' + esc(it.definitionEs) + "</div>"
+        : "") +
+      (it.definitionVi
+        ? '<div class="fc-def-vi def-vi">' + esc(it.definitionVi) + "</div>"
+        : "") +
+      (it.definitionAr
+        ? '<div class="fc-def-ar def-ar">' + esc(it.definitionAr) + "</div>"
         : "") +
       "</div>";
     inner.innerHTML = front + back;
@@ -558,6 +626,10 @@
       var html = '<span class="term-en">' + esc(o.p.term) + "</span>";
       if (o.p.termEs)
         html += ' <span class="term-es">/ ' + esc(o.p.termEs) + "</span>";
+      if (o.p.termVi)
+        html += ' <span class="term-vi">/ ' + esc(o.p.termVi) + "</span>";
+      if (o.p.termAr)
+        html += ' <span class="term-ar">/ ' + esc(o.p.termAr) + "</span>";
       b.innerHTML = html;
       b.addEventListener("click", function () {
         selectLeft(b, o.id);
@@ -578,6 +650,10 @@
         var html = '<span class="def-en">' + esc(o.p.definition) + "</span>";
         if (o.p.definitionEs)
           html += '<span class="def-es"> ' + esc(o.p.definitionEs) + "</span>";
+        if (o.p.definitionVi)
+          html += '<span class="def-vi"> ' + esc(o.p.definitionVi) + "</span>";
+        if (o.p.definitionAr)
+          html += '<span class="def-ar"> ' + esc(o.p.definitionAr) + "</span>";
         b.innerHTML = html;
       }
       b.addEventListener("click", function () {

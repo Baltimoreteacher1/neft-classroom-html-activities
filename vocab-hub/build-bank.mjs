@@ -212,6 +212,10 @@ function main() {
         if (!entry.examples && Array.isArray(v.examples)) entry.examples = v.examples;
         if (!entry.sentences && Array.isArray(v.sentences)) entry.sentences = v.sentences;
         if (!entry.cloze && v.cloze) entry.cloze = v.cloze;
+        if (!entry.termVi && v.termVi) entry.termVi = v.termVi;
+        if (!entry.termAr && v.termAr) entry.termAr = v.termAr;
+        if (!entry.definitionVi && v.definitionVi) entry.definitionVi = v.definitionVi;
+        if (!entry.definitionAr && v.definitionAr) entry.definitionAr = v.definitionAr;
         continue;
       }
 
@@ -219,8 +223,12 @@ function main() {
       const entry = {
         term: v.term,
         termEs: v.termEs || "",
+        termVi: v.termVi || "",
+        termAr: v.termAr || "",
         definition: v.definition || "",
         definitionEs: v.definitionEs || "",
+        definitionVi: v.definitionVi || "",
+        definitionAr: v.definitionAr || "",
         visual: v.visual || "",
         image,
         imageSlug: slugify(v.term),

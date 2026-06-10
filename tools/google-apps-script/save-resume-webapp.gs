@@ -121,7 +121,7 @@ function rowToRecord_(row) {
   };
 }
 
-/** GET handler: health + load. */
+/** GET handler: health + load + list. */
 function doGet(e) {
   var p = (e && e.parameter) || {};
   if (p.action === "health") return buildJson_({ ok: true });
@@ -132,6 +132,15 @@ function doGet(e) {
     var hit = findRow_(sheet, code);
     if (!hit) return buildJson_({ ok: false, error: "not-found" });
     return buildJson_({ ok: true, record: rowToRecord_(hit.values) });
+  }
+  if (p.action === "list") {
+    var sheet = getSheet_();
+    var values = sheet.getDataRange().getValues();
+    var list = [];
+    for (var i = 1; i < values.length; i++) {
+      list.push(rowToRecord_(values[i]));
+    }
+    return buildJson_({ ok: true, records: list });
   }
   return buildJson_({ ok: false, error: "unknown-action" });
 }
