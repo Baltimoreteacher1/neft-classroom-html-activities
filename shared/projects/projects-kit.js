@@ -494,6 +494,273 @@
 
   PK.collectWrapPhases = collectWrapPhases;
 
+  /* ---------------- Step flow within tab panels ---------------- */
+  const STEP_STARTERS =
+    ".task, .q-group, .pk-mt-card, .pk-fn-row, .pk-inv-checklist, .pk-mission-brief, .pk-field-notes, .pk-math-tasks, .pk-vocab, ul.checklist, ol.checklist, .checklist";
+
+  function isStepStarter(el) {
+    if (!el || el.nodeType !== 1) return false;
+    if (el.matches(STEP_STARTERS)) return true;
+    if (el.tagName === "H3") return true;
+    if (el.classList.contains("grid2")) return true;
+    if (el.classList.contains("pk-callout")) return true;
+    if (
+      el.classList.contains("pk-math-scaffold-card") ||
+      el.classList.contains("pk-visualizer-card") ||
+      el.classList.contains("pk-dashboard")
+    )
+      return true;
+    return false;
+  }
+
+  function isIntroNode(el) {
+    if (!el || el.nodeType !== 1) return false;
+    if (el.matches("p, .arc-banner, .pk-phase-intro")) return true;
+    return false;
+  }
+
+  function stepTitleFromNodes(nodes) {
+    for (let i = 0; i < nodes.length; i++) {
+      const el = nodes[i];
+      if (!el || el.nodeType !== 1) continue;
+      if (el.classList.contains("task")) {
+        const strong = el.querySelector("strong");
+        const raw = strong ? strong.textContent : el.textContent;
+        return shortLabel(raw.replace(/:$/, "").trim(), 52);
+      }
+      if (el.classList.contains("q-group")) {
+        const p = el.querySelector("p");
+        if (p) return shortLabel(p.textContent.trim(), 52);
+      }
+      if (el.classList.contains("pk-mt-card")) {
+        const h = el.querySelector("h4");
+        if (h) return shortLabel(h.textContent.trim(), 52);
+      }
+      if (el.classList.contains("pk-fn-row")) {
+        const lbl = el.querySelector(".fld");
+        if (lbl) return shortLabel(lbl.textContent.trim(), 52);
+      }
+      if (el.tagName === "H3") return shortLabel(el.textContent.trim(), 52);
+      if (el.classList.contains("pk-vocab"))
+        return "Learn the vocabulary";
+      if (el.classList.contains("pk-callout")) {
+        const h = el.querySelector("h3");
+        if (h) return shortLabel(h.textContent.trim(), 52);
+      }
+      if (el.classList.contains("grid2")) {
+        const h = el.querySelector("h2, h3");
+        if (h) return shortLabel(h.textContent.trim(), 52);
+      }
+      if (el.matches("label.fld")) return shortLabel(el.textContent.trim(), 52);
+    }
+    return "Complete this part";
+  }
+
+  function wrapScaffolds(stepBody) {
+    stepBody
+      .querySelectorAll(
+        ".pk-math-scaffold-card, .pk-visualizer-card, .pk-dashboard, .pk-mission-brief",
+      )
+      .forEach((node) => {
+        if (node.closest(".pk-scaffold-zone")) return;
+        const zone = document.createElement("div");
+        zone.className = "pk-scaffold-zone";
+        const lbl = document.createElement("div");
+        lbl.className = "pk-zone-label";
+        lbl.textContent = "Reference · look here first";
+        node.parentNode.insertBefore(zone, node);
+        zone.appendChild(lbl);
+        zone.appendChild(node);
+      });
+  }
+
+  function wrapWorkspaces(stepBody) {
+    const hints = Array.from(stepBody.querySelectorAll("details.hintbox"));
+    hints.forEach((hint) => {
+      if (hint.closest(".pk-problem-workspace")) return;
+      let prev = hint.previousElementSibling;
+      const block = [];
+      while (
+        prev &&
+        (prev.matches(
+          "label.fld, input, textarea, select, button, .readout, .feedback, .pk-fb, .btn, .pk-whatif, .pk-stats, .pk-meter, .pk-level-toggle, .pk-lvl1, .pk-lvl2",
+        ) ||
+          prev.classList.contains("grid2"))
+      ) {
+        block.unshift(prev);
+        prev = prev.previousElementSibling;
+      }
+      if (!block.length) return;
+      const ws = document.createElement("div");
+      ws.className = "pk-problem-workspace";
+      const wsLbl = document.createElement("div");
+      wsLbl.className = "pk-zone-label";
+      wsLbl.textContent = "Your work";
+      block[0].parentNode.insertBefore(ws, block[0]);
+      ws.appendChild(wsLbl);
+      block.forEach((n) => ws.appendChild(n));
+      const hintWrap = document.createElement("div");
+      hintWrap.className = "pk-problem-hint";
+      ws.appendChild(hintWrap);
+      hintWrap.appendChild(hint);
+    });
+  }
+
+  function wrapProblemCards(stepBody) {
+    stepBody.querySelectorAll(".q-group").forEach((qg) => {
+      if (qg.classList.contains("pk-problem-card")) return;
+      qg.classList.add("pk-problem-card");
+      const p = qg.querySelector("p");
+      if (p && !p.querySelector(".pk-problem-num")) {
+        const num = document.createElement("span");
+        num.className = "pk-problem-num";
+        num.textContent = "Problem";
+        p.insertBefore(num, p.firstChild);
+      }
+    });
+  }
+
+  function structurePhase(phase) {
+    if (phase.dataset.pkFlow === "1") return 0;
+    const head = phase.querySelector(":scope > .phase-head");
+    const nodes = Array.from(phase.children).filter((n) => n !== head);
+    if (!nodes.length) return 0;
+
+    const intro = [];
+    const stepGroups = [];
+    let current = [];
+
+    function flush() {
+      if (current.length) {
+        stepGroups.push(current);
+        current = [];
+      }
+    }
+
+    nodes.forEach((node) => {
+      if (!stepGroups.length && !current.length && isIntroNode(node)) {
+        intro.push(node);
+        return;
+      }
+      if (isStepStarter(node)) {
+        flush();
+        current.push(node);
+        return;
+      }
+      if (!current.length) intro.push(node);
+      else current.push(node);
+    });
+    flush();
+
+    if (!stepGroups.length) stepGroups.push(nodes);
+
+    const flow = document.createElement("div");
+    flow.className = "pk-flow-steps";
+
+    if (intro.length) {
+      const introWrap = document.createElement("div");
+      introWrap.className = "pk-phase-intro";
+      intro.forEach((n) => introWrap.appendChild(n));
+      flow.appendChild(introWrap);
+    }
+
+    stepGroups.forEach((group) => {
+      const step = document.createElement("article");
+      step.className = "pk-flow-step";
+
+      const stepHead = document.createElement("header");
+      stepHead.className = "pk-step-head";
+
+      const badge = document.createElement("span");
+      badge.className = "pk-step-badge";
+      badge.setAttribute("aria-hidden", "true");
+
+      const meta = document.createElement("div");
+      meta.className = "pk-step-meta";
+
+      const goal = document.createElement("div");
+      goal.className = "pk-step-goal";
+      goal.textContent = "What you'll do";
+
+      const title = document.createElement("h3");
+      title.className = "pk-step-title";
+      title.textContent = stepTitleFromNodes(group);
+
+      meta.appendChild(goal);
+      meta.appendChild(title);
+      stepHead.appendChild(badge);
+      stepHead.appendChild(meta);
+      step.appendChild(stepHead);
+
+      const body = document.createElement("div");
+      body.className = "pk-step-body";
+      group.forEach((n) => body.appendChild(n));
+      wrapScaffolds(body);
+      wrapWorkspaces(body);
+      wrapProblemCards(body);
+      step.appendChild(body);
+      flow.appendChild(step);
+    });
+
+    nodes.forEach((n) => {
+      if (n.parentNode === phase) phase.removeChild(n);
+    });
+    phase.appendChild(flow);
+    phase.classList.add("pk-flow-phase");
+    phase.dataset.pkFlow = "1";
+    return stepGroups.length;
+  }
+
+  function enhancePanelFlow(panel, label) {
+    if (!panel || panel.dataset.pkFlowPanel === "1") return 0;
+    const phases = panel.querySelectorAll(":scope > .phase");
+    let stepTotal = 0;
+
+    const header = document.createElement("div");
+    header.className = "pk-panel-header";
+
+    const objective = document.createElement("div");
+    objective.className = "pk-panel-objective";
+    const objLbl = document.createElement("span");
+    objLbl.className = "pk-panel-obj-label";
+    objLbl.textContent = "In this step";
+    const objText = document.createElement("p");
+    objText.className = "pk-panel-obj-text";
+    objText.textContent = label || "Work through each part below.";
+    objective.appendChild(objLbl);
+    objective.appendChild(objText);
+
+    const progress = document.createElement("div");
+    progress.className = "pk-panel-progress";
+    progress.setAttribute("aria-live", "polite");
+
+    header.appendChild(objective);
+    header.appendChild(progress);
+    panel.insertBefore(header, panel.firstChild);
+
+    phases.forEach((phase) => {
+      stepTotal += structurePhase(phase);
+    });
+
+    const badges = panel.querySelectorAll(".pk-step-badge");
+    badges.forEach((badge, idx) => {
+      badge.textContent = String(idx + 1);
+      const step = badge.closest(".pk-flow-step");
+      if (step) step.dataset.stepIndex = String(idx + 1);
+    });
+
+    progress.textContent =
+      stepTotal > 1
+        ? stepTotal + " steps in this part — work top to bottom"
+        : "1 step in this part";
+
+    panel.dataset.pkFlowPanel = "1";
+    panel.dataset.pkStepTotal = String(stepTotal);
+    return stepTotal;
+  }
+
+  PK.enhancePanelFlow = enhancePanelFlow;
+
   PK.initProjectTabs = function (opts) {
     opts = opts || {};
     if (document.body.hasAttribute("data-pk-no-tabs")) return;
@@ -689,8 +956,9 @@
     tabsWrap.insertAdjacentElement("afterend", panelsWrap);
     panelsWrap.insertAdjacentElement("afterend", nav);
 
-    panels.forEach((entry) => {
+    panels.forEach((entry, idx) => {
       entry.sections.forEach((section) => entry.el.appendChild(section));
+      enhancePanelFlow(entry.el, groups[idx].label);
     });
     teacher.forEach((section) => wrap.appendChild(section));
 

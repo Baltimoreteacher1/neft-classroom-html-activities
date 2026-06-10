@@ -582,7 +582,225 @@
 }
 
 /* --------------------------------------------------------------------------
-   6. Responsive — phones / Chromebooks
+   6. Step flow within tab panels — numbered cards, problem blocks
+   -------------------------------------------------------------------------- */
+.pk .pk-panel-header {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 22px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #f8fbff 0%, #eef6ff 100%);
+  border: 1.5px solid var(--pp-line, #e4ebf2);
+  border-left: 6px solid var(--pp-blue, #1763c7);
+}
+
+.pk .pk-panel-obj-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pp-blue, #1763c7);
+  margin-bottom: 4px;
+}
+
+.pk .pk-panel-obj-text {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.45;
+  color: var(--pp-ink, #0c1b2a);
+}
+
+.pk .pk-panel-progress {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--pp-muted, #54677c);
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px dashed var(--pp-line, #e4ebf2);
+}
+
+.pk-tabs-on .pk .pk-tab-panel .pk-flow-phase .phase-head .phase-num {
+  width: 36px;
+  height: 36px;
+  font-size: 0.82rem;
+  opacity: 0.55;
+  border-radius: 10px;
+}
+
+.pk .pk-phase-intro {
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--pp-bg, #eef3f8);
+  color: var(--pp-muted, #54677c);
+  font-size: 0.96rem;
+  line-height: 1.55;
+}
+
+.pk .pk-phase-intro > p {
+  margin: 0 0 8px;
+}
+
+.pk .pk-phase-intro > p:last-child {
+  margin-bottom: 0;
+}
+
+.pk .pk-flow-steps {
+  display: grid;
+  gap: 18px;
+}
+
+.pk .pk-flow-step {
+  position: relative;
+  border: 1.5px solid var(--pp-line, #e4ebf2);
+  border-left: 5px solid var(--pp-teal, #0e9a8c);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: var(--pp-shadow-sm, 0 2px 6px rgba(12, 27, 42, 0.06));
+  overflow: hidden;
+}
+
+.pk .pk-step-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px 12px;
+  background: linear-gradient(180deg, #fbfdff, #f6faff);
+  border-bottom: 1px solid var(--pp-line, #e4ebf2);
+}
+
+.pk .pk-step-badge {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    var(--pp-teal, #0e9a8c),
+    var(--pp-blue, #1763c7)
+  );
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 900;
+  box-shadow: 0 6px 14px rgba(14, 154, 140, 0.28);
+}
+
+.pk .pk-step-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.pk .pk-step-goal {
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--pp-muted, #54677c);
+  margin-bottom: 2px;
+}
+
+.pk .pk-step-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--pp-ink, #0c1b2a);
+}
+
+.pk .pk-step-body {
+  padding: 16px 18px 18px;
+}
+
+.pk .pk-step-body > *:first-child {
+  margin-top: 0;
+}
+
+.pk .pk-zone-label {
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pp-muted, #54677c);
+  margin: 0 0 8px;
+}
+
+.pk .pk-scaffold-zone {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px dashed #c5d3e0;
+}
+
+.pk .pk-scaffold-zone .pk-zone-label {
+  color: var(--pp-blue, #1763c7);
+}
+
+.pk .pk-problem-workspace {
+  margin-top: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fbfdff, #f3f8fd);
+  border: 1.5px solid var(--pp-line, #e4ebf2);
+}
+
+.pk .pk-problem-workspace .pk-zone-label {
+  color: var(--pp-teal, #0e9a8c);
+}
+
+.pk .pk-problem-hint {
+  margin-top: 12px;
+}
+
+.pk .pk-problem-card {
+  margin: 12px 0;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--pp-line, #e4ebf2);
+  background: #fff;
+}
+
+.pk .pk-problem-card > p {
+  margin: 0 0 10px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.pk .pk-problem-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--pp-blue, #1763c7);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.pk .pk-flow-step .task {
+  margin-top: 0;
+  border-left: 4px solid var(--pp-gold, #f4a924);
+}
+
+.pk .pk-tab-panel > .phase + .phase {
+  margin-top: 28px;
+  padding-top: 8px;
+  border-top: 2px dashed var(--pp-line, #e4ebf2);
+}
+
+/* --------------------------------------------------------------------------
+   7. Responsive — phones / Chromebooks
    -------------------------------------------------------------------------- */
 @media (max-width: 640px) {
   .pk .pk-tabs-wrap {
@@ -618,7 +836,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   7. PRINT — show every phase, hide chrome
+   8. PRINT — show every phase, hide chrome
    -------------------------------------------------------------------------- */
 @media print {
   .pk-tabs-on .pk .pk-tab-panel[hidden] {
@@ -634,6 +852,17 @@
   .pk .pk-tab-panel > .phase {
     break-inside: avoid;
     page-break-inside: avoid;
+  }
+
+  .pk .pk-panel-header {
+    border: 1px solid #ccc;
+    background: #f5f5f5;
+  }
+
+  .pk .pk-flow-step {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    box-shadow: none;
   }
 }
 
