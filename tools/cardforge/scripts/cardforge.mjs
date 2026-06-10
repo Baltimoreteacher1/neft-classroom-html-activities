@@ -15,6 +15,7 @@ import { buildPackage } from "../lib/generate.mjs";
 import { runQa } from "../lib/qa.mjs";
 import { auditCards } from "../lib/audit.mjs";
 import { publishGuard } from "../lib/publish.mjs";
+import { updateCard } from "../lib/card-updater.mjs";
 
 const [cmd, arg] = process.argv.slice(2);
 const log = (...a) => console.log(...a);
@@ -106,11 +107,20 @@ function cmdPublish(pkgDir) {
   log("");
 }
 
-const ROUTES = { audit: cmdAudit, analyze: cmdAnalyze, build: cmdBuild, qa: cmdQa, stage: cmdStage, publish: cmdPublish };
+function cmdUpdateCard(pkgDir) {
+  if (!pkgDir) return fail("Usage: cardforge update-card <package-dir>");
+  const r = updateCard(resolve(process.cwd(), pkgDir));
+  if (!r.ok) return fail(r.message);
+  log(`Card update report → ${rel(r.dir)}/card-update-report.md`);
+  log(`  matched live lesson: ${r.liveMatch || "none (staged-only)"}${r.demo ? " · demo (no live card modified)" : ""}`);
+  for (const b of r.buttons) log(`  ${b.present ? "•" : "+"} ${b.label} → ${b.file}`);
+}
+
+const ROUTES = { audit: cmdAudit, analyze: cmdAnalyze, build: cmdBuild, qa: cmdQa, stage: cmdStage, publish: cmdPublish, "update-card": cmdUpdateCard };
 
 if (!ROUTES[cmd]) {
   log("CardForge — Lesson-to-EduWonderLab Math Card Engine");
-  log("Usage: cardforge <audit|analyze|build|qa|stage|publish> [arg]");
+  log("Usage: cardforge <audit|analyze|build|qa|stage|update-card|publish> [arg]");
   process.exit(cmd ? 1 : 0);
 }
 ROUTES[cmd](arg);

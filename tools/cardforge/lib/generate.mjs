@@ -2,6 +2,9 @@
 // deterministically from a job.json (schemas/job.schema.json).
 import { resolve } from "node:path";
 import { writeFile, writeJSON, slugify, CF_ROOT } from "./util.mjs";
+import { renderSubPacket } from "./sub-packet.mjs";
+import { renderActivityPack } from "./activity-pack.mjs";
+import { renderInteractive } from "./interactive.mjs";
 
 function mdList(items, fmt = (x) => x) {
   return (items || []).map((x) => `- ${fmt(x)}`).join("\n") || "_None._";
@@ -199,6 +202,14 @@ export function buildPackage(job) {
   write("student-practice.md", renderStudentPractice(job));
   write("answer-key.md", renderAnswerKey(job));
   if ((job.lesson.exitTicket || []).length) write("exit-ticket.md", renderExitTicket(job));
+
+  // Factory printables + interactive (self-contained HTML).
+  write("sub-packet.html", renderSubPacket(job));
+  write("activity-pack.html", renderActivityPack(job));
+  write("interactive.html", renderInteractive(job));
+  card.resources.subPacket = { label: "Emergency Sub Plan", file: "sub-packet.html", applicable: true, exists: true };
+  card.resources.activityPack = { label: "Activity Pack", file: "activity-pack.html", applicable: true, exists: true };
+  card.resources.interactive = { label: "Interactive Practice", file: "interactive.html", applicable: true, exists: true };
 
   const manifest = {
     card: card.id, title: card.title, demo: !!card.demo, status: card.status,

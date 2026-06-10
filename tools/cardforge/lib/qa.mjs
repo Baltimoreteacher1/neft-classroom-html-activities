@@ -31,6 +31,27 @@ export function runQa(pkgDir) {
   for (const f of need) check(checks, `resource ${f}`, "block", files.includes(f), "");
   check(checks, "resource exit-ticket.md", "warn", files.includes("exit-ticket.md"), "appropriate for most lessons");
   check(checks, "resource-manifest.json", "warn", files.includes("resource-manifest.json"), "");
+  check(checks, "Factory: sub-packet.html", "warn", files.includes("sub-packet.html"), "");
+  check(checks, "Factory: activity-pack.html", "warn", files.includes("activity-pack.html"), "");
+  check(checks, "Factory: interactive.html", "warn", files.includes("interactive.html"), "");
+
+  // --- ESOL / SPED presence (scanned from the teacher guide) ---
+  if (files.includes("teacher-guide.md")) {
+    const tg = readFileSync(resolve(dir, "teacher-guide.md"), "utf8");
+    check(checks, "ESOL supports present", "warn", /esol/i.test(tg) && !/ESOL:\*\*\s*_n\/a_/i.test(tg), "");
+    check(checks, "SPED supports present", "warn", /sped/i.test(tg) && !/SPED:\*\*\s*_n\/a_/i.test(tg), "");
+  }
+
+  // --- Design: printables should be black-and-white friendly ---
+  for (const hf of ["sub-packet.html", "activity-pack.html"]) {
+    if (!files.includes(hf)) continue;
+    const html = readFileSync(resolve(dir, hf), "utf8");
+    // Flag color-only instructions ("color the red / blue ...") and tiny fonts.
+    const colorWord = /\b(the )?(red|blue|green|yellow|orange|purple)\b[^.\n]{0,30}\b(box|part|section|answer|region)\b/i.test(html);
+    check(checks, `${hf}: no color-only instructions`, "warn", !colorWord, "B/W printer friendly");
+    const tiny = /font-size:\s*([0-9]|10)(px|pt)\b/i.test(html);
+    check(checks, `${hf}: no tiny fonts`, "warn", !tiny, "readable print");
+  }
 
   // --- Math accuracy: answer key vs practice count + stat-claim spot checks ---
   let practiceNums = [], keyNums = [];
