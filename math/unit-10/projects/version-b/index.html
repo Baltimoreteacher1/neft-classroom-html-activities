@@ -884,6 +884,16 @@
         </div>
       </section>
 
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+    
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -989,7 +999,7 @@
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase">
+      <section class="phase" >
         <div class="phase-head">
           <div
             class="phase-num"
@@ -998,39 +1008,49 @@
             3
           </div>
           <div>
-            <span class="arc-banner">Part 3 · World — real aquariums</span>
-            <div class="skill">Compare to real data · 6.G.2</div>
-            <h2>Your Tank vs. Real Aquariums</h2>
+            <span class="arc-banner">Part 3 · World — real-world research</span>
+            <div class="skill">Compare to real data</div>
+            <h2>How Do Your Calculations Compare?</h2>
           </div>
         </div>
         <p>
-          These are real standard aquarium sizes (inches). A standard
-          "10-gallon" tank is about 20 × 10 × 12 inches. See where your tank
-          lands.
+          Compare your calculated project totals against real-world industry benchmarks and standards.
         </p>
+
+        <div class="pk-research-lab">
+          <h3>🔍 Wikipedia Standard Aquarium Tank Sizes</h3>
+          <p>Open the aquarium tank sizes reference on Wikipedia. Find the standard volume capacity of a medium aquarium (typically 20 gallons, which is about 4,620 cubic inches). Enter the capacity volume below:</p>
+          <a href="https://en.wikipedia.org/wiki/Aquarium#Standard_sizes" target="_blank" class="pk-research-btn">🔗 Wikipedia: Standard Aquarium Dimensions Table ↗</a>
+          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
+            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Aquarium Design Standard</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="worldGo()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Standard Capacity (cu in)</label>
+              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="worldGo()">
+            </div>
+          </div>
+        </div>
+
         <div class="grid2">
           <div>
-            <label class="fld" for="worldCat">Compare against</label>
-            <select id="worldCat" data-save onchange="worldGo()">
-              <option value="volume">Full volume (cubic in)</option>
-              <option value="sa">Open-top glass (sq in)</option>
-            </select>
-            <label class="fld" for="myWorld">My number</label>
+            <label class="fld" for="myWorld">My calculated value to compare</label>
             <input
               type="number"
               id="myWorld"
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your value"
+              placeholder="auto-fills or type your value"
             />
-            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
-              Tip: type your tank's full volume (or glass area) from Part 1.
-            </p>
-            <div id="worldMeter"></div>
+            <div id="worldMeter" style="margin-top: 24px;"></div>
           </div>
           <div>
-            <h3>Standard Aquariums 🐟</h3>
+            <h3>Standard Aquarium Capacities 🌍</h3>
             <div
               style="
                 overflow: auto;
@@ -1039,13 +1059,22 @@
               "
             >
               <table class="rubric" style="margin-top: 0">
-                <tr>
-                  <th>Tank</th>
-                  <th>l × w × h (in)</th>
-                  <th>Volume</th>
-                  <th>Glass</th>
-                </tr>
-                <tbody id="worldRows"></tbody>
+                <thead>
+                  <tr>
+                    <th>Item/Location</th>
+                    <th>Standard Value</th>
+                  </tr>
+                </thead>
+                <tbody id="worldRows">
+                  <tr><td>Goldfish 🐠</td><td>4620 cu in</td></tr>
+                  <tr><td>Betta Fish 🐟</td><td>2310 cu in</td></tr>
+                  <tr><td>Guppies (5x) 🐟</td><td>6930 cu in</td></tr>
+                  <tr><td>Neon Tetras (10x) 🐠</td><td>11550 cu in</td></tr>
+                  <tr><td>Angelfish 🐠</td><td>1200 cu in</td></tr>
+                  <tr><td>Clownfish 🐟</td><td>3400 cu in</td></tr>
+                  <tr><td>Snails (4x) 🐚</td><td>9240 cu in</td></tr>
+                  <tr><td>Cherry Shrimp (6x) 🦐</td><td>13860 cu in</td></tr>
+                </tbody>
               </table>
             </div>
           </div>

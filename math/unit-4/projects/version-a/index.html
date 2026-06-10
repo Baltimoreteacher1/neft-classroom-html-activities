@@ -849,6 +849,16 @@
         </div>
       </section>
 
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+    
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -934,7 +944,7 @@
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase">
+      <section class="phase" >
         <div class="phase-head">
           <div
             class="phase-num"
@@ -943,43 +953,49 @@
             3
           </div>
           <div>
-            <span class="arc-banner"
-              >Part 3 · World — real state tax rates</span
-            >
-            <div class="skill">Compare to real data · 6.RP.3c</div>
-            <h2>Test Against Real State Sales Tax</h2>
+            <span class="arc-banner">Part 3 · World — real-world research</span>
+            <div class="skill">Compare to real data</div>
+            <h2>How Do Your Calculations Compare?</h2>
           </div>
         </div>
         <p>
-          These are realistic average combined sales-tax rates for U.S. states.
-          Pick a state to see what your customer would really pay there, and how
-          your rate compares.
+          Compare your calculated project totals against real-world industry benchmarks and standards.
         </p>
+
+        <div class="pk-research-lab">
+          <h3>🔍 State Sales Tax Rate Database</h3>
+          <p>Open the Tax Foundation portal. Look up the combined state/local sales tax rate for your home state or a state of choice. Enter the percentage rate below:</p>
+          <a href="https://taxfoundation.org/data/all-state-sales-tax-rates-and-structure/" target="_blank" class="pk-research-btn">🔗 Tax Foundation: State Sales Tax Rates Table ↗</a>
+          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
+            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">State Name Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="worldGo()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Combined Sales Tax Rate (%)</label>
+              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="worldGo()">
+            </div>
+          </div>
+        </div>
+
         <div class="grid2">
           <div>
-            <label class="fld" for="worldState"
-              >Charge tax like this state</label
-            >
-            <select id="worldState" data-save onchange="worldGo()"></select>
-            <label class="fld" for="myWorld"
-              >My sale price before tax ($)</label
-            >
+            <label class="fld" for="myWorld">My calculated value to compare</label>
             <input
               type="number"
               id="myWorld"
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your sale price"
+              placeholder="auto-fills or type your value"
             />
-            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
-              Tip: use your sale price from Part 1 here.
-            </p>
-            <div id="worldMeter"></div>
-            <div class="readout" id="world-out"></div>
+            <div id="worldMeter" style="margin-top: 24px;"></div>
           </div>
           <div>
-            <h3>U.S. State Sales-Tax Sample 🇺🇸</h3>
+            <h3>State Tax Rates 🌍</h3>
             <div
               style="
                 overflow: auto;
@@ -988,11 +1004,22 @@
               "
             >
               <table class="rubric" style="margin-top: 0">
-                <tr>
-                  <th>State</th>
-                  <th>Avg combined tax</th>
-                </tr>
-                <tbody id="worldRows"></tbody>
+                <thead>
+                  <tr>
+                    <th>Item/Location</th>
+                    <th>Standard Value</th>
+                  </tr>
+                </thead>
+                <tbody id="worldRows">
+                  <tr><td>California</td><td>7.25%</td></tr>
+                  <tr><td>Texas</td><td>6.25%</td></tr>
+                  <tr><td>New York</td><td>8.82%</td></tr>
+                  <tr><td>Oregon</td><td>0%</td></tr>
+                  <tr><td>Maryland</td><td>6%</td></tr>
+                  <tr><td>Indiana</td><td>7%</td></tr>
+                  <tr><td>Maine</td><td>5.5%</td></tr>
+                  <tr><td>Hawaii</td><td>4%</td></tr>
+                </tbody>
               </table>
             </div>
           </div>
@@ -1040,15 +1067,11 @@
           placeholder="A lower price brings more customers, but ___. Cheapest is not always best because ___."
         ></textarea>
         <div class="pk-lvl2">
-          <label class="fld" for="worldHard"
-            >Level 2: If your sale price is $40 and a state charges 9.5% tax,
-            what is the percent increase from sale price to total? Show your
-            thinking.</label
-          >
+          <label class="fld" for="worldHard"><strong>Level 2 Diner Receipt Challenge:</strong> Calculate the sales tax for a dinner subtotal of $45.00 using your researched state tax rate of **X%** and add a 15% tip. What is the final grand total? Show your decimal multiplication and addition.</label>
           <textarea
             id="worldHard"
             data-save
-            placeholder="Tax is $___; percent increase = tax ÷ sale price × 100 = ___% because ___"
+            placeholder="$45.00 × (___ / 100) = $___ tax. Subtotal + tax + 15% tip = $___ total because..."
           ></textarea>
         </div>
       </section>
@@ -1559,98 +1582,130 @@
         updateProgress();
       }
 
-      /* ---- Part 3: world dataset (avg combined state sales tax %) ---- */
-      const world = [
-        ["California", 8.85],
-        ["Texas", 8.2],
-        ["New York", 8.53],
-        ["Florida", 7.0],
-        ["Illinois", 8.86],
-        ["Washington", 9.4],
-        ["Tennessee", 9.55],
-        ["Colorado", 7.81],
-        ["Oregon", 0.0],
-        ["Georgia", 7.4],
-      ];
+      /* ---- Part 3: world dataset + meter ---- */
+      const baseWorldSample = [7.25, 6.25, 8.82, 0, 6, 7, 5.5, 4];
+
       function renderWorld() {
-        $("worldRows").innerHTML = world
-          .map(
-            (r) =>
-              "<tr><td>" + r[0] + "</td><td>" + r[1].toFixed(2) + "%</td></tr>",
-          )
-          .join("");
-        $("worldState").innerHTML = world
-          .map(
-            (r, i) =>
-              '<option value="' +
-              i +
-              '">' +
-              r[0] +
-              " (" +
-              r[1].toFixed(2) +
-              "%)</option>",
-          )
-          .join("");
+        // Automatically populated from static table in HTML
       }
-      function worldSample() {
-        return world.map((r) => r[1]);
-      }
+
       function worldGo() {
-        const sale = num("myWorld");
-        const i = parseInt($("worldState").value, 10) || 0;
-        const rate = world[i][1];
-        PK.worldMeter("worldMeter", worldSample(), rate, {
-          mean: "U.S. avg %",
-          me: world[i][0] + " %",
-        });
-        if (!isNaN(sale) && sale > 0) {
-          const taxAmt = sale * (rate / 100),
-            total = sale + taxAmt;
-          show(
-            "world-out",
-            '<div class="big">$' +
-              total.toFixed(2) +
-              " in " +
-              world[i][0] +
-              "</div>" +
-              "A $" +
-              sale.toFixed(2) +
-              " sale price at " +
-              world[i][0] +
-              "’s " +
-              rate.toFixed(2) +
-              "% tax = $" +
-              taxAmt.toFixed(2) +
-              " tax → <strong>$" +
-              total.toFixed(2) +
-              "</strong> total.",
-          );
-        } else {
-          hide("world-out");
+        const my = num("myWorld");
+        const customName = $("worldCountry").value.trim();
+        const customSize = num("worldSize");
+        
+        let sample = [...baseWorldSample];
+        if (!isNaN(customSize) && customSize > 0) {
+          sample.push(customSize);
         }
+        
+        PK.worldMeter(
+          "worldMeter",
+          sample,
+          my,
+          { mean: "World Avg", me: "Me" }
+        );
+
+        const fb = $("worldMeter");
+        if (!isNaN(customSize) && customSize > 0 && customName) {
+          const ratio = (my / customSize).toFixed(2);
+          const pct = Math.round((my / customSize) * 100);
+          const diff = Math.abs(my - customSize).toFixed(2);
+          
+          let myValStr = false ? "$" + my.toFixed(2) : my + "%";
+          let custValStr = false ? "$" + customSize.toFixed(2) : customSize + "%";
+          let diffStr = false ? "$" + Number(diff).toFixed(2) : Number(diff).toFixed(2) + "%";
+
+          const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
+          const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
+            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
+            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
+            `</div>`;
+          fb.innerHTML += desc;
+        }
+        
+        // Draw the dynamic SVG visualizer
+        if (typeof drawVisualizer === 'function') {
+          drawVisualizer();
+        }
+        
         updateProgress();
       }
+
       function runWhatIf() {
-        const c = parseFloat($("whatIfCoupon").value);
-        if (proj.sale == null) {
-          $("whatIfBox").textContent =
-            "Finish your sale price in Part 1 first.";
+        const v = parseFloat($("whatIfVal").value);
+        let sample = [...baseWorldSample];
+        const customSize = num("worldSize");
+        if (!isNaN(customSize) && customSize > 0) {
+          sample.push(customSize);
+        }
+        if (isNaN(v)) {
+          $("whatIfBox").textContent = "Enter a number first.";
           return;
         }
-        if (isNaN(c) || c < 0) {
-          $("whatIfBox").textContent = "Enter a coupon percent first.";
-          return;
-        }
-        const after = proj.sale * (1 - c / 100);
+        const before = PK.mean(sample);
+        const after = PK.mean(sample.concat([v]));
+        
+        let beforeStr = false ? "$" + before.toFixed(2) : before.toFixed(2) + "%";
+        let afterStr = false ? "$" + after.toFixed(2) : after.toFixed(2) + "%";
+        let vStr = false ? "$" + v.toFixed(2) : v + "%";
+
         PK.whatIf(
           "whatIfBox",
-          { "sale price": "$" + proj.sale.toFixed(2) },
-          { "with coupon": "$" + after.toFixed(2) },
-          "Applying an extra " + c + "% coupon to your sale price:",
+          { average: beforeStr },
+          { average: afterStr },
+          "Adding a value of " + vStr + " to the sample:"
         );
       }
 
-      /* ---- Use example numbers ---- */
+      
+      function drawVisualizer() {
+        const sub = num("subtotal") || 0;
+        const tax = num("tax-rate") || 0;
+        const tip = num("tip-pct") || 0;
+        
+        let html = "";
+        if (sub > 0) {
+          const taxAmt = sub * (tax / 100);
+          const tipAmt = sub * (tip / 100);
+          const total = sub + taxAmt + tipAmt;
+          
+          html = `
+            <g transform="translate(150, 20)">
+              <!-- Receipt Background -->
+              <rect x="0" y="0" width="200" height="200" fill="#fcfcfc" stroke="#cbd5e1" stroke-width="2" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.05))" />
+              <line x1="10" y1="35" x2="190" y2="35" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3,3" />
+              <text x="100" y="25" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">DINER BILL RECEIPT</text>
+              
+              <text x="20" y="60" font-size="10" fill="#5e6e7e">Subtotal:</text>
+              <text x="180" y="60" text-anchor="end" font-size="10" font-weight="bold" fill="#0f2b3c">$${sub.toFixed(2)}</text>
+              
+              <text x="20" y="85" font-size="10" fill="#5e6e7e">Sales Tax (${tax}%):</text>
+              <text x="180" y="85" text-anchor="end" font-size="10" fill="#0f2b3c">$${taxAmt.toFixed(2)}</text>
+              
+              <text x="20" y="110" font-size="10" fill="#5e6e7e">Tip (${tip}%):</text>
+              <text x="180" y="110" text-anchor="end" font-size="10" fill="#0f2b3c">$${tipAmt.toFixed(2)}</text>
+              
+              <line x1="10" y1="130" x2="190" y2="130" stroke="#cbd5e1" stroke-width="1.5" />
+              <text x="20" y="155" font-size="12" font-weight="bold" fill="#2d874b">GRAND TOTAL:</text>
+              <text x="180" y="155" text-anchor="end" font-size="12" font-weight="bold" fill="#2d874b">$${total.toFixed(2)}</text>
+            </g>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Diner Bill values to print receipt</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+
       function useExamples() {
         const ex = {
           item: "hand-poured candle",

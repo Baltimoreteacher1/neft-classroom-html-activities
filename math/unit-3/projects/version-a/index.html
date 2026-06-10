@@ -810,6 +810,16 @@
         </p>
       </section>
 
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+    
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -896,7 +906,7 @@
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase">
+      <section class="phase" >
         <div class="phase-head">
           <div
             class="phase-num"
@@ -905,45 +915,49 @@
             3
           </div>
           <div>
-            <span class="arc-banner"
-              >Part 3 · World — real ingredient prices</span
-            >
-            <div class="skill">Unit rate vs the world · 6.RP.2 · 6.RP.3</div>
-            <h2>How Does Your Price Compare?</h2>
+            <span class="arc-banner">Part 3 · World — real-world research</span>
+            <div class="skill">Compare to real data</div>
+            <h2>How Do Your Calculations Compare?</h2>
           </div>
         </div>
         <p>
-          These are realistic per-cup prices for a smoothie ingredient at stores
-          in different cities and countries. Pick the ingredient, type your unit
-          price, and see where you land versus the global average.
+          Compare your calculated project totals against real-world industry benchmarks and standards.
         </p>
+
+        <div class="pk-research-lab">
+          <h3>🔍 USDA Retail Strawberry Costs</h3>
+          <p>Open the USDA Fruit Prices database. Look up the average retail cost per pound of fresh strawberries. Enter the researched price below to compute your ratios:</p>
+          <a href="https://www.ers.usda.gov/data-products/fruit-and-vegetable-prices/" target="_blank" class="pk-research-btn">🔗 USDA Fruit and Vegetable Prices Data ↗</a>
+          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
+            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Researched Fruit Name</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="worldGo()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Strawberry Cost per Pound ($)</label>
+              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="worldGo()">
+            </div>
+          </div>
+        </div>
+
         <div class="grid2">
           <div>
-            <label class="fld" for="worldCat"
-              >Compare against (per-cup price)</label
-            >
-            <select id="worldCat" data-save onchange="worldGo()">
-              <option value="1">Strawberries ($/cup)</option>
-              <option value="2">Yogurt ($/cup)</option>
-              <option value="3">Banana ($/cup)</option>
-            </select>
-            <label class="fld" for="myWorld">My unit price ($/cup)</label>
+            <label class="fld" for="myWorld">My calculated value to compare</label>
             <input
               type="number"
               id="myWorld"
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your $/cup"
+              placeholder="auto-fills or type your value"
             />
-            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
-              Tip: your better-buy unit price from Part 1 is a great value to
-              type here.
-            </p>
-            <div id="worldMeter"></div>
+            <div id="worldMeter" style="margin-top: 24px;"></div>
           </div>
           <div>
-            <h3>Store Price Sample 🌍</h3>
+            <h3>Fruit Unit Prices 🌍</h3>
             <div
               style="
                 overflow: auto;
@@ -952,19 +966,24 @@
               "
             >
               <table class="rubric" style="margin-top: 0">
-                <tr>
-                  <th>Store / City</th>
-                  <th>Strawberry $/cup</th>
-                  <th>Yogurt $/cup</th>
-                  <th>Banana $/cup</th>
-                </tr>
-                <tbody id="worldRows"></tbody>
+                <thead>
+                  <tr>
+                    <th>Item/Location</th>
+                    <th>Standard Value</th>
+                  </tr>
+                </thead>
+                <tbody id="worldRows">
+                  <tr><td>Strawberries 🍓</td><td>$2.50</td></tr>
+                  <tr><td>Bananas 🍌</td><td>$3.20</td></tr>
+                  <tr><td>Blueberries 🫐</td><td>$2.10</td></tr>
+                  <tr><td>Mangoes 🥭</td><td>$4.00</td></tr>
+                  <tr><td>Spinach 🥬</td><td>$1.80</td></tr>
+                  <tr><td>Yogurt 🥛</td><td>$2.90</td></tr>
+                  <tr><td>Almond Milk 🥛</td><td>$3.50</td></tr>
+                  <tr><td>Honey 🍯</td><td>$2.75</td></tr>
+                </tbody>
               </table>
             </div>
-            <p style="font-size: 13px; color: var(--muted)">
-              👀 Spot the bad buy: one store is far above the others. Find it in
-              the What-If Lab below.
-            </p>
           </div>
         </div>
 
@@ -1026,13 +1045,11 @@
             step="0.01"
             placeholder="sum of prices ÷ how many"
           />
-          <label class="fld" for="worldOutlier"
-            >Which store is the outlier, and how does it change the mean?</label
-          >
+          <label class="fld" for="worldOutlier"><strong>Level 2 Ratio Chef Challenge:</strong> A smoothie recipe has a strawberry weight to banana weight ratio of 3:2. If you buy enough strawberries to equal your researched strawberry price of **$X** per pound, what is the proportional cost of bananas if bananas cost $0.60 per pound? Solve using equivalent ratios.</label>
           <textarea
             id="worldOutlier"
             data-save
-            placeholder="The outlier is ___ at $___ per cup. It pulls the mean UP because ___."
+            placeholder="Strawberry cost $___ : Banana cost $___ = 3:2, because..."
           ></textarea>
         </div>
 
@@ -1469,56 +1486,123 @@
       }
 
       /* ---- Part 3: world dataset + meter ---- */
-      // [store/city, strawberry $/cup, yogurt $/cup, banana $/cup] — realistic, with one "bad buy" outlier
-      const world = [
-        ["Walmart, USA", 1.45, 0.95, 0.35],
-        ["Aldi, Germany", 1.2, 0.8, 0.3],
-        ["Tesco, UK", 1.65, 1.1, 0.4],
-        ["Loblaws, Canada", 1.75, 1.2, 0.45],
-        ["Coles, Australia", 1.9, 1.25, 0.5],
-        ["Soriana, Mexico", 1.1, 0.85, 0.28],
-        ["FairPrice, Singapore", 2.1, 1.4, 0.55],
-        ["Airport kiosk (bad buy)", 4.5, 3.2, 1.6],
-      ];
+      const baseWorldSample = [2.5, 3.2, 2.1, 4, 1.8, 2.9, 3.5, 2.75];
 
       function renderWorld() {
-        $("worldRows").innerHTML = world
-          .map(
-            (r) =>
-              `<tr><td>${r[0]}</td><td>$${r[1].toFixed(2)}</td><td>$${r[2].toFixed(2)}</td><td>$${r[3].toFixed(2)}</td></tr>`,
-          )
-          .join("");
+        // Automatically populated from static table in HTML
       }
-      function worldSample() {
-        const idx = parseInt($("worldCat").value, 10);
-        return world.map((r) => r[idx]);
-      }
+
       function worldGo() {
         const my = num("myWorld");
-        PK.worldMeter("worldMeter", worldSample(), my, {
-          mean: "World avg $",
-          me: "Me $",
-        });
+        const customName = $("worldCountry").value.trim();
+        const customSize = num("worldSize");
+        
+        let sample = [...baseWorldSample];
+        if (!isNaN(customSize) && customSize > 0) {
+          sample.push(customSize);
+        }
+        
+        PK.worldMeter(
+          "worldMeter",
+          sample,
+          my,
+          { mean: "World Avg", me: "Me" }
+        );
+
+        const fb = $("worldMeter");
+        if (!isNaN(customSize) && customSize > 0 && customName) {
+          const ratio = (my / customSize).toFixed(2);
+          const pct = Math.round((my / customSize) * 100);
+          const diff = Math.abs(my - customSize).toFixed(2);
+          
+          let myValStr = true ? "$" + my.toFixed(2) : my + "";
+          let custValStr = true ? "$" + customSize.toFixed(2) : customSize + "";
+          let diffStr = true ? "$" + Number(diff).toFixed(2) : Number(diff).toFixed(2) + "";
+
+          const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
+          const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
+            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
+            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
+            `</div>`;
+          fb.innerHTML += desc;
+        }
+        
+        // Draw the dynamic SVG visualizer
+        if (typeof drawVisualizer === 'function') {
+          drawVisualizer();
+        }
+        
         updateProgress();
       }
+
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
-        const sample = worldSample();
+        let sample = [...baseWorldSample];
+        const customSize = num("worldSize");
+        if (!isNaN(customSize) && customSize > 0) {
+          sample.push(customSize);
+        }
         if (isNaN(v)) {
           $("whatIfBox").textContent = "Enter a number first.";
           return;
         }
         const before = PK.mean(sample);
         const after = PK.mean(sample.concat([v]));
+        
+        let beforeStr = true ? "$" + before.toFixed(2) : before.toFixed(2) + "";
+        let afterStr = true ? "$" + after.toFixed(2) : after.toFixed(2) + "";
+        let vStr = true ? "$" + v.toFixed(2) : v + "";
+
         PK.whatIf(
           "whatIfBox",
-          { average: "$" + before.toFixed(2) },
-          { average: "$" + after.toFixed(2) },
-          "Adding one more cup at $" + v.toFixed(2) + " to the world sample:",
+          { average: beforeStr },
+          { average: afterStr },
+          "Adding a value of " + vStr + " to the sample:"
         );
       }
 
-      /* ---- Use example numbers ---- */
+      
+      function drawVisualizer() {
+        const s = num("ratio-s") || 0;
+        const b = num("ratio-b") || 0;
+        
+        let html = "";
+        if (s > 0 || b > 0) {
+          const sum = s + b;
+          const pctS = (s / sum) * 100;
+          const fillH = 120;
+          const sH = (s / sum) * fillH;
+          const bH = (b / sum) * fillH;
+          
+          html = `
+            <!-- Blender Jar -->
+            <path d="M 210 50 L 290 50 L 275 180 L 225 180 Z" fill="none" stroke="#0f2b3c" stroke-width="3" />
+            <path d="M 290 80 C 315 80, 315 140, 280 140" fill="none" stroke="#0f2b3c" stroke-width="2.5" />
+            
+            <!-- Strawberry Fill (Red) -->
+            <path d="M ${225 + 5 * (180 - sH) / 130} ${180 - sH} L ${275 - 5 * (180 - sH) / 130} ${180 - sH} L 275 180 L 225 180 Z" fill="rgba(239, 68, 68, 0.7)" />
+            <!-- Banana Fill (Yellow) -->
+            <path d="M ${210 + 15 * (50 + bH) / 130} ${50} L ${290 - 15 * (50 + bH) / 130} ${50} L ${275 - 5 * (180 - sH) / 130} ${180 - sH} L ${225 + 5 * (180 - sH) / 130} ${180 - sH} Z" fill="rgba(253, 224, 71, 0.7)" />
+            
+            <text x="190" y="100" text-anchor="end" font-size="11" font-weight="bold" fill="#ef4444">Strawberries: ${s} pts</text>
+            <text x="310" y="100" text-anchor="start" font-size="11" font-weight="bold" fill="#eab308">Bananas: ${b} pts</text>
+            <text x="250" y="210" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Strawberry-Banana Ratio = ${s} : ${b}</text>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Ingredient Ratios to blend</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+
       function useExamples() {
         const ex = {
           "r-fruit": 6,

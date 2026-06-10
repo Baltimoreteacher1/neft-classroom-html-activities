@@ -852,6 +852,16 @@
         </div>
       </section>
 
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+    
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -928,7 +938,7 @@
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase">
+      <section class="phase" >
         <div class="phase-head">
           <div
             class="phase-num"
@@ -937,41 +947,49 @@
             3
           </div>
           <div>
-            <span class="arc-banner"
-              >Part 3 · World — sample school fundraisers</span
-            >
-            <div class="skill">Compare to real data · 6.EE.7–8</div>
-            <h2>How Does Your Fundraiser Compare?</h2>
+            <span class="arc-banner">Part 3 · World — real-world research</span>
+            <div class="skill">Compare to real data</div>
+            <h2>How Do Your Calculations Compare?</h2>
           </div>
         </div>
         <p>
-          These are sample school fundraisers with their goal, amount raised,
-          and percent to goal. Pick what to compare and see where you land.
+          Compare your calculated project totals against real-world industry benchmarks and standards.
         </p>
+
+        <div class="pk-research-lab">
+          <h3>🔍 DonorsChoose Classroom Project Funding Budgets</h3>
+          <p>Open the DonorsChoose page. Search for a local classroom project. Note the total fundraising goal requested (often around $400 for classroom resources). Enter the target goal below:</p>
+          <a href="https://www.donorschoose.org/" target="_blank" class="pk-research-btn">🔗 DonorsChoose Classroom Projects Search ↗</a>
+          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
+            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Classroom Project Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="worldGo()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Classroom Funding Goal ($)</label>
+              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="worldGo()">
+            </div>
+          </div>
+        </div>
+
         <div class="grid2">
           <div>
-            <label class="fld" for="worldCat">Compare against</label>
-            <select id="worldCat" data-save onchange="worldGo()">
-              <option value="pct">Percent of goal reached (%)</option>
-              <option value="goal">Goal amount ($)</option>
-              <option value="raised">Amount raised ($)</option>
-            </select>
-            <label class="fld" for="myWorld">My number</label>
+            <label class="fld" for="myWorld">My calculated value to compare</label>
             <input
               type="number"
               id="myWorld"
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your value"
+              placeholder="auto-fills or type your value"
             />
-            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
-              Tip: your percent to goal is raised ÷ goal × 100.
-            </p>
-            <div id="worldMeter"></div>
+            <div id="worldMeter" style="margin-top: 24px;"></div>
           </div>
           <div>
-            <h3>Sample School Fundraisers 🏫</h3>
+            <h3>Typical Project Budgets 🌍</h3>
             <div
               style="
                 overflow: auto;
@@ -980,19 +998,27 @@
               "
             >
               <table class="rubric" style="margin-top: 0">
-                <tr>
-                  <th>School</th>
-                  <th>Goal</th>
-                  <th>Raised</th>
-                  <th>% to goal</th>
-                </tr>
-                <tbody id="worldRows"></tbody>
+                <thead>
+                  <tr>
+                    <th>Item/Location</th>
+                    <th>Standard Value</th>
+                  </tr>
+                </thead>
+                <tbody id="worldRows">
+                  <tr><td>Math Manipulatives</td><td>$400.00</td></tr>
+                  <tr><td>Library Books</td><td>$350.00</td></tr>
+                  <tr><td>Science Lab Kits</td><td>$600.00</td></tr>
+                  <tr><td>Art Supplies</td><td>$250.00</td></tr>
+                  <tr><td>Recess Sports Gear</td><td>$800.00</td></tr>
+                  <tr><td>Classroom Rug</td><td>$500.00</td></tr>
+                  <tr><td>STEM Maker Space</td><td>$450.00</td></tr>
+                  <tr><td>Music Instruments</td><td>$300.00</td></tr>
+                </tbody>
               </table>
             </div>
           </div>
         </div>
 
-        <!-- What-If Lab: change price/items, watch projected total + x ≥ goal flip live -->
         <div
           class="phase"
           style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
@@ -1046,15 +1072,11 @@
           placeholder="My percent to goal is ___%, which is higher / lower than the sample average of ___%, so we are ___."
         ></textarea>
         <div class="pk-lvl2">
-          <label class="fld" for="worldHard"
-            >Level 2 question: A school needs at least $480 and sells items at
-            $8. What is the fewest number of items they must sell? Show your
-            reasoning.</label
-          >
+          <label class="fld" for="worldHard"><strong>Level 2 Notebook Fundraiser Inequality:</strong> Your class fundraiser has raised $120 so far. If you sell custom notebooks for $4 each, write and solve an inequality to find the minimum number of notebooks $n$ you must sell to meet or exceed your researched target goal of **$X**. Graph the solution on the number line.</label>
           <textarea
             id="worldHard"
             data-save
-            placeholder="8n ≥ 480 → n ≥ 480 ÷ 8 = 60, so at least 60 items because ___"
+            placeholder="120 + 4n ≥ ___. 4n ≥ ___ - 120. n ≥ ___ notebooks because..."
           ></textarea>
         </div>
         <label class="fld" for="careful"
@@ -1700,107 +1722,112 @@
       }
 
       /* ---- Part 3: world dataset + meter ---- */
-      // [school, goal, raised] — % computed
-      const world = [
-        ["Maple MS", 300, 240],
-        ["Oak Ridge", 500, 175],
-        ["Riverside", 250, 250],
-        ["Hillcrest", 400, 320],
-        ["Lincoln", 600, 150],
-        ["Eastview", 350, 315],
-        ["Pine Valley", 450, 90],
-        ["Summit", 200, 220],
-      ];
-      function worldPct(r) {
-        return Math.round((r[2] / r[1]) * 100);
-      }
+      const baseWorldSample = [400, 350, 600, 250, 800, 500, 450, 300];
+
       function renderWorld() {
-        $("worldRows").innerHTML = world
-          .map(
-            (r) =>
-              "<tr><td>" +
-              r[0] +
-              "</td><td>$" +
-              r[1] +
-              "</td><td>$" +
-              r[2] +
-              "</td><td>" +
-              worldPct(r) +
-              "%</td></tr>",
-          )
-          .join("");
+        // Automatically populated from static table in HTML
       }
-      function worldSample() {
-        const cat = $("worldCat").value;
-        if (cat === "goal") return world.map((r) => r[1]);
-        if (cat === "raised") return world.map((r) => r[2]);
-        return world.map(worldPct);
-      }
+
       function worldGo() {
         const my = num("myWorld");
-        const isMoney = $("worldCat").value !== "pct";
-        PK.worldMeter("worldMeter", worldSample(), my, {
-          mean: isMoney ? "Sample avg $" : "Sample avg %",
-          me: "Me",
-        });
+        const customName = $("worldCountry").value.trim();
+        const customSize = num("worldSize");
+        
+        let sample = [...baseWorldSample];
+        if (!isNaN(customSize) && customSize > 0) {
+          sample.push(customSize);
+        }
+        
+        PK.worldMeter(
+          "worldMeter",
+          sample,
+          my,
+          { mean: "World Avg", me: "Me" }
+        );
+
+        const fb = $("worldMeter");
+        if (!isNaN(customSize) && customSize > 0 && customName) {
+          const ratio = (my / customSize).toFixed(2);
+          const pct = Math.round((my / customSize) * 100);
+          const diff = Math.abs(my - customSize).toFixed(2);
+          
+          let myValStr = true ? "$" + my.toFixed(2) : my + "";
+          let custValStr = true ? "$" + customSize.toFixed(2) : customSize + "";
+          let diffStr = true ? "$" + Number(diff).toFixed(2) : Number(diff).toFixed(2) + "";
+
+          const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
+          const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
+            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
+            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
+            `</div>`;
+          fb.innerHTML += desc;
+        }
+        
+        // Draw the dynamic SVG visualizer
+        if (typeof drawVisualizer === 'function') {
+          drawVisualizer();
+        }
+        
         updateProgress();
       }
 
-      /* ---- What-If Lab: projected total + x ≥ goal flip ---- */
       function runWhatIf() {
-        const price = num("wi-price"),
-          items = num("wi-items");
-        const raised = proj.raised,
-          goal = proj.goal;
-        if (isNaN(price) || price < 0 || isNaN(items) || items < 0) {
-          $("whatIfBox").innerHTML =
-            'Enter a price and item count to project your total. Uses your "already raised" and "goal" from Part 1.';
+        const v = parseFloat($("whatIfVal").value);
+        let sample = [...baseWorldSample];
+        const customSize = num("worldSize");
+        if (!isNaN(customSize) && customSize > 0) {
+          sample.push(customSize);
+        }
+        if (isNaN(v)) {
+          $("whatIfBox").textContent = "Enter a number first.";
           return;
         }
-        const fromSales = price * items;
-        if (raised == null || goal == null) {
-          $("whatIfBox").innerHTML =
-            "Selling " +
-            items +
-            " items at $" +
-            price.toFixed(2) +
-            " raises <b>$" +
-            fromSales.toFixed(2) +
-            "</b>. Fill in Part 1 (raised + goal) to test x ≥ goal.";
-          return;
-        }
-        const total = raised + fromSales;
-        const meets = total >= goal;
+        const before = PK.mean(sample);
+        const after = PK.mean(sample.concat([v]));
+        
+        let beforeStr = true ? "$" + before.toFixed(2) : before.toFixed(2) + "";
+        let afterStr = true ? "$" + after.toFixed(2) : after.toFixed(2) + "";
+        let vStr = true ? "$" + v.toFixed(2) : v + "";
+
         PK.whatIf(
           "whatIfBox",
-          {
-            sales: "$" + fromSales.toFixed(2),
-            "already raised": "$" + raised.toFixed(2),
-          },
-          {
-            "projected total": "$" + total.toFixed(2),
-            goal: "$" + goal.toFixed(2),
-          },
-          "Selling " + items + " items at $" + price.toFixed(2) + " each:",
+          { average: beforeStr },
+          { average: afterStr },
+          "Adding a value of " + vStr + " to the sample:"
         );
-        $("whatIfBox").innerHTML +=
-          '<p style="margin:8px 0 0"><b>Goal condition x ≥ ' +
-          goal +
-          ":</b> " +
-          total.toFixed(2) +
-          " ≥ " +
-          goal +
-          " → " +
-          (meets
-            ? '<span style="color:var(--green)">✅ TRUE — plan meets the goal!</span>'
-            : '<span style="color:var(--coral)">❌ FALSE — short by $' +
-              (goal - total).toFixed(2) +
-              ".</span>") +
-          "</p>";
-        updateProgress();
       }
 
-      /* ---- Use example numbers ---- */
+      
+      function drawVisualizer() {
+        const raised = num("c-raised") || 0;
+        const target = num("worldSize") || 400;
+        
+        const maxH = 140;
+        const fillPct = Math.min(Math.max((raised / target) * 100, 0), 100);
+        const fillH = (fillPct / 100) * maxH;
+        const fillY = 170 - fillH;
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            <text x="250" y="35" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Fundraising Goal Thermometer (${fillPct.toFixed(0)}%)</text>
+            
+            <!-- Thermometer Border -->
+            <rect x="235" y="30" width="30" height="140" rx="15" fill="none" stroke="#5e6e7e" stroke-width="3" />
+            <circle cx="250" cy="180" r="25" fill="#f1f5f9" stroke="#5e6e7e" stroke-width="3" />
+            <rect x="237" y="32" width="26" height="138" rx="13" fill="#f1f5f9" />
+            
+            <!-- Fluid Fill -->
+            <circle cx="250" cy="180" r="23" fill="#ef4444" />
+            <rect x="237" y="${fillY}" width="26" height="${fillH}" fill="#ef4444" />
+            
+            <text x="290" y="105" font-size="11" font-weight="bold" fill="#0f2b3c">Raised: $${raised.toFixed(0)}</text>
+            <text x="290" y="65" font-size="11" font-weight="bold" fill="#c45a3c">Target: $${target.toFixed(0)}</text>
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+
       function useExamples() {
         const ex = {
           cause: "6th grade field trip",

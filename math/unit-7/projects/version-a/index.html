@@ -1118,6 +1118,16 @@
         </p>
       </section>
 
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+    
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -1250,7 +1260,7 @@
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase">
+      <section class="phase" >
         <div class="phase-head">
           <div
             class="phase-num"
@@ -1259,45 +1269,49 @@
             3
           </div>
           <div>
-            <span class="arc-banner"
-              >Part 3 · World — real maps &amp; coasters</span
-            >
-            <div class="skill">Compare to real data · 6.NS.6 · 6.NS.8</div>
-            <h2>How Does Your Map Compare?</h2>
+            <span class="arc-banner">Part 3 · World — real-world research</span>
+            <div class="skill">Compare to real data</div>
+            <h2>How Do Your Calculations Compare?</h2>
           </div>
         </div>
         <p>
-          These are real-ish landmark coordinates on a city grid (origin = city
-          center) and famous roller-coaster drop heights. Pick a category and
-          see where your number lands.
+          Compare your calculated project totals against real-world industry benchmarks and standards.
         </p>
+
+        <div class="pk-research-lab">
+          <h3>🔍 World Record Coaster Summit Heights</h3>
+          <p>Open the RCDB. Look up the height of the tallest steel roller coaster in the world (Kingda Ka). Enter the coaster summit height in feet below:</p>
+          <a href="https://rcdb.com/" target="_blank" class="pk-research-btn">🔗 Roller Coaster Database (RCDB) ↗</a>
+          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
+            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Roller Coaster Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="worldGo()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Coaster Height (feet)</label>
+              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="worldGo()">
+            </div>
+          </div>
+        </div>
+
         <div class="grid2">
           <div>
-            <label class="fld" for="worldCat">Compare against</label>
-            <select id="worldCat" data-save onchange="worldGo()">
-              <option value="dist">
-                Landmark distance from center (units)
-              </option>
-              <option value="drop">
-                Coaster drop height (m, signed: drop = −)
-              </option>
-            </select>
-            <label class="fld" for="myWorld">My number</label>
+            <label class="fld" for="myWorld">My calculated value to compare</label>
             <input
               type="number"
               id="myWorld"
               data-save
-              step="1"
+              step="0.01"
               oninput="worldGo()"
-              placeholder="type your value"
+              placeholder="auto-fills or type your value"
             />
-            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
-              Tip: a walking distance from Part 1 is a great value to type here.
-            </p>
-            <div id="worldMeter"></div>
+            <div id="worldMeter" style="margin-top: 24px;"></div>
           </div>
           <div>
-            <h3 id="worldTitle">World Sample 🌍</h3>
+            <h3>Tallest Coaster Summits 🌍</h3>
             <div
               style="
                 overflow: auto;
@@ -1307,15 +1321,23 @@
             >
               <table class="rubric" style="margin-top: 0">
                 <thead>
-                  <tr id="worldHead"></tr>
+                  <tr>
+                    <th>Item/Location</th>
+                    <th>Standard Value</th>
+                  </tr>
                 </thead>
-                <tbody id="worldRows"></tbody>
+                <tbody id="worldRows">
+                  <tr><td>Kingda Ka</td><td>456 ft</td></tr>
+                  <tr><td>Top Thrill 2</td><td>420 ft</td></tr>
+                  <tr><td>Fury 325</td><td>325 ft</td></tr>
+                  <tr><td>Steel Dragon 2000</td><td>318 ft</td></tr>
+                  <tr><td>Leviathan</td><td>305 ft</td></tr>
+                  <tr><td>Goliath</td><td>230 ft</td></tr>
+                  <tr><td>Millennium Force</td><td>205 ft</td></tr>
+                  <tr><td>Intimidator 305</td><td>185 ft</td></tr>
+                </tbody>
               </table>
             </div>
-            <p class="pk-lvl1" style="font-size: 13px; color: var(--muted)">
-              Level 1: stick with one category (landmark distance) to keep it
-              simple.
-            </p>
           </div>
         </div>
 
@@ -1359,15 +1381,11 @@
           placeholder="My number is ___ the sample average because ___."
         ></textarea>
         <div class="pk-lvl2">
-          <label class="fld" for="worldHard"
-            >Level 2 question: A coaster drops from +52 m to −13 m below the
-            loading dock (0). How tall is the total drop? Show your thinking
-            with absolute value.</label
-          >
+          <label class="fld" for="worldHard"><strong>Level 2 Blueprint Grid Challenge:</strong> On a park blueprint grid, your coaster station is located at $(2, -5)$ and the summit is at $(2, Y)$. If the coordinate distance represents feet and the absolute distance between coordinates equals your researched coaster height of **X** feet, what is the value of the summit’s Y-coordinate ($Y > 0$)? Show your absolute value steps.</label>
           <textarea
             id="worldHard"
             data-save
-            placeholder="|52| + |−13| = ___ because ___"
+            placeholder="Distance = |Y - (-5)| = Y + 5 = ___. Y = ___ - 5 = ___ feet because..."
           ></textarea>
         </div>
         <label class="fld" for="careful"
@@ -1906,108 +1924,124 @@
       }
 
       /* ---- Part 3: world dataset + meter ---- */
-      // Landmark grid coords (origin = city center) → distance from center used as the metric.
-      // Real coaster drop heights (signed: a drop below the dock = negative).
-      const worldData = {
-        dist: {
-          title: "City Landmark Grid 🗺️ (origin = center)",
-          head: ["Landmark", "(x, y)", "Dist. from center"],
-          // distance from center = |x| + |y| (taxicab) for a 6th-grade friendly metric on shared rows/cols
-          rows: [
-            ["Statue of Liberty, NYC", [-3, -4], 7],
-            ["Eiffel Tower, Paris", [-2, 3], 5],
-            ["Sydney Opera House", [5, -2], 7],
-            ["Tokyo Tower", [4, 4], 8],
-            ["Christ the Redeemer, Rio", [-6, -5], 11],
-            ["Big Ben, London", [1, 2], 3],
-          ],
-          sample: function () {
-            return this.rows.map((r) => r[2]);
-          },
-        },
-        drop: {
-          title: "Famous Coaster Drops 🎢 (drop = negative)",
-          head: ["Coaster", "Park", "Drop (m)"],
-          rows: [
-            ["Kingda Ka", "NJ, USA", -127],
-            ["Top Thrill 2", "OH, USA", -128],
-            ["Fury 325", "NC, USA", -98],
-            ["Steel Dragon 2000", "Japan", -94],
-            ["Leviathan", "Canada", -93],
-            ["Goliath", "CA, USA", -78],
-          ],
-          sample: function () {
-            return this.rows.map((r) => r[2]);
-          },
-        },
-      };
+      const baseWorldSample = [456, 420, 325, 318, 305, 230, 205, 185];
 
       function renderWorld() {
-        const cat = $("worldCat").value;
-        const d = worldData[cat];
-        $("worldTitle").textContent = d.title;
-        $("worldHead").innerHTML = d.head
-          .map((h) => "<th>" + h + "</th>")
-          .join("");
-        $("worldRows").innerHTML = d.rows
-          .map((r) => {
-            if (cat === "dist")
-              return (
-                "<tr><td>" +
-                r[0] +
-                "</td><td>(" +
-                r[1][0] +
-                ", " +
-                r[1][1] +
-                ")</td><td>" +
-                r[2] +
-                "</td></tr>"
-              );
-            return (
-              "<tr><td>" +
-              r[0] +
-              "</td><td>" +
-              r[1] +
-              "</td><td>" +
-              r[2] +
-              "</td></tr>"
-            );
-          })
-          .join("");
+        // Automatically populated from static table in HTML
       }
-      function worldSample() {
-        return worldData[$("worldCat").value].sample();
-      }
+
       function worldGo() {
-        renderWorld();
         const my = num("myWorld");
-        const cat = $("worldCat").value;
-        const labels =
-          cat === "drop"
-            ? { mean: "Avg drop", me: "Me" }
-            : { mean: "Avg dist", me: "Me" };
-        PK.worldMeter("worldMeter", worldSample(), my, labels);
+        const customName = $("worldCountry").value.trim();
+        const customSize = num("worldSize");
+        
+        let sample = [...baseWorldSample];
+        if (!isNaN(customSize) && customSize > 0) {
+          sample.push(customSize);
+        }
+        
+        PK.worldMeter(
+          "worldMeter",
+          sample,
+          my,
+          { mean: "World Avg", me: "Me" }
+        );
+
+        const fb = $("worldMeter");
+        if (!isNaN(customSize) && customSize > 0 && customName) {
+          const ratio = (my / customSize).toFixed(2);
+          const pct = Math.round((my / customSize) * 100);
+          const diff = Math.abs(my - customSize).toFixed(2);
+          
+          let myValStr = false ? "$" + my.toFixed(2) : my + " ft";
+          let custValStr = false ? "$" + customSize.toFixed(2) : customSize + " ft";
+          let diffStr = false ? "$" + Number(diff).toFixed(2) : Number(diff).toFixed(2) + " ft";
+
+          const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
+          const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
+            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
+            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
+            `</div>`;
+          fb.innerHTML += desc;
+        }
+        
+        // Draw the dynamic SVG visualizer
+        if (typeof drawVisualizer === 'function') {
+          drawVisualizer();
+        }
+        
         updateProgress();
       }
+
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
-        const sample = worldSample();
+        let sample = [...baseWorldSample];
+        const customSize = num("worldSize");
+        if (!isNaN(customSize) && customSize > 0) {
+          sample.push(customSize);
+        }
         if (isNaN(v)) {
           $("whatIfBox").textContent = "Enter a number first.";
           return;
         }
-        const beforeMin = Math.min.apply(null, sample);
-        const afterArr = sample.concat([v]);
-        const afterMin = Math.min.apply(null, afterArr);
+        const before = PK.mean(sample);
+        const after = PK.mean(sample.concat([v]));
+        
+        let beforeStr = false ? "$" + before.toFixed(2) : before.toFixed(2) + " ft";
+        let afterStr = false ? "$" + after.toFixed(2) : after.toFixed(2) + " ft";
+        let vStr = false ? "$" + v.toFixed(2) : v + " ft";
+
         PK.whatIf(
           "whatIfBox",
-          { average: PK.mean(sample).toFixed(2), min: beforeMin },
-          { average: PK.mean(afterArr).toFixed(2), min: afterMin },
-          "Adding a value of " + v + " to the sample:",
+          { average: beforeStr },
+          { average: afterStr },
+          "Adding a value of " + vStr + " to the sample:"
         );
       }
 
-      /* ---- Use example numbers ---- */
+      
+      function drawVisualizer() {
+        const eX = num("p-ent-x"), eY = num("p-ent-y");
+        const cX = num("p-cst-x"), cY = num("p-cst-y");
+        const fX = num("p-fer-x"), fY = num("p-fer-y");
+        const sX = num("p-shp-x"), sY = num("p-shp-y");
+        
+        let points = "";
+        const scale = 10;
+        const cx = 250, cy = 120;
+        
+        const drawDot = (x, y, color, label) => {
+          if (isNaN(x) || isNaN(y)) return "";
+          const px = cx + x * scale;
+          const py = cy - y * scale;
+          return `
+            <circle cx="${px}" cy="${py}" r="6" fill="${color}" />
+            <text x="${px + 8}" y="${py + 4}" font-size="9" font-weight="bold" fill="#0f2b3c">${label} (${x},${y})</text>
+          `;
+        };
+        
+        points += drawDot(eX, eY, "#1a6fb5", "Entrance");
+        points += drawDot(cX, cY, "#d4952a", "Coaster");
+        points += drawDot(fX, fY, "#0e8a7d", "Ferris Wheel");
+        points += drawDot(sX, sY, "#c45a3c", "Shop");
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            <!-- Grid Axes -->
+            <line x1="250" y1="20" x2="250" y2="220" stroke="#cbd5e1" stroke-width="2" />
+            <line x1="50" y1="120" x2="450" y2="120" stroke="#cbd5e1" stroke-width="2" />
+            
+            <text x="440" y="115" font-size="9" fill="#94a3b8">X</text>
+            <text x="255" y="32" font-size="9" fill="#94a3b8">Y</text>
+            
+            ${points}
+            <text x="250" y="235" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Blueprint Map Coordinate Grid Plotter</text>
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+
       function useExamples() {
         const ex = {
           p1name: "Home",

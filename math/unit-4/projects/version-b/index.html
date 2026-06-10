@@ -810,6 +810,16 @@
         </div>
       </section>
 
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+    
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -893,7 +903,7 @@
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase">
+      <section class="phase" >
         <div class="phase-head">
           <div
             class="phase-num"
@@ -902,38 +912,49 @@
             3
           </div>
           <div>
-            <span class="arc-banner"
-              >Part 3 · World — national prices &amp; tips</span
-            >
-            <div class="skill">Compare to real data · 6.RP.2 · 6.RP.3c</div>
-            <h2>Compare to National Averages</h2>
+            <span class="arc-banner">Part 3 · World — real-world research</span>
+            <div class="skill">Compare to real data</div>
+            <h2>How Do Your Calculations Compare?</h2>
           </div>
         </div>
         <p>
-          These are realistic average U.S. grocery unit prices. Pick a product
-          to see how your unit price compares.
+          Compare your calculated project totals against real-world industry benchmarks and standards.
         </p>
+
+        <div class="pk-research-lab">
+          <h3>🔍 BLS Average US Milk Prices</h3>
+          <p>Open the BLS database. Find the national average retail price for a gallon of whole milk. Enter the average price below to compute your decimal totals:</p>
+          <a href="https://www.bls.gov/charts/consumer-price-index/consumer-price-index-average-price-data.htm" target="_blank" class="pk-research-btn">🔗 BLS Consumer Price Index Average Prices ↗</a>
+          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
+            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Researched Item/Region</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="worldGo()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Cost per Gallon of Milk ($)</label>
+              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="worldGo()">
+            </div>
+          </div>
+        </div>
+
         <div class="grid2">
           <div>
-            <label class="fld" for="worldProduct">Compare against</label>
-            <select id="worldProduct" data-save onchange="worldGo()"></select>
-            <label class="fld" for="myWorld">My unit price ($ per unit)</label>
+            <label class="fld" for="myWorld">My calculated value to compare</label>
             <input
               type="number"
               id="myWorld"
               data-save
-              step="0.0001"
+              step="0.01"
               oninput="worldGo()"
-              placeholder="type your unit price"
+              placeholder="auto-fills or type your value"
             />
-            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
-              Tip: use your better-buy unit price from Part 1.
-            </p>
-            <div id="worldMeter"></div>
-            <div class="readout" id="world-out"></div>
+            <div id="worldMeter" style="margin-top: 24px;"></div>
           </div>
           <div>
-            <h3>U.S. Grocery Unit-Price Sample 🇺🇸</h3>
+            <h3>US Average CPI Prices 🌍</h3>
             <div
               style="
                 overflow: auto;
@@ -942,17 +963,24 @@
               "
             >
               <table class="rubric" style="margin-top: 0">
-                <tr>
-                  <th>Product</th>
-                  <th>Avg unit price</th>
-                </tr>
-                <tbody id="worldRows"></tbody>
+                <thead>
+                  <tr>
+                    <th>Item/Location</th>
+                    <th>Standard Value</th>
+                  </tr>
+                </thead>
+                <tbody id="worldRows">
+                  <tr><td>Whole Milk (gal)</td><td>$3.98</td></tr>
+                  <tr><td>White Bread (loaf)</td><td>$4.25</td></tr>
+                  <tr><td>Chicken Breast (lb)</td><td>$3.50</td></tr>
+                  <tr><td>White Rice (lb)</td><td>$4.50</td></tr>
+                  <tr><td>Large Eggs (doz)</td><td>$3.80</td></tr>
+                  <tr><td>Bananas (lb)</td><td>$4.10</td></tr>
+                  <tr><td>Ground Beef (lb)</td><td>$4.60</td></tr>
+                  <tr><td>Apples (lb)</td><td>$3.70</td></tr>
+                </tbody>
               </table>
             </div>
-            <h3 style="margin-top: 16px">Tip Norms 🍽️</h3>
-            <p style="font-size: 14px; color: var(--muted); margin: 0">
-              Typical U.S. restaurant tips: 15% (okay), 18% (good), 20% (great).
-            </p>
           </div>
         </div>
 
@@ -1004,14 +1032,11 @@
           placeholder="Cheapest per unit saves money, but ___. The cheapest is not always best because ___ (quality, waste, need)."
         ></textarea>
         <div class="pk-lvl2">
-          <label class="fld" for="worldHard"
-            >Level 2: A $20 bill with an 18% tip — what is the total, and what
-            percent of the total is the tip? Show your thinking.</label
-          >
+          <label class="fld" for="worldHard"><strong>Level 2 Grocery Decimal Challenge:</strong> Your food cart recipe requires 5.5 gallons of whole milk. If you buy milk at your researched average price of **$X** per gallon, and the local county charges a 4% sales tax on groceries, what is the final cost? Show your decimal multiplication.</label>
           <textarea
             id="worldHard"
             data-save
-            placeholder="Tip = $___; total = $___; tip ÷ total × 100 = ___% because ___"
+            placeholder="5.5 gal × $___ = $___ subtotal. Subtotal × 1.04 = $___ total because..."
           ></textarea>
         </div>
       </section>
@@ -1416,100 +1441,130 @@
         updateProgress();
       }
 
-      /* ---- Part 3: world dataset (avg U.S. grocery unit prices) ---- */
-      const world = [
-        ["Milk ($/gallon)", 4.1],
-        ["Eggs ($/dozen)", 3.2],
-        ["Bread ($/loaf)", 2.9],
-        ["Bananas ($/lb)", 0.62],
-        ["Chicken breast ($/lb)", 4.3],
-        ["Rice ($/lb)", 1.05],
-        ["Bottled water ($/16oz)", 0.55],
-        ["Granola bar ($/bar)", 0.65],
-        ["Apples ($/lb)", 1.55],
-        ["Cheese ($/lb)", 5.4],
-      ];
+      /* ---- Part 3: world dataset + meter ---- */
+      const baseWorldSample = [3.98, 4.25, 3.5, 4.5, 3.8, 4.1, 4.6, 3.7];
+
       function renderWorld() {
-        $("worldRows").innerHTML = world
-          .map(
-            (r) =>
-              "<tr><td>" + r[0] + "</td><td>$" + r[1].toFixed(2) + "</td></tr>",
-          )
-          .join("");
-        $("worldProduct").innerHTML = world
-          .map((r, i) => '<option value="' + i + '">' + r[0] + "</option>")
-          .join("");
+        // Automatically populated from static table in HTML
       }
-      function worldSample() {
-        return world.map((r) => r[1]);
-      }
+
       function worldGo() {
         const my = num("myWorld");
-        const i = parseInt($("worldProduct").value, 10) || 0;
-        const avg = world[i][1];
-        PK.worldMeter("worldMeter", worldSample(), my, {
-          mean: "Sample avg $",
-          me: "My $/unit",
-        });
-        if (!isNaN(my) && my > 0) {
-          const rel =
-            my < avg
-              ? "cheaper than"
-              : my > avg
-                ? "pricier than"
-                : "the same as";
-          show(
-            "world-out",
-            '<div class="big">$' +
-              my.toFixed(4) +
-              " / unit</div>" +
-              "Your unit price is <strong>" +
-              rel +
-              "</strong> the " +
-              world[i][0] +
-              " average of $" +
-              avg.toFixed(2) +
-              ".",
-          );
-        } else {
-          hide("world-out");
+        const customName = $("worldCountry").value.trim();
+        const customSize = num("worldSize");
+        
+        let sample = [...baseWorldSample];
+        if (!isNaN(customSize) && customSize > 0) {
+          sample.push(customSize);
         }
+        
+        PK.worldMeter(
+          "worldMeter",
+          sample,
+          my,
+          { mean: "World Avg", me: "Me" }
+        );
+
+        const fb = $("worldMeter");
+        if (!isNaN(customSize) && customSize > 0 && customName) {
+          const ratio = (my / customSize).toFixed(2);
+          const pct = Math.round((my / customSize) * 100);
+          const diff = Math.abs(my - customSize).toFixed(2);
+          
+          let myValStr = true ? "$" + my.toFixed(2) : my + "";
+          let custValStr = true ? "$" + customSize.toFixed(2) : customSize + "";
+          let diffStr = true ? "$" + Number(diff).toFixed(2) : Number(diff).toFixed(2) + "";
+
+          const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
+          const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
+            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
+            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
+            `</div>`;
+          fb.innerHTML += desc;
+        }
+        
+        // Draw the dynamic SVG visualizer
+        if (typeof drawVisualizer === 'function') {
+          drawVisualizer();
+        }
+        
         updateProgress();
       }
+
       function runWhatIf() {
-        const cp = parseFloat($("c-price").value),
-          cu = parseFloat($("c-units").value);
-        if (proj.upA == null || proj.upB == null) {
-          $("whatIfBox").textContent =
-            "Finish Packages A and B in Part 1 first.";
+        const v = parseFloat($("whatIfVal").value);
+        let sample = [...baseWorldSample];
+        const customSize = num("worldSize");
+        if (!isNaN(customSize) && customSize > 0) {
+          sample.push(customSize);
+        }
+        if (isNaN(v)) {
+          $("whatIfBox").textContent = "Enter a number first.";
           return;
         }
-        if (isNaN(cp) || cp <= 0 || isNaN(cu) || cu <= 0) {
-          $("whatIfBox").textContent = "Enter Package C price and units first.";
-          return;
-        }
-        const upC = cp / cu;
-        const all = [
-          ["A", proj.upA],
-          ["B", proj.upB],
-          ["C", upC],
-        ];
-        all.sort((x, y) => x[1] - y[1]);
+        const before = PK.mean(sample);
+        const after = PK.mean(sample.concat([v]));
+        
+        let beforeStr = true ? "$" + before.toFixed(2) : before.toFixed(2) + "";
+        let afterStr = true ? "$" + after.toFixed(2) : after.toFixed(2) + "";
+        let vStr = true ? "$" + v.toFixed(2) : v + "";
+
         PK.whatIf(
           "whatIfBox",
-          {
-            "best of A,B":
-              "$" + Math.min(proj.upA, proj.upB).toFixed(4) + "/unit",
-          },
-          {
-            "best of A,B,C":
-              "$" + all[0][1].toFixed(4) + "/unit (Package " + all[0][0] + ")",
-          },
-          "Adding Package C at $" + upC.toFixed(4) + " per unit:",
+          { average: beforeStr },
+          { average: afterStr },
+          "Adding a value of " + vStr + " to the sample:"
         );
       }
 
-      /* ---- Use example numbers ---- */
+      
+      function drawVisualizer() {
+        const sub = num("subtotal") || 0;
+        const tax = num("tax-rate") || 0;
+        const tip = num("tip-pct") || 0;
+        
+        let html = "";
+        if (sub > 0) {
+          const taxAmt = sub * (tax / 100);
+          const tipAmt = sub * (tip / 100);
+          const total = sub + taxAmt + tipAmt;
+          
+          html = `
+            <g transform="translate(150, 20)">
+              <!-- Receipt Background -->
+              <rect x="0" y="0" width="200" height="200" fill="#fcfcfc" stroke="#cbd5e1" stroke-width="2" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.05))" />
+              <line x1="10" y1="35" x2="190" y2="35" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3,3" />
+              <text x="100" y="25" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">FOOD CART RECEIPT</text>
+              
+              <text x="20" y="60" font-size="10" fill="#5e6e7e">Menu Subtotal:</text>
+              <text x="180" y="60" text-anchor="end" font-size="10" font-weight="bold" fill="#0f2b3c">$${sub.toFixed(2)}</text>
+              
+              <text x="20" y="85" font-size="10" fill="#5e6e7e">Sales Tax (${tax}%):</text>
+              <text x="180" y="85" text-anchor="end" font-size="10" fill="#0f2b3c">$${taxAmt.toFixed(2)}</text>
+              
+              <text x="20" y="110" font-size="10" fill="#5e6e7e">Staff Tip (${tip}%):</text>
+              <text x="180" y="110" text-anchor="end" font-size="10" fill="#0f2b3c">$${tipAmt.toFixed(2)}</text>
+              
+              <line x1="10" y1="130" x2="190" y2="130" stroke="#cbd5e1" stroke-width="1.5" />
+              <text x="20" y="155" font-size="12" font-weight="bold" fill="#2d874b">GRAND TOTAL:</text>
+              <text x="180" y="155" text-anchor="end" font-size="12" font-weight="bold" fill="#2d874b">$${total.toFixed(2)}</text>
+            </g>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Food Cart Bill values to print receipt</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+
       function useExamples() {
         const ex = {
           product: "granola bars",

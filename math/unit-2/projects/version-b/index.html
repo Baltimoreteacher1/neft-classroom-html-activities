@@ -863,6 +863,16 @@
         </p>
       </section>
 
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+    
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -950,7 +960,7 @@
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase">
+      <section class="phase" >
         <div class="phase-head">
           <div
             class="phase-num"
@@ -959,41 +969,49 @@
             3
           </div>
           <div>
-            <span class="arc-banner"
-              >Part 3 · World — standard material lengths</span
-            >
-            <div class="skill">Compare to real data · 6.NS.1</div>
-            <h2>How Many Pieces Do Standard Materials Make?</h2>
+            <span class="arc-banner">Part 3 · World — real-world research</span>
+            <div class="skill">Compare to real data</div>
+            <h2>How Do Your Calculations Compare?</h2>
           </div>
         </div>
         <p>
-          These are standard board and pipe lengths: length ÷ cut size = pieces.
-          Pick a category and see where your number lands.
+          Compare your calculated project totals against real-world industry benchmarks and standards.
         </p>
+
+        <div class="pk-research-lab">
+          <h3>🔍 Standard Construction Stud Widths</h3>
+          <p>Open the website or look up the dimensional standards for common soft lumber. Find the ACTUAL thickness/width of a standard 2x4 board (standard is 3 1/2 inches, or 7/2 inches). Enter the thickness below:</p>
+          <a href="https://www.homedepot.com/" target="_blank" class="pk-research-btn">🔗 The Home Depot Lumber Lumber Dimensions Guide ↗</a>
+          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
+            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Lumber Specification</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="worldGo()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Actual Board Width (inches)</label>
+              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="worldGo()">
+            </div>
+          </div>
+        </div>
+
         <div class="grid2">
           <div>
-            <label class="fld" for="worldCat">Compare against</label>
-            <select id="worldCat" data-save onchange="worldGo()">
-              <option value="pieces">Pieces per material</option>
-              <option value="length">Material length (ft)</option>
-            </select>
-            <label class="fld" for="myWorld">My number</label>
+            <label class="fld" for="myWorld">My calculated value to compare</label>
             <input
               type="number"
               id="myWorld"
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your value"
+              placeholder="auto-fills or type your value"
             />
-            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
-              Tip: your shelves or pieces from Part 1 are a great value to type
-              here.
-            </p>
-            <div id="worldMeter"></div>
+            <div id="worldMeter" style="margin-top: 24px;"></div>
           </div>
           <div>
-            <h3>Standard Material Lengths 🪵</h3>
+            <h3>Actual Dimensions 🌍</h3>
             <div
               style="
                 overflow: auto;
@@ -1002,13 +1020,22 @@
               "
             >
               <table class="rubric" style="margin-top: 0">
-                <tr>
-                  <th>Material</th>
-                  <th>Length (ft)</th>
-                  <th>Cut</th>
-                  <th>Pieces</th>
-                </tr>
-                <tbody id="worldRows"></tbody>
+                <thead>
+                  <tr>
+                    <th>Item/Location</th>
+                    <th>Standard Value</th>
+                  </tr>
+                </thead>
+                <tbody id="worldRows">
+                  <tr><td>2x4 Stud</td><td>3.5 in</td></tr>
+                  <tr><td>2x6 Board</td><td>5.5 in</td></tr>
+                  <tr><td>2x2 Furring</td><td>1.5 in</td></tr>
+                  <tr><td>2x8 Plank</td><td>7.25 in</td></tr>
+                  <tr><td>2x10 Plank</td><td>9.25 in</td></tr>
+                  <tr><td>2x12 Plank</td><td>11.25 in</td></tr>
+                  <tr><td>Standard Trim</td><td>2.5 in</td></tr>
+                  <tr><td>Fencing Slat</td><td>4.5 in</td></tr>
+                </tbody>
               </table>
             </div>
           </div>
@@ -1063,16 +1090,11 @@
           placeholder="My material makes ___ pieces, which is ___ the average of ___ because ___."
         ></textarea>
         <div class="pk-lvl2">
-          <label class="fld" for="worldHard"
-            >Level 2 question: A 7-foot board is cut into 3/4-ft pieces. How
-            many full pieces, and how much board (if any) is left over? Then say
-            whether 3/4-ft cuts or 2/3-ft cuts waste less. Show your
-            thinking.</label
-          >
+          <label class="fld" for="worldHard"><strong>Level 2 Carpentry Challenge:</strong> Use your researched actual board width (use fraction form, e.g. 3 1/2 = 7/2 inches). If a wooden plank is 21 inches wide, how many standard studs of your researched size can be ripped (cut vertically) from it? Show your fraction division steps.</label>
           <textarea
             id="worldHard"
             data-save
-            placeholder="7 ÷ (3/4) = 7 × (4/3) = 28/3 = ___ R ___; leftover = ___ ft because ___"
+            placeholder="21 ÷ 7/2 = 21 × 2/7 = ___ boards because..."
           ></textarea>
         </div>
         <label class="fld" for="careful"
@@ -1520,68 +1542,156 @@
       }
 
       /* ---- Part 3: world dataset + meter ---- */
-      // [material, lengthFt, cutLabel, pieces] — standard board/pipe lengths
-      const world = [
-        ["Pine 2x4 stud", 8, "2/3 ft", 12],
-        ["Plywood strip", 6, "3/4 ft", 8],
-        ["Oak shelf board", 10, "5/6 ft", 12],
-        ["Copper pipe", 3.5, "1/4 ft", 14],
-        ["PVC pipe", 5, "1/2 ft", 10],
-        ["Dowel rod", 4.5, "3/8 ft", 12],
-        ["Trim molding", 12, "1 1/4 ft", 9],
-        ["Steel rod", 3.75, "1/2 ft", 7],
-      ];
-      const wIdx = { pieces: 3, length: 1 };
+      const baseWorldSample = [3.5, 5.5, 1.5, 7.25, 9.25, 11.25, 2.5, 4.5];
+
       function renderWorld() {
-        $("worldRows").innerHTML = world
-          .map(
-            (r) =>
-              "<tr><td>" +
-              r[0] +
-              "</td><td>" +
-              r[1] +
-              "</td><td>" +
-              r[2] +
-              "</td><td>" +
-              r[3] +
-              "</td></tr>",
-          )
-          .join("");
+        // Automatically populated from static table in HTML
       }
-      function worldSample() {
-        return world.map((r) => r[wIdx[$("worldCat").value]]);
-      }
+
       function worldGo() {
         const my = num("myWorld");
-        const labels =
-          $("worldCat").value === "length"
-            ? { mean: "Avg ft", me: "Me" }
-            : { mean: "Avg pieces", me: "Me" };
-        PK.worldMeter("worldMeter", worldSample(), my, labels);
+        const customName = $("worldCountry").value.trim();
+        const customSize = num("worldSize");
+        
+        let sample = [...baseWorldSample];
+        if (!isNaN(customSize) && customSize > 0) {
+          sample.push(customSize);
+        }
+        
+        PK.worldMeter(
+          "worldMeter",
+          sample,
+          my,
+          { mean: "World Avg", me: "Me" }
+        );
+
+        const fb = $("worldMeter");
+        if (!isNaN(customSize) && customSize > 0 && customName) {
+          const ratio = (my / customSize).toFixed(2);
+          const pct = Math.round((my / customSize) * 100);
+          const diff = Math.abs(my - customSize).toFixed(2);
+          
+          let myValStr = false ? "$" + my.toFixed(2) : my + " in";
+          let custValStr = false ? "$" + customSize.toFixed(2) : customSize + " in";
+          let diffStr = false ? "$" + Number(diff).toFixed(2) : Number(diff).toFixed(2) + " in";
+
+          const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
+          const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
+            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
+            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
+            `</div>`;
+          fb.innerHTML += desc;
+        }
+        
+        // Draw the dynamic SVG visualizer
+        if (typeof drawVisualizer === 'function') {
+          drawVisualizer();
+        }
+        
         updateProgress();
       }
+
       function runWhatIf() {
-        const length = parseFloat($("wi-length").value),
-          cut = parseFloat($("wi-cut").value);
-        if (isNaN(length) || length <= 0 || isNaN(cut) || cut <= 0) {
-          $("whatIfBox").textContent =
-            "Enter a material length and a cut size first.";
+        const v = parseFloat($("whatIfVal").value);
+        let sample = [...baseWorldSample];
+        const customSize = num("worldSize");
+        if (!isNaN(customSize) && customSize > 0) {
+          sample.push(customSize);
+        }
+        if (isNaN(v)) {
+          $("whatIfBox").textContent = "Enter a number first.";
           return;
         }
-        const pieces = Math.floor(length / cut);
-        const halfPieces = Math.floor(length / (cut / 2));
+        const before = PK.mean(sample);
+        const after = PK.mean(sample.concat([v]));
+        
+        let beforeStr = false ? "$" + before.toFixed(2) : before.toFixed(2) + " in";
+        let afterStr = false ? "$" + after.toFixed(2) : after.toFixed(2) + " in";
+        let vStr = false ? "$" + v.toFixed(2) : v + " in";
+
         PK.whatIf(
           "whatIfBox",
-          { "cut size": cut + " ft", "full pieces": pieces },
-          {
-            "cut size": cut / 2 + " ft (half as big)",
-            "full pieces": halfPieces,
-          },
-          "Cutting the piece size in half:",
+          { average: beforeStr },
+          { average: afterStr },
+          "Adding a value of " + vStr + " to the sample:"
         );
       }
 
-      /* ---- Use example numbers ---- */
+      
+      function drawVisualizer() {
+        const board = num("p1-board");
+        const ribbon = num("p2-ribbon");
+        const box = num("p3-box");
+        
+        let p1Html = "";
+        if (board > 0) {
+          const totalW = 140;
+          const pieceW = totalW / board;
+          let pieces = "";
+          for (let i = 0; i < board; i++) {
+            const x = 30 + i * pieceW;
+            pieces += `
+              <rect x="${x}" y="95" width="${pieceW}" height="20" fill="rgba(26, 111, 181, 0.15)" stroke="#1a6fb5" />
+              <text x="${x + pieceW/2}" y="108" text-anchor="middle" font-size="8" fill="#1a6fb5">1/${board}</text>
+            `;
+          }
+          p1Html = `
+            <rect x="30" y="95" width="140" height="20" fill="none" stroke="#0f2b3c" stroke-width="2" />
+            ${pieces}
+            <text x="100" y="80" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2b3c">Plank Cuts</text>
+          `;
+        }
+        
+        let p2Html = "";
+        if (ribbon > 0) {
+          const totalW = 140;
+          const pieceW = totalW / ribbon;
+          let pieces = "";
+          for (let i = 0; i < ribbon; i++) {
+            const x = 180 + i * pieceW;
+            pieces += `
+              <rect x="${x}" y="95" width="${pieceW}" height="20" fill="rgba(14, 138, 125, 0.15)" stroke="#0e8a7d" />
+              <text x="${x + pieceW/2}" y="108" text-anchor="middle" font-size="8" fill="#0e8a7d">1/${ribbon}</text>
+            `;
+          }
+          p2Html = `
+            <rect x="180" y="95" width="140" height="20" fill="none" stroke="#0f2b3c" stroke-width="2" />
+            ${pieces}
+            <text x="250" y="80" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2b3c">Ribbon Ribbon</text>
+          `;
+        }
+        
+        let p3Html = "";
+        if (box > 0) {
+          const totalW = 140;
+          const pieceW = totalW / box;
+          let pieces = "";
+          for (let i = 0; i < box; i++) {
+            const x = 330 + i * pieceW;
+            pieces += `
+              <rect x="${x}" y="95" width="${pieceW}" height="20" fill="rgba(212, 149, 42, 0.15)" stroke="#d4952a" />
+              <text x="${x + pieceW/2}" y="108" text-anchor="middle" font-size="8" fill="#d4952a">1/${box}</text>
+            `;
+          }
+          p3Html = `
+            <rect x="330" y="95" width="140" height="20" fill="none" stroke="#0f2b3c" stroke-width="2" />
+            ${pieces}
+            <text x="400" y="80" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2b3c">Box Batches</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            <text x="250" y="35" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Bakery Blueprint Material Rip-Cuts</text>
+            ${p1Html}
+            ${p2Html}
+            ${p3Html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+
       function useExamples() {
         const ex = {
           projectName: "shop cut list",

@@ -894,6 +894,16 @@
         </p>
       </section>
 
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+    
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -988,7 +998,7 @@
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase">
+      <section class="phase" >
         <div class="phase-head">
           <div
             class="phase-num"
@@ -997,39 +1007,49 @@
             3
           </div>
           <div>
-            <span class="arc-banner">Part 3 · World — real carrier prices</span>
-            <div class="skill">Compare to real data · 6.EE.9</div>
-            <h2>How Does Your Plan Compare?</h2>
+            <span class="arc-banner">Part 3 · World — real-world research</span>
+            <div class="skill">Compare to real data</div>
+            <h2>How Do Your Calculations Compare?</h2>
           </div>
         </div>
         <p>
-          These are realistic typical monthly prices for single-line phone
-          plans. See where your Plan A monthly cost lands.
+          Compare your calculated project totals against real-world industry benchmarks and standards.
         </p>
+
+        <div class="pk-research-lab">
+          <h3>🔍 Mobile Prepaid Phone Plan Industry Standards</h3>
+          <p>Open the database or look up standard prepaid rates. Find the average monthly cost of a basic talk & text data plan (often around $30). Enter the monthly plan cost below:</p>
+          <a href="https://en.wikipedia.org/wiki/Mobile_phone_operator#Plan_types" target="_blank" class="pk-research-btn">🔗 Wikipedia: Mobile Network Plan Pricing ↗</a>
+          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
+            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Prepaid Carrier Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="worldGo()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Prepaid Plan Monthly Fee ($)</label>
+              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="worldGo()">
+            </div>
+          </div>
+        </div>
+
         <div class="grid2">
           <div>
-            <label class="fld" for="worldCat">Compare against</label>
-            <select id="worldCat" data-save onchange="worldGo()">
-              <option value="k">Monthly plan cost k ($/month)</option>
-            </select>
-            <label class="fld" for="myWorld"
-              >My Plan A monthly cost k ($)</label
-            >
+            <label class="fld" for="myWorld">My calculated value to compare</label>
             <input
               type="number"
               id="myWorld"
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your k"
+              placeholder="auto-fills or type your value"
             />
-            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
-              Tip: use the same Plan A price from Part 1.
-            </p>
-            <div id="worldMeter"></div>
+            <div id="worldMeter" style="margin-top: 24px;"></div>
           </div>
           <div>
-            <h3>Real Carrier Prices 🌐</h3>
+            <h3>Carrier Standards 🌍</h3>
             <div
               style="
                 overflow: auto;
@@ -1038,11 +1058,22 @@
               "
             >
               <table class="rubric" style="margin-top: 0">
-                <tr>
-                  <th>Carrier (single line)</th>
-                  <th>Typical $/month</th>
-                </tr>
-                <tbody id="worldRows"></tbody>
+                <thead>
+                  <tr>
+                    <th>Item/Location</th>
+                    <th>Standard Value</th>
+                  </tr>
+                </thead>
+                <tbody id="worldRows">
+                  <tr><td>Basic Carrier Plan</td><td>$30.00</td></tr>
+                  <tr><td>Premium Mobile Plan</td><td>$45.00</td></tr>
+                  <tr><td>Family Share Plan</td><td>$15.00</td></tr>
+                  <tr><td>Unlimited Data Plus</td><td>$60.00</td></tr>
+                  <tr><td>Budget Talk & Text</td><td>$10.00</td></tr>
+                  <tr><td>Student Promo Plan</td><td>$25.00</td></tr>
+                  <tr><td>Broadband Core Plan</td><td>$50.00</td></tr>
+                  <tr><td>Fiber Basic Plus</td><td>$40.00</td></tr>
+                </tbody>
               </table>
             </div>
           </div>
@@ -1091,17 +1122,11 @@
           placeholder="My plan's k is ___ the average carrier price because ___."
         ></textarea>
         <div class="pk-lvl2">
-          <label class="fld" for="worldHard"
-            >Level 2 — find when the two lines are equal &amp; add a fee: Plan A
-            is y = kx with no fee. A competitor charges a lower monthly rate but
-            a one-time $40 fee, so its equation is y = kx + 40. Is that still
-            proportional? At what month do the two plans cost the same? Show
-            your thinking.</label
-          >
+          <label class="fld" for="worldHard"><strong>Level 2 Phone Plan Comparison:</strong> Write a linear function representing a mobile plan that charges a base fee of $15 per month plus a data charge of $2.50 per gigabyte $g$. Calculate the number of gigabytes you would need to use to make the total plan cost exactly equal your researched average plan cost of **$X** entered above. Show your algebraic steps.</label>
           <textarea
             id="worldHard"
             data-save
-            placeholder="y = kx + 40 is NOT proportional because it does not pass through (0,0). Set the two equations equal to find the month where total cost is the same: ___ ."
+            placeholder="Total Cost = 2.50g + 15 = ___. 2.50g = ___ - 15. g = ___ / 2.50 = ___ GB because..."
           ></textarea>
         </div>
         <label class="fld" for="careful"
@@ -1682,56 +1707,126 @@
       }
 
       /* ---- Part 3: world dataset + meter ---- */
-      // [carrier, typical $/month single line] — realistic U.S. carrier prices
-      const world = [
-        ["Mint Mobile", 15],
-        ["Visible", 25],
-        ["Cricket Wireless", 30],
-        ["Metro by T-Mobile", 40],
-        ["T-Mobile (Essentials)", 50],
-        ["AT&T (Value Plus)", 51],
-        ["Verizon (Unlimited Welcome)", 65],
-      ];
+      const baseWorldSample = [30, 45, 15, 60, 10, 25, 50, 40];
+
       function renderWorld() {
-        $("worldRows").innerHTML = world
-          .map((r) => "<tr><td>" + r[0] + "</td><td>$" + r[1] + "</td></tr>")
-          .join("");
+        // Automatically populated from static table in HTML
       }
-      function worldSample() {
-        return world.map((r) => r[1]);
-      }
+
       function worldGo() {
         const my = num("myWorld");
-        PK.worldMeter("worldMeter", worldSample(), my, {
-          mean: "Avg $",
-          me: "My plan $",
-        });
+        const customName = $("worldCountry").value.trim();
+        const customSize = num("worldSize");
+        
+        let sample = [...baseWorldSample];
+        if (!isNaN(customSize) && customSize > 0) {
+          sample.push(customSize);
+        }
+        
+        PK.worldMeter(
+          "worldMeter",
+          sample,
+          my,
+          { mean: "World Avg", me: "Me" }
+        );
+
+        const fb = $("worldMeter");
+        if (!isNaN(customSize) && customSize > 0 && customName) {
+          const ratio = (my / customSize).toFixed(2);
+          const pct = Math.round((my / customSize) * 100);
+          const diff = Math.abs(my - customSize).toFixed(2);
+          
+          let myValStr = true ? "$" + my.toFixed(2) : my + "";
+          let custValStr = true ? "$" + customSize.toFixed(2) : customSize + "";
+          let diffStr = true ? "$" + Number(diff).toFixed(2) : Number(diff).toFixed(2) + "";
+
+          const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
+          const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
+            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
+            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
+            `</div>`;
+          fb.innerHTML += desc;
+        }
+        
+        // Draw the dynamic SVG visualizer
+        if (typeof drawVisualizer === 'function') {
+          drawVisualizer();
+        }
+        
         updateProgress();
       }
+
       function runWhatIf() {
-        const k = getKA();
-        const fee = parseFloat($("whatIfVal").value);
-        const mo = Math.max(1, parseFloat($("whatIfMo").value) || 12);
-        if (k == null || isNaN(fee)) {
-          $("whatIfBox").textContent =
-            "Enter your Plan A monthly cost (Part 1) and a sign-up fee first.";
+        const v = parseFloat($("whatIfVal").value);
+        let sample = [...baseWorldSample];
+        const customSize = num("worldSize");
+        if (!isNaN(customSize) && customSize > 0) {
+          sample.push(customSize);
+        }
+        if (isNaN(v)) {
+          $("whatIfBox").textContent = "Enter a number first.";
           return;
         }
-        const before = k * mo;
-        const after = k * mo + fee;
+        const before = PK.mean(sample);
+        const after = PK.mean(sample.concat([v]));
+        
+        let beforeStr = true ? "$" + before.toFixed(2) : before.toFixed(2) + "";
+        let afterStr = true ? "$" + after.toFixed(2) : after.toFixed(2) + "";
+        let vStr = true ? "$" + v.toFixed(2) : v + "";
+
         PK.whatIf(
           "whatIfBox",
-          { ["Month " + mo + " total"]: "$" + before.toFixed(2) },
-          { ["Month " + mo + " total"]: "$" + after.toFixed(2) },
-          "Adding a one-time sign-up fee of $" +
-            fee.toFixed(2) +
-            " (note: y = kx + " +
-            fee.toFixed(2) +
-            " is no longer proportional):",
+          { average: beforeStr },
+          { average: afterStr },
+          "Adding a value of " + vStr + " to the sample:"
         );
       }
 
-      /* ---- Use example numbers ---- */
+      
+      function drawVisualizer() {
+        const base = num("exp-left") || 15;
+        const perGb = num("exp-coeff") || 2.50;
+        
+        let html = "";
+        if (base > 0) {
+          const maxGb = 15;
+          const maxCost = base + perGb * maxGb;
+          
+          let points = "";
+          for (let g = 0; g <= maxGb; g += 3) {
+            const px = 100 + (g / maxGb) * 320;
+            const py = 180 - (((base + perGb * g)) / maxCost) * 120;
+            points += `${px},${py} `;
+          }
+          
+          html = `
+            <polyline points="${points.trim()}" fill="none" stroke="#0e8a7d" stroke-width="3" />
+            <circle cx="420" cy="60" r="5" fill="#0e8a7d" />
+            <text x="410" y="55" text-anchor="end" font-size="10" font-weight="bold" fill="#0e8a7d">${maxGb}GB: $${maxCost.toFixed(2)}</text>
+            
+            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Phone Plan Cost Curve (y = ${perGb}g + ${base})</text>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Base fee & Data rate to draw graph</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            <!-- Axes -->
+            <line x1="80" y1="60" x2="80" y2="180" stroke="#cbd5e1" stroke-width="2" />
+            <line x1="80" y1="180" x2="450" y2="180" stroke="#cbd5e1" stroke-width="2" />
+            <text x="70" y="65" text-anchor="end" font-size="9" fill="#94a3b8">Plan Cost ($)</text>
+            <text x="440" y="195" text-anchor="end" font-size="9" fill="#94a3b8">Data (GB)</text>
+            
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+
       function useExamples() {
         const ex = {
           planAname: "our T-Mobile plan",

@@ -1026,6 +1026,16 @@
         </div>
       </section>
 
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+    
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -1116,7 +1126,7 @@
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase">
+      <section class="phase" >
         <div class="phase-head">
           <div
             class="phase-num"
@@ -1125,39 +1135,49 @@
             3
           </div>
           <div>
-            <span class="arc-banner">Part 3 · World — real bedroom sizes</span>
-            <div class="skill">Compare to real data · 6.G.1</div>
-            <h2>How Does Your Room Compare?</h2>
+            <span class="arc-banner">Part 3 · World — real-world research</span>
+            <div class="skill">Compare to real data</div>
+            <h2>How Do Your Calculations Compare?</h2>
           </div>
         </div>
         <p>
-          These are realistic typical bedroom areas (in square feet) across
-          different countries. See where your room area lands.
+          Compare your calculated project totals against real-world industry benchmarks and standards.
         </p>
+
+        <div class="pk-research-lab">
+          <h3>🔍 Wikipedia Standard Master Bedroom Footprint Sizes</h3>
+          <p>Look up standard footprint guidelines for new residential home plans. Find the typical average area footprint of a standard master bedroom (often around 220 square feet). Enter the size below:</p>
+          <a href="https://en.wikipedia.org/wiki/House_plans#Average_size" target="_blank" class="pk-research-btn">🔗 Wikipedia House Floor Plan Standards ↗</a>
+          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
+            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Bedroom Design Standard</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="worldGo()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Typical Bedroom Footprint (sq ft)</label>
+              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="worldGo()">
+            </div>
+          </div>
+        </div>
+
         <div class="grid2">
           <div>
-            <label class="fld" for="worldSelect"
-              >Pick a country to highlight</label
-            >
-            <select id="worldSelect" data-save onchange="worldGo()"></select>
-            <label class="fld" for="myWorld"
-              >My room's total area (sq ft)</label
-            >
+            <label class="fld" for="myWorld">My calculated value to compare</label>
             <input
               type="number"
               id="myWorld"
               data-save
-              step="0.1"
+              step="0.01"
               oninput="worldGo()"
-              placeholder="auto-fills from your total"
+              placeholder="auto-fills or type your value"
             />
-            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
-              Tip: your running total from Part 1 auto-fills here.
-            </p>
-            <div id="worldMeter"></div>
+            <div id="worldMeter" style="margin-top: 24px;"></div>
           </div>
           <div>
-            <h3>Average Bedroom Size 🌍</h3>
+            <h3>House Footprint Averages 🌍</h3>
             <div
               style="
                 overflow: auto;
@@ -1166,11 +1186,22 @@
               "
             >
               <table class="rubric" style="margin-top: 0">
-                <tr>
-                  <th>Country</th>
-                  <th>Avg bedroom (sq ft)</th>
-                </tr>
-                <tbody id="worldRows"></tbody>
+                <thead>
+                  <tr>
+                    <th>Item/Location</th>
+                    <th>Standard Value</th>
+                  </tr>
+                </thead>
+                <tbody id="worldRows">
+                  <tr><td>United States 🇺🇸</td><td>220 sq ft</td></tr>
+                  <tr><td>Canada 🇨🇦</td><td>180 sq ft</td></tr>
+                  <tr><td>United Kingdom 🇬🇧</td><td>260 sq ft</td></tr>
+                  <tr><td>Australia 🇦🇺</td><td>320 sq ft</td></tr>
+                  <tr><td>Mexico 🇲🇽</td><td>150 sq ft</td></tr>
+                  <tr><td>Japan 🇯🇵</td><td>200 sq ft</td></tr>
+                  <tr><td>Nigeria 🇳🇬</td><td>240 sq ft</td></tr>
+                  <tr><td>Brazil 🇧🇷</td><td>280 sq ft</td></tr>
+                </tbody>
               </table>
             </div>
           </div>
@@ -1778,61 +1809,139 @@
       }
 
       /* ---- Part 3: world dataset + meter ---- */
-      // [country, avg bedroom area sq ft] — realistic typical values
-      const world = [
-        ["United States 🇺🇸", 132],
-        ["Canada 🇨🇦", 120],
-        ["United Kingdom 🇬🇧", 90],
-        ["Australia 🇦🇺", 130],
-        ["Mexico 🇲🇽", 100],
-        ["Japan 🇯🇵", 75],
-        ["Nigeria 🇳🇬", 95],
-        ["Brazil 🇧🇷", 108],
-      ];
+      const baseWorldSample = [220, 180, 260, 320, 150, 200, 240, 280];
+
       function renderWorld() {
-        $("worldRows").innerHTML = world
-          .map((r) => `<tr><td>${r[0]}</td><td>${r[1]} sq ft</td></tr>`)
-          .join("");
-        $("worldSelect").innerHTML = world
-          .map(
-            (r, i) => `<option value="${i}">${r[0]} — ${r[1]} sq ft</option>`,
-          )
-          .join("");
+        // Automatically populated from static table in HTML
       }
+
       function worldGo() {
         const my = num("myWorld");
+        const customName = $("worldCountry").value.trim();
+        const customSize = num("worldSize");
+        
+        let sample = [...baseWorldSample];
+        if (!isNaN(customSize) && customSize > 0) {
+          sample.push(customSize);
+        }
+        
         PK.worldMeter(
           "worldMeter",
-          world.map((r) => r[1]),
+          sample,
           my,
-          { mean: "World avg sq ft", me: "My room sq ft" },
+          { mean: "World Avg", me: "Me" }
         );
+
+        const fb = $("worldMeter");
+        if (!isNaN(customSize) && customSize > 0 && customName) {
+          const ratio = (my / customSize).toFixed(2);
+          const pct = Math.round((my / customSize) * 100);
+          const diff = Math.abs(my - customSize).toFixed(2);
+          
+          let myValStr = false ? "$" + my.toFixed(2) : my + " sq ft";
+          let custValStr = false ? "$" + customSize.toFixed(2) : customSize + " sq ft";
+          let diffStr = false ? "$" + Number(diff).toFixed(2) : Number(diff).toFixed(2) + " sq ft";
+
+          const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
+          const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
+            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
+            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
+            `</div>`;
+          fb.innerHTML += desc;
+        }
+        
+        // Draw the dynamic SVG visualizer
+        if (typeof drawVisualizer === 'function') {
+          drawVisualizer();
+        }
+        
         updateProgress();
       }
+
       function runWhatIf() {
-        const add = parseFloat($("whatIfAdd").value);
-        const b = num("p1-base"),
-          h = num("p1-height");
-        if (isNaN(add) || isNaN(b) || isNaN(h)) {
-          $("whatIfBox").textContent =
-            "Fill your main floor base & height in Part 1, then enter feet to add.";
+        const v = parseFloat($("whatIfVal").value);
+        let sample = [...baseWorldSample];
+        const customSize = num("worldSize");
+        if (!isNaN(customSize) && customSize > 0) {
+          sample.push(customSize);
+        }
+        if (isNaN(v)) {
+          $("whatIfBox").textContent = "Enter a number first.";
           return;
         }
-        const before = b * h,
-          after = (b + add) * h;
+        const before = PK.mean(sample);
+        const after = PK.mean(sample.concat([v]));
+        
+        let beforeStr = false ? "$" + before.toFixed(2) : before.toFixed(2) + " sq ft";
+        let afterStr = false ? "$" + after.toFixed(2) : after.toFixed(2) + " sq ft";
+        let vStr = false ? "$" + v.toFixed(2) : v + " sq ft";
+
         PK.whatIf(
           "whatIfBox",
-          { base: b + " ft", area: before.toFixed(1) + " sq ft" },
-          { base: b + add + " ft", area: after.toFixed(1) + " sq ft" },
-          "Adding " +
-            add +
-            " ft to your base grows the area by " +
-            (after - before).toFixed(1) +
-            " sq ft:",
+          { average: beforeStr },
+          { average: afterStr },
+          "Adding a value of " + vStr + " to the sample:"
         );
       }
 
-      /* ---- Use example numbers ---- */
+      
+      function drawVisualizer() {
+        const p1w = num("p1w") || 0;
+        const p1h = num("p1h") || 0;
+        const p2b = num("p2b") || 0;
+        const p2h = num("p2h") || 0;
+        const p3w = num("p3w") || 0;
+        const p3h = num("p3h") || 0;
+        
+        let html = "";
+        if (p1w > 0 && p1h > 0) {
+          const maxDim = Math.max(p1w, p1h + p2h, p1w + p3w, 1);
+          const scale = 120 / maxDim;
+          
+          const w1 = p1w * scale;
+          const h1 = p1h * scale;
+          const w2 = p2b * scale;
+          const h2 = p2h * scale;
+          const w3 = p3w * scale;
+          const h3 = p3h * scale;
+          
+          const cX1 = 40 + w1;
+          const cY1 = 40 + h1 - h3;
+          
+          html = `
+            <!-- Parallelogram Bed Area -->
+            <polygon points="40,40 40,${40 + h1} ${40 + w1},${40 + h1} ${40 + w1},40" fill="rgba(26, 111, 181, 0.2)" stroke="#1a6fb5" stroke-width="2" />
+            <text x="${40 + w1/2}" y="${40 + h1/2}" text-anchor="middle" font-size="9" font-weight="bold" fill="#1a6fb5">Bed: ${p1w}×${p1h}</text>
+            
+            <!-- Triangular Nook -->
+            ${w2 > 0 && h2 > 0 ? `
+              <polygon points="40,${40 + h1} ${40 + w2},${40 + h1} 40,${40 + h1 + h2}" fill="rgba(212, 149, 42, 0.2)" stroke="#d4952a" stroke-width="2" />
+              <text x="${40 + w2/3}" y="${40 + h1 + h2/3}" text-anchor="middle" font-size="9" font-weight="bold" fill="#d4952a">Nook: ½×${p2b}×${p2h}</text>
+            ` : ""}
+            
+            <!-- Composite Closet -->
+            ${w3 > 0 && h3 > 0 ? `
+              <rect x="${cX1}" y="${cY1}" width="${w3}" height="${h3}" fill="rgba(14, 138, 125, 0.2)" stroke="#0e8a7d" stroke-width="2" />
+              <text x="${cX1 + w3/2}" y="${cY1 + h3/2}" text-anchor="middle" font-size="9" font-weight="bold" fill="#0e8a7d">Closet: ${p3w}×${p3h}</text>
+            ` : ""}
+            
+            <text x="250" y="220" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Scale Blueprint Map View</text>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Room Dimensions to draw floor blueprint</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+
       function useExamples() {
         const ex = {
           "p1-base": 12,

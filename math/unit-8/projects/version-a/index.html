@@ -929,6 +929,16 @@
         </div>
       </section>
 
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+    
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -1008,7 +1018,7 @@
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase">
+      <section class="phase" >
         <div class="phase-head">
           <div
             class="phase-num"
@@ -1017,43 +1027,49 @@
             3
           </div>
           <div>
-            <span class="arc-banner">Part 3 · World — sample escape rooms</span>
-            <div class="skill">Compare to real designs · 6.EE.7</div>
-            <h2>How Does Your Room Compare?</h2>
+            <span class="arc-banner">Part 3 · World — real-world research</span>
+            <div class="skill">Compare to real data</div>
+            <h2>How Do Your Calculations Compare?</h2>
           </div>
         </div>
         <p>
-          These are sample student escape rooms with their number of locks and
-          the average combination (solution). Pick what to compare and see where
-          your room lands.
+          Compare your calculated project totals against real-world industry benchmarks and standards.
         </p>
+
+        <div class="pk-research-lab">
+          <h3>🔍 NSA Cryptographic Bit Key Standards</h3>
+          <p>Open the cryptology history page. Research standard cryptographic key sizes in bits (AES standard is commonly 128, 192, or 256 bits). Enter the bits key size below:</p>
+          <a href="https://www.nsa.gov/History/Cryptologic-History/" target="_blank" class="pk-research-btn">🔗 NSA: Cryptology History & Encryption Standards ↗</a>
+          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
+            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Cipher Algorithm Standard</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="worldGo()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">AES Bit Key Size (bits)</label>
+              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="worldGo()">
+            </div>
+          </div>
+        </div>
+
         <div class="grid2">
           <div>
-            <label class="fld" for="worldCat">Compare against</label>
-            <select id="worldCat" data-save onchange="worldGo()">
-              <option value="locks">Number of locks</option>
-              <option value="avgSolution">
-                Average combination (solution)
-              </option>
-              <option value="hardest">Hardest lock combination</option>
-            </select>
-            <label class="fld" for="myWorld">My number</label>
+            <label class="fld" for="myWorld">My calculated value to compare</label>
             <input
               type="number"
               id="myWorld"
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your value"
+              placeholder="auto-fills or type your value"
             />
-            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
-              Tip: for "hardest lock," type your biggest combination (Lock D is
-              usually it).
-            </p>
-            <div id="worldMeter"></div>
+            <div id="worldMeter" style="margin-top: 24px;"></div>
           </div>
           <div>
-            <h3>Sample Escape Rooms 🔐</h3>
+            <h3>Encryption Standard Keys 🌍</h3>
             <div
               style="
                 overflow: auto;
@@ -1062,19 +1078,27 @@
               "
             >
               <table class="rubric" style="margin-top: 0">
-                <tr>
-                  <th>Room</th>
-                  <th>Locks</th>
-                  <th>Avg sol.</th>
-                  <th>Hardest</th>
-                </tr>
-                <tbody id="worldRows"></tbody>
+                <thead>
+                  <tr>
+                    <th>Item/Location</th>
+                    <th>Standard Value</th>
+                  </tr>
+                </thead>
+                <tbody id="worldRows">
+                  <tr><td>AES-128 Key</td><td>128 bits</td></tr>
+                  <tr><td>AES-192 Key</td><td>192 bits</td></tr>
+                  <tr><td>AES-256 Key</td><td>256 bits</td></tr>
+                  <tr><td>DES Standard Key</td><td>64 bits</td></tr>
+                  <tr><td>Triple DES Key</td><td>56 bits</td></tr>
+                  <tr><td>RSA Standard Key</td><td>1024 bits</td></tr>
+                  <tr><td>RSA Advanced Key</td><td>2048 bits</td></tr>
+                  <tr><td>Historical Skipjack</td><td>80 bits</td></tr>
+                </tbody>
               </table>
             </div>
           </div>
         </div>
 
-        <!-- What-If Lab: inequality lock (combo > 50 for Level 2) -->
         <div
           class="phase"
           style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
@@ -1137,14 +1161,11 @@
           placeholder="My hardest combination is ___, which is higher / lower than the sample average of ___, so my room is ___."
         ></textarea>
         <div class="pk-lvl2">
-          <label class="fld" for="worldHard"
-            >Level 2 question: A sample room's hardest lock is 5x − 3 = 97.
-            Solve it and explain each step.</label
-          >
+          <label class="fld" for="worldHard"><strong>Level 2 Cryptogram Equation Challenge:</strong> To unlock the escape room vault, you must solve a cryptogram equation: $4k - 20 = R$, where $R$ is your researched key size of **X** bits. Solve the equation for $k$ to find the correct dial code. Show your algebraic steps.</label>
           <textarea
             id="worldHard"
             data-save
-            placeholder="Add 3 to both sides → 5x = 100, divide by 5 → x = 20 because ___"
+            placeholder="4k - 20 = ___. 4k = ___ + 20. k = ___ / 4 = ___ because..."
           ></textarea>
         </div>
       </section>
@@ -1684,231 +1705,122 @@
       }
 
       /* ---- Part 3: world dataset + meter ---- */
-      // [room, locks, avgSolution, hardest] — sample student escape rooms
-      const world = [
-        ["The Vault", 4, 11, 24],
-        ["Lost Temple", 5, 9, 30],
-        ["Cyber Heist", 6, 14, 48],
-        ["Ghost Manor", 3, 7, 18],
-        ["Sky Station", 5, 12, 55],
-        ["Pirate's Cove", 4, 10, 36],
-        ["Dragon Keep", 6, 16, 64],
-        ["Spy Bunker", 4, 8, 27],
-      ];
-      const wIdx = { locks: 1, avgSolution: 2, hardest: 3 };
+      const baseWorldSample = [128, 192, 256, 64, 56, 1024, 2048, 80];
+
       function renderWorld() {
-        $("worldRows").innerHTML = world
-          .map(
-            (r) =>
-              "<tr><td>" +
-              r[0] +
-              "</td><td>" +
-              r[1] +
-              "</td><td>" +
-              r[2] +
-              "</td><td>" +
-              r[3] +
-              "</td></tr>",
-          )
-          .join("");
+        // Automatically populated from static table in HTML
       }
-      function worldSample() {
-        return world.map((r) => r[wIdx[$("worldCat").value]]);
-      }
+
       function worldGo() {
         const my = num("myWorld");
-        PK.worldMeter("worldMeter", worldSample(), my, {
-          mean: "Sample avg",
-          me: "Me",
-        });
+        const customName = $("worldCountry").value.trim();
+        const customSize = num("worldSize");
+        
+        let sample = [...baseWorldSample];
+        if (!isNaN(customSize) && customSize > 0) {
+          sample.push(customSize);
+        }
+        
+        PK.worldMeter(
+          "worldMeter",
+          sample,
+          my,
+          { mean: "World Avg", me: "Me" }
+        );
+
+        const fb = $("worldMeter");
+        if (!isNaN(customSize) && customSize > 0 && customName) {
+          const ratio = (my / customSize).toFixed(2);
+          const pct = Math.round((my / customSize) * 100);
+          const diff = Math.abs(my - customSize).toFixed(2);
+          
+          let myValStr = false ? "$" + my.toFixed(2) : my + " bits";
+          let custValStr = false ? "$" + customSize.toFixed(2) : customSize + " bits";
+          let diffStr = false ? "$" + Number(diff).toFixed(2) : Number(diff).toFixed(2) + " bits";
+
+          const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
+          const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
+            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
+            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
+            `</div>`;
+          fb.innerHTML += desc;
+        }
+        
+        // Draw the dynamic SVG visualizer
+        if (typeof drawVisualizer === 'function') {
+          drawVisualizer();
+        }
+        
         updateProgress();
       }
 
-      /* ---- What-If Lab: inequality lock (reuses drawNumberLine ported from Version B) ---- */
-      function runIneq() {
-        const goal = num("ineqTarget");
-        const test = $("ineqTest").value.trim();
-        if (isNaN(goal) || goal <= 0) {
-          $("ineqBox").innerHTML =
-            "Enter a target to build the inequality lock.";
-          $("nline-wrap").style.display = "none";
+      function runWhatIf() {
+        const v = parseFloat($("whatIfVal").value);
+        let sample = [...baseWorldSample];
+        const customSize = num("worldSize");
+        if (!isNaN(customSize) && customSize > 0) {
+          sample.push(customSize);
+        }
+        if (isNaN(v)) {
+          $("whatIfBox").textContent = "Enter a number first.";
           return;
         }
-        let testHtml = "";
-        if (test !== "") {
-          const t = num("ineqTest");
-          testHtml =
-            "<br><b>Try " +
-            t +
-            ":</b> " +
-            t +
-            " ≥ " +
-            goal +
-            " → " +
-            (t >= goal
-              ? '<span style="color:var(--green)">✅ TRUE — the lock opens!</span>'
-              : '<span style="color:var(--coral)">❌ FALSE — combination too low, lock stays shut.</span>');
-        }
-        $("ineqBox").innerHTML =
-          "<b>Inequality lock:</b> x ≥ " +
-          goal +
-          " (closed circle at " +
-          goal +
-          ", shade right).<br>" +
-          "Solution set: every combination of " +
-          goal +
-          " or more — " +
-          goal +
-          ", " +
-          (goal + 1) +
-          ", " +
-          (goal + 5) +
-          ", " +
-          (goal + 20) +
-          " … on forever." +
-          testHtml;
-        drawNumberLine(goal, ">=", "≥", true, true);
-        $("nline-wrap").style.display = "block";
-        updateProgress();
+        const before = PK.mean(sample);
+        const after = PK.mean(sample.concat([v]));
+        
+        let beforeStr = false ? "$" + before.toFixed(2) : before.toFixed(2) + " bits";
+        let afterStr = false ? "$" + after.toFixed(2) : after.toFixed(2) + " bits";
+        let vStr = false ? "$" + v.toFixed(2) : v + " bits";
+
+        PK.whatIf(
+          "whatIfBox",
+          { average: beforeStr },
+          { average: afterStr },
+          "Adding a value of " + vStr + " to the sample:"
+        );
       }
 
-      // Ported from Version B — reusable inequality number line SVG
-      function drawNumberLine(goal, sym, symDisplay, isClosed, isRight) {
-        const W = 520,
-          H = 80,
-          cx = W / 2,
-          y = 44,
-          tickH = 10,
-          labelY = y + 22,
-          arrowLen = 18,
-          tickSpacing = 50;
-        const ticks = [];
-        for (let i = -4; i <= 4; i++)
-          ticks.push({ val: goal + i, x: cx + i * tickSpacing });
-        const shadeColor = "#6d3fa0",
-          shadeOpacity = "0.18";
-        let shadeX, shadeW;
-        if (isRight) {
-          shadeX = cx;
-          shadeW = cx + 4 * tickSpacing + arrowLen;
-        } else {
-          shadeX = cx - 4 * tickSpacing - arrowLen;
-          shadeW = cx;
+      
+      function drawVisualizer() {
+        const lockA = num("code-a");
+        const lockB = num("code-b");
+        const lockC = num("code-c");
+        const lockD = num("worldHard");
+        
+        const isUnlocked = (!isNaN(lockA) && !isNaN(lockB) && !isNaN(lockC));
+        let angle = 0;
+        if (isUnlocked) {
+          angle = (lockA + lockB + lockC) * 5;
         }
-        const circleFill = isClosed ? shadeColor : "#fff";
-        let svg =
-          '<svg xmlns="http://www.w3.org/2000/svg" width="' +
-          W +
-          '" height="' +
-          H +
-          '" viewBox="0 0 ' +
-          W +
-          " " +
-          H +
-          '" role="img" aria-label="Number line showing x ' +
-          symDisplay +
-          " " +
-          goal +
-          '">';
-        svg +=
-          '<rect x="' +
-          shadeX +
-          '" y="' +
-          (y - 6) +
-          '" width="' +
-          Math.abs(shadeW - shadeX) +
-          '" height="12" fill="' +
-          shadeColor +
-          '" opacity="' +
-          shadeOpacity +
-          '"/>';
-        svg +=
-          '<line x1="' +
-          (cx - 4 * tickSpacing - arrowLen) +
-          '" y1="' +
-          y +
-          '" x2="' +
-          (cx + 4 * tickSpacing + arrowLen) +
-          '" y2="' +
-          y +
-          '" stroke="#1a2633" stroke-width="2.5"/>';
-        svg +=
-          '<polygon points="' +
-          (cx + 4 * tickSpacing + arrowLen) +
-          "," +
-          y +
-          " " +
-          (cx + 4 * tickSpacing + arrowLen - 10) +
-          "," +
-          (y - 5) +
-          " " +
-          (cx + 4 * tickSpacing + arrowLen - 10) +
-          "," +
-          (y + 5) +
-          '" fill="#1a2633"/>';
-        svg +=
-          '<polygon points="' +
-          (cx - 4 * tickSpacing - arrowLen) +
-          "," +
-          y +
-          " " +
-          (cx - 4 * tickSpacing - arrowLen + 10) +
-          "," +
-          (y - 5) +
-          " " +
-          (cx - 4 * tickSpacing - arrowLen + 10) +
-          "," +
-          (y + 5) +
-          '" fill="#1a2633"/>';
-        ticks.forEach(function (t) {
-          if (Math.abs(t.val - goal) <= 2) {
-            svg +=
-              '<line x1="' +
-              t.x +
-              '" y1="' +
-              (y - tickH) +
-              '" x2="' +
-              t.x +
-              '" y2="' +
-              (y + tickH) +
-              '" stroke="#1a2633" stroke-width="1.5"/>';
-            svg +=
-              '<text x="' +
-              t.x +
-              '" y="' +
-              labelY +
-              '" text-anchor="middle" font-size="13" font-family="sans-serif" fill="#1a2633">' +
-              t.val +
-              "</text>";
-          }
-        });
-        svg +=
-          '<circle cx="' +
-          cx +
-          '" cy="' +
-          y +
-          '" r="7" fill="' +
-          circleFill +
-          '" stroke="' +
-          shadeColor +
-          '" stroke-width="2.5"/>';
-        svg +=
-          '<text x="' +
-          cx +
-          '" y="' +
-          (y - 14) +
-          '" text-anchor="middle" font-size="13" font-weight="700" font-family="sans-serif" fill="' +
-          shadeColor +
-          '">x ' +
-          symDisplay +
-          " " +
-          goal +
-          "</text>";
-        svg += "</svg>";
-        $("nline-wrap").innerHTML = svg;
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(250, 110)">
+              <!-- Outer Lock Ring -->
+              <circle cx="0" cy="0" r="70" fill="#cbd5e1" stroke="#0f2b3c" stroke-width="4" />
+              
+              <!-- Rotating Dial -->
+              <g transform="rotate(${angle})">
+                <circle cx="0" cy="0" r="50" fill="#f1f5f9" stroke="#5e6e7e" stroke-width="2" />
+                <line x1="0" y1="-50" x2="0" y2="-40" stroke="#ef4444" stroke-width="3" />
+                <circle cx="0" cy="-35" r="3" fill="#0f2b3c" />
+                <text x="0" y="5" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">DIAL</text>
+              </g>
+              <!-- Index Pointer -->
+              <polygon points="0,-75 -5,-65 5,-65" fill="#ef4444" />
+            </g>
+            
+            ${isUnlocked ? `
+              <text x="250" y="210" text-anchor="middle" font-size="14" font-weight="bold" fill="#2d874b">🔓 COMBINATION SAFE OPENED!</text>
+            ` : `
+              <text x="250" y="210" text-anchor="middle" font-size="14" font-weight="bold" fill="#c45a3c">🔒 LOCK DIAL SECURED</text>
+            `}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
       }
+    
 
-      /* ---- Use example numbers ---- */
       function useExamples() {
         const ex = {
           roomName: "The Vault of Numbers",

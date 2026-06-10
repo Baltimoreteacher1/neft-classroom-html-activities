@@ -885,6 +885,16 @@
         </p>
       </section>
 
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+    
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -973,7 +983,7 @@
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase">
+      <section class="phase" >
         <div class="phase-head">
           <div
             class="phase-num"
@@ -982,38 +992,49 @@
             3
           </div>
           <div>
-            <span class="arc-banner">Part 3 · World — real recipe yields</span>
-            <div class="skill">Compare to real data · 6.NS.1</div>
-            <h2>How Many Servings Do Real Recipes Make?</h2>
+            <span class="arc-banner">Part 3 · World — real-world research</span>
+            <div class="skill">Compare to real data</div>
+            <h2>How Do Your Calculations Compare?</h2>
           </div>
         </div>
         <p>
-          These are realistic recipe yields: batch size ÷ serving size =
-          servings. Pick a category and see where your number lands.
+          Compare your calculated project totals against real-world industry benchmarks and standards.
         </p>
+
+        <div class="pk-research-lab">
+          <h3>🔍 USDA Egg Weight Standarization</h3>
+          <p>Open the USDA database. Look up "large egg raw". Note the weight of one large egg in ounces (usually 1.75 oz or 1 3/4 oz). Enter your researched weight below:</p>
+          <a href="https://fdc.nal.usda.gov/" target="_blank" class="pk-research-btn">🔗 USDA FoodData Central Database ↗</a>
+          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
+            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Ingredient Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="worldGo()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Standard Large Egg Weight (oz)</label>
+              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="worldGo()">
+            </div>
+          </div>
+        </div>
+
         <div class="grid2">
           <div>
-            <label class="fld" for="worldCat">Compare against</label>
-            <select id="worldCat" data-save onchange="worldGo()">
-              <option value="servings">Servings per batch</option>
-              <option value="batch">Batch size (cups)</option>
-            </select>
-            <label class="fld" for="myWorld">My number</label>
+            <label class="fld" for="myWorld">My calculated value to compare</label>
             <input
               type="number"
               id="myWorld"
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your value"
+              placeholder="auto-fills or type your value"
             />
-            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
-              Tip: your servings from Part 1 are a great value to type here.
-            </p>
-            <div id="worldMeter"></div>
+            <div id="worldMeter" style="margin-top: 24px;"></div>
           </div>
           <div>
-            <h3>Real Recipe Yields 🍰</h3>
+            <h3>Standard Weights 🌍</h3>
             <div
               style="
                 overflow: auto;
@@ -1022,13 +1043,22 @@
               "
             >
               <table class="rubric" style="margin-top: 0">
-                <tr>
-                  <th>Recipe</th>
-                  <th>Batch (cups)</th>
-                  <th>Serving</th>
-                  <th>Servings</th>
-                </tr>
-                <tbody id="worldRows"></tbody>
+                <thead>
+                  <tr>
+                    <th>Item/Location</th>
+                    <th>Standard Value</th>
+                  </tr>
+                </thead>
+                <tbody id="worldRows">
+                  <tr><td>Large Egg</td><td>1.75 oz</td></tr>
+                  <tr><td>Extra Large</td><td>2 oz</td></tr>
+                  <tr><td>Medium Egg</td><td>1.5 oz</td></tr>
+                  <tr><td>Jumbo Egg</td><td>2.25 oz</td></tr>
+                  <tr><td>Small Egg</td><td>1.25 oz</td></tr>
+                  <tr><td>Standard Grade A</td><td>1.85 oz</td></tr>
+                  <tr><td>Organic Extra</td><td>2.1 oz</td></tr>
+                  <tr><td>Peewee Egg</td><td>1.6 oz</td></tr>
+                </tbody>
               </table>
             </div>
           </div>
@@ -1083,15 +1113,11 @@
           placeholder="My recipe makes ___ servings, which is ___ the average of ___ because ___."
         ></textarea>
         <div class="pk-lvl2">
-          <label class="fld" for="worldHard"
-            >Level 2 question: A baker has 4 1/2 cups of batter and each waffle
-            uses 3/8 cup. How many waffles, and how much batter (if any) is left
-            over? Show your thinking.</label
-          >
+          <label class="fld" for="worldHard"><strong>Level 2 Baking Scale Challenge:</strong> Use your researched egg weight (use fractional representation, e.g. 1 3/4 = 7/4 oz). If a commercial baking bowl contains exactly 7 ounces of egg whites, how many cookie batches can you make if each batch requires your researched weight? Show your fraction division steps.</label>
           <textarea
             id="worldHard"
             data-save
-            placeholder="4 1/2 = 9/2; (9/2) ÷ (3/8) = (9/2) × (8/3) = ___ because ___"
+            placeholder="7 ÷ ___/___ = 7 × ___/___ = ___ batches because..."
           ></textarea>
         </div>
         <label class="fld" for="careful"
@@ -1558,71 +1584,135 @@
       }
 
       /* ---- Part 3: world dataset + meter ---- */
-      // [recipe, batchCups, servingLabel, servings] — realistic recipe yields
-      const world = [
-        ["Chocolate Chip Cookies", 3, "1/4 cup", 12],
-        ["Banana Bread", 3.5, "1/2 cup", 7],
-        ["Pancakes", 4, "1/3 cup", 12],
-        ["Muffins", 6, "2/3 cup", 9],
-        ["Brownies", 2.5, "1/8 cup", 20],
-        ["Cupcakes", 4, "1/4 cup", 16],
-        ["Granola Bars", 4.5, "3/8 cup", 12],
-        ["Dinner Rolls", 3.75, "1/4 cup", 15],
-      ];
-      const wIdx = { servings: 3, batch: 1 };
+      const baseWorldSample = [1.75, 2, 1.5, 2.25, 1.25, 1.85, 2.1, 1.6];
+
       function renderWorld() {
-        $("worldRows").innerHTML = world
-          .map(
-            (r) =>
-              "<tr><td>" +
-              r[0] +
-              "</td><td>" +
-              r[1] +
-              "</td><td>" +
-              r[2] +
-              "</td><td>" +
-              r[3] +
-              "</td></tr>",
-          )
-          .join("");
+        // Automatically populated from static table in HTML
       }
-      function worldSample() {
-        return world.map((r) => r[wIdx[$("worldCat").value]]);
-      }
+
       function worldGo() {
         const my = num("myWorld");
-        const labels =
-          $("worldCat").value === "batch"
-            ? { mean: "Avg cups", me: "Me" }
-            : { mean: "Avg servings", me: "Me" };
-        PK.worldMeter("worldMeter", worldSample(), my, labels);
+        const customName = $("worldCountry").value.trim();
+        const customSize = num("worldSize");
+        
+        let sample = [...baseWorldSample];
+        if (!isNaN(customSize) && customSize > 0) {
+          sample.push(customSize);
+        }
+        
+        PK.worldMeter(
+          "worldMeter",
+          sample,
+          my,
+          { mean: "World Avg", me: "Me" }
+        );
+
+        const fb = $("worldMeter");
+        if (!isNaN(customSize) && customSize > 0 && customName) {
+          const ratio = (my / customSize).toFixed(2);
+          const pct = Math.round((my / customSize) * 100);
+          const diff = Math.abs(my - customSize).toFixed(2);
+          
+          let myValStr = false ? "$" + my.toFixed(2) : my + " oz";
+          let custValStr = false ? "$" + customSize.toFixed(2) : customSize + " oz";
+          let diffStr = false ? "$" + Number(diff).toFixed(2) : Number(diff).toFixed(2) + " oz";
+
+          const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
+          const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
+            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
+            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
+            `</div>`;
+          fb.innerHTML += desc;
+        }
+        
+        // Draw the dynamic SVG visualizer
+        if (typeof drawVisualizer === 'function') {
+          drawVisualizer();
+        }
+        
         updateProgress();
       }
+
       function runWhatIf() {
-        const batch = parseFloat($("wi-batch").value),
-          serve = parseFloat($("wi-serve").value);
-        if (isNaN(batch) || batch <= 0 || isNaN(serve) || serve <= 0) {
-          $("whatIfBox").textContent =
-            "Enter a batch size and a serving size first.";
+        const v = parseFloat($("whatIfVal").value);
+        let sample = [...baseWorldSample];
+        const customSize = num("worldSize");
+        if (!isNaN(customSize) && customSize > 0) {
+          sample.push(customSize);
+        }
+        if (isNaN(v)) {
+          $("whatIfBox").textContent = "Enter a number first.";
           return;
         }
-        const servings = batch / serve;
-        const halfServings = batch / (serve / 2);
+        const before = PK.mean(sample);
+        const after = PK.mean(sample.concat([v]));
+        
+        let beforeStr = false ? "$" + before.toFixed(2) : before.toFixed(2) + " oz";
+        let afterStr = false ? "$" + after.toFixed(2) : after.toFixed(2) + " oz";
+        let vStr = false ? "$" + v.toFixed(2) : v + " oz";
+
         PK.whatIf(
           "whatIfBox",
-          {
-            "serving size": serve + " cup",
-            servings: servings.toFixed(2).replace(/\.?0+$/, ""),
-          },
-          {
-            "serving size": serve / 2 + " cup (half as big)",
-            servings: halfServings.toFixed(2).replace(/\.?0+$/, ""),
-          },
-          "Cutting the serving size in half:",
+          { average: beforeStr },
+          { average: afterStr },
+          "Adding a value of " + vStr + " to the sample:"
         );
       }
 
-      /* ---- Use example numbers ---- */
+      
+      function drawVisualizer() {
+        const p1a = num("p1a");
+        const p1b = num("p1b");
+        const cups = num("p2-cups");
+        const w = num("p3w") || 0;
+        const n = num("p3n") || 0;
+        const d = num("p3d") || 1;
+        
+        const drawCup = (x, label, fillRatio) => {
+          const clampedRatio = Math.min(Math.max(fillRatio, 0), 1.2);
+          const fillH = clampedRatio * 90;
+          const fillY = 170 - fillH;
+          
+          return `
+            <g>
+              <!-- Liquid Fill -->
+              ${clampedRatio > 0 ? `<path d="M ${x+15} ${fillY} L ${x+85} ${fillY} L ${x+75} 170 L ${x+25} 170 Z" fill="rgba(14, 138, 125, 0.6)" />` : ""}
+              
+              <!-- Cup Outline -->
+              <path d="M ${x+10} 70 L ${x+90} 70 L ${x+80} 170 A 5 5 0 0 1 ${x+75} 175 L ${x+25} 175 A 5 5 0 0 1 ${x+20} 170 Z" fill="none" stroke="#0f2b3c" stroke-width="2" />
+              <!-- Handle -->
+              <path d="M ${x+90} 90 C ${x+115} 90, ${x+115} 150, ${x+80} 150" fill="none" stroke="#0f2b3c" stroke-width="2" />
+              
+              <!-- Scale Ticks -->
+              <line x1="${x+22}" y1="145" x2="${x+35}" y2="145" stroke="#0f2b3c" />
+              <text x="${x+40}" y="148" font-size="8" fill="#5e6e7e">1/4</text>
+              <line x1="${x+25}" y1="120" x2="${x+40}" y2="120" stroke="#0f2b3c" />
+              <text x="${x+45}" y="123" font-size="8" fill="#5e6e7e">1/2</text>
+              <line x1="${x+27}" y1="95" x2="${x+35}" y2="95" stroke="#0f2b3c" />
+              <text x="${x+40}" y="98" font-size="8" fill="#5e6e7e">3/4</text>
+              
+              <text x="${x+50}" y="195" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2b3c">${label}</text>
+              <text x="${x+50}" y="210" text-anchor="middle" font-size="9" fill="#0e8a7d" font-weight="bold">Value: ${fillRatio.toFixed(2)} cups</text>
+            </g>
+          `;
+        };
+        
+        const ratio1 = (!isNaN(p1a) && p1b > 0) ? (p1a / p1b) : 0;
+        const ratio2 = !isNaN(cups) ? cups : 0;
+        const ratio3 = w + (n / d);
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            <text x="250" y="35" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Bakery Ingredient Measuring Labs</text>
+            ${drawCup(50, "Loaf Dough", ratio1)}
+            ${drawCup(200, "Frosting Cups", ratio2 / 4)}
+            ${drawCup(350, "Roll Dough", ratio3 / 4)}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+
       function useExamples() {
         const ex = {
           recipeName: "classic bake set",

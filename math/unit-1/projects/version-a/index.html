@@ -818,6 +818,16 @@
         </p>
       </section>
 
+      
+      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
+      <section class="pk-visualizer-card no-print">
+        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
+          This visual interactive canvas updates in real-time as you complete your math calculations.
+        </p>
+        <div id="projectVisualizer"></div>
+      </section>
+    
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -900,7 +910,7 @@
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase">
+      <section class="phase" >
         <div class="phase-head">
           <div
             class="phase-num"
@@ -909,40 +919,49 @@
             3
           </div>
           <div>
-            <span class="arc-banner">Part 3 · World — real cookout costs</span>
-            <div class="skill">Compare to real data · 6.NS.3</div>
-            <h2>How Does Your Cost Compare?</h2>
+            <span class="arc-banner">Part 3 · World — real-world research</span>
+            <div class="skill">Compare to real data</div>
+            <h2>How Do Your Calculations Compare?</h2>
           </div>
         </div>
         <p>
-          These are realistic typical cookout costs per guest in different U.S.
-          cities. Pick a category and see where your number lands.
+          Compare your calculated project totals against real-world industry benchmarks and standards.
         </p>
+
+        <div class="pk-research-lab">
+          <h3>🔍 Block Party Food Cost Research</h3>
+          <p>Open the USDA Cost of Food report. Look up the monthly food cost for an adult on the "Low-Cost Plan". Enter the monthly value below to run the comparison math:</p>
+          <a href="https://www.fns.usda.gov/cnpp/usda-food-plans-cost-food-monthly-reports" target="_blank" class="pk-research-btn">🔗 USDA: Cost of Food Monthly Reports ↗</a>
+          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
+            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Food Plan Category Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="worldGo()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Cost per Person per Month ($)</label>
+              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="worldGo()">
+            </div>
+          </div>
+        </div>
+
         <div class="grid2">
           <div>
-            <label class="fld" for="worldCat">Compare against</label>
-            <select id="worldCat" data-save onchange="worldGo()">
-              <option value="costPerGuest">Cost per guest ($)</option>
-              <option value="bags">Goodie bags made</option>
-              <option value="guests">Number of guests</option>
-            </select>
-            <label class="fld" for="myWorld">My number</label>
+            <label class="fld" for="myWorld">My calculated value to compare</label>
             <input
               type="number"
               id="myWorld"
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your value"
+              placeholder="auto-fills or type your value"
             />
-            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
-              Tip: your cost per guest from Part 1 is a great value to type
-              here.
-            </p>
-            <div id="worldMeter"></div>
+            <div id="worldMeter" style="margin-top: 24px;"></div>
           </div>
           <div>
-            <h3>City Cookout Sample 🇺🇸</h3>
+            <h3>Typical Regional Averages 🌍</h3>
             <div
               style="
                 overflow: auto;
@@ -951,13 +970,22 @@
               "
             >
               <table class="rubric" style="margin-top: 0">
-                <tr>
-                  <th>City</th>
-                  <th>Cost / guest</th>
-                  <th>Bags</th>
-                  <th>Guests</th>
-                </tr>
-                <tbody id="worldRows"></tbody>
+                <thead>
+                  <tr>
+                    <th>Item/Location</th>
+                    <th>Standard Value</th>
+                  </tr>
+                </thead>
+                <tbody id="worldRows">
+                  <tr><td>Atlanta, GA</td><td>$210.00</td></tr>
+                  <tr><td>Chicago, IL</td><td>$240.00</td></tr>
+                  <tr><td>Houston, TX</td><td>$180.00</td></tr>
+                  <tr><td>Denver, CO</td><td>$260.00</td></tr>
+                  <tr><td>Miami, FL</td><td>$290.00</td></tr>
+                  <tr><td>Phoenix, AZ</td><td>$195.00</td></tr>
+                  <tr><td>Seattle, WA</td><td>$230.00</td></tr>
+                  <tr><td>Detroit, MI</td><td>$220.00</td></tr>
+                </tbody>
               </table>
             </div>
           </div>
@@ -1002,14 +1030,11 @@
           placeholder="My cost per guest is ___ the sample average because ___."
         ></textarea>
         <div class="pk-lvl2">
-          <label class="fld" for="worldHard"
-            >Level 2 question: If a city's cost per guest is $18.50 and 40
-            guests come, what is the total cost? Show your thinking.</label
-          >
+          <label class="fld" for="worldHard"><strong>Level 2 Culinary Challenge:</strong> Use your researched USDA monthly food cost entered above. If you host a party of 40 guests for a month under this plan, what is the total food cost? Show your step-by-step decimal multiplication.</label>
           <textarea
             id="worldHard"
             data-save
-            placeholder="$18.50 × 40 = ___ because ___"
+            placeholder="Monthly Cost $___ × 40 guests = $___ because..."
           ></textarea>
         </div>
         <label class="fld" for="careful"
@@ -1345,57 +1370,161 @@
       }
 
       /* ---- Part 3: world dataset + meter ---- */
-      // [city, costPerGuest, bags, guests] — realistic typical U.S. cookout values
-      const world = [
-        ["Atlanta, GA", 14.5, 10, 30],
-        ["Chicago, IL", 19.25, 12, 28],
-        ["Houston, TX", 12.75, 8, 40],
-        ["Denver, CO", 17.0, 9, 24],
-        ["Miami, FL", 21.4, 14, 26],
-        ["Phoenix, AZ", 13.2, 6, 35],
-        ["Seattle, WA", 20.1, 11, 22],
-        ["Detroit, MI", 11.9, 8, 32],
-      ];
-      const wIdx = { costPerGuest: 1, bags: 2, guests: 3 };
+      const baseWorldSample = [210, 240, 180, 260, 290, 195, 230, 220];
 
       function renderWorld() {
-        $("worldRows").innerHTML = world
-          .map(
-            (r) =>
-              `<tr><td>${r[0]}</td><td>$${r[1].toFixed(2)}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`,
-          )
-          .join("");
+        // Automatically populated from static table in HTML
       }
-      function worldSample() {
-        return world.map((r) => r[wIdx[$("worldCat").value]]);
-      }
+
       function worldGo() {
         const my = num("myWorld");
-        const labels =
-          $("worldCat").value === "costPerGuest"
-            ? { mean: "City avg $", me: "Me $" }
-            : { mean: "City avg", me: "Me" };
-        PK.worldMeter("worldMeter", worldSample(), my, labels);
+        const customName = $("worldCountry").value.trim();
+        const customSize = num("worldSize");
+        
+        let sample = [...baseWorldSample];
+        if (!isNaN(customSize) && customSize > 0) {
+          sample.push(customSize);
+        }
+        
+        PK.worldMeter(
+          "worldMeter",
+          sample,
+          my,
+          { mean: "World Avg", me: "Me" }
+        );
+
+        const fb = $("worldMeter");
+        if (!isNaN(customSize) && customSize > 0 && customName) {
+          const ratio = (my / customSize).toFixed(2);
+          const pct = Math.round((my / customSize) * 100);
+          const diff = Math.abs(my - customSize).toFixed(2);
+          
+          let myValStr = true ? "$" + my.toFixed(2) : my + "";
+          let custValStr = true ? "$" + customSize.toFixed(2) : customSize + "";
+          let diffStr = true ? "$" + Number(diff).toFixed(2) : Number(diff).toFixed(2) + "";
+
+          const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
+          const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
+            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
+            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
+            `</div>`;
+          fb.innerHTML += desc;
+        }
+        
+        // Draw the dynamic SVG visualizer
+        if (typeof drawVisualizer === 'function') {
+          drawVisualizer();
+        }
+        
         updateProgress();
       }
+
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
-        const sample = worldSample();
+        let sample = [...baseWorldSample];
+        const customSize = num("worldSize");
+        if (!isNaN(customSize) && customSize > 0) {
+          sample.push(customSize);
+        }
         if (isNaN(v)) {
           $("whatIfBox").textContent = "Enter a number first.";
           return;
         }
         const before = PK.mean(sample);
         const after = PK.mean(sample.concat([v]));
+        
+        let beforeStr = true ? "$" + before.toFixed(2) : before.toFixed(2) + "";
+        let afterStr = true ? "$" + after.toFixed(2) : after.toFixed(2) + "";
+        let vStr = true ? "$" + v.toFixed(2) : v + "";
+
         PK.whatIf(
           "whatIfBox",
-          { average: "$" + before.toFixed(2) },
-          { average: "$" + after.toFixed(2) },
-          "Adding a value of $" + v.toFixed(2) + " to the city sample:",
+          { average: beforeStr },
+          { average: afterStr },
+          "Adding a value of " + vStr + " to the sample:"
         );
       }
 
-      /* ---- Use example numbers ---- */
+      
+      function drawVisualizer() {
+        const s = num("g-stickers");
+        const b = num("g-bars");
+        const dj = num("l-dj");
+        const bub = num("l-bubble");
+        
+        let vennHtml = "";
+        let lcmHtml = "";
+        
+        if (!isNaN(s) && s > 0 && !isNaN(b) && b > 0) {
+          const g = gcd(s, b);
+          const leftOnly = [];
+          const rightOnly = [];
+          const both = [];
+          for (let i = 1; i <= Math.max(s, b); i++) {
+            if (s % i === 0 && b % i === 0) both.push(i);
+            else if (s % i === 0) leftOnly.push(i);
+            else if (b % i === 0) rightOnly.push(i);
+          }
+          vennHtml = `
+            <circle cx="110" cy="120" r="55" fill="rgba(26, 111, 181, 0.15)" stroke="#1a6fb5" stroke-width="2" />
+            <circle cx="180" cy="120" r="55" fill="rgba(212, 149, 42, 0.15)" stroke="#d4952a" stroke-width="2" />
+            <text x="110" y="52" text-anchor="middle" font-size="10" font-weight="bold" fill="#1a6fb5">${s} Stickers</text>
+            <text x="180" y="52" text-anchor="middle" font-size="10" font-weight="bold" fill="#d4952a">${b} Bars</text>
+            <text x="85" y="125" text-anchor="middle" font-size="11" fill="#0f2b3c">${leftOnly.slice(0, 3).join(', ')}</text>
+            <text x="205" y="125" text-anchor="middle" font-size="11" fill="#0f2b3c">${rightOnly.slice(0, 3).join(', ')}</text>
+            <text x="145" y="120" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">${both.slice(-3).join(', ')}</text>
+            <text x="145" y="195" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">GCF (Bags) = ${g}</text>
+          `;
+        } else {
+          vennHtml = `
+            <text x="145" y="120" text-anchor="middle" font-size="12" fill="#5e6e7e" italic>Enter Sticker & Bar amounts</text>
+          `;
+        }
+        
+        if (!isNaN(dj) && dj > 0 && !isNaN(bub) && bub > 0) {
+          const l = lcm(dj, bub);
+          let ticksDj = "";
+          let ticksBub = "";
+          const maxVal = l * 1.5;
+          for (let i = 0; i <= maxVal; i += dj) {
+            const px = 300 + (i / maxVal) * 170;
+            ticksDj += `<circle cx="${px}" cy="100" r="4" fill="#0e8a7d" />
+                        <text x="${px}" y="90" text-anchor="middle" font-size="8" fill="#5e6e7e">${i}</text>`;
+          }
+          for (let i = 0; i <= maxVal; i += bub) {
+            const px = 300 + (i / maxVal) * 170;
+            ticksBub += `<circle cx="${px}" cy="140" r="4" fill="#c45a3c" />
+                        <text x="${px}" y="155" text-anchor="middle" font-size="8" fill="#5e6e7e">${i}</text>`;
+          }
+          const syncPx = 300 + (l / maxVal) * 170;
+          lcmHtml = `
+            <line x1="300" y1="100" x2="480" y2="100" stroke="#0e8a7d" stroke-width="2" />
+            <line x1="300" y1="140" x2="480" y2="140" stroke="#c45a3c" stroke-width="2" />
+            <text x="290" y="104" text-anchor="end" font-size="10" font-weight="bold" fill="#0e8a7d">DJ (${dj}m)</text>
+            <text x="290" y="144" text-anchor="end" font-size="10" font-weight="bold" fill="#c45a3c">Bub (${bub}m)</text>
+            ${ticksDj}
+            ${ticksBub}
+            <line x1="${syncPx}" y1="80" x2="${syncPx}" y2="160" stroke="#2e7d32" stroke-width="1.5" stroke-dasharray="4,4" />
+            <text x="${syncPx}" y="75" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">Sync: ${l} min</text>
+            <text x="390" y="195" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">LCM (Sync) = ${l} min</text>
+          `;
+        } else {
+          lcmHtml = `
+            <text x="390" y="120" text-anchor="middle" font-size="12" fill="#5e6e7e" italic>Enter DJ & Bubble intervals</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            <line x1="260" y1="20" x2="260" y2="220" stroke="#e2e7ec" stroke-width="1" />
+            ${vennHtml}
+            ${lcmHtml}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+
       function useExamples() {
         const ex = {
           "g-stickers": 48,
