@@ -650,20 +650,7 @@
               Variables · Equation · Table · Graph · 6.EE.9
             </div>
             
-        <!-- ===================== RESEARCH LAB ===================== -->
-        <div class="pk-research-lab">
-          <h3>🔍 YouTube RPM Revenue Statistics</h3>
-          <p>Research typical revenue per 1,000 views (RPM) for educational channels (often around $4.50). Enter the researched RPM below to model your earnings:</p>
-          <a href="https://www.youtube.com/creators/" target="_blank" class="pk-research-btn">🔗 YouTube Creator Hub: Analytics Guidelines ↗</a>
-          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
-            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
-          </p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Creator Niche Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="syncResearch()">
-            </div>
-            <div>
+        <div>
               <label class="fld" for="worldSize">Typical Revenue per 1,000 views ($)</label>
               <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
             </div>
@@ -693,11 +680,22 @@
               placeholder="example: skateboarding tricks"
             />
           </div>
-          <div>
-            <label class="fld" for="k-rate"
-              >Your researched growth rate k (new subscribers per week)</label
-            >
-            <input
+          
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://www.youtube.com/creators/" target="_blank" class="pk-research-inline-link">🔗 YouTube Creator Hub: Analytics Guidelines ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Research typical revenue per 1,000 views (RPM) for educational channels (often around $4.50). Enter the researched RPM below to model your earnings:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Creator Niche Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
+            <div>
+              <label class="fld" for="k-rate">Typical Revenue per 1,000 views ($)</label>
+              <input
               type="number"
               id="k-rate"
               data-save
@@ -706,7 +704,10 @@
               placeholder="example: 12"
               oninput="calcEquation()"
             />
+            </div>
           </div>
+        </div>
+    
         </div>
         <label class="fld" for="kwhy"
           >Why this k? Justify it with your research.</label
@@ -865,6 +866,7 @@
         </p>
       </section>
 
+      
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1580,10 +1582,11 @@
         return world.map((r) => r[1]);
       }
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        const customSize = $("k-rate") ? num("k-rate") : NaN;
         
         let sample = worldSample();
         if (!isNaN(customSize) && customSize > 0) {
@@ -1591,7 +1594,7 @@
         }
         
         const labels =
-          $("worldCat").value === "costPerGuest"
+          $("worldCat").value === "costPerGuest" || $("worldCat").value === "price"
             ? { mean: "City avg $", me: "Me $" }
             : { mean: "City avg", me: "Me" };
             
@@ -1622,11 +1625,13 @@
         updateProgress();
       }
   
+  
+      
       
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
         let sample = worldSample();
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        const customSize = $("k-rate") ? num("k-rate") : NaN;
         if (!isNaN(customSize) && customSize > 0) {
           sample = [...sample, customSize];
         }
@@ -1649,14 +1654,16 @@
         );
       }
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
         const ex = {
+          
           "worldCountry": "Gaming Channel",
+          "k-rate": 4.5,
           "worldSize": 4.5,
           topic: "skateboarding tricks",
-          "k-rate": 12,
           "find-x": 7,
           "find-y": 300,
           "sw-target": 240,
@@ -1664,6 +1671,7 @@
           "ch-b": 8,
           "ch-weeks": 10,
           myWorld: 12,
+          
         };
         Object.entries(ex).forEach(([key, v]) => {
           if ($(key)) $(key).value = v;
@@ -1685,6 +1693,52 @@
         worldGo();
       }
     
+
+      
+      function drawVisualizer() {
+        const rpm = num("exp-coeff") || 4.5;
+        
+        let html = "";
+        if (rpm > 0) {
+          const maxViews = 100;
+          const maxEarnings = rpm * maxViews;
+          
+          let points = "";
+          for (let v = 0; v <= maxViews; v += 10) {
+            const px = 100 + (v / maxViews) * 320;
+            const py = 180 - ((v * rpm) / maxEarnings) * 120;
+            points += `${px},${py} `;
+          }
+          
+          html = `
+            <polyline points="${points.trim()}" fill="none" stroke="#1a6fb5" stroke-width="3" />
+            <circle cx="420" cy="60" r="5" fill="#1a6fb5" />
+            <text x="410" y="55" text-anchor="end" font-size="10" font-weight="bold" fill="#1a6fb5">${maxViews}k views: $${maxEarnings.toFixed(2)}</text>
+            
+            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Earnings Linear Growth Line (y = ${rpm}x)</text>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter RPM to draw linear growth graph</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            <!-- Axes -->
+            <line x1="80" y1="60" x2="80" y2="180" stroke="#cbd5e1" stroke-width="2" />
+            <line x1="80" y1="180" x2="450" y2="180" stroke="#cbd5e1" stroke-width="2" />
+            <text x="70" y="65" text-anchor="end" font-size="9" fill="#94a3b8">Earnings ($)</text>
+            <text x="440" y="195" text-anchor="end" font-size="9" fill="#94a3b8">Views (k)</text>
+            
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
 
       
       function drawVisualizer() {

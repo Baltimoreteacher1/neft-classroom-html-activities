@@ -681,20 +681,7 @@
 
         <!-- Lock A: addition -->
         
-        <!-- ===================== RESEARCH LAB ===================== -->
-        <div class="pk-research-lab">
-          <h3>🔍 NSA Cryptographic Bit Key Standards</h3>
-          <p>Open the cryptology history page. Research standard cryptographic key sizes in bits (AES standard is commonly 128, 192, or 256 bits). Enter the bits key size below:</p>
-          <a href="https://www.nsa.gov/History/Cryptologic-History/" target="_blank" class="pk-research-btn">🔗 NSA: Cryptology History & Encryption Standards ↗</a>
-          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
-            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
-          </p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Cipher Algorithm Standard</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="syncResearch()">
-            </div>
-            <div>
+        <div>
               <label class="fld" for="worldSize">AES Bit Key Size (bits)</label>
               <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
             </div>
@@ -722,9 +709,22 @@
               oninput="solveLockA()"
             />
           </div>
-          <div>
-            <label class="fld" for="a-q">q — what the clue totals</label>
-            <input
+          
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://www.nsa.gov/History/Cryptologic-History/" target="_blank" class="pk-research-inline-link">🔗 NSA: Cryptology History & Encryption Standards ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the cryptology history page. Research standard cryptographic key sizes in bits (AES standard is commonly 128, 192, or 256 bits). Enter the bits key size below:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Cipher Algorithm Standard</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
+            <div>
+              <label class="fld" for="a-q">q — what the clue totals</label>
+              <input
               type="number"
               id="a-q"
               data-save
@@ -733,7 +733,10 @@
               placeholder="example: 15"
               oninput="solveLockA()"
             />
+            </div>
           </div>
+        </div>
+    
         </div>
         <button class="btn" type="button" onclick="solveLockA()">
           Solve &amp; Verify Lock A
@@ -949,6 +952,7 @@
         </div>
       </section>
 
+      
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1746,10 +1750,11 @@
         return world.map((r) => r[wIdx[$("worldCat").value]]);
       }
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        const customSize = $("a-q") ? num("a-q") : NaN;
         
         let sample = worldSample();
         if (!isNaN(customSize) && customSize > 0) {
@@ -1757,7 +1762,7 @@
         }
         
         const labels =
-          $("worldCat").value === "costPerGuest"
+          $("worldCat").value === "costPerGuest" || $("worldCat").value === "price"
             ? { mean: "City avg $", me: "Me $" }
             : { mean: "City avg", me: "Me" };
             
@@ -1787,6 +1792,7 @@
         
         updateProgress();
       }
+  
   
 
       /* ---- What-If Lab: inequality lock (reuses drawNumberLine ported from Version B) ---- */
@@ -1976,12 +1982,13 @@
       /* ---- Use example numbers ---- */
       function useExamples() {
         const ex = {
+          
           "worldCountry": "AES-128 Key",
+          "a-q": 128,
           "worldSize": 128,
           roomName: "The Vault of Numbers",
           roomTheme: "Secret Spy Lab",
           "a-p": 8,
-          "a-q": 15,
           "b-p": 6,
           "b-q": 10,
           "c-p": 4,
@@ -1994,6 +2001,7 @@
           ineqTarget: 50,
           ineqTest: 71,
           myWorld: "",
+          
         };
         Object.entries(ex).forEach(([k, v]) => {
           if ($(k)) $(k).value = v;
@@ -2014,6 +2022,49 @@
         worldGo();
       }
     
+
+      
+      function drawVisualizer() {
+        const lockA = num("code-a");
+        const lockB = num("code-b");
+        const lockC = num("code-c");
+        const lockD = num("worldHard");
+        
+        const isUnlocked = (!isNaN(lockA) && !isNaN(lockB) && !isNaN(lockC));
+        let angle = 0;
+        if (isUnlocked) {
+          angle = (lockA + lockB + lockC) * 5;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(250, 110)">
+              <!-- Outer Lock Ring -->
+              <circle cx="0" cy="0" r="70" fill="#cbd5e1" stroke="#0f2b3c" stroke-width="4" />
+              
+              <!-- Rotating Dial -->
+              <g transform="rotate(${angle})">
+                <circle cx="0" cy="0" r="50" fill="#f1f5f9" stroke="#5e6e7e" stroke-width="2" />
+                <line x1="0" y1="-50" x2="0" y2="-40" stroke="#ef4444" stroke-width="3" />
+                <circle cx="0" cy="-35" r="3" fill="#0f2b3c" />
+                <text x="0" y="5" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">DIAL</text>
+              </g>
+              <!-- Index Pointer -->
+              <polygon points="0,-75 -5,-65 5,-65" fill="#ef4444" />
+            </g>
+            
+            ${isUnlocked ? `
+              <text x="250" y="210" text-anchor="middle" font-size="14" font-weight="bold" fill="#2d874b">🔓 COMBINATION SAFE OPENED!</text>
+            ` : `
+              <text x="250" y="210" text-anchor="middle" font-size="14" font-weight="bold" fill="#c45a3c">🔒 LOCK DIAL SECURED</text>
+            `}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
 
       
       function drawVisualizer() {

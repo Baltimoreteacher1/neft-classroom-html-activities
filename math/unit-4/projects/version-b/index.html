@@ -596,20 +596,7 @@
               Unit Price · Conversion · 6.RP.2 · 6.RP.3b · 6.RP.3d
             </div>
             
-        <!-- ===================== RESEARCH LAB ===================== -->
-        <div class="pk-research-lab">
-          <h3>🔍 BLS Average US Milk Prices</h3>
-          <p>Open the BLS database. Find the national average retail price for a gallon of whole milk. Enter the average price below to compute your decimal totals:</p>
-          <a href="https://www.bls.gov/charts/consumer-price-index/consumer-price-index-average-price-data.htm" target="_blank" class="pk-research-btn">🔗 BLS Consumer Price Index Average Prices ↗</a>
-          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
-            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
-          </p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Researched Item/Region</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="syncResearch()">
-            </div>
-            <div>
+        <div>
               <label class="fld" for="worldSize">Cost per Gallon of Milk ($)</label>
               <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
             </div>
@@ -643,6 +630,19 @@
         <div style="margin-top: 14px">
           <strong>Package A (real price &amp; size)</strong>
           <div class="grid2" style="margin-top: 8px">
+            
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://www.bls.gov/charts/consumer-price-index/consumer-price-index-average-price-data.htm" target="_blank" class="pk-research-inline-link">🔗 BLS Consumer Price Index Average Prices ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the BLS database. Find the national average retail price for a gallon of whole milk. Enter the average price below to compute your decimal totals:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Researched Item/Region</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
             <div>
               <label class="fld" for="a-price">Price ($)</label>
               <input
@@ -655,6 +655,9 @@
                 oninput="calcUnitPrice()"
               />
             </div>
+          </div>
+        </div>
+    
             <div>
               <label class="fld" for="a-units"
                 >Number of units (oz, count, etc.)</label
@@ -830,6 +833,7 @@
         </div>
       </section>
 
+      
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1474,10 +1478,11 @@
         return world.map((r) => r[1]);
       }
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        const customSize = $("a-price") ? num("a-price") : NaN;
         
         let sample = worldSample();
         if (!isNaN(customSize) && customSize > 0) {
@@ -1485,7 +1490,7 @@
         }
         
         const labels =
-          $("worldCat").value === "costPerGuest"
+          $("worldCat").value === "costPerGuest" || $("worldCat").value === "price"
             ? { mean: "City avg $", me: "Me $" }
             : { mean: "City avg", me: "Me" };
             
@@ -1516,11 +1521,13 @@
         updateProgress();
       }
   
+  
+      
       
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
         let sample = worldSample();
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        const customSize = $("a-price") ? num("a-price") : NaN;
         if (!isNaN(customSize) && customSize > 0) {
           sample = [...sample, customSize];
         }
@@ -1543,18 +1550,21 @@
         );
       }
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
         const ex = {
+          
           "worldCountry": "Whole Milk (gal)",
+          "a-price": 3.98,
           "worldSize": 3.98,
           product: "granola bars",
-          "a-price": 3.6,
           "a-units": 12,
           "b-price": 5.25,
           "b-units": 20,
           "conv-val": 5,
+          
         };
         Object.entries(ex).forEach(([k, v]) => {
           if ($(k)) $(k).value = v;
@@ -1577,6 +1587,56 @@
         worldGo();
       }
     
+
+      
+      function drawVisualizer() {
+        const sub = num("subtotal") || 0;
+        const tax = num("tax-rate") || 0;
+        const tip = num("tip-pct") || 0;
+        
+        let html = "";
+        if (sub > 0) {
+          const taxAmt = sub * (tax / 100);
+          const tipAmt = sub * (tip / 100);
+          const total = sub + taxAmt + tipAmt;
+          
+          html = `
+            <g transform="translate(150, 20)">
+              <!-- Receipt Background -->
+              <rect x="0" y="0" width="200" height="200" fill="#fcfcfc" stroke="#cbd5e1" stroke-width="2" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.05))" />
+              <line x1="10" y1="35" x2="190" y2="35" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3,3" />
+              <text x="100" y="25" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">FOOD CART RECEIPT</text>
+              
+              <text x="20" y="60" font-size="10" fill="#5e6e7e">Menu Subtotal:</text>
+              <text x="180" y="60" text-anchor="end" font-size="10" font-weight="bold" fill="#0f2b3c">$${sub.toFixed(2)}</text>
+              
+              <text x="20" y="85" font-size="10" fill="#5e6e7e">Sales Tax (	h ${tax}%):</text>
+              <text x="180" y="85" text-anchor="end" font-size="10" fill="#0f2b3c">$${taxAmt.toFixed(2)}</text>
+              
+              <text x="20" y="110" font-size="10" fill="#5e6e7e">Staff Tip (${tip}%):</text>
+              <text x="180" y="110" text-anchor="end" font-size="10" fill="#0f2b3c">$${tipAmt.toFixed(2)}</text>
+              
+              <line x1="10" y1="130" x2="190" y2="130" stroke="#cbd5e1" stroke-width="1.5" />
+              <text x="20" y="155" font-size="12" font-weight="bold" fill="#2d874b">GRAND TOTAL:</text>
+              <text x="180" y="155" text-anchor="end" font-size="12" font-weight="bold" fill="#2d874b">$${total.toFixed(2)}</text>
+            </g>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Food Cart Bill values to print receipt</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
 
       
       function drawVisualizer() {

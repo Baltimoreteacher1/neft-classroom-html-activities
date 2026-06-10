@@ -743,20 +743,7 @@
 
         <!-- 1a Integers in context -->
         
-        <!-- ===================== RESEARCH LAB ===================== -->
-        <div class="pk-research-lab">
-          <h3>🔍 World Ocean Trench Average Depths</h3>
-          <p>Open the NOAA database page. Look up the average depth of the Atlantic Ocean in meters (often 3,646 meters, represented as -3646 m). Enter the depth below as a negative integer:</p>
-          <a href="https://www.ngdc.noaa.gov/mgg/bathymetry/relief.html" target="_blank" class="pk-research-btn">🔗 NOAA: Marine Geology & Ocean Bathymetry Relief ↗</a>
-          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
-            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
-          </p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Ocean/Trench Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="syncResearch()">
-            </div>
-            <div>
+        <div>
               <label class="fld" for="worldSize">Researched Ocean Depth (negative m)</label>
               <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
             </div>
@@ -772,11 +759,22 @@
           level — or use a famous one).
         </div>
         <div class="grid2">
-          <div>
-            <label class="fld" for="high"
-              >Highest place (meters, positive)</label
-            >
-            <input
+          
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://www.ngdc.noaa.gov/mgg/bathymetry/relief.html" target="_blank" class="pk-research-inline-link">🔗 NOAA: Marine Geology & Ocean Bathymetry Relief ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the NOAA database page. Look up the average depth of the Atlantic Ocean in meters (often 3,646 meters, represented as -3646 m). Enter the depth below as a negative integer:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Ocean/Trench Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
+            <div>
+              <label class="fld" for="high">Researched Ocean Depth (negative m)</label>
+              <input
               type="number"
               id="high"
               data-save
@@ -784,7 +782,10 @@
               placeholder="example: 2500"
               oninput="calcContext()"
             />
+            </div>
           </div>
+        </div>
+    
           <div>
             <label class="fld" for="low"
               >Lowest place (meters, enter negative)</label
@@ -946,6 +947,7 @@
         </p>
       </section>
 
+      
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1633,10 +1635,11 @@
         return worldData[$("worldCat").value].sample();
       }
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        const customSize = $("high") ? num("high") : NaN;
         
         let sample = worldSample();
         if (!isNaN(customSize) && customSize > 0) {
@@ -1644,7 +1647,7 @@
         }
         
         const labels =
-          $("worldCat").value === "costPerGuest"
+          $("worldCat").value === "costPerGuest" || $("worldCat").value === "price"
             ? { mean: "City avg $", me: "Me $" }
             : { mean: "City avg", me: "Me" };
             
@@ -1675,11 +1678,13 @@
         updateProgress();
       }
   
+  
+      
       
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
         let sample = worldSample();
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        const customSize = $("high") ? num("high") : NaN;
         if (!isNaN(customSize) && customSize > 0) {
           sample = [...sample, customSize];
         }
@@ -1702,11 +1707,14 @@
         );
       }
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
         const ex = {
+          
           "worldCountry": "Atlantic Ocean Floor",
+          "high": -3646,
           "worldSize": -3646,
           high: 2500,
           low: -85,
@@ -1716,6 +1724,7 @@
           t3: -5,
           t4: 35,
           t5: 4,
+          
         };
         Object.entries(ex).forEach(([k, v]) => {
           if ($(k)) $(k).value = v;
@@ -1736,6 +1745,48 @@
         worldGo();
       }
     
+
+      
+      function drawVisualizer() {
+        const subY = num("sub-depth");
+        const targetY = num("target-depth");
+        
+        let html = "";
+        if (!isNaN(subY)) {
+          const maxVal = Math.max(Math.abs(subY), Math.abs(targetY || 0), 4000);
+          const subPy = 50 + (Math.abs(subY) / maxVal) * 140;
+          const targetPy = targetY ? (50 + (Math.abs(targetY) / maxVal) * 140) : null;
+          
+          html = `
+            <line x1="100" y1="50" x2="400" y2="50" stroke="#0284c7" stroke-width="2" />
+            <text x="100" y="45" font-size="10" font-weight="bold" fill="#0284c7">Sea Level (0m)</text>
+            
+            <circle cx="250" cy="${subPy}" r="8" fill="#d4952a" />
+            <text x="265" y="${subPy + 4}" font-size="10" font-weight="bold" fill="#d4952a">Sub: ${subY}m</text>
+            
+            ${targetPy ? `
+              <line x1="150" y1="${targetPy}" x2="350" y2="${targetPy}" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3,3" />
+              <text x="160" y="${targetPy - 5}" font-size="9" fill="#5e6e7e">Target Depth: ${targetY}m</text>
+            ` : ""}
+            
+            <text x="250" y="220" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Submarine Vertical Depth Profile</text>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Submarine Depth to draw vertical profile</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
 
       
       function drawVisualizer() {

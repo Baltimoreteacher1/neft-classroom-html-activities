@@ -1618,6 +1618,65 @@
       document.addEventListener('click', e => { 
         if(e.target.closest('button, .route-card, .jump-wrap select')) AudioSynth.click(); 
       });
+      
+      const DESTINATION_RANGES = {
+        india_taj_kite: {
+          "base": { min: 10, max: 50 },
+          "height": { min: 5, max: 30 }
+        },
+        brazil_redeemer: {
+          "length": { min: 5, max: 30 },
+          "width": { min: 4, max: 25 },
+          "height": { min: 3, max: 20 }
+        },
+        egypt_pyramid: {
+          "base side": { min: 8, max: 40 },
+          "slant height": { min: 6, max: 30 }
+        },
+        france_louvre: {
+          "base of each triangular face": { min: 15, max: 60 },
+          "slant height": { min: 10, max: 50 }
+        },
+        japan_himeji: {
+          "length": { min: 5, max: 40 },
+          "width": { min: 3, max: 30 },
+          "height": { min: 2, max: 20 }
+        },
+        australia_opera: {
+          "base": { min: 10, max: 60 },
+          "height": { min: 8, max: 50 }
+        },
+        mexico_chichen: {
+          "base 1": { min: 15, max: 60 },
+          "base 2": { min: 8, max: 40 },
+          "height": { min: 5, max: 30 }
+        },
+        uae_burj: {
+          "panel length": { min: 2, max: 15 },
+          "panel width": { min: 1.5, max: 10 },
+          "number of panels": { min: 10, max: 100 }
+        },
+        peru_machu: {
+          "base": { min: 10, max: 50 },
+          "height": { min: 4, max: 30 }
+        },
+        italy_colosseum: {
+          "length": { min: 5, max: 30 },
+          "width": { min: 2, max: 20 },
+          "height": { min: 1.5, max: 15 }
+        },
+        canada_cn: {
+          "length": { min: 2, max: 25 },
+          "width": { min: 2, max: 25 },
+          "height": { min: 5, max: 50 }
+        },
+        southafrica_table: {
+          "base 1": { min: 3, max: 15 },
+          "base 2": { min: 2, max: 10 },
+          "height": { min: 1, max: 8 }
+        }
+      };
+
       const DESTINATIONS = [
         {
           id: "india_taj_kite",
@@ -2183,6 +2242,14 @@
         return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
       }
 
+      
+      function updateResearchedData(destId, key, value) {
+        const r = responseFor(destId);
+        if (!r.researchedData) r.researchedData = {};
+        r.researchedData[key] = value;
+        saveState(false);
+      }
+
       function init() {
         $("student-date").value = todayISO();
         applyPreset("balanced", true);
@@ -2520,12 +2587,37 @@
   `;
       }
       function dataTable(d) {
+        const r = responseFor(d.id);
+        if (!r.researchedData) {
+          r.researchedData = {};
+          d.data.forEach(row => {
+            r.researchedData[row[0]] = "";
+          });
+        }
         return (
-          `<table class="data-table"><thead><tr><th>Measurement</th><th>Value</th></tr></thead><tbody>` +
+          `<table class="data-table"><thead><tr><th>Measurement</th><th style="text-align:right; padding-right:24px;">Researched Input</th></tr></thead><tbody>` +
           d.data
             .map(
-              (row) =>
-                `<tr><td>${escapeHtml(row[0])}</td><td>${escapeHtml(row[1])} ${escapeHtml(row[2])}</td></tr>`,
+              (row) => {
+                const key = row[0];
+                const savedVal = r.researchedData[key] ?? "";
+                const limit = DESTINATION_RANGES[d.id]?.[key];
+                const limitLabel = limit ? `<br><span style="font-size:10px; color:var(--muted)">Range: ${limit.min}–${limit.max} ${row[2]}</span>` : "";
+                return `<tr>
+                  <td><strong>${escapeHtml(key)}</strong>${limitLabel}</td>
+                  <td>
+                    <div style="display:flex; align-items:center; gap:6px; justify-content:flex-end;">
+                      <input type="number" 
+                        id="data-${d.id}-${key.replace(/\s+/g, '_')}" 
+                        style="width:90px; padding:6px 8px; border:1.5px solid var(--line); border-radius:8px; text-align:right;"
+                        value="${escapeHtml(savedVal)}" 
+                        placeholder="e.g. ${row[1]}"
+                        oninput="updateResearchedData('${d.id}', '${key}', this.value)">
+                      <span style="font-weight:bold; color:var(--navy); min-width:24px; text-align:left;">${escapeHtml(row[2])}</span>
+                    </div>
+                  </td>
+                </tr>`;
+              }
             )
             .join("") +
           `</tbody></table>`
@@ -2699,22 +2791,124 @@
         if ($("numeric-answer")) r.numericAnswer = $("numeric-answer").value;
         if ($("budget-material")) r.budgetMaterial = $("budget-material").value;
         if ($("budget-estimate")) r.budgetEstimate = $("budget-estimate").value;
+        
+        const d = destinationById(id);
+        if (r.researchedData) {
+          d.data.forEach(row => {
+            const key = row[0];
+            const inp = $(`data-${id}-${key.replace(/\s+/g, '_')}`);
+            if (inp) {
+              r.researchedData[key] = inp.value;
+            }
+          });
+        }
       }
       function checkCalculation() {
         persistMissionInputs();
         const d = destinationById(state.selectedIds[state.currentIndex]);
         const r = responseFor(d.id);
+        
+        if (!r.researchedData) r.researchedData = {};
+        let missing = false;
+        let outOfRange = false;
+        let rangeErrMsg = "";
+        
+        for (const row of d.data) {
+          const key = row[0];
+          const val = cleanNumber(r.researchedData[key]);
+          if (isNaN(val) || val <= 0) {
+            missing = true;
+            break;
+          }
+          const constraint = DESTINATION_RANGES[d.id]?.[key];
+          if (constraint) {
+            if (val < constraint.min || val > constraint.max) {
+              outOfRange = true;
+              rangeErrMsg = `"${key}" must be between ${constraint.min} and ${constraint.max} ${row[2]}.`;
+              break;
+            }
+          }
+        }
+        
+        if (missing) {
+          const fb = $("feedback-box");
+          fb.className = "feedback show no";
+          fb.innerHTML = `<strong>Missing research data.</strong> Please research and enter all required dimensions above first.`;
+          AudioSynth.error();
+          return;
+        }
+        
+        if (outOfRange) {
+          const fb = $("feedback-box");
+          fb.className = "feedback show no";
+          fb.innerHTML = `<strong>Invalid dimension range.</strong> ${rangeErrMsg} Double check your research or view the Maps link.`;
+          AudioSynth.error();
+          return;
+        }
+        
+        const vals = {};
+        for (const row of d.data) {
+          vals[row[0]] = cleanNumber(r.researchedData[row[0]]);
+        }
+        
+        let expectedAnswer = 0;
+        let expectedSetup = "";
+        
+        switch (d.formulaType) {
+          case "parallelogram_area":
+            expectedAnswer = vals["base"] * vals["height"];
+            expectedSetup = `A = ${vals["base"]} × ${vals["height"]}`;
+            break;
+          case "rect_prism_sa":
+            const l = vals["length"];
+            const w = vals["width"];
+            const h = vals["height"];
+            expectedAnswer = 2 * (l * w + l * h + w * h);
+            expectedSetup = `SA = 2(${l}×${w} + ${l}×${h} + ${w}×${h})`;
+            break;
+          case "square_pyramid_lateral":
+            const b = vals["base side"] ?? vals["base of each triangular face"] ?? vals["base"];
+            const sh = vals["slant height"];
+            expectedAnswer = 4 * (0.5 * b * sh);
+            expectedSetup = `LA = 4(½ × ${b} × ${sh})`;
+            break;
+          case "triangle_area":
+            expectedAnswer = 0.5 * vals["base"] * vals["height"];
+            expectedSetup = `A = ½ × ${vals["base"]} × ${vals["height"]}`;
+            break;
+          case "trapezoid_area":
+            const b1 = vals["base 1"];
+            const b2 = vals["base 2"];
+            const th = vals["height"];
+            expectedAnswer = 0.5 * (b1 + b2) * th;
+            expectedSetup = `A = ½(${b1} + ${b2}) × ${th}`;
+            break;
+          case "rectangle_area_repeated":
+            const len = vals["panel length"];
+            const wid = vals["panel width"];
+            const count = vals["number of panels"];
+            expectedAnswer = len * wid * count;
+            expectedSetup = `A = ${len} × ${wid} × ${count}`;
+            break;
+          case "rect_prism_volume":
+            expectedAnswer = vals["length"] * vals["width"] * vals["height"];
+            expectedSetup = `V = ${vals["length"]} × ${vals["width"]} × ${vals["height"]}`;
+            break;
+        }
+        
+        expectedAnswer = Math.round(expectedAnswer * 100) / 100;
         const value = cleanNumber(r.numericAnswer);
         const formulaOK = r.formulaType === d.formulaType;
         const numericOK =
           isFinite(value) &&
-          Math.abs(value - d.answer) <= (d.tolerance ?? 0.01);
+          Math.abs(value - expectedAnswer) <= (d.tolerance ?? 0.05);
+          
         r.checked = true;
         r.correct = formulaOK && numericOK;
         const fb = $("feedback-box");
         fb.className = "feedback show " + (r.correct ? "ok" : "no");
         if (r.correct) {
-          fb.innerHTML = feedbackText(d, true);
+          fb.innerHTML = `<strong>✅ Correct calculation.</strong> ${expectedSetup} = <strong>${value} ${escapeHtml(d.unit)}</strong>.`;
           AudioSynth.success();
         } else {
           const formulaMsg = formulaOK
@@ -2722,8 +2916,8 @@
             : `Formula check: choose <strong>${escapeHtml(FORMULAS[d.formulaType])}</strong>.`;
           const answerMsg = numericOK
             ? "Your number is correct."
-            : `Calculation check: the target answer is <strong>${escapeHtml(d.answer)} ${escapeHtml(d.unit)}</strong>.`;
-          fb.innerHTML = `<strong>Revise and try again.</strong> ${formulaMsg} ${answerMsg}<br><em>Expected setup: ${escapeHtml(d.substitution)}</em>`;
+            : `Calculation check: using your dimensions, the expected answer is <strong>${expectedAnswer} ${escapeHtml(d.unit)}</strong>.`;
+          fb.innerHTML = `<strong>Revise and try again.</strong> ${formulaMsg} ${answerMsg}<br><em>Expected setup: ${expectedSetup}</em>`;
           AudioSynth.error();
         }
         saveState(true);
@@ -2848,13 +3042,20 @@
             const r = responseFor(id);
             const rowClass =
               r.correct && explorationComplete(r) ? "good" : "needs";
+            const dimStrings = [];
+            if (r.researchedData) {
+              for (const [k, v] of Object.entries(r.researchedData)) {
+                dimStrings.push(`${k}: ${v}`);
+              }
+            }
             return `<tr class="${rowClass}">
-      <td><strong>${i + 1}. ${d.flag} ${escapeHtml(d.landmark)}</strong><br><span style="color:var(--muted);font-size:12px;">${escapeHtml(d.country)} · ${escapeHtml(d.focus)}</span></td>
+      <td><strong>${i + 1}. ${d.flag} ${escapeHtml(d.landmark)}</strong><br><span style="color:var(--muted);font-size:12px;">${escapeHtml(d.country)} · ${escapeHtml(d.focus)}</span><br><span style="color:var(--navy);font-size:11px;font-weight:bold;">Dims: ${escapeHtml(dimStrings.join(", ") || "—")}</span></td>
       <td>${r.correct ? "✅ Correct" : r.checked ? "🔁 Revise" : "○ Not checked"}<br><span style="color:var(--muted);font-size:12px;">Answer: ${escapeHtml(r.numericAnswer || "—")} ${escapeHtml(d.unit)}</span></td>
       <td>${escapeHtml(r.observation || "No observation yet")}<br><span style="color:var(--muted);font-size:12px;">Geometry: ${escapeHtml(r.geometryNote || "—")}</span></td>
-      <td>${escapeHtml(r.substitution || "—")}<br><span style="color:var(--muted);font-size:12px;">Expected: ${escapeHtml(d.substitution)} = ${escapeHtml(d.answer)} ${escapeHtml(d.unit)}</span></td>
+      <td>${escapeHtml(r.substitution || "—")}</td>
     </tr>`;
           })
+          .join("")
           .join("");
 
         $("submit-period").value = state.student.period
@@ -2899,6 +3100,14 @@
           const d = destinationById(id);
           const r = responseFor(id);
           const material = d.rates[Number(r.budgetMaterial || 0)]?.[0] || "";
+          
+          const dimStrings = [];
+          if (r.researchedData) {
+            for (const [k, v] of Object.entries(r.researchedData)) {
+              dimStrings.push(`${k}: ${v} ${d.data.find(row => row[0] === k)?.[2] || ""}`);
+            }
+          }
+          
           lines.push("────────────────────────────");
           lines.push(`${i + 1}. ${d.landmark} — ${d.country}`);
           lines.push("Focus: " + d.focus);
@@ -2908,13 +3117,12 @@
           );
           lines.push("Observation: " + (r.observation || "—"));
           lines.push("Geometry connection: " + (r.geometryNote || "—"));
+          lines.push("Researched Dimensions: " + (dimStrings.join(", ") || "—"));
           lines.push("Formula selected: " + (FORMULAS[r.formulaType] || "—"));
           lines.push("Student substitution: " + (r.substitution || "—"));
           lines.push(
             "Student answer: " + (r.numericAnswer || "—") + " " + d.unit,
           );
-          lines.push("Expected setup: " + d.substitution);
-          lines.push("Expected answer: " + d.answer + " " + d.unit);
           lines.push(
             "Math status: " +
               (r.correct

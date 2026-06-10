@@ -778,20 +778,7 @@
 
         <!-- 1c Mixed ÷ fraction -->
         
-        <!-- ===================== RESEARCH LAB ===================== -->
-        <div class="pk-research-lab">
-          <h3>🔍 USDA Egg Weight Standarization</h3>
-          <p>Open the USDA database. Look up "large egg raw". Note the weight of one large egg in ounces (usually 1.75 oz or 1 3/4 oz). Enter your researched weight below:</p>
-          <a href="https://fdc.nal.usda.gov/" target="_blank" class="pk-research-btn">🔗 USDA FoodData Central Database ↗</a>
-          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
-            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
-          </p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Ingredient Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="syncResearch()">
-            </div>
-            <div>
+        <div>
               <label class="fld" for="worldSize">Standard Large Egg Weight (oz)</label>
               <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
             </div>
@@ -845,17 +832,36 @@
           </div>
         </div>
         <div class="grid2" style="margin-top: 10px">
-          <div>
-            <label class="fld" for="p3cn">Cut size — numerator</label>
-            <input
-              type="number"
-              id="p3cn"
-              data-save
-              min="1"
-              placeholder="ex: 3"
-              oninput="calcPhase3()"
-            />
+          
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://fdc.nal.usda.gov/" target="_blank" class="pk-research-inline-link">🔗 USDA FoodData Central Database ↗</a>
           </div>
+          <p class="pk-research-inline-instructions">Open the USDA database. Look up "large egg raw". Note the weight of one large egg in ounces (usually 1.75 oz or 1 3/4 oz). Enter your researched weight below:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Ingredient Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Standard Large Egg Weight (oz)</label>
+              <input type="number" id="worldSize" data-save step="any" min="0" placeholder="e.g. 1.75" oninput="recalcAll()">
+            </div>
+          </div>
+          
+          <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);">
+            <label class="fld">Equivalent Fraction (used in calculation)</label>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <input type="number" id="p3cn" data-save readonly style="width: 70px; text-align: center; background: #f1f5f9; border-color: #cbd5e1;">
+              <span>/</span>
+              <input type="number" id="p3cd" data-save readonly style="width: 70px; text-align: center; background: #f1f5f9; border-color: #cbd5e1;">
+              <span>oz</span>
+            </div>
+          </div>
+        </div>
+    
           <div>
             <label class="fld" for="p3cd">Cut size — denominator</label>
             <input
@@ -905,6 +911,7 @@
         </p>
       </section>
 
+      
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1620,6 +1627,7 @@
         return world.map((r) => r[wIdx[$("worldCat").value]]);
       }
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
@@ -1631,7 +1639,7 @@
         }
         
         const labels =
-          $("worldCat").value === "costPerGuest"
+          $("worldCat").value === "costPerGuest" || $("worldCat").value === "price"
             ? { mean: "City avg $", me: "Me $" }
             : { mean: "City avg", me: "Me" };
             
@@ -1662,6 +1670,8 @@
         updateProgress();
       }
   
+  
+      
       
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
@@ -1689,10 +1699,12 @@
         );
       }
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
         const ex = {
+          
           "worldCountry": "Large Egg",
           "worldSize": 1.75,
           recipeName: "classic bake set",
@@ -1707,6 +1719,7 @@
           p3d: 2,
           p3cn: 3,
           p3cd: 4,
+          
         };
         Object.entries(ex).forEach(([k, v]) => {
           if ($(k)) $(k).value = v;
@@ -1742,6 +1755,96 @@
           $("p3cn").value = frac.num;
           $("p3cd").value = frac.den;
           calcPhase3();
+        }
+        worldGo();
+      }
+    
+
+      
+      function drawVisualizer() {
+        const p1a = num("p1a");
+        const p1b = num("p1b");
+        const cups = num("p2-cups");
+        const w = num("p3w") || 0;
+        const n = num("p3n") || 0;
+        const d = num("p3d") || 1;
+        
+        const drawCup = (x, label, fillRatio) => {
+          const clampedRatio = Math.min(Math.max(fillRatio, 0), 1.2);
+          const fillH = clampedRatio * 90;
+          const fillY = 170 - fillH;
+          
+          return `
+            <g>
+              <!-- Liquid Fill -->
+              ${clampedRatio > 0 ? `<path d="M ${x+15} ${fillY} L ${x+85} ${fillY} L ${x+75} 170 L ${x+25} 170 Z" fill="rgba(14, 138, 125, 0.6)" />` : ""}
+              
+              <!-- Cup Outline -->
+              <path d="M ${x+10} 70 L ${x+90} 70 L ${x+80} 170 A 5 5 0 0 1 ${x+75} 175 L ${x+25} 175 A 5 5 0 0 1 ${x+20} 170 Z" fill="none" stroke="#0f2b3c" stroke-width="2" />
+              <!-- Handle -->
+              <path d="M ${x+90} 90 C ${x+115} 90, ${x+115} 150, ${x+80} 150" fill="none" stroke="#0f2b3c" stroke-width="2" />
+              
+              <!-- Scale Ticks -->
+              <line x1="${x+22}" y1="145" x2="${x+35}" y2="145" stroke="#0f2b3c" />
+              <text x="${x+40}" y="148" font-size="8" fill="#5e6e7e">1/4</text>
+              <line x1="${x+25}" y1="120" x2="${x+40}" y2="120" stroke="#0f2b3c" />
+              <text x="${x+45}" y="123" font-size="8" fill="#5e6e7e">1/2</text>
+              <line x1="${x+27}" y1="95" x2="${x+35}" y2="95" stroke="#0f2b3c" />
+              <text x="${x+40}" y="98" font-size="8" fill="#5e6e7e">3/4</text>
+              
+              <text x="${x+50}" y="195" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2b3c">${label}</text>
+              <text x="${x+50}" y="210" text-anchor="middle" font-size="9" fill="#0e8a7d" font-weight="bold">Value: ${fillRatio.toFixed(2)} cups</text>
+            </g>
+          `;
+        };
+        
+        const ratio1 = (!isNaN(p1a) && p1b > 0) ? (p1a / p1b) : 0;
+        const ratio2 = !isNaN(cups) ? cups : 0;
+        const ratio3 = w + (n / d);
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            <text x="250" y="35" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Bakery Ingredient Measuring Labs</text>
+            ${drawCup(50, "Loaf Dough", ratio1)}
+            ${drawCup(200, "Frosting Cups", ratio2 / 4)}
+            ${drawCup(350, "Roll Dough", ratio3 / 4)}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
+      function decimalToFraction(val) {
+        const eps = 0.005;
+        if (Math.abs(val - 1.75) < eps) return { num: 7, den: 4 };
+        if (Math.abs(val - 1.5) < eps) return { num: 3, den: 2 };
+        if (Math.abs(val - 2.0) < eps) return { num: 2, den: 1 };
+        if (Math.abs(val - 1.25) < eps) return { num: 5, den: 4 };
+        if (Math.abs(val - 2.25) < eps) return { num: 9, den: 4 };
+        
+        const len = String(val).split('.')[1]?.length || 0;
+        if (len === 0) return { num: Math.round(val), den: 1 };
+        const den = Math.pow(10, len);
+        const num = Math.round(val * den);
+        const gcdVal = (a, b) => b ? gcdVal(b, a % b) : a;
+        const g = gcdVal(num, den);
+        return { num: num / g, den: den / g };
+      }
+
+      function syncResearch() {
+        const ws = $("worldSize");
+        if (!ws) return;
+        const val = num("worldSize");
+        if (isNaN(val) || val <= 0) return;
+        const frac = decimalToFraction(val);
+        if ($("p3cn") && $("p3cd")) {
+          $("p3cn").value = frac.num;
+          $("p3cd").value = frac.den;
+          if (typeof calcPhase3 === 'function') calcPhase3();
+          else if (typeof recalcAll === 'function') {
+            if (typeof calcBudget === 'function') calcBudget();
+          }
         }
         worldGo();
       }

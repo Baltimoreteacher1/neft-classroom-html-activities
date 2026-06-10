@@ -726,20 +726,7 @@
             <span class="arc-banner">Part 1 · Self — your real data</span>
             <div class="skill">Collect Data · 6.SP.1 · 6.SP.5a</div>
             
-        <!-- ===================== RESEARCH LAB ===================== -->
-        <div class="pk-research-lab">
-          <h3>🔍 World Bank Literacy Rate Database</h3>
-          <p>Open the World Bank Database. Look up the literacy rate percentage for a country of your choice. Enter the country name and its literacy rate below:</p>
-          <a href="https://data.worldbank.org/" target="_blank" class="pk-research-btn">🔗 World Bank: Global Literacy Rates ↗</a>
-          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
-            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
-          </p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Country Name Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="syncResearch()">
-            </div>
-            <div>
+        <div>
               <label class="fld" for="worldSize">Literacy Rate (%)</label>
               <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
             </div>
@@ -833,9 +820,22 @@
               oninput="collectData()"
             />
           </div>
-          <div class="pk-lvl2">
-            <label class="fld" for="d-sun">Minutes read — Sunday</label>
-            <input
+          
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://data.worldbank.org/" target="_blank" class="pk-research-inline-link">🔗 World Bank: Global Literacy Rates ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the World Bank Database. Look up the literacy rate percentage for a country of your choice. Enter the country name and its literacy rate below:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Country Name Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
+            <div>
+              <label class="fld" for="d-sun">Minutes read — Sunday</label>
+              <input
               type="number"
               id="d-sun"
               data-save
@@ -843,7 +843,10 @@
               placeholder="e.g. 22"
               oninput="collectData()"
             />
+            </div>
           </div>
+        </div>
+    
         </div>
         <div class="readout" id="collect-out"></div>
       </section>
@@ -1201,6 +1204,7 @@
         </details>
       </section>
 
+      
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -2155,10 +2159,11 @@
 
       // ── What-If Lab: add a value, show before/after ──
       
+      
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
         let sample = worldSample();
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        const customSize = $("d-sun") ? num("d-sun") : NaN;
         if (!isNaN(customSize) && customSize > 0) {
           sample = [...sample, customSize];
         }
@@ -2180,6 +2185,7 @@
           "Adding a value of " + vStr + " to the sample:"
         );
       }
+  
   
 
       // ── Part 2 Peer: compare my data vs partner's ──
@@ -2249,10 +2255,11 @@
       }
 
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        const customSize = $("d-sun") ? num("d-sun") : NaN;
         
         let sample = worldSample();
         if (!isNaN(customSize) && customSize > 0) {
@@ -2260,7 +2267,7 @@
         }
         
         const labels =
-          $("worldCat").value === "costPerGuest"
+          $("worldCat").value === "costPerGuest" || $("worldCat").value === "price"
             ? { mean: "City avg $", me: "Me $" }
             : { mean: "City avg", me: "Me" };
             
@@ -2290,6 +2297,7 @@
         
         updateProgress();
       }
+  
   
 
       // ── Report + export ──
@@ -2381,6 +2389,71 @@
         worldGo();
       }
     
+
+      
+      function drawVisualizer() {
+        const nums = lastParsed.length ? lastParsed : parseDataset();
+        if (!nums || nums.length === 0) {
+          $("projectVisualizer").innerHTML = '<text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter data set in Phase 1 to draw plots</text>';
+          return;
+        }
+        
+        const min = Math.min(...nums), max = Math.max(...nums);
+        const mean = calcMean(nums);
+        const sorted = sortNums(nums);
+        const median = calcMedian(nums);
+        
+        let q1 = sorted[Math.floor(sorted.length / 4)];
+        let q3 = sorted[Math.floor(sorted.length * 3 / 4)];
+        
+        const maxVal = Math.max(max, 100);
+        const minVal = Math.min(min, 0);
+        const range = maxVal - minVal;
+        
+        const getPx = (v) => 80 + ((v - minVal) / range) * 340;
+        
+        const medPx = getPx(median);
+        const minPx = getPx(min);
+        const maxPx = getPx(max);
+        const q1Px = getPx(q1);
+        const q3Px = getPx(q3);
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Dataset Statistical Summary Box Plot</text>
+            
+            <!-- Box -->
+            <rect x="${q1Px}" y="100" width="${q3Px - q1Px}" height="40" fill="rgba(14, 138, 125, 0.2)" stroke="#0e8a7d" stroke-width="2" />
+            
+            <!-- Whiskers -->
+            <line x1="${minPx}" y1="120" x2="${q1Px}" y2="120" stroke="#0f2b3c" stroke-width="1.5" />
+            <line x1="	h ${maxPx}" y1="120" x2="${q3Px}" y2="120" stroke="#0f2b3c" stroke-width="1.5" />
+            <line x1="${minPx}" y1="105" x2="${minPx}" y2="135" stroke="#0f2b3c" stroke-width="1.5" />
+            <line x1="${maxPx}" y1="105" x2="${maxPx}" y2="135" stroke="#0f2b3c" stroke-width="1.5" />
+            
+            <!-- Median Line -->
+            <line x1="${medPx}" y1="100" x2="${medPx}" y2="140" stroke="#d4952a" stroke-width="2" />
+            
+            <!-- Labels -->
+            <text x="${minPx}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#5e6e7e">Min: ${min}</text>
+            <text x="${q1Px}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#0e8a7d">Q1: ${q1}</text>
+            <text x="${medPx}" y="75" text-anchor="middle" font-size="10" font-weight="bold" fill="#d4952a">Med: ${median}</text>
+            <text x="${q3Px}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#0e8a7d">Q3: ${q3}</text>
+            <text x="${maxPx}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#5e6e7e">Max: ${max}</text>
+            
+            <!-- Axis Line -->
+            <line x1="80" y1="180" x2="420" y2="180" stroke="#0f2b3c" stroke-width="1.5" />
+            <text x="80" y="195" text-anchor="middle" font-size="10" fill="#1a2633">${minVal}</text>
+            <text x="420" y="195" text-anchor="middle" font-size="10" fill="#1a2633">${maxVal}</text>
+            
+            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#2d874b">Mean = ${mean.toFixed(2)} | Range = ${max - min}</text>
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
 
       
       function drawVisualizer() {

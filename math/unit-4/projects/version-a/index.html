@@ -711,28 +711,29 @@
 
         <!-- 1c Tax -->
         
-        <!-- ===================== RESEARCH LAB ===================== -->
-        <div class="pk-research-lab">
-          <h3>🔍 State Sales Tax Rate Database</h3>
-          <p>Open the Tax Foundation portal. Look up the combined state/local sales tax rate for your home state or a state of choice. Enter the percentage rate below:</p>
-          <a href="https://taxfoundation.org/data/all-state-sales-tax-rates-and-structure/" target="_blank" class="pk-research-btn">🔗 Tax Foundation: State Sales Tax Rates Table ↗</a>
-          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
-            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
-          </p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">State Name Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="syncResearch()">
-            </div>
-            <div>
+        <div>
               <label class="fld" for="worldSize">Combined Sales Tax Rate (%)</label>
               <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
             </div>
           </div>
         </div>
   <h3 style="margin-top: 24px">🧾 Add sales tax (final total)</h3>
-        <label class="fld" for="tax-rate">Your state sales tax (%)</label>
-        <input
+        
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://taxfoundation.org/data/all-state-sales-tax-rates-and-structure/" target="_blank" class="pk-research-inline-link">🔗 Tax Foundation: State Sales Tax Rates Table ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the Tax Foundation portal. Look up the combined state/local sales tax rate for your home state or a state of choice. Enter the percentage rate below:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">State Name Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
+            <div>
+              <label class="fld" for="tax-rate">Your state sales tax (%)</label>
+              <input
           type="number"
           id="tax-rate"
           data-save
@@ -742,6 +743,10 @@
           placeholder="example: 8"
           oninput="calcTax()"
         />
+            </div>
+          </div>
+        </div>
+    
         <button class="btn" type="button" onclick="calcTax()">
           Calculate total with tax
         </button>
@@ -869,6 +874,7 @@
         </div>
       </section>
 
+      
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1626,10 +1632,11 @@
         return world.map((r) => r[1]);
       }
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        const customSize = $("tax-rate") ? num("tax-rate") : NaN;
         
         let sample = worldSample();
         if (!isNaN(customSize) && customSize > 0) {
@@ -1637,7 +1644,7 @@
         }
         
         const labels =
-          $("worldCat").value === "costPerGuest"
+          $("worldCat").value === "costPerGuest" || $("worldCat").value === "price"
             ? { mean: "City avg $", me: "Me $" }
             : { mean: "City avg", me: "Me" };
             
@@ -1668,11 +1675,13 @@
         updateProgress();
       }
   
+  
+      
       
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
         let sample = worldSample();
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        const customSize = $("tax-rate") ? num("tax-rate") : NaN;
         if (!isNaN(customSize) && customSize > 0) {
           sample = [...sample, customSize];
         }
@@ -1695,18 +1704,21 @@
         );
       }
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
         const ex = {
+          
           "worldCountry": "California",
+          "tax-rate": 7.25,
           "worldSize": 7.25,
           item: "hand-poured candle",
           cost: 40.0,
           markup: 25,
           discount: 20,
-          "tax-rate": 8,
           "conv-val": 5,
+          
         };
         Object.entries(ex).forEach(([k, v]) => {
           if ($(k)) $(k).value = v;
@@ -1729,6 +1741,56 @@
         worldGo();
       }
     
+
+      
+      function drawVisualizer() {
+        const sub = num("subtotal") || 0;
+        const tax = num("tax-rate") || 0;
+        const tip = num("tip-pct") || 0;
+        
+        let html = "";
+        if (sub > 0) {
+          const taxAmt = sub * (tax / 100);
+          const tipAmt = sub * (tip / 100);
+          const total = sub + taxAmt + tipAmt;
+          
+          html = `
+            <g transform="translate(150, 20)">
+              <!-- Receipt Background -->
+              <rect x="0" y="0" width="200" height="200" fill="#fcfcfc" stroke="#cbd5e1" stroke-width="2" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.05))" />
+              <line x1="10" y1="35" x2="190" y2="35" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3,3" />
+              <text x="100" y="25" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">DINER BILL RECEIPT</text>
+              
+              <text x="20" y="60" font-size="10" fill="#5e6e7e">Subtotal:</text>
+              <text x="180" y="60" text-anchor="end" font-size="10" font-weight="bold" fill="#0f2b3c">$${sub.toFixed(2)}</text>
+              
+              <text x="20" y="85" font-size="10" fill="#5e6e7e">Sales Tax (${tax}%):</text>
+              <text x="180" y="85" text-anchor="end" font-size="10" fill="#0f2b3c">$${taxAmt.toFixed(2)}</text>
+              
+              <text x="20" y="110" font-size="10" fill="#5e6e7e">Tip (${tip}%):</text>
+              <text x="180" y="110" text-anchor="end" font-size="10" fill="#0f2b3c">$${tipAmt.toFixed(2)}</text>
+              
+              <line x1="10" y1="130" x2="190" y2="130" stroke="#cbd5e1" stroke-width="1.5" />
+              <text x="20" y="155" font-size="12" font-weight="bold" fill="#2d874b">GRAND TOTAL:</text>
+              <text x="180" y="155" text-anchor="end" font-size="12" font-weight="bold" fill="#2d874b">$${total.toFixed(2)}</text>
+            </g>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Diner Bill values to print receipt</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
 
       
       function drawVisualizer() {

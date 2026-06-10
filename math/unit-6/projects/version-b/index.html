@@ -685,20 +685,7 @@
 
         <!-- 1a Cost expression -->
         
-        <!-- ===================== RESEARCH LAB ===================== -->
-        <div class="pk-research-lab">
-          <h3>🔍 Streaming Subscription Monthly Pricing Guidelines</h3>
-          <p>Open the database or check current pricing. Find the standard monthly fee of a Netflix Standard plan. Enter the monthly cost below:</p>
-          <a href="https://en.wikipedia.org/wiki/Streaming_television#Pricing" target="_blank" class="pk-research-btn">🔗 Wikipedia: Pricing of major video streaming apps ↗</a>
-          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
-            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
-          </p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Streaming App Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="syncResearch()">
-            </div>
-            <div>
+        <div>
               <label class="fld" for="worldSize">Netflix Monthly Fee ($)</label>
               <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
             </div>
@@ -718,9 +705,22 @@
           months.
         </p>
         <div class="grid2">
-          <div>
-            <label class="fld" for="cost-p">Monthly price p ($)</label>
-            <input
+          
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://en.wikipedia.org/wiki/Streaming_television#Pricing" target="_blank" class="pk-research-inline-link">🔗 Wikipedia: Pricing of major video streaming apps ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the database or check current pricing. Find the standard monthly fee of a Netflix Standard plan. Enter the monthly cost below:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Streaming App Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
+            <div>
+              <label class="fld" for="cost-p">Monthly price p ($)</label>
+              <input
               type="number"
               id="cost-p"
               data-save
@@ -729,7 +729,10 @@
               placeholder="example: 9.99"
               oninput="calcCost()"
             />
+            </div>
           </div>
+        </div>
+    
           <div>
             <label class="fld" for="cost-fee">One-time setup fee ($)</label>
             <input
@@ -800,6 +803,7 @@
         </details>
       </section>
 
+      
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1416,10 +1420,11 @@
         return world.map((r) => r[wIdx[cat]]);
       }
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        const customSize = $("cost-p") ? num("cost-p") : NaN;
         
         let sample = worldSample();
         if (!isNaN(customSize) && customSize > 0) {
@@ -1427,7 +1432,7 @@
         }
         
         const labels =
-          $("worldCat").value === "costPerGuest"
+          $("worldCat").value === "costPerGuest" || $("worldCat").value === "price"
             ? { mean: "City avg $", me: "Me $" }
             : { mean: "City avg", me: "Me" };
             
@@ -1457,6 +1462,7 @@
         
         updateProgress();
       }
+  
   
 
       /* ---- Equivalent-expression prover: 2(n+3) vs 2n+6 ---- */
@@ -1501,10 +1507,11 @@
 
       /* ---- What-If: add one more month ---- */
       
+      
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
         let sample = worldSample();
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        const customSize = $("cost-p") ? num("cost-p") : NaN;
         if (!isNaN(customSize) && customSize > 0) {
           sample = [...sample, customSize];
         }
@@ -1527,14 +1534,16 @@
         );
       }
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
         const ex = {
+          
           "worldCountry": "Netflix Standard",
+          "cost-p": 15.49,
           "worldSize": 15.49,
           appName: "StreamPro",
-          "cost-p": 9.99,
           "cost-fee": 4.5,
           "cost-n": 6,
           "p-p": 7.5,
@@ -1542,6 +1551,7 @@
           "cmp-n": 6,
           worldN: 6,
           myWorld: "",
+          
         };
         Object.entries(ex).forEach(([k, v]) => {
           if ($(k)) $(k).value = v;
@@ -1562,6 +1572,61 @@
         worldGo();
       }
     
+
+      
+      function drawVisualizer() {
+        const leftExpr = num("exp-left") || 0;
+        const rightExpr = num("exp-right") || 0;
+        
+        let html = "";
+        const tilt = Math.min(Math.max((leftExpr - rightExpr) * 2, -15), 15);
+        const isBal = (leftExpr === rightExpr && leftExpr > 0);
+        
+        if (leftExpr > 0 || rightExpr > 0) {
+          html = `
+            <g transform="translate(250, 150)">
+              <!-- Balance Stand -->
+              <line x1="0" y1="0" x2="0" y2="60" stroke="#0f2b3c" stroke-width="6" />
+              <polygon points="-30,60 30,60 20,55 -20,55" fill="#0f2b3c" />
+              
+              <!-- Tilted Beam -->
+              <g transform="rotate(${tilt})">
+                <line x1="-120" y1="0" x2="120" y2="0" stroke="#0f2b3c" stroke-width="4" />
+                
+                <!-- Left Pan -->
+                <line x1="-100" y1="0" x2="-100" y2="40" stroke="#5e6e7e" stroke-width="1.5" />
+                <path d="M -130 40 L -70 40 L -80 50 L -120 50 Z" fill="#cbd5e1" stroke="#5e6e7e" stroke-width="1.5" />
+                <text x="-100" y="32" text-anchor="middle" font-size="10" font-weight="bold" fill="#1a6fb5">Left: ${leftExpr}</text>
+                
+                <!-- Right Pan -->
+                <line x1="100" y1="0" x2="100" y2="40" stroke="#5e6e7e" stroke-width="1.5" />
+                <path d="M 70 40 L 130 40 L 120 50 L 80 50 Z" fill="#cbd5e1" stroke="#5e6e7e" stroke-width="1.5" />
+                <text x="100" y="32" text-anchor="middle" font-size="10" font-weight="bold" fill="#0e8a7d">Right: ${rightExpr}</text>
+              </g>
+            </g>
+            
+            ${isBal ? `
+              <text x="250" y="60" text-anchor="middle" font-size="14" font-weight="bold" fill="#2d874b">⚖️ BALANCED EQUALITY!</text>
+            ` : `
+              <text x="250" y="60" text-anchor="middle" font-size="14" font-weight="bold" fill="#c45a3c">⚖️ UNBALANCED EXPRESSIONS</text>
+            `}
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Left & Right expressions to balance scale</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
 
       
       function drawVisualizer() {

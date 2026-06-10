@@ -686,20 +686,7 @@
 
         <!-- 1c Unit rate -->
         
-        <!-- ===================== RESEARCH LAB ===================== -->
-        <div class="pk-research-lab">
-          <h3>🔍 USDA Retail Strawberry Costs</h3>
-          <p>Open the USDA Fruit Prices database. Look up the average retail cost per pound of fresh strawberries. Enter the researched price below to compute your ratios:</p>
-          <a href="https://www.ers.usda.gov/data-products/fruit-and-vegetable-prices/" target="_blank" class="pk-research-btn">🔗 USDA Fruit and Vegetable Prices Data ↗</a>
-          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
-            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
-          </p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Researched Fruit Name</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="syncResearch()">
-            </div>
-            <div>
+        <div>
               <label class="fld" for="worldSize">Strawberry Cost per Pound ($)</label>
               <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
             </div>
@@ -709,11 +696,22 @@
           1️⃣ Price one smoothie — unit rate (6.RP.2)
         </h3>
         <div class="grid2">
-          <div>
-            <label class="fld" for="u-cost"
-              >Total cost to make one batch ($)</label
-            >
-            <input
+          
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://www.ers.usda.gov/data-products/fruit-and-vegetable-prices/" target="_blank" class="pk-research-inline-link">🔗 USDA Fruit and Vegetable Prices Data ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the USDA Fruit Prices database. Look up the average retail cost per pound of fresh strawberries. Enter the researched price below to compute your ratios:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Researched Fruit Name</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
+            <div>
+              <label class="fld" for="u-cost">Strawberry Cost per Pound ($)</label>
+              <input
               type="number"
               id="u-cost"
               data-save
@@ -722,7 +720,10 @@
               placeholder="example: 9.00"
               oninput="calcUnitRate()"
             />
+            </div>
           </div>
+        </div>
+    
           <div>
             <label class="fld" for="u-smoothies"
               >Smoothies one batch makes</label
@@ -830,6 +831,7 @@
         </p>
       </section>
 
+      
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1524,10 +1526,11 @@
         return world.map((r) => r[idx]);
       }
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        const customSize = $("u-cost") ? num("u-cost") : NaN;
         
         let sample = worldSample();
         if (!isNaN(customSize) && customSize > 0) {
@@ -1535,7 +1538,7 @@
         }
         
         const labels =
-          $("worldCat").value === "costPerGuest"
+          $("worldCat").value === "costPerGuest" || $("worldCat").value === "price"
             ? { mean: "City avg $", me: "Me $" }
             : { mean: "City avg", me: "Me" };
             
@@ -1566,11 +1569,13 @@
         updateProgress();
       }
   
+  
+      
       
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
         let sample = worldSample();
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        const customSize = $("u-cost") ? num("u-cost") : NaN;
         if (!isNaN(customSize) && customSize > 0) {
           sample = [...sample, customSize];
         }
@@ -1593,15 +1598,17 @@
         );
       }
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
         const ex = {
+          
           "worldCountry": "Strawberries 🍓",
+          "u-cost": 2.5,
           "worldSize": 2.5,
           "r-fruit": 6,
           "r-yogurt": 4,
-          "u-cost": 9.0,
           "u-smoothies": 3,
           "b-price1": 4.5,
           "b-cups1": 3,
@@ -1611,6 +1618,7 @@
           "p-yogurt": 5,
           "p-common": 12,
           myWorld: "",
+          
         };
         Object.entries(ex).forEach(([k, v]) => {
           if ($(k)) $(k).value = v;
@@ -1631,6 +1639,50 @@
         worldGo();
       }
     
+
+      
+      function drawVisualizer() {
+        const s = num("ratio-s") || 0;
+        const b = num("ratio-b") || 0;
+        
+        let html = "";
+        if (s > 0 || b > 0) {
+          const sum = s + b;
+          const pctS = (s / sum) * 100;
+          const fillH = 120;
+          const sH = (s / sum) * fillH;
+          const bH = (b / sum) * fillH;
+          
+          html = `
+            <!-- Blender Jar -->
+            <path d="M 210 50 L 290 50 L 275 180 L 225 180 Z" fill="none" stroke="#0f2b3c" stroke-width="3" />
+            <path d="M 290 80 C 315 80, 315 140, 280 140" fill="none" stroke="#0f2b3c" stroke-width="2.5" />
+            
+            <!-- Strawberry Fill (Red) -->
+            <path d="M ${225 + 5 * (180 - sH) / 130} ${180 - sH} L ${275 - 5 * (180 - sH) / 130} ${180 - sH} L 275 180 L 225 180 Z" fill="rgba(239, 68, 68, 0.7)" />
+            <!-- Banana Fill (Yellow) -->
+            <path d="M ${210 + 15 * (50 + bH) / 130} ${50} L ${290 - 15 * (50 + bH) / 130} ${50} L ${275 - 5 * (180 - sH) / 130} ${180 - sH} L ${225 + 5 * (180 - sH) / 130} ${180 - sH} Z" fill="rgba(253, 224, 71, 0.7)" />
+            
+            <text x="190" y="100" text-anchor="end" font-size="11" font-weight="bold" fill="#ef4444">Strawberries: ${s} pts</text>
+            <text x="310" y="100" text-anchor="start" font-size="11" font-weight="bold" fill="#eab308">Bananas: ${b} pts</text>
+            <text x="250" y="210" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Strawberry-Banana Ratio = ${s} : ${b}</text>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Ingredient Ratios to blend</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
 
       
       function drawVisualizer() {

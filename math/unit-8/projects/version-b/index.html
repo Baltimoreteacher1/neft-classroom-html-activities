@@ -687,20 +687,7 @@
 
         <!-- 1a: how much more (addition equation) -->
         
-        <!-- ===================== RESEARCH LAB ===================== -->
-        <div class="pk-research-lab">
-          <h3>🔍 DonorsChoose Classroom Project Funding Budgets</h3>
-          <p>Open the DonorsChoose page. Search for a local classroom project. Note the total fundraising goal requested (often around $400 for classroom resources). Enter the target goal below:</p>
-          <a href="https://www.donorschoose.org/" target="_blank" class="pk-research-btn">🔗 DonorsChoose Classroom Projects Search ↗</a>
-          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
-            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
-          </p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Classroom Project Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="syncResearch()">
-            </div>
-            <div>
+        <div>
               <label class="fld" for="worldSize">Classroom Funding Goal ($)</label>
               <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
             </div>
@@ -725,9 +712,22 @@
               oninput="solvePhase1()"
             />
           </div>
-          <div>
-            <label class="fld" for="f1-goal">Your fundraiser goal ($)</label>
-            <input
+          
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://www.donorschoose.org/" target="_blank" class="pk-research-inline-link">🔗 DonorsChoose Classroom Projects Search ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the DonorsChoose page. Search for a local classroom project. Note the total fundraising goal requested (often around $400 for classroom resources). Enter the target goal below:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Classroom Project Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
+            <div>
+              <label class="fld" for="f1-goal">Your fundraiser goal ($)</label>
+              <input
               type="number"
               id="f1-goal"
               data-save
@@ -735,7 +735,10 @@
               placeholder="example: 300"
               oninput="solvePhase1()"
             />
+            </div>
           </div>
+        </div>
+    
         </div>
         <button class="btn" type="button" onclick="solvePhase1()">
           Solve &amp; Verify
@@ -872,6 +875,7 @@
         </div>
       </section>
 
+      
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1767,10 +1771,11 @@
         return world.map(worldPct);
       }
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        const customSize = $("f1-goal") ? num("f1-goal") : NaN;
         
         let sample = worldSample();
         if (!isNaN(customSize) && customSize > 0) {
@@ -1778,7 +1783,7 @@
         }
         
         const labels =
-          $("worldCat").value === "costPerGuest"
+          $("worldCat").value === "costPerGuest" || $("worldCat").value === "price"
             ? { mean: "City avg $", me: "Me $" }
             : { mean: "City avg", me: "Me" };
             
@@ -1809,13 +1814,15 @@
         updateProgress();
       }
   
+  
 
       /* ---- What-If Lab: projected total + x ≥ goal flip ---- */
+      
       
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
         let sample = worldSample();
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        const customSize = $("f1-goal") ? num("f1-goal") : NaN;
         if (!isNaN(customSize) && customSize > 0) {
           sample = [...sample, customSize];
         }
@@ -1838,16 +1845,18 @@
         );
       }
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
         const ex = {
+          
           "worldCountry": "Math Manipulatives",
+          "f1-goal": 400,
           "worldSize": 400,
           cause: "6th grade field trip",
           item: "cupcakes",
           "f1-raised": 85,
-          "f1-goal": 300,
           "f2-price": 5,
           "f2-target": 150,
           "f3-goal": 300,
@@ -1857,6 +1866,7 @@
           "p-goal": 400,
           "p-raised": 250,
           myWorld: "",
+          
         };
         Object.entries(ex).forEach(([k, v]) => {
           if ($(k)) $(k).value = v;
@@ -1877,6 +1887,39 @@
         worldGo();
       }
     
+
+      
+      function drawVisualizer() {
+        const raised = num("c-raised") || 0;
+        const target = num("worldSize") || 400;
+        
+        const maxH = 140;
+        const fillPct = Math.min(Math.max((raised / target) * 100, 0), 100);
+        const fillH = (fillPct / 100) * maxH;
+        const fillY = 170 - fillH;
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            <text x="250" y="35" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Fundraising Goal Thermometer (${fillPct.toFixed(0)}%)</text>
+            
+            <!-- Thermometer Border -->
+            <rect x="235" y="30" width="30" height="140" rx="15" fill="none" stroke="#5e6e7e" stroke-width="3" />
+            <circle cx="250" cy="180" r="25" fill="#f1f5f9" stroke="#5e6e7e" stroke-width="3" />
+            <rect x="237" y="32" width="26" height="138" rx="13" fill="#f1f5f9" />
+            
+            <!-- Fluid Fill -->
+            <circle cx="250" cy="180" r="23" fill="#ef4444" />
+            <rect x="237" y="${fillY}" width="26" height="${fillH}" fill="#ef4444" />
+            
+            <text x="290" y="105" font-size="11" font-weight="bold" fill="#0f2b3c">Raised: $${raised.toFixed(0)}</text>
+            <text x="290" y="65" font-size="11" font-weight="bold" fill="#c45a3c">Target: $${target.toFixed(0)}</text>
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
 
       
       function drawVisualizer() {

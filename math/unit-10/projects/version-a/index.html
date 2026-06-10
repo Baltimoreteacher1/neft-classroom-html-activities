@@ -642,20 +642,7 @@
 
         <!-- 1a Volume -->
         
-        <!-- ===================== RESEARCH LAB ===================== -->
-        <div class="pk-research-lab">
-          <h3>🔍 Giza Great Pyramid Dimensional Scale</h3>
-          <p>Open the Giza Pyramid page. Find the original base side length in cubits (often 440 cubits). Enter the base side length below to model the scale volume calculations:</p>
-          <a href="https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza" target="_blank" class="pk-research-btn">🔗 Wikipedia: Dimensions of the Great Pyramid of Giza ↗</a>
-          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
-            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
-          </p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Ancient Monument Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="syncResearch()">
-            </div>
-            <div>
+        <div>
               <label class="fld" for="worldSize">Original Base Side Length (cubits)</label>
               <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
             </div>
@@ -666,9 +653,22 @@
           Level 1 tip: round each measurement to a whole number of inches first.
         </p>
         <div class="grid3">
-          <div>
-            <label class="fld" for="v-length">Length (in)</label>
-            <input
+          
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza" target="_blank" class="pk-research-inline-link">🔗 Wikipedia: Dimensions of the Great Pyramid of Giza ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the Giza Pyramid page. Find the original base side length in cubits (often 440 cubits). Enter the base side length below to model the scale volume calculations:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Ancient Monument Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
+            <div>
+              <label class="fld" for="v-length">Length (in)</label>
+              <input
               type="number"
               id="v-length"
               data-save
@@ -677,7 +677,10 @@
               placeholder="example: 8"
               oninput="calcVolume()"
             />
+            </div>
           </div>
+        </div>
+    
           <div>
             <label class="fld" for="v-width">Width (in)</label>
             <input
@@ -859,6 +862,7 @@
         </div>
       </section>
 
+      
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1552,10 +1556,11 @@
         return world.map((r) => (cat === "volume" ? volOf(r) : saOf(r)));
       }
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        const customSize = $("v-length") ? num("v-length") : NaN;
         
         let sample = worldSample();
         if (!isNaN(customSize) && customSize > 0) {
@@ -1563,7 +1568,7 @@
         }
         
         const labels =
-          $("worldCat").value === "costPerGuest"
+          $("worldCat").value === "costPerGuest" || $("worldCat").value === "price"
             ? { mean: "City avg $", me: "Me $" }
             : { mean: "City avg", me: "Me" };
             
@@ -1594,11 +1599,13 @@
         updateProgress();
       }
   
+  
+      
       
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
         let sample = worldSample();
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        const customSize = $("v-length") ? num("v-length") : NaN;
         if (!isNaN(customSize) && customSize > 0) {
           sample = [...sample, customSize];
         }
@@ -1621,18 +1628,21 @@
         );
       }
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
         const ex = {
+          
           "worldCountry": "Giza Great Pyramid",
+          "v-length": 440,
           "worldSize": 440,
           objName: "my cereal box (example)",
-          "v-length": 8,
           "v-width": 5,
           "v-height": 3,
           "cost-rate": 0.05,
           myWorld: "",
+          
         };
         Object.entries(ex).forEach(([k, v]) => {
           if ($(k)) $(k).value = v;
@@ -1653,6 +1663,81 @@
         worldGo();
       }
     
+
+      
+      function drawVisualizer() {
+        const l = num("v-length") || 0;
+        const w = num("v-width") || 0;
+        const h = num("v-height") || 0;
+        
+        let html = "";
+        if (l > 0 && w > 0 && h > 0) {
+          const maxDim = Math.max(l, w, h, 1);
+          const scale = 35 / maxDim;
+          
+          const cx = 100, cy = 130;
+          const dxX = 25 * scale, dyX = 12 * scale;
+          const dxY = -25 * scale, dyY = 12 * scale;
+          const dxZ = 0, dyZ = -30 * scale;
+          
+          const p0 = {x: cx, y: cy};
+          const p1 = {x: cx + w*dxX, y: cy + w*dyX};
+          const p2 = {x: cx + w*dxX + l*dxY, y: cy + w*dyX + l*dyY};
+          const p3 = {x: cx + l*dxY, y: cy + l*dyY};
+          
+          const p4 = {x: p0.x, y: p0.y + h*dyZ};
+          const p5 = {x: p1.x, y: p1.y + h*dyZ};
+          const p6 = {x: p2.x, y: p2.y + h*dyZ};
+          const p7 = {x: p3.x, y: p3.y + h*dyZ};
+          
+          const nScale = 14 / maxDim;
+          const nl = l * nScale;
+          const nw = w * nScale;
+          const nh = h * nScale;
+          const nx = 330, ny = 120;
+          
+          html = `
+            <polygon points="${p0.x},${p0.y} ${p1.x},${p1.y} ${p2.x},${p2.y} ${p3.x},${p3.y}" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5" />
+            <polygon points="${p0.x},${p0.y} ${p1.x},${p1.y} ${p5.x},${p5.y} ${p4.x},${p4.y}" fill="rgba(26, 111, 181, 0.15)" stroke="#1a6fb5" stroke-width="2" />
+            <polygon points="${p1.x},${p1.y} ${p2.x},${p2.y} ${p6.x},${p6.y} ${p5.x},${p5.y}" fill="rgba(14, 138, 125, 0.15)" stroke="#0e8a7d" stroke-width="2" />
+            <polygon points="${p4.x},${p4.y} ${p5.x},${p5.y} ${p6.x},${p6.y} ${p7.x},${p7.y}" fill="rgba(212, 149, 42, 0.15)" stroke="#d4952a" stroke-width="2" />
+            <line x1="${p3.x}" y1="${p3.y}" x2="${p7.x}" y2="${p7.y}" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3,3" />
+            <line x1="${p2.x}" y1="${p2.y}" x2="${p7.x}" y2="${p7.y}" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3,3" />
+            <text x="${(p0.x+p1.x)/2}" y="${(p0.y+p1.y)/2 + 15}" font-size="9" font-weight="bold" fill="#1a6fb5" text-anchor="middle">W: ${w}</text>
+            <text x="${(p1.x+p2.x)/2 + 15}" y="${(p1.y+p2.y)/2}" font-size="9" font-weight="bold" fill="#0e8a7d" text-anchor="middle">L: ${l}</text>
+            <text x="${p5.x + 15}" y="${p5.y + h*dyZ/2}" font-size="9" font-weight="bold" fill="#d4952a" text-anchor="middle">H: ${h}</text>
+            <text x="100" y="30" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">3D Wireframe View</text>
+            
+            <g transform="translate(${nx}, ${ny})">
+              <rect x="${-nl/2}" y="${-nw/2}" width="${nl}" height="${nw}" fill="rgba(26, 111, 181, 0.2)" stroke="#1a6fb5" stroke-dasharray="2,2" />
+              <rect x="${-nl/2}" y="${-nw/2 - nh}" width="${nl}" height="${nh}" fill="rgba(212, 149, 42, 0.2)" stroke="#d4952a" />
+              <rect x="${-nl/2}" y="${nw/2}" width="${nl}" height="${nh}" fill="rgba(212, 149, 42, 0.2)" stroke="#d4952a" />
+              <rect x="${-nl/2 - nh}" y="${-nw/2}" width="${nh}" height="${nw}" fill="rgba(14, 138, 125, 0.2)" stroke="#0e8a7d" />
+              <rect x="${nl/2}" y="${-nw/2}" width="${nh}" height="${nw}" fill="rgba(14, 138, 125, 0.2)" stroke="#0e8a7d" />
+              <rect x="${-nl/2}" y="${-nw/2 - 2*nh}" width="${nl}" height="${nh}" fill="rgba(26, 111, 181, 0.2)" stroke="#1a6fb5" />
+              <text x="0" y="0" text-anchor="middle" font-size="9" font-weight="bold" fill="#1a6fb5">2D Net</text>
+            </g>
+            <text x="350" y="30" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Flat Folding Net</text>
+            <text x="250" y="220" text-anchor="middle" font-size="12" font-weight="bold" fill="#2d874b">
+              Volume = ${(l*w*h).toFixed(0)} cu in | Surface Area = ${(2*(l*w + w*h + l*h)).toFixed(0)} sq in
+            </text>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Dimensions to draw 3D net folder</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
 
       
       function drawVisualizer() {

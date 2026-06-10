@@ -779,20 +779,7 @@
           <div>
             <div class="skill">Measures of Center · 6.SP.3 · 6.SP.5c</div>
             
-        <!-- ===================== RESEARCH LAB ===================== -->
-        <div class="pk-research-lab">
-          <h3>🔍 NOAA State High Temperature Records</h3>
-          <p>Open the NOAA database or local temperature charts. Find the record highest temperature ever recorded in your home state (often around 105°F). Enter the state/city name and temperature below:</p>
-          <a href="https://www.climate.gov/maps-data" target="_blank" class="pk-research-btn">🔗 NOAA: Climate Maps & Temperature Tables ↗</a>
-          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
-            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
-          </p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">State/City Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="syncResearch()">
-            </div>
-            <div>
+        <div>
               <label class="fld" for="worldSize">Record High Temp (°F)</label>
               <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
             </div>
@@ -815,16 +802,32 @@
           You can also enter your own data below.
         </div>
 
-        <label class="fld" for="dataset2"
-          >Your data set (numbers separated by commas)</label
-        >
-        <input
+        
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://www.climate.gov/maps-data" target="_blank" class="pk-research-inline-link">🔗 NOAA: Climate Maps & Temperature Tables ↗</a>
+          </div>
+          <p class="pk-research-inline-instructions">Open the NOAA database or local temperature charts. Find the record highest temperature ever recorded in your home state (often around 105°F). Enter the state/city name and temperature below:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">State/City Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
+            <div>
+              <label class="fld" for="dataset2">Record High Temp (°F)</label>
+              <input
           type="text"
           id="dataset2"
           data-save
           oninput="calcCenter2()"
           placeholder="Click 'Use Dataset' after choosing a topic, or type your own"
         />
+            </div>
+          </div>
+        </div>
+    
 
         <button class="btn blue" onclick="useTopicData()">
           Use My Topic's Dataset
@@ -1081,6 +1084,7 @@
         </details>
       </section>
 
+      
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -2021,6 +2025,71 @@
         worldGo();
       }
     
+
+      
+      function drawVisualizer() {
+        const nums = lastParsed && lastParsed.length ? lastParsed : parseInput(document.getElementById("dataset2b").value);
+        if (!nums || nums.length === 0) {
+          $("projectVisualizer").innerHTML = '<text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter data set to draw plots</text>';
+          return;
+        }
+        
+        const min = Math.min(...nums), max = Math.max(...nums);
+        const mean = calcMean(nums);
+        const sorted = sortNums(nums);
+        const median = calcMedian(nums);
+        
+        let q1 = sorted[Math.floor(sorted.length / 4)];
+        let q3 = sorted[Math.floor(sorted.length * 3 / 4)];
+        
+        const maxVal = Math.max(max, 130);
+        const minVal = Math.min(min, 30);
+        const range = maxVal - minVal;
+        
+        const getPx = (v) => 80 + ((v - minVal) / range) * 340;
+        
+        const medPx = getPx(median);
+        const minPx = getPx(min);
+        const maxPx = getPx(max);
+        const q1Px = getPx(q1);
+        const q3Px = getPx(q3);
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Dataset High Temperature Summary Box Plot</text>
+            
+            <!-- Box -->
+            <rect x="${q1Px}" y="100" width="${q3Px - q1Px}" height="40" fill="rgba(196, 90, 60, 0.2)" stroke="#c45a3c" stroke-width="2" />
+            
+            <!-- Whiskers -->
+            <line x1="${minPx}" y1="120" x2="${q1Px}" y2="120" stroke="#0f2b3c" stroke-width="1.5" />
+            <line x1="	h ${maxPx}" y1="120" x2="${q3Px}" y2="120" stroke="#0f2b3c" stroke-width="1.5" />
+            <line x1="${minPx}" y1="105" x2="${minPx}" y2="135" stroke="#0f2b3c" stroke-width="1.5" />
+            <line x1="${maxPx}" y1="105" x2="${maxPx}" y2="135" stroke="#0f2b3c" stroke-width="1.5" />
+            
+            <!-- Median Line -->
+            <line x1="${medPx}" y1="100" x2="${medPx}" y2="140" stroke="#d4952a" stroke-width="2" />
+            
+            <!-- Labels -->
+            <text x="${minPx}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#5e6e7e">Min: ${min}</text>
+            <text x="${q1Px}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#c45a3c">Q1: ${q1}</text>
+            <text x="${medPx}" y="75" text-anchor="middle" font-size="10" font-weight="bold" fill="#d4952a">Med: ${median}</text>
+            <text x="${q3Px}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#c45a3c">Q3: ${q3}</text>
+            <text x="${maxPx}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#5e6e7e">Max: ${max}</text>
+            
+            <!-- Axis Line -->
+            <line x1="80" y1="180" x2="420" y2="180" stroke="#0f2b3c" stroke-width="1.5" />
+            <text x="80" y="195" text-anchor="middle" font-size="10" fill="#1a2633">${minVal}</text>
+            <text x="420" y="195" text-anchor="middle" font-size="10" fill="#1a2633">${maxVal}</text>
+            
+            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#2d874b">Mean = 	h ${mean.toFixed(2)} | Range = ${max - min}</text>
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
 
       
       function drawVisualizer() {

@@ -662,20 +662,7 @@
 
         <!-- 1a Trapezoid garden plot -->
         
-        <!-- ===================== RESEARCH LAB ===================== -->
-        <div class="pk-research-lab">
-          <h3>🔍 Raised Garden Bed Dimension Guide</h3>
-          <p>Research recommended structural standards for raised garden beds. Find the standard width (typically 4 feet to allow reaching from both sides). Enter the standard bed width below:</p>
-          <a href="https://en.wikipedia.org/wiki/Raised-bed_gardening" target="_blank" class="pk-research-btn">🔗 Wikipedia: Raised-Bed Gardening Standards ↗</a>
-          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
-            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
-          </p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Garden Design Guideline</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="syncResearch()">
-            </div>
-            <div>
+        <div>
               <label class="fld" for="worldSize">Recommended Bed Width (feet)</label>
               <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
             </div>
@@ -757,18 +744,44 @@
               oninput="calcTrapezoid()"
             />
           </div>
-          <div>
-            <label class="fld" for="p1-h">Height (h) in feet</label>
-            <input
-              type="number"
-              id="p1-h"
-              data-save
-              min="0.1"
-              step="0.1"
-              placeholder="example: 6"
-              oninput="calcTrapezoid()"
-            />
+          
+        <!-- ===================== INLINE RESEARCH LAB ===================== -->
+        <div class="pk-research-inline-card">
+          <div class="pk-research-inline-header">
+            <span class="pk-research-badge">🔍 Research Required</span>
+            <a href="https://en.wikipedia.org/wiki/Raised-bed_gardening" target="_blank" class="pk-research-inline-link">🔗 Wikipedia: Raised-Bed Gardening Standards ↗</a>
           </div>
+          <p class="pk-research-inline-instructions">Research recommended structural standards for raised garden beds. Find the standard width (typically 4 feet to allow reaching from both sides). Enter the standard bed width below:</p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Garden Design Guideline</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Recommended Bed Width (feet)</label>
+              <input type="number" id="worldSize" data-save step="any" min="0" placeholder="e.g. 4" oninput="recalcAll()">
+            </div>
+          </div>
+          
+          <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);">
+            <label class="fld">Calculated Garden Dimensions (used in calculation)</label>
+            <div class="grid3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+              <div>
+                <label class="fld" for="p1-b1">Base 1 (ft)</label>
+                <input type="number" id="p1-b1" data-save readonly style="background: #f1f5f9; border-color: #cbd5e1; width: 100%;">
+              </div>
+              <div>
+                <label class="fld" for="p1-b2">Base 2 (ft)</label>
+                <input type="number" id="p1-b2" data-save readonly style="background: #f1f5f9; border-color: #cbd5e1; width: 100%;">
+              </div>
+              <div>
+                <label class="fld" for="p1-h">Height (ft)</label>
+                <input type="number" id="p1-h" data-save readonly style="background: #f1f5f9; border-color: #cbd5e1; width: 100%;">
+              </div>
+            </div>
+          </div>
+        </div>
+    
         </div>
         <button class="btn" type="button" onclick="calcTrapezoid()">
           Calculate garden plot area
@@ -978,6 +991,7 @@
         </div>
       </section>
 
+      
       
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
@@ -1766,6 +1780,7 @@
           .join("");
       }
       
+      
       function worldGo() {
         const my = num("myWorld");
         const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
@@ -1777,7 +1792,7 @@
         }
         
         const labels =
-          $("worldCat").value === "costPerGuest"
+          $("worldCat").value === "costPerGuest" || $("worldCat").value === "price"
             ? { mean: "City avg $", me: "Me $" }
             : { mean: "City avg", me: "Me" };
             
@@ -1808,6 +1823,8 @@
         updateProgress();
       }
   
+  
+      
       
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
@@ -1835,10 +1852,12 @@
         );
       }
   
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
         const ex = {
+          
           "worldCountry": "New York, NY",
           "worldSize": 4,
           "p1-b1": 8,
@@ -1852,6 +1871,7 @@
           "p4-price1": 4.5,
           "p4-area2": 45,
           "p4-price2": 5.2,
+          
         };
         Object.entries(ex).forEach(([k, v]) => {
           if ($(k)) $(k).value = v;
@@ -1870,6 +1890,80 @@
           $("p1-b2").value = 8;
           $("p1-h").value = (val / 10).toFixed(1);
           calcTrapezoid();
+        }
+        worldGo();
+      }
+    
+
+      
+      function drawVisualizer() {
+        const p1w = num("p1w") || 0;
+        const p1h = num("p1h") || 0;
+        const p2b = num("p2b") || 0;
+        const p2h = num("p2h") || 0;
+        const p3w = num("p3w") || 0;
+        const p3h = num("p3h") || 0;
+        
+        let html = "";
+        if (p1w > 0 && p1h > 0) {
+          const maxDim = Math.max(p1w, p1h + p2h, p1w + p3w, 1);
+          const scale = 120 / maxDim;
+          
+          const w1 = p1w * scale;
+          const h1 = p1h * scale;
+          const w2 = p2b * scale;
+          const h2 = p2h * scale;
+          const w3 = p3w * scale;
+          const h3 = p3h * scale;
+          
+          const cX1 = 40 + w1;
+          const cY1 = 40 + h1 - h3;
+          
+          html = `
+            <!-- Main Plot (Blue) -->
+            <polygon points="40,40 40,${40 + h1} ${40 + w1},	h ${40 + h1} ${40 + w1},40" fill="rgba(26, 111, 181, 0.2)" stroke="#1a6fb5" stroke-width="2" />
+            <text x="${40 + w1/2}" y="${40 + h1/2}" text-anchor="middle" font-size="9" font-weight="bold" fill="#1a6fb5">Bed: ${p1w}×${p1h}</text>
+            
+            <!-- Triangular Crop Patch -->
+            ${w2 > 0 && h2 > 0 ? `
+              <polygon points="40,${40 + h1} ${40 + w2},${40 + h1} 40,	h ${40 + h1 + h2}" fill="rgba(212, 149, 42, 0.2)" stroke="#d4952a" stroke-width="2" />
+              <text x="${40 + w2/3}" y="${40 + h1 + h2/3}" text-anchor="middle" font-size="9" font-weight="bold" fill="#d4952a">Nook: ½×${p2b}×${p2h}</text>
+            ` : ""}
+            
+            <!-- Tool Shed Closet -->
+            ${w3 > 0 && h3 > 0 ? `
+              <rect x="${cX1}" y="${cY1}" width="${w3}" height="${h3}" fill="rgba(14, 138, 125, 0.2)" stroke="#0e8a7d" stroke-width="2" />
+              <text x="${cX1 + w3/2}" y="${cY1 + h3/2}" text-anchor="middle" font-size="9" font-weight="bold" fill="#0e8a7d">Closet: ${p3w}×${p3h}</text>
+            ` : ""}
+            
+            <text x="250" y="220" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Scale Garden Blueprint Map View</text>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Plot Dimensions to draw garden blueprint</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+
+      function syncResearch() {
+        const ws = $("worldSize");
+        if (!ws) return;
+        const val = num("worldSize");
+        if (isNaN(val) || val <= 0) return;
+        if ($("p1-b1") && $("p1-b2") && $("p1-h")) {
+          $("p1-b1").value = 12;
+          $("p1-b2").value = 8;
+          $("p1-h").value = (val / 10).toFixed(1);
+          if (typeof calcTrapezoid === 'function') calcTrapezoid();
         }
         worldGo();
       }
