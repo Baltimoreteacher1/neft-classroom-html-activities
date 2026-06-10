@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Starfield Coordinate Defender: A 3D coordinate space target sweeping game. Plot targeting vectors on X, Y, and Z axes to fire lasers and clear sector anomalies.">
+    <title>Starfield Coordinate Defender | 3D Coordinate Targeting Game</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --space-bg: #030611;
+            --space-card: rgba(11, 19, 43, 0.75);
+            --border-glow: rgba(255, 255, 255, 0.08);
+            --border-active: rgba(59, 130, 246, 0.4);
+            
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.35);
+            --secondary: #10b981;
+            --secondary-glow: rgba(16, 185, 129, 0.35);
+            --accent: #f59e0b;
+            --accent-glow: rgba(245, 158, 11, 0.35);
+            --pink: #ec4899;
+            --pink-glow: rgba(236, 72, 153, 0.35);
+            --danger: #ef4444;
+            --white: #ffffff;
+            
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --text-dark: #0f172a;
+            
+            --font-display: 'Outfit', sans-serif;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 10px;
+            
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: 0 16px 45px rgba(0, 0, 0, 0.6), 0 0 30px rgba(59, 130, 246, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--space-bg);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(236, 72, 153, 0.04) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        header {
+            background: rgba(11, 19, 43, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-glow);
+            padding: 16px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            filter: drop-shadow(0 0 8px var(--primary-glow));
+            animation: pulse-slow 4s infinite ease-in-out;
+        }
+
+        .logo-title {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--white) 30%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-glow);
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(4px);
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%);
+            border: none;
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+
+        .btn-secondary {
+            border-color: rgba(236, 72, 153, 0.3);
+            color: #f472b6;
+            background: rgba(236, 72, 153, 0.08);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--pink);
+            background: rgba(236, 72, 153, 0.15);
+            box-shadow: 0 0 10px rgba(236, 72, 153, 0.15);
+        }
+
+        /* Layout Grid */
+        .app-grid {
+            display: grid;
+            grid-template-columns: 370px 1fr;
+            gap: 24px;
+            max-width: 1440px;
+            width: 100%;
+            margin: 24px auto;
+            padding: 0 24px;
+            flex: 1;
+        }
+
+        @media (max-width: 1100px) {
+            .app-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .main-workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Panels */
+        .glass-panel {
+            background: var(--space-card);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 12px;
+            color: var(--white);
+        }
+
+        .panel-title svg {
+            color: var(--primary);
+        }
+
+        /* Sector threat checklist */
+        .threat-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .threat-card {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .threat-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: var(--border-active);
+        }
+
+        .threat-card.active {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.08);
+            box-shadow: inset 0 0 12px rgba(59, 130, 246, 0.1);
+        }
+
+        .threat-card.completed {
+            border-color: var(--secondary);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .threat-card.completed .threat-coords {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .threat-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .threat-title-text {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--white);
+        }
+
+        .threat-coords {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .threat-badge {
+            font-size: 1.3rem;
+            margin-left: 12px;
+        }
+
+        /* Navigation HUD Metric Bar */
+        .matching-hud {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255,255,255,0.03);
+            margin-bottom: 16px;
+        }
+
+        .hud-metric {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .hud-metric-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .hud-metric-value {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        /* 3D Viewport styling */
+        .viewport-wrapper {
+            position: relative;
+            background: #cbd5e1;
+            border-radius: var(--radius-md);
+            padding: 4px;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .viewport-svg-element {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-width: 600px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        /* Vector and Grid SVG Classes */
+        .svg-grid-line {
+            stroke: #e2e8f0;
+            stroke-width: 0.75;
+            stroke-dasharray: 2, 2;
+        }
+
+        .svg-grid-boundary {
+            stroke: #94a3b8;
+            stroke-width: 1;
+            fill: none;
+        }
+
+        .svg-axis-line {
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+
+        .svg-axis-label {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 12px;
+        }
+
+        .svg-tick-text {
+            font-family: var(--font-display);
+            font-size: 9px;
+            fill: #64748b;
+            font-weight: 600;
+        }
+
+        .svg-target-line {
+            stroke-width: 1.5;
+            stroke-dasharray: 4, 3;
+            stroke-linecap: round;
+        }
+
+        .svg-star {
+            fill: #94a3b8;
+            opacity: 0.4;
+        }
+
+        /* Control Input Slider Deck */
+        .sliders-deck {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .sliders-deck {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .control-channel {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+        }
+
+        .channel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .channel-label {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .channel-value-display {
+            font-family: var(--font-mono);
+            font-size: 1.15rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* Custom slider styles */
+        .range-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--white);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+            transition: var(--transition);
+        }
+
+        /* Color channels targeting vectors */
+        .channel-x .channel-label { color: var(--danger); }
+        .channel-x .channel-value-display { color: var(--danger); }
+        .channel-x .range-slider::-webkit-slider-thumb { background: var(--danger); box-shadow: 0 0 10px var(--danger); }
+
+        .channel-y .channel-label { color: var(--secondary); }
+        .channel-y .channel-value-display { color: var(--secondary); }
+        .channel-y .range-slider::-webkit-slider-thumb { background: var(--secondary); box-shadow: 0 0 10px var(--secondary); }
+
+        .channel-z .channel-label { color: var(--accent); }
+        .channel-z .channel-value-display { color: var(--accent); }
+        .channel-z .range-slider::-webkit-slider-thumb { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+
+        /* ESOL Sentence stems */
+        .esol-panel {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(236, 72, 153, 0.03) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.18);
+        }
+
+        .esol-bubble {
+            background: rgba(0, 0, 0, 0.25);
+            border-left: 4px solid var(--primary);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            color: var(--text-main);
+            margin-bottom: 16px;
+        }
+
+        .esol-translation {
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            font-style: italic;
+            margin-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 8px;
+        }
+
+        .sentence-stem-tag {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 0.8rem;
+            border-radius: 15px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: var(--transition);
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .sentence-stem-tag:hover {
+            color: var(--white);
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        /* Diagnostics logs console */
+        .diagnostics-panel {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 340px;
+            background: #02040a;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            z-index: 1000;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            display: none;
+            animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .diagnostics-log-box {
+            background: #000;
+            border-radius: var(--radius-sm);
+            height: 150px;
+            overflow-y: auto;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            padding: 8px 12px;
+            color: #3b82f6;
+            margin: 12px 0;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            line-height: 1.4;
+        }
+
+        @keyframes pulse-slow {
+            0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 8px var(--primary-glow)); }
+            50% { transform: scale(1.05); opacity: 0.85; filter: drop-shadow(0 0 15px var(--primary)); }
+        }
+
+        @keyframes slide-up {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border-glow);
+            margin-top: 40px;
+            background: rgba(2, 4, 10, 0.8);
+            font-family: var(--font-display);
+        }
+
+        /* Beautiful In-App Notification Modal Overlay */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(2, 4, 10, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-card {
+            background: #0b132b;
+            border: 2px solid var(--border-active);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            width: min(420px, 90%);
+            text-align: center;
+            box-shadow: var(--shadow);
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-icon {
+            font-size: 3.5rem;
+            margin-bottom: 16px;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
+        }
+
+        .modal-title {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--white) 30%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .modal-message {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-wrap">
+            <span class="logo-icon">🛰️</span>
+            <h1 class="logo-title">Sector 3D: Tactical Sweeper</h1>
+        </div>
+        <div class="header-controls">
+            <button class="btn btn-secondary" id="lang-toggle-btn" onclick="toggleLanguage()">
+                🌐 EN | ES
+            </button>
+            <button class="btn" onclick="openDiagnostics()">
+                🛠️ Diagnostics
+            </button>
+            <button class="btn btn-primary" id="selftest-btn" onclick="runSelfTests()">
+                ⚡ Self-Test
+            </button>
+        </div>
+    </header>
+
+    <main class="app-grid">
+        <!-- Sidebar: Level Mission Checklist & ESOL helpers -->
+        <div class="sidebar">
+            
+            <!-- Mission Log -->
+            <div class="glass-panel">
+                <h2 class="panel-title">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <span id="lbl-mission-control">Sector Quadrants</span>
+                </h2>
+
+                <div class="matching-hud">
+                    <div class="hud-metric">
+                        <span class="hud-metric-label" id="lbl-match-state">Turret Status</span>
+                        <span class="hud-metric-value" id="quest-status-flag" style="color:var(--secondary);">ONLINE</span>
+                    </div>
+                    <div class="hud-metric" style="text-align: right;">
+                        <span class="hud-metric-label" id="lbl-score">Tactical Score</span>
+                        <span class="hud-metric-value" id="score-display" style="color:var(--accent);">0 PTS</span>
+                    </div>
+                </div>
+
+                <div class="threat-list" id="quests-container">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+
+            <!-- ESOL Panels -->
+            <div class="glass-panel esol-panel">
+                <h2 class="panel-title" style="color: var(--accent); border-bottom-color: rgba(245,158,11,0.15);">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    <span id="lbl-esol-title">Targeting Report Scaffold</span>
+                </h2>
+
+                <div class="esol-bubble" id="esol-scaffold-box">
+                    <span id="esol-en">Choose your launch coordinates ($X, Y, Z$) using the sliders below. Tilt the coordinate screen by dragging to scan the 3D depth field.</span>
+                    <div class="esol-translation" id="esol-es">Elige tus coordenadas de disparo ($X, Y, Z$) usando los deslizadores. Inclina la pantalla arrastrando para explorar el campo de profundidad 3D.</div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:8px;" id="sentence-stems-container">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Main Workspace (3D Target Map & Coordinate sliders) -->
+        <div class="main-workspace">
+            
+            <!-- 3D Vector Viewport Screen -->
+            <div class="glass-panel" style="padding: 16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:4px 8px;">
+                    <div class="panel-title" style="margin-bottom:0; border-bottom:none; padding-bottom:0;">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        <span id="lbl-viewport-title">Tactical Targeting Radar (Drag to Rotate Screen)</span>
+                    </div>
+                    <div style="font-family: var(--font-mono); font-size:0.8rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); padding:4px 12px; border-radius:12px; color:var(--accent);" id="active-targets-hud">
+                        Anomalies: 0/0
+                    </div>
+                </div>
+
+                <div class="viewport-wrapper" id="canvas-container">
+                    <!-- Programmatic 3D Vector Map rendered with style="background:white" as per rules -->
+                    <svg id="viewport-3d" class="viewport-svg-element" viewBox="0 0 600 450" width="600" height="450" style="background:white;">
+                        <!-- Drawn programmatically -->
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Command Sliders Deck -->
+            <div class="glass-panel">
+                
+                <h2 class="panel-title" style="margin-bottom: 24px;">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span id="lbl-control-title">Turret Firing Control Deck</span>
+                </h2>
+
+                <div class="sliders-deck">
+                    <!-- X Vector -->
+                    <div class="control-channel channel-x">
+                        <div class="channel-header">
+                            <span class="channel-label" id="lbl-chan-x">Horizontal (X Vector)</span>
+                            <span class="channel-value-display" id="val-x">0</span>
+                        </div>
+                        <input type="range" class="range-slider" id="slider-x" min="-5" max="5" value="0" step="1" oninput="handleSliderInput('x', this.value)">
+                    </div>
+
+                    <!-- Y Vector -->
+                    <div class="control-channel channel-y">
+                        <div class="channel-header">
+                            <span class="channel-label" id="lbl-chan-y">Vertical (Y Vector)</span>
+                            <span class="channel-value-display" id="val-y">0</span>
+                        </div>
+                        <input type="range" class="range-slider" id="slider-y" min="-5" max="5" value="0" step="1" oninput="handleSliderInput('y', this.value)">
+                    </div>
+
+                    <!-- Z Vector -->
+                    <div class="control-channel channel-z">
+                        <div class="channel-header">
+                            <span class="channel-label" id="lbl-chan-z">Depth (Z Vector)</span>
+                            <span class="channel-value-display" id="val-z">5</span>
+                        </div>
+                        <input type="range" class="range-slider" id="slider-z" min="1" max="10" value="5" step="1" oninput="handleSliderInput('z', this.value)">
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; gap:16px;">
+                    <button class="btn btn-secondary" onclick="resetControls()" style="padding:14px 28px;">
+                        🔄 Reset targeting Vector
+                    </button>
+                    <button class="btn btn-primary" onclick="triggerFire()" style="padding:14px 40px; font-size:1.05rem;" id="btn-fire-laser">
+                        💥 Fire Laser Cannons
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Diagnostics panel Overlay -->
+    <div class="diagnostics-panel" id="diagnostics-overlay">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:6px;">
+            <strong style="font-family: var(--font-display); font-size: 0.95rem;">🛠️ Diagnostics Console</strong>
+            <button onclick="closeDiagnostics()" style="background:none; border:none; color:var(--danger); font-size:1.1rem; font-weight:800; cursor:pointer;">&times;</button>
+        </div>
+        <div class="diagnostics-log-box" id="diagnostics-logs"></div>
+        <button class="btn" style="width:100%; justify-content:center; padding: 8px;" onclick="clearDiagnosticsLogs()">
+            Clear Logs
+        </button>
+    </div>
+
+    <!-- Custom Dialog Modal Overlay -->
+    <div class="modal-overlay" id="custom-modal-overlay">
+        <div class="modal-card" id="custom-modal-card">
+            <div class="modal-icon" id="custom-modal-icon">🏆</div>
+            <h3 class="modal-title" id="custom-modal-title">SECTOR CLEARED!</h3>
+            <p class="modal-message" id="custom-modal-message">You neutralized all target probes in this quadrant.</p>
+            <button class="btn btn-primary" id="custom-modal-btn" onclick="closeCustomModal()" style="width: 100%; justify-content: center; padding: 12px;">Continue Sweeping</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Neft Learning Systems. Built locally, completely private. Designed to support Grade 6 Coordinate geometry and spatial vectors targets.</p>
+    </footer>
+
+    <script>
+        // ==========================================
+        // 1. CONFIGURATION
+        // ==========================================
+        const CONFIG = {
+            canvas: { 
+                width: 600, 
+                height: 450, 
+                focalLength: 320, 
+                gridRange: 5, 
+                zMax: 10,
+                unitScale: 38,
+                depthOffset: 240
+            },
+            colors: {
+                x_axis: '#e11d48', // Neon Rose Red
+                y_axis: '#16a34a', // Dark Green
+                z_axis: '#d97706', // Amber
+                grid: '#cbd5e1',   // Slate Grid lines
+                gridSub: '#f8fafc',
+                text: '#0f172a',
+                laser: '#db2777',
+                explosion: '#f97316'
+            },
+            quests: [
+                { 
+                    id: 1, 
+                    targets: [{x: 2, y: 3, z: 4}], 
+                    title: 'Sector Alpha', 
+                    title_es: 'Sector Alfa', 
+                    desc: 'Plot vector targeting components (X=2, Y=3, Z=4) to fire on the primary rogue probe.', 
+                    desc_es: 'Calcula los vectores de disparo (X=2, Y=3, Z=4) para neutralizar la sonda principal.' 
+                },
+                { 
+                    id: 2, 
+                    targets: [{x: -3, y: 1, z: 6}, {x: 4, y: -2, z: 8}], 
+                    title: 'Sector Beta', 
+                    title_es: 'Sector Beta', 
+                    desc: 'Two anomalies moving: lock vectors to target one (-3, 1, 6) then target two (4, -2, 8).', 
+                    desc_es: 'Dos anomalías detectadas: apunta primero a (-3, 1, 6) y luego a (4, -2, 8).' 
+                },
+                { 
+                    id: 3, 
+                    targets: [{x: 3, y: 3, z: 5}, {x: -3, y: -3, z: 5}, {x: 0, y: 2, z: 9}], 
+                    title: 'Sector Gamma', 
+                    title_es: 'Sector Gamma', 
+                    desc: 'Clear triple target coordinates at (3, 3, 5), (-3, -3, 5), and depth sector (0, 2, 9).', 
+                    desc_es: 'Limpia los objetivos triples en (3, 3, 5), (-3, -3, 5) y en el sector profundo (0, 2, 9).' 
+                }
+            ],
+            stems: [
+                {
+                    id: 'stem-1',
+                    en: 'Target probe is locked in the 3D space at coordinates (X=[x], Y=[y], Z=[z]).',
+                    es: 'La sonda objetivo está fijada en el espacio 3D en las coordenadas (X=[x], Y=[y], Z=[z]).'
+                },
+                {
+                    id: 'stem-2',
+                    en: 'To neutralize depth coordinate [z], the vector firing trajectory must extend exactly [z] units.',
+                    es: 'Para neutralizar la coordenada de profundidad [z], la trayectoria del disparo debe extenderse exactamente [z] unidades.'
+                }
+            ],
+            translations: {
+                en: {
+                    'mission-control': 'Sector Quadrants',
+                    'viewport-title': 'Tactical Targeting Radar (Drag to Rotate Screen)',
+                    'control-title': 'Turret Firing Control Deck',
+                    'esol-title': 'Targeting Report Scaffold',
+                    'chan-x': 'Horizontal (X Vector)',
+                    'chan-y': 'Vertical (Y Vector)',
+                    'chan-z': 'Depth (Z Vector)',
+                    'match-state': 'Turret Status',
+                    'score': 'Tactical Score'
+                },
+                es: {
+                    'mission-control': 'Cuadrantes de Sector',
+                    'viewport-title': 'Radar de Puntería Táctica (Arrastra para Rotar)',
+                    'control-title': 'Consola de Disparo de Torreta',
+                    'esol-title': 'Andamio de Reporte de Puntería',
+                    'chan-x': 'Horizontal (Vector X)',
+                    'chan-y': 'Vertical (Vector Y)',
+                    'chan-z': 'Profundidad (Vector Z)',
+                    'match-state': 'Estado de Torreta',
+                    'score': 'Puntuación Táctica'
+                }
+            }
+        };
+
+        // ==========================================
+        // 2. CONFIG VALIDATOR
+        // ==========================================
+        function validateConfig() {
+            if (!CONFIG.canvas || typeof CONFIG.canvas.focalLength !== 'number') {
+                throw new Error("Invalid CONFIG: canvas properties missing.");
+            }
+            if (!CONFIG.colors || !CONFIG.colors.x_axis || !CONFIG.colors.y_axis) {
+                throw new Error("Invalid CONFIG: colors configuration incomplete.");
+            }
+            if (!Array.isArray(CONFIG.quests) || CONFIG.quests.length === 0) {
+                throw new Error("Invalid CONFIG: quest configurations empty.");
+            }
+        }
+
+        // ==========================================
+        // 3. REPOSITORY LAYER
+        // ==========================================
+        const Repository = {
+            state: {
+                currentLevel: 1,
+                targets: [],
+                score: 0,
+                targetX: 0,
+                targetY: 0,
+                targetZ: 5,
+                cameraYaw: -0.4,   // Yaw angle in radians
+                cameraPitch: 0.28, // Pitch angle in radians
+                isFiring: false,
+                laserProgress: 0,
+                particles: [],
+                logs: [],
+                lang: 'en'
+            },
+            
+            getState() {
+                return this.state;
+            },
+            
+            setState(updatedFields) {
+                Object.assign(this.state, updatedFields);
+                if (typeof this.onStateChange === 'function') {
+                    this.onStateChange(this.state);
+                }
+            },
+            
+            log(msg) {
+                const now = new Date();
+                const timeStr = now.toTimeString().split(' ')[0] + '.' + String(now.getMilliseconds()).padStart(3, '0');
+                const logLine = `[${timeStr}] ${msg}`;
+                this.state.logs.push(logLine);
+                if (this.state.logs.length > 80) this.state.logs.shift();
+                if (typeof this.onLog === 'function') {
+                    this.onLog(logLine);
+                }
+            }
+        };
+
+        // ==========================================
+        // 4. SERVICE LAYER
+        // ==========================================
+        const Service = {
+            // Perspective Projection math conversion from 3D space to 2D SVG
+            project3D(x, y, z, yaw, pitch) {
+                const { width, height, focalLength, unitScale, depthOffset } = CONFIG.canvas;
+                
+                // Convert coordinate units into virtual screen spacing
+                const X = x * unitScale;
+                const Y = y * unitScale;
+                const Z = z * unitScale;
+
+                // 1. Yaw Rotation (around vertical Y axis)
+                const x1 = X * Math.cos(yaw) - Z * Math.sin(yaw);
+                const z1 = X * Math.sin(yaw) + Z * Math.cos(yaw);
+
+                // 2. Pitch Rotation (around horizontal rotated X axis)
+                const y2 = Y * Math.cos(pitch) - z1 * Math.sin(pitch);
+                const z2 = Y * Math.sin(pitch) + z1 * Math.cos(pitch);
+
+                // Apply Z-depth offset translation so it floats ahead of camera view
+                const finalZ = z2 + depthOffset;
+
+                // Prevent math errors when items go past camera focal line
+                if (finalZ <= 10) return null;
+
+                const scaleFactor = focalLength / finalZ;
+                const px = (width / 2) + x1 * scaleFactor;
+                const py = (height / 2) - y2 * scaleFactor;
+
+                return { x: px, y: py, depth: finalZ, scale: scaleFactor };
+            },
+
+            // Web Audio API Synthesizer Frequency sweep
+            playLaserSynth(audioCtx) {
+                if (!audioCtx) return;
+                try {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.35);
+                    
+                    gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+                    
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.35);
+                } catch (e) {
+                    console.warn("Laser audio synth error:", e);
+                }
+            },
+
+            // Web Audio API Synthesizer Explosion noise crash
+            playExplosionSynth(audioCtx) {
+                if (!audioCtx) return;
+                try {
+                    const bufferSize = audioCtx.sampleRate * 0.6;
+                    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                    const data = buffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) {
+                        data[i] = Math.random() * 2 - 1;
+                    }
+
+                    const noise = audioCtx.createBufferSource();
+                    noise.buffer = buffer;
+
+                    const filter = audioCtx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(600, audioCtx.currentTime);
+                    filter.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.6);
+
+                    const gain = audioCtx.createGain();
+                    gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+
+                    noise.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    noise.start();
+                    noise.stop(audioCtx.currentTime + 0.6);
+                } catch (e) {
+                    console.warn("Explosion audio synth error:", e);
+                }
+            }
+        };
+
+        // ==========================================
+        // 5. CONTROLLER LAYER
+        // ==========================================
+        const Controller = {
+            audioContext: null,
+            animationId: null,
+            dragState: {
+                isDragging: false,
+                startX: 0,
+                startY: 0,
+                startYaw: 0,
+                startPitch: 0
+            },
+
+            init() {
+                validateConfig();
+                this.loadLevel(Repository.getState().currentLevel);
+                this.setupViewportEvents();
+                this.startRenderLoop();
+                Repository.log("Space Coordinate Turret loaded and online.");
+            },
+
+            ensureAudio() {
+                if (!this.audioContext) {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (this.audioContext.state === 'suspended') {
+                    this.audioContext.resume();
+                }
+            },
+
+            loadLevel(levelId) {
+                const quest = CONFIG.quests.find(q => q.id === levelId);
+                if (!quest) {
+                    Repository.log(`Error: Level ${levelId} is unavailable.`);
+                    return;
+                }
+
+                const levelTargets = quest.targets.map((t, index) => ({
+                    id: index,
+                    x: t.x,
+                    y: t.y,
+                    z: t.z,
+                    destroyed: false
+                }));
+
+                Repository.setState({
+                    currentLevel: levelId,
+                    targets: levelTargets,
+                    isFiring: false,
+                    laserProgress: 0,
+                    particles: []
+                });
+
+                Repository.log(`Level Loaded: ${quest.title}. Objectives: ${levelTargets.length} target anomalies.`);
+            },
+
+            updateCoordinates(dimension, value) {
+                const updates = {};
+                const parsedValue = parseInt(value, 10);
+                if (dimension === 'x') updates.targetX = parsedValue;
+                if (dimension === 'y') updates.targetY = parsedValue;
+                if (dimension === 'z') updates.targetZ = parsedValue;
+                Repository.setState(updates);
+            },
+
+            fireLaser() {
+                const state = Repository.getState();
+                if (state.isFiring) return;
+
+                this.ensureAudio();
+                Service.playLaserSynth(this.audioContext);
+
+                Repository.setState({
+                    isFiring: true,
+                    laserProgress: 0
+                });
+                Repository.log(`Laser cannons fired at vector coordinates (${state.targetX}, ${state.targetY}, ${state.targetZ}).`);
+            },
+
+            completeLaserSweep() {
+                Repository.setState({ isFiring: false });
+                const state = Repository.getState();
+                const { targetX, targetY, targetZ, targets } = state;
+
+                let hitRegistered = false;
+                const updatedTargets = targets.map(t => {
+                    if (!t.destroyed && t.x === targetX && t.y === targetY && t.z === targetZ) {
+                        t.destroyed = true;
+                        hitRegistered = true;
+                    }
+                    return t;
+                });
+
+                if (hitRegistered) {
+                    Service.playExplosionSynth(this.audioContext);
+                    this.spawnParticles(targetX, targetY, targetZ);
+                    Repository.setState({
+                        targets: updatedTargets,
+                        score: state.score + 100
+                    });
+                    Repository.log(`HIT! Spatial anomaly neutralized at coordinate (${targetX}, ${targetY}, ${targetZ})`);
+
+                    // Check if all targets are clear
+                    const isSectorClear = updatedTargets.every(t => t.destroyed);
+                    if (isSectorClear) {
+                        setTimeout(() => this.progressLevel(), 1200);
+                    }
+                } else {
+                    Repository.log(`MISS! Target coordinates (${targetX}, ${targetY}, ${targetZ}) contain zero anomalies.`);
+                }
+            },
+
+            spawnParticles(x, y, z) {
+                const particles = [];
+                for (let i = 0; i < 24; i++) {
+                    particles.push({
+                        x: x,
+                        y: y,
+                        z: z,
+                        vx: (Math.random() - 0.5) * 6,
+                        vy: (Math.random() - 0.5) * 6,
+                        vz: (Math.random() - 0.5) * 6,
+                        life: 1.0,
+                        decay: 0.02 + Math.random() * 0.03
+                    });
+                }
+                Repository.setState({
+                    particles: [...Repository.getState().particles, ...particles]
+                });
+            },
+
+            progressLevel() {
+                const state = Repository.getState();
+                if (state.currentLevel < CONFIG.quests.length) {
+                    const nextLvl = state.currentLevel + 1;
+                    this.loadLevel(nextLvl);
+                    UI.showCustomModal("SECTOR CLEARED!", "Anomalies neutralized. Preparing hyperspace coordinate shift...", "🏆");
+                } else {
+                    UI.showCustomModal("SYSTEM SECURITY SECURED!", "All coordinate sectors are clear of anomalies. System calibration complete.", "🎓");
+                    Repository.setState({ score: 0 });
+                    this.loadLevel(1);
+                }
+            },
+
+            setupViewportEvents() {
+                const container = document.getElementById('canvas-container');
+                
+                const onDragStart = (e) => {
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                    const state = Repository.getState();
+                    
+                    this.dragState = {
+                        isDragging: true,
+                        startX: clientX,
+                        startY: clientY,
+                        startYaw: state.cameraYaw,
+                        startPitch: state.cameraPitch
+                    };
+                };
+
+                const onDragMove = (e) => {
+                    if (!this.dragState.isDragging) return;
+                    
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                    const dx = clientX - this.dragState.startX;
+                    const dy = clientY - this.dragState.startY;
+
+                    // Map screen drag to yaw and pitch angle shifts
+                    const nextYaw = this.dragState.startYaw + dx * 0.005;
+                    const nextPitch = Math.max(-0.6, Math.min(0.6, this.dragState.startPitch - dy * 0.005));
+
+                    Repository.setState({
+                        cameraYaw: nextYaw,
+                        cameraPitch: nextPitch
+                    });
+                };
+
+                const onDragEnd = () => {
+                    this.dragState.isDragging = false;
+                };
+
+                container.addEventListener('mousedown', onDragStart);
+                container.addEventListener('mousemove', onDragMove);
+                window.addEventListener('mouseup', onDragEnd);
+
+                container.addEventListener('touchstart', onDragStart);
+                container.addEventListener('touchmove', onDragMove);
+                window.addEventListener('touchend', onDragEnd);
+            },
+
+            startRenderLoop() {
+                const tick = () => {
+                    this.updatePhysics();
+                    UI.renderViewport();
+                    this.animationId = requestAnimationFrame(tick);
+                };
+                this.animationId = requestAnimationFrame(tick);
+            },
+
+            updatePhysics() {
+                const state = Repository.getState();
+                
+                // Update laser firing progress animation
+                if (state.isFiring) {
+                    const nextProgress = state.laserProgress + 0.04;
+                    if (nextProgress >= 1) {
+                        this.completeLaserSweep();
+                    } else {
+                        Repository.setState({ laserProgress: nextProgress });
+                    }
+                }
+
+                // Update particle physics
+                if (state.particles.length > 0) {
+                    const updatedParticles = state.particles
+                        .map(p => {
+                            p.x += p.vx * 0.03;
+                            p.y += p.vy * 0.03;
+                            p.z += p.vz * 0.03;
+                            p.life -= p.decay;
+                            return p;
+                        })
+                        .filter(p => p.life > 0);
+                    
+                    Repository.setState({ particles: updatedParticles });
+                }
+            },
+
+            selfTest() {
+                Repository.log("System Self-Test diagnostics started...");
+                let status = true;
+
+                // Test 1: Config properties validation
+                try {
+                    validateConfig();
+                    Repository.log("[PASS] Config settings verify.");
+                } catch (e) {
+                    Repository.log(`[FAIL] Config settings verify: ${e.message}`);
+                    status = false;
+                }
+
+                // Test 2: Math Projection matrix
+                const pMid = Service.project3D(0, 0, 0, 0, 0);
+                if (pMid && Math.abs(pMid.x - 300) < 1 && Math.abs(pMid.y - 225) < 1) {
+                    Repository.log("[PASS] 3D Vector engine projections correctly aligned.");
+                } else {
+                    Repository.log(`[FAIL] 3D Vector engine projections failed. Midpoint: ${JSON.stringify(pMid)}`);
+                    status = false;
+                }
+
+                // Test 3: Math target range verification
+                const pFar = Service.project3D(5, 5, 10, 0, 0);
+                const pNear = Service.project3D(-5, -5, 1, 0, 0);
+                if (pFar && pNear) {
+                    Repository.log("[PASS] Sector boundary coordinates project in-screen.");
+                } else {
+                    Repository.log("[FAIL] Sector boundary coordinates projected behind camera.");
+                    status = false;
+                }
+
+                Repository.log(status ? "DIAGNOSTICS: SYSTEM VERIFIED (OK)" : "DIAGNOSTICS: FAILURES FOUND");
+                return status;
+            }
+        };
+
+        // ==========================================
+        // 6. UI LAYER & RENDERER
+        // ==========================================
+        const UI = {
+            stars: [],
+
+            init() {
+                // Initialize background space stars for 3D parallax stars effect
+                for (let i = 0; i < 60; i++) {
+                    this.stars.push({
+                        x: (Math.random() - 0.5) * 12,
+                        y: (Math.random() - 0.5) * 12,
+                        z: Math.random() * 10
+                    });
+                }
+                
+                Repository.onStateChange = (state) => this.renderDOM(state);
+                Repository.onLog = (logLine) => {
+                    const box = document.getElementById('diagnostics-logs');
+                    if (box) {
+                        box.innerHTML += `<div>${logLine}</div>`;
+                        box.scrollTop = box.scrollHeight;
+                    }
+                };
+
+                // Initial binding
+                this.renderDOM(Repository.getState());
+            },
+
+            renderDOM(state) {
+                const t = CONFIG.translations[state.lang];
+                
+                // Static Header Labels
+                document.getElementById('lbl-mission-control').innerText = t['mission-control'];
+                document.getElementById('lbl-viewport-title').innerText = t['viewport-title'];
+                document.getElementById('lbl-control-title').innerText = t['control-title'];
+                document.getElementById('lbl-esol-title').innerText = t['esol-title'];
+                document.getElementById('lbl-chan-x').innerText = t['chan-x'];
+                document.getElementById('lbl-chan-y').innerText = t['chan-y'];
+                document.getElementById('lbl-chan-z').innerText = t['chan-z'];
+                document.getElementById('lbl-match-state').innerText = t['match-state'];
+                document.getElementById('score-display').innerText = `${state.score} PTS`;
+                
+                // Sliders values display
+                document.getElementById('val-x').innerText = state.targetX;
+                document.getElementById('val-y').innerText = state.targetY;
+                document.getElementById('val-z').innerText = state.targetZ;
+
+                // Quests threat checklist update
+                const questsContainer = document.getElementById('quests-container');
+                questsContainer.innerHTML = '';
+                
+                CONFIG.quests.forEach(q => {
+                    const isCurrent = state.currentLevel === q.id;
+                    // Check if all targets in this level are destroyed
+                    const isCompleted = state.currentLevel > q.id || (isCurrent && state.targets.every(t => t.destroyed));
+
+                    const title = state.lang === 'es' ? q.title_es : q.title;
+                    const desc = state.lang === 'es' ? q.desc_es : q.desc;
+
+                    questsContainer.innerHTML += `
+                        <div class="threat-card ${isCurrent?'active':''} ${isCompleted?'completed':''}" onclick="Controller.loadLevel(${q.id})">
+                            <div class="threat-info">
+                                <span class="threat-title-text">${title}</span>
+                                <span class="threat-coords">${desc}</span>
+                            </div>
+                            <span class="threat-badge">${isCompleted?'✅':'🛰️'}</span>
+                        </div>
+                    `;
+                });
+
+                // Update coordinates HUD
+                const remaining = state.targets.filter(t => !t.destroyed).length;
+                document.getElementById('active-targets-hud').innerText = `Probes: ${remaining}/${state.targets.length}`;
+
+                // Sentence stems update (ESOL support)
+                const stemsContainer = document.getElementById('sentence-stems-container');
+                stemsContainer.innerHTML = '';
+
+                CONFIG.stems.forEach(stem => {
+                    let text = state.lang === 'es' ? stem.es : stem.en;
+                    // Replace values
+                    text = text.replace(/\[x\]/g, state.targetX);
+                    text = text.replace(/\[y\]/g, state.targetY);
+                    text = text.replace(/\[z\]/g, state.targetZ);
+
+                    stemsContainer.innerHTML += `
+                        <div class="sentence-stem-tag" onclick="copySentenceToConsole('${text.replace(/'/g, "\\'")}')">
+                            ${text}
+                        </div>
+                    `;
+                });
+            },
+
+            // Drawing 3D projection items onto SVG
+            renderViewport() {
+                const svg = document.getElementById('viewport-3d');
+                if (!svg) return;
+
+                const state = Repository.getState();
+                const { targetX, targetY, targetZ, cameraYaw, cameraPitch, targets, particles, isFiring, laserProgress } = state;
+                const { gridRange, zMax } = CONFIG.canvas;
+
+                let svgContent = '';
+
+                // 1. Draw Starfield background with parallax
+                this.stars.forEach(star => {
+                    const pt = Service.project3D(star.x, star.y, star.z, cameraYaw, cameraPitch);
+                    if (pt) {
+                        const starSize = 1.2 * pt.scale;
+                        svgContent += `<circle cx="${pt.x}" cy="${pt.y}" r="${starSize}" class="svg-star" />`;
+                    }
+                });
+
+                // 2. Draw 3D Grid Planes at Z levels (Z=2, Z=5, Z=8)
+                const zPlanes = [2, 5, 8];
+                zPlanes.forEach(zp => {
+                    const points = [];
+                    // Get corner vertices of coordinate plane boundary box (-5 to 5)
+                    const corners = [
+                        {x: -gridRange, y: -gridRange},
+                        {x: gridRange, y: -gridRange},
+                        {x: gridRange, y: gridRange},
+                        {x: -gridRange, y: gridRange}
+                    ];
+
+                    let valid = true;
+                    corners.forEach(c => {
+                        const proj = Service.project3D(c.x, c.y, zp, cameraYaw, cameraPitch);
+                        if (proj) points.push(proj);
+                        else valid = false;
+                    });
+
+                    if (valid) {
+                        const pathStr = points.map((p, i) => `${i===0?'M':'L'}${p.x},${p.y}`).join(' ') + ' Z';
+                        // Draw outer border boundary
+                        svgContent += `<path d="${pathStr}" class="svg-grid-boundary" />`;
+
+                        // Draw grid lines inside this plane
+                        for (let g = -gridRange + 1; g < gridRange; g++) {
+                            const p1 = Service.project3D(g, -gridRange, zp, cameraYaw, cameraPitch);
+                            const p2 = Service.project3D(g, gridRange, zp, cameraYaw, cameraPitch);
+                            if (p1 && p2) {
+                                svgContent += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" class="svg-grid-line" />`;
+                            }
+
+                            const p3 = Service.project3D(-gridRange, g, zp, cameraYaw, cameraPitch);
+                            const p4 = Service.project3D(gridRange, g, zp, cameraYaw, cameraPitch);
+                            if (p3 && p4) {
+                                svgContent += `<line x1="${p3.x}" y1="${p3.y}" x2="${p4.x}" y2="${p4.y}" class="svg-grid-line" />`;
+                            }
+                        }
+
+                        // Label depth coordinates on grid plane
+                        const labelPt = Service.project3D(-gridRange - 0.5, gridRange + 0.5, zp, cameraYaw, cameraPitch);
+                        if (labelPt) {
+                            svgContent += `<text x="${labelPt.x}" y="${labelPt.y}" class="svg-tick-text" text-anchor="end">Z = ${zp}</text>`;
+                        }
+                    }
+                });
+
+                // 3. Draw Coordinate Axes (X in Red, Y in Green, Z in Yellow/Orange)
+                // X Axis (-5 to 5)
+                const xAxisStart = Service.project3D(-gridRange, 0, 0, cameraYaw, cameraPitch);
+                const xAxisEnd = Service.project3D(gridRange, 0, 0, cameraYaw, cameraPitch);
+                if (xAxisStart && xAxisEnd) {
+                    svgContent += `<line x1="${xAxisStart.x}" y1="${xAxisStart.y}" x2="${xAxisEnd.x}" y2="${xAxisEnd.y}" stroke="${CONFIG.colors.x_axis}" class="svg-axis-line" />`;
+                    svgContent += `<text x="${xAxisEnd.x + 8}" y="${xAxisEnd.y + 4}" fill="${CONFIG.colors.x_axis}" class="svg-axis-label">+X</text>`;
+                }
+
+                // Y Axis (-5 to 5)
+                const yAxisStart = Service.project3D(0, -gridRange, 0, cameraYaw, cameraPitch);
+                const yAxisEnd = Service.project3D(0, gridRange, 0, cameraYaw, cameraPitch);
+                if (yAxisStart && yAxisEnd) {
+                    svgContent += `<line x1="${yAxisStart.x}" y1="${yAxisStart.y}" x2="${yAxisEnd.x}" y2="${yAxisEnd.y}" stroke="${CONFIG.colors.y_axis}" class="svg-axis-line" />`;
+                    svgContent += `<text x="${yAxisEnd.x - 4}" y="${yAxisEnd.y - 8}" fill="${CONFIG.colors.y_axis}" class="svg-axis-label" text-anchor="middle">+Y</text>`;
+                }
+
+                // Z Axis (1 to 10)
+                const zAxisStart = Service.project3D(0, 0, 1, cameraYaw, cameraPitch);
+                const zAxisEnd = Service.project3D(0, 0, zMax, cameraYaw, cameraPitch);
+                if (zAxisStart && zAxisEnd) {
+                    svgContent += `<line x1="${zAxisStart.x}" y1="${zAxisStart.y}" x2="${zAxisEnd.x}" y2="${zAxisEnd.y}" stroke="${CONFIG.colors.z_axis}" class="svg-axis-line" />`;
+                    svgContent += `<text x="${zAxisEnd.x + 8}" y="${zAxisEnd.y - 4}" fill="${CONFIG.colors.z_axis}" class="svg-axis-label">+Z (Depth)</text>`;
+                }
+
+                // 4. Draw Active Target Probes in 3D
+                targets.forEach(t => {
+                    if (t.destroyed) return;
+                    const pt = Service.project3D(t.x, t.y, t.z, cameraYaw, cameraPitch);
+                    if (pt) {
+                        const radius = Math.max(6, 12 * pt.scale);
+                        
+                        // Setup gradient styling for realistic 3D look
+                        svgContent += `
+                            <defs>
+                                <radialGradient id="grad-target-${t.id}" cx="35%" cy="35%" r="65%">
+                                    <stop offset="0%" stop-color="#93c5fd" />
+                                    <stop offset="40%" stop-color="#3b82f6" />
+                                    <stop offset="100%" stop-color="#1e3a8a" />
+                                </radialGradient>
+                            </defs>
+                            <g>
+                                <circle cx="${pt.x}" cy="${pt.y}" r="${radius}" fill="url(#grad-target-${t.id})" stroke="#60a5fa" stroke-width="1.5" />
+                                <circle cx="${pt.x}" cy="${pt.y}" r="${radius + 6}" fill="none" stroke="#3b82f6" stroke-width="0.75" stroke-dasharray="3, 3" opacity="0.6"/>
+                                <text x="${pt.x}" y="${pt.y - radius - 6}" font-family="var(--font-mono)" font-size="9" fill="#1e3a8a" font-weight="bold" text-anchor="middle">(${t.x}, ${t.y}, ${t.z})</text>
+                            </g>
+                        `;
+                    }
+                });
+
+                // 5. Draw Target Reticle at active targeting values
+                const reticlePt = Service.project3D(targetX, targetY, targetZ, cameraYaw, cameraPitch);
+                if (reticlePt) {
+                    const retSize = 15;
+                    svgContent += `
+                        <g>
+                            <circle cx="${reticlePt.x}" cy="${reticlePt.y}" r="12" fill="none" stroke="${CONFIG.colors.laser}" stroke-width="1.5" />
+                            <line x1="${reticlePt.x - retSize}" y1="${reticlePt.y}" x2="${reticlePt.x + retSize}" y2="${reticlePt.y}" stroke="${CONFIG.colors.laser}" stroke-width="1" />
+                            <line x1="${reticlePt.x}" y1="${reticlePt.y - retSize}" x2="${reticlePt.x}" y2="${reticlePt.y + retSize}" stroke="${CONFIG.colors.laser}" stroke-width="1" />
+                            <text x="${reticlePt.x}" y="${reticlePt.y + 24}" font-family="var(--font-mono)" font-size="10" fill="${CONFIG.colors.laser}" font-weight="bold" text-anchor="middle">Aim: (${targetX}, ${targetY}, ${targetZ})</text>
+                        </g>
+                    `;
+                }
+
+                // 6. Draw Animated Laser beam trajectory
+                if (isFiring && reticlePt) {
+                    const originPt = Service.project3D(0, 0, 0, cameraYaw, cameraPitch);
+                    if (originPt) {
+                        const targetXPos = originPt.x + (reticlePt.x - originPt.x) * laserProgress;
+                        const targetYPos = originPt.y + (reticlePt.y - originPt.y) * laserProgress;
+
+                        svgContent += `
+                            <line x1="${originPt.x}" y1="${originPt.y}" x2="${targetXPos}" y2="${targetYPos}" stroke="${CONFIG.colors.laser}" stroke-width="3" stroke-linecap="round" />
+                            <line x1="${originPt.x}" y1="${originPt.y}" x2="${targetXPos}" y2="${targetYPos}" stroke="#ffffff" stroke-width="1" stroke-linecap="round" />
+                            <circle cx="${targetXPos}" cy="${targetYPos}" r="6" fill="#ffffff" filter="drop-shadow(0 0 4px ${CONFIG.colors.laser})" />
+                        `;
+                    }
+                }
+
+                // 7. Draw particle explosions
+                particles.forEach(p => {
+                    const pt = Service.project3D(p.x, p.y, p.z, cameraYaw, cameraPitch);
+                    if (pt) {
+                        const size = Math.max(1, 4 * pt.scale * p.life);
+                        svgContent += `<circle cx="${pt.x}" cy="${pt.y}" r="${size}" fill="${CONFIG.colors.explosion}" opacity="${p.life}" />`;
+                    }
+                });
+
+                // Commit SVGs content to view
+                svg.innerHTML = svgContent;
+            },
+
+            // In-app Alert Modals
+            showCustomModal(title, msg, icon) {
+                const overlay = document.getElementById('custom-modal-overlay');
+                const titleEl = document.getElementById('custom-modal-title');
+                const msgEl = document.getElementById('custom-modal-message');
+                const iconEl = document.getElementById('custom-modal-icon');
+
+                titleEl.innerText = title;
+                msgEl.innerText = msg;
+                iconEl.innerText = icon || "🏆";
+
+                overlay.style.display = 'flex';
+                // Trigger reflow
+                overlay.offsetHeight;
+                overlay.style.opacity = '1';
+                document.getElementById('custom-modal-card').style.transform = 'scale(1)';
+            }
+        };
+
+        // UI Event triggers
+        function handleSliderInput(dimension, val) {
+            Controller.updateCoordinates(dimension, val);
+        }
+
+        function resetControls() {
+            document.getElementById('slider-x').value = 0;
+            document.getElementById('slider-y').value = 0;
+            document.getElementById('slider-z').value = 5;
+            Controller.updateCoordinates('x', 0);
+            Controller.updateCoordinates('y', 0);
+            Controller.updateCoordinates('z', 5);
+            Repository.log("Coordinates targeting vectors reset to origin (0, 0, 5).");
+        }
+
+        function triggerFire() {
+            Controller.fireLaser();
+        }
+
+        function toggleLanguage() {
+            const state = Repository.getState();
+            const nextLang = state.lang === 'en' ? 'es' : 'en';
+            Repository.setState({ lang: nextLang });
+            Repository.log(`System language updated to: ${nextLang.toUpperCase()}`);
+        }
+
+        function openDiagnostics() {
+            document.getElementById('diagnostics-overlay').style.display = 'block';
+        }
+
+        function closeDiagnostics() {
+            document.getElementById('diagnostics-overlay').style.display = 'none';
+        }
+
+        function clearDiagnosticsLogs() {
+            Repository.setState({ logs: [] });
+            document.getElementById('diagnostics-logs').innerHTML = '';
+            Repository.log("Diagnostics logs cleared.");
+        }
+
+        function runSelfTests() {
+            openDiagnostics();
+            const testResult = Controller.selfTest();
+            const logBox = document.getElementById('diagnostics-logs');
+            if (testResult) {
+                logBox.innerHTML += `<div style="color:var(--secondary); font-weight:bold;">[SUCCESS] Turret calibration check complete.</div>`;
+            } else {
+                logBox.innerHTML += `<div style="color:var(--danger); font-weight:bold;">[ERROR] System self-test failures.</div>`;
+            }
+        }
+
+        function closeCustomModal() {
+            const overlay = document.getElementById('custom-modal-overlay');
+            overlay.style.opacity = '0';
+            document.getElementById('custom-modal-card').style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+        }
+
+        function copySentenceToConsole(text) {
+            Repository.log(`Report Helper: "${text}"`);
+        }
+
+        // ==========================================
+        // 7. INITIALIZATION GATEWAY
+        // ==========================================
+        window.addEventListener('load', () => {
+            Repository.setState({ logs: [] }); // Clear startup logs
+            Controller.init();
+            UI.init();
+        });
+    </script>
+</body>
+</html>
