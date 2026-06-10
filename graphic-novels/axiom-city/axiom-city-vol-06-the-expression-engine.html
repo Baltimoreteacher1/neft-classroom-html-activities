@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en" data-textsize="md">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Axiom City Vol. 6 — The Expression Engine | Interactive Graphic Novel | Numerical &amp; Algebraic Expressions</title>
+<meta name="description" content="An interactive 3D graphic novel teaching Grade 6 fraction division, exponents, algebraic expressions, equivalence, GCF/LCM, and the distributive property. EduWonderLab.">
+<style>
+/* ================= AXIOM CITY ENGINE CSS v1.0 — DO NOT FORK ================= */
+:root{
+  --paper:#F7F4EC; --ink:#24323F; --navy:#17324D; --teal:#1FA6A2; --amber:#F2C15B;
+  --coral:#E2674A; --purple:#4A2580; --accent:var(--teal);
+  --panelborder:3px solid var(--navy);
+  --balloonfont:600 1rem/1.32 'Segoe UI',system-ui,-apple-system,sans-serif;
+  --capfont:italic 500 .92rem/1.35 Georgia,'Times New Roman',serif;
+  --pagew:560px;
+}
+html[data-textsize="lg"]{font-size:18px}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:radial-gradient(120% 120% at 50% 0%,#23425f 0%,#101e2e 55%,#0a1420 100%);color:var(--ink);font:400 16px/1.45 'Segoe UI',system-ui,sans-serif;overflow:hidden}
+body.hc{--ink:#000;--paper:#fff}
+button{font:inherit;cursor:pointer}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:4px}
+
+/* ---------- COVER SCREEN ---------- */
+#cover{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:18px;background:radial-gradient(110% 110% at 50% 10%,#1c3a57 0%,#0a1420 100%);perspective:1400px;overflow:auto}
+#coverCard{position:relative;width:min(88vw,520px,calc((100vh - 200px)*0.714));aspect-ratio:5/7;border-radius:10px 18px 18px 10px;box-shadow:0 40px 80px rgba(0,0,0,.6),0 8px 22px rgba(0,0,0,.5);transform-style:preserve-3d;transition:transform .18s ease-out;background:var(--navy);overflow:hidden}
+#coverCard .spine{position:absolute;left:0;top:0;bottom:0;width:26px;background:linear-gradient(90deg,#0d1f33,#17324D 60%,#244a6e);z-index:5}
+#coverCard .spine span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-90deg);white-space:nowrap;color:var(--amber);font:900 .72rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.28em}
+.cov-layer{position:absolute;inset:0;will-change:transform}
+#coverTitle{position:absolute;left:34px;right:18px;top:26px;z-index:6;color:#fff}
+#coverTitle .series{font:900 .9rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.4em;color:var(--amber)}
+#coverTitle h1{font:900 clamp(2rem,7vw,3.1rem)/0.95 'Arial Black',Arial,sans-serif;text-transform:uppercase;margin-top:8px;text-shadow:4px 4px 0 rgba(0,0,0,.35);color:#fff}
+#coverTitle h1 em{font-style:normal;color:var(--accent)}
+#coverTitle .vol{display:inline-block;margin-top:10px;background:var(--accent);color:#fff;font:900 .8rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.18em;padding:7px 12px;border-radius:4px;box-shadow:2px 2px 0 rgba(0,0,0,.4)}
+#coverBottom{position:absolute;left:34px;right:18px;bottom:18px;z-index:6;display:flex;justify-content:space-between;align-items:flex-end;color:#cfe3ea;font:700 .72rem/1.3 'Segoe UI',sans-serif;letter-spacing:.12em}
+#coverActions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.bigbtn{background:var(--amber);color:var(--navy);border:none;border-radius:999px;font:900 1rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.1em;padding:18px 34px;box-shadow:0 6px 0 #b78a2e,0 14px 30px rgba(0,0,0,.5);transition:transform .12s,box-shadow .12s}
+.bigbtn:hover{transform:translateY(-2px)}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 #b78a2e}
+.bigbtn.alt{background:#274a6a;color:#fff;box-shadow:0 6px 0 #122a42,0 14px 30px rgba(0,0,0,.5)}
+
+/* ---------- HUD ---------- */
+#hud{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:10px;padding:8px 14px;background:linear-gradient(180deg,rgba(7,14,22,.92),rgba(7,14,22,.65) 70%,transparent);color:#dfe9ef}
+#hud .brand{font:900 .78rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.22em;color:var(--amber);white-space:nowrap}
+#hud .brand small{display:block;font:700 .56rem/1.4 'Segoe UI',sans-serif;letter-spacing:.18em;color:#9fb7c6}
+#progress{display:flex;gap:5px;margin-left:8px;flex-wrap:wrap}
+#progress .dot{width:9px;height:9px;border-radius:50%;background:#3a576f;border:1px solid #5b7d99}
+#progress .dot.on{background:var(--accent);border-color:var(--accent);box-shadow:0 0 6px var(--accent)}
+#badges{display:flex;gap:6px;margin-left:auto}
+.badge{width:34px;height:34px;border-radius:50%;background:#1c3a52;border:2px solid #35587a;display:flex;align-items:center;justify-content:center;filter:grayscale(1) brightness(.6);transition:filter .4s,transform .4s}
+.badge.earned{filter:none;border-color:var(--amber);background:#234d6b;animation:badgepop .6s cubic-bezier(.2,2,.4,1)}
+.badge svg{width:20px;height:20px}
+@keyframes badgepop{0%{transform:scale(.2) rotate(-40deg)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+.hudbtns{display:flex;gap:6px;margin-left:10px}
+.hudbtn{background:#1c3a52;border:1px solid #35587a;color:#dfe9ef;border-radius:8px;min-width:48px;min-height:38px;padding:4px 10px;font:700 .72rem/1.1 'Segoe UI',sans-serif}
+.hudbtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#06222b}
+.hudbtn.teacher{background:var(--purple);border-color:#6b46a8;color:#fff}
+
+/* ---------- BOOK STAGE ---------- */
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;perspective:2200px;padding:64px 12px 56px}
+#book{position:relative;width:min(96vw,1180px);height:min(calc(100vh - 130px),780px);transform-style:preserve-3d}
+#bookcase{position:absolute;inset:0;border-radius:8px 14px 14px 8px;background:#0e2233;box-shadow:0 50px 90px rgba(0,0,0,.65),0 10px 26px rgba(0,0,0,.5);transform:translateZ(-30px)}
+.edges{position:absolute;top:6px;bottom:6px;width:14px;background:repeating-linear-gradient(90deg,#e8e2d2 0 2px,#cfc7b2 2px 3px);border-radius:3px;transition:width .5s}
+#edgesL{left:-6px;border-right:1px solid #b8ae97}
+#edgesR{right:-6px;border-left:1px solid #b8ae97}
+#spreadWrap{position:absolute;inset:0;display:flex;border-radius:6px;overflow:visible}
+.page{position:relative;width:50%;height:100%;background:var(--paper);overflow:hidden;display:flex;flex-direction:column}
+.page.left{border-radius:8px 0 0 8px;box-shadow:inset -22px 0 28px -22px rgba(36,50,63,.45)}
+.page.right{border-radius:0 8px 8px 0;box-shadow:inset 22px 0 28px -22px rgba(36,50,63,.45)}
+#spine3d{position:absolute;left:50%;top:0;bottom:0;width:4px;transform:translateX(-50%);background:linear-gradient(90deg,rgba(0,0,0,.25),rgba(0,0,0,.45),rgba(0,0,0,.25));z-index:3}
+.page-inner{flex:1;overflow:auto;padding:18px 20px 14px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin}
+.pagefoot{flex:none;display:flex;justify-content:space-between;align-items:center;padding:6px 16px 10px;font:700 .66rem/1 'Segoe UI',sans-serif;letter-spacing:.18em;color:#7d8a8f;text-transform:uppercase}
+.page .chapterband{flex:none;background:var(--navy);color:#fff;font:900 .72rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.24em;padding:8px 20px;text-transform:uppercase}
+.page .chapterband em{color:var(--accent);font-style:normal}
+.gatelockcorner{position:absolute;top:8px;right:10px;z-index:5;width:34px;height:34px;border-radius:50%;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,.3)}
+.gatelockcorner.open{background:var(--teal)}
+.gatelockcorner svg{width:18px;height:18px}
+
+/* turning sheet */
+#turnSheet{position:absolute;top:0;bottom:0;right:0;width:50%;z-index:20;transform-origin:left center;transform-style:preserve-3d;pointer-events:none;display:none}
+#turnSheet.show{display:block}
+#turnSheet .ts{position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;background:var(--paper)}
+#turnSheet .ts.front{border-radius:0 8px 8px 0}
+#turnSheet .ts.back{transform:rotateY(180deg);border-radius:8px 0 0 8px}
+#turnSheet .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.0),rgba(0,0,0,.28));opacity:0;pointer-events:none}
+@keyframes turnFwd{0%{transform:rotateY(0)}100%{transform:rotateY(-180deg)}}
+@keyframes turnBack{0%{transform:rotateY(-180deg)}100%{transform:rotateY(0)}}
+#turnSheet.fwd{animation:turnFwd .8s cubic-bezier(.45,.05,.3,1) forwards}
+#turnSheet.back{animation:turnBack .8s cubic-bezier(.45,.05,.3,1) forwards}
+body.reduced #turnSheet{display:none!important}
+
+/* nav arrows */
+.navarrow{position:fixed;top:50%;transform:translateY(-50%);z-index:40;width:54px;height:88px;border:none;border-radius:12px;background:rgba(20,42,62,.8);color:#fff;font-size:1.6rem;display:flex;align-items:center;justify-content:center;transition:background .2s,opacity .2s}
+.navarrow:hover{background:var(--accent)}
+.navarrow[disabled]{opacity:.25;cursor:not-allowed}
+#prevBtn{left:8px}#nextBtn{right:8px}
+.navarrow.locked{background:var(--coral)}
+@keyframes shake{0%,100%{transform:translateY(-50%)}25%{transform:translateY(-50%) translateX(-6px)}75%{transform:translateY(-50%) translateX(6px)}}
+.navarrow.shake{animation:shake .3s 2}
+
+/* ---------- COMIC ART ---------- */
+.panelrow{display:flex;gap:10px}
+.panelrow>.panel{flex:1}
+.panel{position:relative;border:var(--panelborder);border-radius:6px 10px 7px 9px;background:#fff;overflow:hidden;box-shadow:3px 3px 0 rgba(23,50,77,.18)}
+.panel.tall{min-height:200px}
+.panel svg.scene{display:block;width:100%;height:auto}
+.panel3d{transform-style:preserve-3d;transition:transform .25s ease-out;will-change:transform}
+.panel3d [data-depth]{will-change:transform}
+.balloon{position:absolute;max-width:62%;background:#fff;border:3px solid var(--navy);border-radius:14px;padding:8px 12px;font:var(--balloonfont);color:var(--ink);box-shadow:2px 2px 0 rgba(23,50,77,.25);z-index:4}
+.balloon .who{display:block;font:900 .58rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.16em;color:var(--accent);text-transform:uppercase;margin-bottom:3px}
+.balloon::after{content:"";position:absolute;bottom:-14px;left:28px;width:0;height:0;border:9px solid transparent;border-top:14px solid var(--navy)}
+.balloon::before{content:"";position:absolute;bottom:-9px;left:31px;width:0;height:0;border:7px solid transparent;border-top:11px solid #fff;z-index:1}
+.balloon.tail-r::after{left:auto;right:28px}
+.balloon.tail-r::before{left:auto;right:31px}
+.balloon.vex{background:#062e33;border-color:var(--teal);color:#c8f5f1;border-radius:10px;font-family:'Consolas','Courier New',monospace;font-weight:500;box-shadow:0 0 12px rgba(31,166,162,.5)}
+.balloon.vex .who{color:var(--amber)}
+.balloon.vex::after{border-top-color:var(--teal)}
+.balloon.vex::before{border-top-color:#062e33}
+.balloon.thought{border-radius:30px;border-style:dashed}
+.caption{background:#FFF3D8;border:2px solid var(--amber);border-left-width:8px;padding:7px 12px;font:var(--capfont);color:#5a4a22;border-radius:3px}
+.caption.loc{font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-style:normal;font-family:'Segoe UI',sans-serif;font-size:.74rem}
+.sfx{position:absolute;z-index:5;font:900 1.7rem/1 'Arial Black',Arial,sans-serif;color:var(--coral);-webkit-text-stroke:2px var(--navy);text-stroke:2px var(--navy);transform:rotate(-7deg);text-shadow:3px 3px 0 var(--amber);letter-spacing:.04em;pointer-events:none}
+.splashtitle{font:900 clamp(1.5rem,3.2vw,2.4rem)/1 'Arial Black',Arial,sans-serif;text-transform:uppercase;color:var(--navy)}
+.splashtitle em{color:var(--accent);font-style:normal}
+.kicker{font:900 .68rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.3em;color:var(--coral);text-transform:uppercase}
+
+/* ---------- GATES ---------- */
+.gatebox{border:4px solid var(--accent);border-radius:12px;background:linear-gradient(180deg,#ffffff,#eef7f6);box-shadow:0 6px 0 rgba(23,50,77,.15);overflow:hidden}
+.gatebox header{display:flex;align-items:center;gap:10px;background:var(--accent);color:#fff;padding:9px 14px}
+.gatebox header .gicon{width:30px;height:30px;flex:none}
+.gatebox header h3{font:900 .85rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.gatebody{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.gateprompt{font:600 .95rem/1.4 'Segoe UI',sans-serif}
+.gatecheck{align-self:flex-start;background:var(--navy);color:#fff;border:none;border-radius:999px;font:900 .82rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.1em;padding:13px 26px;min-height:48px;box-shadow:0 4px 0 #0c1d30}
+.gatecheck:active{transform:translateY(2px);box-shadow:0 2px 0 #0c1d30}
+.gatefeedback{min-height:1.3em;font:700 .88rem/1.35 'Segoe UI',sans-serif}
+.gatefeedback.bad{color:var(--coral)}
+.gatefeedback.good{color:#0d7a4f}
+.gatehint{background:#FFF3D8;border:2px dashed var(--amber);border-radius:8px;padding:9px 12px;font:600 .86rem/1.4 'Segoe UI',sans-serif;color:#5a4a22}
+.gatesolved{display:flex;align-items:center;gap:10px;background:#e2f4ee;border:3px solid #0d7a4f;border-radius:10px;padding:10px 14px;font:900 .8rem/1.3 'Arial Black',Arial,sans-serif;color:#0d7a4f;letter-spacing:.08em}
+.stamp{display:inline-block;transform:rotate(-6deg);border:3px solid #0d7a4f;border-radius:6px;padding:3px 8px}
+/* gate widgets */
+.tokenbank,.beakers{display:flex;gap:8px;flex-wrap:wrap}
+.token{width:48px;height:48px;border-radius:50%;border:3px solid var(--navy);background:var(--amber);font:900 .7rem/1 'Arial Black',Arial,sans-serif;color:var(--navy);display:flex;align-items:center;justify-content:center;transition:transform .15s,background .2s}
+.token:hover{transform:scale(1.1)}
+.token.inA{background:var(--teal);color:#fff}
+.token.inB{background:#7db8e8;color:var(--navy)}
+.beaker{flex:1;min-width:120px;border:3px solid var(--navy);border-radius:0 0 14px 14px;border-top-style:dashed;padding:8px;min-height:74px;background:rgba(31,166,162,.08)}
+.beaker h4{font:900 .62rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.12em;color:var(--navy);text-transform:uppercase;margin-bottom:6px}
+.beaker .cnt{font:900 1.2rem/1 'Arial Black',Arial,sans-serif;color:var(--accent)}
+.numin{width:96px;min-height:48px;border:3px solid var(--navy);border-radius:8px;font:900 1.05rem/1 'Arial Black',Arial,sans-serif;text-align:center;color:var(--navy);background:#fff;padding:6px}
+.numin:focus{border-color:var(--accent)}
+.numin.ok{border-color:#0d7a4f;background:#e2f4ee}
+.numin.no{border-color:var(--coral);background:#fdebe6}
+.rt-table{border-collapse:collapse;width:100%}
+.rt-table th,.rt-table td{border:2px solid var(--navy);padding:7px 9px;text-align:center;font:700 .92rem/1.2 'Segoe UI',sans-serif}
+.rt-table th{background:var(--navy);color:#fff;font:900 .7rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.08em}
+.rt-table td.given{background:#eef7f6;font-weight:800}
+.choicebtns{display:flex;gap:10px;flex-wrap:wrap}
+.choicebtn{flex:1;min-width:140px;min-height:48px;border:3px solid var(--navy);border-radius:10px;background:#fff;font:700 .9rem/1.3 'Segoe UI',sans-serif;padding:10px 12px;text-align:left;transition:background .15s}
+.choicebtn:hover{background:#eef7f6}
+.choicebtn[aria-pressed="true"]{background:var(--navy);color:#fff}
+.gategrid{touch-action:manipulation}
+.gategrid .gp{cursor:pointer}
+.unlockflash{animation:unlockflash 1s ease-out}
+@keyframes unlockflash{0%{box-shadow:0 0 0 0 rgba(242,193,91,.9)}100%{box-shadow:0 0 0 26px rgba(242,193,91,0)}}
+
+/* ---------- MODALS ---------- */
+.modal{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(5,12,19,.72);padding:16px}
+.modal.open{display:flex}
+.modalcard{background:var(--paper);border-radius:14px;max-width:780px;width:100%;max-height:88vh;overflow:auto;box-shadow:0 30px 70px rgba(0,0,0,.6)}
+.modalcard>header{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;background:var(--navy);color:#fff;padding:12px 18px;z-index:2}
+.modalcard>header h2{font:900 1rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.modalcard .x{background:var(--coral);border:none;color:#fff;border-radius:8px;width:40px;height:40px;font:900 1rem/1 Arial}
+.modalbody{padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.tt{border-collapse:collapse;width:100%}
+.tt th,.tt td{border:2px solid var(--navy);padding:8px 10px;font:600 .85rem/1.35 'Segoe UI',sans-serif;text-align:left;vertical-align:top}
+.tt th{background:var(--navy);color:#fff;font:900 .68rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.tt tr:nth-child(even) td{background:#fff}
+.workedsteps{display:flex;flex-direction:column;gap:8px}
+.workedsteps .st{display:flex;gap:10px;align-items:flex-start;background:#fff;border:2px solid var(--navy);border-radius:8px;padding:9px 12px;font:600 .9rem/1.4 'Segoe UI',sans-serif}
+.workedsteps .st b.n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font:900 .8rem/1 Arial}
+
+/* ---------- END MATTER ---------- */
+.castcard{display:flex;gap:12px;align-items:center;border:3px solid var(--navy);border-radius:10px;background:#fff;padding:8px 12px}
+.castcard svg{width:64px;height:76px;flex:none}
+.castcard h4{font:900 .8rem/1.2 'Arial Black',Arial,sans-serif;color:var(--navy);letter-spacing:.06em}
+.castcard p{font:600 .8rem/1.35 'Segoe UI',sans-serif;color:#4c5a66}
+.journal{border:3px solid var(--amber);background:#FFFDF4;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.journal h4{font:900 .8rem/1.2 'Arial Black',Arial,sans-serif;color:#8a6a1c;letter-spacing:.14em;text-transform:uppercase}
+.journal .jrow{display:flex;gap:10px;align-items:flex-start;font:600 .88rem/1.4 Georgia,serif;color:#4a3d18}
+.journal .jrow b{color:var(--navy)}
+#certificate{border:6px double var(--navy);border-radius:8px;background:#fff;padding:18px;text-align:center;display:flex;flex-direction:column;gap:8px}
+#certificate h3{font:900 1.2rem/1.1 'Arial Black',Arial,sans-serif;color:var(--navy);letter-spacing:.1em}
+#certName{border:none;border-bottom:3px solid var(--navy);font:900 1.3rem/1.2 Georgia,serif;text-align:center;background:transparent;min-height:48px;width:80%;align-self:center;color:var(--ink)}
+.certbadges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.certbadges .badge{filter:none;border-color:var(--amber);background:#fdf6e7}
+.certbadges .badge.locked{filter:grayscale(1) opacity(.35)}
+
+/* ---------- MOBILE ---------- */
+@media (max-width:820px){
+  #book{height:min(calc(100vh - 120px),760px)}
+  #spreadWrap .page{width:100%}
+  #spreadWrap .page.offscreen{display:none}
+  #spine3d,#edgesL{display:none}
+  .navarrow{width:44px;height:72px}
+  .balloon{max-width:78%}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important;transition-duration:.001s!important}
+}
+/* ---------- PRINT ---------- */
+@media print{
+  body{overflow:visible;background:#fff}
+  body *{visibility:hidden}
+  body.print-teacher #teacherModal,body.print-teacher #teacherModal *{visibility:visible}
+  body.print-teacher #teacherModal{position:static;display:block;background:#fff;padding:0}
+  body.print-teacher #teacherModal .modalcard{max-height:none;box-shadow:none}
+  body.print-cert #certificate,body.print-cert #certificate *{visibility:visible}
+  body.print-cert #certificate{position:fixed;inset:5% 8%;background:#fff}
+  .x,.gatecheck{display:none!important}
+}
+/* ===== VOL OVERRIDES — Vol 6 · The Expression Engine (accent amber) ===== */
+:root{--accent:var(--amber)}
+/* contrast fixes: amber surfaces need NAVY text for AA */
+.gatebox header{color:var(--navy)}
+.gatebox header .gicon{color:var(--navy)}
+.hudbtn[aria-pressed="true"]{color:var(--navy)}
+#coverTitle .vol{color:var(--navy)}
+.workedsteps .st b.n{color:var(--navy)}
+.navarrow:hover{color:var(--navy)}
+.balloon .who{color:#8a6a1c}
+.balloon.vex .who{color:var(--amber)}
+.splashtitle em{color:#b78a2e}
+.beaker .cnt{color:#8a6a1c}
+.gatebox{background:linear-gradient(180deg,#ffffff,#fdf6e7)}
+.rt-table td.given{background:#fdf6e7}
+.choicebtn:hover{background:#fdf6e7}
+</style>
+</head>
+<body>
+<!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<pattern id="halftone" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.4" fill="#17324D" opacity=".18"/></pattern>
+<pattern id="halftoneT" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.4" fill="#1FA6A2" opacity=".3"/></pattern>
+<linearGradient id="skygrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd8e8"/><stop offset="1" stop-color="#e8f4ee"/></linearGradient>
+<linearGradient id="duskgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A2580"/><stop offset=".6" stop-color="#E2674A"/><stop offset="1" stop-color="#F2C15B"/></linearGradient>
+<radialGradient id="vexglow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#7CF2EC"/><stop offset=".6" stop-color="#1FA6A2"/><stop offset="1" stop-color="#1FA6A2" stop-opacity="0"/></radialGradient>
+
+<!-- MAYA: teal jacket, black high bun, star pin -->
+<g id="sym-maya"><path d="M22 118 L24 84 Q24 70 50 70 Q76 70 76 84 L78 118 Z" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><path d="M40 73 L50 86 L60 73" fill="#F7F4EC" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="44" r="24" fill="#C68642" stroke="#17324D" stroke-width="4"/><path d="M27 40 Q26 18 50 18 Q74 18 73 40 Q66 26 50 26 Q34 26 27 40Z" fill="#1B1B23" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="13" r="9" fill="#1B1B23" stroke="#17324D" stroke-width="3"/><path d="M62 8 l2.2 4.4 4.8.6-3.5 3.4.9 4.8-4.4-2.3-4.4 2.3.9-4.8-3.5-3.4 4.8-.6z" fill="#F2C15B" stroke="#17324D" stroke-width="1.5"/><circle cx="42" cy="44" r="2.6" fill="#17324D"/><circle cx="58" cy="44" r="2.6" fill="#17324D"/><path d="M37 37 q5 -3 9 -1 M54 36 q5 -2 9 1" fill="none" stroke="#17324D" stroke-width="2.4" stroke-linecap="round"/><path d="M44 55 q6 5 12 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- THEO: navy hoodie, flat-top, amber glasses -->
+<g id="sym-theo"><path d="M22 118 L24 86 Q24 72 50 72 Q76 72 76 86 L78 118 Z" fill="#17324D" stroke="#17324D" stroke-width="4"/><path d="M36 72 Q50 80 64 72 L64 80 Q50 88 36 80Z" fill="#0d2238" stroke="#17324D" stroke-width="2"/><circle cx="50" cy="45" r="24" fill="#6B4226" stroke="#17324D" stroke-width="4"/><path d="M27 38 Q27 16 50 16 Q73 16 73 38 L70 30 L30 30 Z" fill="#10101a" stroke="#17324D" stroke-width="3"/><rect x="33" y="38" width="14" height="11" rx="3" fill="#fff" stroke="#F2C15B" stroke-width="3"/><rect x="53" y="38" width="14" height="11" rx="3" fill="#fff" stroke="#F2C15B" stroke-width="3"/><line x1="47" y1="43" x2="53" y2="43" stroke="#F2C15B" stroke-width="3"/><circle cx="40" cy="44" r="2.4" fill="#17324D"/><circle cx="60" cy="44" r="2.4" fill="#17324D"/><path d="M43 57 q7 3 14 -1" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- ZARA: coral overalls, side ponytail -->
+<g id="sym-zara"><path d="M22 118 L24 88 Q24 74 50 74 Q76 74 76 88 L78 118 Z" fill="#fff" stroke="#17324D" stroke-width="4"/><path d="M30 78 L34 118 L44 118 L42 80 M70 78 L66 118 L56 118 L58 80" fill="#E2674A" stroke="#17324D" stroke-width="3"/><rect x="40" y="92" width="20" height="16" rx="3" fill="#E2674A" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="46" r="24" fill="#F1C27D" stroke="#17324D" stroke-width="4"/><path d="M27 44 Q24 20 50 19 Q76 20 74 38 Q70 28 52 27 Q34 27 32 44 Z" fill="#E2674A" stroke="#17324D" stroke-width="3"/><path d="M71 30 Q88 36 84 58 Q80 70 72 72 Q78 58 72 46Z" fill="#E2674A" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="46" r="2.6" fill="#17324D"/><circle cx="58" cy="46" r="2.6" fill="#17324D"/><path d="M42 57 q8 6 16 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/><circle cx="36" cy="53" r="3" fill="#E2674A" opacity=".5"/><circle cx="64" cy="53" r="3" fill="#E2674A" opacity=".5"/></g>
+<!-- DEV: purple tee, headphones -->
+<g id="sym-dev"><path d="M22 118 L24 88 Q24 74 50 74 Q76 74 76 88 L78 118 Z" fill="#4A2580" stroke="#17324D" stroke-width="4"/><path d="M43 92 l7 -6 7 6 -7 6z" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="50" cy="46" r="24" fill="#8D5524" stroke="#17324D" stroke-width="4"/><path d="M28 40 Q26 18 50 17 Q74 18 72 40 L66 28 L60 34 L52 26 L44 34 L36 27 Z" fill="#171722" stroke="#17324D" stroke-width="3"/><path d="M24 64 Q20 50 26 42 M76 64 Q80 50 74 42" fill="none" stroke="#4A2580" stroke-width="6" stroke-linecap="round"/><circle cx="25" cy="64" r="7" fill="#4A2580" stroke="#17324D" stroke-width="3"/><circle cx="75" cy="64" r="7" fill="#4A2580" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="46" r="2.6" fill="#17324D"/><circle cx="58" cy="46" r="2.6" fill="#17324D"/><path d="M43 57 q7 5 14 1" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- VEX: glowing orb AI -->
+<g id="sym-vex"><circle cx="50" cy="50" r="38" fill="url(#vexglow)" opacity=".55"/><polygon points="50,22 73,36 73,64 50,78 27,64 27,36" fill="#0b3a40" stroke="#1FA6A2" stroke-width="3.5"/><polygon points="50,30 66,40 66,60 50,70 34,60 34,40" fill="none" stroke="#7CF2EC" stroke-width="1.6" opacity=".8"/><circle cx="50" cy="50" r="10" fill="#F2C15B"/><circle cx="50" cy="50" r="4.5" fill="#17324D"/><circle cx="50" cy="14" r="3" fill="#F2C15B"/><circle cx="78" cy="70" r="2.4" fill="#7CF2EC"/><circle cx="22" cy="72" r="2" fill="#7CF2EC"/></g>
+<!-- props -->
+<g id="sym-bike"><circle cx="22" cy="46" r="14" fill="none" stroke="#17324D" stroke-width="4"/><circle cx="74" cy="46" r="14" fill="none" stroke="#17324D" stroke-width="4"/><path d="M22 46 L40 22 L62 22 L74 46 M40 22 L48 46 L22 46 M48 46 L62 22 M36 16 L46 16 M62 22 L58 14 L66 14" fill="none" stroke="#E2674A" stroke-width="4" stroke-linecap="round"/></g>
+<g id="sym-skyline"><rect x="0" y="34" width="14" height="46" fill="#17324D"/><rect x="16" y="20" width="18" height="60" fill="#22456a"/><rect x="36" y="42" width="12" height="38" fill="#17324D"/><rect x="50" y="10" width="20" height="70" fill="#2c567f"/><polygon points="60,0 50,12 70,12" fill="#1FA6A2"/><rect x="72" y="30" width="14" height="50" fill="#17324D"/><rect x="88" y="46" width="12" height="34" fill="#22456a"/><g fill="#F2C15B" opacity=".9"><rect x="20" y="26" width="3" height="4"/><rect x="27" y="36" width="3" height="4"/><rect x="54" y="18" width="3" height="4"/><rect x="61" y="30" width="3" height="4"/><rect x="54" y="44" width="3" height="4"/><rect x="75" y="36" width="3" height="4"/></g></g>
+<g id="sym-trophy"><path d="M30 14 H70 V34 Q70 52 50 56 Q30 52 30 34 Z" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><path d="M30 20 H16 Q16 38 32 40 M70 20 H84 Q84 38 68 40" fill="none" stroke="#F2C15B" stroke-width="6"/><rect x="44" y="56" width="12" height="12" fill="#b78a2e" stroke="#17324D" stroke-width="3"/><rect x="34" y="68" width="32" height="10" rx="2" fill="#17324D"/></g>
+<!-- badge sigils -->
+<g id="sig-flask"><path d="M40 15 h20 v18 l16 30 a8 8 0 0 1 -7 12 H31 a8 8 0 0 1 -7 -12 l16 -30 z" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><path d="M33 52 h34 l6 11 a4 4 0 0 1 -4 6 H31 a4 4 0 0 1 -4 -6 z" fill="#F2C15B"/></g>
+<g id="sig-watch"><circle cx="50" cy="55" r="28" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><path d="M50 55 L50 36 M50 55 L64 60" stroke="#17324D" stroke-width="4" stroke-linecap="round"/><rect x="42" y="12" width="16" height="8" rx="2" fill="#17324D"/><line x1="50" y1="20" x2="50" y2="27" stroke="#17324D" stroke-width="4"/></g>
+<g id="sig-table"><rect x="18" y="22" width="64" height="56" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><line x1="18" y1="40" x2="82" y2="40" stroke="#17324D" stroke-width="4"/><line x1="50" y1="22" x2="50" y2="78" stroke="#17324D" stroke-width="4"/><rect x="18" y="22" width="64" height="18" fill="#1FA6A2" opacity=".5"/></g>
+<g id="sig-graph"><rect x="16" y="16" width="68" height="68" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><path d="M24 76 L76 30" stroke="#1FA6A2" stroke-width="5" stroke-linecap="round"/><circle cx="38" cy="64" r="5" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="56" cy="48" r="5" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="68" cy="58" r="5" fill="#E2674A" stroke="#17324D" stroke-width="2"/></g>
+<g id="sig-swap"><path d="M24 38 H64 l-10 -12 M76 62 H36 l10 12" fill="none" stroke="#1FA6A2" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="sig-boss"><path d="M50 10 l11 22 24 4 -17 17 4 24 -22 -11 -22 11 4 -24 -17 -17 24 -4 z" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="52" r="9" fill="#E2674A" stroke="#17324D" stroke-width="3"/></g>
+<g id="sig-lock"><rect x="28" y="44" width="44" height="36" rx="6" fill="currentColor"/><path d="M36 44 v-8 a14 14 0 0 1 28 0 v8" fill="none" stroke="currentColor" stroke-width="8"/></g>
+<g id="sig-open"><rect x="28" y="44" width="44" height="36" rx="6" fill="currentColor"/><path d="M36 44 v-8 a14 14 0 0 1 28 0" fill="none" stroke="currentColor" stroke-width="8"/></g>
+<!-- ===== VOL 6 ADDITIONS: vault, cipher tiles, badge sigils ===== -->
+<g id="sym-vault"><circle cx="50" cy="50" r="44" fill="#22456a" stroke="#17324D" stroke-width="5"/><circle cx="50" cy="50" r="33" fill="#17324D" stroke="#F2C15B" stroke-width="3"/><circle cx="50" cy="50" r="12" fill="#0d1f33" stroke="#F2C15B" stroke-width="3"/><g stroke="#F2C15B" stroke-width="4" stroke-linecap="round"><line x1="50" y1="38" x2="50" y2="22"/><line x1="50" y1="62" x2="50" y2="78"/><line x1="38" y1="50" x2="22" y2="50"/><line x1="62" y1="50" x2="78" y2="50"/></g><g fill="#7CF2EC" font-family="Consolas,monospace" font-weight="700" font-size="10"><text x="32" y="32">3n</text><text x="58" y="32">+5</text><text x="30" y="76">x²</text><text x="58" y="76">12</text></g></g>
+<g id="sym-ctile"><rect x="14" y="14" width="72" height="72" rx="10" fill="#FFF3D8" stroke="#17324D" stroke-width="5"/><rect x="22" y="22" width="56" height="56" rx="6" fill="none" stroke="#F2C15B" stroke-width="3"/></g>
+<g id="sym-glyphsign"><rect x="10" y="22" width="80" height="44" rx="6" fill="#fff" stroke="#17324D" stroke-width="4"/><rect x="44" y="66" width="12" height="22" fill="#17324D"/><g font-family="Consolas,monospace" font-weight="700" font-size="14" fill="#4A2580"><text x="18" y="40">⌁§∆!?</text><text x="18" y="58">¤∇⌁⌁§</text></g></g>
+<g id="sig-vbar"><rect x="14" y="34" width="72" height="32" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><rect x="14" y="34" width="54" height="32" fill="#F2C15B" opacity=".85"/><line x1="32" y1="34" x2="32" y2="66" stroke="#17324D" stroke-width="3"/><line x1="50" y1="34" x2="50" y2="66" stroke="#17324D" stroke-width="3"/><line x1="68" y1="34" x2="68" y2="66" stroke="#17324D" stroke-width="3"/><path d="M14 24 H32" stroke="#E2674A" stroke-width="5" stroke-linecap="round"/></g>
+<g id="sig-pow"><text x="34" y="64" font-family="Arial Black,Arial" font-weight="900" font-size="44" fill="#17324D" text-anchor="middle">3</text><text x="62" y="40" font-family="Arial Black,Arial" font-weight="900" font-size="26" fill="#E2674A" text-anchor="middle">4</text><path d="M22 76 q28 14 56 0" fill="none" stroke="#F2C15B" stroke-width="6" stroke-linecap="round"/></g>
+<g id="sig-tile"><rect x="14" y="30" width="32" height="32" rx="5" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><rect x="54" y="30" width="32" height="32" rx="5" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><text x="30" y="52" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="16" fill="#17324D">3n</text><text x="70" y="52" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="16" fill="#fff">+5</text><rect x="34" y="64" width="32" height="22" rx="5" fill="#fff" stroke="#17324D" stroke-width="3"/></g>
+<g id="sig-eq"><path d="M26 36 H74 M26 50 H74 M26 64 H74" stroke="#17324D" stroke-width="8" stroke-linecap="round"/><circle cx="50" cy="50" r="40" fill="none" stroke="#F2C15B" stroke-width="6"/></g>
+<g id="sig-gear"><circle cx="40" cy="44" r="16" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><circle cx="40" cy="44" r="5" fill="#17324D"/><g stroke="#17324D" stroke-width="6" stroke-linecap="round"><line x1="40" y1="20" x2="40" y2="28"/><line x1="40" y1="60" x2="40" y2="68"/><line x1="16" y1="44" x2="24" y2="44"/><line x1="56" y1="44" x2="64" y2="44"/></g><circle cx="68" cy="68" r="12" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><circle cx="68" cy="68" r="4" fill="#17324D"/></g>
+<g id="sig-key"><circle cx="32" cy="38" r="18" fill="none" stroke="#F2C15B" stroke-width="8"/><path d="M44 50 L78 84 M66 72 l10 -10 M58 64 l8 -8" stroke="#F2C15B" stroke-width="8" stroke-linecap="round"/><circle cx="32" cy="38" r="6" fill="#E2674A"/></g>
+<g id="sym-glitch"><path d="M30 78 Q18 70 24 56 Q12 52 22 40 Q14 28 30 28 Q32 14 46 22 Q56 10 64 24 Q80 18 76 36 Q90 42 80 54 Q88 66 72 70 Q74 84 58 78 Q48 90 38 78 Z" fill="#4A2580" stroke="#17324D" stroke-width="3" opacity=".92"/><g stroke="#E2674A" stroke-width="2.5" stroke-linecap="round"><path d="M28 44 l10 -5 M62 39 l10 5"/></g><circle cx="40" cy="50" r="4.2" fill="#F2C15B"/><circle cx="62" cy="50" r="4.2" fill="#F2C15B"/><circle cx="40" cy="50" r="1.7" fill="#17324D"/><circle cx="62" cy="50" r="1.7" fill="#17324D"/><path d="M42 64 q9 6 18 -2" fill="none" stroke="#F2C15B" stroke-width="2.5" stroke-linecap="round"/><g font-family="Consolas,monospace" font-weight="700" font-size="9" fill="#7CF2EC"><text x="30" y="22">3⁴=12?</text></g><g stroke="#7CF2EC" stroke-width="1.5" opacity=".7" stroke-linecap="round"><line x1="18" y1="60" x2="8" y2="64"/><line x1="84" y1="58" x2="94" y2="62"/><line x1="50" y1="10" x2="50" y2="3"/></g></g>
+<g id="sym-gear"><circle cx="50" cy="50" r="26" fill="#F2C15B" stroke="#17324D" stroke-width="5"/><circle cx="50" cy="50" r="9" fill="#0d1f33" stroke="#17324D" stroke-width="3"/><g stroke="#17324D" stroke-width="9" stroke-linecap="round"><line x1="50" y1="14" x2="50" y2="22"/><line x1="50" y1="78" x2="50" y2="86"/><line x1="14" y1="50" x2="22" y2="50"/><line x1="78" y1="50" x2="86" y2="50"/><line x1="25" y1="25" x2="31" y2="31"/><line x1="75" y1="25" x2="69" y2="31"/><line x1="25" y1="75" x2="31" y2="69"/><line x1="75" y1="75" x2="69" y2="69"/></g></g>
+</defs>
+</svg>
+
+<!-- ============ COVER ============ -->
+<div id="cover">
+  <div id="coverCard" role="img" aria-label="Cover of Axiom City Volume 6: The Expression Engine. Deep under the library, four kids and a glowing orb face a giant round vault door covered in glowing algebraic expression glyphs.">
+    <div class="cov-layer" data-depth="6" style="z-index:1">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><rect width="500" height="700" fill="#0d1f33"/><rect width="500" height="700" fill="url(#halftone)"/><circle cx="250" cy="330" r="240" fill="#F2C15B" opacity=".10"/><circle cx="250" cy="330" r="160" fill="#F2C15B" opacity=".12"/></svg>
+    </div>
+    <div class="cov-layer" data-depth="12" style="z-index:2">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+        <g transform="translate(60,140) scale(3.8)" opacity=".95"><use href="#sym-vault"/></g>
+        <g font-family="Consolas,monospace" font-weight="700" fill="#F2C15B" opacity=".9"><text x="60" y="120" font-size="24">2(x+4)</text><text x="350" y="150" font-size="22">3⁴</text><text x="40" y="560" font-size="22">12(2a+3)</text><text x="360" y="540" font-size="24">3n+5</text><text x="395" y="240" font-size="20">¾÷3</text><text x="48" y="250" font-size="20">x+x+x</text></g>
+        <rect y="640" width="500" height="60" fill="#17324D"/>
+      </svg>
+    </div>
+    <div class="cov-layer" data-depth="22" style="z-index:3">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+        <rect x="0" y="586" width="500" height="60" fill="#06121f"/>
+        <g transform="translate(58,470) scale(.95)"><use href="#sym-maya"/></g>
+        <g transform="translate(158,486) scale(.88)"><use href="#sym-theo"/></g>
+        <g transform="translate(252,486) scale(.88)"><use href="#sym-zara"/></g>
+        <g transform="translate(346,470) scale(.95)"><use href="#sym-dev"/></g>
+        <g transform="translate(212,372) scale(.85)"><use href="#sym-vex"/></g>
+        <g stroke="#7CF2EC" stroke-width="3" opacity=".6" stroke-linecap="round"><line x1="240" y1="450" x2="225" y2="475"/><line x1="262" y1="450" x2="277" y2="475"/></g>
+      </svg>
+    </div>
+    <div class="spine"><span>AXIOM CITY · EDUWONDERLAB</span></div>
+    <div id="coverTitle">
+      <div class="series">AXIOM CITY</div>
+      <h1>THE EXPRESSION<br><em>ENGINE</em></h1>
+      <span class="vol">VOL. 6 · EXPRESSIONS</span>
+    </div>
+    <div id="coverBottom"><span>AN INTERACTIVE<br>GRAPHIC NOVEL</span><span>GRADE 6 · UNIT 6<br>EDUWONDERLAB</span></div>
+  </div>
+  <div id="coverActions">
+      <button class="bigbtn" id="startBtn">START READING</button>
+      <button class="bigbtn alt" id="resumeBtn" hidden>RESUME</button>
+  </div>
+</div>
+
+<!-- ============ HUD ============ -->
+<header id="hud" hidden>
+  <div class="brand">AXIOM CITY<small>VOL 6 · THE EXPRESSION ENGINE</small></div>
+  <div id="progress" aria-label="Reading progress"></div>
+  <div id="badges" aria-label="Badges earned"></div>
+  <div class="hudbtns">
+    <button class="hudbtn" id="sndBtn" aria-pressed="false" title="Sound effects">🔇 Sound</button>
+    <button class="hudbtn" id="motBtn" aria-pressed="true" title="3D motion effects">3D On</button>
+    <button class="hudbtn" id="txtBtn" aria-pressed="false" title="Larger text">A+</button>
+    <button class="hudbtn" id="hcBtn" aria-pressed="false" title="High contrast">HC</button>
+    <button class="hudbtn teacher" id="teacherBtn">Teacher</button>
+  </div>
+</header>
+
+<!-- ============ BOOK ============ -->
+<main id="stage" hidden>
+  <div id="book">
+    <div id="bookcase"></div>
+    <div class="edges" id="edgesL"></div>
+    <div class="edges" id="edgesR"></div>
+    <div id="spreadWrap">
+      <section class="page left" id="pageL" aria-live="polite"></section>
+      <section class="page right" id="pageR" aria-live="polite"></section>
+    </div>
+    <div id="spine3d"></div>
+    <div id="turnSheet" aria-hidden="true"><div class="ts front"></div><div class="ts back"></div><div class="shade"></div></div>
+  </div>
+</main>
+<button class="navarrow" id="prevBtn" aria-label="Previous page" hidden>‹</button>
+<button class="navarrow" id="nextBtn" aria-label="Next page" hidden>›</button>
+<div class="sr-only" role="status" aria-live="polite" id="live"></div>
+
+<!-- ============ MODALS ============ -->
+<div class="modal" id="teacherModal" role="dialog" aria-modal="true" aria-labelledby="tmTitle">
+  <div class="modalcard">
+    <header><h2 id="tmTitle">Teacher Guide — Vol. 6</h2><div><button class="hudbtn" id="printTeacher">Print</button> <button class="x" data-close aria-label="Close">✕</button></div></header>
+    <div class="modalbody" id="teacherBody"></div>
+  </div>
+</div>
+<div class="modal" id="workedModal" role="dialog" aria-modal="true" aria-labelledby="wmTitle">
+  <div class="modalcard">
+    <header><h2 id="wmTitle">VEX · Worked Example</h2></header>
+    <div class="modalbody" id="workedBody"></div>
+  </div>
+</div>
+<script>
+/* ================================================================
+   ===== CONTENT START (per-volume: swap everything in here) =====
+   ================================================================ */
+const VOLUME = {
+  num: 6, slug: "v6", title: "The Expression Engine", unit: "Unit 6 · Expressions",
+  accent: "#F2C15B",
+  nextTeaser: "VOL. 7 — BELOW ZERO"
+};
+
+const BADGES = [
+  {id:"g1", icon:"#sig-vbar",  label:"Ration Keeper — Fraction Division"},
+  {id:"g2", icon:"#sig-pow",   label:"Power Holder — Exponents"},
+  {id:"g3", icon:"#sig-tile",  label:"Sign Smith — Build Expressions"},
+  {id:"g4", icon:"#sig-eq",    label:"Twin Spotter — Equivalence"},
+  {id:"g5", icon:"#sig-gear",  label:"Gear Aligner — GCF & LCM"},
+  {id:"boss",icon:"#sig-key",  label:"Key Forger — Boss Gate"}
+];
+
+/* tiny scene helpers (content-side, fine to reuse) */
+const SC = (vb,inner,depth)=>`<svg class="scene" viewBox="${vb}" role="img" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
+const SKY='<rect width="400" height="200" fill="url(#skygrad)"/>';
+const GROUND='<rect y="168" width="400" height="32" fill="#cdc6ad"/><rect y="168" width="400" height="32" fill="url(#halftone)"/>';
+
+const PAGES = [
+/* ---- p1: title page + crew strip ---- */
+{ ch:"Axiom City · Volume Six", html:`
+  <div style="text-align:center;margin-top:10px"><div class="kicker">EduWonderLab Presents</div>
+  <h2 class="splashtitle" style="margin:8px 0">THE EXPRESSION <em>ENGINE</em></h2>
+  <div class="caption" style="display:inline-block">An expressions adventure in five chapters — featuring six reader gates. Solve the math to move the story.</div></div>
+  <div class="panel panel3d tall" style="margin-top:8px">${SC("0 0 400 210",`
+    <rect width="400" height="210" fill="#10243a"/><g data-depth="8" transform="translate(150,10) scale(1)" opacity=".9"><use href="#sym-vault"/></g>
+    <g data-depth="16" transform="translate(20,86) scale(1)"><use href="#sym-maya"/></g>
+    <g data-depth="16" transform="translate(115,86)"><use href="#sym-theo"/></g>
+    <g data-depth="16" transform="translate(210,86)"><use href="#sym-zara"/></g>
+    <g data-depth="16" transform="translate(305,86)"><use href="#sym-dev"/></g>
+    <g data-depth="26" transform="translate(50,4) scale(.55)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:6px;left:8px;max-width:46%"><span class="who">VEX</span>Distortion detected. It is rewriting the city's signs. Reader: stand by.</div>
+  </div>
+  <div class="caption loc">Previously, in Volume Five: the crew's blueprints rebuilt the Brightside community lot — skate ramp, garden beds, stage and all. The mayor still has Zara's sketch framed. Then the new street signs started speaking… nonsense.</div>`},
+
+/* ---- p2: ch1 splash ---- */
+{ ch:"Chapter 1 · The Scribbled Signs", html:`
+  <div class="kicker">Chapter One</div><h2 class="splashtitle">THE SCRIBBLED <em>SIGNS</em></h2>
+  <div class="panel panel3d tall">${SC("0 0 400 230",`
+    ${SKY}<g data-depth="6" transform="translate(0,60) scale(4,1.7)" opacity=".6"><use href="#sym-skyline"/></g>
+    <g data-depth="14" transform="translate(40,96) scale(1.2)"><use href="#sym-glyphsign"/></g>
+    <g data-depth="14" transform="translate(250,100) scale(1.1)"><use href="#sym-glyphsign"/></g>
+    <g data-depth="18" transform="translate(150,96) scale(.85)"><use href="#sym-dev"/></g>
+    <g data-depth="22" transform="translate(210,30) scale(.5)"><use href="#sym-vex"/></g>
+    ${GROUND}`)}
+    <div class="sfx" style="top:8px;left:14px">ZZRRT!</div>
+    <div class="balloon" style="bottom:16px;left:10px;max-width:52%"><span class="who">DEV</span>Library Lane now says <b>"⌁§∆!?"</b>. The bakery sign says it too. EVERY sign says it.</div>
+    <div class="balloon vex tail-r" style="top:60px;right:8px;max-width:42%"><span class="who">VEX</span>Distortion source: below the library. Something is rewriting the city's symbols.</div>
+  </div>
+  <div class="panelrow"><div class="panel">${SC("0 0 200 120",`<rect width="200" height="120" fill="#fdf2ee"/><g transform="translate(60,8) scale(.85)"><use href="#sym-maya"/></g>`)}
+    <div class="balloon" style="top:6px;left:6px;max-width:70%"><span class="who">MAYA</span>Ms. Ortiz says Ada Vex built a <b>cipher vault</b> under the library. The sign machine lives inside it.</div></div>
+  <div class="panel">${SC("0 0 200 120",`<rect width="200" height="120" fill="#eef7f6"/><g transform="translate(64,14) scale(.85)"><use href="#sym-dev"/></g>`)}
+    <div class="balloon" style="bottom:6px;left:6px;max-width:80%"><span class="who">DEV</span>A vault full of locks and puzzles? Crew… I have trained for this my whole life. Follow me.</div></div></div>`},
+
+/* ---- p3: ch1 descent + lantern setup ---- */
+{ ch:"Chapter 1 · The Scribbled Signs", html:`
+  <div class="caption loc">Under Vexhall Library. A stone stairwell. Very dark. Very deep.</div>
+  <div class="panel panel3d tall">${SC("0 0 400 200",`
+    <rect width="400" height="200" fill="#0d1f33"/><rect width="400" height="200" fill="url(#halftone)"/>
+    <polygon data-depth="6" points="60,0 340,0 300,200 100,200" fill="#17324D"/>
+    <g data-depth="12" transform="translate(40,60) scale(.8)"><use href="#sym-zara"/></g>
+    <g data-depth="12" transform="translate(130,70) scale(.8)"><use href="#sym-dev"/></g>
+    <g data-depth="12" transform="translate(220,60) scale(.8)"><use href="#sym-theo"/></g>
+    <g data-depth="20" transform="translate(310,16) scale(.5)"><use href="#sym-vex"/></g>
+    <g data-depth="16" fill="#F2C15B" stroke="#17324D" stroke-width="2"><rect x="318" y="120" width="26" height="34" rx="4"/><rect x="350" y="120" width="26" height="34" rx="4"/><circle cx="331" cy="130" r="5" fill="#FFF3D8"/><circle cx="363" cy="130" r="5" fill="#FFF3D8"/></g>
+    <text data-depth="16" x="346" y="174" text-anchor="middle" font-family="Arial" font-weight="800" font-size="10" fill="#F2C15B">GLOW-INK · 2 JARS</text>`)}
+    <div class="balloon" style="top:8px;left:8px;max-width:50%"><span class="who">ZARA</span>Ms. Ortiz left us two jars of glow-ink. Each stair lantern drinks exactly <b>one third</b> of a jar.</div>
+    <div class="balloon tail-r" style="bottom:12px;right:8px;max-width:46%"><span class="who">THEO</span>So the question is 2 ÷ 1/3. How many third-size servings live inside two whole jars?</div>
+  </div>
+  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#eef7f6"/><g transform="translate(318,2) scale(.62)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>The answer to a division is called the <b>quotient</b>. Draw a bar for each jar, slice each bar into thirds, count the pieces. Models do not lie.</div>
+  </div>
+  <div class="caption">Dividing by a fraction asks "how many of that piece fit inside?" A bar model makes the pieces visible — slice, then count.</div>`},
+
+/* ---- p4: GATE 1 ---- */
+{ ch:"Chapter 1 · Reader Gate", gate:"g1", html:`
+  <div class="panel">${SC("0 0 400 90",`<rect width="400" height="90" fill="#0d1f33"/><g transform="translate(8,2) scale(.7)"><use href="#sym-dev"/></g>`)}
+    <div class="balloon" style="top:6px;left:84px;max-width:60%"><span class="who">DEV</span>Reader — you're our fifth crew member. Light the stairwell!</div>
+  </div>`},
+
+/* ---- p5: ch2 splash — power cells + glitch appears ---- */
+{ ch:"Chapter 2 · Power Cells", html:`
+  <div class="kicker">Chapter Two</div><h2 class="splashtitle">POWER <em>CELLS</em></h2>
+  <div class="panel panel3d tall">${SC("0 0 400 220",`
+    <rect width="400" height="220" fill="#10243a"/><rect width="400" height="220" fill="url(#halftone)"/>
+    <g data-depth="8" fill="#1FA6A2" opacity=".25"><rect x="30" y="40" width="60" height="140" rx="6"/><rect x="310" y="40" width="60" height="140" rx="6"/></g>
+    <g data-depth="14" transform="translate(150,20) scale(1.05)"><use href="#sym-glitch"/></g>
+    <g data-depth="18" transform="translate(40,96) scale(.85)"><use href="#sym-theo"/></g>
+    <g data-depth="18" transform="translate(290,96) scale(.85)"><use href="#sym-dev"/></g>
+    <rect data-depth="10" x="120" y="150" width="160" height="48" rx="8" fill="#06222b" stroke="#1FA6A2" stroke-width="2.5"/>
+    <text data-depth="10" x="200" y="170" text-anchor="middle" font-family="Consolas,monospace" font-size="11" fill="#7CF2EC">CELL A: 3⁴ crystals</text>
+    <text data-depth="10" x="200" y="188" text-anchor="middle" font-family="Consolas,monospace" font-size="11" fill="#7CF2EC">CELL B: 2⁵ crystals</text>`)}
+    <div class="sfx" style="top:6px;right:14px">SKRITCH!</div>
+    <div class="balloon" style="top:8px;left:8px;max-width:46%"><span class="who">THEO</span>There it is — a scribble made of broken equations. It just wrote "3⁴ = 12" on the wall.</div>
+    <div class="balloon tail-r" style="bottom:10px;right:8px;max-width:44%"><span class="who">DEV</span>Boss fight, level one. It guards the power cells. Wrong totals keep the lights dead.</div>
+  </div>
+  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#eef7f6"/><g transform="translate(318,2) scale(.62)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>3⁴ is a <b>power</b>: base 3, <b>exponent</b> 4. The exponent counts how many times the base is multiplied — never base times exponent. The glitch wants you to add or shortcut.</div>
+  </div>
+  <div class="caption">An exponent is repeated multiplication: 5² = 5 × 5, not 5 × 2. Say it "three to the fourth power."</div>`},
+
+/* ---- p6: GATE 2 ---- */
+{ ch:"Chapter 2 · Reader Gate", gate:"g2", html:`
+  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#10243a"/><g transform="translate(10,0) scale(.66)"><use href="#sym-theo"/></g>`)}
+    <div class="balloon" style="top:6px;left:80px;max-width:66%"><span class="who">THEO</span>Charge both cells, reader. Real totals only — no glitch math.</div>
+  </div>`},
+
+/* ---- p7: ch3 — say it with symbols ---- */
+{ ch:"Chapter 3 · Say It With Symbols", html:`
+  <div class="kicker">Chapter Three</div><h2 class="splashtitle">SAY IT WITH <em>SYMBOLS</em></h2>
+  <div class="caption loc">The sign-press room. A brass machine the size of a bus, fed by letter tiles.</div>
+  <div class="panel panel3d tall">${SC("0 0 400 200",`
+    <rect width="400" height="200" fill="#1a1030"/><rect width="400" height="200" fill="url(#halftone)"/>
+    <rect data-depth="8" x="60" y="30" width="280" height="90" rx="10" fill="#22456a" stroke="#F2C15B" stroke-width="3"/>
+    <text data-depth="8" x="200" y="62" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="13" fill="#FFF3D8">"5 more than 3 times the mystery number n"</text>
+    <text data-depth="8" x="200" y="86" text-anchor="middle" font-family="Consolas,monospace" font-size="12" fill="#7CF2EC">— Ada Vex's journal, page 112</text>
+    <g data-depth="16" transform="translate(30,84) scale(.85)"><use href="#sym-maya"/></g>
+    <g data-depth="16" transform="translate(296,84) scale(.85)"><use href="#sym-dev"/></g>
+    <g data-depth="20" transform="translate(180,128) scale(.9)"><use href="#sym-ctile"/></g>`)}
+    <div class="balloon" style="bottom:12px;left:8px;max-width:50%"><span class="who">MAYA</span>The press only prints when we feed it Ada's sentence — written in <b>symbols</b>, not words.</div>
+    <div class="balloon tail-r" style="top:8px;right:8px;max-width:44%"><span class="who">DEV</span>Word-to-code translation. The letter <b>n</b> is the <b>variable</b> — the mystery number's costume.</div>
+  </div>
+  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#eef7f6"/><g transform="translate(318,2) scale(.62)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:8px;left:10px;max-width:74%"><span class="who">VEX</span>In a term like 7y, the 7 is the <b>coefficient</b> — the number multiplying the variable. Translate the words, then test your expression by feeding it a value.</div>
+  </div>
+  <div class="caption">An algebraic expression is math with at least one variable. "Times" becomes a coefficient; "more than" becomes addition.</div>`},
+
+/* ---- p8: GATE 3 ---- */
+{ ch:"Chapter 3 · Reader Gate", gate:"g3", html:`
+  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#1a1030"/><g transform="translate(8,0) scale(.66)"><use href="#sym-dev"/></g>`)}
+    <div class="balloon" style="top:6px;left:80px;max-width:68%"><span class="who">DEV</span>Your turn, reader. Build Ada's expression — then run it.</div>
+  </div>`},
+
+/* ---- p9: ch4 — the twin door ---- */
+{ ch:"Chapter 4 · The Twin Door", html:`
+  <div class="kicker">Chapter Four</div><h2 class="splashtitle">THE TWIN <em>DOOR</em></h2>
+  <div class="panel panel3d tall">${SC("0 0 400 210",`
+    <rect width="400" height="210" fill="#0d1f33"/><rect width="400" height="210" fill="url(#halftone)"/>
+    <rect data-depth="8" x="130" y="20" width="140" height="180" rx="8" fill="#17324D" stroke="#F2C15B" stroke-width="4"/>
+    <line data-depth="8" x1="200" y1="20" x2="200" y2="200" stroke="#F2C15B" stroke-width="3" stroke-dasharray="8 6"/>
+    <g data-depth="8" font-family="Consolas,monospace" font-weight="700" font-size="12" fill="#7CF2EC"><text x="142" y="70">3(x+4)</text><text x="212" y="70">3x+12</text><text x="148" y="130">x+x</text><text x="222" y="130">x²</text></g>
+    <g data-depth="16" transform="translate(20,86) scale(.85)"><use href="#sym-zara"/></g>
+    <g data-depth="16" transform="translate(300,86) scale(.85)"><use href="#sym-dev"/></g>
+    <g data-depth="14" transform="translate(50,8) scale(.7)"><use href="#sym-glitch"/></g>`)}
+    <div class="balloon" style="top:8px;right:8px;max-width:46%" ><span class="who">DEV</span>Twin door rule: each pair only powers up if both sides are <b>equivalent expressions</b> — same value for EVERY x.</div>
+    <div class="balloon tail-r" style="bottom:10px;left:8px;max-width:48%"><span class="who">ZARA</span>x + x is two sticks taped together — that's 2x. A square of sticks is x·x. Totally different builds.</div>
+  </div>
+  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#eef7f6"/><g transform="translate(318,2) scale(.62)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:8px;left:10px;max-width:74%"><span class="who">VEX</span>Two tests, crew: distribute and combine like terms — or substitute a number into both sides. Equivalent expressions match every single time. The glitch only needs you wrong once.</div>
+  </div>
+  <div class="caption">Equivalent expressions name the same value for every value of the variable. One mismatch = not equivalent.</div>`},
+
+/* ---- p10: GATE 4 ---- */
+{ ch:"Chapter 4 · Reader Gate", gate:"g4", html:`
+  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#0d1f33"/><g transform="translate(8,-4) scale(.62)"><use href="#sym-zara"/></g>`)}
+    <div class="balloon" style="top:6px;left:78px;max-width:70%"><span class="who">ZARA</span>Sort the pairs, reader — true twins power the door, fakes feed the glitch.</div>
+  </div>`},
+
+/* ---- p11: ch5 splash — the gear heart ---- */
+{ ch:"Chapter 5 · The Gear Heart", html:`
+  <div class="kicker">Chapter Five</div><h2 class="splashtitle">THE GEAR <em>HEART</em></h2>
+  <div class="panel panel3d tall">${SC("0 0 400 220",`
+    <rect width="400" height="220" fill="#10243a"/><rect width="400" height="220" fill="url(#halftone)"/>
+    <g data-depth="10" transform="translate(70,30) scale(1.6)"><use href="#sym-gear"/></g>
+    <g data-depth="10" transform="translate(230,60) scale(1.2)"><use href="#sym-gear"/></g>
+    <text data-depth="10" x="134" y="120" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="14" fill="#FFF3D8">24</text>
+    <text data-depth="10" x="278" y="130" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="14" fill="#FFF3D8">36</text>
+    <g data-depth="18" transform="translate(20,96) scale(.85)"><use href="#sym-maya"/></g>
+    <g data-depth="18" transform="translate(310,96) scale(.85)"><use href="#sym-zara"/></g>
+    <g data-depth="22" transform="translate(180,150) scale(.5)"><use href="#sym-vex"/></g>`)}
+    <div class="sfx" style="top:10px;left:14px">KA-CHUNK</div>
+    <div class="balloon" style="top:8px;right:8px;max-width:46%"><span class="who">ZARA</span>The vault's heart: a 24-tooth gear and a 36-tooth gear. The linking cog must be the <b>greatest common factor</b> — the biggest tooth count that divides both.</div>
+    <div class="balloon tail-r" style="bottom:10px;left:8px;max-width:44%"><span class="who">MAYA</span>And the timing lights blink every 6 turns and every 8 turns. They sync at the <b>least common multiple</b> — the first count they share.</div>
+  </div>
+  <div class="caption">GCF: the greatest factor two numbers share. LCM: the smallest number both count to. Factors divide in; multiples count up.</div>`},
+
+/* ---- p12: GATE 5 ---- */
+{ ch:"Chapter 5 · Reader Gate", gate:"g5", html:`
+  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#10243a"/><g transform="translate(8,-4) scale(.62)"><use href="#sym-zara"/></g>`)}
+    <div class="balloon" style="top:6px;left:78px;max-width:70%"><span class="who">ZARA</span>Size the cog and set the timing, reader — the heart won't turn without you.</div>
+  </div>`},
+
+/* ---- p13: boss setup ---- */
+{ ch:"Chapter 5 · The Master Key", html:`
+  <div class="caption loc">The cipher vault door. The glitch swells, scribbling over Ada's engraving: 18x + 24.</div>
+  <div class="panel panel3d tall">${SC("0 0 400 200",`
+    <rect width="400" height="200" fill="#0d1f33"/><rect width="400" height="200" fill="url(#halftone)"/>
+    <g data-depth="10" transform="translate(140,30) scale(1.4)"><use href="#sym-vault"/></g>
+    <g data-depth="16" transform="translate(30,10) scale(1.2)"><use href="#sym-glitch"/></g>
+    <g data-depth="18" transform="translate(30,110) scale(.8)"><use href="#sym-dev"/></g>
+    <rect data-depth="12" x="290" y="30" width="100" height="58" rx="8" fill="#06222b" stroke="#1FA6A2" stroke-width="2.5"/>
+    <text data-depth="12" x="340" y="52" text-anchor="middle" font-family="Consolas,monospace" font-size="10" fill="#7CF2EC">KEY FORMAT:</text>
+    <text data-depth="12" x="340" y="74" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="13" fill="#F2C15B">GCF( __ + __ )</text>`)}
+    <div class="balloon" style="bottom:8px;left:8px;max-width:48%"><span class="who">DEV</span>Final boss. The lock wants 18x + 24 <b>factored</b> — greatest common factor pulled out front, distributive property in reverse.</div>
+    <div class="balloon vex tail-r" style="top:8px;right:8px;max-width:42%"><span class="who">VEX</span>Then two more locks: one order-of-operations engine code, one equivalence seal. Reader — forge the master key.</div>
+  </div>
+  <div class="caption">Boss Gate: factoring, powers, and equivalence — everything this vault taught you, in three locks.</div>`},
+
+/* ---- p14: BOSS GATE ---- */
+{ ch:"Boss Gate · The Master Key", gate:"boss", html:`
+  <div class="panel">${SC("0 0 400 76",`<rect width="400" height="76" fill="#0d1f33"/><g transform="translate(330,4) scale(.56)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>BOSS GATE. Three locks. The glitch is watching. No pressure. (Some pressure.)</div>
+  </div>`},
+
+/* ---- p15: victory + teaser ---- */
+{ ch:"Chapter 5 · The Engine Wakes", html:`
+  <div class="panel panel3d tall">${SC("0 0 400 220",`
+    <rect width="400" height="220" fill="#10243a"/>
+    <circle data-depth="8" cx="200" cy="90" r="80" fill="#F2C15B" opacity=".18"/>
+    <g data-depth="10" transform="translate(155,30) scale(.95)"><use href="#sym-vault"/></g>
+    <g data-depth="18" transform="translate(30,96) scale(.85)"><use href="#sym-maya"/></g>
+    <g data-depth="18" transform="translate(110,104) scale(.8)"><use href="#sym-theo"/></g>
+    <g data-depth="18" transform="translate(290,104) scale(.8)"><use href="#sym-zara"/></g>
+    <g data-depth="18" transform="translate(320,90) scale(.4)"><use href="#sym-vex"/></g>
+    <g data-depth="22" transform="translate(196,96) scale(.85)"><use href="#sym-dev"/></g>
+    <text data-depth="14" x="200" y="200" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="14" fill="#7CF2EC">LIBRARY LANE → LIBRARY LANE ✓</text>`)}
+    <div class="sfx" style="top:10px;left:16px">CLUNK-WHIRRR!</div>
+    <div class="balloon" style="bottom:14px;left:10px;max-width:52%"><span class="who">DEV</span>Vault cleared! The Expression Engine reboots — every sign in the city snaps back to honest words.</div>
+  </div>
+  <div class="panelrow">
+    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#eef7f6"/><g transform="translate(58,4) scale(.7)"><use href="#sym-glitch"/></g><text x="100" y="100" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="16" fill="#0d7a4f">=</text>`)}
+      <div class="balloon" style="top:4px;left:4px;max-width:72%"><span class="who">MAYA</span>The glitch isn't gone — it's <i>fixed</i>. All its broken equations balanced. Now it's just a tidy little equals sign.</div></div>
+    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#06121f"/><g stroke="#22456a" stroke-width="1.5">${[1,2,3,4].map(i=>`<line x1="${i*40}" y1="0" x2="${i*40}" y2="110"/>`).join("")}${[1,2].map(i=>`<line x1="0" y1="${i*36}" x2="200" y2="${i*36}"/>`).join("")}</g><g fill="#7CF2EC" font-size="14" font-family="Arial"><text x="30" y="30">❄</text><text x="150" y="24">❄</text><text x="90" y="58">❄</text><text x="170" y="84">❄</text><text x="50" y="92">❄</text></g><text x="100" y="50" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="13" fill="#F2C15B">−9°</text>`)}
+      <div class="balloon vex" style="bottom:2px;left:4px;max-width:64%"><span class="who">VEX</span>New distortion. Cold. Negative. To be continued…</div></div>
+  </div>
+  <div class="caption" style="text-align:center"><b>NEXT: VOL. 7 — BELOW ZERO</b></div>`},
+
+/* ---- p16: cast ---- */
+{ ch:"End Matter · The Crew", html:`
+  <h2 class="splashtitle" style="font-size:1.4rem">MEET THE <em>CREW</em></h2>
+  <div class="castcard"><svg viewBox="0 0 100 120"><use href="#sym-maya"/></svg><div><h4>MAYA CHEN</h4><p>Crew captain. Keeps the notebook, asks the next question. This volume: decoded Ada's journal sentence for the sign press.</p></div></div>
+  <div class="castcard"><svg viewBox="0 0 100 120"><use href="#sym-theo"/></svg><div><h4>THEO OKAFOR</h4><p>Evidence officer. Allergic to glitch math. This volume: caught "3⁴ = 12" red-handed at the power cells.</p></div></div>
+  <div class="castcard"><svg viewBox="0 0 100 120"><use href="#sym-zara"/></svg><div><h4>ZARA QUINN</h4><p>Builder and mixer. This volume: proved x + x is two sticks, not a square — and sized the vault's linking cog.</p></div></div>
+  <div class="castcard"><svg viewBox="0 0 100 120"><use href="#sym-dev"/></svg><div><h4>DEV PATEL</h4><p>Pattern hunter and puzzle-game champion. This volume: led the whole vault run, door by door, lock by lock.</p></div></div>
+  <div class="castcard"><svg viewBox="0 0 100 120"><use href="#sym-vex"/></svg><div><h4>VEX</h4><p>Fragment of Ada Vex's Pattern Engine. Senses distortions; cannot compute. That's your job.</p></div></div>`},
+
+/* ---- p17: journal recap ---- */
+{ ch:"End Matter · Ada Vex's Journal", html:`
+  <h2 class="splashtitle" style="font-size:1.4rem">ADA VEX'S <em>JOURNAL</em></h2>
+  <div class="journal"><h4>Unit 6 · What the vault taught us</h4>
+    <div class="jrow"><b>Quotient of fractions.</b><span>Dividing by a fraction counts how many of that piece fit: 2 ÷ 1/3 = 6 third-size pieces. Sharing 3/4 among 3 gives 1/4 each.</span></div>
+    <div class="jrow"><b>Exponent &amp; power.</b><span>The exponent counts repeated multiplication of the base: 3⁴ = 3·3·3·3 = 81 — never 3 × 4.</span></div>
+    <div class="jrow"><b>Variable &amp; coefficient.</b><span>A variable stands for the mystery number; a coefficient multiplies it. "5 more than 3 times n" is 3n + 5; at n = 4 it equals 17.</span></div>
+    <div class="jrow"><b>Equivalent expressions.</b><span>Same value for every variable value: 3(x+4) = 3x+12 and 2x+5x = 7x. But 4(x−2) ≠ 4x−2, and x + x is 2x — not x².</span></div>
+    <div class="jrow"><b>GCF &amp; LCM.</b><span>GCF(24, 36) = 12 — the biggest shared factor. LCM(6, 8) = 24 — the first shared multiple.</span></div>
+    <div class="jrow"><b>Distributive property.</b><span>Multiply across the sum — or run it backwards to factor: 18x + 24 = 6(3x + 4).</span></div>
+  </div>
+  <div class="caption">"Two expressions that always agree are one idea wearing two coats. Find the idea." — A.V.</div>`},
+
+/* ---- p18: certificate ---- */
+{ ch:"End Matter · Certificate", html:`
+  <div id="certificate">
+    <div class="kicker">Axiom City · EduWonderLab</div>
+    <h3>READER CERTIFICATE</h3>
+    <p style="font:600 .9rem Georgia,serif">This certifies that</p>
+    <input id="certName" maxlength="40" placeholder="write your name" aria-label="Your name for the certificate">
+    <p style="font:600 .9rem Georgia,serif">completed <b>Volume 6: The Expression Engine</b> and proved mastery over fraction division, exponents, writing and evaluating expressions, equivalent expressions, GCF and LCM, and the distributive property.</p>
+    <div class="certbadges" id="certBadges"></div>
+    <button class="gatecheck" id="printCert" style="align-self:center">PRINT CERTIFICATE</button>
+  </div>
+  <div class="caption" style="text-align:center">Thank you for cracking the vault with the crew. Volume 7 is waiting in the cold.</div>`}
+];
+
+/* ================= GATES ================= */
+function mkfeed(el,msg,ok){el.textContent=msg;el.className="gatefeedback "+(ok?"good":"bad");}
+const GATES = {
+g1:{ title:"Gate 1 · Light the Stairwell", icon:"#sig-vbar",
+  prompt:`Two jars of glow-ink. Each stair lantern drinks exactly <b>1/3 of a jar</b>. <b>Lock A:</b> how many lanterns can the crew light — what is <b>2 ÷ 1/3</b>? <b>Lock B:</b> the spare <b>3/4 jar</b> is shared equally among <b>3</b> hand-lamps — what is <b>3/4 ÷ 3</b>?`,
+  hints:[ "Conceptual: dividing by 1/3 asks 'how many third-size servings FIT inside?' — count the slices in the bar model. And sharing among 3 lamps makes each share SMALLER, not bigger.",
+          "Procedural: Lock A — every jar holds exactly 3 thirds, so count the thirds across BOTH bars. Lock B — dividing by 3 is the same as taking 1/3 of: multiply 3/4 × 1/3, then simplify the fraction." ],
+  worked:{ steps:[ "A different crew has 4 jars of lamp oil; each torch burns 1/2 a jar. Ask: how many halves fit inside 4 wholes?",
+    "Each jar holds 2 halves, so 4 jars hold 4 × 2 = 8 halves. 4 ÷ 1/2 = 8 torches — dividing by a unit fraction COUNTS the pieces.",
+    "Sharing flips it: 2/3 of a jar split between 2 lamps is 2/3 × 1/2 = 1/3 of a jar each. Smaller pieces, fair shares." ],
+    q:"How many 1/2-jar torches can be filled from 5 jars?", a:"10" },
+  render(body,api){
+    body.innerHTML=`<svg viewBox="0 0 380 92" style="width:100%;max-width:380px" role="img" aria-label="Bar model: two whole jars, each sliced into three equal thirds.">
+      <text x="10" y="14" font-family="Arial" font-weight="800" font-size="11" fill="#17324D">JAR 1</text>
+      <text x="200" y="14" font-family="Arial" font-weight="800" font-size="11" fill="#17324D">JAR 2</text>
+      <g fill="#FFF3D8" stroke="#17324D" stroke-width="3"><rect x="10" y="20" width="170" height="44" rx="4"/><rect x="200" y="20" width="170" height="44" rx="4"/></g>
+      <g stroke="#17324D" stroke-width="2" stroke-dasharray="5 4"><line x1="66.7" y1="20" x2="66.7" y2="64"/><line x1="123.3" y1="20" x2="123.3" y2="64"/><line x1="256.7" y1="20" x2="256.7" y2="64"/><line x1="313.3" y1="20" x2="313.3" y2="64"/></g>
+      <text x="95" y="82" text-anchor="middle" font-family="Arial" font-weight="700" font-size="11" fill="#8a6a1c">each slice = 1/3 jar = 1 lantern</text>
+      <text x="285" y="82" text-anchor="middle" font-family="Arial" font-weight="700" font-size="11" fill="#8a6a1c">count every slice</text></svg>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b style="font:900 .75rem 'Arial Black'">LOCK A</b><span style="font:600 .9rem 'Segoe UI'">2 ÷ 1/3 =</span><input class="numin" id="fd1" inputmode="numeric" aria-label="number of lanterns"> <span style="font:600 .9rem 'Segoe UI'">lanterns</span></div>
+    <div><b style="font:900 .75rem 'Arial Black'">LOCK B</b><div style="font:600 .9rem 'Segoe UI';margin:4px 0">3/4 ÷ 3 = ?</div>
+    <div class="choicebtns" role="group" aria-label="Choose the quotient of three fourths divided by 3">
+      <button class="choicebtn" data-f="a" aria-pressed="false">1/12 jar</button>
+      <button class="choicebtn" data-f="b" aria-pressed="false">1/4 jar</button>
+      <button class="choicebtn" data-f="c" aria-pressed="false">9/4 jars</button>
+      <button class="choicebtn" data-f="d" aria-pressed="false">3 jars</button></div></div>`;
+    let pick=null;
+    body.querySelectorAll("[data-f]").forEach(b=>b.addEventListener("click",()=>{
+      body.querySelectorAll("[data-f]").forEach(x=>x.setAttribute("aria-pressed","false"));
+      b.setAttribute("aria-pressed","true");pick=b.dataset.f;api.sound("blip");}));
+    api.onCheck(()=>{
+      const raw=body.querySelector("#fd1").value.trim(),v=parseFloat(raw);
+      const okA=v===6;
+      body.querySelector("#fd1").className="numin "+(okA?"ok":"no");
+      if(!okA){
+        if(raw==="2/3"||Math.abs(v-2/3)<.01)return api.fail("That's 2 × 1/3 — multiplying makes LESS ink, not more lanterns. Division asks how many thirds FIT. Count slices.");
+        return api.fail("Lock A holds. Count every third-size slice across BOTH jars in the bar model.");}
+      if(!pick)return api.fail("Lock A open! Now stamp Lock B — pick the quotient of 3/4 ÷ 3.");
+      if(pick==="b")api.pass("2 ÷ 1/3 = 6 lanterns lit, and each hand-lamp glows on 3/4 ÷ 3 = 1/4 jar. The stairwell BLAZES — down we go!");
+      else if(pick==="c")api.fail("9/4 is 3/4 × 3 — that's multiplying. Sharing among 3 lamps makes each share smaller than 3/4.");
+      else if(pick==="d")api.fail("3 lamps can't each get 3 whole jars out of 3/4 of one. Sharing shrinks the share.");
+      else api.fail("1/12 splits too far — that's dividing by 3 twice. Share the three quarter-pieces just once.");});
+  }},
+g2:{ title:"Gate 2 · Power Cells", icon:"#sig-pow",
+  prompt:`The glitch scrawled <b>“3⁴ = 12”</b> on the wall. Lies. Charge both cells with TRUE totals: Cell A holds <b>3⁴</b> crystals, Cell B holds <b>2⁵</b>.`,
+  hints:[ "Conceptual: the exponent counts how many copies of the base get MULTIPLIED together. It never multiplies the base directly — that's the glitch's favorite trick.",
+          "Procedural: write it long. 3⁴ = 3 × 3 × 3 × 3 — multiply one step at a time, left to right. Then write five 2s for Cell B and do the same." ],
+  worked:{ steps:[ "A spare cell reads 2⁴. Expand it: 2 × 2 × 2 × 2 — four copies of the base, all multiplied.",
+    "Multiply stepwise: 2 × 2 = 4 → 4 × 2 = 8 → 8 × 2 = 16. So 2⁴ = 16.",
+    "The glitch's way: 2 × 4 = 8. Wrong — the exponent repeats the base; it never multiplies it." ],
+    q:"What is 5³?", a:"125" },
+  render(body,api){
+    body.innerHTML=`<div style="display:flex;gap:18px;flex-wrap:wrap">
+      <label style="font:700 .88rem 'Segoe UI'">CELL A — 3⁴ = <input class="numin" id="pa" inputmode="numeric" aria-label="3 to the fourth power"> crystals</label>
+      <label style="font:700 .88rem 'Segoe UI'">CELL B — 2⁵ = <input class="numin" id="pb" inputmode="numeric" aria-label="2 to the fifth power"> crystals</label></div>`;
+    api.onCheck(()=>{
+      const a=parseFloat(body.querySelector("#pa").value),b=parseFloat(body.querySelector("#pb").value);
+      const okA=a===81,okB=b===32;
+      body.querySelector("#pa").className="numin "+(okA?"ok":"no");
+      body.querySelector("#pb").className="numin "+(okB?"ok":"no");
+      if(a===12)return api.fail("12 is 3 × 4 — exponents repeat-multiply. Write four 3s and multiply them all.");
+      if(b===10)return api.fail("10 is 2 × 5 — glitch math! The exponent says multiply five 2s together.");
+      if(okA&&okB)api.pass("3⁴ = 81 and 2⁵ = 32. Both cells flare to life — the glitch shrieks and skitters deeper into the vault!");
+      else if(!okA)api.fail("Cell A stays dark. Multiply the 3s one step at a time: 3, 9, 27, …");
+      else api.fail("Cell B stays dark. Keep doubling: 2, 4, 8, … five 2s in all.");});
+  }},
+g3:{ title:"Gate 3 · Say It With Symbols", icon:"#sig-tile",
+  prompt:`Ada's journal: <i>“5 more than 3 times the mystery number n.”</i> <b>Step 1:</b> pick the expression that says it in symbols. <b>Step 2:</b> test-run the press — evaluate your expression for <b>n = 4</b>.`,
+  hints:[ "Conceptual: '3 times n' builds one multiplication term — 3 is the coefficient. '5 more than THAT' adds 5 to the finished product, not to n first.",
+          "Procedural: translate the 'times' part first, then bolt the 'more than' on the end as addition. To evaluate, substitute 4 for n and multiply BEFORE you add." ],
+  worked:{ steps:[ "Different sentence: “2 less than 4 times the number m.” '4 times m' → 4m. '2 less than that' → 4m − 2.",
+    "Watch the traps: 4(m − 2) subtracts BEFORE multiplying, and 2 − 4m flips the subtraction. Word order is the cipher.",
+    "Test-run at m = 3: 4 × 3 − 2 = 12 − 2 = 10. Multiply first, then subtract." ],
+    q:"Evaluate 4m − 2 for m = 5.", a:"18" },
+  render(body,api){
+    body.innerHTML=`<div class="choicebtns" role="group" aria-label="Choose the expression for 5 more than 3 times n">
+      <button class="choicebtn" data-e="a" aria-pressed="false">3(n + 5)</button>
+      <button class="choicebtn" data-e="b" aria-pressed="false">3n + 5</button>
+      <button class="choicebtn" data-e="c" aria-pressed="false">5n + 3</button>
+      <button class="choicebtn" data-e="d" aria-pressed="false">8n</button></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:600 .9rem 'Segoe UI'">Test-run the press at n = 4. Your expression =</span><input class="numin" id="ev" inputmode="numeric" aria-label="value of the expression at n equals 4"></div>`;
+    let pick=null;
+    body.querySelectorAll("[data-e]").forEach(b=>b.addEventListener("click",()=>{
+      body.querySelectorAll("[data-e]").forEach(x=>x.setAttribute("aria-pressed","false"));
+      b.setAttribute("aria-pressed","true");pick=b.dataset.e;api.sound("blip");}));
+    api.onCheck(()=>{
+      if(!pick)return api.fail("Pick an expression first — the press needs symbols before it can run.");
+      if(pick==="a")return api.fail("3(n + 5) adds the 5 to n BEFORE tripling — that says '3 times (5 more than n)'. Re-read Ada's order.");
+      if(pick==="c")return api.fail("5n + 3 says '3 more than 5 times n' — the coefficient and the constant swapped costumes.");
+      if(pick==="d")return api.fail("8n smashed 3 and 5 into one coefficient — but only the 3 multiplies n. The 5 is added on after.");
+      const v=parseFloat(body.querySelector("#ev").value);
+      if(v===17){body.querySelector("#ev").className="numin ok";api.pass("3n + 5 — and at n = 4 the press prints 3 × 4 + 5 = 17. Honest signs roll off the line!");}
+      else if(v===27){body.querySelector("#ev").className="numin no";api.fail("27 means you added first. Multiplication runs before addition: triple n, THEN add.");}
+      else{body.querySelector("#ev").className="numin no";api.fail("Right expression! Now substitute n = 4: multiply, then add. The press waits.");}});
+  }},
+g4:{ title:"Gate 4 · The Twin Door", icon:"#sig-eq",
+  prompt:`Four panels, four pairs. Tap a panel to stamp it: first tap <b>EQUIV</b> (true twins — equal for EVERY x), second tap <b>NOT</b> (fake), third tap clears it. All four stamps must be correct at once.`,
+  hints:[ "Conceptual: twins agree for EVERY value of x. Substitute x = 1, then x = 2, into both sides — a single disagreement unmasks a fake.",
+          "Procedural: distribute parentheses and combine like terms before judging. Remember a(b − c) = ab − ac — the multiplier must hit BOTH terms inside. When in doubt, test a number." ],
+  worked:{ steps:[ "Pair to judge: 5(x + 2) vs 5x + 10. Distribute: 5·x + 5·2 = 5x + 10 — identical. True twins.",
+    "Pair: 2(x − 3) vs 2x − 3. Distribute: 2x − 6, which is NOT 2x − 3 — the 2 must multiply the 3 as well. Fake.",
+    "Pair: y + y + y vs 3y. Adding three copies makes 3 OF them — twins. (Multiplying three copies would be y³, a different beast entirely.)" ],
+    q:"Distribute: 6(x + 5) = 6x + __ ?", a:"30" },
+  render(body,api){
+    const pairs=[["3(x + 4)","3x + 12"],["2x + 5x","7x"],["4(x − 2)","4x − 2"],["x + x","x²"]];
+    body.innerHTML=`<div class="choicebtns" style="flex-wrap:wrap" role="group" aria-label="Stamp each pair EQUIV or NOT">`+
+      pairs.map((p,i)=>`<button class="choicebtn" data-p="${i}" style="min-width:45%;text-align:center" aria-pressed="false"><b>${p[0]}</b> vs <b>${p[1]}</b><br><span class="stampword" style="font:900 .72rem 'Arial Black',Arial;letter-spacing:.08em;color:#8a6a1c">— TAP TO STAMP —</span></button>`).join("")+`</div>`;
+    const st=[0,0,0,0];
+    body.querySelectorAll("[data-p]").forEach(b=>b.addEventListener("click",()=>{
+      const i=+b.dataset.p;st[i]=(st[i]+1)%3;
+      b.querySelector(".stampword").textContent=["— TAP TO STAMP —","STAMP: EQUIV ✓","STAMP: NOT ✗"][st[i]];
+      b.setAttribute("aria-pressed",st[i]?"true":"false");
+      b.style.background=st[i]===1?"#e2f4ee":st[i]===2?"#fdebe6":"";
+      api.sound("blip");}));
+    api.onCheck(()=>{
+      if(st.some(v=>v===0))return api.fail("Every panel needs a stamp — EQUIV or NOT.");
+      const want=[1,1,2,2],wrong=st.filter((v,i)=>v!==want[i]).length;
+      if(!wrong)api.pass("3(x+4) = 3x+12 ✓ · 2x+5x = 7x ✓ · 4(x−2) is NOT 4x−2 · x+x is 2x, never x². The twin door grinds open!");
+      else api.fail(wrong+" stamp"+(wrong>1?"s are":" is")+" wrong. Distribute — or feed both sides x = 2 and watch for a disagreement.");});
+  }},
+g5:{ title:"Gate 5 · The Gear Heart", icon:"#sig-gear",
+  prompt:`Two locks turn the heart. <b>Cog lock:</b> the linking cog's tooth count is the <b>GCF of 24 and 36</b> — the greatest count that divides both gears. <b>Timing lock:</b> lights blinking every <b>6</b> turns and every <b>8</b> turns first sync at their <b>LCM</b> — after how many turns?`,
+  hints:[ "Conceptual: a GCF divides INTO both numbers, so it can never be bigger than either gear. An LCM is counted UP TO, so it can never be smaller than either blink number. Factors divide in; multiples count up.",
+          "Procedural: list every factor of each gear's tooth count and keep the greatest one they share. Then skip-count by 6s and by 8s until the two lists land on the same number." ],
+  worked:{ steps:[ "Different machine: gears of 18 and 30 teeth. Factors of 18: 1, 2, 3, 6, 9, 18. Factors of 30: 1, 2, 3, 5, 6, 10, 15, 30. Greatest shared factor: 6.",
+    "Its lights blink every 4 and every 10 turns. Skip-count: 4, 8, … and 10, 20, … — the lists first collide at 20. LCM = 20.",
+    "Sanity rails: the GCF (6) is no bigger than either gear; the LCM (20) is no smaller than either blink count. If your answers break those rails, you've swapped them." ],
+    q:"What is the LCM of 3 and 5?", a:"15" },
+  render(body,api){
+    body.innerHTML=`<div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b style="font:900 .75rem 'Arial Black'">COG</b><span style="font:600 .9rem 'Segoe UI'">GCF(24, 36) =</span><input class="numin" id="gc" inputmode="numeric" aria-label="greatest common factor of 24 and 36"> <span style="font:600 .9rem 'Segoe UI'">teeth</span></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b style="font:900 .75rem 'Arial Black'">TIMING</b><span style="font:600 .9rem 'Segoe UI'">LCM(6, 8) =</span><input class="numin" id="lc" inputmode="numeric" aria-label="least common multiple of 6 and 8"> <span style="font:600 .9rem 'Segoe UI'">turns</span></div></div>`;
+    api.onCheck(()=>{
+      const g=parseFloat(body.querySelector("#gc").value),l=parseFloat(body.querySelector("#lc").value);
+      const okG=g===12,okL=l===24;
+      body.querySelector("#gc").className="numin "+(okG?"ok":"no");
+      body.querySelector("#lc").className="numin "+(okL?"ok":"no");
+      if(!okG){
+        if(g===72)return api.fail("72 is a common MULTIPLE of 24 and 36 — the cog wants the greatest common FACTOR. A factor can't out-tooth the gears it divides.");
+        if([2,3,4,6].includes(g))return api.fail(g+" divides both gears, true — but a bigger cog still fits. Greatest means greatest.");
+        return api.fail("The cog slips. Which tooth counts divide 24 AND 36 exactly? Take the greatest one.");}
+      if(!okL){
+        if(l===2)return api.fail("2 is the greatest common FACTOR of 6 and 8 — the timing lock wants their first common MULTIPLE. Count UP, not in.");
+        if(l===48)return api.fail("48 is a shared multiple, but the lights sync sooner. LEAST common multiple.");
+        if(l===14)return api.fail("6 + 8 = 14 isn't on either blink list. Skip-count by 6s and by 8s instead.");
+        return api.fail("Lights still off-beat. Skip-count by 6s and by 8s — where do the lists first match?");}
+      api.pass("Cog: GCF = 12 teeth. Timing: LCM = 24 turns. KA-CHUNK — the gear heart spins true!");});
+  }},
+boss:{ title:"BOSS GATE · The Master Key", icon:"#sig-key",
+  prompt:`The glitch swells over Ada's engraving. Three locks forge the master key. <b>Lock 1:</b> factor <b>18x + 24</b> — greatest common factor out front. <b>Lock 2:</b> the engine's wake-up code: <b>2³ × 5 − 10 ÷ 2</b>. <b>Lock 3:</b> stamp the equivalence seal.`,
+  hints:[ "Conceptual: factoring runs the distributive property in REVERSE — pull the greatest common factor out front; what stays inside must multiply back to the original. For the code: powers first, then × and ÷ left to right, subtraction last.",
+          "Procedural: Lock 1 — find the GCF of 18 and 24, then divide each term by it to fill the parentheses. Lock 2 — expand 2³ before touching anything else. Lock 3 — the 4 must multiply BOTH terms inside the parentheses." ],
+  worked:{ steps:[ "Practice key: factor 10y + 15. GCF(10, 15) = 5. Divide each term: 10y ÷ 5 = 2y and 15 ÷ 5 = 3, so 10y + 15 = 5(2y + 3). Distribute to check it!",
+    "Practice code: 3² × 2 − 8 ÷ 4. Power first: 3² = 9. Then × and ÷ left to right: 9 × 2 = 18 and 8 ÷ 4 = 2. Subtract last: 18 − 2 = 16.",
+    "Practice seal: 3(4a + 2) = 3·4a + 3·2 = 12a + 6. The outside number multiplies BOTH terms — 12a + 2 would be a fake." ],
+    q:"Compute 4² × 2 − 6 ÷ 3.", a:"30" },
+  render(body,api){
+    body.innerHTML=`<div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><b style="font:900 .75rem 'Arial Black'">LOCK 1</b><span style="font:600 .92rem 'Segoe UI'">18x + 24 =</span><input class="numin" id="k1" style="width:60px" inputmode="numeric" aria-label="greatest common factor pulled out front"><span style="font:900 1rem 'Arial Black'">(</span><input class="numin" id="k2" style="width:60px" inputmode="numeric" aria-label="coefficient of x inside the parentheses"><span style="font:900 1rem 'Arial Black'">x&nbsp;+</span><input class="numin" id="k3" style="width:60px" inputmode="numeric" aria-label="constant inside the parentheses"><span style="font:900 1rem 'Arial Black'">)</span></div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><b style="font:900 .75rem 'Arial Black'">LOCK 2</b><span style="font:600 .92rem 'Segoe UI'">2³ × 5 − 10 ÷ 2 =</span><input class="numin" id="k4" inputmode="numeric" aria-label="value of the wake-up code"></div>
+      <div><b style="font:900 .75rem 'Arial Black'">LOCK 3</b><div style="font:600 .92rem 'Segoe UI';margin:4px 0">4(2n + 3) is equivalent to…</div><div class="choicebtns"><button class="choicebtn" data-w="a" aria-pressed="false">8n + 3</button><button class="choicebtn" data-w="b" aria-pressed="false">8n + 12</button><button class="choicebtn" data-w="c" aria-pressed="false">6n + 7</button><button class="choicebtn" data-w="d" aria-pressed="false">2n + 12</button></div></div></div>`;
+    let p3=null;
+    body.querySelectorAll("[data-w]").forEach(b=>b.addEventListener("click",()=>{
+      body.querySelectorAll("[data-w]").forEach(x=>x.setAttribute("aria-pressed","false"));
+      b.setAttribute("aria-pressed","true");p3=b.dataset.w;api.sound("blip");}));
+    api.onCheck(()=>{
+      const g=parseFloat(body.querySelector("#k1").value),c=parseFloat(body.querySelector("#k2").value),k=parseFloat(body.querySelector("#k3").value);
+      const ok1=g===6&&c===3&&k===4;
+      body.querySelector("#k1").className="numin "+(g===6?"ok":"no");
+      body.querySelector("#k2").className="numin "+(c===3?"ok":"no");
+      body.querySelector("#k3").className="numin "+(k===4?"ok":"no");
+      if(!ok1){
+        if(g===2||g===3)return api.fail("Lock 1 holds. "+g+" divides both terms, but a GREATER common factor fits — find the biggest.");
+        if(g===6)return api.fail("Lock 1 holds. The GCF is right! Now divide EACH term by it: 18x ÷ 6 gives the x-term, 24 ÷ 6 gives the constant.");
+        return api.fail("Lock 1 holds. Start with the GCF of 18 and 24, then divide each term by it.");}
+      const t=parseFloat(body.querySelector("#k4").value);
+      body.querySelector("#k4").className="numin "+(t===35?"ok":"no");
+      if(t!==35){
+        if(t===25)return api.fail("Lock 2 holds. Did 2³ become 6? Exponents repeat-multiply: three 2s, multiplied.");
+        if(t===15)return api.fail("Lock 2 holds. Don't march straight left to right — × and ÷ both finish BEFORE the subtraction.");
+        return api.fail("Lock 2 holds. Order of operations: power first, then × and ÷ left to right, subtraction last.");}
+      if(!p3)return api.fail("Two locks open! Stamp the equivalence seal to finish the key.");
+      if(p3==="a")return api.fail("Lock 3 holds. The 4 multiplied the 2n but skipped the 3 — distribute to BOTH terms.");
+      if(p3==="c")return api.fail("Lock 3 holds. 6n + 7 ADDED 4 to each term. Distributing multiplies — it never adds.");
+      if(p3==="d")return api.fail("Lock 3 holds. The 4 reached the 3 but missed the 2n. Both terms get multiplied.");
+      api.pass("18x + 24 = 6(3x + 4) · code 35 · seal 8n + 12. ALL LOCKS OPEN — the Master Key turns and the Expression Engine WAKES!");});
+  }}
+};
+
+/* ================= TEACHER PANEL DATA ================= */
+const TEACHER = {
+  suggested:"Use as a 2–3 day unit anchor: Ch. 1 after lessons 6-1/6-2 (dividing with fractions), Ch. 2 with 6-3/6-4 (exponents and powers), Ch. 3 with 6-5 (writing & evaluating algebraic expressions), Ch. 4 with 6-6 (equivalent expressions), Ch. 5 + Boss after 6-7/6-8 (GCF/LCM and the distributive property). Whole-class on projector, pairs on devices, or independent enrichment. Progress saves on the device.",
+  standards:[
+    ["6.NS.A.1","Interpret and compute quotients of fractions; solve word problems involving division of fractions","Ch. 1 story + Gate 1 (glow-ink bar model: 2 ÷ 1/3 and 3/4 ÷ 3)"],
+    ["6.EE.A.1","Write and evaluate numerical expressions involving whole-number exponents","Ch. 2 + Gate 2 (power cells 3⁴, 2⁵); Boss Lock 2 (order of operations)"],
+    ["6.EE.A.2","Write, read, and evaluate expressions in which letters stand for numbers","Ch. 3 + Gate 3 (translate “5 more than 3 times n”; evaluate at n = 4)"],
+    ["6.EE.A.3/A.4","Apply properties of operations to generate equivalent expressions; identify when two expressions are equivalent","Ch. 4 + Gate 4 (twin-door EQUIV/NOT sort); Boss Locks 1 & 3 (factor + distribute)"],
+    ["6.NS.B.4","Find GCF and LCM; use the distributive property to express a sum with a common factor","Ch. 5 + Gate 5 (gear heart GCF/LCM); Boss Lock 1 (factor 18x + 24)"]
+  ],
+  answers:[
+    ["Gate 1","Lock A: 2 ÷ 1/3 = 6 lanterns (count the thirds in the bar model). Lock B: 3/4 ÷ 3 = 1/4 jar. Misconceptions trapped: multiplying instead of dividing (2/3), and 9/4 (multiplied by 3 instead of sharing)."],
+    ["Gate 2","3⁴ = 81 and 2⁵ = 32. Misconception trapped: base × exponent — entering 12 (3 × 4) or 10 (2 × 5) triggers targeted “exponents repeat-multiply” feedback."],
+    ["Gate 3","Expression: 3n + 5; at n = 4 the value is 17. Misconceptions: 3(n + 5) (wrong order of operations from the words), 5n + 3 (coefficient/constant swapped), 8n (merged 3 and 5 into one term), 27 (added before multiplying)."],
+    ["Gate 4","EQUIV: 3(x + 4) = 3x + 12 and 2x + 5x = 7x. NOT: 4(x − 2) ≠ 4x − 2 (the 4 must multiply both terms) and x + x ≠ x² (repeated addition is 2x; repeated multiplication is x²)."],
+    ["Gate 5","Cog: GCF(24, 36) = 12. Timing: LCM(6, 8) = 24. Feedback distinguishes mixups: 72 (a common multiple) at the cog and 2 (the GCF) at the timing lock are each redirected by name."],
+    ["Boss","Lock 1: 18x + 24 = 6(3x + 4) — GCF 6, then 3 and 4 inside. Lock 2: 2³ × 5 − 10 ÷ 2 = 40 − 5 = 35 (traps: 2³ misread as 6 → 25; strict left-to-right → 15). Lock 3: 4(2n + 3) = 8n + 12 (distractors hit partial or additive distribution)."]
+  ]
+};
+/* ================================================================
+   ===== CONTENT END ==============================================
+   ================================================================ */
+</script>
+<script>
+/* ================================================================
+   ===== AXIOM CITY ENGINE v1.0 — identical in every volume =======
+   ================================================================ */
+"use strict";
+/* ---------- storage (exact wrapper, ewl_ prefix) ---------- */
+const storage={_m:{},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){this._m[k]=v}},get(k,d=null){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return this._m[k]??d}}};
+const K=s=>`ewl_axiom_${VOLUME.slug}_${s}`;
+
+const $=s=>document.querySelector(s);
+const live=msg=>{$("#live").textContent=msg};
+const reducedMQ=matchMedia("(prefers-reduced-motion: reduce)");
+const mobileMQ=matchMedia("(max-width: 820px)");
+
+const prefs=Object.assign({sound:false,motion:true,bigtext:false,hc:false},storage.get(K("prefs"))||{});
+let solved=new Set(storage.get(K("gates"))||[]);
+let page=storage.get(K("page"))||0;            // index of left/visible page
+let turning=false;
+const attempts={};
+
+/* ---------- audio (Web Audio oscillators only, muted default) ---------- */
+let actx=null;
+function ac(){if(!actx){try{actx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return actx}
+function tone(f,t,dur,type="square",vol=.04){const c=ac();if(!c||!prefs.sound)return;const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(vol,c.currentTime+t);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+t+dur);o.connect(g).connect(c.destination);o.start(c.currentTime+t);o.stop(c.currentTime+t+dur+.02)}
+const SND={blip(){tone(660,0,.07)},flip(){tone(220,0,.09,"triangle",.05);tone(330,.05,.08,"triangle",.04)},win(){[523,659,784,1046].forEach((f,i)=>tone(f,i*.09,.14,"triangle",.05))},thud(){tone(110,0,.18,"sawtooth",.05)}};
+
+/* ---------- helpers ---------- */
+function gateLockIcon(open){return `<div class="gatelockcorner ${open?"open":""}" aria-hidden="true"><svg viewBox="0 0 100 100" style="color:#fff"><use href="${open?"#sig-open":"#sig-lock"}"/></svg></div>`}
+
+function pageInnerHTML(i){
+  if(i==null||i<0||i>=PAGES.length) return `<div class="page-inner" style="align-items:center;justify-content:center"><div class="kicker" style="opacity:.4">AXIOM CITY</div></div><div class="pagefoot"><span></span><span></span></div>`;
+  const p=PAGES[i];
+  const gateHTML=p.gate?`<div class="gatemount" data-gate="${p.gate}"></div>`:"";
+  const lock=p.gate?gateLockIcon(solved.has(p.gate)):"";
+  return `${lock}<div class="chapterband">${p.ch.replace("·","· <em>").concat(p.ch.includes("·")?"</em>":"")}</div><div class="page-inner">${p.html}${gateHTML}</div><div class="pagefoot"><span>${VOLUME.unit}</span><span>PAGE ${i+1} / ${PAGES.length}</span></div>`;
+}
+
+/* ---------- gate framework ---------- */
+function mountGates(scope){
+  scope.querySelectorAll(".gatemount").forEach(m=>{
+    const id=m.dataset.gate,G=GATES[id];
+    if(!G)return;
+    if(solved.has(id)){m.innerHTML=`<div class="gatesolved"><span class="stamp">SOLVED</span> ${G.title} — badge earned.</div>`;return}
+    m.innerHTML=`<div class="gatebox"><header><svg class="gicon" viewBox="0 0 100 100"><use href="${G.icon}"/></svg><h3>${G.title}</h3></header>
+      <div class="gatebody"><div class="gateprompt">${G.prompt}</div><div class="gwidget"></div>
+      <div class="gatehint" hidden></div>
+      <button class="gatecheck">CHECK</button>
+      <div class="gatefeedback" aria-live="polite"></div></div></div>`;
+    const box=m.querySelector(".gatebox"),body=m.querySelector(".gwidget"),fb=m.querySelector(".gatefeedback"),hint=m.querySelector(".gatehint"),btn=m.querySelector(".gatecheck");
+    let checker=null;
+    const api={
+      sound:n=>SND[n]&&SND[n](),
+      onCheck(fn){checker=fn},
+      fail(msg){
+        attempts[id]=(attempts[id]||0)+1;SND.thud();mkfeed(fb,msg,false);
+        const n=attempts[id];
+        if(n===1){hint.hidden=false;hint.innerHTML="💡 <b>Hint:</b> "+G.hints[0]}
+        else if(n===2){hint.hidden=false;hint.innerHTML="🧭 <b>Hint 2:</b> "+G.hints[1]}
+        else if(n>=3&&!hint.querySelector(".askvex")){
+          const b=document.createElement("button");b.className="gatecheck askvex";b.style.marginTop="8px";b.textContent="ASK VEX — WORKED EXAMPLE";
+          b.addEventListener("click",()=>openWorked(G));hint.appendChild(b);
+        }
+        live("Not yet. "+msg);
+      },
+      pass(msg){
+        solved.add(id);storage.set(K("gates"),[...solved]);SND.win();
+        m.innerHTML=`<div class="gatesolved unlockflash"><span class="stamp">SOLVED</span> ${msg}</div>`;
+        const corner=m.closest(".page,#pageL,#pageR")?.querySelector(".gatelockcorner");
+        if(corner){corner.classList.add("open");corner.innerHTML=`<svg viewBox="0 0 100 100" style="color:#fff"><use href="#sig-open"/></svg>`}
+        earnBadge(id);updateNav();live("Gate solved! "+msg);
+      }
+    };
+    G.render(body,api);
+    btn.addEventListener("click",()=>{ac();checker&&checker()});
+  });
+}
+function openWorked(G){
+  $("#workedBody").innerHTML=`<div class="workedsteps">${G.worked.steps.map((s,i)=>`<div class="st"><b class="n">${i+1}</b><span>${s}</span></div>`).join("")}</div>
+    <div class="caption">Your turn — same idea, different numbers:</div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span style="font:600 .92rem 'Segoe UI'">${G.worked.q}</span>
+    <input class="numin" id="wkin" aria-label="worked example answer"><button class="gatecheck" id="wkgo">CHECK</button></div>
+    <div class="gatefeedback" id="wkfb" aria-live="polite"></div>`;
+  $("#workedModal").classList.add("open");
+  $("#wkgo").addEventListener("click",()=>{
+    const v=($("#wkin").value||"").trim().replace(/\s+/g,"");
+    if(v===G.worked.a||parseFloat(v)===parseFloat(G.worked.a)){
+      mkfeed($("#wkfb"),"Yes! Now head back and open that gate.",true);SND.win();
+      setTimeout(()=>$("#workedModal").classList.remove("open"),1100);
+    }else{mkfeed($("#wkfb"),"Walk the steps above again — you've got this.",false);SND.thud()}
+  });
+}
+
+/* ---------- badges ---------- */
+function buildBadges(){
+  $("#badges").innerHTML=BADGES.map(b=>`<div class="badge ${solved.has(b.id)?"earned":""}" id="badge-${b.id}" title="${b.label}" role="img" aria-label="${b.label}${solved.has(b.id)?" — earned":" — locked"}"><svg viewBox="0 0 100 100"><use href="${b.icon}"/></svg></div>`).join("");
+}
+function earnBadge(id){buildBadges();const el=$("#badge-"+id);if(el){el.classList.remove("earned");void el.offsetWidth;el.classList.add("earned")}const b=BADGES.find(x=>x.id===id);if(b)live("Badge earned: "+b.label)}
+
+/* ---------- progress ---------- */
+function buildProgress(){$("#progress").innerHTML=PAGES.map((_,i)=>`<span class="dot ${i<=page?"on":""}"></span>`).join("")}
+
+/* ---------- navigation & rendering ---------- */
+const isMobile=()=>mobileMQ.matches;
+function leftIndex(){return isMobile()?page:page-(page%2)}
+function visiblePages(){return isMobile()?[page]:[leftIndex(),leftIndex()+1].filter(i=>i<PAGES.length)}
+function blockedBy(){for(const i of visiblePages()){const g=PAGES[i]&&PAGES[i].gate;if(g&&!solved.has(g))return g}return null}
+
+function renderSpread(){
+  const L=$("#pageL"),R=$("#pageR");
+  if(isMobile()){L.innerHTML=pageInnerHTML(page);L.classList.remove("offscreen");R.classList.add("offscreen");R.innerHTML="";mountGates(L)}
+  else{const li=leftIndex();L.innerHTML=pageInnerHTML(li);R.innerHTML=pageInnerHTML(li+1<PAGES.length?li+1:null);L.classList.remove("offscreen");R.classList.remove("offscreen");mountGates(L);mountGates(R)}
+  buildProgress();updateNav();updateEdges();
+  if(PAGES[page])live(`Page ${page+1} of ${PAGES.length}. ${PAGES[page].ch}.`);
+  storage.set(K("page"),page);
+  if($("#certName")){$("#certName").value=storage.get(K("name"))||"";$("#certName").addEventListener("input",e=>storage.set(K("name"),e.target.value));
+    $("#certBadges").innerHTML=BADGES.map(b=>`<div class="badge ${solved.has(b.id)?"":"locked"}"><svg viewBox="0 0 100 100"><use href="${b.icon}"/></svg></div>`).join("");
+    $("#printCert").addEventListener("click",()=>{document.body.classList.add("print-cert");window.print();setTimeout(()=>document.body.classList.remove("print-cert"),400)});}
+}
+function updateEdges(){const f=page/Math.max(1,PAGES.length-1);$("#edgesL").style.width=(4+f*12)+"px";$("#edgesR").style.width=(16-f*12)+"px"}
+function updateNav(){
+  $("#prevBtn").disabled=page<=0||turning;
+  const lastVisible=Math.max(...visiblePages());
+  const end=lastVisible>=PAGES.length-1;
+  const blocked=blockedBy();
+  $("#nextBtn").disabled=end||turning;
+  $("#nextBtn").classList.toggle("locked",!!blocked&&!end);
+  $("#nextBtn").innerHTML=blocked&&!end?"🔒":"›";
+  $("#nextBtn").setAttribute("aria-label",blocked?"Locked — solve the gate on this page to continue":"Next page");
+}
+function step(dir){
+  if(turning)return;
+  if(dir>0){
+    const blocked=blockedBy();
+    if(blocked){const G=GATES[blocked];SND.thud();$("#nextBtn").classList.add("shake");setTimeout(()=>$("#nextBtn").classList.remove("shake"),700);
+      live("This page is gated. Solve "+G.title+" to continue.");
+      const gb=document.querySelector(".gatebox");if(gb){gb.classList.add("unlockflash");setTimeout(()=>gb.classList.remove("unlockflash"),1000)}
+      return}
+    const lastVisible=Math.max(...visiblePages());
+    if(lastVisible>=PAGES.length-1)return;
+    const target=isMobile()?page+1:leftIndex()+2;
+    animTurn(1,target);
+  }else{
+    if(page<=0)return;
+    const target=isMobile()?page-1:Math.max(0,leftIndex()-2);
+    animTurn(-1,target);
+  }
+}
+function animTurn(dir,target){
+  if(isMobile()||reducedMQ.matches||!prefs.motion){page=target;renderSpread();SND.flip();return}
+  turning=true;SND.flip();
+  const sheet=$("#turnSheet"),front=sheet.querySelector(".ts.front"),back=sheet.querySelector(".ts.back");
+  const oldL=leftIndex();
+  if(dir>0){
+    front.innerHTML=pageInnerHTML(oldL+1<PAGES.length?oldL+1:null);
+    back.innerHTML=pageInnerHTML(target<PAGES.length?target:null);
+    page=target;
+    /* underneath: left stays old-left, right becomes new-right */
+    $("#pageR").innerHTML=pageInnerHTML(target+1<PAGES.length?target+1:null);
+    sheet.className="";sheet.classList.add("show","fwd");
+  }else{
+    front.innerHTML=pageInnerHTML(target+1<PAGES.length?target+1:null);
+    back.innerHTML=pageInnerHTML(oldL);
+    page=target;
+    $("#pageL").innerHTML=pageInnerHTML(target);
+    sheet.className="";sheet.classList.add("show","back");
+  }
+  const done=()=>{sheet.classList.remove("show","fwd","back");sheet.removeEventListener("animationend",done);turning=false;renderSpread()};
+  sheet.addEventListener("animationend",done);
+  setTimeout(()=>{if(turning){done()}},1000);
+}
+
+/* ---------- parallax ---------- */
+let rafPending=false,px=0,py=0;
+function applyParallax(){
+  rafPending=false;
+  if(!prefs.motion||reducedMQ.matches)return;
+  document.querySelectorAll("#spreadWrap .panel3d").forEach(p=>{
+    p.style.transform=`rotateY(${px*4}deg) rotateX(${-py*3}deg)`;
+    p.querySelectorAll("[data-depth]").forEach(l=>{const d=+l.dataset.depth||0;l.style.transform=`translate(${px*d*.6}px,${py*d*.35}px)`});
+  });
+}
+addEventListener("pointermove",e=>{
+  px=(e.clientX/innerWidth-.5)*2;py=(e.clientY/innerHeight-.5)*2;
+  if(!rafPending){rafPending=true;requestAnimationFrame(applyParallax)}
+  const cc=$("#coverCard");
+  if(cc&&!$("#cover").hidden&&prefs.motion&&!reducedMQ.matches){
+    cc.style.transform=`rotateY(${px*9}deg) rotateX(${-py*7}deg)`;
+    cc.querySelectorAll(".cov-layer").forEach(l=>{const d=+l.dataset.depth||0;l.style.transform=`translate(${px*d}px,${py*d*.6}px)`});
+  }
+},{passive:true});
+
+/* note: SVG <g data-depth> transform via style works in modern browsers (SVG2). Wrapped above for safety. */
+
+/* ---------- HUD toggles ---------- */
+function syncToggles(){
+  $("#sndBtn").setAttribute("aria-pressed",prefs.sound);$("#sndBtn").textContent=prefs.sound?"🔊 Sound":"🔇 Sound";
+  $("#motBtn").setAttribute("aria-pressed",prefs.motion);$("#motBtn").textContent=prefs.motion?"3D On":"3D Off";
+  $("#txtBtn").setAttribute("aria-pressed",prefs.bigtext);document.documentElement.dataset.textsize=prefs.bigtext?"lg":"md";
+  $("#hcBtn").setAttribute("aria-pressed",prefs.hc);document.body.classList.toggle("hc",prefs.hc);
+  if(!prefs.motion)document.querySelectorAll(".panel3d").forEach(p=>p.style.transform="");
+  storage.set(K("prefs"),prefs);
+}
+$("#sndBtn").addEventListener("click",()=>{prefs.sound=!prefs.sound;ac();syncToggles();SND.blip()});
+$("#motBtn").addEventListener("click",()=>{prefs.motion=!prefs.motion;syncToggles()});
+$("#txtBtn").addEventListener("click",()=>{prefs.bigtext=!prefs.bigtext;syncToggles()});
+$("#hcBtn").addEventListener("click",()=>{prefs.hc=!prefs.hc;syncToggles()});
+
+/* ---------- teacher panel ---------- */
+function buildTeacher(){
+  $("#teacherBody").innerHTML=`
+    <p style="font:600 .9rem/1.45 'Segoe UI'">${VOLUME.unit} — interactive graphic novel. Story pauses at six <b>reader gates</b>; students must solve grade-level math problems to continue. Progress, badges, and settings persist per device.</p>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">SUGGESTED USE</h3>
+    <p style="font:600 .88rem/1.45 'Segoe UI'">${TEACHER.suggested}</p>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">STANDARDS ALIGNMENT (CCSS)</h3>
+    <table class="tt"><tr><th>Standard</th><th>Description</th><th>Where</th></tr>
+    ${TEACHER.standards.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</table>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">ANSWER KEY</h3>
+    <table class="tt"><tr><th>Gate</th><th>Answer &amp; notes</th></tr>
+    ${TEACHER.answers.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td></tr>`).join("")}</table>
+    <p style="font:600 .8rem/1.4 'Segoe UI';color:#666">Hints escalate: conceptual → procedural → VEX worked example (parallel problem; never reveals the gate answer). Sound is off by default. 3D motion can be disabled (auto-disabled for reduced-motion users). © EduWonderLab — single-file, offline-safe, no data leaves the device.</p>`;
+}
+$("#teacherBtn").addEventListener("click",()=>{buildTeacher();$("#teacherModal").classList.add("open")});
+$("#printTeacher").addEventListener("click",()=>{document.body.classList.add("print-teacher");window.print();setTimeout(()=>document.body.classList.remove("print-teacher"),400)});
+document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",()=>b.closest(".modal").classList.remove("open")));
+
+/* ---------- input ---------- */
+$("#nextBtn").addEventListener("click",()=>{ac();step(1)});
+$("#prevBtn").addEventListener("click",()=>{ac();step(-1)});
+addEventListener("keydown",e=>{
+  if(e.key==="Escape"){$("#teacherModal").classList.remove("open");return}
+  if($(".modal.open"))return;
+  if(["ArrowRight","PageDown"].includes(e.key))step(1);
+  if(["ArrowLeft","PageUp"].includes(e.key))step(-1);
+});
+let tx=null;
+addEventListener("touchstart",e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener("touchend",e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>60&&!$(".modal.open"))step(dx<0?1:-1);tx=null},{passive:true});
+mobileMQ.addEventListener("change",()=>renderSpread());
+
+/* ---------- boot ---------- */
+function openBook(){
+  $("#cover").hidden=true;$("#hud").hidden=false;$("#stage").hidden=false;
+  $("#prevBtn").hidden=false;$("#nextBtn").hidden=false;
+  renderSpread();
+}
+$("#startBtn").addEventListener("click",()=>{ac();page=0;openBook()});
+$("#resumeBtn").addEventListener("click",()=>{ac();openBook()});
+if((storage.get(K("page"))||0)>0||solved.size>0){$("#resumeBtn").hidden=false}
+if(reducedMQ.matches){prefs.motion=false}
+document.body.classList.toggle("reduced",reducedMQ.matches);
+buildBadges();syncToggles();buildProgress();
+</script>
+</body>
+</html>
