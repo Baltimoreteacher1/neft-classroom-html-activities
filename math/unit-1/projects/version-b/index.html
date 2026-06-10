@@ -666,7 +666,27 @@
         </p>
 
         <!-- 1b Split -->
-        <h3 style="margin-top: 24px">➗ Split the cost fairly (division)</h3>
+        
+        <!-- ===================== RESEARCH LAB ===================== -->
+        <div class="pk-research-lab">
+          <h3>🔍 Robotics Kit Component Pricing</h3>
+          <p>Open the LEGO Education website or spike PRIME catalog. Find the retail price of a Spike Prime Core Expansion Set or basic set. Enter the researched price below:</p>
+          <a href="https://education.lego.com/" target="_blank" class="pk-research-btn">🔗 LEGO Education SPIKE Prime Catalog ↗</a>
+          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
+            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Researched Kit Name</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="syncResearch()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Kit Price ($)</label>
+              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
+            </div>
+          </div>
+        </div>
+  <h3 style="margin-top: 24px">➗ Split the cost fairly (division)</h3>
         <div class="grid2">
           <div>
             <label class="fld" for="s-total">Total shared cost ($)</label
@@ -838,7 +858,7 @@
         </p>
         <div id="projectVisualizer"></div>
       </section>
-    
+  
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -921,7 +941,7 @@
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase" >
+      <section class="phase">
         <div class="phase-head">
           <div
             class="phase-num"
@@ -930,49 +950,39 @@
             3
           </div>
           <div>
-            <span class="arc-banner">Part 3 · World — real-world research</span>
-            <div class="skill">Compare to real data</div>
-            <h2>How Do Your Calculations Compare?</h2>
+            <span class="arc-banner">Part 3 · World — real robotics kits</span>
+            <div class="skill">Compare to real data · 6.NS.3</div>
+            <h2>How Does Your Spending Compare?</h2>
           </div>
         </div>
         <p>
-          Compare your calculated project totals against real-world industry benchmarks and standards.
+          These are realistic prices for popular school robotics kits and team
+          budgets. Pick a category and see where your number lands.
         </p>
-
-        <div class="pk-research-lab">
-          <h3>🔍 Robotics Kit Component Pricing</h3>
-          <p>Open the LEGO Education website or spike PRIME catalog. Find the retail price of a Spike Prime Core Expansion Set or basic set. Enter the researched price below:</p>
-          <a href="https://education.lego.com/" target="_blank" class="pk-research-btn">🔗 LEGO Education SPIKE Prime Catalog ↗</a>
-          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
-            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
-          </p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Researched Kit Name</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="worldGo()">
-            </div>
-            <div>
-              <label class="fld" for="worldSize">Kit Price ($)</label>
-              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="worldGo()">
-            </div>
-          </div>
-        </div>
-
         <div class="grid2">
           <div>
-            <label class="fld" for="myWorld">My calculated value to compare</label>
+            <label class="fld" for="worldCat">Compare against</label>
+            <select id="worldCat" data-save onchange="worldGo()">
+              <option value="kitPrice">Kit price ($)</option>
+              <option value="perStudent">Cost per student ($)</option>
+              <option value="teamBudget">Team budget ($)</option>
+            </select>
+            <label class="fld" for="myWorld">My number</label>
             <input
               type="number"
               id="myWorld"
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="auto-fills or type your value"
+              placeholder="type your value"
             />
-            <div id="worldMeter" style="margin-top: 24px;"></div>
+            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
+              Tip: try your parts subtotal or your cost per teammate.
+            </p>
+            <div id="worldMeter"></div>
           </div>
           <div>
-            <h3>Typical Kit Benchmarks 🌍</h3>
+            <h3>Robotics Kit Sample 🤖</h3>
             <div
               style="
                 overflow: auto;
@@ -981,22 +991,13 @@
               "
             >
               <table class="rubric" style="margin-top: 0">
-                <thead>
-                  <tr>
-                    <th>Item/Location</th>
-                    <th>Standard Value</th>
-                  </tr>
-                </thead>
-                <tbody id="worldRows">
-                  <tr><td>VEX IQ Kit</td><td>$329.95</td></tr>
-                  <tr><td>LEGO SPIKE Prime</td><td>$379.95</td></tr>
-                  <tr><td>VEX V5 Kit</td><td>$149.95</td></tr>
-                  <tr><td>Hummingbird Bit</td><td>$99.95</td></tr>
-                  <tr><td>Sphero RVR</td><td>$279.95</td></tr>
-                  <tr><td>Arduino Robot Kit</td><td>$410.00</td></tr>
-                  <tr><td>micro:bit Robot</td><td>$189.95</td></tr>
-                  <tr><td>FIRST LEGO League</td><td>$299.95</td></tr>
-                </tbody>
+                <tr>
+                  <th>Kit / Team</th>
+                  <th>Kit price</th>
+                  <th>Per student</th>
+                  <th>Team budget</th>
+                </tr>
+                <tbody id="worldRows"></tbody>
               </table>
             </div>
           </div>
@@ -1039,14 +1040,14 @@
           placeholder="My value is ___ the sample average because ___."
         ></textarea>
         <div class="pk-lvl2">
-          <label class="fld" for="worldHard"><strong>Level 2 Tech Challenge:</strong> Use your researched kit price entered above. If your classroom has a budget of $1,500, how many of these kits can you purchase, and what exact budget remains? Show your division steps.</label>
+          <label class="fld" for="worldHard"
+            >Level 2 question: A kit costs $279.00 and is split among 6
+            students. What does each student pay? Show your thinking.</label
+          >
           <textarea
             id="worldHard"
             data-save
-            placeholder="<textarea
-            id="worldHard"
-            data-save
-            placeholder="500 ÷ $___ = ___ kits with a remainder of $___ because..."
+            placeholder="$279.00 ÷ 6 = ___ because ___"
           ></textarea>
         </div>
         <label class="fld" for="careful"
@@ -1409,33 +1410,81 @@
       function worldSample() {
         return world.map((r) => r[wIdx[$("worldCat").value]]);
       }
+      
       function worldGo() {
         const my = num("myWorld");
-        PK.worldMeter("worldMeter", worldSample(), my, {
-          mean: "Sample avg $",
-          me: "Me $",
-        });
+        const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
+        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        
+        let sample = worldSample();
+        if (!isNaN(customSize) && customSize > 0) {
+          sample = [...sample, customSize];
+        }
+        
+        const labels =
+          $("worldCat").value === "costPerGuest"
+            ? { mean: "City avg $", me: "Me $" }
+            : { mean: "City avg", me: "Me" };
+            
+        PK.worldMeter("worldMeter", sample, my, labels);
+        
+        const fb = $("worldMeter");
+        if (!isNaN(customSize) && customSize > 0 && customName) {
+          const ratio = (my / customSize).toFixed(2);
+          const pct = Math.round((my / customSize) * 100);
+          const diff = Math.abs(my - customSize).toFixed(2);
+          
+          let myValStr = true ? "$" + my.toFixed(2) : my + "";
+          let custValStr = true ? "$" + customSize.toFixed(2) : customSize + "";
+          let diffStr = true ? "$" + Number(diff).toFixed(2) : Number(diff).toFixed(2) + "";
+
+          const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
+          const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
+            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
+            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
+            `</div>`;
+          fb.innerHTML += desc;
+        }
+        
+        if (typeof drawVisualizer === 'function') {
+          drawVisualizer();
+        }
+        
         updateProgress();
       }
+  
+      
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
-        const sample = worldSample();
+        let sample = worldSample();
+        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        if (!isNaN(customSize) && customSize > 0) {
+          sample = [...sample, customSize];
+        }
         if (isNaN(v)) {
           $("whatIfBox").textContent = "Enter a number first.";
           return;
         }
-        const before = PK.mean(sample),
-          after = PK.mean(sample.concat([v]));
+        const before = PK.mean(sample);
+        const after = PK.mean(sample.concat([v]));
+        
+        let beforeStr = true ? "$" + before.toFixed(2) : before.toFixed(2) + "";
+        let afterStr = true ? "$" + after.toFixed(2) : after.toFixed(2) + "";
+        let vStr = true ? "$" + v.toFixed(2) : v + "";
+
         PK.whatIf(
           "whatIfBox",
-          { average: "$" + before.toFixed(2) },
-          { average: "$" + after.toFixed(2) },
-          "Adding a value of $" + v.toFixed(2) + " to the sample:",
+          { average: beforeStr },
+          { average: afterStr },
+          "Adding a value of " + vStr + " to the sample:"
         );
       }
+  
 
       function useExamples() {
         const ex = {
+          "worldCountry": "VEX IQ Kit",
+          "worldSize": 329.95,
           p1: 18.75,
           q1: 4,
           p2: 6.4,
@@ -1457,7 +1506,81 @@
         });
         recalcAll();
       }
-      function recalcAll() {
+      
+      function syncResearch() {
+        const ws = $("worldSize");
+        if (!ws) return;
+        const val = num("worldSize");
+        if (isNaN(val) || val <= 0) return;
+        if ($("s-total")) {
+          $("s-total").value = val;
+          calcSplit();
+        }
+        worldGo();
+      }
+    
+
+      
+      function drawVisualizer() {
+        const s = num("f-screws");
+        const b = num("f-bolts");
+        
+        let html = "";
+        if (!isNaN(s) && s > 0 && !isNaN(b) && b > 0) {
+          const g = gcd(s, b);
+          const screwsPer = s / g;
+          const boltsPer = b / g;
+          
+          const numBoxes = Math.min(g, 6);
+          let boxesHtml = "";
+          for (let i = 0; i < numBoxes; i++) {
+            const x = 30 + (i % 3) * 150;
+            const y = 30 + Math.floor(i / 3) * 100;
+            
+            let itemsHtml = "";
+            for (let sc = 0; sc < Math.min(screwsPer, 8); sc++) {
+              const sx = x + 15 + (sc % 4) * 16;
+              const sy = y + 35 + Math.floor(sc / 4) * 16;
+              itemsHtml += `<circle cx="${sx}" cy="${sy}" r="5" fill="#1a6fb5" />`;
+            }
+            for (let bl = 0; bl < Math.min(boltsPer, 8); bl++) {
+              const bx = x + 85 + (bl % 4) * 16;
+              const by = y + 35 + Math.floor(bl / 4) * 16;
+              itemsHtml += `<rect x="${bx - 5}" y="${by - 5}" width="10" height="10" rx="2" fill="#d4952a" />`;
+            }
+            
+            boxesHtml += `
+              <g>
+                <rect x="${x}" y="${y}" width="140" height="80" rx="8" fill="none" stroke="#0e8a7d" stroke-width="2" />
+                <text x="${x + 70}" y="${y + 20}" text-anchor="middle" font-size="10" font-weight="bold" fill="#0e8a7d">Toolkit #${i+1}</text>
+                ${itemsHtml}
+              </g>
+            `;
+          }
+          
+          html = `
+            ${boxesHtml}
+            <text x="250" y="215" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">
+              GCF = ${g} Toolkits | Each gets ${screwsPer} Screws (🔵) & ${boltsPer} Bolts (🟧)
+            </text>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Screws & Bolts amounts to visualize toolkits</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+function recalcAll() {
+        if (typeof syncResearch === "function") syncResearch();
         calcParts();
         calcSplit();
         calcKits();

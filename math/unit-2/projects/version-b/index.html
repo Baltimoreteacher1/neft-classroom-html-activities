@@ -774,7 +774,27 @@
         </details>
 
         <!-- 1c Mixed ÷ fraction -->
-        <h3 style="margin-top: 24px">
+        
+        <!-- ===================== RESEARCH LAB ===================== -->
+        <div class="pk-research-lab">
+          <h3>🔍 Standard Construction Stud Widths</h3>
+          <p>Open the website or look up the dimensional standards for common soft lumber. Find the ACTUAL thickness/width of a standard 2x4 board (standard is 3 1/2 inches, or 7/2 inches). Enter the thickness below:</p>
+          <a href="https://www.homedepot.com/" target="_blank" class="pk-research-btn">🔗 The Home Depot Lumber Lumber Dimensions Guide ↗</a>
+          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
+            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Lumber Specification</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="syncResearch()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Actual Board Width (inches)</label>
+              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
+            </div>
+          </div>
+        </div>
+  <h3 style="margin-top: 24px">
           🔧 Pipe sections (mixed number ÷ fraction)
         </h3>
         <div class="task">
@@ -872,7 +892,7 @@
         </p>
         <div id="projectVisualizer"></div>
       </section>
-    
+  
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -960,7 +980,7 @@
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase" >
+      <section class="phase">
         <div class="phase-head">
           <div
             class="phase-num"
@@ -969,49 +989,41 @@
             3
           </div>
           <div>
-            <span class="arc-banner">Part 3 · World — real-world research</span>
-            <div class="skill">Compare to real data</div>
-            <h2>How Do Your Calculations Compare?</h2>
+            <span class="arc-banner"
+              >Part 3 · World — standard material lengths</span
+            >
+            <div class="skill">Compare to real data · 6.NS.1</div>
+            <h2>How Many Pieces Do Standard Materials Make?</h2>
           </div>
         </div>
         <p>
-          Compare your calculated project totals against real-world industry benchmarks and standards.
+          These are standard board and pipe lengths: length ÷ cut size = pieces.
+          Pick a category and see where your number lands.
         </p>
-
-        <div class="pk-research-lab">
-          <h3>🔍 Standard Construction Stud Widths</h3>
-          <p>Open the website or look up the dimensional standards for common soft lumber. Find the ACTUAL thickness/width of a standard 2x4 board (standard is 3 1/2 inches, or 7/2 inches). Enter the thickness below:</p>
-          <a href="https://www.homedepot.com/" target="_blank" class="pk-research-btn">🔗 The Home Depot Lumber Lumber Dimensions Guide ↗</a>
-          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
-            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
-          </p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Lumber Specification</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="worldGo()">
-            </div>
-            <div>
-              <label class="fld" for="worldSize">Actual Board Width (inches)</label>
-              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="worldGo()">
-            </div>
-          </div>
-        </div>
-
         <div class="grid2">
           <div>
-            <label class="fld" for="myWorld">My calculated value to compare</label>
+            <label class="fld" for="worldCat">Compare against</label>
+            <select id="worldCat" data-save onchange="worldGo()">
+              <option value="pieces">Pieces per material</option>
+              <option value="length">Material length (ft)</option>
+            </select>
+            <label class="fld" for="myWorld">My number</label>
             <input
               type="number"
               id="myWorld"
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="auto-fills or type your value"
+              placeholder="type your value"
             />
-            <div id="worldMeter" style="margin-top: 24px;"></div>
+            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
+              Tip: your shelves or pieces from Part 1 are a great value to type
+              here.
+            </p>
+            <div id="worldMeter"></div>
           </div>
           <div>
-            <h3>Actual Dimensions 🌍</h3>
+            <h3>Standard Material Lengths 🪵</h3>
             <div
               style="
                 overflow: auto;
@@ -1020,22 +1032,13 @@
               "
             >
               <table class="rubric" style="margin-top: 0">
-                <thead>
-                  <tr>
-                    <th>Item/Location</th>
-                    <th>Standard Value</th>
-                  </tr>
-                </thead>
-                <tbody id="worldRows">
-                  <tr><td>2x4 Stud</td><td>3.5 in</td></tr>
-                  <tr><td>2x6 Board</td><td>5.5 in</td></tr>
-                  <tr><td>2x2 Furring</td><td>1.5 in</td></tr>
-                  <tr><td>2x8 Plank</td><td>7.25 in</td></tr>
-                  <tr><td>2x10 Plank</td><td>9.25 in</td></tr>
-                  <tr><td>2x12 Plank</td><td>11.25 in</td></tr>
-                  <tr><td>Standard Trim</td><td>2.5 in</td></tr>
-                  <tr><td>Fencing Slat</td><td>4.5 in</td></tr>
-                </tbody>
+                <tr>
+                  <th>Material</th>
+                  <th>Length (ft)</th>
+                  <th>Cut</th>
+                  <th>Pieces</th>
+                </tr>
+                <tbody id="worldRows"></tbody>
               </table>
             </div>
           </div>
@@ -1090,11 +1093,16 @@
           placeholder="My material makes ___ pieces, which is ___ the average of ___ because ___."
         ></textarea>
         <div class="pk-lvl2">
-          <label class="fld" for="worldHard"><strong>Level 2 Carpentry Challenge:</strong> Use your researched actual board width (use fraction form, e.g. 3 1/2 = 7/2 inches). If a wooden plank is 21 inches wide, how many standard studs of your researched size can be ripped (cut vertically) from it? Show your fraction division steps.</label>
+          <label class="fld" for="worldHard"
+            >Level 2 question: A 7-foot board is cut into 3/4-ft pieces. How
+            many full pieces, and how much board (if any) is left over? Then say
+            whether 3/4-ft cuts or 2/3-ft cuts waste less. Show your
+            thinking.</label
+          >
           <textarea
             id="worldHard"
             data-save
-            placeholder="21 ÷ 7/2 = 21 × 2/7 = ___ boards because..."
+            placeholder="7 ÷ (3/4) = 7 × (4/3) = 28/3 = ___ R ___; leftover = ___ ft because ___"
           ></textarea>
         </div>
         <label class="fld" for="careful"
@@ -1542,29 +1550,55 @@
       }
 
       /* ---- Part 3: world dataset + meter ---- */
-      const baseWorldSample = [3.5, 5.5, 1.5, 7.25, 9.25, 11.25, 2.5, 4.5];
-
+      // [material, lengthFt, cutLabel, pieces] — standard board/pipe lengths
+      const world = [
+        ["Pine 2x4 stud", 8, "2/3 ft", 12],
+        ["Plywood strip", 6, "3/4 ft", 8],
+        ["Oak shelf board", 10, "5/6 ft", 12],
+        ["Copper pipe", 3.5, "1/4 ft", 14],
+        ["PVC pipe", 5, "1/2 ft", 10],
+        ["Dowel rod", 4.5, "3/8 ft", 12],
+        ["Trim molding", 12, "1 1/4 ft", 9],
+        ["Steel rod", 3.75, "1/2 ft", 7],
+      ];
+      const wIdx = { pieces: 3, length: 1 };
       function renderWorld() {
-        // Automatically populated from static table in HTML
+        $("worldRows").innerHTML = world
+          .map(
+            (r) =>
+              "<tr><td>" +
+              r[0] +
+              "</td><td>" +
+              r[1] +
+              "</td><td>" +
+              r[2] +
+              "</td><td>" +
+              r[3] +
+              "</td></tr>",
+          )
+          .join("");
       }
-
+      function worldSample() {
+        return world.map((r) => r[wIdx[$("worldCat").value]]);
+      }
+      
       function worldGo() {
         const my = num("myWorld");
-        const customName = $("worldCountry").value.trim();
-        const customSize = num("worldSize");
+        const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
+        const customSize = $("worldSize") ? num("worldSize") : NaN;
         
-        let sample = [...baseWorldSample];
+        let sample = worldSample();
         if (!isNaN(customSize) && customSize > 0) {
-          sample.push(customSize);
+          sample = [...sample, customSize];
         }
         
-        PK.worldMeter(
-          "worldMeter",
-          sample,
-          my,
-          { mean: "World Avg", me: "Me" }
-        );
-
+        const labels =
+          $("worldCat").value === "costPerGuest"
+            ? { mean: "City avg $", me: "Me $" }
+            : { mean: "City avg", me: "Me" };
+            
+        PK.worldMeter("worldMeter", sample, my, labels);
+        
         const fb = $("worldMeter");
         if (!isNaN(customSize) && customSize > 0 && customName) {
           const ratio = (my / customSize).toFixed(2);
@@ -1583,20 +1617,20 @@
           fb.innerHTML += desc;
         }
         
-        // Draw the dynamic SVG visualizer
         if (typeof drawVisualizer === 'function') {
           drawVisualizer();
         }
         
         updateProgress();
       }
-
+  
+      
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
-        let sample = [...baseWorldSample];
-        const customSize = num("worldSize");
+        let sample = worldSample();
+        const customSize = $("worldSize") ? num("worldSize") : NaN;
         if (!isNaN(customSize) && customSize > 0) {
-          sample.push(customSize);
+          sample = [...sample, customSize];
         }
         if (isNaN(v)) {
           $("whatIfBox").textContent = "Enter a number first.";
@@ -1616,6 +1650,64 @@
           "Adding a value of " + vStr + " to the sample:"
         );
       }
+  
+
+      /* ---- Use example numbers ---- */
+      function useExamples() {
+        const ex = {
+          "worldCountry": "2x4 Stud",
+          "worldSize": 3.5,
+          projectName: "shop cut list",
+          "p1-board": 8,
+          "p1-denom": 3,
+          p2a: 5,
+          p2b: 6,
+          p2c: 1,
+          p2d: 4,
+          p3w: 3,
+          p3n: 1,
+          p3d: 2,
+        };
+        Object.entries(ex).forEach(([k, v]) => {
+          if ($(k)) $(k).value = v;
+        });
+        recalcAll();
+      }
+
+      
+      function decimalToFraction(val) {
+        const eps = 0.005;
+        if (Math.abs(val - 3.5) < eps) return { num: 7, den: 2 };
+        if (Math.abs(val - 5.5) < eps) return { num: 11, den: 2 };
+        if (Math.abs(val - 1.5) < eps) return { num: 3, den: 2 };
+        if (Math.abs(val - 7.25) < eps) return { num: 29, den: 4 };
+        if (Math.abs(val - 9.25) < eps) return { num: 37, den: 4 };
+        if (Math.abs(val - 11.25) < eps) return { num: 45, den: 4 };
+        
+        const len = String(val).split('.')[1]?.length || 0;
+        if (len === 0) return { num: Math.round(val), den: 1 };
+        const den = Math.pow(10, len);
+        const num = Math.round(val * den);
+        const gcdVal = (a, b) => b ? gcdVal(b, a % b) : a;
+        const g = gcdVal(num, den);
+        return { num: num / g, den: den / g };
+      }
+
+      function syncResearch() {
+        const ws = $("worldSize");
+        if (!ws) return;
+        const val = num("worldSize");
+        if (isNaN(val) || val <= 0) return;
+        const frac = decimalToFraction(val);
+        if ($("p3w") && $("p3n") && $("p3d")) {
+          $("p3w").value = Math.floor(val);
+          $("p3n").value = frac.num % frac.den;
+          $("p3d").value = frac.den;
+          calcPhase3();
+        }
+        worldGo();
+      }
+    
 
       
       function drawVisualizer() {
@@ -1691,27 +1783,9 @@
         $("projectVisualizer").innerHTML = svgString;
       }
     
-
-      function useExamples() {
-        const ex = {
-          projectName: "shop cut list",
-          "p1-board": 8,
-          "p1-denom": 3,
-          p2a: 5,
-          p2b: 6,
-          p2c: 1,
-          p2d: 4,
-          p3w: 3,
-          p3n: 1,
-          p3d: 2,
-        };
-        Object.entries(ex).forEach(([k, v]) => {
-          if ($(k)) $(k).value = v;
-        });
-        recalcAll();
-      }
-
-      function recalcAll() {
+  
+function recalcAll() {
+        if (typeof syncResearch === "function") syncResearch();
         calcPhase1();
         calcPhase2();
         calcPhase3();

@@ -722,8 +722,102 @@
       .hidden {
         display: none !important;
       }
+      /* session pages — groups of activities */
+      .listgrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 12px;
+      }
+      .listcard {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+        box-shadow: var(--shadow);
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        transition: transform 0.15s, border-color 0.15s;
+        text-decoration: none;
+        color: inherit;
+      }
+      .listcard:hover {
+        border-color: var(--teal);
+        transform: translateY(-2px);
+      }
+      .listcard.done {
+        border-color: var(--green);
+        background: linear-gradient(135deg, #fff, var(--green-soft));
+      }
+      .listcard h3 {
+        margin: 0;
+        font-size: 15px;
+        color: var(--navy);
+      }
+      .listcard .openlink {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--teal);
+        margin-top: auto;
+      }
+      .listcard .sessmeta,
+      .listcard .preview {
+        font-size: 12px;
+        color: var(--navy2);
+        margin: 0;
+        line-height: 1.4;
+      }
+      .listbanner {
+        grid-column: 1 / -1;
+        margin-bottom: 4px;
+      }
+      .actpage {
+        max-width: 860px;
+        margin: 0 auto;
+      }
+      .actnav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+        padding: 12px 14px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+      }
+      .actnav .crumb {
+        font-size: 13px;
+        color: var(--navy2);
+        font-weight: 600;
+      }
+      .actnav .navbtns {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .sessionhead {
+        font-size: 14px;
+        color: var(--navy2);
+        background: var(--teal-soft);
+        border-radius: 10px;
+        padding: 10px 14px;
+        margin-bottom: 16px;
+      }
+      .sessionacts {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .sessionacts .card {
+        margin: 0;
+      }
       @media (max-width: 600px) {
-        .grid {
+        .grid,
+        .listgrid {
           grid-template-columns: 1fr;
         }
       }
@@ -732,7 +826,7 @@
   <body>
     <header class="app">
       <div>
-        <h1>ACCESS Practice Lab <span class="brandtag">v2.0</span></h1>
+        <h1>ACCESS Practice Lab <span class="brandtag">v3.1</span></h1>
         <div class="sub">
           Interactive WIDA test-prep for Listening · Reading · Speaking ·
           Writing — EduWonderLab
@@ -788,7 +882,11 @@
         </div>
       </div>
 
-      <main id="activityView" class="grid" aria-live="polite"></main>
+      <main id="sessionListView" class="listgrid" aria-live="polite"></main>
+      <section id="sessionPageView" class="actpage hidden" aria-live="polite">
+        <nav class="actnav" id="sessionNav"></nav>
+        <div id="sessionContent"></div>
+      </section>
       <section id="teacherView" class="hidden"></section>
       <section id="resultsView" class="hidden"></section>
     </div>
@@ -5703,6 +5801,7 @@
       }; /*__TEACHER__*/
 
       /* ============================ ENGINE ============================ */
+      var SESSION_SIZE = 5;
       var state = { domain: "Listening", band: "A" };
       var STORE_KEY = "ewl_access_lab_v2";
       var progress = loadProgress();
@@ -6620,29 +6719,304 @@
         buildSpeak(a, c);
       }
 
-      /* ---- View rendering ---- */
-      function refreshProgress() {
-        var list = ACTIVITIES.filter(function (a) {
+      /* ---- View rendering (session groups) ---- */
+      function getActivityList() {
+        return ACTIVITIES.filter(function (a) {
           return a.domain === state.domain && a.band === state.band;
         });
+      }
+      function getSessions(list) {
+        var sessions = [];
+        for (var i = 0; i < list.length; i += SESSION_SIZE) {
+          sessions.push(list.slice(i, i + SESSION_SIZE));
+        }
+        return sessions;
+      }
+      function sessionDoneCount(acts) {
+        var n = 0;
+        for (var i = 0; i < acts.length; i++) {
+          if (progress[acts[i].id]) n++;
+        }
+        return n;
+      }
+      function buildSessionListCard(sessionActs, num, total) {
+        var done = sessionDoneCount(sessionActs);
+        var allDone = done === sessionActs.length;
+        var href =
+          "#/session/" +
+          encodeURIComponent(state.domain) +
+          "/" +
+          state.band +
+          "/" +
+          num;
+        var card = el(
+          '<a class="listcard' +
+            (allDone ? " done" : "") +
+            '" href="' +
+            href +
+            '"></a>',
+        );
+        card.appendChild(
+          el(
+            '<div class="meta"><span class="lvl">Session ' +
+              num +
+              " of " +
+              total +
+              '</span><span class="typ">' +
+              sessionActs.length +
+              " activities</span></div>",
+          ),
+        );
+        card.appendChild(
+          el(
+            "<h3>Session " + num + ": " + esc(sessionActs[0].title) + "</h3>",
+          ),
+        );
+        var titles = sessionActs
+          .map(function (a) {
+            return a.title;
+          })
+          .join(" · ");
+        card.appendChild(
+          el(
+            '<p class="preview">' +
+              esc(titles.length > 90 ? titles.substring(0, 90) + "…" : titles) +
+              "</p>",
+          ),
+        );
+        card.appendChild(
+          el(
+            '<div class="sessmeta">' +
+              done +
+              "/" +
+              sessionActs.length +
+              " completed · about " +
+              sessionActs.length * 3 +
+              " min</div>",
+          ),
+        );
+        card.appendChild(
+          el(
+            '<span class="openlink">' +
+              (allDone ? "Review this session →" : "Open session →") +
+              "</span>",
+          ),
+        );
+        return card;
+      }
+      function refreshProgress() {
+        var list = getActivityList();
         var done = list.filter(function (a) {
           return progress[a.id];
         }).length;
         var pct = list.length ? Math.round((done / list.length) * 100) : 0;
         document.getElementById("progFill").style.width = pct + "%";
         document.getElementById("progText").textContent =
-          done + " of " + list.length + " done in this view";
+          done +
+          " of " +
+          list.length +
+          " done in " +
+          state.domain +
+          " · Band " +
+          state.band;
+      }
+      function renderSessionList() {
+        var view = document.getElementById("sessionListView");
+        view.innerHTML = "";
+        var list = getActivityList();
+        var sessions = getSessions(list);
+        if (!sessions.length) {
+          view.appendChild(
+            el('<div class="note">No activities in this band yet.</div>'),
+          );
+        } else {
+          view.appendChild(
+            el(
+              '<div class="note listbanner">Practice in sessions of up to ' +
+                SESSION_SIZE +
+                " activities. Finish one session, then come back later for the next.</div>",
+            ),
+          );
+          for (var i = 0; i < sessions.length; i++) {
+            view.appendChild(buildSessionListCard(sessions[i], i + 1, sessions.length));
+          }
+        }
+        refreshProgress();
+      }
+      function getSessionsForDomainBand(domain, band) {
+        return getSessions(
+          ACTIVITIES.filter(function (a) {
+            return a.domain === domain && a.band === band;
+          }),
+        );
+      }
+      function renderSessionPage(domain, band, sessionNum) {
+        state.domain = domain;
+        state.band = band;
+        syncTabsAndBand();
+        var sessions = getSessionsForDomainBand(domain, band);
+        var idx = sessionNum - 1;
+        if (idx < 0 || idx >= sessions.length) return navigateSessionList();
+        var sessionActs = sessions[idx];
+        document.getElementById("sessionListView").classList.add("hidden");
+        document.getElementById("teacherView").classList.add("hidden");
+        document.getElementById("resultsView").classList.add("hidden");
+        document.getElementById("bandbar").classList.remove("hidden");
+        document.getElementById("sessionPageView").classList.remove("hidden");
+        var nav = document.getElementById("sessionNav");
+        nav.innerHTML = "";
+        var left = el(
+          '<div><button class="btn ghost" id="backSessions">← All sessions</button><div class="crumb">' +
+            esc(domain) +
+            " · Band " +
+            esc(band) +
+            "</div></div>",
+        );
+        left.querySelector("#backSessions").onclick = function (e) {
+          e.preventDefault();
+          navigateSessionList();
+        };
+        var btns = el('<div class="navbtns"></div>');
+        if (idx > 0) {
+          var pb = el(
+            '<button class="btn ghost">← Session ' + idx + "</button>",
+          );
+          pb.onclick = function () {
+            navigateSession(idx);
+          };
+          btns.appendChild(pb);
+        }
+        if (idx < sessions.length - 1) {
+          var nb = el(
+            '<button class="btn tealb">Session ' + (idx + 2) + " →</button>",
+          );
+          nb.onclick = function () {
+            navigateSession(idx + 2);
+          };
+          btns.appendChild(nb);
+        }
+        nav.appendChild(left);
+        nav.appendChild(btns);
+        var content = document.getElementById("sessionContent");
+        content.innerHTML = "";
+        var start = idx * SESSION_SIZE + 1;
+        var end = start + sessionActs.length - 1;
+        var done = sessionDoneCount(sessionActs);
+        content.appendChild(
+          el(
+            '<div class="sessionhead"><b>Practice Session ' +
+              sessionNum +
+              " of " +
+              sessions.length +
+              "</b> · Activities " +
+              start +
+              "–" +
+              end +
+              " · " +
+              done +
+              "/" +
+              sessionActs.length +
+              " done · save progress and return anytime</div>",
+          ),
+        );
+        var wrap = el('<div class="sessionacts"></div>');
+        for (var i = 0; i < sessionActs.length; i++) {
+          wrap.appendChild(buildCard(sessionActs[i]));
+        }
+        content.appendChild(wrap);
+        document.title =
+          "Session " + sessionNum + " — " + domain + " — ACCESS Practice Lab";
+        refreshProgress();
+        window.scrollTo(0, 0);
+      }
+      function showSessionListMode() {
+        document.getElementById("sessionPageView").classList.add("hidden");
+        document.getElementById("sessionListView").classList.remove("hidden");
+        document.title = "ACCESS Practice Lab — EduWonderLab";
+      }
+      function navigateSessionList() {
+        location.hash = "#/" + state.domain + "/" + state.band;
+      }
+      function navigateSession(num) {
+        location.hash =
+          "#/session/" +
+          encodeURIComponent(state.domain) +
+          "/" +
+          state.band +
+          "/" +
+          num;
+      }
+      function syncTabsAndBand() {
+        Array.prototype.forEach.call(
+          document.querySelectorAll("#tabs .tab"),
+          function (t) {
+            t.setAttribute(
+              "aria-selected",
+              t.dataset.domain === state.domain ? "true" : "false",
+            );
+          },
+        );
+        Array.prototype.forEach.call(
+          document.querySelectorAll("#bandtoggle button"),
+          function (t) {
+            t.setAttribute(
+              "aria-pressed",
+              t.dataset.band === state.band ? "true" : "false",
+            );
+          },
+        );
+      }
+      function onRoute() {
+        var hash = location.hash.slice(1) || "/Listening/A";
+        var parts = hash.split("/").filter(Boolean);
+        if (parts[0] === "session" && parts[1] && parts[2] && parts[3]) {
+          var sn = parseInt(parts[3], 10);
+          if (!isNaN(sn)) {
+            renderSessionPage(decodeURIComponent(parts[1]), parts[2], sn);
+            return;
+          }
+        }
+        if (
+          ["Listening", "Reading", "Speaking", "Writing"].indexOf(parts[0]) >= 0
+        ) {
+          state.domain = parts[0];
+        }
+        if (["A", "B"].indexOf(parts[1]) >= 0) {
+          state.band = parts[1];
+        }
+        if (parts[0] === "Teacher") {
+          state.domain = "Teacher";
+          showTeacherOrResults("Teacher");
+          return;
+        }
+        if (parts[0] === "Results") {
+          state.domain = "Results";
+          showTeacherOrResults("Results");
+          return;
+        }
+        showSessionListMode();
+        syncTabsAndBand();
+        document.getElementById("teacherView").classList.add("hidden");
+        document.getElementById("resultsView").classList.add("hidden");
+        document.getElementById("bandbar").classList.remove("hidden");
+        renderSessionList();
+      }
+      function showTeacherOrResults(domain) {
+        syncTabsAndBand();
+        document.getElementById("sessionListView").classList.add("hidden");
+        document.getElementById("sessionPageView").classList.add("hidden");
+        document.getElementById("bandbar").classList.add("hidden");
+        document
+          .getElementById("teacherView")
+          .classList.toggle("hidden", domain !== "Teacher");
+        document
+          .getElementById("resultsView")
+          .classList.toggle("hidden", domain !== "Results");
+        if (domain === "Teacher") renderTeacher();
+        else if (domain === "Results") renderResults();
       }
       function renderActivities() {
-        var view = document.getElementById("activityView");
-        view.innerHTML = "";
-        var list = ACTIVITIES.filter(function (a) {
-          return a.domain === state.domain && a.band === state.band;
-        });
-        list.forEach(function (a) {
-          view.appendChild(buildCard(a));
-        });
-        refreshProgress();
+        renderSessionList();
       }
 
       /* ---- Teacher hub ---- */
@@ -6861,33 +7235,9 @@
       /* ---- Tab + band wiring ---- */
       function selectDomain(domain) {
         state.domain = domain;
-        Array.prototype.forEach.call(
-          document.querySelectorAll("#tabs .tab"),
-          function (t) {
-            t.setAttribute(
-              "aria-selected",
-              t.dataset.domain === domain ? "true" : "false",
-            );
-          },
-        );
-        var isTeacher = domain === "Teacher";
-        var isResults = domain === "Results";
-        var isActivities = !isTeacher && !isResults;
-        document
-          .getElementById("bandbar")
-          .classList.toggle("hidden", !isActivities);
-        document
-          .getElementById("activityView")
-          .classList.toggle("hidden", !isActivities);
-        document
-          .getElementById("teacherView")
-          .classList.toggle("hidden", !isTeacher);
-        document
-          .getElementById("resultsView")
-          .classList.toggle("hidden", !isResults);
-        if (isTeacher) renderTeacher();
-        else if (isResults) renderResults();
-        else renderActivities();
+        if (domain === "Teacher") location.hash = "#/Teacher";
+        else if (domain === "Results") location.hash = "#/Results";
+        else location.hash = "#/" + domain + "/" + state.band;
       }
 
       /* ---- My Results: auto-graded scorecard + teacher report ---- */
@@ -7041,16 +7391,13 @@
       }
       function selectBand(b) {
         state.band = b;
-        Array.prototype.forEach.call(
-          document.querySelectorAll("#bandtoggle button"),
-          function (t) {
-            t.setAttribute(
-              "aria-pressed",
-              t.dataset.band === b ? "true" : "false",
-            );
-          },
-        );
-        renderActivities();
+        if (
+          ["Listening", "Reading", "Speaking", "Writing"].indexOf(
+            state.domain,
+          ) >= 0
+        ) {
+          location.hash = "#/" + state.domain + "/" + b;
+        }
       }
       document.querySelectorAll("#tabs .tab").forEach(function (t) {
         t.onclick = function () {
@@ -7062,6 +7409,7 @@
           selectBand(t.dataset.band);
         };
       });
+      window.addEventListener("hashchange", onRoute);
 
       /* ---- Adaptive placement: quick check that recommends a WIDA band ---- */
       var PLACEMENT = [
@@ -7221,7 +7569,12 @@
       function boot() {
         document.getElementById("statTotal").textContent =
           ACTIVITIES.length + " activities";
-        selectDomain("Listening");
+        if (!location.hash || location.hash === "#") {
+          location.replace(
+            location.pathname + location.search + "#/Listening/A",
+          );
+        }
+        onRoute();
       }
       boot();
     </script>

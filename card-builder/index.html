@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Universal Lesson Card Factory | EduWonderLab</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <div class="brand">
+          <span class="brand-badge">EduWonderLab</span>
+          <h1>Universal Lesson Card Factory</h1>
+          <p class="tagline">
+            Build curriculum-ready lesson cards for any grade and math standard.
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <main class="app-layout">
+      <section class="panel form-panel" aria-labelledby="form-heading">
+        <h2 id="form-heading">Lesson Details</h2>
+
+        <div class="preset-bar" role="group" aria-label="Sample presets">
+          <span class="preset-label">Quick presets:</span>
+          <button type="button" class="preset-btn" data-preset="ratios">
+            Grade 6: Understand Ratios
+          </button>
+          <button type="button" class="preset-btn" data-preset="one-step">
+            Grade 6: Solve One-Step Equations
+          </button>
+          <button type="button" class="preset-btn" data-preset="mean-median">
+            Grade 6: Mean, Median, Mode
+          </button>
+          <button type="button" class="preset-btn" data-preset="fractions">
+            Grade 5: Add Fractions with Unlike Denominators
+          </button>
+          <button type="button" class="preset-btn" data-preset="two-step">
+            Grade 7: Two-Step Equations
+          </button>
+          <button type="button" class="preset-btn" data-preset="linear">
+            Grade 8: Linear Functions
+          </button>
+        </div>
+
+        <div class="import-bar" id="importBar">
+          <div>
+            <strong>📤 Build from a deck or doc</strong>
+            <p class="field-hint" style="margin: 2px 0 0">
+              Upload a lesson <b>.pptx</b>, <b>.docx</b>, or a
+              <b>_EXTRACT.json</b> — the card fills in automatically from its
+              content. Works fully in your browser; nothing is uploaded.
+            </p>
+          </div>
+          <label class="btn btn-secondary" style="cursor: pointer">
+            Choose file
+            <input
+              type="file"
+              id="deckFile"
+              accept=".pptx,.docx,.json"
+              style="display: none"
+            />
+          </label>
+        </div>
+        <p id="importStatus" class="field-hint" hidden></p>
+
+        <form id="lesson-form" novalidate>
+          <div class="form-grid">
+            <div class="field">
+              <label for="gradeLevel">Grade level</label>
+              <input
+                type="text"
+                id="gradeLevel"
+                name="gradeLevel"
+                placeholder="e.g. 6"
+                required
+              />
+            </div>
+            <div class="field">
+              <label for="subject">Subject</label>
+              <input type="text" id="subject" name="subject" value="Math" />
+            </div>
+            <div class="field">
+              <label for="unitNumber">Unit number</label>
+              <input
+                type="text"
+                id="unitNumber"
+                name="unitNumber"
+                placeholder="e.g. 4"
+              />
+            </div>
+            <div class="field">
+              <label for="unitTitle">Unit title</label>
+              <input
+                type="text"
+                id="unitTitle"
+                name="unitTitle"
+                placeholder="e.g. Ratios and Rates"
+              />
+            </div>
+            <div class="field field-full">
+              <label for="unitTheme">Unit theme / context</label>
+              <input
+                type="text"
+                id="unitTheme"
+                name="unitTheme"
+                placeholder="e.g. Sports statistics and shopping deals"
+              />
+            </div>
+            <div class="field">
+              <label for="lessonNumber">Lesson number</label>
+              <input
+                type="text"
+                id="lessonNumber"
+                name="lessonNumber"
+                placeholder="e.g. 4-1"
+              />
+            </div>
+            <div class="field field-wide">
+              <label for="lessonTitle">Lesson title</label>
+              <input
+                type="text"
+                id="lessonTitle"
+                name="lessonTitle"
+                placeholder="e.g. Rates and Unit Rates"
+              />
+            </div>
+            <div class="field">
+              <label for="standard">Standard</label>
+              <input
+                type="text"
+                id="standard"
+                name="standard"
+                placeholder="e.g. 6.RP.A.2"
+              />
+            </div>
+            <div class="field field-full">
+              <label for="mainSkill">Main skill</label>
+              <input
+                type="text"
+                id="mainSkill"
+                name="mainSkill"
+                placeholder="e.g. compare ratios"
+              />
+            </div>
+            <div class="field field-full">
+              <label for="lessonSummary"
+                >Lesson summary <span class="optional">(optional)</span></label
+              >
+              <textarea
+                id="lessonSummary"
+                name="lessonSummary"
+                rows="3"
+                placeholder="Brief context for the lesson..."
+              ></textarea>
+            </div>
+            <div class="field">
+              <label for="studentSupportLevel">Student support level</label>
+              <select id="studentSupportLevel" name="studentSupportLevel">
+                <option value="standard">Standard</option>
+                <option value="esol-1-2.5">ESOL Level 1–2.5</option>
+                <option value="esol-2.6-4.5">ESOL Level 2.6–4.5</option>
+                <option value="extra-scaffolded">Extra Scaffolded</option>
+                <option value="challenge">Challenge</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="outputMode">Output mode</label>
+              <select id="outputMode" name="outputMode">
+                <option value="html">HTML Card</option>
+                <option value="json">Curriculum JSON</option>
+                <option value="pack">Full Card Pack Plan</option>
+              </select>
+            </div>
+          </div>
+
+          <fieldset class="toggle-group">
+            <legend>Supports &amp; extensions</legend>
+            <label class="toggle">
+              <input type="checkbox" id="includeEsol" name="includeEsol" />
+              <span>Include ESOL supports</span>
+            </label>
+            <label class="toggle">
+              <input
+                type="checkbox"
+                id="includeSpanishVocab"
+                name="includeSpanishVocab"
+              />
+              <span>Include Spanish vocabulary</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="includeTwr" name="includeTwr" />
+              <span>Include TWR writing prompt</span>
+            </label>
+            <label class="toggle">
+              <input
+                type="checkbox"
+                id="includeChallenge"
+                name="includeChallenge"
+              />
+              <span>Include challenge option</span>
+            </label>
+            <label class="toggle">
+              <input
+                type="checkbox"
+                id="includeReadiness"
+                name="includeReadiness"
+                checked
+              />
+              <span>Include readiness pre-lesson</span>
+            </label>
+            <label class="toggle">
+              <input
+                type="checkbox"
+                id="includeFlagship"
+                name="includeFlagship"
+              />
+              <span>Flagship lesson variant</span>
+            </label>
+          </fieldset>
+
+          <div class="field field-full extract-picker-row">
+            <label for="extractSelect"
+              >PPTX extract / CONFIRMED JSON
+              <span class="optional">(optional)</span></label
+            >
+            <div class="extract-picker">
+              <select id="extractSelect" aria-label="Choose extract file">
+                <option value="">— Choose an extract —</option>
+              </select>
+              <button
+                type="button"
+                class="btn btn-secondary btn-small"
+                id="refreshManifestBtn"
+                title="Run refresh-extract-manifest.mjs in Terminal"
+              >
+                ↻
+              </button>
+            </div>
+            <input
+              type="text"
+              id="extractPath"
+              name="extractPath"
+              placeholder="Or paste full path to _EXTRACT.json"
+            />
+            <p id="extractManifestStatus" class="field-hint">
+              Loading extract list…
+            </p>
+          </div>
+          <div class="field">
+            <label for="extractSession">Extract session</label>
+            <select id="extractSession" name="extractSession">
+              <option value="S1">Session 1 (S1)</option>
+              <option value="S2">Session 2 (S2)</option>
+            </select>
+          </div>
+          <div class="field field-full">
+            <label for="existingLinks"
+              >Existing resource links
+              <span class="optional">(optional, one per line)</span></label
+            >
+            <textarea
+              id="existingLinks"
+              name="existingLinks"
+              rows="3"
+              placeholder="Interactive Lesson|https://example.com/lesson&#10;Guided Notes|https://example.com/notes"
+            ></textarea>
+          </div>
+
+          <div class="action-bar">
+            <button type="submit" class="btn btn-primary" id="generateBtn">
+              Generate Card
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              id="regenerateObjectiveBtn"
+            >
+              Regenerate Objective
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              id="exportAllPresetsBtn"
+            >
+              Export All Presets
+            </button>
+            <button type="button" class="btn btn-secondary" id="resetBtn">
+              Reset Form
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel output-panel" aria-labelledby="output-heading">
+        <h2 id="output-heading">Card Preview &amp; Output</h2>
+
+        <div
+          id="qaWarnings"
+          class="qa-warnings"
+          role="alert"
+          aria-live="polite"
+          hidden
+        ></div>
+
+        <div id="cardPreview" class="card-preview-wrap">
+          <p class="preview-placeholder">
+            Fill in lesson details and click <strong>Generate Card</strong> to
+            preview your EduWonderLab-style lesson card.
+          </p>
+        </div>
+
+        <div class="output-tabs" role="tablist" aria-label="Output formats">
+          <button
+            type="button"
+            class="tab-btn active"
+            role="tab"
+            aria-selected="true"
+            data-tab="html"
+          >
+            HTML
+          </button>
+          <button
+            type="button"
+            class="tab-btn"
+            role="tab"
+            aria-selected="false"
+            data-tab="json"
+          >
+            JSON
+          </button>
+          <button
+            type="button"
+            class="tab-btn"
+            role="tab"
+            aria-selected="false"
+            data-tab="pack"
+          >
+            Pack Plan
+          </button>
+        </div>
+
+        <div class="output-area">
+          <div class="output-toolbar">
+            <button
+              type="button"
+              class="btn btn-copy"
+              id="copyHtmlBtn"
+              disabled
+            >
+              Copy HTML
+            </button>
+            <button
+              type="button"
+              class="btn btn-copy"
+              id="copyJsonBtn"
+              disabled
+            >
+              Copy JSON
+            </button>
+            <button
+              type="button"
+              class="btn btn-copy"
+              id="copyPackBtn"
+              disabled
+            >
+              Copy Full Pack Plan
+            </button>
+            <button
+              type="button"
+              class="btn btn-export"
+              id="downloadJsonBtn"
+              disabled
+            >
+              Download JSON
+            </button>
+          </div>
+          <pre
+            id="outputCode"
+            class="output-code"
+            aria-label="Generated output"
+          ><code>Select an output tab after generating a card.</code></pre>
+        </div>
+
+        <div id="scaffoldPanel" class="scaffold-panel" hidden></div>
+
+        <div id="toast" class="toast" role="status" aria-live="polite" hidden>
+          Copied to clipboard!
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        Universal Lesson Card Factory — private EduWonderLab teacher tool.
+        Static build for Cloudflare Pages.
+      </p>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

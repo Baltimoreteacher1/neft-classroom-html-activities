@@ -649,7 +649,27 @@
             <div class="skill">
               Variables · Equation · Table · Graph · 6.EE.9
             </div>
-            <h2>Design YOUR Channel</h2>
+            
+        <!-- ===================== RESEARCH LAB ===================== -->
+        <div class="pk-research-lab">
+          <h3>🔍 YouTube RPM Revenue Statistics</h3>
+          <p>Research typical revenue per 1,000 views (RPM) for educational channels (often around $4.50). Enter the researched RPM below to model your earnings:</p>
+          <a href="https://www.youtube.com/creators/" target="_blank" class="pk-research-btn">🔗 YouTube Creator Hub: Analytics Guidelines ↗</a>
+          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
+            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Creator Niche Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="syncResearch()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Typical Revenue per 1,000 views ($)</label>
+              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
+            </div>
+          </div>
+        </div>
+  <h2>Design YOUR Channel</h2>
           </div>
         </div>
         <p>
@@ -854,7 +874,7 @@
         </p>
         <div id="projectVisualizer"></div>
       </section>
-    
+  
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -948,7 +968,7 @@
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase" >
+      <section class="phase">
         <div class="phase-head">
           <div
             class="phase-num"
@@ -957,49 +977,39 @@
             3
           </div>
           <div>
-            <span class="arc-banner">Part 3 · World — real-world research</span>
-            <div class="skill">Compare to real data</div>
-            <h2>How Do Your Calculations Compare?</h2>
+            <span class="arc-banner"
+              >Part 3 · World — real creator benchmarks</span
+            >
+            <div class="skill">Compare to real data · 6.EE.9</div>
+            <h2>How Does Your k Compare?</h2>
           </div>
         </div>
         <p>
-          Compare your calculated project totals against real-world industry benchmarks and standards.
+          These are realistic typical weekly subscriber gains for channels at
+          different sizes. Pick a tier and see where your <em>k</em> lands.
         </p>
-
-        <div class="pk-research-lab">
-          <h3>🔍 YouTube RPM Revenue Statistics</h3>
-          <p>Research typical revenue per 1,000 views (RPM) for educational channels (often around $4.50). Enter the researched RPM below to model your earnings:</p>
-          <a href="https://www.youtube.com/creators/" target="_blank" class="pk-research-btn">🔗 YouTube Creator Hub: Analytics Guidelines ↗</a>
-          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
-            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
-          </p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Creator Niche Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="worldGo()">
-            </div>
-            <div>
-              <label class="fld" for="worldSize">Typical Revenue per 1,000 views ($)</label>
-              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="worldGo()">
-            </div>
-          </div>
-        </div>
-
         <div class="grid2">
           <div>
-            <label class="fld" for="myWorld">My calculated value to compare</label>
+            <label class="fld" for="worldCat">Compare against</label>
+            <select id="worldCat" data-save onchange="worldGo()">
+              <option value="k">Weekly growth rate k (subs/week)</option>
+            </select>
+            <label class="fld" for="myWorld">My growth rate k</label>
             <input
               type="number"
               id="myWorld"
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="auto-fills or type your value"
+              placeholder="type your k"
             />
-            <div id="worldMeter" style="margin-top: 24px;"></div>
+            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
+              Tip: use the same k you researched in Part 1.
+            </p>
+            <div id="worldMeter"></div>
           </div>
           <div>
-            <h3>RPM Benchmarks 🌍</h3>
+            <h3>Creator Growth Benchmarks 🌐</h3>
             <div
               style="
                 overflow: auto;
@@ -1008,22 +1018,11 @@
               "
             >
               <table class="rubric" style="margin-top: 0">
-                <thead>
-                  <tr>
-                    <th>Item/Location</th>
-                    <th>Standard Value</th>
-                  </tr>
-                </thead>
-                <tbody id="worldRows">
-                  <tr><td>Gaming Channel</td><td>$4.50</td></tr>
-                  <tr><td>Tech Reviews</td><td>$6.00</td></tr>
-                  <tr><td>Cooking Lab</td><td>$2.50</td></tr>
-                  <tr><td>Science & Space</td><td>$8.00</td></tr>
-                  <tr><td>Daily Vlogs</td><td>$1.50</td></tr>
-                  <tr><td>Music & Beats</td><td>$3.50</td></tr>
-                  <tr><td>Art & Craft</td><td>$5.00</td></tr>
-                  <tr><td>Travel Vlogs</td><td>$4.00</td></tr>
-                </tbody>
+                <tr>
+                  <th>Channel tier</th>
+                  <th>Typical k (subs/week)</th>
+                </tr>
+                <tbody id="worldRows"></tbody>
               </table>
             </div>
           </div>
@@ -1068,11 +1067,16 @@
           placeholder="My k is ___ the benchmark average because ___."
         ></textarea>
         <div class="pk-lvl2">
-          <label class="fld" for="worldHard"><strong>Level 2 Linear Growth Challenge:</strong> Write a linear equation $y = mx$ representing your total earnings $y$ (in dollars) for $x$ thousand views, using your researched rate $m = Researched RPM$ entered above. If you want to earn a total of $360.00, how many thousands of views must your channel receive? Show your division.</label>
+          <label class="fld" for="worldHard"
+            >Level 2 — find when two lines are equal: Your channel is y = kx
+            with a 0 head start. A friend starts with a one-time 200-subscriber
+            boost, so their equation is y = kx + 200 (the same k). Are these
+            still proportional? Will your lines ever be equal? Explain.</label
+          >
           <textarea
             id="worldHard"
             data-save
-            placeholder="y = ___x. To earn $360: 360 = ___x. x = 360 ÷ ___ = ___ thousand views because..."
+            placeholder="y = kx + 200 is NOT proportional because it does not pass through (0,0). The two lines are parallel (same k), so they ___."
           ></textarea>
         </div>
         <label class="fld" for="careful"
@@ -1558,29 +1562,41 @@
       }
 
       /* ---- Part 3: world dataset + meter ---- */
-      const baseWorldSample = [4.5, 6, 2.5, 8, 1.5, 3.5, 5, 4];
-
+      // [tier, typical weekly k] — realistic creator-growth benchmarks
+      const world = [
+        ["Brand-new channel (0–1k subs)", 5],
+        ["Growing channel (1k–10k)", 25],
+        ["Established (10k–100k)", 120],
+        ["Large channel (100k–500k)", 600],
+        ["Major creator (500k–1M)", 1500],
+        ["Top-tier (1M+)", 4000],
+      ];
       function renderWorld() {
-        // Automatically populated from static table in HTML
+        $("worldRows").innerHTML = world
+          .map((r) => "<tr><td>" + r[0] + "</td><td>" + r[1] + "</td></tr>")
+          .join("");
       }
-
+      function worldSample() {
+        return world.map((r) => r[1]);
+      }
+      
       function worldGo() {
         const my = num("myWorld");
-        const customName = $("worldCountry").value.trim();
-        const customSize = num("worldSize");
+        const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
+        const customSize = $("worldSize") ? num("worldSize") : NaN;
         
-        let sample = [...baseWorldSample];
+        let sample = worldSample();
         if (!isNaN(customSize) && customSize > 0) {
-          sample.push(customSize);
+          sample = [...sample, customSize];
         }
         
-        PK.worldMeter(
-          "worldMeter",
-          sample,
-          my,
-          { mean: "World Avg", me: "Me" }
-        );
-
+        const labels =
+          $("worldCat").value === "costPerGuest"
+            ? { mean: "City avg $", me: "Me $" }
+            : { mean: "City avg", me: "Me" };
+            
+        PK.worldMeter("worldMeter", sample, my, labels);
+        
         const fb = $("worldMeter");
         if (!isNaN(customSize) && customSize > 0 && customName) {
           const ratio = (my / customSize).toFixed(2);
@@ -1599,20 +1615,20 @@
           fb.innerHTML += desc;
         }
         
-        // Draw the dynamic SVG visualizer
         if (typeof drawVisualizer === 'function') {
           drawVisualizer();
         }
         
         updateProgress();
       }
-
+  
+      
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
-        let sample = [...baseWorldSample];
-        const customSize = num("worldSize");
+        let sample = worldSample();
+        const customSize = $("worldSize") ? num("worldSize") : NaN;
         if (!isNaN(customSize) && customSize > 0) {
-          sample.push(customSize);
+          sample = [...sample, customSize];
         }
         if (isNaN(v)) {
           $("whatIfBox").textContent = "Enter a number first.";
@@ -1632,6 +1648,43 @@
           "Adding a value of " + vStr + " to the sample:"
         );
       }
+  
+
+      /* ---- Use example numbers ---- */
+      function useExamples() {
+        const ex = {
+          "worldCountry": "Gaming Channel",
+          "worldSize": 4.5,
+          topic: "skateboarding tricks",
+          "k-rate": 12,
+          "find-x": 7,
+          "find-y": 300,
+          "sw-target": 240,
+          "ch-a": 12,
+          "ch-b": 8,
+          "ch-weeks": 10,
+          myWorld: 12,
+        };
+        Object.entries(ex).forEach(([key, v]) => {
+          if ($(key)) $(key).value = v;
+        });
+        updateSwTargetLabel();
+        recalcAll();
+      }
+
+      
+      function syncResearch() {
+        const ws = $("worldSize");
+        if (!ws) return;
+        const val = num("worldSize");
+        if (isNaN(val) || val <= 0) return;
+        if ($("k-rate")) {
+          $("k-rate").value = val;
+          calcEquation();
+        }
+        worldGo();
+      }
+    
 
       
       function drawVisualizer() {
@@ -1676,27 +1729,9 @@
         $("projectVisualizer").innerHTML = svgString;
       }
     
-
-      function useExamples() {
-        const ex = {
-          topic: "skateboarding tricks",
-          "k-rate": 12,
-          "find-x": 7,
-          "find-y": 300,
-          "sw-target": 240,
-          "ch-a": 12,
-          "ch-b": 8,
-          "ch-weeks": 10,
-          myWorld: 12,
-        };
-        Object.entries(ex).forEach(([key, v]) => {
-          if ($(key)) $(key).value = v;
-        });
-        updateSwTargetLabel();
-        recalcAll();
-      }
-
-      function recalcAll() {
+  
+function recalcAll() {
+        if (typeof syncResearch === "function") syncResearch();
         calcEquation();
         calcTable();
         calcGraph();

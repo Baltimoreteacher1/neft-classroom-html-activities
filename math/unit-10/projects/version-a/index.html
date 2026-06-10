@@ -641,7 +641,27 @@
         />
 
         <!-- 1a Volume -->
-        <h3 style="margin-top: 18px">🧊 Box volume (V = l × w × h)</h3>
+        
+        <!-- ===================== RESEARCH LAB ===================== -->
+        <div class="pk-research-lab">
+          <h3>🔍 Giza Great Pyramid Dimensional Scale</h3>
+          <p>Open the Giza Pyramid page. Find the original base side length in cubits (often 440 cubits). Enter the base side length below to model the scale volume calculations:</p>
+          <a href="https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza" target="_blank" class="pk-research-btn">🔗 Wikipedia: Dimensions of the Great Pyramid of Giza ↗</a>
+          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
+            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Ancient Monument Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="syncResearch()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Original Base Side Length (cubits)</label>
+              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
+            </div>
+          </div>
+        </div>
+  <h3 style="margin-top: 18px">🧊 Box volume (V = l × w × h)</h3>
         <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
           Level 1 tip: round each measurement to a whole number of inches first.
         </p>
@@ -848,7 +868,7 @@
         </p>
         <div id="projectVisualizer"></div>
       </section>
-    
+  
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -953,7 +973,7 @@
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase" >
+      <section class="phase">
         <div class="phase-head">
           <div
             class="phase-num"
@@ -962,49 +982,38 @@
             3
           </div>
           <div>
-            <span class="arc-banner">Part 3 · World — real-world research</span>
-            <div class="skill">Compare to real data</div>
-            <h2>How Do Your Calculations Compare?</h2>
+            <span class="arc-banner">Part 3 · World — real shipping boxes</span>
+            <div class="skill">Compare to real data · 6.G.2</div>
+            <h2>Your Box vs. Real Shipping Boxes</h2>
           </div>
         </div>
         <p>
-          Compare your calculated project totals against real-world industry benchmarks and standards.
+          These are real USPS Priority Mail Flat Rate box sizes (in inches).
+          Pick what to compare and see where your box lands.
         </p>
-
-        <div class="pk-research-lab">
-          <h3>🔍 Giza Great Pyramid Dimensional Scale</h3>
-          <p>Open the Giza Pyramid page. Find the original base side length in cubits (often 440 cubits). Enter the base side length below to model the scale volume calculations:</p>
-          <a href="https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza" target="_blank" class="pk-research-btn">🔗 Wikipedia: Dimensions of the Great Pyramid of Giza ↗</a>
-          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
-            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
-          </p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Ancient Monument Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="worldGo()">
-            </div>
-            <div>
-              <label class="fld" for="worldSize">Original Base Side Length (cubits)</label>
-              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="worldGo()">
-            </div>
-          </div>
-        </div>
-
         <div class="grid2">
           <div>
-            <label class="fld" for="myWorld">My calculated value to compare</label>
+            <label class="fld" for="worldCat">Compare against</label>
+            <select id="worldCat" data-save onchange="worldGo()">
+              <option value="volume">Volume (cubic in)</option>
+              <option value="sa">Surface area (sq in)</option>
+            </select>
+            <label class="fld" for="myWorld">My number</label>
             <input
               type="number"
               id="myWorld"
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="auto-fills or type your value"
+              placeholder="type your value"
             />
-            <div id="worldMeter" style="margin-top: 24px;"></div>
+            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
+              Tip: type your box's volume (or surface area) from Part 1.
+            </p>
+            <div id="worldMeter"></div>
           </div>
           <div>
-            <h3>Pyramid Base Metrics 🌍</h3>
+            <h3>USPS Flat-Rate Boxes 🇺🇸</h3>
             <div
               style="
                 overflow: auto;
@@ -1013,22 +1022,13 @@
               "
             >
               <table class="rubric" style="margin-top: 0">
-                <thead>
-                  <tr>
-                    <th>Item/Location</th>
-                    <th>Standard Value</th>
-                  </tr>
-                </thead>
-                <tbody id="worldRows">
-                  <tr><td>Giza Great Pyramid</td><td>440 cubits</td></tr>
-                  <tr><td>Pyramid of Khafre</td><td>275 cubits</td></tr>
-                  <tr><td>Red Pyramid</td><td>512 cubits</td></tr>
-                  <tr><td>Transamerica Pyramid</td><td>1000 cubits</td></tr>
-                  <tr><td>Luxor Hotel Vegas</td><td>800 cubits</td></tr>
-                  <tr><td>Louvre Pyramid</td><td>320 cubits</td></tr>
-                  <tr><td>Walter Pyramid</td><td>450 cubits</td></tr>
-                  <tr><td>Giza Small Pyramid</td><td>385 cubits</td></tr>
-                </tbody>
+                <tr>
+                  <th>Box</th>
+                  <th>l × w × h (in)</th>
+                  <th>Volume</th>
+                  <th>SA</th>
+                </tr>
+                <tbody id="worldRows"></tbody>
               </table>
             </div>
           </div>
@@ -1551,55 +1551,82 @@
         const cat = $("worldCat").value;
         return world.map((r) => (cat === "volume" ? volOf(r) : saOf(r)));
       }
+      
       function worldGo() {
         const my = num("myWorld");
-        const cat = $("worldCat").value;
+        const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
+        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        
+        let sample = worldSample();
+        if (!isNaN(customSize) && customSize > 0) {
+          sample = [...sample, customSize];
+        }
+        
         const labels =
-          cat === "volume"
-            ? { mean: "Box avg vol", me: "My vol" }
-            : { mean: "Box avg SA", me: "My SA" };
-        PK.worldMeter("worldMeter", worldSample(), my, labels);
+          $("worldCat").value === "costPerGuest"
+            ? { mean: "City avg $", me: "Me $" }
+            : { mean: "City avg", me: "Me" };
+            
+        PK.worldMeter("worldMeter", sample, my, labels);
+        
+        const fb = $("worldMeter");
+        if (!isNaN(customSize) && customSize > 0 && customName) {
+          const ratio = (my / customSize).toFixed(2);
+          const pct = Math.round((my / customSize) * 100);
+          const diff = Math.abs(my - customSize).toFixed(2);
+          
+          let myValStr = false ? "$" + my.toFixed(2) : my + " cubits";
+          let custValStr = false ? "$" + customSize.toFixed(2) : customSize + " cubits";
+          let diffStr = false ? "$" + Number(diff).toFixed(2) : Number(diff).toFixed(2) + " cubits";
+
+          const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
+          const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
+            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
+            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
+            `</div>`;
+          fb.innerHTML += desc;
+        }
+        
+        if (typeof drawVisualizer === 'function') {
+          drawVisualizer();
+        }
+        
         updateProgress();
       }
+  
+      
       function runWhatIf() {
-        const d = dims();
-        if (!d) {
-          $("whatIfBox").textContent =
-            "Fill in your box dimensions in Part 1 first.";
+        const v = parseFloat($("whatIfVal").value);
+        let sample = worldSample();
+        const customSize = $("worldSize") ? num("worldSize") : NaN;
+        if (!isNaN(customSize) && customSize > 0) {
+          sample = [...sample, customSize];
+        }
+        if (isNaN(v)) {
+          $("whatIfBox").textContent = "Enter a number first.";
           return;
         }
-        const rate = num("cost-rate");
-        const which = $("whatIfDim").value;
-        const before = { l: d.l, w: d.w, h: d.h };
-        const after = Object.assign({}, before);
-        after[which] = round2(after[which] + 1);
-        const saB = round2(
-          2 * (before.l * before.w + before.l * before.h + before.w * before.h),
-        );
-        const saA = round2(
-          2 * (after.l * after.w + after.l * after.h + after.w * after.h),
-        );
-        const beforeObj = { SA: saB + " sq" };
-        const afterObj = { SA: saA + " sq" };
-        if (!isNaN(rate) && rate > 0) {
-          beforeObj.cost = "$" + round2(saB * rate).toFixed(2);
-          afterObj.cost = "$" + round2(saA * rate).toFixed(2);
-        }
+        const before = PK.mean(sample);
+        const after = PK.mean(sample.concat([v]));
+        
+        let beforeStr = false ? "$" + before.toFixed(2) : before.toFixed(2) + " cubits";
+        let afterStr = false ? "$" + after.toFixed(2) : after.toFixed(2) + " cubits";
+        let vStr = false ? "$" + v.toFixed(2) : v + " cubits";
+
         PK.whatIf(
           "whatIfBox",
-          beforeObj,
-          afterObj,
-          "Adding 1 inch to the " +
-            { l: "length", w: "width", h: "height" }[which] +
-            " raises SA by " +
-            round2(saA - saB) +
-            " sq units. (A cube-shaped box keeps SA smallest for a given volume.)",
+          { average: beforeStr },
+          { average: afterStr },
+          "Adding a value of " + vStr + " to the sample:"
         );
       }
+  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
         const ex = {
+          "worldCountry": "Giza Great Pyramid",
+          "worldSize": 440,
           objName: "my cereal box (example)",
           "v-length": 8,
           "v-width": 5,
@@ -1613,7 +1640,95 @@
         recalcAll();
       }
 
-      function recalcAll() {
+      
+      function syncResearch() {
+        const ws = $("worldSize");
+        if (!ws) return;
+        const val = num("worldSize");
+        if (isNaN(val) || val <= 0) return;
+        if ($("v-length")) {
+          $("v-length").value = val;
+          calcVolume();
+        }
+        worldGo();
+      }
+    
+
+      
+      function drawVisualizer() {
+        const l = num("v-length") || 0;
+        const w = num("v-width") || 0;
+        const h = num("v-height") || 0;
+        
+        let html = "";
+        if (l > 0 && w > 0 && h > 0) {
+          const maxDim = Math.max(l, w, h, 1);
+          const scale = 35 / maxDim;
+          
+          const cx = 100, cy = 130;
+          const dxX = 25 * scale, dyX = 12 * scale;
+          const dxY = -25 * scale, dyY = 12 * scale;
+          const dxZ = 0, dyZ = -30 * scale;
+          
+          const p0 = {x: cx, y: cy};
+          const p1 = {x: cx + w*dxX, y: cy + w*dyX};
+          const p2 = {x: cx + w*dxX + l*dxY, y: cy + w*dyX + l*dyY};
+          const p3 = {x: cx + l*dxY, y: cy + l*dyY};
+          
+          const p4 = {x: p0.x, y: p0.y + h*dyZ};
+          const p5 = {x: p1.x, y: p1.y + h*dyZ};
+          const p6 = {x: p2.x, y: p2.y + h*dyZ};
+          const p7 = {x: p3.x, y: p3.y + h*dyZ};
+          
+          const nScale = 14 / maxDim;
+          const nl = l * nScale;
+          const nw = w * nScale;
+          const nh = h * nScale;
+          const nx = 330, ny = 120;
+          
+          html = `
+            <polygon points="${p0.x},${p0.y} ${p1.x},${p1.y} ${p2.x},${p2.y} ${p3.x},${p3.y}" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5" />
+            <polygon points="${p0.x},${p0.y} ${p1.x},${p1.y} ${p5.x},${p5.y} ${p4.x},${p4.y}" fill="rgba(26, 111, 181, 0.15)" stroke="#1a6fb5" stroke-width="2" />
+            <polygon points="${p1.x},${p1.y} ${p2.x},${p2.y} ${p6.x},${p6.y} ${p5.x},${p5.y}" fill="rgba(14, 138, 125, 0.15)" stroke="#0e8a7d" stroke-width="2" />
+            <polygon points="${p4.x},${p4.y} ${p5.x},${p5.y} ${p6.x},${p6.y} ${p7.x},${p7.y}" fill="rgba(212, 149, 42, 0.15)" stroke="#d4952a" stroke-width="2" />
+            <line x1="${p3.x}" y1="${p3.y}" x2="${p7.x}" y2="${p7.y}" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3,3" />
+            <line x1="${p2.x}" y1="${p2.y}" x2="${p7.x}" y2="${p7.y}" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3,3" />
+            <text x="${(p0.x+p1.x)/2}" y="${(p0.y+p1.y)/2 + 15}" font-size="9" font-weight="bold" fill="#1a6fb5" text-anchor="middle">W: ${w}</text>
+            <text x="${(p1.x+p2.x)/2 + 15}" y="${(p1.y+p2.y)/2}" font-size="9" font-weight="bold" fill="#0e8a7d" text-anchor="middle">L: ${l}</text>
+            <text x="${p5.x + 15}" y="${p5.y + h*dyZ/2}" font-size="9" font-weight="bold" fill="#d4952a" text-anchor="middle">H: ${h}</text>
+            <text x="100" y="30" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">3D Wireframe View</text>
+            
+            <g transform="translate(${nx}, ${ny})">
+              <rect x="${-nl/2}" y="${-nw/2}" width="${nl}" height="${nw}" fill="rgba(26, 111, 181, 0.2)" stroke="#1a6fb5" stroke-dasharray="2,2" />
+              <rect x="${-nl/2}" y="${-nw/2 - nh}" width="${nl}" height="${nh}" fill="rgba(212, 149, 42, 0.2)" stroke="#d4952a" />
+              <rect x="${-nl/2}" y="${nw/2}" width="${nl}" height="${nh}" fill="rgba(212, 149, 42, 0.2)" stroke="#d4952a" />
+              <rect x="${-nl/2 - nh}" y="${-nw/2}" width="${nh}" height="${nw}" fill="rgba(14, 138, 125, 0.2)" stroke="#0e8a7d" />
+              <rect x="${nl/2}" y="${-nw/2}" width="${nh}" height="${nw}" fill="rgba(14, 138, 125, 0.2)" stroke="#0e8a7d" />
+              <rect x="${-nl/2}" y="${-nw/2 - 2*nh}" width="${nl}" height="${nh}" fill="rgba(26, 111, 181, 0.2)" stroke="#1a6fb5" />
+              <text x="0" y="0" text-anchor="middle" font-size="9" font-weight="bold" fill="#1a6fb5">2D Net</text>
+            </g>
+            <text x="350" y="30" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Flat Folding Net</text>
+            <text x="250" y="220" text-anchor="middle" font-size="12" font-weight="bold" fill="#2d874b">
+              Volume = ${(l*w*h).toFixed(0)} cu in | Surface Area = ${(2*(l*w + w*h + l*h)).toFixed(0)} sq in
+            </text>
+          `;
+        } else {
+          html = `
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Dimensions to draw 3D net folder</text>
+          `;
+        }
+        
+        const svgString = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${html}
+          </svg>
+        `;
+        $("projectVisualizer").innerHTML = svgString;
+      }
+    
+  
+function recalcAll() {
+        if (typeof syncResearch === "function") syncResearch();
         proj.obj = $("objName").value;
         calcVolume();
         calcSA();

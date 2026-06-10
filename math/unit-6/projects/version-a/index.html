@@ -714,7 +714,27 @@
         />
 
         <!-- 1a Exponent power-up -->
-        <h3 style="margin-top: 24px">⬆️ Level-up score (exponents · 6.EE.1)</h3>
+        
+        <!-- ===================== RESEARCH LAB ===================== -->
+        <div class="pk-research-lab">
+          <h3>🔍 Gaming Console & Game Pricing Standards</h3>
+          <p>Open the ESA report page. Find the standard retail release price of a standard console video game (typically $60 or $70). Enter the game price below:</p>
+          <a href="https://www.theesa.com/" target="_blank" class="pk-research-btn">🔗 ESA: Gaming Industry Economic Data ↗</a>
+          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
+            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Game Title Researched</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="syncResearch()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Standard Game Retail Price ($)</label>
+              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
+            </div>
+          </div>
+        </div>
+  <h3 style="margin-top: 24px">⬆️ Level-up score (exponents · 6.EE.1)</h3>
         <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
           Level 1 tip: start with a small base like 2 or 3 and an exponent of 2
           or 3.
@@ -863,7 +883,7 @@
         </p>
         <div id="projectVisualizer"></div>
       </section>
-    
+  
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -962,7 +982,7 @@
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase" >
+      <section class="phase">
         <div class="phase-head">
           <div
             class="phase-num"
@@ -971,49 +991,52 @@
             3
           </div>
           <div>
-            <span class="arc-banner">Part 3 · World — real-world research</span>
-            <div class="skill">Compare to real data</div>
-            <h2>How Do Your Calculations Compare?</h2>
+            <span class="arc-banner">Part 3 · World — real game scoring</span>
+            <div class="skill">
+              Compare · Prove equivalence · 6.EE.2c · 6.EE.4
+            </div>
+            <h2>How Does Your Scoring Compare?</h2>
           </div>
         </div>
         <p>
-          Compare your calculated project totals against real-world industry benchmarks and standards.
+          These are realistic-style scoring formulas from different game genres,
+          written as <strong>rc + k</strong>. Pick one and see where your value
+          lands at the same number of coins.
         </p>
-
-        <div class="pk-research-lab">
-          <h3>🔍 Gaming Console & Game Pricing Standards</h3>
-          <p>Open the ESA report page. Find the standard retail release price of a standard console video game (typically $60 or $70). Enter the game price below:</p>
-          <a href="https://www.theesa.com/" target="_blank" class="pk-research-btn">🔗 ESA: Gaming Industry Economic Data ↗</a>
-          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
-            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
-          </p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Game Title Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="worldGo()">
-            </div>
-            <div>
-              <label class="fld" for="worldSize">Standard Game Retail Price ($)</label>
-              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="worldGo()">
-            </div>
-          </div>
-        </div>
-
         <div class="grid2">
           <div>
-            <label class="fld" for="myWorld">My calculated value to compare</label>
+            <label class="fld" for="worldCat">Compare against</label>
+            <select id="worldCat" data-save onchange="worldGo()">
+              <option value="score">Total score at the test coins</option>
+              <option value="rate">Coin rate r</option>
+              <option value="bonus">Flat bonus k</option>
+            </select>
+            <label class="fld" for="worldC">Test coins c</label>
+            <input
+              type="number"
+              id="worldC"
+              data-save
+              min="0"
+              value="12"
+              oninput="worldGo()"
+              placeholder="example: 12"
+            />
+            <label class="fld" for="myWorld">My number</label>
             <input
               type="number"
               id="myWorld"
               data-save
-              step="0.01"
               oninput="worldGo()"
-              placeholder="auto-fills or type your value"
+              placeholder="type your value"
             />
-            <div id="worldMeter" style="margin-top: 24px;"></div>
+            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
+              Tip: your total score from Part 1 (rc + k) is a great value to
+              type here.
+            </p>
+            <div id="worldMeter"></div>
           </div>
           <div>
-            <h3>Game Retail Standards 🌍</h3>
+            <h3>Game Scoring Sample 🎮</h3>
             <div
               style="
                 overflow: auto;
@@ -1022,27 +1045,19 @@
               "
             >
               <table class="rubric" style="margin-top: 0">
-                <thead>
-                  <tr>
-                    <th>Item/Location</th>
-                    <th>Standard Value</th>
-                  </tr>
-                </thead>
-                <tbody id="worldRows">
-                  <tr><td>Platformer Game</td><td>$59.99</td></tr>
-                  <tr><td>Puzzle Quest</td><td>$69.99</td></tr>
-                  <tr><td>Action RPG</td><td>$49.99</td></tr>
-                  <tr><td>Racing Sim</td><td>$39.99</td></tr>
-                  <tr><td>Sandbox Builder</td><td>$29.99</td></tr>
-                  <tr><td>Retro Arcade</td><td>$79.99</td></tr>
-                  <tr><td>Strategy Lab</td><td>$19.99</td></tr>
-                  <tr><td>Space Mission</td><td>$9.99</td></tr>
-                </tbody>
+                <tr>
+                  <th>Game / genre</th>
+                  <th>Rate r</th>
+                  <th>Bonus k</th>
+                  <th>Score</th>
+                </tr>
+                <tbody id="worldRows"></tbody>
               </table>
             </div>
           </div>
         </div>
 
+        <!-- Equivalent-expression prover -->
         <div
           class="phase"
           style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
@@ -1088,11 +1103,15 @@
           placeholder="My score is ___ the sample average because my rate is ___ and my bonus is ___."
         ></textarea>
         <div class="pk-lvl2">
-          <label class="fld" for="worldHard"><strong>Level 2 Algebraic Setup Challenge:</strong> Write an expression for purchasing $g$ games at your researched price of **$X** each, plus a game console that costs $300. Use the distributive property to find the equivalent expression for purchasing this setup for 3 friends, and evaluate it for $g = 2$.</label>
+          <label class="fld" for="worldHard"
+            >Level 2: Justify in writing why 2(c + 3) equals 2c + 6 using the
+            distributive property, then design a third, fairer scoring formula
+            and explain it.</label
+          >
           <textarea
             id="worldHard"
             data-save
-            placeholder="3 × (___g + 300) = ___g + 900. For g = 2, total cost = ___ × 2 + 900 = $___ because..."
+            placeholder="2(c + 3) = 2·c + 2·3 = 2c + 6 by the distributive property. A fairer formula would be ___ because ___."
           ></textarea>
         </div>
         <label class="fld" for="careful"
@@ -1475,29 +1494,55 @@
       }
 
       /* ---- Part 3: world dataset + meter ---- */
-      const baseWorldSample = [59.99, 69.99, 49.99, 39.99, 29.99, 79.99, 19.99, 9.99];
+      // [game/genre, rate r, bonus k] — realistic-style scoring formulas rc + k
+      const world = [
+        ["Coin Runner (arcade)", 5, 0],
+        ["Gem Quest (RPG)", 3, 50],
+        ["Pixel Racer (racing)", 10, 25],
+        ["Block Builder (sandbox)", 2, 100],
+        ["Star Striker (sports)", 8, 10],
+        ["Maze Master (puzzle)", 4, 40],
+        ["Battle Royale (shooter)", 6, 30],
+        ["Farm Frenzy (sim)", 1, 75],
+      ];
+      const wIdx = { rate: 1, bonus: 2 };
 
-      function renderWorld() {
-        // Automatically populated from static table in HTML
+      function worldScore(r) {
+        const c = num("worldC");
+        const cc = isNaN(c) ? 12 : c;
+        return r[1] * cc + r[2];
       }
-
+      function renderWorld() {
+        $("worldRows").innerHTML = world
+          .map(
+            (r) =>
+              `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${worldScore(r)}</td></tr>`,
+          )
+          .join("");
+      }
+      function worldSample() {
+        const cat = $("worldCat").value;
+        if (cat === "score") return world.map((r) => worldScore(r));
+        return world.map((r) => r[wIdx[cat]]);
+      }
+      
       function worldGo() {
         const my = num("myWorld");
-        const customName = $("worldCountry").value.trim();
-        const customSize = num("worldSize");
+        const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
+        const customSize = $("worldSize") ? num("worldSize") : NaN;
         
-        let sample = [...baseWorldSample];
+        let sample = worldSample();
         if (!isNaN(customSize) && customSize > 0) {
-          sample.push(customSize);
+          sample = [...sample, customSize];
         }
         
-        PK.worldMeter(
-          "worldMeter",
-          sample,
-          my,
-          { mean: "World Avg", me: "Me" }
-        );
-
+        const labels =
+          $("worldCat").value === "costPerGuest"
+            ? { mean: "City avg $", me: "Me $" }
+            : { mean: "City avg", me: "Me" };
+            
+        PK.worldMeter("worldMeter", sample, my, labels);
+        
         const fb = $("worldMeter");
         if (!isNaN(customSize) && customSize > 0 && customName) {
           const ratio = (my / customSize).toFixed(2);
@@ -1516,20 +1561,62 @@
           fb.innerHTML += desc;
         }
         
-        // Draw the dynamic SVG visualizer
         if (typeof drawVisualizer === 'function') {
           drawVisualizer();
         }
         
         updateProgress();
       }
+  
 
+      /* ---- Equivalent-expression prover: 2(c+3) vs 2c+6 ---- */
+      function proveEquiv() {
+        const tests = [4, 7, 10];
+        let rows =
+          "<table class='prove-table'><tr><th>c</th><th>2(c + 3)</th><th>2c + 6</th><th>Match?</th></tr>";
+        let allMatch = true;
+        tests.forEach((c) => {
+          const a = 2 * (c + 3);
+          const b = 2 * c + 6;
+          const m = a === b;
+          if (!m) allMatch = false;
+          rows +=
+            "<tr><td>" +
+            c +
+            "</td><td>2 × " +
+            (c + 3) +
+            " = " +
+            a +
+            "</td><td>" +
+            2 * c +
+            " + 6 = " +
+            b +
+            "</td><td class='" +
+            (m ? "match" : "nomatch") +
+            "'>" +
+            (m ? "✅" : "❌") +
+            "</td></tr>";
+        });
+        rows += "</table>";
+        rows +=
+          "<p style='margin-top:10px;font-weight:700;'>" +
+          (allMatch
+            ? "✅ Matched all 3 times — <strong>2(c + 3) and 2c + 6 are equivalent</strong>. The distributive property explains it: 2(c + 3) = 2·c + 2·3 = 2c + 6."
+            : "Check the math — they should match.") +
+          "</p>";
+        $("proveBox").innerHTML = rows;
+        proj.proved = allMatch;
+        updateProgress();
+      }
+
+      /* ---- What-If: add one more coin ---- */
+      
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
-        let sample = [...baseWorldSample];
-        const customSize = num("worldSize");
+        let sample = worldSample();
+        const customSize = $("worldSize") ? num("worldSize") : NaN;
         if (!isNaN(customSize) && customSize > 0) {
-          sample.push(customSize);
+          sample = [...sample, customSize];
         }
         if (isNaN(v)) {
           $("whatIfBox").textContent = "Enter a number first.";
@@ -1549,6 +1636,44 @@
           "Adding a value of " + vStr + " to the sample:"
         );
       }
+  
+
+      /* ---- Use example numbers ---- */
+      function useExamples() {
+        const ex = {
+          "worldCountry": "Platformer Game",
+          "worldSize": 59.99,
+          gameName: "Quest Blaster",
+          "exp-base": 3,
+          "exp-level": 4,
+          "coin-r": 3,
+          "coin-k": 50,
+          "coin-c": 12,
+          "p-r": 5,
+          "p-k": 20,
+          "cmp-c": 12,
+          worldC: 12,
+          myWorld: "",
+        };
+        Object.entries(ex).forEach(([k, v]) => {
+          if ($(k)) $(k).value = v;
+        });
+        recalcAll();
+      }
+
+      
+      function syncResearch() {
+        const ws = $("worldSize");
+        if (!ws) return;
+        const val = num("worldSize");
+        if (isNaN(val) || val <= 0) return;
+        if ($("exp-base")) {
+          $("exp-base").value = val;
+          calcExponent();
+        }
+        worldGo();
+      }
+    
 
       
       function drawVisualizer() {
@@ -1581,7 +1706,7 @@
           html = `
             ${tilesHtml}
             <text x="250" y="210" text-anchor="middle" font-size="13" font-weight="bold" fill="#2d874b">
-              Visual Representation of: ${coef}(${xVal}x + ${cVal}) = ${coef * xVal}x + ${coef * cVal}
+              Visual Representation of: ${coef}(${xVal}x + ${cVal}) = ${coef * xVal}x + 	h ${coef * cVal}
             </text>
           `;
         } else {
@@ -1598,28 +1723,9 @@
         $("projectVisualizer").innerHTML = svgString;
       }
     
-
-      function useExamples() {
-        const ex = {
-          gameName: "Quest Blaster",
-          "exp-base": 3,
-          "exp-level": 4,
-          "coin-r": 3,
-          "coin-k": 50,
-          "coin-c": 12,
-          "p-r": 5,
-          "p-k": 20,
-          "cmp-c": 12,
-          worldC: 12,
-          myWorld: "",
-        };
-        Object.entries(ex).forEach(([k, v]) => {
-          if ($(k)) $(k).value = v;
-        });
-        recalcAll();
-      }
-
-      function recalcAll() {
+  
+function recalcAll() {
+        if (typeof syncResearch === "function") syncResearch();
         coinLabel();
         calcExponent();
         calcCoinExpr();

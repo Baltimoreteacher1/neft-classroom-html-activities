@@ -661,7 +661,27 @@
         </div>
 
         <!-- 1a Trapezoid garden plot -->
-        <h3 style="margin-top: 8px">⏢ Garden plot (trapezoid)</h3>
+        
+        <!-- ===================== RESEARCH LAB ===================== -->
+        <div class="pk-research-lab">
+          <h3>🔍 Raised Garden Bed Dimension Guide</h3>
+          <p>Research recommended structural standards for raised garden beds. Find the standard width (typically 4 feet to allow reaching from both sides). Enter the standard bed width below:</p>
+          <a href="https://en.wikipedia.org/wiki/Raised-bed_gardening" target="_blank" class="pk-research-btn">🔗 Wikipedia: Raised-Bed Gardening Standards ↗</a>
+          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
+            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="worldCountry">Garden Design Guideline</label>
+              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="syncResearch()">
+            </div>
+            <div>
+              <label class="fld" for="worldSize">Recommended Bed Width (feet)</label>
+              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="syncResearch()">
+            </div>
+          </div>
+        </div>
+  <h3 style="margin-top: 8px">⏢ Garden plot (trapezoid)</h3>
         <svg
           class="svg-sketch"
           width="260"
@@ -967,7 +987,7 @@
         </p>
         <div id="projectVisualizer"></div>
       </section>
-    
+  
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -1052,7 +1072,7 @@
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase" >
+      <section class="phase">
         <div class="phase-head">
           <div
             class="phase-num"
@@ -1061,49 +1081,39 @@
             3
           </div>
           <div>
-            <span class="arc-banner">Part 3 · World — real-world research</span>
-            <div class="skill">Compare to real data</div>
-            <h2>How Do Your Calculations Compare?</h2>
+            <span class="arc-banner"
+              >Part 3 · World — real community plots</span
+            >
+            <div class="skill">Compare to real data · 6.G.1</div>
+            <h2>How Does Your Plot Compare?</h2>
           </div>
         </div>
         <p>
-          Compare your calculated project totals against real-world industry benchmarks and standards.
+          These are realistic typical community-garden plot sizes (in square
+          feet). See where your garden plot lands.
         </p>
-
-        <div class="pk-research-lab">
-          <h3>🔍 Raised Garden Bed Dimension Guide</h3>
-          <p>Research recommended structural standards for raised garden beds. Find the standard width (typically 4 feet to allow reaching from both sides). Enter the standard bed width below:</p>
-          <a href="https://en.wikipedia.org/wiki/Raised-bed_gardening" target="_blank" class="pk-research-btn">🔗 Wikipedia: Raised-Bed Gardening Standards ↗</a>
-          <p style="margin-top: 12px; font-size: 13px; color: var(--muted)">
-            <em>Classroom Tip: If the link is blocked in your school network, you can use the typical values table on the right for your reference.</em>
-          </p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Garden Design Guideline</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="worldGo()">
-            </div>
-            <div>
-              <label class="fld" for="worldSize">Recommended Bed Width (feet)</label>
-              <input type="number" id="worldSize" data-save placeholder="e.g. 10" oninput="worldGo()">
-            </div>
-          </div>
-        </div>
-
         <div class="grid2">
           <div>
-            <label class="fld" for="myWorld">My calculated value to compare</label>
+            <label class="fld" for="worldSelect"
+              >Pick a city to highlight</label
+            >
+            <select id="worldSelect" data-save onchange="worldGo()"></select>
+            <label class="fld" for="myWorld">My garden plot area (sq ft)</label>
             <input
               type="number"
               id="myWorld"
               data-save
-              step="0.01"
+              step="0.1"
               oninput="worldGo()"
-              placeholder="auto-fills or type your value"
+              placeholder="auto-fills from your trapezoid plot"
             />
-            <div id="worldMeter" style="margin-top: 24px;"></div>
+            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
+              Tip: your trapezoid plot area from Part 1 auto-fills here.
+            </p>
+            <div id="worldMeter"></div>
           </div>
           <div>
-            <h3>Standard Widths 🌍</h3>
+            <h3>Community Garden Plots 🌍</h3>
             <div
               style="
                 overflow: auto;
@@ -1112,22 +1122,11 @@
               "
             >
               <table class="rubric" style="margin-top: 0">
-                <thead>
-                  <tr>
-                    <th>Item/Location</th>
-                    <th>Standard Value</th>
-                  </tr>
-                </thead>
-                <tbody id="worldRows">
-                  <tr><td>New York, NY</td><td>4 ft</td></tr>
-                  <tr><td>Chicago, IL</td><td>3.5 ft</td></tr>
-                  <tr><td>Seattle, WA</td><td>5 ft</td></tr>
-                  <tr><td>Toronto, Canada</td><td>3 ft</td></tr>
-                  <tr><td>London, UK</td><td>6 ft</td></tr>
-                  <tr><td>Berlin, Germany</td><td>4.5 ft</td></tr>
-                  <tr><td>Tokyo, Japan</td><td>3.8 ft</td></tr>
-                  <tr><td>Mexico City, MX</td><td>5.5 ft</td></tr>
-                </tbody>
+                <tr>
+                  <th>City program</th>
+                  <th>Typical plot (sq ft)</th>
+                </tr>
+                <tbody id="worldRows"></tbody>
               </table>
             </div>
           </div>
@@ -1745,29 +1744,45 @@
       }
 
       /* ---- Part 3: world dataset + meter ---- */
-      const baseWorldSample = [4, 3.5, 5, 3, 6, 4.5, 3.8, 5.5];
-
+      // [city program, typical plot area sq ft] — realistic community-garden values
+      const world = [
+        ["New York, NY 🇺🇸", 100],
+        ["Chicago, IL 🇺🇸", 80],
+        ["Seattle, WA 🇺🇸", 100],
+        ["Toronto, Canada 🇨🇦", 120],
+        ["London, UK 🇬🇧", 90],
+        ["Berlin, Germany 🇩🇪", 215],
+        ["Tokyo, Japan 🇯🇵", 65],
+        ["Mexico City, MX 🇲🇽", 85],
+      ];
       function renderWorld() {
-        // Automatically populated from static table in HTML
+        $("worldRows").innerHTML = world
+          .map((r) => `<tr><td>${r[0]}</td><td>${r[1]} sq ft</td></tr>`)
+          .join("");
+        $("worldSelect").innerHTML = world
+          .map(
+            (r, i) => `<option value="${i}">${r[0]} — ${r[1]} sq ft</option>`,
+          )
+          .join("");
       }
-
+      
       function worldGo() {
         const my = num("myWorld");
-        const customName = $("worldCountry").value.trim();
-        const customSize = num("worldSize");
+        const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
+        const customSize = $("worldSize") ? num("worldSize") : NaN;
         
-        let sample = [...baseWorldSample];
+        let sample = worldSample();
         if (!isNaN(customSize) && customSize > 0) {
-          sample.push(customSize);
+          sample = [...sample, customSize];
         }
         
-        PK.worldMeter(
-          "worldMeter",
-          sample,
-          my,
-          { mean: "World Avg", me: "Me" }
-        );
-
+        const labels =
+          $("worldCat").value === "costPerGuest"
+            ? { mean: "City avg $", me: "Me $" }
+            : { mean: "City avg", me: "Me" };
+            
+        PK.worldMeter("worldMeter", sample, my, labels);
+        
         const fb = $("worldMeter");
         if (!isNaN(customSize) && customSize > 0 && customName) {
           const ratio = (my / customSize).toFixed(2);
@@ -1786,20 +1801,20 @@
           fb.innerHTML += desc;
         }
         
-        // Draw the dynamic SVG visualizer
         if (typeof drawVisualizer === 'function') {
           drawVisualizer();
         }
         
         updateProgress();
       }
-
+  
+      
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
-        let sample = [...baseWorldSample];
-        const customSize = num("worldSize");
+        let sample = worldSample();
+        const customSize = $("worldSize") ? num("worldSize") : NaN;
         if (!isNaN(customSize) && customSize > 0) {
-          sample.push(customSize);
+          sample = [...sample, customSize];
         }
         if (isNaN(v)) {
           $("whatIfBox").textContent = "Enter a number first.";
@@ -1819,6 +1834,46 @@
           "Adding a value of " + vStr + " to the sample:"
         );
       }
+  
+
+      /* ---- Use example numbers ---- */
+      function useExamples() {
+        const ex = {
+          "worldCountry": "New York, NY",
+          "worldSize": 4,
+          "p1-b1": 8,
+          "p1-b2": 12,
+          "p1-h": 6,
+          "p2-base": 14,
+          "p2-height": 10,
+          "p2-coverage": 50,
+          "p3-base": 9,
+          "p3-height": 4,
+          "p4-price1": 4.5,
+          "p4-area2": 45,
+          "p4-price2": 5.2,
+        };
+        Object.entries(ex).forEach(([k, v]) => {
+          if ($(k)) $(k).value = v;
+        });
+        recalcAll();
+      }
+
+      
+      function syncResearch() {
+        const ws = $("worldSize");
+        if (!ws) return;
+        const val = num("worldSize");
+        if (isNaN(val) || val <= 0) return;
+        if ($("p1-b1") && $("p1-b2") && $("p1-h")) {
+          $("p1-b1").value = 12;
+          $("p1-b2").value = 8;
+          $("p1-h").value = (val / 10).toFixed(1);
+          calcTrapezoid();
+        }
+        worldGo();
+      }
+    
 
       
       function drawVisualizer() {
@@ -1846,12 +1901,12 @@
           
           html = `
             <!-- Main Plot (Blue) -->
-            <polygon points="40,40 40,${40 + h1} ${40 + w1},${40 + h1} ${40 + w1},40" fill="rgba(26, 111, 181, 0.2)" stroke="#1a6fb5" stroke-width="2" />
+            <polygon points="40,40 40,${40 + h1} ${40 + w1},	h ${40 + h1} ${40 + w1},40" fill="rgba(26, 111, 181, 0.2)" stroke="#1a6fb5" stroke-width="2" />
             <text x="${40 + w1/2}" y="${40 + h1/2}" text-anchor="middle" font-size="9" font-weight="bold" fill="#1a6fb5">Bed: ${p1w}×${p1h}</text>
             
             <!-- Triangular Crop Patch -->
             ${w2 > 0 && h2 > 0 ? `
-              <polygon points="40,${40 + h1} ${40 + w2},${40 + h1} 40,${40 + h1 + h2}" fill="rgba(212, 149, 42, 0.2)" stroke="#d4952a" stroke-width="2" />
+              <polygon points="40,${40 + h1} ${40 + w2},${40 + h1} 40,	h ${40 + h1 + h2}" fill="rgba(212, 149, 42, 0.2)" stroke="#d4952a" stroke-width="2" />
               <text x="${40 + w2/3}" y="${40 + h1 + h2/3}" text-anchor="middle" font-size="9" font-weight="bold" fill="#d4952a">Nook: ½×${p2b}×${p2h}</text>
             ` : ""}
             
@@ -1877,28 +1932,9 @@
         $("projectVisualizer").innerHTML = svgString;
       }
     
-
-      function useExamples() {
-        const ex = {
-          "p1-b1": 8,
-          "p1-b2": 12,
-          "p1-h": 6,
-          "p2-base": 14,
-          "p2-height": 10,
-          "p2-coverage": 50,
-          "p3-base": 9,
-          "p3-height": 4,
-          "p4-price1": 4.5,
-          "p4-area2": 45,
-          "p4-price2": 5.2,
-        };
-        Object.entries(ex).forEach(([k, v]) => {
-          if ($(k)) $(k).value = v;
-        });
-        recalcAll();
-      }
-
-      function recalcAll() {
+  
+function recalcAll() {
+        if (typeof syncResearch === "function") syncResearch();
         calcTrapezoid();
         calcMural();
         calcBanner();
