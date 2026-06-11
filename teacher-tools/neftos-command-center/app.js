@@ -87,7 +87,7 @@
     links: [
       { id: uid(), label: 'Teacher Tools', url: '/teacher-tools/', category: 'Hub' },
       { id: uid(), label: 'Neft Learning Forecast Engine', url: '/teacher-tools/forecast-engine/', category: 'Teacher Tool' },
-      { id: uid(), label: 'Data Studio', url: '/statistics-data/data-studio/', category: 'Data' },
+      { id: uid(), label: 'Data Studio', url: '/math/statistics/data-studio/', category: 'Data' },
       { id: uid(), label: 'Math Section', url: '/math/', category: 'Classroom' },
       { id: uid(), label: 'Blood on the River', url: '/blood-on-the-river/', category: 'Reading' },
       { id: uid(), label: 'Noam Hebrew Review', url: '/esol-reading-writing/noamhebrewreview/', category: 'Family' }

@@ -221,8 +221,8 @@ const BASE = "/Users/joelneft/neft-classroom-html-activities";
 // Files with VOCAB_DATA JS arrays
 function processVocabDataFiles() {
   const files = [
-    `${BASE}/number-system/6-ns-b-3review/index.html`,
-    `${BASE}/number-system/6-ns-c-3review/index.html`,
+    `${BASE}/math/unit-1/6-ns-b-3review/index.html`,
+    `${BASE}/math/unit-7/6-ns-c-3review/index.html`,
   ];
   let count = 0;
   for (const filePath of files) {
@@ -269,13 +269,13 @@ function processVocabDataFiles() {
 // Files with HTML vocab cards (vocab-term/vocab-def, vc-term/vc-def)
 function processHtmlVocabCards() {
   const files = [
-    `${BASE}/number-system/6-ns-b-2reviewactivities/index.html`,
-    `${BASE}/number-system/6-ns-cstudypractice/index.html`,
-    `${BASE}/ratios-proportions/6-rp-a-2-interactive-study-guide/index.html`,
+    `${BASE}/math/unit-1/6-ns-b-2reviewactivities/index.html`,
+    `${BASE}/math/unit-7/6-ns-cstudypractice/index.html`,
+    `${BASE}/math/unit-4/6-rp-a-2-interactive-study-guide/index.html`,
     `${BASE}/statistics-data/2-2histogramgraphicnovel/index.html`,
     `${BASE}/statistics-data/histogramhero/index.html`,
-    `${BASE}/statistics-data/6-sp-b-5-interactive-review/index.html`,
-    `${BASE}/statistics-data/mean-median-modegallerywalk/index.html`,
+    `${BASE}/math/statistics/6-sp-b-5-interactive-review/index.html`,
+    `${BASE}/math/statistics/mean-median-modegallerywalk/index.html`,
     `${BASE}/unit-4/decimaloperationsreview/index.html`,
     `${BASE}/unit-5/grade6area5-1-2/index.html`,
     `${BASE}/unit-5/grade6area5-1-2language/index.html`,
@@ -683,7 +683,7 @@ function processInlineVocabFiles() {
 function processEEFiles() {
   const files = [
     {
-      path: `${BASE}/expressions-equations/6-ee-9notespracti-e/index.html`,
+      path: `${BASE}/math/unit-9/6-ee-9notespracti-e/index.html`,
       words: [
         {
           term: "Independent Variable",
@@ -696,7 +696,7 @@ function processEEFiles() {
       ],
     },
     {
-      path: `${BASE}/expressions-equations/variablechartpractice/index.html`,
+      path: `${BASE}/math/unit-9/variablechartpractice/index.html`,
       words: null, // Will extract from file
     },
   ];

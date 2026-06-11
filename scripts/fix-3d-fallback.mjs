@@ -9,16 +9,16 @@ const DIR = join(ROOT, "games/3d");
 
 // 3D unit dir -> existing 2D Phaser edition under /games/
 const TWO_D = {
-  "unit-1": "/games/unit1-factor-frenzy.html",
-  "unit-2": "/games/unit2-fraction-kitchen.html",
-  "unit-3": "/games/unit3-ratio-rally.html",
-  "unit-4": "/games/unit4-discount-dash.html",
-  "unit-5": "/games/unit5-area-architect.html",
-  "unit-6": "/games/unit6-expression-engine.html",
-  "unit-7": "/games/unit7-equation-escape.html",
-  "unit-8": "/games/unit8-stats-slam.html",
-  "unit-9": "/games/unit9-coordinate-quest.html",
-  "unit-10": "/games/unit10-volume-vault.html",
+  "unit-1": "/math/unit-1/games/unit1-factor-frenzy.html",
+  "unit-2": "/math/unit-2/games/unit2-fraction-kitchen.html",
+  "unit-3": "/math/unit-3/games/unit3-ratio-rally.html",
+  "unit-4": "/math/unit-4/games/unit4-discount-dash.html",
+  "unit-5": "/math/unit-5/games/unit5-area-architect.html",
+  "unit-6": "/math/unit-6/games/unit6-expression-engine.html",
+  "unit-7": "/math/unit-8/games/unit7-equation-escape.html",
+  "unit-8": "/math/statistics/games/unit8-stats-slam.html",
+  "unit-9": "/math/unit-7/games/unit9-coordinate-quest.html",
+  "unit-10": "/math/unit-10/games/unit10-volume-vault.html",
 };
 
 const ACCURATE_P = `<p>
