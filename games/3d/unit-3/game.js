@@ -3,227 +3,209 @@ import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
 import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 // ============================================================================
-// Unit 3 — RATIO RALLY  (CCSS 6.RP.A.3 / 6.RP.A.2)
-// Cruise-and-pit racer: the car races between pit stops, then the player SETS
-// the answer on a dial (unit rates, scaling, percent, conversions) or picks the
-// cheapest fuel lane by comparing $ and liters — never picking a precomputed
-// multiple-choice number. Wrong dial = visible wrong readout before commit.
-// Premium rebuild: RoundedBox/PBR, scrolling speed cues, emissive pit zone,
-// particle bursts, and feel.sfx() on every action.
+// Unit 3 — RATIO RALLY: HIGHWAY TUNER  (CCSS 6.RP.A.2–3)
+// Continuous arcade highway racer. The car NEVER stops — you steer between
+// lanes, dodge cones, and tune a live dial (↑/↓) WHILE driving. Your dial
+// sets the car's speed; hit the target rate and HOLD it in the green zone to
+// clear each segment. Compare rounds = fuel-stop: steer to the cheapest pump
+// ($ and liters shown — you compute $/L). Math is the throttle, not a quiz.
 // ============================================================================
 
 const COLORS = {
-  bg: 0x0c1a33,
   track: 0x14233f,
-  trackEmissive: 0x1d3a66,
+  trackGlow: 0x1d3a66,
   rail: 0x2f6aa0,
+  dash: 0xeaf4ff,
   car: 0x1fa6a2,
   carEnrich: 0xe09b4a,
   cabin: 0xdff1ff,
-  dialOk: 0x4aa978,
-  dialActive: 0xf2c15b,
+  cone: 0xf2c15b,
+  coneBad: 0xd9795d,
+  pump: 0x4aa978,
+  pumpBad: 0x35507a,
   finish: 0xf2c15b,
-  laneBest: 0x4aa978,
-  amber: 0xf2c15b,
+  good: 0x4aa978,
+  bad: 0xd9795d,
   spark: 0xffd56b,
-  dash: 0xeaf4ff,
+  nitro: 0x5ef0d8,
 };
 
-const LANE_W = 2.4;
-const TRACK_LEN = 28;
+const LANE_W = 3.0;
 const LANE_COUNT = 3;
 const laneX = (i) => (i - (LANE_COUNT - 1) / 2) * LANE_W;
-const PIT_Z = 0;
 
-// ---- Math problem banks (6.RP.A.3) ------------------------------------------
-// Every answer is exact; comments verify the arithmetic. Level 1 = scaffolded
-// (hints + a rate table + smaller numbers). Level 2 = enrichment (larger /
-// multi-step, fewer scaffolds). 6+ rounds per level.
+const CAR_Z = 6;
+const SPAWN_Z = -90;
+const DESPAWN_Z = 16;
+const ROAD_LEN = 220;
 
+// ---- Problem banks (curriculum exact; comments verify arithmetic) ------------
 function makeLevel(level) {
   if (level === 1) {
     return {
       hints: true,
+      holdSec: 4.2,
       problems: [
-        // 12 miles in 3 hours -> 12 ÷ 3 = 4 mph.
         {
           type: "unitrate",
           prompt:
-            "A car goes 12 miles in 3 hours. How many miles in 1 hour? Set the speed (mph).",
+            "12 miles in 3 hours. Tune your speed to miles in 1 hour (mph).",
           table: [
             ["miles", "hours"],
             ["12", "3"],
           ],
-          help: "For one hour, divide the miles by the hours: 12 ÷ 3 = ?",
+          help: "Divide miles by hours: 12 ÷ 3 = ?",
           answer: 4,
           unit: "mph",
           min: 0,
           max: 12,
-          coarse: 5,
+          coarse: 1,
         },
-        // $10 for 2 cars -> 10 ÷ 2 = $5 each.
         {
           type: "unitrate",
-          prompt: "2 cars cost $10. How much for 1 car? Set the price.",
+          prompt: "$10 for 2 cars. Tune the price for 1 car.",
           table: [
             ["dollars", "cars"],
             ["10", "2"],
           ],
-          help: "Price for one car = dollars ÷ cars: 10 ÷ 2 = ?",
+          help: "Dollars ÷ cars: 10 ÷ 2 = ?",
           answer: 5,
           unit: "$/car",
           min: 0,
           max: 12,
-          coarse: 5,
+          coarse: 1,
         },
-        // Equivalent ratio 4:1 -> 4 × 5 = 20 miles in 5 hours.
         {
           type: "equiv",
-          prompt:
-            "A car drives 4 miles each hour. How far does it go in 5 hours? Set the miles.",
+          prompt: "4 miles each hour. How far in 5 hours? Tune the miles.",
           table: [
             ["miles", "hours"],
             ["4", "1"],
             ["?", "5"],
           ],
-          help: "Same speed each hour. Multiply the miles by the hours: 4 × 5 = ?",
+          help: "Same speed each hour: 4 × 5 = ?",
           answer: 20,
-          unit: "miles",
+          unit: "mi",
           min: 0,
           max: 28,
-          coarse: 5,
+          coarse: 2,
         },
-        // Equivalent ratio 3:2 -> for 6 laps, fuel = 3 × 3 = 9.
         {
           type: "equiv",
-          prompt:
-            "A car uses 3 liters of fuel every 2 laps. How much fuel for 6 laps? Set the liters.",
+          prompt: "3 liters every 2 laps. How much for 6 laps? Tune liters.",
           table: [
             ["liters", "laps"],
             ["3", "2"],
             ["?", "6"],
           ],
-          help: "How many groups of 2 laps are in 6? Multiply the liters by that many groups.",
+          help: "6 laps is 3 groups of 2. So 3 × 3 = ?",
           answer: 9,
           unit: "L",
           min: 0,
           max: 16,
-          coarse: 5,
+          coarse: 1,
         },
-        // Conversion: 2 min = 120 s. 2 × 60.
         {
           type: "conversion",
-          prompt: "How many seconds are in 2 minutes? Set the seconds.",
+          prompt: "How many seconds in 2 minutes? Tune the seconds.",
           table: [
             ["minutes", "seconds"],
             ["1", "60"],
             ["2", "?"],
           ],
-          help: "1 minute = 60 seconds. Multiply the minutes by 60: 2 × 60 = ?",
+          help: "2 × 60 = ?",
           answer: 120,
-          unit: "sec",
+          unit: "s",
           min: 0,
           max: 200,
-          coarse: 10,
+          coarse: 5,
         },
-        // Compare: lowest price per liter. A 2.00, B 1.60 (best), C 2.50.
         {
           type: "compare",
-          prompt: "Pick the cheapest fuel. Lowest price per liter wins.",
-          help: "Each lane shows price per liter. Pick the smallest.",
+          prompt: "Fuel stop! Pick the cheapest — lowest $ per liter.",
+          help: "Divide dollars by liters for each pump. Pick the smallest.",
           lanes: [
-            { label: "$6 / 3 L", dollars: 6, liters: 3 }, // 2.00
-            { label: "$8 / 5 L", dollars: 8, liters: 5 }, // 1.60 best
-            { label: "$5 / 2 L", dollars: 5, liters: 2 }, // 2.50
+            { label: "$6 / 3 L", dollars: 6, liters: 3 },
+            { label: "$8 / 5 L", dollars: 8, liters: 5 },
+            { label: "$5 / 2 L", dollars: 5, liters: 2 },
           ],
         },
       ],
     };
   }
-  // ---- Level 2: enrichment (larger / multi-step) ----------------------------
   return {
     hints: false,
+    holdSec: 3.4,
     problems: [
-      // 150 miles in 3 hours -> 50 mph; then 50 × 4 = 200 miles.
       {
         type: "multistep",
-        prompt:
-          "A car goes 150 miles in 3 hours at a steady speed. How far does it go in 4 hours? Set the miles.",
-        help: "First find the speed: 150 ÷ 3. Then multiply that by 4 hours.",
+        prompt: "150 mi in 3 hr steady. How far in 4 hours? Tune miles.",
+        help: "Speed = 150 ÷ 3 = 50 mph. Then 50 × 4 = ?",
         answer: 200,
-        unit: "miles",
+        unit: "mi",
         min: 120,
         max: 280,
-        coarse: 10,
+        coarse: 5,
       },
-      // Percent: 20% of 40 = 8.
       {
         type: "percent",
-        prompt: "What is 20% of 40 mph? Set the speed boost.",
-        help: "20% = 0.20. Multiply 0.20 × 40 to find the boost.",
+        prompt: "What is 20% of 40 mph? Tune the boost.",
+        help: "20% = 0.20. 0.20 × 40 = ?",
         answer: 8,
         unit: "mph",
         min: 0,
         max: 24,
-        coarse: 5,
+        coarse: 1,
       },
-      // Percent: 15% of 80 = 12.
       {
         type: "percent",
-        prompt: "What is 15% of 80 liters? Set the liters.",
-        help: "15% = 0.15. Multiply 0.15 × 80 to find the liters.",
+        prompt: "What is 15% of 80 liters? Tune liters.",
+        help: "15% = 0.15. 0.15 × 80 = ?",
         answer: 12,
         unit: "L",
         min: 0,
         max: 32,
-        coarse: 5,
+        coarse: 1,
       },
-      // Equivalent ratio 7:2 scaled: 35 miles in 10 hours -> miles for? Actually
-      // give 7 mi per 2 h; for 10 h, 10 ÷ 2 = 5, 7 × 5 = 35.
       {
         type: "multistep",
-        prompt:
-          "A car drives 7 miles every 2 hours at a steady pace. How far does it go in 10 hours? Set the miles.",
-        help: "How many groups of 2 hours are in 10? Multiply 7 by that many groups.",
+        prompt: "7 miles every 2 hours. How far in 10 hours? Tune miles.",
+        help: "10 hours is 5 groups of 2. So 7 × 5 = ?",
         answer: 35,
-        unit: "miles",
+        unit: "mi",
         min: 0,
         max: 60,
-        coarse: 5,
+        coarse: 2,
       },
-      // Conversion: 3 minutes 30 s = 210 s. 3×60 + 30.
       {
         type: "conversion",
-        prompt:
-          "How many seconds are in 3 minutes and 30 seconds? Set the seconds.",
-        help: "1 minute = 60 seconds. Multiply the minutes by 60, then add the extra 30 seconds.",
+        prompt: "Seconds in 3 min 30 sec? Tune seconds.",
+        help: "3 × 60 + 30 = ?",
         answer: 210,
-        unit: "sec",
+        unit: "s",
         min: 0,
         max: 300,
         coarse: 10,
       },
-      // Compare: A 1.80, B 1.50 (best), C 1.75.
       {
         type: "compare",
-        prompt: "Pick the cheapest fuel. Lowest price per liter wins.",
-        help: "Each lane shows price per liter. Pick the smallest.",
+        prompt: "Fuel stop! Pick the cheapest — lowest $ per liter.",
+        help: "Divide dollars by liters for each pump.",
         lanes: [
-          { label: "$9 / 5 L", dollars: 9, liters: 5 }, // 1.80
-          { label: "$12 / 8 L", dollars: 12, liters: 8 }, // 1.50 best
-          { label: "$7 / 4 L", dollars: 7, liters: 4 }, // 1.75
+          { label: "$9 / 5 L", dollars: 9, liters: 5 },
+          { label: "$12 / 8 L", dollars: 12, liters: 8 },
+          { label: "$7 / 4 L", dollars: 7, liters: 4 },
         ],
       },
-      // Multi-step percent: $50 part costs, 30% off -> save 15.
       {
         type: "percent",
-        prompt: "What is 30% of $50? Set the savings.",
-        help: "30% = 0.30. Multiply 0.30 × 50 to find the savings.",
+        prompt: "What is 30% of $50? Tune the savings.",
+        help: "30% = 0.30. 0.30 × 50 = ?",
         answer: 15,
         unit: "$",
         min: 0,
         max: 40,
-        coarse: 5,
+        coarse: 2,
       },
     ],
   };
@@ -283,204 +265,142 @@ export default {
     const reduced = feel.reducedMotion;
     const carColor = level === 2 ? COLORS.carEnrich : COLORS.car;
 
-    // ---- Clarity / onboarding kit (shared overlay over the canvas) ----------
-    // Mount element is the same positioned container that hosts the canvas.
+    const BASE_SPEED = level === 2 ? 20 : 16;
+    const BOOST_SPEED = level === 2 ? 38 : 30;
+    const START_LIVES = level === 2 ? 3 : 4;
+    const CONE_GAP = level === 2 ? 14 : 18;
+    const HOLD_SEC = cfg.holdSec;
+
     const clarityMount = renderer.domElement.parentElement || document.body;
     let clarity = null;
 
-    // ---- Scene root ---------------------------------------------------------
     const group = new THREE.Group();
     scene.add(group);
 
-    const disposables = []; // geometries + materials we own
-    const track = (g, m) => {
+    const disposables = [];
+    const mk = (g, m) => {
       disposables.push(g, m);
       return new THREE.Mesh(g, m);
     };
 
-    // ---- Stage / ground (receives shadow) -----------------------------------
+    // ---- Road ----------------------------------------------------------------
     const groundMat = new THREE.MeshStandardMaterial({
       color: COLORS.track,
-      roughness: 0.92,
-      metalness: 0.05,
-      emissive: COLORS.trackEmissive,
-      emissiveIntensity: 0.12,
+      roughness: 0.9,
+      metalness: 0.06,
+      emissive: COLORS.trackGlow,
+      emissiveIntensity: 0.14,
     });
-    const ground = track(
-      new RoundedBoxGeometry(
-        LANE_COUNT * LANE_W + 2.4,
-        0.6,
-        TRACK_LEN,
-        4,
-        0.25,
-      ),
+    disposables.push(groundMat);
+    const ground = mk(
+      new THREE.BoxGeometry(LANE_COUNT * LANE_W + 4, 0.55, ROAD_LEN),
       groundMat,
     );
-    ground.position.set(0, -0.3, 0);
+    ground.position.set(0, -0.28, -ROAD_LEN / 2 + CAR_Z);
     ground.receiveShadow = true;
     group.add(ground);
 
-    // Glowing lane dividers (emissive -> bloom).
     const railMat = new THREE.MeshStandardMaterial({
       color: COLORS.rail,
-      roughness: 0.5,
-      metalness: 0.3,
       emissive: COLORS.rail,
-      emissiveIntensity: 0.5,
+      emissiveIntensity: 0.55,
+      roughness: 0.45,
+      metalness: 0.25,
     });
     disposables.push(railMat);
-    for (let i = 0; i <= LANE_COUNT; i++) {
-      const railGeo = new RoundedBoxGeometry(0.12, 0.16, TRACK_LEN, 2, 0.06);
-      disposables.push(railGeo);
-      const rail = new THREE.Mesh(railGeo, railMat);
-      rail.position.set(laneX(i) - LANE_W / 2, 0.08, 0);
+    [-1, 1].forEach((s) => {
+      const geo = new THREE.BoxGeometry(0.2, 0.45, ROAD_LEN);
+      disposables.push(geo);
+      const rail = new THREE.Mesh(geo, railMat);
+      rail.position.set(
+        (s * (LANE_COUNT * LANE_W + 2.8)) / 2,
+        0.18,
+        -ROAD_LEN / 2 + CAR_Z,
+      );
       rail.castShadow = true;
       group.add(rail);
-    }
-
-    // Finish line (emissive amber, glows).
-    const finishMat = new THREE.MeshStandardMaterial({
-      color: COLORS.finish,
-      emissive: COLORS.finish,
-      emissiveIntensity: 0.8,
-      roughness: 0.4,
-    });
-    const finish = track(
-      new RoundedBoxGeometry(LANE_COUNT * LANE_W + 2.0, 0.08, 0.7, 2, 0.04),
-      finishMat,
-    );
-    finish.position.set(0, 0.1, -TRACK_LEN / 2 + 1.2);
-    finish.receiveShadow = true;
-    group.add(finish);
-
-    // Goal pylons flanking the finish (lathe-style cones for prop variety).
-    const pylonMat = new THREE.MeshStandardMaterial({
-      color: COLORS.amber,
-      emissive: COLORS.amber,
-      emissiveIntensity: 0.4,
-      roughness: 0.5,
-    });
-    disposables.push(pylonMat);
-    [-1, 1].forEach((s) => {
-      const pylGeo = new THREE.ConeGeometry(0.45, 1.4, 18);
-      disposables.push(pylGeo);
-      const pyl = new THREE.Mesh(pylGeo, pylonMat);
-      pyl.position.set(
-        (s * (LANE_COUNT * LANE_W)) / 2 + 0.4,
-        0.7,
-        -TRACK_LEN / 2 + 1.2,
-      );
-      pyl.castShadow = true;
-      group.add(pyl);
     });
 
-    // Scrolling lane dashes (speed cue during cruise + launch).
     const dashMat = new THREE.MeshStandardMaterial({
       color: COLORS.dash,
       emissive: COLORS.dash,
-      emissiveIntensity: 0.65,
-      roughness: 0.4,
+      emissiveIntensity: 0.75,
+      roughness: 0.35,
     });
     disposables.push(dashMat);
-    const dashGeo = new THREE.BoxGeometry(0.16, 0.05, 1.6);
+    const dashGeo = new THREE.BoxGeometry(0.2, 0.06, 2.2);
     disposables.push(dashGeo);
-    const DASH_SPAN = TRACK_LEN - 4;
+    const DASH_SPAN = 110;
+    const DASH_STEP = 3.6;
     const dashes = [];
-    for (let z = -TRACK_LEN / 2 + 2; z < TRACK_LEN / 2 - 2; z += 2.4) {
-      [-1, 1].forEach((side) => {
+    [-1, 1].forEach((side) => {
+      const x = side * (LANE_W / 2);
+      for (let z = CAR_Z; z > CAR_Z - DASH_SPAN; z -= DASH_STEP) {
         const d = new THREE.Mesh(dashGeo, dashMat);
-        d.position.set(side * (LANE_W / 2), 0.06, z);
+        d.position.set(x, 0.07, z);
         group.add(d);
         dashes.push(d);
-      });
-    }
-    function scrollDashes(amount) {
-      if (!amount) return;
-      for (const d of dashes) {
-        d.position.z -= amount;
-        if (d.position.z < -TRACK_LEN / 2 + 1) d.position.z += DASH_SPAN;
       }
-    }
-
-    // Glowing pit-stop zone (visible while tuning).
-    const pitMat = new THREE.MeshStandardMaterial({
-      color: COLORS.amber,
-      emissive: COLORS.amber,
-      emissiveIntensity: 0.55,
-      transparent: true,
-      opacity: 0.42,
-      roughness: 0.45,
     });
-    disposables.push(pitMat);
-    const pitZone = track(
-      new RoundedBoxGeometry(LANE_COUNT * LANE_W + 1.6, 0.05, 5.2, 2, 0.04),
-      pitMat,
-    );
-    pitZone.position.set(0, 0.07, PIT_Z);
-    pitZone.visible = false;
-    group.add(pitZone);
 
-    // ---- Hero car (RoundedBox PBR + emissive accents, casts shadow) ---------
+    // ---- Car -----------------------------------------------------------------
     function buildCar(color) {
       const car = new THREE.Group();
-      const bodyGeo = new RoundedBoxGeometry(1.2, 0.55, 2.1, 4, 0.18);
+      const bodyGeo = new RoundedBoxGeometry(1.55, 0.62, 2.6, 4, 0.2);
       const bodyMat = new THREE.MeshStandardMaterial({
         color,
-        roughness: 0.3,
-        metalness: 0.55,
+        roughness: 0.28,
+        metalness: 0.58,
         emissive: color,
-        emissiveIntensity: 0.18,
+        emissiveIntensity: 0.22,
       });
       disposables.push(bodyGeo, bodyMat);
       const body = new THREE.Mesh(bodyGeo, bodyMat);
-      body.position.y = 0.5;
+      body.position.y = 0.58;
       body.castShadow = true;
       car.add(body);
+      car.userData.bodyMat = bodyMat;
 
-      // Glass cabin (physical material for a clearcoat-ish look).
-      const cabGeo = new RoundedBoxGeometry(0.85, 0.42, 0.95, 4, 0.14);
+      const cabGeo = new RoundedBoxGeometry(1.05, 0.48, 1.15, 4, 0.16);
       const cabMat = new THREE.MeshPhysicalMaterial({
         color: COLORS.cabin,
-        roughness: 0.1,
-        metalness: 0,
-        transmission: 0.4,
+        roughness: 0.08,
+        transmission: 0.45,
         thickness: 0.5,
         clearcoat: 1,
-        clearcoatRoughness: 0.1,
+        clearcoatRoughness: 0.08,
       });
       disposables.push(cabGeo, cabMat);
       const cabin = new THREE.Mesh(cabGeo, cabMat);
-      cabin.position.set(0, 0.92, -0.12);
+      cabin.position.set(0, 1.05, -0.12);
       cabin.castShadow = true;
       car.add(cabin);
 
-      // Glowing underglow strip (emissive -> bloom).
-      const glowGeo = new RoundedBoxGeometry(1.3, 0.08, 2.2, 2, 0.04);
+      const glowGeo = new RoundedBoxGeometry(1.65, 0.1, 2.7, 2, 0.05);
       const glowMat = new THREE.MeshStandardMaterial({
         color: COLORS.spark,
         emissive: COLORS.spark,
-        emissiveIntensity: 0.9,
-        roughness: 0.4,
+        emissiveIntensity: 0.95,
       });
       disposables.push(glowGeo, glowMat);
       const glow = new THREE.Mesh(glowGeo, glowMat);
-      glow.position.y = 0.18;
+      glow.position.y = 0.22;
       car.add(glow);
+      car.userData.glowMat = glowMat;
 
-      // Wheels.
-      const wheelGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.22, 16);
+      const wheelGeo = new THREE.CylinderGeometry(0.36, 0.36, 0.28, 16);
       const wheelMat = new THREE.MeshStandardMaterial({
-        color: 0x14151a,
-        roughness: 0.7,
-        metalness: 0.3,
+        color: 0x12141a,
+        roughness: 0.65,
+        metalness: 0.35,
       });
       disposables.push(wheelGeo, wheelMat);
       const wheels = [];
       [
-        [-0.66, 0.3, 0.72],
-        [0.66, 0.3, 0.72],
-        [-0.66, 0.3, -0.72],
-        [0.66, 0.3, -0.72],
+        [-0.84, 0.36, 0.9],
+        [0.84, 0.36, 0.9],
+        [-0.84, 0.36, -0.9],
+        [0.84, 0.36, -0.9],
       ].forEach(([x, y, z]) => {
         const w = new THREE.Mesh(wheelGeo, wheelMat);
         w.rotation.z = Math.PI / 2;
@@ -494,627 +414,703 @@ export default {
     }
 
     const playerCar = buildCar(carColor);
+    playerCar.position.set(0, 0, CAR_Z);
     group.add(playerCar);
 
-    // ---- 3D problem card (always shows the math) ----------------------------
-    const cardSprite = makeLabel("", {
-      fontSize: 56,
-      scale: 1.5,
-      color: "#ffffff",
-      background: "rgba(12,26,51,0.92)",
-      THREE,
-    });
-    cardSprite.position.set(0, 4.6, -TRACK_LEN / 2 + 6);
-    group.add(cardSprite);
-
-    // Live dial / readout sprite below the card.
-    const dialSprite = makeLabel("", {
-      fontSize: 72,
-      scale: 1.5,
+    const speedo = makeLabel("", {
+      fontSize: 88,
+      scale: 1.35,
       color: "#0c1a33",
-      background: "rgba(242,193,91,0.98)",
+      background: "rgba(242,193,91,0.96)",
       THREE,
     });
-    dialSprite.position.set(0, 3.0, -TRACK_LEN / 2 + 6);
-    group.add(dialSprite);
+    speedo.position.set(0, 2.35, CAR_Z + 0.5);
+    group.add(speedo);
 
-    // The in-world text billboards used to project up over the DOM HUD and
-    // garble the directions. Keep them hidden — the problem + live answer now
-    // read from the crisp engine HUD panel. Also hide the clarity kit's
-    // duplicate objective pill so there is ONE clean problem display.
-    cardSprite.visible = false;
-    dialSprite.visible = false;
+    // ---- Cones (obstacles) ---------------------------------------------------
+    const coneGeo = new THREE.ConeGeometry(0.42, 1.05, 12);
+    const coneMat = new THREE.MeshStandardMaterial({
+      color: COLORS.cone,
+      emissive: COLORS.cone,
+      emissiveIntensity: 0.5,
+      roughness: 0.45,
+    });
+    disposables.push(coneGeo, coneMat);
+    const cones = [];
+
+    function spawnCone(z) {
+      const lane = Math.floor(Math.random() * LANE_COUNT);
+      const c = new THREE.Mesh(coneGeo, coneMat);
+      c.position.set(laneX(lane), 0.52, z);
+      c.castShadow = true;
+      c.userData.lane = lane;
+      c.userData.active = true;
+      group.add(c);
+      cones.push(c);
+      return c;
+    }
+    for (let z = CAR_Z - 20; z > SPAWN_Z; z -= CONE_GAP * 0.9) {
+      if (Math.random() < 0.65) spawnCone(z);
+    }
+
+    // ---- Fuel pumps (compare rounds) -----------------------------------------
+    const fuelGroup = new THREE.Group();
+    fuelGroup.visible = false;
+    group.add(fuelGroup);
+    const pumpMeshes = [];
+    const pumpLabels = [];
+
+    function buildFuelStation() {
+      while (fuelGroup.children.length) fuelGroup.remove(fuelGroup.children[0]);
+      pumpMeshes.length = 0;
+      pumpLabels.forEach((l) => disposeSprite(l));
+      pumpLabels.length = 0;
+      if (!problem || problem.type !== "compare") return;
+
+      problem.lanes.forEach((ln, i) => {
+        const lane = new THREE.Group();
+        lane.position.set(laneX(i), 0, CAR_Z - 10);
+        const pumpGeo = new RoundedBoxGeometry(1.4, 2.2, 1.0, 3, 0.14);
+        const pumpMat = new THREE.MeshStandardMaterial({
+          color: COLORS.pumpBad,
+          emissive: COLORS.pumpBad,
+          emissiveIntensity: 0.4,
+          roughness: 0.4,
+          metalness: 0.2,
+        });
+        disposables.push(pumpGeo, pumpMat);
+        const pump = new THREE.Mesh(pumpGeo, pumpMat);
+        pump.position.y = 1.1;
+        pump.castShadow = true;
+        lane.add(pump);
+        const lbl = makeLabel(ln.label, {
+          fontSize: 64,
+          scale: 1.2,
+          color: "#ffffff",
+          background: "rgba(11,28,52,0.88)",
+          THREE,
+        });
+        lbl.position.set(0, 2.6, 0.3);
+        lane.add(lbl);
+        fuelGroup.add(lane);
+        pumpMeshes.push({ mesh: pump, mat: pumpMat, lane: i });
+        pumpLabels.push(lbl);
+      });
+    }
+
+    function highlightPump(lane) {
+      pumpMeshes.forEach((p) => {
+        const lit = p.lane === lane;
+        p.mat.color.set(lit ? COLORS.pump : COLORS.pumpBad);
+        p.mat.emissive.set(lit ? COLORS.pump : COLORS.pumpBad);
+        p.mat.emissiveIntensity = lit ? 0.85 : 0.35;
+      });
+    }
+
+    // ---- Finish line ---------------------------------------------------------
+    const finishMat = new THREE.MeshStandardMaterial({
+      color: COLORS.finish,
+      emissive: COLORS.finish,
+      emissiveIntensity: 0.85,
+      roughness: 0.35,
+    });
+    disposables.push(finishMat);
+    const finish = mk(
+      new THREE.BoxGeometry(LANE_COUNT * LANE_W + 3.5, 0.1, 1.2),
+      finishMat,
+    );
+    finish.position.set(0, 0.08, SPAWN_Z + 8);
+    finish.visible = false;
+    group.add(finish);
+
     if (!document.getElementById("u3-hud-fix")) {
       const hf = document.createElement("style");
       hf.id = "u3-hud-fix";
-      // Hide the clarity kit's persistent HUD pills (objective/target/level) —
-      // the engine HUD already shows the task, live answer, and level, and the
-      // two HUD strips were overlapping. Keep the "?" help button + overlays.
       hf.textContent = ".ck-chip{display:none !important;}";
       document.head.appendChild(hf);
     }
 
     function disposeSprite(spr) {
       if (!spr) return;
-      group.remove(spr);
+      if (spr.parent) spr.parent.remove(spr);
       if (spr.material.map) spr.material.map.dispose();
       spr.material.dispose();
     }
 
-    // ---- Compare-lane tags (canvas sprites) ---------------------------------
-    let laneTags = []; // active compare tags
-    function makeTag(text, highlight) {
-      const spr = makeLabel(text, {
-        fontSize: 52,
-        scale: 1.1,
-        color: highlight ? "#0c1a33" : "#ffffff",
-        background: highlight ? "rgba(242,193,91,0.98)" : "rgba(20,35,63,0.94)",
-        THREE,
-      });
-      return spr;
-    }
-
-    // ---- Round state --------------------------------------------------------
-    let problemIndex = 0;
+    // ---- State ---------------------------------------------------------------
+    let segIndex = 0;
+    const total = cfg.problems.length;
     let problem = null;
+    let phase = "idle"; // run | fuel | finish | idle
     let dial = 0;
-    let laneSel = 0;
-    let locked = false;
+    let targetLane = 1;
+    let holdTime = 0;
+    let traveled = 0;
+    let nextConeAt = CONE_GAP;
     let streak = 0;
     let bestStreak = 0;
-    let solvedCount = 0;
-    // Forgiving stakes: a pool of attempts; a wrong commit costs one. Run out
-    // and the race ends (lose screen). Level 1 gets more cushion than Level 2.
-    const START_LIVES = level === 2 ? 4 : 6;
+    let solved = 0;
     let lives = START_LIVES;
+    let running = false;
     let gameOver = false;
-    let raceAnim = null; // car launch tween
-    let popAnim = null; // dial scale-pop
-    const total = cfg.problems.length;
-    const CRUISE_SPEED = level === 2 ? 18 : 14;
-    const CRUISE_DIST = level === 2 ? 20 : 16;
-    let phase = "pit"; // cruise | pit | launch (launch uses raceAnim)
-    let cruiseTraveled = 0;
+    let boostT = 0;
+    let hitCooldown = 0;
+    let flash = null;
+    let segmentLock = false;
 
     const timers = [];
     let unbindPress = null;
-    let unbindTap = null;
     let unbindFrame = null;
-
     const later = (fn, ms) => {
       const id = setTimeout(fn, ms);
       timers.push(id);
       return id;
     };
 
-    const isCompare = () => problem && problem.type === "compare";
-    const inPit = () => phase === "pit" && !locked && !gameOver;
+    const isCompare = () => problem?.type === "compare";
+    const inGreen = () => !isCompare() && dial === problem.answer;
 
-    function clearTags() {
-      laneTags.forEach(disposeSprite);
-      laneTags = [];
+    function nearestLane(x) {
+      let best = 0;
+      let bestD = Infinity;
+      for (let i = 0; i < LANE_COUNT; i++) {
+        const d = Math.abs(x - laneX(i));
+        if (d < bestD) {
+          bestD = d;
+          best = i;
+        }
+      }
+      return best;
     }
 
-    // ---- HUD + sprite sync --------------------------------------------------
     function readout() {
       if (isCompare()) {
-        const ln = problem.lanes[laneSel];
-        return `Lane ${laneSel + 1}: ${ln.label}`;
+        const ln = problem.lanes[targetLane];
+        return `Pump ${targetLane + 1}: ${ln.label}`;
       }
       return `${dial}${problem.unit ? " " + problem.unit : ""}`;
     }
 
+    function tableHint() {
+      if (!problem.table || !cfg.hints) return "";
+      const [units, ...rows] = problem.table;
+      const given = rows.find((r) => r.every((c) => !String(c).includes("?")));
+      if (given && units.length >= 2) {
+        return ` · Given: ${given[0]} ${units[0]} / ${given[1]} ${units[1]}`;
+      }
+      return "";
+    }
+
     function updateHud() {
-      // Plain-language "Given:" hint built from the rate table: use the header
-      // row for unit names and the first complete data row for the numbers,
-      // e.g. ["miles","hours"] + ["12","3"] -> "Given: 12 miles in 3 hours".
-      let tableHint = "";
-      if (problem.table && cfg.hints) {
-        const [units, ...rows] = problem.table;
-        const given = rows.find((r) =>
-          r.every((c) => !String(c).includes("?")),
-        );
-        if (given && units.length >= 2) {
-          tableHint = `  Given: ${given[0]} ${units[0]} in ${given[1]} ${units[1]}`;
-        }
-      }
-      const objText = isCompare()
-        ? `${problem.prompt} ▶ ${readout()}`
-        : `${problem.prompt} ▶ You: ${readout()}${tableHint}`;
-      // Single source for the live problem = the engine HUD "Your task" panel.
-      // (We no longer mirror it to the clarity objective pill or the 3D card,
-      // which previously overlapped it into an illegible pile.)
-      hud.setObjective(objText);
-      if (clarity && clarity.setTarget) {
-        clarity.setTarget(
-          isCompare() ? `Pick the lowest $/L` : `Set: ${readout()}`,
-        );
-      }
-      // Mirror onto the 3D dial sprite + scale-pop.
-      updateLabel(dialSprite, isCompare() ? readout() : readout());
-      if (!reduced) {
-        popAnim = { t: 0, dur: 0.18 };
-      }
-    }
-
-    function showCard() {
-      updateLabel(cardSprite, problem.prompt);
-    }
-
-    // ---- Compare tags -------------------------------------------------------
-    function buildCompareTags() {
-      problem.lanes.forEach((ln, i) => {
-        const spr = makeTag(`Lane ${i + 1}  ${ln.label}`, i === laneSel);
-        spr.position.set(laneX(i), 2.0, PIT_Z + 2.2);
-        spr.userData.lane = i;
-        group.add(spr);
-        laneTags.push(spr);
-      });
-    }
-    function refreshCompareTags() {
-      clearTags();
-      buildCompareTags();
-      // Slide the car under the chosen lane.
-      if (reduced) playerCar.position.x = laneX(laneSel);
-      else
-        feel.tween({
-          from: playerCar.position.x,
-          to: laneX(laneSel),
-          duration: 0.22,
-          onUpdate: (v) => (playerCar.position.x = v),
-        });
-    }
-
-    // ---- Round setup --------------------------------------------------------
-    function enterPit() {
-      phase = "pit";
-      locked = false;
-      pitZone.visible = true;
-      playerCar.position.set(isCompare() ? laneX(0) : 0, 0, PIT_Z + 1.2);
-      clearTags();
-
-      if (isCompare()) {
-        laneSel = 0;
-        buildCompareTags();
-        announce(
-          `Pit stop ${problemIndex + 1}. ${problem.prompt} Use left and right to pick a lane.`,
-        );
+      if (!problem) return;
+      let obj;
+      if (phase === "fuel" || isCompare()) {
+        obj = `${problem.prompt} ▶ ${readout()}`;
+      } else if (inGreen()) {
+        const left = Math.max(0, HOLD_SEC - holdTime).toFixed(1);
+        obj = `${problem.prompt} ▶ GREEN ZONE ${readout()} — hold ${left}s${tableHint()}`;
       } else {
-        dial = problem.min;
-        announce(
-          `Pit stop ${problemIndex + 1}. ${problem.prompt} Use up and down to set the number.`,
+        obj = `${problem.prompt} ▶ Tune: ${readout()} (↑/↓ while driving)${tableHint()}`;
+      }
+      hud.setObjective(obj);
+      if (clarity?.setTarget) {
+        clarity.setTarget(
+          isCompare()
+            ? "Steer to cheapest pump, Space to fuel"
+            : `Hold ${problem.answer} ${problem.unit || ""}`,
         );
       }
-      updateHud();
-      feel.sfx("pop");
-
-      if (cfg.hints) {
-        const tip = isCompare()
-          ? "Divide dollars by liters for each lane. Pick the lowest price per liter."
-          : problem.help || "Set the number, then press Space to launch.";
-        hud.message(tip, { tone: "info", duration: 3400 });
+      const bg = inGreen()
+        ? "rgba(47,169,120,0.96)"
+        : "rgba(242,193,91,0.96)";
+      updateLabel(speedo, readout());
+      speedo.material.color.set(inGreen() ? "#ffffff" : "#0c1a33");
+      if (speedo.material.map) {
+        // refresh label texture color via remake is heavy; tint via children
       }
-    }
-
-    function startRound() {
-      clearTags();
-      locked = true;
-      raceAnim = null;
-      phase = "cruise";
-      cruiseTraveled = 0;
-      pitZone.visible = false;
-      problem = cfg.problems[problemIndex];
-
-      playerCar.position.set(
-        isCompare() ? laneX(0) : 0,
-        0,
-        TRACK_LEN / 2 - 2.5,
-      );
-      playerCar.rotation.y = 0;
-
-      hud.setLevel(level === 2 ? "Level 2" : "Level 1");
-      if (typeof hud.setProgress === "function")
-        hud.setProgress(problemIndex, total);
-
-      showCard();
-      hud.setObjective(
-        `Cruising to pit ${problemIndex + 1}… ${problem.prompt}`,
-      );
-      if (clarity && clarity.setTarget)
-        clarity.setTarget("Race to the pit stop");
-      feel.sfx("select");
-      announce(
-        `Round ${problemIndex + 1}. Cruise to the pit stop, then tune your answer.`,
-      );
     }
 
     function stepSize(coarse) {
-      const base = problem.coarse || 1;
-      return coarse ? base : 1;
+      return coarse ? problem.coarse || 1 : 1;
+    }
+
+    function steer(delta) {
+      const next = Math.max(0, Math.min(LANE_COUNT - 1, targetLane + delta));
+      if (next !== targetLane) {
+        targetLane = next;
+        feel.sfx("select");
+        if (phase === "fuel") highlightPump(targetLane);
+        updateHud();
+      }
     }
 
     function changeDial(delta) {
-      if (!inPit() || isCompare()) return;
-      const next = Math.max(problem.min, Math.min(problem.max, dial + delta));
+      if (phase !== "run" || isCompare()) return;
+      const next = Math.max(
+        problem.min,
+        Math.min(problem.max, dial + delta),
+      );
       if (next !== dial) {
         dial = next;
+        holdTime = inGreen() ? holdTime : 0;
         updateHud();
         feel.sfx(delta > 0 ? "add" : "remove");
-        announce(`Dial set to ${dial} ${problem.unit || ""}.`.trim());
+        announce(`Tuned to ${dial} ${problem.unit || ""}`);
       }
     }
 
-    function changeLane(delta) {
-      if (!inPit() || !isCompare()) return;
-      const next = Math.max(
-        0,
-        Math.min(problem.lanes.length - 1, laneSel + delta),
-      );
-      if (next !== laneSel) {
-        laneSel = next;
-        refreshCompareTags();
-        updateHud();
-        feel.sfx("select");
-        const ln = problem.lanes[laneSel];
-        announce(
-          `Lane ${laneSel + 1}. ${ln.dollars} dollars for ${ln.liters} liters.`,
-        );
+    function scrollDashes(amount) {
+      for (const d of dashes) {
+        d.position.z += amount;
+        if (d.position.z > CAR_Z + 5) d.position.z -= DASH_SPAN;
       }
     }
 
-    // ---- Commit / check -----------------------------------------------------
-    function commit() {
-      if (!inPit()) return;
-      if (isCompare()) {
-        let bestIdx = 0,
-          bestRate = Infinity;
-        problem.lanes.forEach((ln, i) => {
-          const r = ln.dollars / ln.liters;
-          if (r < bestRate) {
-            bestRate = r;
-            bestIdx = i;
-          }
-        });
-        if (laneSel !== bestIdx) {
-          rejectRound(
-            `Lane ${laneSel + 1} is not the best. Compare each price per liter.`,
-          );
-          return;
+    function scrollCones(amount) {
+      for (const c of cones) {
+        if (!c.userData.active) continue;
+        c.position.z += amount;
+        if (c.position.z > DESPAWN_Z) {
+          c.position.z = SPAWN_Z - Math.random() * 30;
+          c.userData.lane = Math.floor(Math.random() * LANE_COUNT);
+          c.position.x = laneX(c.userData.lane);
         }
-        win("compare");
-      } else {
-        if (dial !== problem.answer) {
-          const hint =
-            dial < problem.answer
-              ? "Try a higher value."
-              : "Try a lower value.";
-          rejectRound(`Not quite — ${hint}`);
-          return;
-        }
-        win(problem.type);
       }
     }
 
-    function rejectRound(msg) {
+    function checkConeHits() {
+      if (phase !== "run" || hitCooldown > 0) return;
+      const carLane = nearestLane(playerCar.position.x);
+      for (const c of cones) {
+        if (!c.userData.active) continue;
+        if (Math.abs(c.position.z - CAR_Z) > 1.1) continue;
+        if (c.userData.lane !== carLane) continue;
+        hitCone();
+        c.position.z = SPAWN_Z - 20;
+        break;
+      }
+    }
+
+    function hitCone() {
+      hitCooldown = 1.2;
       streak = 0;
+      holdTime = 0;
       if (typeof hud.setStreak === "function") hud.setStreak(0);
-      feel.sfx("wrong");
-      if (!reduced) feel.shake(0.16);
       lives = Math.max(0, lives - 1);
       if (typeof hud.setLives === "function") hud.setLives(lives);
-      if (lives <= 0) {
-        loseGame();
+      feel.sfx("wrong");
+      if (!reduced) {
+        feel.shake(0.28);
+        feel.burst(
+          { x: playerCar.position.x, y: 1.2, z: CAR_Z },
+          { color: COLORS.bad, count: 22, spread: 3.5 },
+        );
+      }
+      flash = { color: COLORS.bad, t: 0.35 };
+      const msg =
+        lives > 0
+          ? `Cone hit! ${lives} ${lives === 1 ? "life" : "lives"} left.`
+          : "Cone hit!";
+      hud.feedback?.(false, msg) || hud.message(msg, { tone: "warn", duration: 2000 });
+      announce(msg);
+      if (lives <= 0) loseGame();
+    }
+
+    function confirmFuel() {
+      if (phase !== "fuel" || !isCompare()) return;
+      let best = 0;
+      let bestRate = Infinity;
+      problem.lanes.forEach((ln, i) => {
+        const r = ln.dollars / ln.liters;
+        if (r < bestRate) {
+          bestRate = r;
+          best = i;
+        }
+      });
+      if (targetLane !== best) {
+        streak = 0;
+        if (typeof hud.setStreak === "function") hud.setStreak(0);
+        lives = Math.max(0, lives - 1);
+        if (typeof hud.setLives === "function") hud.setLives(lives);
+        feel.sfx("wrong");
+        if (!reduced) feel.shake(0.22);
+        const msg =
+          lives > 0
+            ? `Not the best buy. ${lives} ${lives === 1 ? "life" : "lives"} left.`
+            : "Not the best buy.";
+        hud.feedback?.(false, msg);
+        announce(msg);
+        if (lives <= 0) {
+          loseGame();
+          return;
+        }
         return;
       }
-      const full = `${msg} ${lives} ${lives === 1 ? "try" : "tries"} left.`;
-      if (typeof hud.feedback === "function") hud.feedback(false, full);
-      else hud.message(full, { tone: "warn", duration: 2200 });
-      announce(full);
+      completeSegment("fuel");
     }
 
-    function loseGame() {
-      gameOver = true;
-      locked = true;
-      feel.sfx("wrong");
-      const msg = `Out of tries! You solved ${solvedCount} of ${total}.`;
-      hud.setObjective(msg);
-      announce(`Race over. ${msg} Press Play Again to retry.`);
-      if (clarity) {
-        if (clarity.setTarget) clarity.setTarget(null);
-        clarity.lose({
-          titleEn: "Out of tries!",
-          badge: "🏁",
-          stats: `${msg} Tip: find the unit rate (price per liter, miles per hour) before you commit.`,
-        });
-      }
-    }
-
-    function win(detail) {
-      locked = true;
-      phase = "launch";
-      pitZone.visible = false;
-      solvedCount += 1;
+    function completeSegment(kind) {
+      if (segmentLock) return;
+      segmentLock = true;
+      solved += 1;
       streak += 1;
       if (streak > bestStreak) bestStreak = streak;
       if (typeof hud.setStreak === "function") hud.setStreak(streak);
 
-      const pts = 20 + (level === 2 ? 10 : 0);
-      onScore(pts, { round: problemIndex + 1, detail });
+      const pts = 22 + (level === 2 ? 12 : 0) + Math.min(streak - 1, 6) * 4;
+      onScore(pts, { segment: segIndex + 1, kind });
 
-      const summary = isCompare()
-        ? `Best buy! Lane ${laneSel + 1} has the lowest unit price. +${pts}`
-        : `Correct! ${problem.answer} ${problem.unit || ""}. +${pts}`.replace(
-            "  ",
-            " ",
-          );
-      if (typeof hud.feedback === "function") hud.feedback(true, summary);
-      else hud.message(summary, { tone: "ok", duration: 2400 });
-      announce(
-        isCompare()
-          ? `Correct. Lane ${laneSel + 1} is the best unit price. You earned ${pts} points.`
-          : `Correct. The answer is ${problem.answer} ${problem.unit || ""}. You earned ${pts} points.`,
-      );
-      caption(problem.help || "");
-
+      boostT = 1.1;
       feel.sfx("correct");
-      feel.burst(
-        { x: playerCar.position.x, y: 1.4, z: playerCar.position.z },
-        { color: COLORS.spark, count: reduced ? 0 : 34, spread: 4.2 },
-      );
-      if (!reduced) feel.shake(0.26);
+      if (!reduced) {
+        feel.burst(
+          { x: playerCar.position.x, y: 1.8, z: CAR_Z - 1 },
+          { color: COLORS.spark, count: 40, spread: 5 },
+        );
+        feel.shake(0.2);
+      }
+      flash = { color: COLORS.good, t: 0.35 };
+      hud.feedback?.(true, `Segment clear! +${pts}${streak > 1 ? ` · 🔥${streak}` : ""}`);
+      announce(`Segment ${segIndex + 1} clear. ${pts} points.`);
 
-      // Launch the car to the finish as the reward.
-      raceAnim = {
-        from: playerCar.position.z,
-        to: -TRACK_LEN / 2 + 2.2,
-        t: 0,
-        dur: reduced ? 0.01 : 1.2,
-      };
-
+      fuelGroup.visible = false;
       later(() => {
-        if (problemIndex < total - 1) {
-          problemIndex += 1;
-          startRound();
+        if (segIndex < total - 1) {
+          segIndex += 1;
+          startSegment();
         } else {
-          finishGame();
+          startFinish();
         }
-      }, 2200);
+      }, 900);
     }
 
-    function finishGame() {
-      hud.setObjective(
-        `Finished! You solved ${solvedCount} of ${total}. Great job!`,
-      );
-      hud.message("🏁 All rounds complete!", { tone: "ok", duration: 0 });
-      updateLabel(cardSprite, "🏁 RACE COMPLETE");
-      updateLabel(dialSprite, `${solvedCount} / ${total}`);
+    function startSegment() {
+      segmentLock = false;
+      problem = cfg.problems[segIndex];
+      holdTime = 0;
+      traveled = 0;
+      nextConeAt = CONE_GAP;
+      dial = isCompare() ? 0 : problem.min;
+      targetLane = 1;
+      playerCar.position.x = laneX(targetLane);
+
+      if (typeof hud.setProgress === "function") hud.setProgress(segIndex, total);
+
+      if (isCompare()) {
+        phase = "fuel";
+        fuelGroup.visible = true;
+        buildFuelStation();
+        highlightPump(targetLane);
+        announce(
+          `Segment ${segIndex + 1}. Fuel stop. Steer to the cheapest pump and press Space.`,
+        );
+        if (cfg.hints) {
+          hud.message(problem.help, { tone: "info", duration: 3200 });
+        }
+      } else {
+        phase = "run";
+        fuelGroup.visible = false;
+        announce(
+          `Segment ${segIndex + 1}. ${problem.prompt} Tune ↑/↓ and hold the green zone.`,
+        );
+        if (cfg.hints) {
+          hud.message(problem.help, { tone: "info", duration: 3400 });
+        }
+      }
+      updateHud();
+      feel.sfx("pop");
+    }
+
+    function startFinish() {
+      phase = "finish";
+      finish.visible = true;
+      finish.position.z = SPAWN_Z + 8;
+      hud.setObjective("Final stretch — cross the finish! 🏁");
+      announce("Last segment done. Race to the finish line!");
+    }
+
+    function winGame() {
+      gameOver = true;
+      running = false;
+      finish.visible = false;
+      hud.setObjective(`You won! ${solved} segments · best streak ${bestStreak} 🏁`);
+      hud.message("🏁 Race complete!", { tone: "ok", duration: 0 });
       feel.sfx("fanfare");
       if (!reduced) {
-        // Confetti burst over the finish line.
         feel.burst(
-          { x: 0, y: 2.4, z: -TRACK_LEN / 2 + 2.2 },
-          { color: COLORS.amber, count: 60, spread: 7 },
+          { x: 0, y: 2.8, z: CAR_Z - 2 },
+          { color: COLORS.finish, count: 70, spread: 8 },
         );
-        feel.shake(0.3);
+        feel.shake(0.32);
       }
-      announce(
-        `All rounds complete. You solved ${solvedCount} with a best streak of ${bestStreak}. Great tuning, racer.`,
-      );
-      if (clarity) {
-        clarity.setTarget(null);
-        clarity.win({
-          titleEn: "Race complete!",
-          badge: "🏁",
-          stats: `You solved ${solvedCount} of ${total} rounds. Best streak: ${bestStreak}. Score saved.`,
-        });
-      }
+      announce(`Race complete! Best streak ${bestStreak}.`);
+      clarity?.setTarget(null);
+      clarity?.win({
+        titleEn: "Highway champion!",
+        badge: "🏁",
+        stats: `You cleared ${solved} segments. Best streak: ${bestStreak}.`,
+      });
     }
 
-    // ---- Tap: pick a lane (compare) or lock in (numeric) --------------------
-    // On compare rounds a tap only SELECTS a lane; committing requires a second
-    // tap on the already-selected lane (or the Space/action button). This keeps
-    // a stray tap from costing a life. Numeric rounds commit on tap as before.
+    function loseGame() {
+      gameOver = true;
+      running = false;
+      const msg = `Race over. You cleared ${solved} of ${total}.`;
+      hud.setObjective(msg);
+      announce(msg);
+      clarity?.setTarget(null);
+      clarity?.lose({
+        titleEn: "Race over",
+        badge: "🏁",
+        stats: `${msg} Tip: divide to find the unit rate, then hold that number in the green zone.`,
+      });
+    }
+
+    function resetRun() {
+      segIndex = 0;
+      dial = 0;
+      targetLane = 1;
+      holdTime = 0;
+      streak = 0;
+      bestStreak = 0;
+      solved = 0;
+      lives = START_LIVES;
+      gameOver = false;
+      running = true;
+      boostT = 0;
+      hitCooldown = 0;
+      flash = null;
+      finish.visible = false;
+      fuelGroup.visible = false;
+      if (typeof hud.setLives === "function") hud.setLives(lives);
+      if (typeof hud.setStreak === "function") hud.setStreak(0);
+      hud.setLevel(level === 2 ? "Level 2" : "Level 1");
+      startSegment();
+    }
+
     function handleTap() {
-      if (!inPit()) return;
-      if (isCompare()) {
-        const hits = input.raycast(camera, laneTags, false);
-        if (hits.length && hits[0].object.userData.lane != null) {
-          const tappedLane = hits[0].object.userData.lane;
-          if (tappedLane === laneSel) {
-            // Second tap on the chosen lane confirms it.
-            commit();
-          } else {
-            // First tap just moves the selection — no commit yet.
-            laneSel = tappedLane;
-            refreshCompareTags();
-            updateHud();
-            feel.sfx("select");
-            hud.message("Tap this lane again (or press Space) to lock it in.", {
-              tone: "info",
-              duration: 2200,
-            });
-          }
-        }
-        // Taps that miss every lane do nothing on compare rounds.
-      } else {
-        commit();
-      }
+      if (!running || gameOver) return;
+      const nx = input.state.ndc.x;
+      if (nx < -0.1) steer(-1);
+      else if (nx > 0.1) steer(1);
     }
 
     return {
       start() {
-        // Animated camera intro: sweep from a high wide shot into framing.
-        const framePos = { x: 0, y: 8.5, z: 15 };
+        const framePos = { x: 0, y: 7.2, z: 18 };
         if (reduced) {
           camera.position.set(framePos.x, framePos.y, framePos.z);
-          camera.lookAt(0, 0, -2);
+          camera.lookAt(0, 1.2, CAR_Z - 8);
           feel.syncCamera();
         } else {
-          camera.position.set(-6, 16, 24);
-          camera.lookAt(0, 0, -2);
+          camera.position.set(-5, 14, 26);
+          camera.lookAt(0, 0, CAR_Z - 6);
           const from = camera.position.clone();
           feel.tween({
             from: 0,
             to: 1,
-            duration: 1.3,
+            duration: 1.2,
             onUpdate: (p) => {
               camera.position.set(
                 from.x + (framePos.x - from.x) * p,
                 from.y + (framePos.y - from.y) * p,
                 from.z + (framePos.z - from.z) * p,
               );
-              camera.lookAt(0, 0, -2);
+              camera.lookAt(0, 1.2, CAR_Z - 8);
             },
             onComplete: () => feel.syncCamera(),
           });
         }
 
-        // Begin the actual round loop only after the student presses Start in
-        // the clarity overlay. This is the single entry point both for first
-        // play and for Play Again.
         function beginGameplay() {
-          problemIndex = 0;
-          lives = START_LIVES;
-          gameOver = false;
-          if (typeof hud.setLives === "function") hud.setLives(lives);
-          startRound();
-
+          resetRun();
           unbindPress = input.onPress((name) => {
+            if (!running || gameOver) return;
             if (name === "confirm" && problem) {
-              const h = problem.help || "Set the number, then press Space.";
-              caption(h);
-              announce(h);
+              caption(problem.help || "");
+              announce(problem.help || "");
               feel.sfx("pop");
               later(() => caption(""), 2600);
               return;
             }
-            if (!inPit()) return;
-            if (isCompare()) {
-              if (name === "left") changeLane(-1);
-              else if (name === "right") changeLane(1);
-              else if (name === "action") commit();
-            } else {
-              if (name === "up") changeDial(stepSize(false));
+            if (phase === "fuel") {
+              if (name === "left") steer(-1);
+              else if (name === "right") steer(1);
+              else if (name === "action") confirmFuel();
+            } else if (phase === "run") {
+              if (name === "left") steer(-1);
+              else if (name === "right") steer(1);
+              else if (name === "up") changeDial(stepSize(false));
               else if (name === "down") changeDial(-stepSize(false));
-              else if (name === "right") changeDial(stepSize(true));
-              else if (name === "left") changeDial(-stepSize(true));
-              else if (name === "action") commit();
             }
           });
-
-          unbindTap = input.onTap(handleTap);
+          input.onTap(handleTap);
         }
 
-        // Clarity / onboarding kit: start overlay, how-to-play, persistent help
-        // button, mini-HUD, and end screen. Drives nothing in the 3D scene.
         clarity = initClarity({
           mount: clarityMount,
           announce,
-          title: "Ratio Rally — Tune the Rates to Win",
+          title: "Ratio Rally — Highway Tuner",
           objectiveEn:
-            "Race to each pit stop, then SET your answer with Up/Down (or pick the cheapest fuel lane by comparing price and liters). Press Space to launch when your tuning is right.",
+            "Steer between lanes and dodge cones. Use ↑/↓ to tune your rate WHILE driving — when the speedometer hits the green zone, HOLD it to clear the segment. Fuel stops: steer to the cheapest pump and press Space.",
           objectiveEs:
-            "Corre a cada parada, luego AJUSTA tu respuesta con Arriba/Abajo (o elige el carril de combustible más barato comparando precio y litros). Presiona Espacio para lanzar cuando esté correcto.",
+            "Conduce entre carriles y esquiva conos. Usa ↑/↓ para ajustar tu razón MIENTRAS conduces — cuando el velocímetro entre en la zona verde, MANTÉNLO. En gasolina: elige la bomba más barata y presiona Espacio.",
           standard: "6.RP.A.2–3 · Rates, Unit Rates & Percent",
           controls: [
             {
-              key: "↑ / ↓",
-              actionEn: "Set your number one at a time",
-              actionEs: "Ajusta tu número de uno en uno",
+              key: "← / →",
+              actionEn: "Steer between lanes (dodge cones)",
+              actionEs: "Gira entre carriles (esquiva conos)",
             },
             {
-              key: "→ / ←",
-              actionEn:
-                "Jump faster on big-number rounds (and pick a lane on 'cheapest fuel' rounds)",
-              actionEs:
-                "Avanza más rápido en rondas de números grandes (y elige carril en rondas de comparar)",
+              key: "↑ / ↓",
+              actionEn: "Tune your rate while driving",
+              actionEs: "Ajusta tu razón mientras conduces",
             },
             {
               key: "Space",
-              actionEn: "Launch / lock in — check your answer",
-              actionEs: "Lanza / confirma — revisa tu respuesta",
+              actionEn: "Confirm fuel pump on fuel-stop rounds",
+              actionEs: "Confirma la bomba en paradas de gasolina",
             },
             {
               key: "Enter",
-              actionEn: "Show a hint for this problem",
-              actionEs: "Muestra una pista para este problema",
+              actionEn: "Hear a hint",
+              actionEs: "Escucha una pista",
             },
             {
-              key: "Tap / Click",
-              actionEn:
-                "Lock in your number. On 'cheapest fuel' rounds, tap a lane to pick it, then tap it again to lock it in",
-              actionEs:
-                "Confirma tu número. En rondas de comparar, toca un carril para elegirlo y tócalo otra vez para confirmarlo",
-            },
-            {
-              key: "?",
-              actionEn: "Open this help panel any time (Esc closes it)",
-              actionEs: "Abre esta ayuda cuando quieras (Esc la cierra)",
+              key: "Tap sides",
+              actionEn: "Steer left or right",
+              actionEs: "Toca un lado para girar",
             },
           ],
           howToWinEn:
-            "Cruise to each pit, dial in the exact answer (or the cheapest lane), and press Space to launch. Clear every pit stop to finish the race.",
+            "Hold the correct rate in the green zone long enough to clear each highway segment. Dodge cones. On fuel rounds, pick the cheapest pump. Clear every segment and cross the finish.",
           howToWinEs:
-            "Corre a cada parada, ajusta la respuesta exacta (o el carril más barato) y presiona Espacio para lanzar. Completa todas las paradas para terminar.",
+            "Mantén la razón correcta en la zona verde el tiempo suficiente. Esquiva conos. En gasolina, elige la bomba más barata. Cruza la meta.",
           onStart: beginGameplay,
           onPlayAgain: () => location.reload(),
         });
 
         unbindFrame = ctx.onFrame((dt, t) => {
+          if (!running || gameOver) return;
           const d = Math.min(dt, 0.05);
 
-          if (phase === "cruise" && !gameOver) {
-            const scroll = CRUISE_SPEED * d;
-            scrollDashes(scroll);
-            cruiseTraveled += scroll;
-            if (!reduced && playerCar.userData.wheels)
-              playerCar.userData.wheels.forEach(
-                (w) => (w.rotation.x += d * CRUISE_SPEED * 0.55),
-              );
-            playerCar.position.y = Math.sin(t * 8) * 0.03;
-            if (cruiseTraveled >= CRUISE_DIST) enterPit();
-          } else if (raceAnim) {
-            raceAnim.t = Math.min(1, raceAnim.t + d / raceAnim.dur);
-            const e = 1 - Math.pow(1 - raceAnim.t, 3);
-            playerCar.position.z =
-              raceAnim.from + (raceAnim.to - raceAnim.from) * e;
-            scrollDashes(CRUISE_SPEED * 1.6 * d);
-            if (!reduced && playerCar.userData.wheels)
-              playerCar.userData.wheels.forEach(
-                (w) => (w.rotation.x += d * 16),
-              );
-            if (raceAnim.t >= 1) raceAnim = null;
-          } else if (phase === "pit" && !reduced) {
-            playerCar.position.y = Math.sin(t * 2.5) * 0.04;
-            playerCar.rotation.z = Math.sin(t * 1.8) * 0.015;
-            pitMat.emissiveIntensity = 0.45 + Math.sin(t * 4) * 0.2;
+          if (hitCooldown > 0) hitCooldown = Math.max(0, hitCooldown - d);
+          if (boostT > 0) boostT = Math.max(0, boostT - d);
+
+          // Steering
+          const tx = laneX(targetLane);
+          const lerp = reduced ? 1 : Math.min(1, d * 12);
+          playerCar.position.x += (tx - playerCar.position.x) * lerp;
+          const lean = (tx - playerCar.position.x) * -1.2;
+          playerCar.rotation.z = lean;
+
+          let scroll = 0;
+          if (phase === "run") {
+            scroll = inGreen()
+              ? BOOST_SPEED + (boostT > 0 ? 6 : 0)
+              : BASE_SPEED * (0.35 + (0.65 * dial) / Math.max(problem.max, 1));
+            if (inGreen()) {
+              holdTime += d;
+              playerCar.userData.glowMat.emissive.set(COLORS.nitro);
+              playerCar.userData.glowMat.emissiveIntensity = 1.1;
+              playerCar.userData.bodyMat.emissiveIntensity = 0.45;
+              if (!reduced && Math.random() < 0.35) {
+                feel.burst(
+                  {
+                    x: playerCar.position.x + (Math.random() - 0.5) * 0.6,
+                    y: 0.5,
+                    z: CAR_Z - 1.2,
+                  },
+                  { color: COLORS.nitro, count: 2, spread: 1.2, size: 0.12 },
+                );
+              }
+              if (holdTime >= HOLD_SEC) completeSegment("hold");
+            } else {
+              holdTime = 0;
+              playerCar.userData.glowMat.emissive.set(COLORS.spark);
+              playerCar.userData.glowMat.emissiveIntensity = 0.75;
+              playerCar.userData.bodyMat.emissiveIntensity = 0.22;
+            }
+            traveled += scroll;
+            if (traveled >= nextConeAt) {
+              spawnCone(SPAWN_Z - Math.random() * 15);
+              nextConeAt += CONE_GAP;
+            }
+            checkConeHits();
+          } else if (phase === "fuel") {
+            scroll = BASE_SPEED * 0.35;
+          } else if (phase === "finish") {
+            scroll = BOOST_SPEED * 1.1;
+            finish.position.z += scroll;
+            if (finish.position.z >= CAR_Z) winGame();
           }
 
-          // Dial sprite scale-pop on change.
-          if (popAnim) {
-            popAnim.t = Math.min(1, popAnim.t + d / popAnim.dur);
-            const k = 1 + Math.sin(popAnim.t * Math.PI) * 0.18;
-            dialSprite.scale.set(dialSprite.scale.x, 1.5 * k, 1);
-            if (popAnim.t >= 1) popAnim = null;
+          if (scroll > 0) {
+            scrollDashes(scroll);
+            scrollCones(scroll);
+            if (playerCar.userData.wheels) {
+              playerCar.userData.wheels.forEach(
+                (w) => (w.rotation.x += d * scroll * 0.55),
+              );
+            }
           }
-          // Subtle finish-line emissive pulse.
+
           if (!reduced) {
-            finishMat.emissiveIntensity = 0.6 + Math.sin(t * 3) * 0.25;
+            playerCar.position.y =
+              (inGreen() ? 0.08 : 0) + Math.sin(t * (inGreen() ? 14 : 8)) * 0.025;
+            const targetFov =
+              54 + (inGreen() ? 10 : 0) + (boostT > 0 ? 5 : 0);
+            if (camera.isPerspectiveCamera) {
+              camera.fov += (targetFov - camera.fov) * Math.min(1, d * 5);
+              camera.updateProjectionMatrix();
+            }
+            const camX = playerCar.position.x * 0.35;
+            camera.position.x += (camX - camera.position.x) * Math.min(1, d * 3);
+            camera.lookAt(
+              playerCar.position.x * 0.2,
+              1.1,
+              CAR_Z - 10,
+            );
+          }
+
+          if (phase === "run" && Math.floor(t * 4) !== Math.floor((t - d) * 4)) {
+            updateHud();
+          }
+
+          if (flash) {
+            flash.t = Math.max(0, flash.t - d);
+            const k = flash.t / 0.35;
+            groundMat.emissiveIntensity = 0.14 + k * 0.55;
+            groundMat.emissive.lerpColors(
+              new THREE.Color(COLORS.trackGlow),
+              new THREE.Color(flash.color),
+              k,
+            );
+            if (flash.t <= 0) {
+              flash = null;
+              groundMat.emissive.set(COLORS.trackGlow);
+              groundMat.emissiveIntensity = 0.14;
+            }
+          }
+
+          if (!reduced) {
+            railMat.emissiveIntensity = 0.5 + Math.sin(t * 5) * 0.12;
+            finishMat.emissiveIntensity = 0.7 + Math.sin(t * 4) * 0.2;
           }
         });
       },
 
       dispose() {
+        running = false;
         if (clarity) clarity.dispose();
         if (unbindPress) unbindPress();
-        if (unbindTap) unbindTap();
         if (unbindFrame) unbindFrame();
         timers.forEach(clearTimeout);
-        timers.length = 0;
-        clearTags();
-        disposeSprite(cardSprite);
-        disposeSprite(dialSprite);
-        disposables.forEach((d) => d.dispose && d.dispose());
+        disposeSprite(speedo);
+        pumpLabels.forEach(disposeSprite);
+        cones.forEach((c) => group.remove(c));
+        disposables.forEach((d) => d.dispose?.());
         scene.remove(group);
       },
     };
