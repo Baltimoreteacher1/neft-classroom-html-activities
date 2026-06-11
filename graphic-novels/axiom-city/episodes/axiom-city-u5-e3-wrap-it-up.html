@@ -780,7 +780,7 @@ function buildProgress(){$("#progress").innerHTML=PAGES.map((_,i)=>`<span class=
 const isMobile=()=>mobileMQ.matches;
 function leftIndex(){return isMobile()?page:page-(page%2)}
 function visiblePages(){return isMobile()?[page]:[leftIndex(),leftIndex()+1].filter(i=>i<PAGES.length)}
-function blockedBy(){for(const i of visiblePages()){const g=PAGES[i]&&PAGES[i].gate;if(g&&!solved.has(g))return g}return null}
+function blockedBy(){return null/* locks removed: gates still teach via hints + Ask VEX worked examples, but never block turning the page (Neft 2026-06-11) */}
 
 function renderSpread(){
   const L=$("#pageL"),R=$("#pageR");
