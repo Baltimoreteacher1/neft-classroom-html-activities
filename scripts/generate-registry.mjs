@@ -26,6 +26,11 @@ const SKIP_DIRS = new Set([
   "docs",
 ]);
 
+// Build/VCS dirs that must be skipped at ANY depth, not just the repo root —
+// e.g. a standalone Vite sub-app's gitignored `neft-math-lab-studio/dist/`
+// should never be indexed (it isn't committed, so it 404s in production).
+const SKIP_DIRS_ANY_DEPTH = new Set(["node_modules", "dist"]);
+
 // Coarse activity type inferred from the top-level directory. Conservative:
 // anything we can't classify is left as "Activity".
 function typeFor(topDir, urlPath) {
@@ -105,6 +110,7 @@ function walk(dir) {
     const rel = relative(ROOT, full).replace(/\\/g, "/");
     const top = rel.split("/")[0];
     if (st.isDirectory()) {
+      if (SKIP_DIRS_ANY_DEPTH.has(name)) continue;
       if (SKIP_DIRS.has(name) && dir === ROOT) continue;
       if (top === "lessons") continue; // handled via config.json
       walk(full);
