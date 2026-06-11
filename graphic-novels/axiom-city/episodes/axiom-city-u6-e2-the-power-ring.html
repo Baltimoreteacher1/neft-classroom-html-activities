@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en" data-textsize="md">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Axiom City U6·E2 — The Power Ring | Interactive Graphic Novel Episode | Exponents, Order of Operations &amp; Expressions</title>
+<meta name="description" content="An interactive 3D graphic novel episode teaching Grade 6 exponents, order of operations, and writing and evaluating algebraic expressions (Reveal Math lessons 6-3, 6-4, 6-5). EduWonderLab.">
+<style>
+/* ================= AXIOM CITY ENGINE CSS v1.0 — DO NOT FORK ================= */
+:root{
+  --paper:#F7F4EC; --ink:#24323F; --navy:#17324D; --teal:#1FA6A2; --amber:#F2C15B;
+  --coral:#E2674A; --purple:#4A2580; --accent:var(--teal);
+  --panelborder:3px solid var(--navy);
+  --balloonfont:600 1rem/1.32 'Segoe UI',system-ui,-apple-system,sans-serif;
+  --capfont:italic 500 .92rem/1.35 Georgia,'Times New Roman',serif;
+  --pagew:560px;
+}
+html[data-textsize="lg"]{font-size:18px}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:radial-gradient(120% 120% at 50% 0%,#23425f 0%,#101e2e 55%,#0a1420 100%);color:var(--ink);font:400 16px/1.45 'Segoe UI',system-ui,sans-serif;overflow:hidden}
+body.hc{--ink:#000;--paper:#fff}
+button{font:inherit;cursor:pointer}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:4px}
+
+/* ---------- COVER SCREEN ---------- */
+#cover{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:18px;background:radial-gradient(110% 110% at 50% 10%,#1c3a57 0%,#0a1420 100%);perspective:1400px;overflow:auto}
+#coverCard{position:relative;width:min(88vw,520px,calc((100vh - 200px)*0.714));aspect-ratio:5/7;border-radius:10px 18px 18px 10px;box-shadow:0 40px 80px rgba(0,0,0,.6),0 8px 22px rgba(0,0,0,.5);transform-style:preserve-3d;transition:transform .18s ease-out;background:var(--navy);overflow:hidden}
+#coverCard .spine{position:absolute;left:0;top:0;bottom:0;width:26px;background:linear-gradient(90deg,#0d1f33,#17324D 60%,#244a6e);z-index:5}
+#coverCard .spine span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-90deg);white-space:nowrap;color:var(--amber);font:900 .72rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.28em}
+.cov-layer{position:absolute;inset:0;will-change:transform}
+#coverTitle{position:absolute;left:34px;right:18px;top:26px;z-index:6;color:#fff}
+#coverTitle .series{font:900 .9rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.4em;color:var(--amber)}
+#coverTitle h1{font:900 clamp(2rem,7vw,3.1rem)/0.95 'Arial Black',Arial,sans-serif;text-transform:uppercase;margin-top:8px;text-shadow:4px 4px 0 rgba(0,0,0,.35);color:#fff}
+#coverTitle h1 em{font-style:normal;color:var(--accent)}
+#coverTitle .vol{display:inline-block;margin-top:10px;background:var(--accent);color:#fff;font:900 .8rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.18em;padding:7px 12px;border-radius:4px;box-shadow:2px 2px 0 rgba(0,0,0,.4)}
+#coverBottom{position:absolute;left:34px;right:18px;bottom:18px;z-index:6;display:flex;justify-content:space-between;align-items:flex-end;color:#cfe3ea;font:700 .72rem/1.3 'Segoe UI',sans-serif;letter-spacing:.12em}
+#coverActions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.bigbtn{background:var(--amber);color:var(--navy);border:none;border-radius:999px;font:900 1rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.1em;padding:18px 34px;box-shadow:0 6px 0 #b78a2e,0 14px 30px rgba(0,0,0,.5);transition:transform .12s,box-shadow .12s}
+.bigbtn:hover{transform:translateY(-2px)}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 #b78a2e}
+.bigbtn.alt{background:#274a6a;color:#fff;box-shadow:0 6px 0 #122a42,0 14px 30px rgba(0,0,0,.5)}
+
+/* ---------- HUD ---------- */
+#hud{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:10px;padding:8px 14px;background:linear-gradient(180deg,rgba(7,14,22,.92),rgba(7,14,22,.65) 70%,transparent);color:#dfe9ef}
+#hud .brand{font:900 .78rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.22em;color:var(--amber);white-space:nowrap}
+#hud .brand small{display:block;font:700 .56rem/1.4 'Segoe UI',sans-serif;letter-spacing:.18em;color:#9fb7c6}
+#progress{display:flex;gap:5px;margin-left:8px;flex-wrap:wrap}
+#progress .dot{width:9px;height:9px;border-radius:50%;background:#3a576f;border:1px solid #5b7d99}
+#progress .dot.on{background:var(--accent);border-color:var(--accent);box-shadow:0 0 6px var(--accent)}
+#badges{display:flex;gap:6px;margin-left:auto}
+.badge{width:34px;height:34px;border-radius:50%;background:#1c3a52;border:2px solid #35587a;display:flex;align-items:center;justify-content:center;filter:grayscale(1) brightness(.6);transition:filter .4s,transform .4s}
+.badge.earned{filter:none;border-color:var(--amber);background:#234d6b;animation:badgepop .6s cubic-bezier(.2,2,.4,1)}
+.badge svg{width:20px;height:20px}
+@keyframes badgepop{0%{transform:scale(.2) rotate(-40deg)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+.hudbtns{display:flex;gap:6px;margin-left:10px}
+.hudbtn{background:#1c3a52;border:1px solid #35587a;color:#dfe9ef;border-radius:8px;min-width:48px;min-height:38px;padding:4px 10px;font:700 .72rem/1.1 'Segoe UI',sans-serif}
+.hudbtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#06222b}
+.hudbtn.teacher{background:var(--purple);border-color:#6b46a8;color:#fff}
+
+/* ---------- BOOK STAGE ---------- */
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;perspective:2200px;padding:64px 12px 56px}
+#book{position:relative;width:min(96vw,1180px);height:min(calc(100vh - 130px),780px);transform-style:preserve-3d}
+#bookcase{position:absolute;inset:0;border-radius:8px 14px 14px 8px;background:#0e2233;box-shadow:0 50px 90px rgba(0,0,0,.65),0 10px 26px rgba(0,0,0,.5);transform:translateZ(-30px)}
+.edges{position:absolute;top:6px;bottom:6px;width:14px;background:repeating-linear-gradient(90deg,#e8e2d2 0 2px,#cfc7b2 2px 3px);border-radius:3px;transition:width .5s}
+#edgesL{left:-6px;border-right:1px solid #b8ae97}
+#edgesR{right:-6px;border-left:1px solid #b8ae97}
+#spreadWrap{position:absolute;inset:0;display:flex;border-radius:6px;overflow:visible}
+.page{position:relative;width:50%;height:100%;background:var(--paper);overflow:hidden;display:flex;flex-direction:column}
+.page.left{border-radius:8px 0 0 8px;box-shadow:inset -22px 0 28px -22px rgba(36,50,63,.45)}
+.page.right{border-radius:0 8px 8px 0;box-shadow:inset 22px 0 28px -22px rgba(36,50,63,.45)}
+#spine3d{position:absolute;left:50%;top:0;bottom:0;width:4px;transform:translateX(-50%);background:linear-gradient(90deg,rgba(0,0,0,.25),rgba(0,0,0,.45),rgba(0,0,0,.25));z-index:3}
+.page-inner{flex:1;overflow:auto;padding:18px 20px 14px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin}
+.pagefoot{flex:none;display:flex;justify-content:space-between;align-items:center;padding:6px 16px 10px;font:700 .66rem/1 'Segoe UI',sans-serif;letter-spacing:.18em;color:#7d8a8f;text-transform:uppercase}
+.page .chapterband{flex:none;background:var(--navy);color:#fff;font:900 .72rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.24em;padding:8px 20px;text-transform:uppercase}
+.page .chapterband em{color:var(--accent);font-style:normal}
+.gatelockcorner{position:absolute;top:8px;right:10px;z-index:5;width:34px;height:34px;border-radius:50%;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,.3)}
+.gatelockcorner.open{background:var(--teal)}
+.gatelockcorner svg{width:18px;height:18px}
+
+/* turning sheet */
+#turnSheet{position:absolute;top:0;bottom:0;right:0;width:50%;z-index:20;transform-origin:left center;transform-style:preserve-3d;pointer-events:none;display:none}
+#turnSheet.show{display:block}
+#turnSheet .ts{position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;background:var(--paper)}
+#turnSheet .ts.front{border-radius:0 8px 8px 0}
+#turnSheet .ts.back{transform:rotateY(180deg);border-radius:8px 0 0 8px}
+#turnSheet .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.0),rgba(0,0,0,.28));opacity:0;pointer-events:none}
+@keyframes turnFwd{0%{transform:rotateY(0)}100%{transform:rotateY(-180deg)}}
+@keyframes turnBack{0%{transform:rotateY(-180deg)}100%{transform:rotateY(0)}}
+#turnSheet.fwd{animation:turnFwd .8s cubic-bezier(.45,.05,.3,1) forwards}
+#turnSheet.back{animation:turnBack .8s cubic-bezier(.45,.05,.3,1) forwards}
+body.reduced #turnSheet{display:none!important}
+
+/* nav arrows */
+.navarrow{position:fixed;top:50%;transform:translateY(-50%);z-index:40;width:54px;height:88px;border:none;border-radius:12px;background:rgba(20,42,62,.8);color:#fff;font-size:1.6rem;display:flex;align-items:center;justify-content:center;transition:background .2s,opacity .2s}
+.navarrow:hover{background:var(--accent)}
+.navarrow[disabled]{opacity:.25;cursor:not-allowed}
+#prevBtn{left:8px}#nextBtn{right:8px}
+.navarrow.locked{background:var(--coral)}
+@keyframes shake{0%,100%{transform:translateY(-50%)}25%{transform:translateY(-50%) translateX(-6px)}75%{transform:translateY(-50%) translateX(6px)}}
+.navarrow.shake{animation:shake .3s 2}
+
+/* ---------- COMIC ART ---------- */
+.panelrow{display:flex;gap:10px}
+.panelrow>.panel{flex:1}
+.panel{position:relative;border:var(--panelborder);border-radius:6px 10px 7px 9px;background:#fff;overflow:hidden;box-shadow:3px 3px 0 rgba(23,50,77,.18)}
+.panel.tall{min-height:200px}
+.panel svg.scene{display:block;width:100%;height:auto}
+.panel3d{transform-style:preserve-3d;transition:transform .25s ease-out;will-change:transform}
+.panel3d [data-depth]{will-change:transform}
+.balloon{position:absolute;max-width:62%;background:#fff;border:3px solid var(--navy);border-radius:14px;padding:8px 12px;font:var(--balloonfont);color:var(--ink);box-shadow:2px 2px 0 rgba(23,50,77,.25);z-index:4}
+.balloon .who{display:block;font:900 .58rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.16em;color:var(--accent);text-transform:uppercase;margin-bottom:3px}
+.balloon::after{content:"";position:absolute;bottom:-14px;left:28px;width:0;height:0;border:9px solid transparent;border-top:14px solid var(--navy)}
+.balloon::before{content:"";position:absolute;bottom:-9px;left:31px;width:0;height:0;border:7px solid transparent;border-top:11px solid #fff;z-index:1}
+.balloon.tail-r::after{left:auto;right:28px}
+.balloon.tail-r::before{left:auto;right:31px}
+.balloon.vex{background:#062e33;border-color:var(--teal);color:#c8f5f1;border-radius:10px;font-family:'Consolas','Courier New',monospace;font-weight:500;box-shadow:0 0 12px rgba(31,166,162,.5)}
+.balloon.vex .who{color:var(--amber)}
+.balloon.vex::after{border-top-color:var(--teal)}
+.balloon.vex::before{border-top-color:#062e33}
+.balloon.thought{border-radius:30px;border-style:dashed}
+.caption{background:#FFF3D8;border:2px solid var(--amber);border-left-width:8px;padding:7px 12px;font:var(--capfont);color:#5a4a22;border-radius:3px}
+.caption.loc{font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-style:normal;font-family:'Segoe UI',sans-serif;font-size:.74rem}
+.sfx{position:absolute;z-index:5;font:900 1.7rem/1 'Arial Black',Arial,sans-serif;color:var(--coral);-webkit-text-stroke:2px var(--navy);text-stroke:2px var(--navy);transform:rotate(-7deg);text-shadow:3px 3px 0 var(--amber);letter-spacing:.04em;pointer-events:none}
+.splashtitle{font:900 clamp(1.5rem,3.2vw,2.4rem)/1 'Arial Black',Arial,sans-serif;text-transform:uppercase;color:var(--navy)}
+.splashtitle em{color:var(--accent);font-style:normal}
+.kicker{font:900 .68rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.3em;color:var(--coral);text-transform:uppercase}
+
+/* ---------- GATES ---------- */
+.gatebox{border:4px solid var(--accent);border-radius:12px;background:linear-gradient(180deg,#ffffff,#eef7f6);box-shadow:0 6px 0 rgba(23,50,77,.15);overflow:hidden}
+.gatebox header{display:flex;align-items:center;gap:10px;background:var(--accent);color:#fff;padding:9px 14px}
+.gatebox header .gicon{width:30px;height:30px;flex:none}
+.gatebox header h3{font:900 .85rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.gatebody{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.gateprompt{font:600 .95rem/1.4 'Segoe UI',sans-serif}
+.gatecheck{align-self:flex-start;background:var(--navy);color:#fff;border:none;border-radius:999px;font:900 .82rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.1em;padding:13px 26px;min-height:48px;box-shadow:0 4px 0 #0c1d30}
+.gatecheck:active{transform:translateY(2px);box-shadow:0 2px 0 #0c1d30}
+.gatefeedback{min-height:1.3em;font:700 .88rem/1.35 'Segoe UI',sans-serif}
+.gatefeedback.bad{color:var(--coral)}
+.gatefeedback.good{color:#0d7a4f}
+.gatehint{background:#FFF3D8;border:2px dashed var(--amber);border-radius:8px;padding:9px 12px;font:600 .86rem/1.4 'Segoe UI',sans-serif;color:#5a4a22}
+.gatesolved{display:flex;align-items:center;gap:10px;background:#e2f4ee;border:3px solid #0d7a4f;border-radius:10px;padding:10px 14px;font:900 .8rem/1.3 'Arial Black',Arial,sans-serif;color:#0d7a4f;letter-spacing:.08em}
+.stamp{display:inline-block;transform:rotate(-6deg);border:3px solid #0d7a4f;border-radius:6px;padding:3px 8px}
+/* gate widgets */
+.tokenbank,.beakers{display:flex;gap:8px;flex-wrap:wrap}
+.token{width:48px;height:48px;border-radius:50%;border:3px solid var(--navy);background:var(--amber);font:900 .7rem/1 'Arial Black',Arial,sans-serif;color:var(--navy);display:flex;align-items:center;justify-content:center;transition:transform .15s,background .2s}
+.token:hover{transform:scale(1.1)}
+.token.inA{background:var(--teal);color:#fff}
+.token.inB{background:#7db8e8;color:var(--navy)}
+.beaker{flex:1;min-width:120px;border:3px solid var(--navy);border-radius:0 0 14px 14px;border-top-style:dashed;padding:8px;min-height:74px;background:rgba(31,166,162,.08)}
+.beaker h4{font:900 .62rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.12em;color:var(--navy);text-transform:uppercase;margin-bottom:6px}
+.beaker .cnt{font:900 1.2rem/1 'Arial Black',Arial,sans-serif;color:var(--accent)}
+.numin{width:96px;min-height:48px;border:3px solid var(--navy);border-radius:8px;font:900 1.05rem/1 'Arial Black',Arial,sans-serif;text-align:center;color:var(--navy);background:#fff;padding:6px}
+.numin:focus{border-color:var(--accent)}
+.numin.ok{border-color:#0d7a4f;background:#e2f4ee}
+.numin.no{border-color:var(--coral);background:#fdebe6}
+.rt-table{border-collapse:collapse;width:100%}
+.rt-table th,.rt-table td{border:2px solid var(--navy);padding:7px 9px;text-align:center;font:700 .92rem/1.2 'Segoe UI',sans-serif}
+.rt-table th{background:var(--navy);color:#fff;font:900 .7rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.08em}
+.rt-table td.given{background:#eef7f6;font-weight:800}
+.choicebtns{display:flex;gap:10px;flex-wrap:wrap}
+.choicebtn{flex:1;min-width:140px;min-height:48px;border:3px solid var(--navy);border-radius:10px;background:#fff;font:700 .9rem/1.3 'Segoe UI',sans-serif;padding:10px 12px;text-align:left;transition:background .15s}
+.choicebtn:hover{background:#eef7f6}
+.choicebtn[aria-pressed="true"]{background:var(--navy);color:#fff}
+.gategrid{touch-action:manipulation}
+.gategrid .gp{cursor:pointer}
+.unlockflash{animation:unlockflash 1s ease-out}
+@keyframes unlockflash{0%{box-shadow:0 0 0 0 rgba(242,193,91,.9)}100%{box-shadow:0 0 0 26px rgba(242,193,91,0)}}
+
+/* ---------- MODALS ---------- */
+.modal{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(5,12,19,.72);padding:16px}
+.modal.open{display:flex}
+.modalcard{background:var(--paper);border-radius:14px;max-width:780px;width:100%;max-height:88vh;overflow:auto;box-shadow:0 30px 70px rgba(0,0,0,.6)}
+.modalcard>header{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;background:var(--navy);color:#fff;padding:12px 18px;z-index:2}
+.modalcard>header h2{font:900 1rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.modalcard .x{background:var(--coral);border:none;color:#fff;border-radius:8px;width:40px;height:40px;font:900 1rem/1 Arial}
+.modalbody{padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.tt{border-collapse:collapse;width:100%}
+.tt th,.tt td{border:2px solid var(--navy);padding:8px 10px;font:600 .85rem/1.35 'Segoe UI',sans-serif;text-align:left;vertical-align:top}
+.tt th{background:var(--navy);color:#fff;font:900 .68rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.tt tr:nth-child(even) td{background:#fff}
+.workedsteps{display:flex;flex-direction:column;gap:8px}
+.workedsteps .st{display:flex;gap:10px;align-items:flex-start;background:#fff;border:2px solid var(--navy);border-radius:8px;padding:9px 12px;font:600 .9rem/1.4 'Segoe UI',sans-serif}
+.workedsteps .st b.n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font:900 .8rem/1 Arial}
+
+/* ---------- END MATTER ---------- */
+.castcard{display:flex;gap:12px;align-items:center;border:3px solid var(--navy);border-radius:10px;background:#fff;padding:8px 12px}
+.castcard svg{width:64px;height:76px;flex:none}
+.castcard h4{font:900 .8rem/1.2 'Arial Black',Arial,sans-serif;color:var(--navy);letter-spacing:.06em}
+.castcard p{font:600 .8rem/1.35 'Segoe UI',sans-serif;color:#4c5a66}
+.journal{border:3px solid var(--amber);background:#FFFDF4;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.journal h4{font:900 .8rem/1.2 'Arial Black',Arial,sans-serif;color:#8a6a1c;letter-spacing:.14em;text-transform:uppercase}
+.journal .jrow{display:flex;gap:10px;align-items:flex-start;font:600 .88rem/1.4 Georgia,serif;color:#4a3d18}
+.journal .jrow b{color:var(--navy)}
+#certificate{border:6px double var(--navy);border-radius:8px;background:#fff;padding:18px;text-align:center;display:flex;flex-direction:column;gap:8px}
+#certificate h3{font:900 1.2rem/1.1 'Arial Black',Arial,sans-serif;color:var(--navy);letter-spacing:.1em}
+#certName{border:none;border-bottom:3px solid var(--navy);font:900 1.3rem/1.2 Georgia,serif;text-align:center;background:transparent;min-height:48px;width:80%;align-self:center;color:var(--ink)}
+.certbadges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.certbadges .badge{filter:none;border-color:var(--amber);background:#fdf6e7}
+.certbadges .badge.locked{filter:grayscale(1) opacity(.35)}
+
+/* ---------- MOBILE ---------- */
+@media (max-width:820px){
+  #book{height:min(calc(100vh - 120px),760px)}
+  #spreadWrap .page{width:100%}
+  #spreadWrap .page.offscreen{display:none}
+  #spine3d,#edgesL{display:none}
+  .navarrow{width:44px;height:72px}
+  .balloon{max-width:78%}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important;transition-duration:.001s!important}
+}
+/* ---------- PRINT ---------- */
+@media print{
+  body{overflow:visible;background:#fff}
+  body *{visibility:hidden}
+  body.print-teacher #teacherModal,body.print-teacher #teacherModal *{visibility:visible}
+  body.print-teacher #teacherModal{position:static;display:block;background:#fff;padding:0}
+  body.print-teacher #teacherModal .modalcard{max-height:none;box-shadow:none}
+  body.print-cert #certificate,body.print-cert #certificate *{visibility:visible}
+  body.print-cert #certificate{position:fixed;inset:5% 8%;background:#fff}
+  .x,.gatecheck{display:none!important}
+}
+/* ================= VOL OVERRIDES — U6·E2 "The Power Ring" (accent amber, matches Vol 6 story world) ================= */
+:root{--accent:var(--amber)}
+/* contrast fixes: amber surfaces need NAVY text for AA (vol-06 set) */
+.gatebox header{color:var(--navy)}
+.gatebox header .gicon{color:var(--navy)}
+.hudbtn[aria-pressed="true"]{color:var(--navy)}
+#coverTitle .vol{color:var(--navy)}
+.workedsteps .st b.n{color:var(--navy)}
+.navarrow:hover{color:var(--navy)}
+.balloon .who{color:#8a6a1c}
+.balloon.vex .who{color:var(--amber)}
+.splashtitle em{color:#b78a2e}
+.beaker .cnt{color:#8a6a1c}
+.gatebox{background:linear-gradient(180deg,#ffffff,#fdf6e7)}
+.rt-table td.given{background:#fdf6e7}
+.choicebtn:hover{background:#fdf6e7}
+</style>
+</head>
+<body>
+<!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<pattern id="halftone" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.4" fill="#17324D" opacity=".18"/></pattern>
+<pattern id="halftoneT" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.4" fill="#1FA6A2" opacity=".3"/></pattern>
+<linearGradient id="skygrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd8e8"/><stop offset="1" stop-color="#e8f4ee"/></linearGradient>
+<linearGradient id="duskgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A2580"/><stop offset=".6" stop-color="#E2674A"/><stop offset="1" stop-color="#F2C15B"/></linearGradient>
+<radialGradient id="vexglow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#7CF2EC"/><stop offset=".6" stop-color="#1FA6A2"/><stop offset="1" stop-color="#1FA6A2" stop-opacity="0"/></radialGradient>
+
+<!-- MAYA: teal jacket, black high bun, star pin -->
+<g id="sym-maya"><path d="M22 118 L24 84 Q24 70 50 70 Q76 70 76 84 L78 118 Z" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><path d="M40 73 L50 86 L60 73" fill="#F7F4EC" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="44" r="24" fill="#C68642" stroke="#17324D" stroke-width="4"/><path d="M27 40 Q26 18 50 18 Q74 18 73 40 Q66 26 50 26 Q34 26 27 40Z" fill="#1B1B23" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="13" r="9" fill="#1B1B23" stroke="#17324D" stroke-width="3"/><path d="M62 8 l2.2 4.4 4.8.6-3.5 3.4.9 4.8-4.4-2.3-4.4 2.3.9-4.8-3.5-3.4 4.8-.6z" fill="#F2C15B" stroke="#17324D" stroke-width="1.5"/><circle cx="42" cy="44" r="2.6" fill="#17324D"/><circle cx="58" cy="44" r="2.6" fill="#17324D"/><path d="M37 37 q5 -3 9 -1 M54 36 q5 -2 9 1" fill="none" stroke="#17324D" stroke-width="2.4" stroke-linecap="round"/><path d="M44 55 q6 5 12 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- THEO: navy hoodie, flat-top, amber glasses -->
+<g id="sym-theo"><path d="M22 118 L24 86 Q24 72 50 72 Q76 72 76 86 L78 118 Z" fill="#17324D" stroke="#17324D" stroke-width="4"/><path d="M36 72 Q50 80 64 72 L64 80 Q50 88 36 80Z" fill="#0d2238" stroke="#17324D" stroke-width="2"/><circle cx="50" cy="45" r="24" fill="#6B4226" stroke="#17324D" stroke-width="4"/><path d="M27 38 Q27 16 50 16 Q73 16 73 38 L70 30 L30 30 Z" fill="#10101a" stroke="#17324D" stroke-width="3"/><rect x="33" y="38" width="14" height="11" rx="3" fill="#fff" stroke="#F2C15B" stroke-width="3"/><rect x="53" y="38" width="14" height="11" rx="3" fill="#fff" stroke="#F2C15B" stroke-width="3"/><line x1="47" y1="43" x2="53" y2="43" stroke="#F2C15B" stroke-width="3"/><circle cx="40" cy="44" r="2.4" fill="#17324D"/><circle cx="60" cy="44" r="2.4" fill="#17324D"/><path d="M43 57 q7 3 14 -1" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- ZARA: coral overalls, side ponytail -->
+<g id="sym-zara"><path d="M22 118 L24 88 Q24 74 50 74 Q76 74 76 88 L78 118 Z" fill="#fff" stroke="#17324D" stroke-width="4"/><path d="M30 78 L34 118 L44 118 L42 80 M70 78 L66 118 L56 118 L58 80" fill="#E2674A" stroke="#17324D" stroke-width="3"/><rect x="40" y="92" width="20" height="16" rx="3" fill="#E2674A" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="46" r="24" fill="#F1C27D" stroke="#17324D" stroke-width="4"/><path d="M27 44 Q24 20 50 19 Q76 20 74 38 Q70 28 52 27 Q34 27 32 44 Z" fill="#E2674A" stroke="#17324D" stroke-width="3"/><path d="M71 30 Q88 36 84 58 Q80 70 72 72 Q78 58 72 46Z" fill="#E2674A" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="46" r="2.6" fill="#17324D"/><circle cx="58" cy="46" r="2.6" fill="#17324D"/><path d="M42 57 q8 6 16 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/><circle cx="36" cy="53" r="3" fill="#E2674A" opacity=".5"/><circle cx="64" cy="53" r="3" fill="#E2674A" opacity=".5"/></g>
+<!-- DEV: purple tee, headphones -->
+<g id="sym-dev"><path d="M22 118 L24 88 Q24 74 50 74 Q76 74 76 88 L78 118 Z" fill="#4A2580" stroke="#17324D" stroke-width="4"/><path d="M43 92 l7 -6 7 6 -7 6z" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="50" cy="46" r="24" fill="#8D5524" stroke="#17324D" stroke-width="4"/><path d="M28 40 Q26 18 50 17 Q74 18 72 40 L66 28 L60 34 L52 26 L44 34 L36 27 Z" fill="#171722" stroke="#17324D" stroke-width="3"/><path d="M24 64 Q20 50 26 42 M76 64 Q80 50 74 42" fill="none" stroke="#4A2580" stroke-width="6" stroke-linecap="round"/><circle cx="25" cy="64" r="7" fill="#4A2580" stroke="#17324D" stroke-width="3"/><circle cx="75" cy="64" r="7" fill="#4A2580" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="46" r="2.6" fill="#17324D"/><circle cx="58" cy="46" r="2.6" fill="#17324D"/><path d="M43 57 q7 5 14 1" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- VEX: glowing orb AI -->
+<g id="sym-vex"><circle cx="50" cy="50" r="38" fill="url(#vexglow)" opacity=".55"/><polygon points="50,22 73,36 73,64 50,78 27,64 27,36" fill="#0b3a40" stroke="#1FA6A2" stroke-width="3.5"/><polygon points="50,30 66,40 66,60 50,70 34,60 34,40" fill="none" stroke="#7CF2EC" stroke-width="1.6" opacity=".8"/><circle cx="50" cy="50" r="10" fill="#F2C15B"/><circle cx="50" cy="50" r="4.5" fill="#17324D"/><circle cx="50" cy="14" r="3" fill="#F2C15B"/><circle cx="78" cy="70" r="2.4" fill="#7CF2EC"/><circle cx="22" cy="72" r="2" fill="#7CF2EC"/></g>
+<!-- props -->
+<g id="sym-bike"><circle cx="22" cy="46" r="14" fill="none" stroke="#17324D" stroke-width="4"/><circle cx="74" cy="46" r="14" fill="none" stroke="#17324D" stroke-width="4"/><path d="M22 46 L40 22 L62 22 L74 46 M40 22 L48 46 L22 46 M48 46 L62 22 M36 16 L46 16 M62 22 L58 14 L66 14" fill="none" stroke="#E2674A" stroke-width="4" stroke-linecap="round"/></g>
+<g id="sym-skyline"><rect x="0" y="34" width="14" height="46" fill="#17324D"/><rect x="16" y="20" width="18" height="60" fill="#22456a"/><rect x="36" y="42" width="12" height="38" fill="#17324D"/><rect x="50" y="10" width="20" height="70" fill="#2c567f"/><polygon points="60,0 50,12 70,12" fill="#1FA6A2"/><rect x="72" y="30" width="14" height="50" fill="#17324D"/><rect x="88" y="46" width="12" height="34" fill="#22456a"/><g fill="#F2C15B" opacity=".9"><rect x="20" y="26" width="3" height="4"/><rect x="27" y="36" width="3" height="4"/><rect x="54" y="18" width="3" height="4"/><rect x="61" y="30" width="3" height="4"/><rect x="54" y="44" width="3" height="4"/><rect x="75" y="36" width="3" height="4"/></g></g>
+<g id="sym-trophy"><path d="M30 14 H70 V34 Q70 52 50 56 Q30 52 30 34 Z" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><path d="M30 20 H16 Q16 38 32 40 M70 20 H84 Q84 38 68 40" fill="none" stroke="#F2C15B" stroke-width="6"/><rect x="44" y="56" width="12" height="12" fill="#b78a2e" stroke="#17324D" stroke-width="3"/><rect x="34" y="68" width="32" height="10" rx="2" fill="#17324D"/></g>
+<!-- badge sigils -->
+<g id="sig-flask"><path d="M40 15 h20 v18 l16 30 a8 8 0 0 1 -7 12 H31 a8 8 0 0 1 -7 -12 l16 -30 z" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><path d="M33 52 h34 l6 11 a4 4 0 0 1 -4 6 H31 a4 4 0 0 1 -4 -6 z" fill="#F2C15B"/></g>
+<g id="sig-watch"><circle cx="50" cy="55" r="28" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><path d="M50 55 L50 36 M50 55 L64 60" stroke="#17324D" stroke-width="4" stroke-linecap="round"/><rect x="42" y="12" width="16" height="8" rx="2" fill="#17324D"/><line x1="50" y1="20" x2="50" y2="27" stroke="#17324D" stroke-width="4"/></g>
+<g id="sig-table"><rect x="18" y="22" width="64" height="56" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><line x1="18" y1="40" x2="82" y2="40" stroke="#17324D" stroke-width="4"/><line x1="50" y1="22" x2="50" y2="78" stroke="#17324D" stroke-width="4"/><rect x="18" y="22" width="64" height="18" fill="#1FA6A2" opacity=".5"/></g>
+<g id="sig-graph"><rect x="16" y="16" width="68" height="68" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><path d="M24 76 L76 30" stroke="#1FA6A2" stroke-width="5" stroke-linecap="round"/><circle cx="38" cy="64" r="5" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="56" cy="48" r="5" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="68" cy="58" r="5" fill="#E2674A" stroke="#17324D" stroke-width="2"/></g>
+<g id="sig-swap"><path d="M24 38 H64 l-10 -12 M76 62 H36 l10 12" fill="none" stroke="#1FA6A2" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="sig-boss"><path d="M50 10 l11 22 24 4 -17 17 4 24 -22 -11 -22 11 4 -24 -17 -17 24 -4 z" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="52" r="9" fill="#E2674A" stroke="#17324D" stroke-width="3"/></g>
+<g id="sig-lock"><rect x="28" y="44" width="44" height="36" rx="6" fill="currentColor"/><path d="M36 44 v-8 a14 14 0 0 1 28 0 v8" fill="none" stroke="currentColor" stroke-width="8"/></g>
+<g id="sig-open"><rect x="28" y="44" width="44" height="36" rx="6" fill="currentColor"/><path d="M36 44 v-8 a14 14 0 0 1 28 0" fill="none" stroke="currentColor" stroke-width="8"/></g>
+<!-- u6·e2 additions: the glitch (signature lie retuned to this episode's 2⁶=12), Ada's vault dial, power + tile sigils (vol 6), order-of-operations sigil, the second ring -->
+<g id="sym-glitch"><path d="M30 78 Q18 70 24 56 Q12 52 22 40 Q14 28 30 28 Q32 14 46 22 Q56 10 64 24 Q80 18 76 36 Q90 42 80 54 Q88 66 72 70 Q74 84 58 78 Q48 90 38 78 Z" fill="#4A2580" stroke="#17324D" stroke-width="3" opacity=".92"/><g stroke="#E2674A" stroke-width="2.5" stroke-linecap="round"><path d="M28 44 l10 -5 M62 39 l10 5"/></g><circle cx="40" cy="50" r="4.2" fill="#F2C15B"/><circle cx="62" cy="50" r="4.2" fill="#F2C15B"/><circle cx="40" cy="50" r="1.7" fill="#17324D"/><circle cx="62" cy="50" r="1.7" fill="#17324D"/><path d="M42 64 q9 6 18 -2" fill="none" stroke="#F2C15B" stroke-width="2.5" stroke-linecap="round"/><g font-family="Consolas,monospace" font-weight="700" font-size="9" fill="#7CF2EC"><text x="28" y="22">2⁶=12?</text></g><g stroke="#7CF2EC" stroke-width="1.5" opacity=".7" stroke-linecap="round"><line x1="18" y1="60" x2="8" y2="64"/><line x1="84" y1="58" x2="94" y2="62"/><line x1="50" y1="10" x2="50" y2="3"/></g></g>
+<g id="sym-vault"><circle cx="50" cy="50" r="44" fill="#22456a" stroke="#17324D" stroke-width="5"/><circle cx="50" cy="50" r="33" fill="#17324D" stroke="#F2C15B" stroke-width="3"/><circle cx="50" cy="50" r="12" fill="#0d1f33" stroke="#F2C15B" stroke-width="3"/><g stroke="#F2C15B" stroke-width="4" stroke-linecap="round"><line x1="50" y1="38" x2="50" y2="22"/><line x1="50" y1="62" x2="50" y2="78"/><line x1="38" y1="50" x2="22" y2="50"/><line x1="62" y1="50" x2="78" y2="50"/></g><g fill="#7CF2EC" font-family="Consolas,monospace" font-weight="700" font-size="10"><text x="32" y="32">3n</text><text x="58" y="32">+5</text><text x="30" y="76">x²</text><text x="58" y="76">12</text></g></g>
+<g id="sig-pow"><text x="34" y="64" font-family="Arial Black,Arial" font-weight="900" font-size="44" fill="#17324D" text-anchor="middle">3</text><text x="62" y="40" font-family="Arial Black,Arial" font-weight="900" font-size="26" fill="#E2674A" text-anchor="middle">4</text><path d="M22 76 q28 14 56 0" fill="none" stroke="#F2C15B" stroke-width="6" stroke-linecap="round"/></g>
+<g id="sig-tile"><rect x="14" y="30" width="32" height="32" rx="5" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><rect x="54" y="30" width="32" height="32" rx="5" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><text x="30" y="52" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="16" fill="#17324D">3n</text><text x="70" y="52" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="16" fill="#fff">+5</text><rect x="34" y="64" width="32" height="22" rx="5" fill="#fff" stroke="#17324D" stroke-width="3"/></g>
+<g id="sig-ops"><circle cx="24" cy="44" r="15" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="44" r="15" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><circle cx="76" cy="44" r="15" fill="#fff" stroke="#17324D" stroke-width="4"/><text x="24" y="49" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="13" fill="#17324D">( )</text><text x="50" y="50" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="14" fill="#fff">x²</text><text x="76" y="50" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="14" fill="#17324D">+−</text><path d="M18 72 H76 l-7 -7 M76 72 l-7 7" fill="none" stroke="#F2C15B" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="sym-powring"><circle cx="50" cy="50" r="46" fill="#22456a" stroke="#17324D" stroke-width="5"/><circle cx="50" cy="50" r="35" fill="#0d1f33" stroke="#F2C15B" stroke-width="3"/><g font-family="Consolas,monospace" font-weight="700" font-size="11" fill="#7CF2EC"><text x="50" y="24" text-anchor="middle">2⁶</text><text x="79" y="55" text-anchor="middle">5³</text><text x="50" y="89" text-anchor="middle">3²</text><text x="21" y="55" text-anchor="middle">10³</text></g><circle cx="50" cy="50" r="11" fill="#F2C15B" stroke="#17324D" stroke-width="3"/><line x1="50" y1="40" x2="50" y2="27" stroke="#F2C15B" stroke-width="4" stroke-linecap="round"/><g stroke="#F2C15B" stroke-width="2.5" stroke-linecap="round" opacity=".8"><line x1="50" y1="4" x2="50" y2="11"/><line x1="50" y1="89" x2="50" y2="96"/><line x1="4" y1="50" x2="11" y2="50"/><line x1="89" y1="50" x2="96" y2="50"/></g></g>
+</defs>
+</svg>
+
+<!-- ============ COVER ============ -->
+<div id="cover">
+  <div id="coverCard" role="img" aria-label="Cover of Axiom City Unit 6, Episode 2: The Power Ring. Deep in Ada Vex's cipher vault, a giant dial ringed with glowing powers towers over the crew. Dev reaches for the dial while the scribbled glitch-creature chalks 2 to the 6th equals 12 across it, and the glowing orb VEX hovers above with the rest of the crew below.">
+    <div class="cov-layer" data-depth="6" style="z-index:1">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><rect width="500" height="700" fill="#0d1f33"/><rect width="500" height="700" fill="url(#halftone)" opacity=".5"/><polygon points="70,0 430,0 396,700 104,700" fill="#17324D" opacity=".9"/><g fill="#F2C15B" opacity=".18"><circle cx="250" cy="330" r="240"/></g></svg>
+    </div>
+    <div class="cov-layer" data-depth="12" style="z-index:2">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><g stroke="#17324D" stroke-width="3"><rect x="38" y="300" width="26" height="38" rx="4" fill="#F2C15B"/><rect x="436" y="300" width="26" height="38" rx="4" fill="#F2C15B"/><circle cx="51" cy="312" r="6" fill="#FFF3D8"/><circle cx="449" cy="312" r="6" fill="#FFF3D8"/></g><circle cx="250" cy="330" r="205" fill="#22456a" stroke="#17324D" stroke-width="10"/><circle cx="250" cy="330" r="158" fill="#0d1f33" stroke="#F2C15B" stroke-width="6"/><g font-family="Consolas,monospace" font-weight="700" font-size="34" fill="#7CF2EC"><text x="250" y="194" text-anchor="middle">2⁶</text><text x="384" y="342" text-anchor="middle">5³</text><text x="250" y="486" text-anchor="middle">3²</text><text x="116" y="342" text-anchor="middle">10³</text></g><circle cx="250" cy="330" r="44" fill="#F2C15B" stroke="#17324D" stroke-width="6"/><line x1="250" y1="288" x2="250" y2="240" stroke="#F2C15B" stroke-width="12" stroke-linecap="round"/></svg>
+    </div>
+    <div class="cov-layer" data-depth="22" style="z-index:3">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+        <g transform="translate(316,128) scale(1.15)"><use href="#sym-glitch"/></g>
+        <text x="368" y="262" font-family="Consolas,monospace" font-weight="700" font-size="22" fill="#E2674A" text-anchor="middle" transform="rotate(-9 368 262)">2⁶ = 12!!</text>
+        <g transform="translate(96,150) scale(.85)"><use href="#sym-vex"/></g>
+        <g transform="translate(176,438) scale(1.3)"><use href="#sym-dev"/></g>
+        <g transform="translate(48,488) scale(1.05)"><use href="#sym-theo"/></g>
+        <g transform="translate(316,492) scale(1.02)"><use href="#sym-maya"/></g>
+        <g transform="translate(404,540) scale(.9)"><use href="#sym-zara"/></g>
+        <g stroke="#7CF2EC" stroke-width="2.5" opacity=".6" stroke-dasharray="4 7"><line x1="130" y1="216" x2="226" y2="330"/><line x1="130" y1="216" x2="250" y2="240"/></g>
+      </svg>
+    </div>
+    <div class="spine"><span>AXIOM CITY · EDUWONDERLAB</span></div>
+    <div id="coverTitle">
+      <div class="series">AXIOM CITY</div>
+      <h1>THE POWER<br><em>RING</em></h1>
+      <span class="vol">UNIT 6 · EPISODE 2 · EXPRESSIONS</span>
+    </div>
+    <div id="coverBottom"><span>AN INTERACTIVE<br>GRAPHIC NOVEL EPISODE</span><span>GRADE 6 · LESSONS 6-3, 6-4 &amp; 6-5<br>EDUWONDERLAB</span></div>
+  </div>
+  <div id="coverActions">
+      <button class="bigbtn" id="startBtn">START READING</button>
+      <button class="bigbtn alt" id="resumeBtn" hidden>RESUME</button>
+  </div>
+</div>
+
+<!-- ============ HUD ============ -->
+<header id="hud" hidden>
+  <div class="brand">AXIOM CITY<small>U6 · E2 · THE POWER RING</small></div>
+  <div id="progress" aria-label="Reading progress"></div>
+  <div id="badges" aria-label="Badges earned"></div>
+  <div class="hudbtns">
+    <button class="hudbtn" id="sndBtn" aria-pressed="false" title="Sound effects">🔇 Sound</button>
+    <button class="hudbtn" id="motBtn" aria-pressed="true" title="3D motion effects">3D On</button>
+    <button class="hudbtn" id="txtBtn" aria-pressed="false" title="Larger text">A+</button>
+    <button class="hudbtn" id="hcBtn" aria-pressed="false" title="High contrast">HC</button>
+    <button class="hudbtn teacher" id="teacherBtn">Teacher</button>
+  </div>
+</header>
+
+<!-- ============ BOOK ============ -->
+<main id="stage" hidden>
+  <div id="book">
+    <div id="bookcase"></div>
+    <div class="edges" id="edgesL"></div>
+    <div class="edges" id="edgesR"></div>
+    <div id="spreadWrap">
+      <section class="page left" id="pageL" aria-live="polite"></section>
+      <section class="page right" id="pageR" aria-live="polite"></section>
+    </div>
+    <div id="spine3d"></div>
+    <div id="turnSheet" aria-hidden="true"><div class="ts front"></div><div class="ts back"></div><div class="shade"></div></div>
+  </div>
+</main>
+<button class="navarrow" id="prevBtn" aria-label="Previous page" hidden>‹</button>
+<button class="navarrow" id="nextBtn" aria-label="Next page" hidden>›</button>
+<div class="sr-only" role="status" aria-live="polite" id="live"></div>
+
+<!-- ============ MODALS ============ -->
+<div class="modal" id="teacherModal" role="dialog" aria-modal="true" aria-labelledby="tmTitle">
+  <div class="modalcard">
+    <header><h2 id="tmTitle">Teacher Guide — U6 · E2</h2><div><button class="hudbtn" id="printTeacher">Print</button> <button class="x" data-close aria-label="Close">✕</button></div></header>
+    <div class="modalbody" id="teacherBody"></div>
+  </div>
+</div>
+<div class="modal" id="workedModal" role="dialog" aria-modal="true" aria-labelledby="wmTitle">
+  <div class="modalcard">
+    <header><h2 id="wmTitle">VEX · Worked Example</h2></header>
+    <div class="modalbody" id="workedBody"></div>
+  </div>
+</div>
+<script>
+/* ================================================================
+   ===== CONTENT START (per-volume: swap everything in here) =====
+   ================================================================ */
+const VOLUME = {
+  num: 602, slug: "u6e2", title: "The Power Ring", unit: "Unit 6 · Episode 2 · Lessons 6-3, 6-4, 6-5",
+  accent: "#F2C15B",
+  nextTeaser: "EPISODE 3 — THE TWIN DOORS"
+};
+
+const BADGES = [
+  {id:"g1", icon:"#sig-pow",  label:"Power Reader — Exponents"},
+  {id:"g2", icon:"#sig-ops",  label:"Order Keeper — Order of Operations"},
+  {id:"g3", icon:"#sig-tile", label:"Plate Translator — Write &amp; Evaluate Expressions"},
+  {id:"boss",icon:"#sig-boss",label:"Ring Turner — Boss Gate"}
+];
+
+const SC = (vb,inner)=>`<svg class="scene" viewBox="${vb}" role="img" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
+/* cipher-vault interior backdrop (stone shaft under Vexhall Library) */
+const VAULT=`<rect width="400" height="210" fill="#10243a"/><rect width="400" height="210" fill="url(#halftone)"/><polygon data-depth="4" points="46,0 354,0 326,210 74,210" fill="#17324D" opacity=".85"/>`;
+/* glow-ink lantern pair (lit in E1) */
+const LANTERNS=`<g data-depth="8" fill="#F2C15B" stroke="#17324D" stroke-width="2"><rect x="14" y="60" width="18" height="26" rx="3"/><rect x="368" y="60" width="18" height="26" rx="3"/><circle cx="23" cy="68" r="4" fill="#FFF3D8"/><circle cx="377" cy="68" r="4" fill="#FFF3D8"/></g>`;
+
+const PAGES = [
+/* p1 — title + previously */
+{ ch:"Unit 6 · Episode 2", html:`
+  <div style="text-align:center;margin-top:8px"><div class="kicker">EduWonderLab Presents</div>
+  <h2 class="splashtitle" style="margin:8px 0">THE POWER <em>RING</em></h2>
+  <div class="caption" style="display:inline-block">Lessons 6-3, 6-4 &amp; 6-5 — exponents, order of operations, and algebraic expressions. Four reader gates stand between the crew and the vault's second ring.</div></div>
+  <div class="panel panel3d tall" style="margin-top:8px">${SC("0 0 400 210",`${VAULT}${LANTERNS}
+    <g data-depth="10" transform="translate(150,8) scale(1)" opacity=".95"><use href="#sym-vault"/></g>
+    <g data-depth="16" transform="translate(28,96) scale(.86)"><use href="#sym-dev"/></g>
+    <g data-depth="16" transform="translate(118,98) scale(.84)"><use href="#sym-theo"/></g>
+    <g data-depth="16" transform="translate(208,98) scale(.84)"><use href="#sym-maya"/></g>
+    <g data-depth="16" transform="translate(296,96) scale(.86)"><use href="#sym-zara"/></g>
+    <g data-depth="24" transform="translate(46,8) scale(.5)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:6px;left:8px;max-width:54%"><span class="who">VEX</span>Previously: the vault's FIRST ring fell to honest quotients. The glitch retreated one ring deeper. Status: it is still terrible at math.</div>
+  </div>
+  <div class="caption loc">Previously, in Axiom City: a scribble made of broken equations locked Ada Vex's cipher vault and scrambled every sign in town. The crew split its fraction lies — twelve quarter-meter strips hide inside three meters of ribbon, thank you very much — and the first ring rolled open. Two rings to go. The glitch went down the stairs giggling.</div>`},
+
+/* p2 — splash: the second ring */
+{ ch:"Chapter 1 · The Second Ring", html:`
+  <div class="kicker">Chapter One</div><h2 class="splashtitle">THE SECOND <em>RING</em></h2>
+  <div class="panel panel3d tall">${SC("0 0 400 220",`
+    <rect width="400" height="220" fill="#0d1f33"/><rect width="400" height="220" fill="url(#halftone)"/>
+    <circle data-depth="6" cx="200" cy="106" r="96" fill="#17324D"/>
+    <g data-depth="10" transform="translate(116,22) scale(1.7)"><use href="#sym-powring"/></g>
+    <g data-depth="16" transform="translate(296,28) scale(.9)"><use href="#sym-glitch"/></g>
+    <g data-depth="18" transform="translate(28,104) scale(.9)"><use href="#sym-dev"/></g>
+    <g data-depth="18" transform="translate(316,118) scale(.84)"><use href="#sym-theo"/></g>
+    <g data-depth="24" transform="translate(180,168) scale(.46)"><use href="#sym-vex"/></g>
+    <text data-depth="14" x="318" y="116" font-family="Consolas,monospace" font-weight="700" font-size="13" fill="#E2674A" transform="rotate(-8 318 116)">2⁶ = 12!!</text>`)}
+    <div class="sfx" style="top:8px;left:14px">SKRRT!</div>
+    <div class="balloon" style="bottom:14px;left:8px;max-width:46%"><span class="who">DEV</span>Ring two: a giant dial of glowing powers. This is a puzzle BOSS DOOR and I have never been happier.</div>
+    <div class="balloon tail-r" style="top:8px;right:6px;max-width:42%"><span class="who">THEO</span>The glitch just chalked "2⁶ = 12" on it. The notch went dark. It's feeding the ring wrong answers.</div>
+  </div>
+  <div class="caption">The second ring is a dial of <b>powers</b> — little expressions like 2⁶ and 5³. Each notch only glows when it's fed its true value. The glitch inflates every number it touches… by misreading exponents.</div>`},
+
+/* p3 — lesson: reading powers */
+{ ch:"Chapter 1 · Reading Powers", html:`
+  <div class="caption loc">Theo unrolls chalk and a plan. Dev holds the lantern. The glitch heckles from the dark.</div>
+  <div class="panel panel3d tall">${SC("0 0 400 200",`${VAULT}
+    <rect data-depth="8" x="70" y="26" width="260" height="84" rx="8" fill="#0d1f33" stroke="#F2C15B" stroke-width="3"/>
+    <text data-depth="8" x="200" y="56" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="16" fill="#7CF2EC">10³ = 10 × 10 × 10</text>
+    <text data-depth="8" x="200" y="84" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="16" fill="#FFF3D8">= 1000</text>
+    <g data-depth="16" transform="translate(24,96) scale(.88)"><use href="#sym-theo"/></g>
+    <g data-depth="16" transform="translate(316,98) scale(.86)"><use href="#sym-dev"/></g>
+    <g data-depth="12" transform="translate(166,128) scale(.62)"><use href="#sym-glitch"/></g>`)}
+    <div class="balloon" style="top:8px;left:8px;max-width:44%"><span class="who">THEO</span>Practice chip: 10³. Base 10, exponent 3 — so three 10s multiplied. One thousand.</div>
+    <div class="balloon tail-r" style="bottom:12px;right:6px;max-width:40%"><span class="who">GLITCH</span>WRONG. ten times three!! THIRTY. tiny number. very efficient.</div>
+  </div>
+  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#fdf6e7"/><g transform="translate(318,2) scale(.62)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:8px;left:10px;max-width:74%"><span class="who">VEX</span>A <b>power</b> has two parts: the <b>base</b> — the number being copied — and the <b>exponent</b> — the count of copies being MULTIPLIED. Never base times exponent. That error is the glitch's entire personality.</div>
+  </div>
+  <div class="caption">Say 10³ "ten to the third power." The exponent counts factors, not a multiplication partner: 10 × 10 × 10 = 1000, while the glitch's 10 × 3 = 30 isn't even in the neighborhood.</div>`},
+
+/* p4 — GATE g1 */
+{ ch:"Chapter 1 · Reader Gate", gate:"g1", html:`
+  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#0d1f33"/><g transform="translate(8,0) scale(.66)"><use href="#sym-dev"/></g>`)}
+    <div class="balloon" style="top:6px;left:80px;max-width:68%"><span class="who">DEV</span>Reader — feed the first two notches their TRUE values. The glitch already smeared its little "12" on one. Overwrite it.</div>
+  </div>`},
+
+/* p5 — splash: the order lock */
+{ ch:"Chapter 2 · The Order Lock", html:`
+  <div class="kicker">Chapter Two</div><h2 class="splashtitle">THE ORDER <em>LOCK</em></h2>
+  <div class="panel panel3d tall">${SC("0 0 400 210",`${VAULT}${LANTERNS}
+    <g data-depth="10" transform="translate(132,14) scale(1.35)"><use href="#sym-powring"/></g>
+    <rect data-depth="8" x="64" y="152" width="272" height="44" rx="8" fill="#0d1f33" stroke="#1FA6A2" stroke-width="2.5"/>
+    <text data-depth="8" x="200" y="172" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="12" fill="#7CF2EC">NOTCH III ACCEPTS: WHOLE LINES ONLY</text>
+    <text data-depth="8" x="200" y="188" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="12" fill="#E2674A">READ IN ORDER OR DO NOT READ</text>
+    <g data-depth="18" transform="translate(24,92) scale(.88)"><use href="#sym-zara"/></g>
+    <g data-depth="18" transform="translate(318,94) scale(.86)"><use href="#sym-theo"/></g>`)}
+    <div class="sfx" style="top:8px;right:14px">CL-CLUNK</div>
+    <div class="balloon" style="top:8px;left:8px;max-width:46%"><span class="who">ZARA</span>It turned one click and JAMMED. The next notch isn't a single power — it's a whole line of math.</div>
+    <div class="balloon tail-r" style="bottom:12px;right:6px;max-width:44%"><span class="who">THEO</span>Then the line has rules. You don't read math left to right like a comic. You read it by RANK.</div>
+  </div>
+  <div class="panel">${SC("0 0 400 100",`<rect width="400" height="100" fill="#fdf6e7"/><g transform="translate(318,4) scale(.62)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:8px;left:10px;max-width:74%"><span class="who">VEX</span>The <b>order of operations</b>: parentheses first. Exponents second. Multiplication and division third — together, sweeping left to right. Addition and subtraction last. Theo's chalk test: 5 + 2 × 3² becomes 5 + 2 × 9, the multiplication fires next, and the line settles at 23.</div>
+  </div>
+  <div class="caption">Reading 5 + 2 × 3² straight left to right balloons it to 63 — exactly the kind of inflation the glitch adores. Rank order keeps numbers honest.</div>`},
+
+/* p6 — GATE g2 */
+{ ch:"Chapter 2 · Reader Gate", gate:"g2", html:`
+  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#0d1f33"/><g transform="translate(10,-2) scale(.62)"><use href="#sym-theo"/></g>`)}
+    <div class="balloon" style="top:6px;left:78px;max-width:70%"><span class="who">THEO</span>Reader — two lines, one lock. Read them by rank, not left to right.</div>
+  </div>`},
+
+/* p7 — lesson: Ada's inscription, symbols */
+{ ch:"Chapter 3 · The Brass Plate", html:`
+  <div class="kicker">Chapter Three</div><h2 class="splashtitle">THE BRASS <em>PLATE</em></h2>
+  <div class="caption loc">Two clicks down. Set into the ring: a brass plate stamped with Ada Vex's handwriting — words, not numbers.</div>
+  <div class="panel panel3d tall">${SC("0 0 400 200",`${VAULT}
+    <rect data-depth="8" x="58" y="26" width="284" height="78" rx="10" fill="#22456a" stroke="#F2C15B" stroke-width="3"/>
+    <text data-depth="8" x="200" y="58" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="14" fill="#FFF3D8">"the key is 7 less than twice n"</text>
+    <text data-depth="8" x="200" y="84" text-anchor="middle" font-family="Consolas,monospace" font-size="11" fill="#7CF2EC">— A.V., cipher ring two</text>
+    <g data-depth="16" transform="translate(26,96) scale(.88)"><use href="#sym-theo"/></g>
+    <g data-depth="16" transform="translate(316,98) scale(.86)"><use href="#sym-maya"/></g>
+    <g data-depth="12" transform="translate(170,128) scale(.58)"><use href="#sym-glitch"/></g>`)}
+    <div class="balloon" style="bottom:12px;left:8px;max-width:48%"><span class="who">THEO</span>Word-to-symbol translation. <b>n</b> is the <b>variable</b> — the mystery number's costume. I write the expressions; reader runs them.</div>
+    <div class="balloon tail-r" style="top:8px;right:6px;max-width:40%"><span class="who">MAYA</span>Careful — "less than" is sneaky. It flips the order of what you write.</div>
+  </div>
+  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#fdf6e7"/><g transform="translate(318,2) scale(.62)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:8px;left:10px;max-width:74%"><span class="who">VEX</span>Theo's warm-up: "4 more than three times m" becomes 3m + 4 — the 3 is the <b>coefficient</b>, the number multiplying the variable. Feed it m = 2 and the machine outputs 3 × 2 + 4 = 10. Value in, number out: that is evaluating.</div>
+  </div>
+  <div class="caption">An algebraic expression is math with at least one <b>variable</b>. "Times" builds a coefficient; "more than" adds after; "less than" subtracts FROM the thing you built.</div>`},
+
+/* p8 — GATE g3 */
+{ ch:"Chapter 3 · Reader Gate", gate:"g3", html:`
+  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#0d1f33"/><g transform="translate(8,-2) scale(.62)"><use href="#sym-theo"/></g>`)}
+    <div class="balloon" style="top:6px;left:78px;max-width:72%"><span class="who">THEO</span>Reader — translate Ada's plate into symbols, then run the machine. The glitch is mouthing wrong answers at you. Rude.</div>
+  </div>`},
+
+/* p9 — glitch counterattack: inflation */
+{ ch:"Chapter 4 · The Inflation", html:`
+  <div class="caption loc">Three clicks. One alignment left. The glitch stops heckling — and starts TOUCHING things.</div>
+  <div class="panel panel3d tall">${SC("0 0 400 200",`
+    <rect width="400" height="200" fill="#1a1030"/><rect width="400" height="200" fill="url(#halftone)"/>
+    <g data-depth="10" transform="translate(140,10) scale(1.2)"><use href="#sym-glitch"/></g>
+    <g data-depth="8" font-family="Consolas,monospace" font-weight="700" fill="#E2674A"><text x="36" y="60" font-size="14" transform="rotate(-10 36 60)">6² = 12!!</text><text x="300" y="54" font-size="13" transform="rotate(8 300 54)">9 × 9 = 81?? NO. 18.</text><text x="56" y="170" font-size="13" transform="rotate(6 56 170)">EXPONENTS = TIMES TABLES</text><text x="276" y="176" font-size="14" transform="rotate(-7 276 176)">x² = x·2 FOREVER</text></g>
+    <g data-depth="18" transform="translate(20,92) scale(.86)"><use href="#sym-maya"/></g>
+    <g data-depth="18" transform="translate(322,96) scale(.84)"><use href="#sym-dev"/></g>`)}
+    <div class="sfx" style="top:6px;left:14px">SKRITCH SKRITCH</div>
+    <div class="balloon" style="bottom:12px;left:8px;max-width:46%"><span class="who">MAYA</span>It's rewriting the counterweight readouts! It just told the ring that 6² is 12 — and the needle MOVED.</div>
+    <div class="balloon tail-r" style="top:8px;right:6px;max-width:42%"><span class="who">DEV</span>Of course it did. Every lie it writes is the same lie: base times exponent. It has ONE move.</div>
+  </div>
+  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#fdf6e7"/><g transform="translate(318,2) scale(.62)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:8px;left:10px;max-width:74%"><span class="who">VEX</span>Analysis confirmed: the creature cannot square. It multiplies the base by the exponent and inflates everything else to hide it. Beat the final alignment with TRUE values and the ring will reject every number it touched.</div>
+  </div>`},
+
+/* p10 — boss setup */
+{ ch:"Chapter 4 · The Last Alignment", html:`
+  <div class="panel panel3d tall">${SC("0 0 400 200",`
+    <rect width="400" height="200" fill="#0d1f33"/><rect width="400" height="200" fill="url(#halftone)"/>
+    <g data-depth="10" transform="translate(120,4) scale(1.6)"><use href="#sym-powring"/></g>
+    <g data-depth="16" transform="translate(308,18) scale(.78)"><use href="#sym-glitch"/></g>
+    <g data-depth="18" transform="translate(20,94) scale(.88)"><use href="#sym-dev"/></g>
+    <g data-depth="18" transform="translate(318,112) scale(.84)"><use href="#sym-zara"/></g>
+    <g data-depth="24" transform="translate(186,158) scale(.46)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon" style="top:8px;left:8px;max-width:48%"><span class="who">DEV</span>Final alignment. Three locks: a power core, a counterweight, and one lie that has to die in public.</div>
+    <div class="balloon tail-r" style="bottom:12px;right:8px;max-width:42%"><span class="who">ZARA</span>Reader takes the dial. Crew takes the snacks. GO.</div>
+  </div>
+  <div class="caption">Boss Gate: turn the second ring — evaluate the core, evaluate the counterweight, and stamp out the glitch's favorite lie once and for all.</div>`},
+
+/* p11 — BOSS */
+{ ch:"Boss Gate · Turn the Ring", gate:"boss", html:`
+  <div class="panel">${SC("0 0 400 76",`<rect width="400" height="76" fill="#0d1f33"/><g transform="translate(330,2) scale(.56)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>BOSS GATE. Three locks. Feed the ring truth and it turns; feed it glitch math and we live in a vault now.</div>
+  </div>`},
+
+/* p12 — victory + teaser */
+{ ch:"Chapter 5 · One Ring Deeper", html:`
+  <div class="panel panel3d tall">${SC("0 0 400 210",`
+    <rect width="400" height="210" fill="#10243a"/><rect width="400" height="210" fill="url(#halftone)"/>
+    <g data-depth="10" transform="translate(126,2) scale(1.5)" opacity=".95"><use href="#sym-powring"/></g>
+    <g data-depth="8" stroke="#F2C15B" stroke-width="3" opacity=".85"><line x1="200" y1="160" x2="120" y2="206"/><line x1="200" y1="160" x2="280" y2="206"/></g>
+    <rect data-depth="8" x="96" y="168" width="86" height="42" rx="5" fill="#17324D" stroke="#F2C15B" stroke-width="3"/>
+    <rect data-depth="8" x="218" y="168" width="86" height="42" rx="5" fill="#17324D" stroke="#F2C15B" stroke-width="3"/>
+    <text data-depth="8" x="139" y="192" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="11" fill="#7CF2EC">5(y+2)?</text>
+    <text data-depth="8" x="261" y="192" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="11" fill="#7CF2EC">5y+10?</text>
+    <g data-depth="18" transform="translate(22,92) scale(.88)"><use href="#sym-dev"/></g>
+    <g data-depth="18" transform="translate(318,92) scale(.86)"><use href="#sym-theo"/></g>
+    <g data-depth="16" transform="translate(330,10) scale(.6)"><use href="#sym-glitch"/></g>`)}
+    <div class="sfx" style="top:6px;left:14px">KRRRUNNK!</div>
+    <div class="balloon" style="top:8px;left:8px;max-width:46%"><span class="who">DEV</span>The ring TURNED. Achievement unlocked. The glitch just rage-quit down the stairs.</div>
+    <div class="balloon tail-r" style="bottom:14px;right:6px;max-width:44%"><span class="who">THEO</span>And look what it opened onto… two doors. Wearing two different expressions. That can't be a coincidence.</div>
+  </div>
+  <div class="panelrow">
+    <div class="panel">${SC("0 0 200 104",`<rect width="200" height="104" fill="#fdf6e7"/><g transform="translate(56,2) scale(.74)"><use href="#sym-maya"/></g>`)}
+      <div class="balloon" style="top:4px;left:4px;max-width:74%"><span class="who">MAYA</span>Two doors, two labels… and a riddle: are they secretly the SAME door?</div></div>
+    <div class="panel">${SC("0 0 200 104",`<rect width="200" height="104" fill="#0d1f33"/><g transform="translate(60,8) scale(.8)"><use href="#sym-vault"/></g><text x="100" y="98" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#F2C15B">"ring three: pick honestly." — A.V.</text>`)}</div>
+  </div>
+  <div class="caption" style="text-align:center"><b>NEXT: ${VOLUME.nextTeaser}</b></div>`},
+
+/* p13 — journal mini-recap */
+{ ch:"End Matter · Ada Vex's Journal", html:`
+  <h2 class="splashtitle" style="font-size:1.4rem">ADA VEX'S <em>JOURNAL</em></h2>
+  <div class="journal"><h4>Lessons 6-3 · 6-4 · 6-5 — what the second ring taught us</h4>
+    <div class="jrow"><b>Power.</b><span>A base and an exponent. The base is the number being copied; the exponent counts the copies being MULTIPLIED. 10³ = 10 × 10 × 10 = 1000 — never 10 × 3.</span></div>
+    <div class="jrow"><b>Order of operations.</b><span>Read math by rank, not left to right: parentheses, then exponents, then × and ÷ sweeping left to right together, then + and − last.</span></div>
+    <div class="jrow"><b>Variable &amp; coefficient.</b><span>A variable is a letter standing for a number; a coefficient is the number multiplying it. "Less than" flips the order: build the thing first, then subtract from it.</span></div>
+    <div class="jrow"><b>The glitch's lie.</b><span>Every inflation was the same move — base × exponent. An exponent counts factors. x² means x · x. Case closed.</span></div>
+  </div>
+  <div class="caption">"A power is a promise of repeated multiplication. Keep count, and nothing can inflate on you." — A.V.</div>`},
+
+/* p14 — certificate */
+{ ch:"End Matter · Certificate", html:`
+  <div id="certificate">
+    <div class="kicker">Axiom City · EduWonderLab</div>
+    <h3>READER CERTIFICATE</h3>
+    <p style="font:600 .9rem Georgia,serif">This certifies that</p>
+    <input id="certName" maxlength="40" placeholder="write your name" aria-label="Your name for the certificate">
+    <p style="font:600 .9rem Georgia,serif">completed <b>Unit 6 · Episode 2: The Power Ring</b> and proved mastery over exponents, the order of operations, and writing and evaluating algebraic expressions.</p>
+    <div class="certbadges" id="certBadges"></div>
+    <button class="gatecheck" id="printCert" style="align-self:center">PRINT CERTIFICATE</button>
+  </div>
+  <div class="caption" style="text-align:center">Episode 3 — The Twin Doors — is waiting at the bottom of the stairs.</div>`}
+];
+
+function mkfeed(el,msg,ok){el.textContent=msg;el.className="gatefeedback "+(ok?"good":"bad");}
+const GATES = {
+g1:{ title:"Gate 1 · The Glowing Notches", icon:"#sig-pow",
+  prompt:`Two dark notches on the ring: <b>2⁶</b> and <b>5³</b>. The glitch has smeared its "answers" — 12 and 15 — across them. Feed each notch its TRUE value.`,
+  hints:[ "Conceptual: a power is repeated MULTIPLICATION. The base is the number being copied; the exponent counts the copies. It never means base × exponent — that's the glitch's whole personality.",
+          "Procedural: write the base again and again with × between — as many copies as the exponent says — then multiply step by step, left to right." ],
+  worked:{ steps:[ "Theo's practice chip: 10³ — base 10, exponent 3. Say it 'ten to the third power.'",
+    "The exponent counts the 10s being multiplied: 10 × 10 × 10. Three of them, no more, no fewer.",
+    "10 × 10 = 100, then 100 × 10 = 1000. The glitch's version — 10 × 3 = 30 — isn't even in the neighborhood." ],
+    q:"What is 3³?", a:"27" },
+  render(body,api){
+    body.innerHTML=`<svg viewBox="0 0 360 150" style="width:100%;border:3px solid var(--navy);border-radius:8px;background:#0d1f33" role="img" aria-label="Two notches on the power ring. The left notch shows the power 2 to the 6th; the glitch has scrawled 12 over it. The right notch shows 5 cubed; the glitch has scrawled 15 over it.">
+      <circle cx="180" cy="190" r="150" fill="#17324D" stroke="#F2C15B" stroke-width="3"/>
+      <rect x="42" y="28" width="116" height="64" rx="9" fill="#22456a" stroke="#F2C15B" stroke-width="3"/>
+      <text x="100" y="70" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="28" fill="#7CF2EC">2⁶</text>
+      <text x="146" y="36" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="13" fill="#E2674A" transform="rotate(-12 146 36)">12!!</text>
+      <rect x="202" y="28" width="116" height="64" rx="9" fill="#22456a" stroke="#F2C15B" stroke-width="3"/>
+      <text x="260" y="70" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="28" fill="#7CF2EC">5³</text>
+      <text x="306" y="36" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="13" fill="#E2674A" transform="rotate(10 306 36)">15!!</text>
+      <text x="180" y="122" text-anchor="middle" font-family="Arial" font-weight="800" font-size="11" fill="#F2C15B">NOTCH I · NOTCH II — TRUE VALUES ONLY</text></svg>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:900 1.05rem 'Arial Black',Arial;color:var(--navy)">2⁶ =</span><input class="numin" id="a1" inputmode="numeric" aria-label="value of 2 to the 6th power"><span style="font:900 1.05rem 'Arial Black',Arial;color:var(--navy)">5³ =</span><input class="numin" id="b1" inputmode="numeric" aria-label="value of 5 cubed"></div>`;
+    api.onCheck(()=>{const eA=body.querySelector("#a1"),vA=parseFloat(eA.value),eB=body.querySelector("#b1"),vB=parseFloat(eB.value);
+      const okA=vA===64,okB=vB===125;
+      eA.className="numin "+(okA?"ok":"no");eB.className="numin "+(okB?"ok":"no");
+      if(!okA){
+        if(vA===12)return api.fail("That's 2 × 6 — the glitch's signature move. The exponent counts how many 2s get MULTIPLIED: six of them, no shortcuts.");
+        if(vA===36)return api.fail("That's 6² — base and exponent swapped costumes. In 2⁶ the 2 is the base being copied.");
+        return api.fail("Notch I stays dark. Write six 2s with × between them and multiply step by step.");}
+      if(!okB){
+        if(vB===15)return api.fail("5 × 3 is glitch math. The exponent 3 counts three 5s being multiplied — it is not a multiplication partner.");
+        return api.fail("Notch I glows — but Notch II stays dark. Three copies of 5, multiplied, not added, not times-three'd.");}
+      api.pass("2⁶ = 64 and 5³ = 125 — both notches blaze gold and the glitch's smears burn off. The ring turns one click!");});
+  }},
+g2:{ title:"Gate 2 · The Order Lock", icon:"#sig-ops",
+  prompt:`Notch III feeds the dial whole lines of math — and only turns when each line is read in the right ORDER. Evaluate: <b>4 + 3 × 2²</b> and <b>36 ÷ (2 + 4) × 3</b>.`,
+  hints:[ "Conceptual: an expression is read by RANK, not left to right — parentheses first, then exponents, then multiplication and division together, then addition and subtraction at the very end.",
+          "Procedural: settle the parentheses, rewrite any power as its value, then sweep ONCE left to right doing every × and ÷ in the order you meet them. Addition waits for the end." ],
+  worked:{ steps:[ "Theo's chalk warm-up: 5 + 2 × 3². No parentheses — so the exponent goes first: 3² = 9.",
+    "The line now reads 5 + 2 × 9. Multiplication outranks addition, so 2 × 9 fires next.",
+    "Add last — the line settles at 23. Reading it straight left to right instead balloons it to 63: glitch math." ],
+    q:"Evaluate 20 ÷ (1 + 4) × 2.", a:"8" },
+  render(body,api){
+    body.innerHTML=`<svg viewBox="0 0 360 140" style="width:100%;border:3px solid var(--navy);border-radius:8px;background:#0d1f33" role="img" aria-label="The order lock readout. Line A shows 4 plus 3 times 2 squared. Line B shows 36 divided by the quantity 2 plus 4, times 3. A warning reads: read in order or do not read.">
+      <rect x="26" y="18" width="308" height="38" rx="7" fill="#22456a" stroke="#1FA6A2" stroke-width="2.5"/>
+      <text x="44" y="43" font-family="Consolas,monospace" font-weight="700" font-size="17" fill="#7CF2EC">A:  4 + 3 × 2²</text>
+      <rect x="26" y="66" width="308" height="38" rx="7" fill="#22456a" stroke="#1FA6A2" stroke-width="2.5"/>
+      <text x="44" y="91" font-family="Consolas,monospace" font-weight="700" font-size="17" fill="#7CF2EC">B:  36 ÷ (2 + 4) × 3</text>
+      <text x="180" y="126" text-anchor="middle" font-family="Arial" font-weight="800" font-size="11" fill="#E2674A">READ IN ORDER OR DO NOT READ</text></svg>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:900 1.05rem 'Arial Black',Arial;color:var(--navy)">A =</span><input class="numin" id="a2" inputmode="numeric" aria-label="value of line A"><span style="font:900 1.05rem 'Arial Black',Arial;color:var(--navy)">B =</span><input class="numin" id="b2" inputmode="numeric" aria-label="value of line B"></div>`;
+    api.onCheck(()=>{const eA=body.querySelector("#a2"),vA=parseFloat(eA.value),eB=body.querySelector("#b2"),vB=parseFloat(eB.value);
+      const okA=vA===16,okB=vB===18;
+      eA.className="numin "+(okA?"ok":"no");eB.className="numin "+(okB?"ok":"no");
+      if(!okA){
+        if(vA===28)return api.fail("You added 4 + 3 first. Addition goes LAST — the exponent and the multiplication both outrank it.");
+        if(vA===40)return api.fail("You multiplied 3 × 2 before squaring. Exponents fire BEFORE multiplication — deal with 2² first.");
+        return api.fail("Line A resists. Exponent first, then the multiplication, then — at the very end — the addition.");}
+      if(!okB){
+        if(vB===2)return api.fail("You multiplied (2 + 4) × 3 before dividing. Division and multiplication TIE — sweep left to right: divide first, THEN multiply.");
+        return api.fail("Line A glows — line B resists. Parentheses first, then sweep ÷ and × left to right in one pass.");}
+      api.pass("A = 16 and B = 18 — both lines read in perfect rank. CLICK. CLICK. Two more notches blaze and the ring grinds onward!");});
+  }},
+g3:{ title:"Gate 3 · Ada's Inscription", icon:"#sig-tile",
+  prompt:`The brass plate reads: <i>"the key is 7 less than twice n."</i> First pick the expression that says it in symbols — then run it at <b>n = 6</b> to get the key.`,
+  hints:[ "Conceptual: 'less than' is sneaky — it flips the order. '7 less than SOMETHING' means build the something first, then take 7 away from it. 'Twice' makes a coefficient of 2.",
+          "Procedural: two moves — write 'twice n' as 2 times the variable, then subtract 7 from THAT whole thing. To evaluate, swap the variable for its value and follow the order of operations." ],
+  worked:{ steps:[ "Ada's practice plate: '4 more than three times m.' Start with 'three times m' — that's 3m, where 3 is the coefficient and m is the variable.",
+    "'4 more than' adds 4 AFTER the tripling: 3m + 4. The phrase tells you what happens last.",
+    "Test-run it at m = 2: 3 × 2 + 4 = 10. Value in, number out — the expression works like a machine." ],
+    q:"Write '5 more than twice k' as symbols, then evaluate it at k = 3. What number comes out?", a:"11" },
+  render(body,api){
+    body.innerHTML=`<div style="font:600 .9rem 'Segoe UI'">Which expression says <i>"7 less than twice n"</i>?</div>
+      <div class="choicebtns">
+        <button class="choicebtn" data-v="flip" aria-pressed="false">7 − 2n</button>
+        <button class="choicebtn" data-v="correct" aria-pressed="false">2n − 7</button>
+        <button class="choicebtn" data-v="paren" aria-pressed="false">2(n − 7)</button>
+        <button class="choicebtn" data-v="square" aria-pressed="false">n² − 7</button></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px"><span style="font:900 1.05rem 'Arial Black',Arial;color:var(--navy)">Key at n = 6:</span><input class="numin" id="a3" inputmode="numeric" aria-label="value of the expression at n equals 6"></div>`;
+    let pick=null;
+    body.querySelectorAll("[data-v]").forEach(b=>b.addEventListener("click",()=>{body.querySelectorAll("[data-v]").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");pick=b.dataset.v;api.sound("blip");}));
+    api.onCheck(()=>{
+      if(!pick)return api.fail("Pick the symbol expression first — then run it.");
+      if(pick==="flip")return api.fail("That says 'twice n less than 7' — the subtraction got flipped. Build twice n first, THEN take 7 away from it.");
+      if(pick==="paren")return api.fail("Those parentheses subtract inside first — that machine doubles (n − 7), a different recipe from Ada's.");
+      if(pick==="square")return api.fail("n² means n × n — nobody squared anything. 'Twice n' is the coefficient 2, not an exponent.");
+      const el=body.querySelector("#a3"),v=parseFloat(el.value);
+      if(v===5){el.className="numin ok";return api.pass("2n − 7 at n = 6: twice 6 is 12, minus 7 is 5. The plate sinks flush into the ring — key accepted!");}
+      el.className="numin no";
+      if(v===-5)return api.fail("Right symbols, wrong run — that's the flipped expression's output. Double n FIRST, then subtract 7 from the result.");
+      if(v===-2)return api.fail("You subtracted inside parentheses that aren't there. Double n first; the 7 comes off at the end.");
+      if(v===29)return api.fail("That's n² − 7 talking. 'Twice n' multiplies by 2 — it never squares.");
+      api.fail("Swap n for 6, double it, then take 7 away. Order of operations runs the machine.");});
+  }},
+boss:{ title:"BOSS GATE · Turn the Ring", icon:"#sig-boss",
+  prompt:`The glitch throws every inflated number it has at the final alignment. Three locks stand between the crew and the second ring:`,
+  hints:[ "Conceptual: in a term like 3x², the exponent grips ONLY the variable — square first, multiply by the coefficient after. And parentheses are a package: finish the inside before anything multiplies them.",
+          "Procedural: Lock 1 — square the value of x, then triple the result. Lock 2 — add inside the parentheses, then multiply by 5. Lock 3 — remember what an exponent COUNTS." ],
+  worked:{ steps:[ "Night-watch drill: 2y² at y = 3. Square the variable first: 3 × 3 = 9. THEN the coefficient: 2 × 9 = 18. Squaring (2 × 3) instead gives 36 — a different, wrong machine.",
+    "4(k + 5) at k = 2: parentheses first, 2 + 5 = 7, then 4 × 7 = 28. The 4 waits politely outside until the inside is done.",
+    "And the glitch's favorite lie, retired: y² means y × y. An exponent counts copies of the base — it never multiplies by the exponent itself." ],
+    q:"Evaluate 4t² at t = 2.", a:"16" },
+  render(body,api){
+    body.innerHTML=`<svg viewBox="0 0 360 110" style="width:100%;border:3px solid var(--navy);border-radius:8px;background:#0d1f33" role="img" aria-label="The final alignment panel. The power core is labeled 3 x squared at x equals 4. The counterweight is labeled 5 times the quantity n plus 2, at n equals 3. The glitch screams that x squared is x times 2.">
+      <rect x="22" y="16" width="150" height="58" rx="8" fill="#22456a" stroke="#F2C15B" stroke-width="3"/>
+      <text x="97" y="40" text-anchor="middle" font-family="Arial" font-weight="800" font-size="11" fill="#F2C15B">POWER CORE</text>
+      <text x="97" y="62" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="16" fill="#7CF2EC">3x²  ·  x = 4</text>
+      <rect x="188" y="16" width="150" height="58" rx="8" fill="#22456a" stroke="#F2C15B" stroke-width="3"/>
+      <text x="263" y="40" text-anchor="middle" font-family="Arial" font-weight="800" font-size="11" fill="#F2C15B">COUNTERWEIGHT</text>
+      <text x="263" y="62" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="16" fill="#7CF2EC">5(n + 2)  ·  n = 3</text>
+      <text x="180" y="98" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="12" fill="#E2674A">glitch: "x² = x·2!! INFLATE!!"</text></svg>
+      <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b style="font:900 .75rem 'Arial Black'">LOCK 1</b><span style="font:600 .88rem 'Segoe UI'">Power core: 3x² at x = 4 =</span><input class="numin" id="L1" inputmode="numeric" aria-label="value of 3 x squared at x equals 4"></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b style="font:900 .75rem 'Arial Black'">LOCK 2</b><span style="font:600 .88rem 'Segoe UI'">Counterweight: 5(n + 2) at n = 3 =</span><input class="numin" id="L2" inputmode="numeric" aria-label="value of 5 times n plus 2 at n equals 3"></div>
+      <div><b style="font:900 .75rem 'Arial Black'">LOCK 3</b><div style="font:600 .88rem 'Segoe UI';margin:4px 0">The glitch screams "x² is x · 2!" What does x² REALLY mean?</div>
+      <div class="choicebtns">
+        <button class="choicebtn" data-v="x2" aria-pressed="false">x² means x · 2</button>
+        <button class="choicebtn" data-v="xx" aria-pressed="false">x² means x · x — the exponent counts copies of the base</button>
+        <button class="choicebtn" data-v="add" aria-pressed="false">x² means x + x</button>
+        <button class="choicebtn" data-v="coef" aria-pressed="false">x² means the 2 is a coefficient of x</button></div></div></div>`;
+    let pick=null;
+    body.querySelectorAll("[data-v]").forEach(b=>b.addEventListener("click",()=>{body.querySelectorAll("[data-v]").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");pick=b.dataset.v;api.sound("blip");}));
+    api.onCheck(()=>{
+      const e1=body.querySelector("#L1"),v1=parseFloat(e1.value);
+      const ok1=v1===48;e1.className="numin "+(ok1?"ok":"no");
+      if(!ok1){
+        if(v1===144)return api.fail("Lock 1 holds. You squared (3 × 4) — but the exponent grips ONLY the x. Square 4 first, THEN multiply by 3.");
+        if(v1===24)return api.fail("Lock 1 holds. x² is not x · 2. Square the 4 — multiply it by itself — before the coefficient touches anything.");
+        return api.fail("Lock 1 holds. Square the value of x first, then multiply by the coefficient 3.");}
+      const e2=body.querySelector("#L2"),v2=parseFloat(e2.value);
+      const ok2=v2===25;e2.className="numin "+(ok2?"ok":"no");
+      if(!ok2){
+        if(v2===17)return api.fail("Lock 2 holds. That's 5 × 3 + 2 — but parentheses are a package. Add n + 2 FIRST, then multiply the whole bundle by 5.");
+        return api.fail("Lock 2 holds. Finish the inside of the parentheses, then let the 5 multiply the result.");}
+      if(!pick)return api.fail("Lock 3 waits. Tap what x² really means — say it loud enough for the glitch to hear.");
+      if(pick!=="xx"){
+        if(pick==="x2")return api.fail("Lock 3 holds. That IS the glitch's lie — the one that wrote 2⁶ = 12 on the wall. An exponent is a count, not a partner.");
+        if(pick==="add")return api.fail("Lock 3 holds. x + x is 2x — doubling by addition. A power multiplies copies of the base instead.");
+        return api.fail("Lock 3 holds. In x², the 2 sits up high — it's an exponent counting copies, not a coefficient multiplying.");}
+      api.pass("ALL LOCKS OPEN. Core 48, counterweight 25, and the lie 'x² = x · 2' burns off the wall. The second ring TURNS — and below, two doors grind apart.");});
+  }}
+};
+
+const TEACHER = {
+  suggested:"Use after lessons 6-3, 6-4, and 6-5 as a single-class-period review anchor before equivalent expressions (lesson 6-6). Whole-class on a projector, pairs on devices, or independent practice. Progress saves on the device.",
+  standards:[
+    ["6.EE.A.1","Write and evaluate numerical expressions involving whole-number exponents","Gate 1, Gate 2"],
+    ["6.EE.A.2","Write, read, and evaluate expressions in which letters stand for numbers","Gate 3, Boss"]
+  ],
+  answers:[
+    ["Gate 1","Powers: 2⁶ = 64 and 5³ = 125. Traps: 12 and 15 (base × exponent — the glitch's signature error) and 36 (base/exponent swapped)."],
+    ["Gate 2","Order of operations: 4 + 3 × 2² = 16 (traps: 28 added first; 40 multiplied before squaring) and 36 ÷ (2 + 4) × 3 = 18 (trap: 2, multiplying before dividing — ÷ and × sweep left to right)."],
+    ["Gate 3","'7 less than twice n' → 2n − 7 (distractors: 7 − 2n, 2(n − 7), n² − 7); at n = 6 the key is 2 × 6 − 7 = 5 (trap −5: the flipped expression)."],
+    ["Boss","Lock 1: 3x² at x = 4 → 3 × 16 = 48 (trap 144 = (3 × 4)²; trap 24 = 3 × 4 × 2). Lock 2: 5(n + 2) at n = 3 → 5 × 5 = 25 (trap 17 = 5 × 3 + 2). Lock 3: x² means x · x — never x · 2."]
+  ]
+};
+/* ================================================================
+   ===== CONTENT END ==============================================
+   ================================================================ */
+</script>
+<script>
+/* ================================================================
+   ===== AXIOM CITY ENGINE v1.0 — identical in every volume =======
+   ================================================================ */
+"use strict";
+/* ---------- storage (exact wrapper, ewl_ prefix) ---------- */
+const storage={_m:{},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){this._m[k]=v}},get(k,d=null){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return this._m[k]??d}}};
+const K=s=>`ewl_axiom_${VOLUME.slug}_${s}`;
+
+const $=s=>document.querySelector(s);
+const live=msg=>{$("#live").textContent=msg};
+const reducedMQ=matchMedia("(prefers-reduced-motion: reduce)");
+const mobileMQ=matchMedia("(max-width: 820px)");
+
+const prefs=Object.assign({sound:false,motion:true,bigtext:false,hc:false},storage.get(K("prefs"))||{});
+let solved=new Set(storage.get(K("gates"))||[]);
+let page=storage.get(K("page"))||0;            // index of left/visible page
+let turning=false;
+const attempts={};
+
+/* ---------- audio (Web Audio oscillators only, muted default) ---------- */
+let actx=null;
+function ac(){if(!actx){try{actx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return actx}
+function tone(f,t,dur,type="square",vol=.04){const c=ac();if(!c||!prefs.sound)return;const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(vol,c.currentTime+t);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+t+dur);o.connect(g).connect(c.destination);o.start(c.currentTime+t);o.stop(c.currentTime+t+dur+.02)}
+const SND={blip(){tone(660,0,.07)},flip(){tone(220,0,.09,"triangle",.05);tone(330,.05,.08,"triangle",.04)},win(){[523,659,784,1046].forEach((f,i)=>tone(f,i*.09,.14,"triangle",.05))},thud(){tone(110,0,.18,"sawtooth",.05)}};
+
+/* ---------- helpers ---------- */
+function gateLockIcon(open){return `<div class="gatelockcorner ${open?"open":""}" aria-hidden="true"><svg viewBox="0 0 100 100" style="color:#fff"><use href="${open?"#sig-open":"#sig-lock"}"/></svg></div>`}
+
+function pageInnerHTML(i){
+  if(i==null||i<0||i>=PAGES.length) return `<div class="page-inner" style="align-items:center;justify-content:center"><div class="kicker" style="opacity:.4">AXIOM CITY</div></div><div class="pagefoot"><span></span><span></span></div>`;
+  const p=PAGES[i];
+  const gateHTML=p.gate?`<div class="gatemount" data-gate="${p.gate}"></div>`:"";
+  const lock=p.gate?gateLockIcon(solved.has(p.gate)):"";
+  return `${lock}<div class="chapterband">${p.ch.replace("·","· <em>").concat(p.ch.includes("·")?"</em>":"")}</div><div class="page-inner">${p.html}${gateHTML}</div><div class="pagefoot"><span>${VOLUME.unit}</span><span>PAGE ${i+1} / ${PAGES.length}</span></div>`;
+}
+
+/* ---------- gate framework ---------- */
+function mountGates(scope){
+  scope.querySelectorAll(".gatemount").forEach(m=>{
+    const id=m.dataset.gate,G=GATES[id];
+    if(!G)return;
+    if(solved.has(id)){m.innerHTML=`<div class="gatesolved"><span class="stamp">SOLVED</span> ${G.title} — badge earned.</div>`;return}
+    m.innerHTML=`<div class="gatebox"><header><svg class="gicon" viewBox="0 0 100 100"><use href="${G.icon}"/></svg><h3>${G.title}</h3></header>
+      <div class="gatebody"><div class="gateprompt">${G.prompt}</div><div class="gwidget"></div>
+      <div class="gatehint" hidden></div>
+      <button class="gatecheck">CHECK</button>
+      <div class="gatefeedback" aria-live="polite"></div></div></div>`;
+    const box=m.querySelector(".gatebox"),body=m.querySelector(".gwidget"),fb=m.querySelector(".gatefeedback"),hint=m.querySelector(".gatehint"),btn=m.querySelector(".gatecheck");
+    let checker=null;
+    const api={
+      sound:n=>SND[n]&&SND[n](),
+      onCheck(fn){checker=fn},
+      fail(msg){
+        attempts[id]=(attempts[id]||0)+1;SND.thud();mkfeed(fb,msg,false);
+        const n=attempts[id];
+        if(n===1){hint.hidden=false;hint.innerHTML="💡 <b>Hint:</b> "+G.hints[0]}
+        else if(n===2){hint.hidden=false;hint.innerHTML="🧭 <b>Hint 2:</b> "+G.hints[1]}
+        else if(n>=3&&!hint.querySelector(".askvex")){
+          const b=document.createElement("button");b.className="gatecheck askvex";b.style.marginTop="8px";b.textContent="ASK VEX — WORKED EXAMPLE";
+          b.addEventListener("click",()=>openWorked(G));hint.appendChild(b);
+        }
+        live("Not yet. "+msg);
+      },
+      pass(msg){
+        solved.add(id);storage.set(K("gates"),[...solved]);SND.win();
+        m.innerHTML=`<div class="gatesolved unlockflash"><span class="stamp">SOLVED</span> ${msg}</div>`;
+        const corner=m.closest(".page,#pageL,#pageR")?.querySelector(".gatelockcorner");
+        if(corner){corner.classList.add("open");corner.innerHTML=`<svg viewBox="0 0 100 100" style="color:#fff"><use href="#sig-open"/></svg>`}
+        earnBadge(id);updateNav();live("Gate solved! "+msg);
+      }
+    };
+    G.render(body,api);
+    btn.addEventListener("click",()=>{ac();checker&&checker()});
+  });
+}
+function openWorked(G){
+  $("#workedBody").innerHTML=`<div class="workedsteps">${G.worked.steps.map((s,i)=>`<div class="st"><b class="n">${i+1}</b><span>${s}</span></div>`).join("")}</div>
+    <div class="caption">Your turn — same idea, different numbers:</div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span style="font:600 .92rem 'Segoe UI'">${G.worked.q}</span>
+    <input class="numin" id="wkin" aria-label="worked example answer"><button class="gatecheck" id="wkgo">CHECK</button></div>
+    <div class="gatefeedback" id="wkfb" aria-live="polite"></div>`;
+  $("#workedModal").classList.add("open");
+  $("#wkgo").addEventListener("click",()=>{
+    const v=($("#wkin").value||"").trim().replace(/\s+/g,"");
+    if(v===G.worked.a||parseFloat(v)===parseFloat(G.worked.a)){
+      mkfeed($("#wkfb"),"Yes! Now head back and open that gate.",true);SND.win();
+      setTimeout(()=>$("#workedModal").classList.remove("open"),1100);
+    }else{mkfeed($("#wkfb"),"Walk the steps above again — you've got this.",false);SND.thud()}
+  });
+}
+
+/* ---------- badges ---------- */
+function buildBadges(){
+  $("#badges").innerHTML=BADGES.map(b=>`<div class="badge ${solved.has(b.id)?"earned":""}" id="badge-${b.id}" title="${b.label}" role="img" aria-label="${b.label}${solved.has(b.id)?" — earned":" — locked"}"><svg viewBox="0 0 100 100"><use href="${b.icon}"/></svg></div>`).join("");
+}
+function earnBadge(id){buildBadges();const el=$("#badge-"+id);if(el){el.classList.remove("earned");void el.offsetWidth;el.classList.add("earned")}const b=BADGES.find(x=>x.id===id);if(b)live("Badge earned: "+b.label)}
+
+/* ---------- progress ---------- */
+function buildProgress(){$("#progress").innerHTML=PAGES.map((_,i)=>`<span class="dot ${i<=page?"on":""}"></span>`).join("")}
+
+/* ---------- navigation & rendering ---------- */
+const isMobile=()=>mobileMQ.matches;
+function leftIndex(){return isMobile()?page:page-(page%2)}
+function visiblePages(){return isMobile()?[page]:[leftIndex(),leftIndex()+1].filter(i=>i<PAGES.length)}
+function blockedBy(){for(const i of visiblePages()){const g=PAGES[i]&&PAGES[i].gate;if(g&&!solved.has(g))return g}return null}
+
+function renderSpread(){
+  const L=$("#pageL"),R=$("#pageR");
+  if(isMobile()){L.innerHTML=pageInnerHTML(page);L.classList.remove("offscreen");R.classList.add("offscreen");R.innerHTML="";mountGates(L)}
+  else{const li=leftIndex();L.innerHTML=pageInnerHTML(li);R.innerHTML=pageInnerHTML(li+1<PAGES.length?li+1:null);L.classList.remove("offscreen");R.classList.remove("offscreen");mountGates(L);mountGates(R)}
+  buildProgress();updateNav();updateEdges();
+  if(PAGES[page])live(`Page ${page+1} of ${PAGES.length}. ${PAGES[page].ch}.`);
+  storage.set(K("page"),page);
+  if($("#certName")){$("#certName").value=storage.get(K("name"))||"";$("#certName").addEventListener("input",e=>storage.set(K("name"),e.target.value));
+    $("#certBadges").innerHTML=BADGES.map(b=>`<div class="badge ${solved.has(b.id)?"":"locked"}"><svg viewBox="0 0 100 100"><use href="${b.icon}"/></svg></div>`).join("");
+    $("#printCert").addEventListener("click",()=>{document.body.classList.add("print-cert");window.print();setTimeout(()=>document.body.classList.remove("print-cert"),400)});}
+}
+function updateEdges(){const f=page/Math.max(1,PAGES.length-1);$("#edgesL").style.width=(4+f*12)+"px";$("#edgesR").style.width=(16-f*12)+"px"}
+function updateNav(){
+  $("#prevBtn").disabled=page<=0||turning;
+  const lastVisible=Math.max(...visiblePages());
+  const end=lastVisible>=PAGES.length-1;
+  const blocked=blockedBy();
+  $("#nextBtn").disabled=end||turning;
+  $("#nextBtn").classList.toggle("locked",!!blocked&&!end);
+  $("#nextBtn").innerHTML=blocked&&!end?"🔒":"›";
+  $("#nextBtn").setAttribute("aria-label",blocked?"Locked — solve the gate on this page to continue":"Next page");
+}
+function step(dir){
+  if(turning)return;
+  if(dir>0){
+    const blocked=blockedBy();
+    if(blocked){const G=GATES[blocked];SND.thud();$("#nextBtn").classList.add("shake");setTimeout(()=>$("#nextBtn").classList.remove("shake"),700);
+      live("This page is gated. Solve "+G.title+" to continue.");
+      const gb=document.querySelector(".gatebox");if(gb){gb.classList.add("unlockflash");setTimeout(()=>gb.classList.remove("unlockflash"),1000)}
+      return}
+    const lastVisible=Math.max(...visiblePages());
+    if(lastVisible>=PAGES.length-1)return;
+    const target=isMobile()?page+1:leftIndex()+2;
+    animTurn(1,target);
+  }else{
+    if(page<=0)return;
+    const target=isMobile()?page-1:Math.max(0,leftIndex()-2);
+    animTurn(-1,target);
+  }
+}
+function animTurn(dir,target){
+  if(isMobile()||reducedMQ.matches||!prefs.motion){page=target;renderSpread();SND.flip();return}
+  turning=true;SND.flip();
+  const sheet=$("#turnSheet"),front=sheet.querySelector(".ts.front"),back=sheet.querySelector(".ts.back");
+  const oldL=leftIndex();
+  if(dir>0){
+    front.innerHTML=pageInnerHTML(oldL+1<PAGES.length?oldL+1:null);
+    back.innerHTML=pageInnerHTML(target<PAGES.length?target:null);
+    page=target;
+    /* underneath: left stays old-left, right becomes new-right */
+    $("#pageR").innerHTML=pageInnerHTML(target+1<PAGES.length?target+1:null);
+    sheet.className="";sheet.classList.add("show","fwd");
+  }else{
+    front.innerHTML=pageInnerHTML(target+1<PAGES.length?target+1:null);
+    back.innerHTML=pageInnerHTML(oldL);
+    page=target;
+    $("#pageL").innerHTML=pageInnerHTML(target);
+    sheet.className="";sheet.classList.add("show","back");
+  }
+  const done=()=>{sheet.classList.remove("show","fwd","back");sheet.removeEventListener("animationend",done);turning=false;renderSpread()};
+  sheet.addEventListener("animationend",done);
+  setTimeout(()=>{if(turning){done()}},1000);
+}
+
+/* ---------- parallax ---------- */
+let rafPending=false,px=0,py=0;
+function applyParallax(){
+  rafPending=false;
+  if(!prefs.motion||reducedMQ.matches)return;
+  document.querySelectorAll("#spreadWrap .panel3d").forEach(p=>{
+    p.style.transform=`rotateY(${px*4}deg) rotateX(${-py*3}deg)`;
+    p.querySelectorAll("[data-depth]").forEach(l=>{const d=+l.dataset.depth||0;l.style.transform=`translate(${px*d*.6}px,${py*d*.35}px)`});
+  });
+}
+addEventListener("pointermove",e=>{
+  px=(e.clientX/innerWidth-.5)*2;py=(e.clientY/innerHeight-.5)*2;
+  if(!rafPending){rafPending=true;requestAnimationFrame(applyParallax)}
+  const cc=$("#coverCard");
+  if(cc&&!$("#cover").hidden&&prefs.motion&&!reducedMQ.matches){
+    cc.style.transform=`rotateY(${px*9}deg) rotateX(${-py*7}deg)`;
+    cc.querySelectorAll(".cov-layer").forEach(l=>{const d=+l.dataset.depth||0;l.style.transform=`translate(${px*d}px,${py*d*.6}px)`});
+  }
+},{passive:true});
+
+/* note: SVG <g data-depth> transform via style works in modern browsers (SVG2). Wrapped above for safety. */
+
+/* ---------- HUD toggles ---------- */
+function syncToggles(){
+  $("#sndBtn").setAttribute("aria-pressed",prefs.sound);$("#sndBtn").textContent=prefs.sound?"🔊 Sound":"🔇 Sound";
+  $("#motBtn").setAttribute("aria-pressed",prefs.motion);$("#motBtn").textContent=prefs.motion?"3D On":"3D Off";
+  $("#txtBtn").setAttribute("aria-pressed",prefs.bigtext);document.documentElement.dataset.textsize=prefs.bigtext?"lg":"md";
+  $("#hcBtn").setAttribute("aria-pressed",prefs.hc);document.body.classList.toggle("hc",prefs.hc);
+  if(!prefs.motion)document.querySelectorAll(".panel3d").forEach(p=>p.style.transform="");
+  storage.set(K("prefs"),prefs);
+}
+$("#sndBtn").addEventListener("click",()=>{prefs.sound=!prefs.sound;ac();syncToggles();SND.blip()});
+$("#motBtn").addEventListener("click",()=>{prefs.motion=!prefs.motion;syncToggles()});
+$("#txtBtn").addEventListener("click",()=>{prefs.bigtext=!prefs.bigtext;syncToggles()});
+$("#hcBtn").addEventListener("click",()=>{prefs.hc=!prefs.hc;syncToggles()});
+
+/* ---------- teacher panel ---------- */
+function buildTeacher(){
+  $("#teacherBody").innerHTML=`
+    <p style="font:600 .9rem/1.45 'Segoe UI'">${VOLUME.unit} — interactive graphic novel. Story pauses at six <b>reader gates</b>; students must solve grade-level math problems to continue. Progress, badges, and settings persist per device.</p>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">SUGGESTED USE</h3>
+    <p style="font:600 .88rem/1.45 'Segoe UI'">${TEACHER.suggested}</p>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">STANDARDS ALIGNMENT (CCSS)</h3>
+    <table class="tt"><tr><th>Standard</th><th>Description</th><th>Where</th></tr>
+    ${TEACHER.standards.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</table>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">ANSWER KEY</h3>
+    <table class="tt"><tr><th>Gate</th><th>Answer &amp; notes</th></tr>
+    ${TEACHER.answers.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td></tr>`).join("")}</table>
+    <p style="font:600 .8rem/1.4 'Segoe UI';color:#666">Hints escalate: conceptual → procedural → VEX worked example (parallel problem; never reveals the gate answer). Sound is off by default. 3D motion can be disabled (auto-disabled for reduced-motion users). © EduWonderLab — single-file, offline-safe, no data leaves the device.</p>`;
+}
+$("#teacherBtn").addEventListener("click",()=>{buildTeacher();$("#teacherModal").classList.add("open")});
+$("#printTeacher").addEventListener("click",()=>{document.body.classList.add("print-teacher");window.print();setTimeout(()=>document.body.classList.remove("print-teacher"),400)});
+document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",()=>b.closest(".modal").classList.remove("open")));
+
+/* ---------- input ---------- */
+$("#nextBtn").addEventListener("click",()=>{ac();step(1)});
+$("#prevBtn").addEventListener("click",()=>{ac();step(-1)});
+addEventListener("keydown",e=>{
+  if(e.key==="Escape"){$("#teacherModal").classList.remove("open");return}
+  if($(".modal.open"))return;
+  if(["ArrowRight","PageDown"].includes(e.key))step(1);
+  if(["ArrowLeft","PageUp"].includes(e.key))step(-1);
+});
+let tx=null;
+addEventListener("touchstart",e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener("touchend",e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>60&&!$(".modal.open"))step(dx<0?1:-1);tx=null},{passive:true});
+mobileMQ.addEventListener("change",()=>renderSpread());
+
+/* ---------- boot ---------- */
+function openBook(){
+  $("#cover").hidden=true;$("#hud").hidden=false;$("#stage").hidden=false;
+  $("#prevBtn").hidden=false;$("#nextBtn").hidden=false;
+  renderSpread();
+}
+$("#startBtn").addEventListener("click",()=>{ac();page=0;openBook()});
+$("#resumeBtn").addEventListener("click",()=>{ac();openBook()});
+if((storage.get(K("page"))||0)>0||solved.size>0){$("#resumeBtn").hidden=false}
+if(reducedMQ.matches){prefs.motion=false}
+document.body.classList.toggle("reduced",reducedMQ.matches);
+buildBadges();syncToggles();buildProgress();
+</script>
+</body>
+</html>

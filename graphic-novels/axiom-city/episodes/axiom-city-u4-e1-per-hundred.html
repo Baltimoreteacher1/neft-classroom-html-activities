@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en" data-textsize="md">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Axiom City U4·E1 — Per Hundred | Interactive Graphic Novel Episode | Percents &amp; Fraction-Decimal-Percent</title>
+<meta name="description" content="An interactive 3D graphic novel episode teaching Grade 6 percents as rates per 100 and fraction-decimal-percent connections (Reveal Math lessons 4-1 and 4-2). EduWonderLab.">
+<style>
+/* ================= AXIOM CITY ENGINE CSS v1.0 — DO NOT FORK ================= */
+:root{
+  --paper:#F7F4EC; --ink:#24323F; --navy:#17324D; --teal:#1FA6A2; --amber:#F2C15B;
+  --coral:#E2674A; --purple:#4A2580; --accent:var(--teal);
+  --panelborder:3px solid var(--navy);
+  --balloonfont:600 1rem/1.32 'Segoe UI',system-ui,-apple-system,sans-serif;
+  --capfont:italic 500 .92rem/1.35 Georgia,'Times New Roman',serif;
+  --pagew:560px;
+}
+html[data-textsize="lg"]{font-size:18px}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:radial-gradient(120% 120% at 50% 0%,#23425f 0%,#101e2e 55%,#0a1420 100%);color:var(--ink);font:400 16px/1.45 'Segoe UI',system-ui,sans-serif;overflow:hidden}
+body.hc{--ink:#000;--paper:#fff}
+button{font:inherit;cursor:pointer}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:4px}
+
+/* ---------- COVER SCREEN ---------- */
+#cover{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:18px;background:radial-gradient(110% 110% at 50% 10%,#1c3a57 0%,#0a1420 100%);perspective:1400px;overflow:auto}
+#coverCard{position:relative;width:min(88vw,520px,calc((100vh - 200px)*0.714));aspect-ratio:5/7;border-radius:10px 18px 18px 10px;box-shadow:0 40px 80px rgba(0,0,0,.6),0 8px 22px rgba(0,0,0,.5);transform-style:preserve-3d;transition:transform .18s ease-out;background:var(--navy);overflow:hidden}
+#coverCard .spine{position:absolute;left:0;top:0;bottom:0;width:26px;background:linear-gradient(90deg,#0d1f33,#17324D 60%,#244a6e);z-index:5}
+#coverCard .spine span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-90deg);white-space:nowrap;color:var(--amber);font:900 .72rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.28em}
+.cov-layer{position:absolute;inset:0;will-change:transform}
+#coverTitle{position:absolute;left:34px;right:18px;top:26px;z-index:6;color:#fff}
+#coverTitle .series{font:900 .9rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.4em;color:var(--amber)}
+#coverTitle h1{font:900 clamp(2rem,7vw,3.1rem)/0.95 'Arial Black',Arial,sans-serif;text-transform:uppercase;margin-top:8px;text-shadow:4px 4px 0 rgba(0,0,0,.35);color:#fff}
+#coverTitle h1 em{font-style:normal;color:var(--accent)}
+#coverTitle .vol{display:inline-block;margin-top:10px;background:var(--accent);color:#fff;font:900 .8rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.18em;padding:7px 12px;border-radius:4px;box-shadow:2px 2px 0 rgba(0,0,0,.4)}
+#coverBottom{position:absolute;left:34px;right:18px;bottom:18px;z-index:6;display:flex;justify-content:space-between;align-items:flex-end;color:#cfe3ea;font:700 .72rem/1.3 'Segoe UI',sans-serif;letter-spacing:.12em}
+#coverActions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.bigbtn{background:var(--amber);color:var(--navy);border:none;border-radius:999px;font:900 1rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.1em;padding:18px 34px;box-shadow:0 6px 0 #b78a2e,0 14px 30px rgba(0,0,0,.5);transition:transform .12s,box-shadow .12s}
+.bigbtn:hover{transform:translateY(-2px)}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 #b78a2e}
+.bigbtn.alt{background:#274a6a;color:#fff;box-shadow:0 6px 0 #122a42,0 14px 30px rgba(0,0,0,.5)}
+
+/* ---------- HUD ---------- */
+#hud{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:10px;padding:8px 14px;background:linear-gradient(180deg,rgba(7,14,22,.92),rgba(7,14,22,.65) 70%,transparent);color:#dfe9ef}
+#hud .brand{font:900 .78rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.22em;color:var(--amber);white-space:nowrap}
+#hud .brand small{display:block;font:700 .56rem/1.4 'Segoe UI',sans-serif;letter-spacing:.18em;color:#9fb7c6}
+#progress{display:flex;gap:5px;margin-left:8px;flex-wrap:wrap}
+#progress .dot{width:9px;height:9px;border-radius:50%;background:#3a576f;border:1px solid #5b7d99}
+#progress .dot.on{background:var(--accent);border-color:var(--accent);box-shadow:0 0 6px var(--accent)}
+#badges{display:flex;gap:6px;margin-left:auto}
+.badge{width:34px;height:34px;border-radius:50%;background:#1c3a52;border:2px solid #35587a;display:flex;align-items:center;justify-content:center;filter:grayscale(1) brightness(.6);transition:filter .4s,transform .4s}
+.badge.earned{filter:none;border-color:var(--amber);background:#234d6b;animation:badgepop .6s cubic-bezier(.2,2,.4,1)}
+.badge svg{width:20px;height:20px}
+@keyframes badgepop{0%{transform:scale(.2) rotate(-40deg)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+.hudbtns{display:flex;gap:6px;margin-left:10px}
+.hudbtn{background:#1c3a52;border:1px solid #35587a;color:#dfe9ef;border-radius:8px;min-width:48px;min-height:38px;padding:4px 10px;font:700 .72rem/1.1 'Segoe UI',sans-serif}
+.hudbtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#06222b}
+.hudbtn.teacher{background:var(--purple);border-color:#6b46a8;color:#fff}
+
+/* ---------- BOOK STAGE ---------- */
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;perspective:2200px;padding:64px 12px 56px}
+#book{position:relative;width:min(96vw,1180px);height:min(calc(100vh - 130px),780px);transform-style:preserve-3d}
+#bookcase{position:absolute;inset:0;border-radius:8px 14px 14px 8px;background:#0e2233;box-shadow:0 50px 90px rgba(0,0,0,.65),0 10px 26px rgba(0,0,0,.5);transform:translateZ(-30px)}
+.edges{position:absolute;top:6px;bottom:6px;width:14px;background:repeating-linear-gradient(90deg,#e8e2d2 0 2px,#cfc7b2 2px 3px);border-radius:3px;transition:width .5s}
+#edgesL{left:-6px;border-right:1px solid #b8ae97}
+#edgesR{right:-6px;border-left:1px solid #b8ae97}
+#spreadWrap{position:absolute;inset:0;display:flex;border-radius:6px;overflow:visible}
+.page{position:relative;width:50%;height:100%;background:var(--paper);overflow:hidden;display:flex;flex-direction:column}
+.page.left{border-radius:8px 0 0 8px;box-shadow:inset -22px 0 28px -22px rgba(36,50,63,.45)}
+.page.right{border-radius:0 8px 8px 0;box-shadow:inset 22px 0 28px -22px rgba(36,50,63,.45)}
+#spine3d{position:absolute;left:50%;top:0;bottom:0;width:4px;transform:translateX(-50%);background:linear-gradient(90deg,rgba(0,0,0,.25),rgba(0,0,0,.45),rgba(0,0,0,.25));z-index:3}
+.page-inner{flex:1;overflow:auto;padding:18px 20px 14px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin}
+.pagefoot{flex:none;display:flex;justify-content:space-between;align-items:center;padding:6px 16px 10px;font:700 .66rem/1 'Segoe UI',sans-serif;letter-spacing:.18em;color:#7d8a8f;text-transform:uppercase}
+.page .chapterband{flex:none;background:var(--navy);color:#fff;font:900 .72rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.24em;padding:8px 20px;text-transform:uppercase}
+.page .chapterband em{color:var(--accent);font-style:normal}
+.gatelockcorner{position:absolute;top:8px;right:10px;z-index:5;width:34px;height:34px;border-radius:50%;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,.3)}
+.gatelockcorner.open{background:var(--teal)}
+.gatelockcorner svg{width:18px;height:18px}
+
+/* turning sheet */
+#turnSheet{position:absolute;top:0;bottom:0;right:0;width:50%;z-index:20;transform-origin:left center;transform-style:preserve-3d;pointer-events:none;display:none}
+#turnSheet.show{display:block}
+#turnSheet .ts{position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;background:var(--paper)}
+#turnSheet .ts.front{border-radius:0 8px 8px 0}
+#turnSheet .ts.back{transform:rotateY(180deg);border-radius:8px 0 0 8px}
+#turnSheet .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.0),rgba(0,0,0,.28));opacity:0;pointer-events:none}
+@keyframes turnFwd{0%{transform:rotateY(0)}100%{transform:rotateY(-180deg)}}
+@keyframes turnBack{0%{transform:rotateY(-180deg)}100%{transform:rotateY(0)}}
+#turnSheet.fwd{animation:turnFwd .8s cubic-bezier(.45,.05,.3,1) forwards}
+#turnSheet.back{animation:turnBack .8s cubic-bezier(.45,.05,.3,1) forwards}
+body.reduced #turnSheet{display:none!important}
+
+/* nav arrows */
+.navarrow{position:fixed;top:50%;transform:translateY(-50%);z-index:40;width:54px;height:88px;border:none;border-radius:12px;background:rgba(20,42,62,.8);color:#fff;font-size:1.6rem;display:flex;align-items:center;justify-content:center;transition:background .2s,opacity .2s}
+.navarrow:hover{background:var(--accent)}
+.navarrow[disabled]{opacity:.25;cursor:not-allowed}
+#prevBtn{left:8px}#nextBtn{right:8px}
+.navarrow.locked{background:var(--coral)}
+@keyframes shake{0%,100%{transform:translateY(-50%)}25%{transform:translateY(-50%) translateX(-6px)}75%{transform:translateY(-50%) translateX(6px)}}
+.navarrow.shake{animation:shake .3s 2}
+
+/* ---------- COMIC ART ---------- */
+.panelrow{display:flex;gap:10px}
+.panelrow>.panel{flex:1}
+.panel{position:relative;border:var(--panelborder);border-radius:6px 10px 7px 9px;background:#fff;overflow:hidden;box-shadow:3px 3px 0 rgba(23,50,77,.18)}
+.panel.tall{min-height:200px}
+.panel svg.scene{display:block;width:100%;height:auto}
+.panel3d{transform-style:preserve-3d;transition:transform .25s ease-out;will-change:transform}
+.panel3d [data-depth]{will-change:transform}
+.balloon{position:absolute;max-width:62%;background:#fff;border:3px solid var(--navy);border-radius:14px;padding:8px 12px;font:var(--balloonfont);color:var(--ink);box-shadow:2px 2px 0 rgba(23,50,77,.25);z-index:4}
+.balloon .who{display:block;font:900 .58rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.16em;color:var(--accent);text-transform:uppercase;margin-bottom:3px}
+.balloon::after{content:"";position:absolute;bottom:-14px;left:28px;width:0;height:0;border:9px solid transparent;border-top:14px solid var(--navy)}
+.balloon::before{content:"";position:absolute;bottom:-9px;left:31px;width:0;height:0;border:7px solid transparent;border-top:11px solid #fff;z-index:1}
+.balloon.tail-r::after{left:auto;right:28px}
+.balloon.tail-r::before{left:auto;right:31px}
+.balloon.vex{background:#062e33;border-color:var(--teal);color:#c8f5f1;border-radius:10px;font-family:'Consolas','Courier New',monospace;font-weight:500;box-shadow:0 0 12px rgba(31,166,162,.5)}
+.balloon.vex .who{color:var(--amber)}
+.balloon.vex::after{border-top-color:var(--teal)}
+.balloon.vex::before{border-top-color:#062e33}
+.balloon.thought{border-radius:30px;border-style:dashed}
+.caption{background:#FFF3D8;border:2px solid var(--amber);border-left-width:8px;padding:7px 12px;font:var(--capfont);color:#5a4a22;border-radius:3px}
+.caption.loc{font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-style:normal;font-family:'Segoe UI',sans-serif;font-size:.74rem}
+.sfx{position:absolute;z-index:5;font:900 1.7rem/1 'Arial Black',Arial,sans-serif;color:var(--coral);-webkit-text-stroke:2px var(--navy);text-stroke:2px var(--navy);transform:rotate(-7deg);text-shadow:3px 3px 0 var(--amber);letter-spacing:.04em;pointer-events:none}
+.splashtitle{font:900 clamp(1.5rem,3.2vw,2.4rem)/1 'Arial Black',Arial,sans-serif;text-transform:uppercase;color:var(--navy)}
+.splashtitle em{color:var(--accent);font-style:normal}
+.kicker{font:900 .68rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.3em;color:var(--coral);text-transform:uppercase}
+
+/* ---------- GATES ---------- */
+.gatebox{border:4px solid var(--accent);border-radius:12px;background:linear-gradient(180deg,#ffffff,#eef7f6);box-shadow:0 6px 0 rgba(23,50,77,.15);overflow:hidden}
+.gatebox header{display:flex;align-items:center;gap:10px;background:var(--accent);color:#fff;padding:9px 14px}
+.gatebox header .gicon{width:30px;height:30px;flex:none}
+.gatebox header h3{font:900 .85rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.gatebody{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.gateprompt{font:600 .95rem/1.4 'Segoe UI',sans-serif}
+.gatecheck{align-self:flex-start;background:var(--navy);color:#fff;border:none;border-radius:999px;font:900 .82rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.1em;padding:13px 26px;min-height:48px;box-shadow:0 4px 0 #0c1d30}
+.gatecheck:active{transform:translateY(2px);box-shadow:0 2px 0 #0c1d30}
+.gatefeedback{min-height:1.3em;font:700 .88rem/1.35 'Segoe UI',sans-serif}
+.gatefeedback.bad{color:var(--coral)}
+.gatefeedback.good{color:#0d7a4f}
+.gatehint{background:#FFF3D8;border:2px dashed var(--amber);border-radius:8px;padding:9px 12px;font:600 .86rem/1.4 'Segoe UI',sans-serif;color:#5a4a22}
+.gatesolved{display:flex;align-items:center;gap:10px;background:#e2f4ee;border:3px solid #0d7a4f;border-radius:10px;padding:10px 14px;font:900 .8rem/1.3 'Arial Black',Arial,sans-serif;color:#0d7a4f;letter-spacing:.08em}
+.stamp{display:inline-block;transform:rotate(-6deg);border:3px solid #0d7a4f;border-radius:6px;padding:3px 8px}
+/* gate widgets */
+.tokenbank,.beakers{display:flex;gap:8px;flex-wrap:wrap}
+.token{width:48px;height:48px;border-radius:50%;border:3px solid var(--navy);background:var(--amber);font:900 .7rem/1 'Arial Black',Arial,sans-serif;color:var(--navy);display:flex;align-items:center;justify-content:center;transition:transform .15s,background .2s}
+.token:hover{transform:scale(1.1)}
+.token.inA{background:var(--teal);color:#fff}
+.token.inB{background:#7db8e8;color:var(--navy)}
+.beaker{flex:1;min-width:120px;border:3px solid var(--navy);border-radius:0 0 14px 14px;border-top-style:dashed;padding:8px;min-height:74px;background:rgba(31,166,162,.08)}
+.beaker h4{font:900 .62rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.12em;color:var(--navy);text-transform:uppercase;margin-bottom:6px}
+.beaker .cnt{font:900 1.2rem/1 'Arial Black',Arial,sans-serif;color:var(--accent)}
+.numin{width:96px;min-height:48px;border:3px solid var(--navy);border-radius:8px;font:900 1.05rem/1 'Arial Black',Arial,sans-serif;text-align:center;color:var(--navy);background:#fff;padding:6px}
+.numin:focus{border-color:var(--accent)}
+.numin.ok{border-color:#0d7a4f;background:#e2f4ee}
+.numin.no{border-color:var(--coral);background:#fdebe6}
+.rt-table{border-collapse:collapse;width:100%}
+.rt-table th,.rt-table td{border:2px solid var(--navy);padding:7px 9px;text-align:center;font:700 .92rem/1.2 'Segoe UI',sans-serif}
+.rt-table th{background:var(--navy);color:#fff;font:900 .7rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.08em}
+.rt-table td.given{background:#eef7f6;font-weight:800}
+.choicebtns{display:flex;gap:10px;flex-wrap:wrap}
+.choicebtn{flex:1;min-width:140px;min-height:48px;border:3px solid var(--navy);border-radius:10px;background:#fff;font:700 .9rem/1.3 'Segoe UI',sans-serif;padding:10px 12px;text-align:left;transition:background .15s}
+.choicebtn:hover{background:#eef7f6}
+.choicebtn[aria-pressed="true"]{background:var(--navy);color:#fff}
+.gategrid{touch-action:manipulation}
+.gategrid .gp{cursor:pointer}
+.unlockflash{animation:unlockflash 1s ease-out}
+@keyframes unlockflash{0%{box-shadow:0 0 0 0 rgba(242,193,91,.9)}100%{box-shadow:0 0 0 26px rgba(242,193,91,0)}}
+
+/* ---------- MODALS ---------- */
+.modal{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(5,12,19,.72);padding:16px}
+.modal.open{display:flex}
+.modalcard{background:var(--paper);border-radius:14px;max-width:780px;width:100%;max-height:88vh;overflow:auto;box-shadow:0 30px 70px rgba(0,0,0,.6)}
+.modalcard>header{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;background:var(--navy);color:#fff;padding:12px 18px;z-index:2}
+.modalcard>header h2{font:900 1rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.modalcard .x{background:var(--coral);border:none;color:#fff;border-radius:8px;width:40px;height:40px;font:900 1rem/1 Arial}
+.modalbody{padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.tt{border-collapse:collapse;width:100%}
+.tt th,.tt td{border:2px solid var(--navy);padding:8px 10px;font:600 .85rem/1.35 'Segoe UI',sans-serif;text-align:left;vertical-align:top}
+.tt th{background:var(--navy);color:#fff;font:900 .68rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.tt tr:nth-child(even) td{background:#fff}
+.workedsteps{display:flex;flex-direction:column;gap:8px}
+.workedsteps .st{display:flex;gap:10px;align-items:flex-start;background:#fff;border:2px solid var(--navy);border-radius:8px;padding:9px 12px;font:600 .9rem/1.4 'Segoe UI',sans-serif}
+.workedsteps .st b.n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font:900 .8rem/1 Arial}
+
+/* ---------- END MATTER ---------- */
+.castcard{display:flex;gap:12px;align-items:center;border:3px solid var(--navy);border-radius:10px;background:#fff;padding:8px 12px}
+.castcard svg{width:64px;height:76px;flex:none}
+.castcard h4{font:900 .8rem/1.2 'Arial Black',Arial,sans-serif;color:var(--navy);letter-spacing:.06em}
+.castcard p{font:600 .8rem/1.35 'Segoe UI',sans-serif;color:#4c5a66}
+.journal{border:3px solid var(--amber);background:#FFFDF4;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.journal h4{font:900 .8rem/1.2 'Arial Black',Arial,sans-serif;color:#8a6a1c;letter-spacing:.14em;text-transform:uppercase}
+.journal .jrow{display:flex;gap:10px;align-items:flex-start;font:600 .88rem/1.4 Georgia,serif;color:#4a3d18}
+.journal .jrow b{color:var(--navy)}
+#certificate{border:6px double var(--navy);border-radius:8px;background:#fff;padding:18px;text-align:center;display:flex;flex-direction:column;gap:8px}
+#certificate h3{font:900 1.2rem/1.1 'Arial Black',Arial,sans-serif;color:var(--navy);letter-spacing:.1em}
+#certName{border:none;border-bottom:3px solid var(--navy);font:900 1.3rem/1.2 Georgia,serif;text-align:center;background:transparent;min-height:48px;width:80%;align-self:center;color:var(--ink)}
+.certbadges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.certbadges .badge{filter:none;border-color:var(--amber);background:#fdf6e7}
+.certbadges .badge.locked{filter:grayscale(1) opacity(.35)}
+
+/* ---------- MOBILE ---------- */
+@media (max-width:820px){
+  #book{height:min(calc(100vh - 120px),760px)}
+  #spreadWrap .page{width:100%}
+  #spreadWrap .page.offscreen{display:none}
+  #spine3d,#edgesL{display:none}
+  .navarrow{width:44px;height:72px}
+  .balloon{max-width:78%}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important;transition-duration:.001s!important}
+}
+/* ---------- PRINT ---------- */
+@media print{
+  body{overflow:visible;background:#fff}
+  body *{visibility:hidden}
+  body.print-teacher #teacherModal,body.print-teacher #teacherModal *{visibility:visible}
+  body.print-teacher #teacherModal{position:static;display:block;background:#fff;padding:0}
+  body.print-teacher #teacherModal .modalcard{max-height:none;box-shadow:none}
+  body.print-cert #certificate,body.print-cert #certificate *{visibility:visible}
+  body.print-cert #certificate{position:fixed;inset:5% 8%;background:#fff}
+  .x,.gatecheck{display:none!important}
+}
+/* ================= VOL OVERRIDES (U4·E1 · Per Hundred — coral accent like Vol 4) ================= */
+:root{--accent:#E2674A}
+/* contrast fixes: deeper coral #C9472B for small coral text on white and for white-on-coral surfaces (AA);
+   HUD pressed state keeps the engine's dark #06222b text — it passes AA on #E2674A (≈5:1) */
+.balloon .who{color:#C9472B}
+.balloon.vex .who{color:var(--amber)}
+.gatebox header{background:#C9472B}
+.gatebox{background:linear-gradient(180deg,#ffffff,#fdf1ec)}
+.workedsteps .st b.n{background:#C9472B}
+.splashtitle em{color:#C9472B}
+.beaker{background:rgba(226,103,74,.09)}
+.rt-table td.given{background:#fdf1ec}
+.choicebtn:hover{background:#fdf1ec}
+</style>
+</head>
+<body>
+<!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<pattern id="halftone" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.4" fill="#17324D" opacity=".18"/></pattern>
+<pattern id="halftoneT" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.4" fill="#1FA6A2" opacity=".3"/></pattern>
+<linearGradient id="skygrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd8e8"/><stop offset="1" stop-color="#e8f4ee"/></linearGradient>
+<linearGradient id="duskgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A2580"/><stop offset=".6" stop-color="#E2674A"/><stop offset="1" stop-color="#F2C15B"/></linearGradient>
+<radialGradient id="vexglow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#7CF2EC"/><stop offset=".6" stop-color="#1FA6A2"/><stop offset="1" stop-color="#1FA6A2" stop-opacity="0"/></radialGradient>
+
+<!-- MAYA: teal jacket, black high bun, star pin -->
+<g id="sym-maya"><path d="M22 118 L24 84 Q24 70 50 70 Q76 70 76 84 L78 118 Z" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><path d="M40 73 L50 86 L60 73" fill="#F7F4EC" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="44" r="24" fill="#C68642" stroke="#17324D" stroke-width="4"/><path d="M27 40 Q26 18 50 18 Q74 18 73 40 Q66 26 50 26 Q34 26 27 40Z" fill="#1B1B23" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="13" r="9" fill="#1B1B23" stroke="#17324D" stroke-width="3"/><path d="M62 8 l2.2 4.4 4.8.6-3.5 3.4.9 4.8-4.4-2.3-4.4 2.3.9-4.8-3.5-3.4 4.8-.6z" fill="#F2C15B" stroke="#17324D" stroke-width="1.5"/><circle cx="42" cy="44" r="2.6" fill="#17324D"/><circle cx="58" cy="44" r="2.6" fill="#17324D"/><path d="M37 37 q5 -3 9 -1 M54 36 q5 -2 9 1" fill="none" stroke="#17324D" stroke-width="2.4" stroke-linecap="round"/><path d="M44 55 q6 5 12 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- THEO: navy hoodie, flat-top, amber glasses -->
+<g id="sym-theo"><path d="M22 118 L24 86 Q24 72 50 72 Q76 72 76 86 L78 118 Z" fill="#17324D" stroke="#17324D" stroke-width="4"/><path d="M36 72 Q50 80 64 72 L64 80 Q50 88 36 80Z" fill="#0d2238" stroke="#17324D" stroke-width="2"/><circle cx="50" cy="45" r="24" fill="#6B4226" stroke="#17324D" stroke-width="4"/><path d="M27 38 Q27 16 50 16 Q73 16 73 38 L70 30 L30 30 Z" fill="#10101a" stroke="#17324D" stroke-width="3"/><rect x="33" y="38" width="14" height="11" rx="3" fill="#fff" stroke="#F2C15B" stroke-width="3"/><rect x="53" y="38" width="14" height="11" rx="3" fill="#fff" stroke="#F2C15B" stroke-width="3"/><line x1="47" y1="43" x2="53" y2="43" stroke="#F2C15B" stroke-width="3"/><circle cx="40" cy="44" r="2.4" fill="#17324D"/><circle cx="60" cy="44" r="2.4" fill="#17324D"/><path d="M43 57 q7 3 14 -1" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- ZARA: coral overalls, side ponytail -->
+<g id="sym-zara"><path d="M22 118 L24 88 Q24 74 50 74 Q76 74 76 88 L78 118 Z" fill="#fff" stroke="#17324D" stroke-width="4"/><path d="M30 78 L34 118 L44 118 L42 80 M70 78 L66 118 L56 118 L58 80" fill="#E2674A" stroke="#17324D" stroke-width="3"/><rect x="40" y="92" width="20" height="16" rx="3" fill="#E2674A" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="46" r="24" fill="#F1C27D" stroke="#17324D" stroke-width="4"/><path d="M27 44 Q24 20 50 19 Q76 20 74 38 Q70 28 52 27 Q34 27 32 44 Z" fill="#E2674A" stroke="#17324D" stroke-width="3"/><path d="M71 30 Q88 36 84 58 Q80 70 72 72 Q78 58 72 46Z" fill="#E2674A" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="46" r="2.6" fill="#17324D"/><circle cx="58" cy="46" r="2.6" fill="#17324D"/><path d="M42 57 q8 6 16 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/><circle cx="36" cy="53" r="3" fill="#E2674A" opacity=".5"/><circle cx="64" cy="53" r="3" fill="#E2674A" opacity=".5"/></g>
+<!-- DEV: purple tee, headphones -->
+<g id="sym-dev"><path d="M22 118 L24 88 Q24 74 50 74 Q76 74 76 88 L78 118 Z" fill="#4A2580" stroke="#17324D" stroke-width="4"/><path d="M43 92 l7 -6 7 6 -7 6z" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="50" cy="46" r="24" fill="#8D5524" stroke="#17324D" stroke-width="4"/><path d="M28 40 Q26 18 50 17 Q74 18 72 40 L66 28 L60 34 L52 26 L44 34 L36 27 Z" fill="#171722" stroke="#17324D" stroke-width="3"/><path d="M24 64 Q20 50 26 42 M76 64 Q80 50 74 42" fill="none" stroke="#4A2580" stroke-width="6" stroke-linecap="round"/><circle cx="25" cy="64" r="7" fill="#4A2580" stroke="#17324D" stroke-width="3"/><circle cx="75" cy="64" r="7" fill="#4A2580" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="46" r="2.6" fill="#17324D"/><circle cx="58" cy="46" r="2.6" fill="#17324D"/><path d="M43 57 q7 5 14 1" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- VEX: glowing orb AI -->
+<g id="sym-vex"><circle cx="50" cy="50" r="38" fill="url(#vexglow)" opacity=".55"/><polygon points="50,22 73,36 73,64 50,78 27,64 27,36" fill="#0b3a40" stroke="#1FA6A2" stroke-width="3.5"/><polygon points="50,30 66,40 66,60 50,70 34,60 34,40" fill="none" stroke="#7CF2EC" stroke-width="1.6" opacity=".8"/><circle cx="50" cy="50" r="10" fill="#F2C15B"/><circle cx="50" cy="50" r="4.5" fill="#17324D"/><circle cx="50" cy="14" r="3" fill="#F2C15B"/><circle cx="78" cy="70" r="2.4" fill="#7CF2EC"/><circle cx="22" cy="72" r="2" fill="#7CF2EC"/></g>
+<!-- props -->
+<g id="sym-bike"><circle cx="22" cy="46" r="14" fill="none" stroke="#17324D" stroke-width="4"/><circle cx="74" cy="46" r="14" fill="none" stroke="#17324D" stroke-width="4"/><path d="M22 46 L40 22 L62 22 L74 46 M40 22 L48 46 L22 46 M48 46 L62 22 M36 16 L46 16 M62 22 L58 14 L66 14" fill="none" stroke="#E2674A" stroke-width="4" stroke-linecap="round"/></g>
+<g id="sym-skyline"><rect x="0" y="34" width="14" height="46" fill="#17324D"/><rect x="16" y="20" width="18" height="60" fill="#22456a"/><rect x="36" y="42" width="12" height="38" fill="#17324D"/><rect x="50" y="10" width="20" height="70" fill="#2c567f"/><polygon points="60,0 50,12 70,12" fill="#1FA6A2"/><rect x="72" y="30" width="14" height="50" fill="#17324D"/><rect x="88" y="46" width="12" height="34" fill="#22456a"/><g fill="#F2C15B" opacity=".9"><rect x="20" y="26" width="3" height="4"/><rect x="27" y="36" width="3" height="4"/><rect x="54" y="18" width="3" height="4"/><rect x="61" y="30" width="3" height="4"/><rect x="54" y="44" width="3" height="4"/><rect x="75" y="36" width="3" height="4"/></g></g>
+<g id="sym-trophy"><path d="M30 14 H70 V34 Q70 52 50 56 Q30 52 30 34 Z" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><path d="M30 20 H16 Q16 38 32 40 M70 20 H84 Q84 38 68 40" fill="none" stroke="#F2C15B" stroke-width="6"/><rect x="44" y="56" width="12" height="12" fill="#b78a2e" stroke="#17324D" stroke-width="3"/><rect x="34" y="68" width="32" height="10" rx="2" fill="#17324D"/></g>
+<!-- badge sigils -->
+<g id="sig-flask"><path d="M40 15 h20 v18 l16 30 a8 8 0 0 1 -7 12 H31 a8 8 0 0 1 -7 -12 l16 -30 z" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><path d="M33 52 h34 l6 11 a4 4 0 0 1 -4 6 H31 a4 4 0 0 1 -4 -6 z" fill="#F2C15B"/></g>
+<g id="sig-watch"><circle cx="50" cy="55" r="28" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><path d="M50 55 L50 36 M50 55 L64 60" stroke="#17324D" stroke-width="4" stroke-linecap="round"/><rect x="42" y="12" width="16" height="8" rx="2" fill="#17324D"/><line x1="50" y1="20" x2="50" y2="27" stroke="#17324D" stroke-width="4"/></g>
+<g id="sig-table"><rect x="18" y="22" width="64" height="56" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><line x1="18" y1="40" x2="82" y2="40" stroke="#17324D" stroke-width="4"/><line x1="50" y1="22" x2="50" y2="78" stroke="#17324D" stroke-width="4"/><rect x="18" y="22" width="64" height="18" fill="#1FA6A2" opacity=".5"/></g>
+<g id="sig-graph"><rect x="16" y="16" width="68" height="68" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><path d="M24 76 L76 30" stroke="#1FA6A2" stroke-width="5" stroke-linecap="round"/><circle cx="38" cy="64" r="5" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="56" cy="48" r="5" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="68" cy="58" r="5" fill="#E2674A" stroke="#17324D" stroke-width="2"/></g>
+<g id="sig-swap"><path d="M24 38 H64 l-10 -12 M76 62 H36 l10 12" fill="none" stroke="#1FA6A2" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="sig-boss"><path d="M50 10 l11 22 24 4 -17 17 4 24 -22 -11 -22 11 4 -24 -17 -17 24 -4 z" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="52" r="9" fill="#E2674A" stroke="#17324D" stroke-width="3"/></g>
+<!-- u4e1 additions: night-market lantern and percent sigils -->
+<g id="sym-lantern"><line x1="50" y1="8" x2="50" y2="20" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="45" r="22" fill="#FFF3D8" opacity=".4"/><rect x="40" y="20" width="20" height="8" rx="2" fill="#E2674A" stroke="#17324D" stroke-width="2.5"/><rect x="36" y="28" width="28" height="36" rx="9" fill="#F2C15B" stroke="#17324D" stroke-width="3"/><line x1="50" y1="28" x2="50" y2="64" stroke="#b78a2e" stroke-width="2"/><rect x="40" y="64" width="20" height="7" rx="2" fill="#E2674A" stroke="#17324D" stroke-width="2.5"/></g>
+<g id="sig-grid"><rect x="18" y="18" width="64" height="64" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><g stroke="#17324D" stroke-width="2.5"><line x1="34" y1="18" x2="34" y2="82"/><line x1="50" y1="18" x2="50" y2="82"/><line x1="66" y1="18" x2="66" y2="82"/><line x1="18" y1="34" x2="82" y2="34"/><line x1="18" y1="50" x2="82" y2="50"/><line x1="18" y1="66" x2="82" y2="66"/></g><g fill="#E2674A"><rect x="20" y="20" width="12" height="12"/><rect x="36" y="20" width="12" height="12"/><rect x="52" y="20" width="12" height="12"/><rect x="20" y="36" width="12" height="12"/><rect x="36" y="52" width="12" height="12"/></g></g>
+<g id="sig-tag"><path d="M18 44 L44 18 H80 V54 L54 80 Z" fill="#E2674A" stroke="#17324D" stroke-width="4"/><circle cx="66" cy="32" r="6" fill="#fff" stroke="#17324D" stroke-width="3"/><line x1="34" y1="52" x2="52" y2="70" stroke="#fff" stroke-width="5" stroke-linecap="round"/></g>
+<g id="sig-lock"><rect x="28" y="44" width="44" height="36" rx="6" fill="currentColor"/><path d="M36 44 v-8 a14 14 0 0 1 28 0 v8" fill="none" stroke="currentColor" stroke-width="8"/></g>
+<g id="sig-open"><rect x="28" y="44" width="44" height="36" rx="6" fill="currentColor"/><path d="M36 44 v-8 a14 14 0 0 1 28 0" fill="none" stroke="currentColor" stroke-width="8"/></g>
+</defs>
+</svg>
+
+<!-- ============ COVER ============ -->
+<div id="cover">
+  <div id="coverCard" role="img" aria-label="Cover of Axiom City Unit 4, Episode 1: Per Hundred. Night-market dusk on the waterfront: strings of lanterns cross above glowing stalls, a giant board of one hundred lanterns hangs about half lit, the storm-damaged pier stretches into dark water behind it, and the four crew kids gather below with the glowing orb VEX.">
+    <div class="cov-layer" data-depth="6" style="z-index:1">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><rect width="500" height="700" fill="url(#duskgrad)"/><circle cx="400" cy="96" r="34" fill="#FFF3D8" opacity=".95"/><circle cx="400" cy="96" r="54" fill="#FFF3D8" opacity=".2"/><g fill="#fff" opacity=".35"><ellipse cx="150" cy="120" rx="54" ry="13"/><ellipse cx="260" cy="70" rx="40" ry="10"/></g></svg>
+    </div>
+    <div class="cov-layer" data-depth="12" style="z-index:2">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><g transform="translate(0,196) scale(5,3.2)" opacity=".4"><use href="#sym-skyline"/></g><rect y="480" width="500" height="220" fill="#0d1b2e"/><g stroke="#22456a" stroke-width="3" opacity=".7"><path d="M0 520 q40 -8 80 0 t80 0 t80 0 t80 0 t80 0 t80 0"/><path d="M0 560 q50 -8 100 0 t100 0 t100 0 t100 0 t100 0"/></g><g fill="#1d2f47"><rect x="250" y="452" width="250" height="16"/><rect x="268" y="466" width="14" height="48"/><rect x="340" y="466" width="14" height="48"/><rect x="412" y="466" width="14" height="48"/><rect x="474" y="466" width="14" height="48"/></g><path d="M392 452 l38 22 m-16 -22 l-26 24" stroke="#E2674A" stroke-width="5" fill="none"/></svg>
+    </div>
+    <div class="cov-layer" data-depth="22" style="z-index:3">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+        <path d="M0 128 Q250 196 500 128" fill="none" stroke="#3b2d57" stroke-width="4"/><circle cx="28" cy="131" r="13" fill="#F2C15B" opacity=".25"/><circle cx="28" cy="131" r="8" fill="#F2C15B" stroke="#17324D" stroke-width="2.5"/><circle cx="83" cy="137" r="13" fill="#E2674A" opacity=".25"/><circle cx="83" cy="137" r="8" fill="#E2674A" stroke="#17324D" stroke-width="2.5"/><circle cx="139" cy="141" r="13" fill="#7CF2EC" opacity=".25"/><circle cx="139" cy="141" r="8" fill="#7CF2EC" stroke="#17324D" stroke-width="2.5"/><circle cx="194" cy="144" r="13" fill="#F2C15B" opacity=".25"/><circle cx="194" cy="144" r="8" fill="#F2C15B" stroke="#17324D" stroke-width="2.5"/><circle cx="250" cy="145" r="13" fill="#E2674A" opacity=".25"/><circle cx="250" cy="145" r="8" fill="#E2674A" stroke="#17324D" stroke-width="2.5"/><circle cx="306" cy="144" r="13" fill="#7CF2EC" opacity=".25"/><circle cx="306" cy="144" r="8" fill="#7CF2EC" stroke="#17324D" stroke-width="2.5"/><circle cx="361" cy="141" r="13" fill="#F2C15B" opacity=".25"/><circle cx="361" cy="141" r="8" fill="#F2C15B" stroke="#17324D" stroke-width="2.5"/><circle cx="417" cy="137" r="13" fill="#E2674A" opacity=".25"/><circle cx="417" cy="137" r="8" fill="#E2674A" stroke="#17324D" stroke-width="2.5"/><circle cx="472" cy="131" r="13" fill="#7CF2EC" opacity=".25"/><circle cx="472" cy="131" r="8" fill="#7CF2EC" stroke="#17324D" stroke-width="2.5"/>
+        <rect x="140" y="178" width="208" height="208" rx="12" fill="#241c4a" stroke="#17324D" stroke-width="6"/>
+        <circle cx="158" cy="196" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="158" cy="196" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="177" cy="196" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="177" cy="196" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="196" cy="196" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="196" cy="196" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="215" cy="196" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="215" cy="196" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="234" cy="196" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="234" cy="196" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="253" cy="196" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="253" cy="196" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="272" cy="196" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="272" cy="196" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="291" cy="196" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="291" cy="196" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="310" cy="196" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="310" cy="196" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="329" cy="196" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="329" cy="196" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="158" cy="215" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="158" cy="215" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="177" cy="215" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="177" cy="215" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="196" cy="215" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="196" cy="215" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="215" cy="215" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="215" cy="215" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="234" cy="215" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="234" cy="215" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="253" cy="215" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="253" cy="215" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="272" cy="215" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="272" cy="215" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="291" cy="215" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="291" cy="215" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="310" cy="215" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="310" cy="215" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="329" cy="215" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="329" cy="215" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="158" cy="234" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="158" cy="234" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="177" cy="234" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="177" cy="234" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="196" cy="234" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="196" cy="234" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="215" cy="234" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="215" cy="234" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="234" cy="234" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="234" cy="234" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="253" cy="234" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="253" cy="234" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="272" cy="234" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="272" cy="234" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="291" cy="234" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="291" cy="234" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="310" cy="234" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="310" cy="234" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="329" cy="234" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="329" cy="234" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="158" cy="253" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="158" cy="253" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="177" cy="253" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="177" cy="253" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="196" cy="253" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="196" cy="253" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="215" cy="253" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="215" cy="253" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="234" cy="253" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="234" cy="253" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="253" cy="253" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="253" cy="253" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="272" cy="253" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="272" cy="253" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="291" cy="253" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="291" cy="253" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="310" cy="253" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="310" cy="253" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="329" cy="253" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="329" cy="253" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="158" cy="272" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="158" cy="272" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="177" cy="272" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="177" cy="272" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="196" cy="272" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="196" cy="272" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="215" cy="272" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="215" cy="272" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="234" cy="272" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="234" cy="272" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="253" cy="272" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="253" cy="272" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="272" cy="272" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="272" cy="272" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="291" cy="272" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="291" cy="272" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="310" cy="272" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="310" cy="272" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="329" cy="272" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="329" cy="272" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="158" cy="291" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="158" cy="291" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="177" cy="291" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="177" cy="291" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="196" cy="291" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="196" cy="291" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="215" cy="291" r="6.4" fill="#F2C15B" stroke="#17324D" stroke-width="1.4"/><circle cx="215" cy="291" r="9.4" fill="#F2C15B" opacity=".22"/><circle cx="234" cy="291" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="253" cy="291" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="272" cy="291" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="291" cy="291" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="310" cy="291" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="329" cy="291" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="158" cy="310" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="177" cy="310" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="196" cy="310" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="215" cy="310" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="234" cy="310" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="253" cy="310" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="272" cy="310" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="291" cy="310" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="310" cy="310" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="329" cy="310" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="158" cy="329" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="177" cy="329" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="196" cy="329" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="215" cy="329" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="234" cy="329" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="253" cy="329" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="272" cy="329" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="291" cy="329" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="310" cy="329" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="329" cy="329" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="158" cy="348" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="177" cy="348" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="196" cy="348" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="215" cy="348" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="234" cy="348" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="253" cy="348" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="272" cy="348" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="291" cy="348" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="310" cy="348" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="329" cy="348" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="158" cy="367" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="177" cy="367" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="196" cy="367" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="215" cy="367" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="234" cy="367" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="253" cy="367" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="272" cy="367" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="291" cy="367" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="310" cy="367" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/><circle cx="329" cy="367" r="5.2" fill="#3b2d57" stroke="#17324D" stroke-width="1.4"/>
+        <rect x="118" y="386" width="14" height="180" fill="#6b4f2a" stroke="#17324D" stroke-width="4"/>
+        <rect x="356" y="386" width="14" height="180" fill="#6b4f2a" stroke="#17324D" stroke-width="4"/>
+        <g transform="translate(8,440)"><rect x="4" y="16" width="104" height="60" fill="#241c4a" stroke="#17324D" stroke-width="4"/><rect x="0" y="0" width="112" height="18" fill="#E2674A" stroke="#17324D" stroke-width="4"/><rect x="12" y="0" width="12" height="18" fill="#fff" opacity=".65"/><rect x="88" y="0" width="12" height="18" fill="#fff" opacity=".65"/></g>
+        <g transform="translate(382,446)"><rect x="4" y="16" width="100" height="56" fill="#241c4a" stroke="#17324D" stroke-width="4"/><rect x="0" y="0" width="108" height="18" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><rect x="12" y="0" width="12" height="18" fill="#fff" opacity=".65"/><rect x="84" y="0" width="12" height="18" fill="#fff" opacity=".65"/></g>
+        <g transform="translate(64,548) scale(1)"><use href="#sym-maya"/></g>
+        <g transform="translate(160,560) scale(.95)"><use href="#sym-theo"/></g>
+        <g transform="translate(252,548) scale(1.05)"><use href="#sym-zara"/></g>
+        <g transform="translate(352,562) scale(.92)"><use href="#sym-dev"/></g>
+        <g transform="translate(210,86) scale(.8)"><use href="#sym-vex"/></g>
+        <g transform="translate(28,330) scale(.8)"><use href="#sym-lantern"/></g>
+        <g transform="translate(408,316) scale(.7)"><use href="#sym-lantern"/></g>
+      </svg>
+    </div>
+    <div class="spine"><span>AXIOM CITY · EDUWONDERLAB</span></div>
+    <div id="coverTitle">
+      <div class="series">AXIOM CITY</div>
+      <h1>PER<br><em>HUNDRED</em></h1>
+      <span class="vol">UNIT 4 · EPISODE 1 · PERCENTS</span>
+    </div>
+    <div id="coverBottom"><span>AN INTERACTIVE<br>GRAPHIC NOVEL EPISODE</span><span>GRADE 6 · LESSONS 4-1 &amp; 4-2<br>EDUWONDERLAB</span></div>
+  </div>
+  <div id="coverActions">
+      <button class="bigbtn" id="startBtn">START READING</button>
+      <button class="bigbtn alt" id="resumeBtn" hidden>RESUME</button>
+  </div>
+</div>
+
+<!-- ============ HUD ============ -->
+<header id="hud" hidden>
+  <div class="brand">AXIOM CITY<small>U4 · E1 · PER HUNDRED</small></div>
+  <div id="progress" aria-label="Reading progress"></div>
+  <div id="badges" aria-label="Badges earned"></div>
+  <div class="hudbtns">
+    <button class="hudbtn" id="sndBtn" aria-pressed="false" title="Sound effects">🔇 Sound</button>
+    <button class="hudbtn" id="motBtn" aria-pressed="true" title="3D motion effects">3D On</button>
+    <button class="hudbtn" id="txtBtn" aria-pressed="false" title="Larger text">A+</button>
+    <button class="hudbtn" id="hcBtn" aria-pressed="false" title="High contrast">HC</button>
+    <button class="hudbtn teacher" id="teacherBtn">Teacher</button>
+  </div>
+</header>
+
+<!-- ============ BOOK ============ -->
+<main id="stage" hidden>
+  <div id="book">
+    <div id="bookcase"></div>
+    <div class="edges" id="edgesL"></div>
+    <div class="edges" id="edgesR"></div>
+    <div id="spreadWrap">
+      <section class="page left" id="pageL" aria-live="polite"></section>
+      <section class="page right" id="pageR" aria-live="polite"></section>
+    </div>
+    <div id="spine3d"></div>
+    <div id="turnSheet" aria-hidden="true"><div class="ts front"></div><div class="ts back"></div><div class="shade"></div></div>
+  </div>
+</main>
+<button class="navarrow" id="prevBtn" aria-label="Previous page" hidden>‹</button>
+<button class="navarrow" id="nextBtn" aria-label="Next page" hidden>›</button>
+<div class="sr-only" role="status" aria-live="polite" id="live"></div>
+
+<!-- ============ MODALS ============ -->
+<div class="modal" id="teacherModal" role="dialog" aria-modal="true" aria-labelledby="tmTitle">
+  <div class="modalcard">
+    <header><h2 id="tmTitle">Teacher Guide — U4 · Episode 1</h2><div><button class="hudbtn" id="printTeacher">Print</button> <button class="x" data-close aria-label="Close">✕</button></div></header>
+    <div class="modalbody" id="teacherBody"></div>
+  </div>
+</div>
+<div class="modal" id="workedModal" role="dialog" aria-modal="true" aria-labelledby="wmTitle">
+  <div class="modalcard">
+    <header><h2 id="wmTitle">VEX · Worked Example</h2></header>
+    <div class="modalbody" id="workedBody"></div>
+  </div>
+</div>
+<script>
+/* ================================================================
+   ===== CONTENT START (per-volume: swap everything in here) =====
+   ================================================================ */
+const VOLUME = {
+  num: 401, slug: "u4e1", title: "Per Hundred", unit: "Unit 4 · Episode 1 · Lessons 4-1 &amp; 4-2",
+  accent: "#E2674A",
+  nextTeaser: "EPISODE 2 — FIND THE WHOLE"
+};
+
+const BADGES = [
+  {id:"g1", icon:"#sig-grid", label:"Lantern Lighter — Percent as Per-Hundred"},
+  {id:"g2", icon:"#sig-tag",  label:"Tag Translator — Fractions · Decimals · Percents"},
+  {id:"boss",icon:"#sig-boss", label:"Per Hundred — Boss Gate"}
+];
+
+/* tiny scene helpers (content-side, fine to reuse) */
+const SC = (vb,inner)=>`<svg class="scene" viewBox="${vb}" role="img" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
+const NIGHT=h=>`<rect width="400" height="${h}" fill="#141031"/><circle cx="350" cy="28" r="16" fill="#FFF3D8" opacity=".9"/><circle cx="350" cy="28" r="26" fill="#FFF3D8" opacity=".18"/>`;
+const LANT=y=>{let s=`<path d="M0 ${y} Q200 ${y+26} 400 ${y}" stroke="#3b2d57" stroke-width="2.5" fill="none"/>`;const cols=["#F2C15B","#E2674A","#7CF2EC"];for(let i=0;i<7;i++){const t=(i+.5)/7,x=Math.round(400*t),yy=Math.round(y+52*t*(1-t))+8;s+=`<circle cx="${x}" cy="${yy}" r="10" fill="${cols[i%3]}" opacity=".25"/><circle cx="${x}" cy="${yy}" r="6" fill="${cols[i%3]}" stroke="#17324D" stroke-width="2"/>`}return s};
+const STALL=(x,y,w,c)=>`<rect x="${x+4}" y="${y+16}" width="${w-8}" height="42" fill="#241c4a" stroke="#17324D" stroke-width="3"/><rect x="${x}" y="${y}" width="${w}" height="16" fill="${c}" stroke="#17324D" stroke-width="3"/><rect x="${x+10}" y="${y}" width="10" height="16" fill="#fff" opacity=".65"/><rect x="${x+w-20}" y="${y}" width="10" height="16" fill="#fff" opacity=".65"/>`;
+/* the lantern board: 10×10 grid, `lit` lanterns glowing (fills row by row) */
+const BOARD=(x,y,cell,lit,total=100)=>{let s=`<rect x="${x-6}" y="${y-6}" width="${cell*10+12}" height="${cell*Math.ceil(total/10)+12}" rx="6" fill="#241c4a" stroke="#17324D" stroke-width="3"/>`;
+  for(let i=0;i<total;i++){const cx=x+(i%10)*cell+cell/2,cy=y+Math.floor(i/10)*cell+cell/2,on=i<lit;
+  s+=on?`<circle cx="${cx}" cy="${cy}" r="${cell*.34}" fill="#F2C15B" stroke="#17324D" stroke-width="1.2"/><circle cx="${cx}" cy="${cy}" r="${cell*.46}" fill="#F2C15B" opacity=".22"/>`
+       :`<circle cx="${cx}" cy="${cy}" r="${cell*.3}" fill="#3b2d57" stroke="#17324D" stroke-width="1.2"/>`}return s};
+/* the pier silhouette */
+const PIER=(y)=>`<rect y="${y}" width="400" height="${200-y<60?60:200-y}" fill="#0d1b2e"/><g fill="#1d2f47"><rect x="36" y="${y-26}" width="240" height="10"/><rect x="44" y="${y-16}" width="10" height="30"/><rect x="100" y="${y-16}" width="10" height="30"/><rect x="160" y="${y-16}" width="10" height="30"/><rect x="220" y="${y-16}" width="10" height="30"/></g><path d="M250 ${y-26} l26 14 m-10 -14 l-18 16" stroke="#E2674A" stroke-width="3" fill="none"/><g stroke="#22456a" stroke-width="2" opacity=".7"><path d="M0 ${y+14} q30 -6 60 0 t60 0 t60 0 t60 0 t60 0 t60 0"/></g>`;
+/* inline guest character: BRAM of Team Torque (same 100×118 grid as crew symbols) */
+const BRAM=`<g><path d="M22 118 L24 84 Q24 70 50 70 Q76 70 76 84 L78 118 Z" fill="#E2674A" stroke="#17324D" stroke-width="4"/><path d="M46 84 l9 7 -7 5 9 7" fill="none" stroke="#F2C15B" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="44" r="24" fill="#E8BEAC" stroke="#17324D" stroke-width="4"/><path d="M28 38 Q26 14 52 14 Q78 16 74 28 Q84 22 82 38 Q74 28 60 26 Q34 26 30 42 Z" fill="#3A3A44" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="44" r="2.4" fill="#17324D"/><circle cx="58" cy="44" r="2.4" fill="#17324D"/><path d="M36 38 q5 -4 10 -2 M54 36 q6 -2 10 2" stroke="#17324D" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M42 57 q8 4 16 -3" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>`;
+
+const PAGES = [
+/* ---- p1: title page + previously ---- */
+{ ch:"Axiom City · Unit 4, Episode 1", html:`
+  <div style="text-align:center;margin-top:10px"><div class="kicker">EduWonderLab Presents</div>
+  <h2 class="splashtitle" style="margin:8px 0">PER <em>HUNDRED</em></h2>
+  <div class="caption" style="display:inline-block">An Axiom City episode — Lessons 4-1 &amp; 4-2 in one sitting, featuring three reader gates. Solve the math to move the story.</div></div>
+  <div class="panel panel3d tall" style="margin-top:8px">${SC("0 0 400 210",`
+    ${NIGHT(210)}<g data-depth="6" transform="translate(0,50) scale(4,1.6)" opacity=".4"><use href="#sym-skyline"/></g>
+    <g data-depth="10">${LANT(34)}</g>
+    <g data-depth="16" transform="translate(20,86)"><use href="#sym-maya"/></g>
+    <g data-depth="16" transform="translate(115,86)"><use href="#sym-theo"/></g>
+    <g data-depth="16" transform="translate(210,86)"><use href="#sym-zara"/></g>
+    <g data-depth="16" transform="translate(305,86)"><use href="#sym-dev"/></g>
+    <g data-depth="26" transform="translate(170,6) scale(.55)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:6px;left:8px;max-width:46%"><span class="who">VEX</span>Market status: opens in ten minutes. Pier status: cracked in three places. Crew status: holding one hundred lanterns. Carefully.</div>
+  </div>
+  <div class="caption loc">Previously: on a rained-out field day, four sixth graders woke VEX — a fragment of Ada Vex's Pattern Engine — in the old observatory. Then the autumn storm chewed up the old pier. Tonight the Night Market opens to save it: every stall, every lantern, every coin feeds the repair fund.</div>`},
+
+/* ---- p2: episode splash — opening night ---- */
+{ ch:"Episode 1 · Opening Night", html:`
+  <div class="kicker">Episode One</div><h2 class="splashtitle">OPENING <em>NIGHT</em></h2>
+  <div class="caption loc">The waterfront, dusk. Stalls glowing, crowd arriving — and Zara and Dev wrestling one very important board up a ladder.</div>
+  <div class="panel panel3d tall">${SC("0 0 400 230",`
+    ${NIGHT(230)}<g data-depth="6" transform="translate(0,60) scale(4,1.7)" opacity=".45"><use href="#sym-skyline"/></g>
+    <rect data-depth="8" x="40" y="22" width="320" height="40" rx="8" fill="#17324D"/>
+    <text data-depth="8" x="200" y="48" text-anchor="middle" fill="#F2C15B" font-family="Arial Black,Arial" font-weight="900" font-size="16">NIGHT MARKET — SAVE OUR PIER!</text>
+    <g data-depth="12">${LANT(72)}</g>
+    <g data-depth="12">${BOARD(150,108,10,18)}</g>
+    <g data-depth="14">${STALL(8,150,108,"#E2674A")}${STALL(286,150,108,"#1FA6A2")}</g>
+    <g data-depth="20" transform="translate(96,116) scale(.84)"><use href="#sym-zara"/></g>
+    <g data-depth="20" transform="translate(258,124) scale(.8)"><use href="#sym-dev"/></g>
+    <g data-depth="16" transform="translate(330,80) scale(.8)">${BRAM}</g>`)}
+    <div class="balloon" style="top:64px;left:6px;max-width:44%"><span class="who">ZARA</span>Easy — EASY! One hundred lanterns, ten rows of ten. This board IS the fundraiser, Dev. Drop it and we drop the pier.</div>
+    <div class="balloon tail-r" style="bottom:12px;right:4px;max-width:46%"><span class="who">DEV</span>Relax, I've hauled rarer loot through worse maps. It's a giant progress bar — every donation block lights one lantern.</div>
+  </div>
+  <div class="panel">${SC("0 0 400 90",`<rect width="400" height="90" fill="#1a1535"/><g transform="translate(8,4) scale(.66)">${BRAM}</g><g transform="translate(330,6) scale(.6)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon" style="top:6px;left:78px;max-width:46%"><span class="who">BRAM</span>Bram's Bargain Bay, by the gate! Deals so big they barely make sense!</div>
+    <div class="balloon vex" style="bottom:6px;right:66px;max-width:38%"><span class="who">VEX</span>"Barely make sense" — noted. Filed. Watched.</div>
+  </div>`},
+
+/* ---- p3: the lantern board — percent defined ---- */
+{ ch:"Episode 1 · The Lantern Board", html:`
+  <div class="caption loc">The board goes up over the square. An hour into the market, the first donation blocks land.</div>
+  <div class="panel panel3d tall">${SC("0 0 400 200",`
+    <rect width="400" height="200" fill="#1a1535"/>
+    <g data-depth="6">${LANT(18)}</g>
+    <g data-depth="12">${BOARD(140,46,12,25)}</g>
+    <text data-depth="12" x="200" y="36" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="11" fill="#F2C15B">PIER FUND BOARD</text>
+    <g data-depth="18" transform="translate(20,70) scale(.92)"><use href="#sym-maya"/></g>
+    <g data-depth="18" transform="translate(300,70) scale(.92)"><use href="#sym-theo"/></g>`)}
+    <div class="balloon" style="top:4px;left:6px;max-width:42%"><span class="who">MAYA</span>Ms. Ortiz pledged the first blocks — twenty-five lanterns lit already. Twenty-five out of one hundred.</div>
+    <div class="balloon tail-r" style="bottom:10px;right:6px;max-width:46%"><span class="who">THEO</span>So the board does the math by existing. 25 out of 100 is also the decimal 0.25 — same amount, different costume. But the PERCENT number is 25. No decimal point invited.</div>
+  </div>
+  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#e9f6f5"/><g transform="translate(318,2) scale(.64)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>Definition loaded: a <b>percent</b> is a rate <b>per hundred</b>. 25 out of 100 = 25%. The symbol % carries the "out of 100" for you — write the count, hang the sign, done.</div>
+  </div>
+  <div class="caption">A <b>percent</b> is a rate per hundred. On a hundred-grid, the shaded count out of 100 IS the percent. The decimal form (0.25) and the percent form (25%) are the same amount in different costumes.</div>`},
+
+/* ---- p4: GATE 1 ---- */
+{ ch:"Episode 1 · Reader Gate", gate:"g1", html:`
+  <div class="panel">${SC("0 0 400 90",`<rect width="400" height="90" fill="#1a1535"/><g transform="translate(8,0) scale(.7)"><use href="#sym-zara"/></g><g transform="translate(330,8) scale(.6)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon" style="top:6px;left:84px;max-width:56%"><span class="who">ZARA</span>Reader — you're our fifth crew member. The donation rush just hit and the crowd wants numbers. Read the boards, post the percents.</div>
+  </div>`},
+
+/* ---- p5: the tag tangle — FDP translation ---- */
+{ ch:"Episode 1 · The Tag Tangle", html:`
+  <div class="kicker">Mid-Evening</div><h2 class="splashtitle">THE TAG <em>TANGLE</em></h2>
+  <div class="caption loc">Every stall pledged a share of its sales to the pier — and every stall wrote that share differently. Fractions. Decimals. Chaos.</div>
+  <div class="panel panel3d tall">${SC("0 0 400 200",`
+    <rect width="400" height="200" fill="#1a1535"/>
+    <g data-depth="6">${LANT(16)}</g>
+    <g data-depth="10">${STALL(28,120,150,"#F2C15B")}${STALL(230,120,150,"#7CF2EC")}</g>
+    <rect data-depth="12" x="58" y="52" width="84" height="52" rx="6" fill="#FFF3D8" stroke="#17324D" stroke-width="3" transform="rotate(-4 100 78)"/>
+    <g data-depth="12" transform="rotate(-4 100 78)"><text x="100" y="74" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="13" fill="#17324D">9/20</text><text x="100" y="92" text-anchor="middle" font-family="Arial" font-weight="700" font-size="8" fill="#C9472B">OF EVERY SALE → PIER</text></g>
+    <rect data-depth="12" x="258" y="52" width="84" height="52" rx="6" fill="#FFF3D8" stroke="#17324D" stroke-width="3" transform="rotate(3 300 78)"/>
+    <g data-depth="12" transform="rotate(3 300 78)"><text x="300" y="74" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="13" fill="#17324D">0.3</text><text x="300" y="92" text-anchor="middle" font-family="Arial" font-weight="700" font-size="8" fill="#C9472B">OF EVERY SALE → PIER</text></g>
+    <g data-depth="18" transform="translate(160,84) scale(.9)"><use href="#sym-theo"/></g>`)}
+    <div class="balloon" style="bottom:10px;left:6px;max-width:52%"><span class="who">THEO</span>The pier board only speaks percent. My tea stall's tag says 9/20. Divide top by bottom: 9 ÷ 20 = 0.45. Slide the decimal two places — 45%.</div>
+    <div class="balloon tail-r" style="top:4px;right:6px;max-width:40%"><span class="who">MAYA</span>And the juice cart's 0.3? Slide twice: 30%. Three forms, one truth.</div>
+  </div>
+  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#e9f6f5"/><g transform="translate(318,2) scale(.64)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>Definition loaded: fraction → decimal → percent are three outfits for one amount. Divide top by bottom for the decimal; per-hundred it — two decimal slides — for the percent. The amount never changes. Only the costume.</div>
+  </div>
+  <div class="caption">To rewrite a fraction as a percent: divide the numerator by the denominator, then move the decimal point two places right and add the % sign. 9/20 = 0.45 = 45%.</div>`},
+
+/* ---- p6: GATE 2 ---- */
+{ ch:"Episode 1 · Reader Gate", gate:"g2", html:`
+  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#1a1535"/><g transform="translate(8,0) scale(.66)"><use href="#sym-dev"/></g>`)}
+    <div class="balloon" style="top:6px;left:80px;max-width:68%"><span class="who">DEV</span>Reader — the translator post is yours. Two stubborn tags left. Turn them into percent so the whole market reads one language.</div>
+  </div>`},
+
+/* ---- p7: the gate stall — foreshadow ---- */
+{ ch:"Episode 1 · The Gate Stall", html:`
+  <div class="kicker">By The Gate</div><h2 class="splashtitle">SOMETHING'S <em>OFF</em></h2>
+  <div class="caption loc">Tags translated, the crowd flows again — straight past a stall whose sign is still dripping wet paint.</div>
+  <div class="panel panel3d tall">${SC("0 0 400 200",`
+    <rect width="400" height="200" fill="#141031"/>
+    <g data-depth="6">${LANT(14)}</g>
+    <g data-depth="10">${STALL(120,108,170,"#E2674A")}</g>
+    <rect data-depth="12" x="128" y="44" width="154" height="52" rx="6" fill="#fff" stroke="#17324D" stroke-width="4" transform="rotate(-2 205 70)"/>
+    <g data-depth="12" transform="rotate(-2 205 70)"><text x="205" y="68" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="15" fill="#C9472B">50% OFF</text><text x="205" y="86" text-anchor="middle" font-family="Arial" font-weight="700" font-size="10" fill="#17324D">EVERYTHING*</text></g>
+    <g data-depth="18" transform="translate(40,76) scale(.94)">${BRAM}</g>
+    <g data-depth="18" transform="translate(304,76) scale(.94)"><use href="#sym-theo"/></g>
+    <g data-depth="24" transform="translate(196,148) scale(.4)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon" style="top:4px;left:6px;max-width:42%"><span class="who">BRAM</span>Half off! HALF! You can't argue with half, junior leaguers.</div>
+    <div class="balloon tail-r" style="bottom:10px;right:6px;max-width:48%"><span class="who">THEO</span>Half of WHAT, Bram? Your shelf tag still says 0.2 of the "regular" price. Your sign and your tag aren't even on speaking terms.</div>
+  </div>
+  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#e9f6f5"/><g transform="translate(10,0) scale(.64)"><use href="#sym-maya"/></g>`)}
+    <div class="balloon" style="top:6px;left:80px;max-width:66%"><span class="who">MAYA</span>Tonight's mission is lanterns, not lawsuits. VEX, log the gate stall — we'll come back with receipts.</div>
+  </div>`},
+
+/* ---- p8: twenty-five planks — scaling to hundredths ---- */
+{ ch:"Episode 1 · Twenty-Five Planks", html:`
+  <div class="caption loc">The pier itself, dark beyond the lanterns. The repair plan splits it into 25 planks — donations fund them one by one.</div>
+  <div class="panel panel3d tall">${SC("0 0 400 200",`
+    <rect width="400" height="140" fill="#141031"/>${PIER(140)}
+    <g data-depth="6">${LANT(12)}</g>
+    <rect data-depth="12" x="116" y="34" width="168" height="58" rx="8" fill="#F7F4EC" stroke="#E2674A" stroke-width="4"/>
+    <text data-depth="12" x="200" y="58" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="11" fill="#17324D">PIER REPAIR — 25 PLANKS</text>
+    <text data-depth="12" x="200" y="78" text-anchor="middle" font-family="Arial" font-weight="700" font-size="10" fill="#C9472B">funded planks ÷ 25 = our progress</text>
+    <g data-depth="18" transform="translate(20,76) scale(.9)"><use href="#sym-maya"/></g>
+    <g data-depth="18" transform="translate(304,76) scale(.9)"><use href="#sym-dev"/></g>`)}
+    <div class="balloon" style="top:4px;left:6px;max-width:46%"><span class="who">MAYA</span>Twenty-fifths don't speak percent yet — but 25 × 4 = 100. When the snack stand had funded 6 planks, that was 6/25. Multiply top AND bottom by 4: 24/100. Twenty-four percent.</div>
+    <div class="balloon tail-r" style="bottom:10px;right:6px;max-width:42%"><span class="who">DEV</span>Scale the fraction to a hundred, then read the percent straight off. It's a free upgrade.</div>
+  </div>
+  <div class="caption">When the denominator divides 100 evenly (like 20, 25 or 50), scale the fraction to hundredths — multiply top and bottom by the same number — and the numerator becomes the percent. 6/25 = 24/100 = 24%.</div>`},
+
+/* ---- p9: boss setup — the closing bell ---- */
+{ ch:"Episode 1 · The Closing Bell", html:`
+  <div class="caption loc">Closing time. The mayor's big board waits for the night's final announcement — and Bram waits to argue with it.</div>
+  <div class="panel panel3d tall">${SC("0 0 400 200",`
+    <rect width="400" height="200" fill="#141031"/>
+    <g data-depth="6">${LANT(14)}</g>
+    <rect data-depth="10" x="112" y="36" width="184" height="120" rx="8" fill="#fff" stroke="#17324D" stroke-width="4"/>
+    <text data-depth="10" x="204" y="60" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="10" fill="#C9472B">CLOSING ANNOUNCEMENT — DUE AT THE BELL</text>
+    <text data-depth="10" x="204" y="84" text-anchor="middle" font-family="Arial" font-weight="700" font-size="11" fill="#17324D">Planks funded: 19/25 → ?%</text>
+    <text data-depth="10" x="204" y="104" text-anchor="middle" font-family="Arial" font-weight="700" font-size="11" fill="#17324D">Bram's brag: "0.4 = 4%. Same thing."</text>
+    <text data-depth="10" x="204" y="124" text-anchor="middle" font-family="Arial" font-weight="700" font-size="11" fill="#17324D">Poster pick: which grid shows 30%?</text>
+    <g data-depth="16" transform="translate(14,66) scale(.96)">${BRAM}</g>
+    <g data-depth="16" transform="translate(298,66) scale(.96)"><use href="#sym-maya"/></g>
+    <g data-depth="22" transform="translate(186,150) scale(.42)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon" style="top:4px;left:6px;max-width:46%"><span class="who">BRAM</span>My stall pledged point-four of sales. Or 4%. Same thing, obviously — small dot, small difference.</div>
+    <div class="balloon tail-r" style="bottom:8px;right:6px;max-width:40%"><span class="who">MAYA</span>Reader — three locks. Ring the bell with TRUE numbers.</div>
+  </div>
+  <div class="caption">Boss Gate: turn the plank fraction into a percent, judge Bram's brag, and pick the honest poster grid.</div>`},
+
+/* ---- p10: BOSS GATE ---- */
+{ ch:"Boss Gate · The Closing Bell", gate:"boss", html:`
+  <div class="panel">${SC("0 0 400 76",`<rect width="400" height="76" fill="#10243a"/><g transform="translate(330,4) scale(.56)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>BOSS GATE. Three locks. One bell. The pier is listening. (No pressure. Some pressure.)</div>
+  </div>`},
+
+/* ---- p11: victory + teaser ---- */
+{ ch:"Episode 1 · The Bell Rings", html:`
+  <div class="panel panel3d tall">${SC("0 0 400 220",`
+    ${NIGHT(220)}<g data-depth="6">${LANT(20)}</g>
+    <rect data-depth="12" x="60" y="38" width="280" height="46" rx="8" fill="#17324D"/>
+    <text data-depth="12" x="200" y="59" text-anchor="middle" fill="#F2C15B" font-family="Arial Black,Arial" font-weight="900" font-size="14">PIER FUND — 76% FUNDED!</text>
+    <text data-depth="12" x="200" y="76" text-anchor="middle" fill="#7CF2EC" font-family="Arial" font-weight="700" font-size="10">19 of 25 planks · one night · per hundred</text>
+    <g data-depth="10">${BOARD(146,96,11,76)}</g>
+    <g data-depth="18" transform="translate(16,116) scale(.78)"><use href="#sym-zara"/></g>
+    <g data-depth="18" transform="translate(78,122) scale(.76)"><use href="#sym-dev"/></g>
+    <g data-depth="18" transform="translate(296,118) scale(.76)"><use href="#sym-maya"/></g>
+    <g data-depth="18" transform="translate(346,124) scale(.74)">${BRAM}</g>
+    <g data-depth="26" transform="translate(348,18) scale(.55)"><use href="#sym-vex"/></g>`)}
+    <div class="sfx" style="top:84px;left:18px">DING!</div>
+    <div class="balloon" style="bottom:46px;right:6px;max-width:38%"><span class="who">BRAM</span>…my stall still had the best lighting.</div>
+    <div class="balloon tail-r" style="bottom:6px;left:10px;max-width:46%"><span class="who">ZARA</span>And the dimmest math. See you next market night, Bram.</div>
+  </div>
+  <div class="panelrow">
+    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#1a1535"/><g transform="translate(58,4) scale(.78)"><use href="#sym-theo"/></g>`)}
+      <div class="balloon" style="top:4px;left:4px;max-width:72%"><span class="who">THEO</span>Six planks to go. And that gate stall's "50% off" still doesn't say 50% off of WHAT.</div></div>
+    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#10243a"/><rect x="40" y="20" width="120" height="70" rx="6" fill="#FFF3D8" stroke="#F2C15B" stroke-width="3"/><text x="100" y="44" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="11" fill="#C9472B">50% OFF…</text><text x="100" y="62" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#17324D">…of a price nobody</text><text x="100" y="76" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#17324D">has ever seen.</text>`)}
+      <div class="balloon vex" style="top:2px;left:4px;max-width:58%"><span class="who">VEX</span>New distortion at the gate stall: a percent hiding its whole. To be continued…</div></div>
+  </div>
+  <div class="caption" style="text-align:center"><b>NEXT: EPISODE 2 — FIND THE WHOLE</b></div>`},
+
+/* ---- p12: journal mini-recap + certificate ---- */
+{ ch:"End Matter · Journal &amp; Certificate", html:`
+  <h2 class="splashtitle" style="font-size:1.25rem">ADA VEX'S <em>JOURNAL</em></h2>
+  <div class="journal"><h4>Episode 1 · What opening night taught us</h4>
+    <div class="jrow"><b>Percent.</b><span>"Per hundred." A rate out of 100 — on a hundred-grid, the shaded count IS the percent. 60 lit lanterns out of 100 means 60%, and 7 out of 100 means 7% — no decimal point required.</span></div>
+    <div class="jrow"><b>Fraction → decimal → percent.</b><span>Three costumes, one amount. Divide top by bottom for the decimal; slide the decimal two places for the percent. 13/20 = 0.65 = 65% — and the zero matters: 0.08 is 8%, not 80%.</span></div>
+    <div class="jrow"><b>Compare in one form.</b><span>Never judge a decimal against a percent in different costumes. 0.4 is 40% — ten times 4%. And a grid only shows a percent when its whole is exactly 100 parts.</span></div>
+  </div>
+  <div class="caption">"A hundred lanterns can hold any promise. Light them one per hundred." — A.V.</div>
+  <div id="certificate">
+    <div class="kicker">Axiom City · EduWonderLab</div>
+    <h3>READER CERTIFICATE</h3>
+    <p style="font:600 .9rem Georgia,serif">This certifies that</p>
+    <input id="certName" maxlength="40" placeholder="write your name" aria-label="Your name for the certificate">
+    <p style="font:600 .9rem Georgia,serif">completed <b>Unit 4 · Episode 1: Per Hundred</b> and proved mastery over percents as rates per hundred and fraction–decimal–percent connections.</p>
+    <div class="certbadges" id="certBadges"></div>
+    <button class="gatecheck" id="printCert" style="align-self:center">PRINT CERTIFICATE</button>
+  </div>
+  <div class="caption" style="text-align:center">Thank you for lighting the board with the crew. Episode 2 is already being built — half off, whole missing.</div>`}
+];
+
+/* ================= GATES ================= */
+function mkfeed(el,msg,ok){el.textContent=msg;el.className="gatefeedback "+(ok?"good":"bad");}
+const GATES = {
+g1:{ title:"Gate 1 · Light the Announcement", icon:"#sig-grid",
+  prompt:`Zara's board holds <b>100 lanterns</b> in a 10×10 grid — right now <b>60 are lit</b>. Beside it, the raffle wall holds <b>100 hooks</b>, and <b>7</b> of them hold a winning tag. The crowd announcement needs both as <b>percents</b>.`,
+  hints:[ "Conceptual: percent means 'per hundred.' Zara's board IS a hundred — so asking 'what percent is lit' is just asking 'how many out of the hundred are lit.' Same for the raffle wall.",
+          "Procedural: when the whole is exactly 100, the count out of 100 is the percent number itself — write the count and hang the % sign on it. Don't slide any decimal: a 0-point-something answer is the DECIMAL costume, and the announcement wants the percent." ],
+  worked:{ steps:[ "Different board — the test string Zara wired at home: 45 of its 100 bulbs glow. Percent means per hundred, so 45 out of 100 is 45%. The count and the percent match because the whole is 100.",
+    "Costume check: 45 out of 100 is also the decimal 0.45 — the same amount dressed differently. The % sign already carries the 'out of 100,' so the percent number stays 45, never 0.45.",
+    "Tiny counts work the same: 9 winning tickets out of 100 is 9%. Count, then %. That's the whole trick." ],
+    q:"A practice strip has 23 of its 100 bulbs lit. What percent of the strip is lit?", a:"23" },
+  render(body,api){
+    const grid=(lit,label)=>{let s="";for(let i=0;i<100;i++){const x=(i%10)*13+8,y=Math.floor(i/10)*13+8,on=i<lit;
+      s+=on?`<circle cx="${x}" cy="${y}" r="4.6" fill="#F2C15B" stroke="#17324D" stroke-width="1"/>`
+           :`<circle cx="${x}" cy="${y}" r="3.8" fill="#3b2d57" stroke="#17324D" stroke-width="1"/>`}
+      return `<svg viewBox="0 0 132 132" width="120" height="120" role="img" aria-label="${label}" style="background:#241c4a;border-radius:8px;border:3px solid #17324D">${s}</svg>`};
+    body.innerHTML=`<div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start">
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:center">${grid(60,"lantern board: a ten by ten grid of 100 lanterns with 60 lit")}
+        <label style="font:700 .85rem 'Segoe UI'">Lit: <input class="numin" id="q1" style="width:70px" inputmode="decimal" aria-label="percent of lanterns lit"> %</label></div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:center">${grid(7,"raffle wall: a ten by ten grid of 100 hooks with 7 winning tags")}
+        <label style="font:700 .85rem 'Segoe UI'">Winners: <input class="numin" id="q2" style="width:70px" inputmode="decimal" aria-label="percent of hooks holding a winning tag"> %</label></div></div>`;
+    api.onCheck(()=>{
+      const v1=parseFloat(body.querySelector("#q1").value), v2=parseFloat(body.querySelector("#q2").value);
+      const ok1=v1===60, ok2=v2===7;
+      body.querySelector("#q1").className="numin "+(ok1?"ok":"no");
+      body.querySelector("#q2").className="numin "+(ok2?"ok":"no");
+      if(isNaN(v1)||isNaN(v2))return api.fail("Post something first — both boards need a number.");
+      if(!ok1){
+        if(Math.abs(v1-0.6)<1e-9)return api.fail("That's the DECIMAL costume — six tenths. The % sign already says 'per hundred,' so the percent number is the lit count out of 100. No decimal slide needed.");
+        if(v1===40)return api.fail("Those are the DARK lanterns. The announcement asks what percent is LIT.");
+        return api.fail("Look again — the board is exactly 100 lanterns, and percent means per hundred. The lit count out of 100 IS the percent number.");
+      }
+      if(!ok2){
+        if(Math.abs(v2-0.07)<1e-9)return api.fail("That's the decimal — seven hundredths. The raffle wall wants the PERCENT: winners per hundred hooks.");
+        if(v2===93)return api.fail("Those are the empty hooks. The crowd wants the WINNING tags.");
+        return api.fail("The raffle wall holds exactly 100 hooks — the winning count out of 100 is the percent.");
+      }
+      api.pass("Announcement posted! 60 of 100 lit is 60%, and 7 winners out of 100 hooks is 7%. Percent means per hundred — the board was speaking it all along.");});
+  }},
+g2:{ title:"Gate 2 · The Price-Tag Translator", icon:"#sig-tag",
+  prompt:`Two stubborn tags. <b>Tag A</b> pledges <b>13/20</b> of each sale to the pier. <b>Tag B</b> pledges <b>0.08</b> of each sale. The market board only speaks percent — translate.`,
+  hints:[ "Conceptual: a fraction, a decimal and a percent are three costumes for ONE amount. The decimal is the bridge — get it first, and the percent is just that amount re-counted per hundred.",
+          "Procedural: Tag A — divide the top by the bottom to get the decimal, then slide the decimal point two places right for the percent. Tag B is already a decimal: read its HUNDREDTHS place — two slides right — and don't let the zero after the point vanish." ],
+  worked:{ steps:[ "Different tag — the tea stall's 9/20. Divide top by bottom: 9 ÷ 20 = 0.45. That's the decimal costume.",
+    "Decimal to percent: slide the point two places right — 0.45 becomes 45, so 9/20 = 45%. Same pledge, three outfits.",
+    "Zero-watch: the cocoa cart pledged 0.06. Two slides right gives 6 — six HUNDREDTHS is 6%, never sixty. The zero between the point and the digit matters." ],
+    q:"Translate the popcorn cart's 0.03 pledge into a percent.", a:"3" },
+  render(body,api){
+    body.innerHTML=`<div style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span style="display:inline-block;background:#FFF3D8;border:3px solid #17324D;border-radius:6px;padding:6px 12px;font:900 1rem 'Arial Black',Arial">TAG A · 13/20</span>
+        <label style="font:700 .85rem 'Segoe UI'">as a decimal: <input class="numin" id="d1" style="width:80px" inputmode="decimal" aria-label="thirteen twentieths as a decimal"></label>
+        <label style="font:700 .85rem 'Segoe UI'">as a percent: <input class="numin" id="p1" style="width:70px" inputmode="decimal" aria-label="thirteen twentieths as a percent"> %</label></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span style="display:inline-block;background:#FFF3D8;border:3px solid #17324D;border-radius:6px;padding:6px 12px;font:900 1rem 'Arial Black',Arial">TAG B · 0.08</span>
+        <label style="font:700 .85rem 'Segoe UI'">as a percent: <input class="numin" id="p2" style="width:70px" inputmode="decimal" aria-label="eight hundredths as a percent"> %</label></div></div>`;
+    api.onCheck(()=>{
+      const vd=parseFloat(body.querySelector("#d1").value), vp=parseFloat(body.querySelector("#p1").value), v2=parseFloat(body.querySelector("#p2").value);
+      const okd=Math.abs(vd-0.65)<=0.001, okp=vp===65, ok2=v2===8;
+      body.querySelector("#d1").className="numin "+(okd?"ok":"no");
+      body.querySelector("#p1").className="numin "+(okp?"ok":"no");
+      body.querySelector("#p2").className="numin "+(ok2?"ok":"no");
+      if(isNaN(vd)&&isNaN(vp)&&isNaN(v2))return api.fail("Translate something first — three boxes wait for numbers.");
+      if(!okd){
+        if(vd===65)return api.fail("That's the PERCENT costume in the decimal box. This tag's decimal lives between 0 and 1 — divide the top by the bottom.");
+        return api.fail("Tag A's decimal: divide 13 by 20 — top by bottom — and keep what the division gives you.");
+      }
+      if(!okp){
+        if(Math.abs(vp-0.65)<=0.001)return api.fail("That's the decimal again — it already lives in the first box. Slide it two places right to speak percent.");
+        return api.fail("Decimal locked. Now slide its point two places right and hang the % sign.");
+      }
+      if(!ok2){
+        if(v2===80)return api.fail("The zero matters — 0.08 is eight HUNDREDTHS, not eight tenths. Eighty per hundred would be 0.80, a much louder pledge.");
+        if(Math.abs(v2-0.08)<1e-9)return api.fail("That's the decimal it already wears. Per-hundred it: slide the point two places right.");
+        return api.fail("Tag B: read the hundredths. Two slides right — and watch the zero between the point and the 8.");
+      }
+      api.pass("Translated! 13/20 = 0.65 = 65%, and 0.08 = 8/100 = 8%. Three costumes, one amount — and the market finally speaks one language.");});
+  }},
+boss:{ title:"BOSS GATE · The Closing Bell", icon:"#sig-boss",
+  prompt:`The mayor's board waits. <b>Lock 1:</b> the pier banner reads <b>19/25</b> planks funded — post it as a percent. <b>Lock 2:</b> Bram swears a <b>0.4</b> pledge and a <b>4%</b> pledge are the same. Which is larger? <b>Lock 3:</b> next week's poster must show <b>30%</b> — pick Zara's honest grid.`,
+  hints:[ "Conceptual: Lock 1 — a percent needs a per-hundred view, and twenty-fifths scale to hundredths because 25 × 4 = 100. Lock 2 — never compare a decimal with a percent in different costumes; change one of them first. Lock 3 — a grid only shows a percent when its WHOLE is exactly 100 parts; shaded count alone proves nothing.",
+          "Procedural: Lock 1 — multiply the banner fraction's top AND bottom by 4, then read the numerator of the hundredths. Lock 2 — slide the decimal's point two places right to see its percent, then compare. Lock 3 — for each grid, count the shaded squares AND the total squares before you trust it." ],
+  worked:{ steps:[ "Different banner — the snack count read 7/25 sold. Scale to hundredths: 7 × 4 = 28 and 25 × 4 = 100, so 7/25 = 28/100 = 28%.",
+    "Costume duel with different numbers: compare 0.6 with 6%. Slide 0.6 two places — 60% — and the duel is over: sixty per hundred crushes six per hundred. The decimal was the bigger amount in disguise.",
+    "Grid check: 20 shaded squares mean 20% ONLY if the grid holds 100 squares. In a 40-square grid, 20 shaded is 20/40 — one half — which is 50%. Count the whole before you believe the shading." ],
+    q:"Scale the craft stall's 11/25 to a percent.", a:"44" },
+  render(body,api){
+    const mini=(shaded,total,label)=>{const cols=10,rows=total/10,cell=9;let s="";
+      for(let i=0;i<total;i++){const x=(i%cols)*cell+2,y=Math.floor(i/cols)*cell+2,on=i<shaded;
+        s+=`<rect x="${x}" y="${y}" width="${cell-1.4}" height="${cell-1.4}" fill="${on?"#E2674A":"#fff"}" stroke="#17324D" stroke-width=".8"/>`}
+      return `<svg viewBox="0 0 ${cols*cell+4} ${rows*cell+4}" width="86" height="${rows*8.6+4}" role="img" aria-label="${label}">${s}</svg>`};
+    body.innerHTML=`<div style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b style="font:900 .75rem 'Arial Black'">LOCK 1</b><span style="font:600 .88rem 'Segoe UI'">Planks funded: <b>19/25</b> =</span><input class="numin" id="L1" style="width:74px" inputmode="decimal" aria-label="nineteen twenty-fifths as a percent"> <span style="font:600 .88rem 'Segoe UI'">%</span></div>
+      <div><b style="font:900 .75rem 'Arial Black'">LOCK 2</b><span style="font:600 .88rem 'Segoe UI'"> Which pledge is LARGER?</span>
+        <div class="choicebtns" role="group" aria-label="compare zero point four with four percent">
+          <button class="choicebtn" data-v="dec" aria-pressed="false">0.4 of a sale</button>
+          <button class="choicebtn" data-v="pct" aria-pressed="false">4% of a sale</button>
+          <button class="choicebtn" data-v="eq" aria-pressed="false">They're equal</button></div></div>
+      <div><b style="font:900 .75rem 'Arial Black'">LOCK 3</b><span style="font:600 .88rem 'Segoe UI'"> Which grid shows <b>30%</b> shaded?</span>
+        <div class="choicebtns" role="group" aria-label="choose the grid that shows thirty percent">
+          <button class="choicebtn" data-g="a" aria-pressed="false" style="flex-direction:column">${mini(30,100,"grid A: 30 of its 100 squares shaded")}<span>A</span></button>
+          <button class="choicebtn" data-g="b" aria-pressed="false" style="flex-direction:column">${mini(3,100,"grid B: 3 of its 100 squares shaded")}<span>B</span></button>
+          <button class="choicebtn" data-g="c" aria-pressed="false" style="flex-direction:column">${mini(30,50,"grid C: 30 of its 50 squares shaded")}<span>C</span></button>
+          <button class="choicebtn" data-g="d" aria-pressed="false" style="flex-direction:column">${mini(13,100,"grid D: 13 of its 100 squares shaded")}<span>D</span></button></div></div></div>`;
+    let pick2=null, pick3=null;
+    body.querySelectorAll(".choicebtn[data-v]").forEach(b=>b.addEventListener("click",()=>{
+      body.querySelectorAll(".choicebtn[data-v]").forEach(x=>x.setAttribute("aria-pressed","false"));
+      b.setAttribute("aria-pressed","true");pick2=b.dataset.v;api.sound("blip");}));
+    body.querySelectorAll(".choicebtn[data-g]").forEach(b=>b.addEventListener("click",()=>{
+      body.querySelectorAll(".choicebtn[data-g]").forEach(x=>x.setAttribute("aria-pressed","false"));
+      b.setAttribute("aria-pressed","true");pick3=b.dataset.g;api.sound("blip");}));
+    api.onCheck(()=>{
+      const v1=parseFloat(body.querySelector("#L1").value);
+      const ok1=v1===76;
+      body.querySelector("#L1").className="numin "+(ok1?"ok":"no");
+      if(isNaN(v1))return api.fail("Lock 1 first — the banner number leads the announcement.");
+      if(!ok1){
+        if(v1===19)return api.fail("Lock 1 holds. 19 is only the TOP of the fraction — that's out of 25, not out of 100. Scale the whole fraction to hundredths.");
+        if(Math.abs(v1-0.76)<1e-9)return api.fail("Lock 1 holds. That's the decimal costume. The big board speaks percent — per hundred.");
+        return api.fail("Lock 1 holds. 25 × 4 = 100 — multiply BOTH parts of 19/25 by 4 and read the hundredths.");
+      }
+      if(pick2===null)return api.fail("Lock 1 open! Lock 2: put both pledges in the SAME costume before you judge them.");
+      if(pick2==="pct")return api.fail("Lock 2 holds. 4 looks bigger than 0.4 — but slide 0.4 two places: it's 40 per hundred. Forty percent against four.");
+      if(pick2==="eq")return api.fail("Lock 2 holds. That's Bram's exact claim — and the bell refuses it. Slide 0.4 two places right; it is not 4 per hundred.");
+      if(pick3===null)return api.fail("Locks 1 and 2 open! Lock 3: count shaded AND total squares in each grid — a percent grid must show its amount per HUNDRED.");
+      if(pick3==="b")return api.fail("Lock 3 holds. That grid lights 3 of 100 — that's 3%. Ten times too shy for the poster.");
+      if(pick3==="c")return api.fail("Lock 3 holds. Thirty squares glow, but that grid only HAS fifty — 30 out of 50 is 60%. Percent needs a hundred parts in the whole.");
+      if(pick3==="d")return api.fail("Lock 3 holds. 13 of 100 is 13% — not even half way to the goal poster.");
+      api.pass("ALL LOCKS OPEN. 19/25 = 76/100 — the bell rings on 76% funded; 0.4 is 40%, ten times Bram's 4%; and only the 30-of-100 grid honestly says 30%. The market closes loud, and the pier fund glows.");});
+  }}
+};
+
+/* ================= TEACHER PANEL DATA ================= */
+const TEACHER = {
+  suggested:"A single-class-period episode: use after lessons 4-1 (understand percent) and 4-2 (relate fractions, decimals and percents). Gate 1 reinforces 4-1 (percent as a rate per 100, read from hundred-grids); Gate 2 is 4-2 (translating fraction → decimal → percent, including the 0.08 place-value pitfall); the Boss Gate applies both — scaling a twenty-fifths fraction to per-hundred, comparing a decimal with a percent, and validating hundred-grids — previewing the estimation and percent-of-a-number work of Episode 2. Whole-class on projector, pairs on devices, or independent practice. Progress saves on the device.",
+  standards:[
+    ["6.RP.A.3c","Percent as a rate per 100 — find and interpret percents of a quantity","Episode story + Gate 1 (lantern board, raffle wall) and Boss Gate Locks 1 & 3"],
+    ["6.RP.A.3c","Fraction–decimal–percent equivalence: write fractions and decimals as percents and compare across forms","Gate 2 (price-tag translator) and Boss Gate Locks 1 & 2"]
+  ],
+  answers:[
+    ["Gate 1","Lantern board: 60 of 100 lit → 60% (when the whole is exactly 100, the count IS the percent). Raffle wall: 7 of 100 → 7%. Decimal-form traps (0.6 and 0.07) and complement traps (40 dark lanterns, 93 empty hooks) get targeted feedback."],
+    ["Gate 2","Tag A: 13/20 = 13 ÷ 20 = 0.65 (accepted ±0.001) = 65%. Tag B: 0.08 = 8%. Traps: 65 entered as the decimal, 0.65 entered as the percent, and 80 for Tag B — 'the zero matters: eight HUNDREDTHS, not eight tenths.'"],
+    ["Boss","Lock 1: 19/25 = (19×4)/(25×4) = 76/100 = 76% (traps: 19 numerator-only, 0.76 decimal form). Lock 2: 0.4 = 40% > 4%, so 0.4 is larger ('they're equal' is Bram's claim and a trapped distractor). Lock 3: the 30-of-100 grid; distractors are 3/100 (3%), 30/50 (60% — the whole isn't 100) and 13/100 (13%)."]
+  ]
+};
+/* ================================================================
+   ===== CONTENT END ==============================================
+   ================================================================ */
+</script>
+<script>
+/* ================================================================
+   ===== AXIOM CITY ENGINE v1.0 — identical in every volume =======
+   ================================================================ */
+"use strict";
+/* ---------- storage (exact wrapper, ewl_ prefix) ---------- */
+const storage={_m:{},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){this._m[k]=v}},get(k,d=null){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return this._m[k]??d}}};
+const K=s=>`ewl_axiom_${VOLUME.slug}_${s}`;
+
+const $=s=>document.querySelector(s);
+const live=msg=>{$("#live").textContent=msg};
+const reducedMQ=matchMedia("(prefers-reduced-motion: reduce)");
+const mobileMQ=matchMedia("(max-width: 820px)");
+
+const prefs=Object.assign({sound:false,motion:true,bigtext:false,hc:false},storage.get(K("prefs"))||{});
+let solved=new Set(storage.get(K("gates"))||[]);
+let page=storage.get(K("page"))||0;            // index of left/visible page
+let turning=false;
+const attempts={};
+
+/* ---------- audio (Web Audio oscillators only, muted default) ---------- */
+let actx=null;
+function ac(){if(!actx){try{actx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return actx}
+function tone(f,t,dur,type="square",vol=.04){const c=ac();if(!c||!prefs.sound)return;const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(vol,c.currentTime+t);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+t+dur);o.connect(g).connect(c.destination);o.start(c.currentTime+t);o.stop(c.currentTime+t+dur+.02)}
+const SND={blip(){tone(660,0,.07)},flip(){tone(220,0,.09,"triangle",.05);tone(330,.05,.08,"triangle",.04)},win(){[523,659,784,1046].forEach((f,i)=>tone(f,i*.09,.14,"triangle",.05))},thud(){tone(110,0,.18,"sawtooth",.05)}};
+
+/* ---------- helpers ---------- */
+function gateLockIcon(open){return `<div class="gatelockcorner ${open?"open":""}" aria-hidden="true"><svg viewBox="0 0 100 100" style="color:#fff"><use href="${open?"#sig-open":"#sig-lock"}"/></svg></div>`}
+
+function pageInnerHTML(i){
+  if(i==null||i<0||i>=PAGES.length) return `<div class="page-inner" style="align-items:center;justify-content:center"><div class="kicker" style="opacity:.4">AXIOM CITY</div></div><div class="pagefoot"><span></span><span></span></div>`;
+  const p=PAGES[i];
+  const gateHTML=p.gate?`<div class="gatemount" data-gate="${p.gate}"></div>`:"";
+  const lock=p.gate?gateLockIcon(solved.has(p.gate)):"";
+  return `${lock}<div class="chapterband">${p.ch.replace("·","· <em>").concat(p.ch.includes("·")?"</em>":"")}</div><div class="page-inner">${p.html}${gateHTML}</div><div class="pagefoot"><span>${VOLUME.unit}</span><span>PAGE ${i+1} / ${PAGES.length}</span></div>`;
+}
+
+/* ---------- gate framework ---------- */
+function mountGates(scope){
+  scope.querySelectorAll(".gatemount").forEach(m=>{
+    const id=m.dataset.gate,G=GATES[id];
+    if(!G)return;
+    if(solved.has(id)){m.innerHTML=`<div class="gatesolved"><span class="stamp">SOLVED</span> ${G.title} — badge earned.</div>`;return}
+    m.innerHTML=`<div class="gatebox"><header><svg class="gicon" viewBox="0 0 100 100"><use href="${G.icon}"/></svg><h3>${G.title}</h3></header>
+      <div class="gatebody"><div class="gateprompt">${G.prompt}</div><div class="gwidget"></div>
+      <div class="gatehint" hidden></div>
+      <button class="gatecheck">CHECK</button>
+      <div class="gatefeedback" aria-live="polite"></div></div></div>`;
+    const box=m.querySelector(".gatebox"),body=m.querySelector(".gwidget"),fb=m.querySelector(".gatefeedback"),hint=m.querySelector(".gatehint"),btn=m.querySelector(".gatecheck");
+    let checker=null;
+    const api={
+      sound:n=>SND[n]&&SND[n](),
+      onCheck(fn){checker=fn},
+      fail(msg){
+        attempts[id]=(attempts[id]||0)+1;SND.thud();mkfeed(fb,msg,false);
+        const n=attempts[id];
+        if(n===1){hint.hidden=false;hint.innerHTML="💡 <b>Hint:</b> "+G.hints[0]}
+        else if(n===2){hint.hidden=false;hint.innerHTML="🧭 <b>Hint 2:</b> "+G.hints[1]}
+        else if(n>=3&&!hint.querySelector(".askvex")){
+          const b=document.createElement("button");b.className="gatecheck askvex";b.style.marginTop="8px";b.textContent="ASK VEX — WORKED EXAMPLE";
+          b.addEventListener("click",()=>openWorked(G));hint.appendChild(b);
+        }
+        live("Not yet. "+msg);
+      },
+      pass(msg){
+        solved.add(id);storage.set(K("gates"),[...solved]);SND.win();
+        m.innerHTML=`<div class="gatesolved unlockflash"><span class="stamp">SOLVED</span> ${msg}</div>`;
+        const corner=m.closest(".page,#pageL,#pageR")?.querySelector(".gatelockcorner");
+        if(corner){corner.classList.add("open");corner.innerHTML=`<svg viewBox="0 0 100 100" style="color:#fff"><use href="#sig-open"/></svg>`}
+        earnBadge(id);updateNav();live("Gate solved! "+msg);
+      }
+    };
+    G.render(body,api);
+    btn.addEventListener("click",()=>{ac();checker&&checker()});
+  });
+}
+function openWorked(G){
+  $("#workedBody").innerHTML=`<div class="workedsteps">${G.worked.steps.map((s,i)=>`<div class="st"><b class="n">${i+1}</b><span>${s}</span></div>`).join("")}</div>
+    <div class="caption">Your turn — same idea, different numbers:</div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span style="font:600 .92rem 'Segoe UI'">${G.worked.q}</span>
+    <input class="numin" id="wkin" aria-label="worked example answer"><button class="gatecheck" id="wkgo">CHECK</button></div>
+    <div class="gatefeedback" id="wkfb" aria-live="polite"></div>`;
+  $("#workedModal").classList.add("open");
+  $("#wkgo").addEventListener("click",()=>{
+    const v=($("#wkin").value||"").trim().replace(/\s+/g,"");
+    if(v===G.worked.a||parseFloat(v)===parseFloat(G.worked.a)){
+      mkfeed($("#wkfb"),"Yes! Now head back and open that gate.",true);SND.win();
+      setTimeout(()=>$("#workedModal").classList.remove("open"),1100);
+    }else{mkfeed($("#wkfb"),"Walk the steps above again — you've got this.",false);SND.thud()}
+  });
+}
+
+/* ---------- badges ---------- */
+function buildBadges(){
+  $("#badges").innerHTML=BADGES.map(b=>`<div class="badge ${solved.has(b.id)?"earned":""}" id="badge-${b.id}" title="${b.label}" role="img" aria-label="${b.label}${solved.has(b.id)?" — earned":" — locked"}"><svg viewBox="0 0 100 100"><use href="${b.icon}"/></svg></div>`).join("");
+}
+function earnBadge(id){buildBadges();const el=$("#badge-"+id);if(el){el.classList.remove("earned");void el.offsetWidth;el.classList.add("earned")}const b=BADGES.find(x=>x.id===id);if(b)live("Badge earned: "+b.label)}
+
+/* ---------- progress ---------- */
+function buildProgress(){$("#progress").innerHTML=PAGES.map((_,i)=>`<span class="dot ${i<=page?"on":""}"></span>`).join("")}
+
+/* ---------- navigation & rendering ---------- */
+const isMobile=()=>mobileMQ.matches;
+function leftIndex(){return isMobile()?page:page-(page%2)}
+function visiblePages(){return isMobile()?[page]:[leftIndex(),leftIndex()+1].filter(i=>i<PAGES.length)}
+function blockedBy(){for(const i of visiblePages()){const g=PAGES[i]&&PAGES[i].gate;if(g&&!solved.has(g))return g}return null}
+
+function renderSpread(){
+  const L=$("#pageL"),R=$("#pageR");
+  if(isMobile()){L.innerHTML=pageInnerHTML(page);L.classList.remove("offscreen");R.classList.add("offscreen");R.innerHTML="";mountGates(L)}
+  else{const li=leftIndex();L.innerHTML=pageInnerHTML(li);R.innerHTML=pageInnerHTML(li+1<PAGES.length?li+1:null);L.classList.remove("offscreen");R.classList.remove("offscreen");mountGates(L);mountGates(R)}
+  buildProgress();updateNav();updateEdges();
+  if(PAGES[page])live(`Page ${page+1} of ${PAGES.length}. ${PAGES[page].ch}.`);
+  storage.set(K("page"),page);
+  if($("#certName")){$("#certName").value=storage.get(K("name"))||"";$("#certName").addEventListener("input",e=>storage.set(K("name"),e.target.value));
+    $("#certBadges").innerHTML=BADGES.map(b=>`<div class="badge ${solved.has(b.id)?"":"locked"}"><svg viewBox="0 0 100 100"><use href="${b.icon}"/></svg></div>`).join("");
+    $("#printCert").addEventListener("click",()=>{document.body.classList.add("print-cert");window.print();setTimeout(()=>document.body.classList.remove("print-cert"),400)});}
+}
+function updateEdges(){const f=page/Math.max(1,PAGES.length-1);$("#edgesL").style.width=(4+f*12)+"px";$("#edgesR").style.width=(16-f*12)+"px"}
+function updateNav(){
+  $("#prevBtn").disabled=page<=0||turning;
+  const lastVisible=Math.max(...visiblePages());
+  const end=lastVisible>=PAGES.length-1;
+  const blocked=blockedBy();
+  $("#nextBtn").disabled=end||turning;
+  $("#nextBtn").classList.toggle("locked",!!blocked&&!end);
+  $("#nextBtn").innerHTML=blocked&&!end?"🔒":"›";
+  $("#nextBtn").setAttribute("aria-label",blocked?"Locked — solve the gate on this page to continue":"Next page");
+}
+function step(dir){
+  if(turning)return;
+  if(dir>0){
+    const blocked=blockedBy();
+    if(blocked){const G=GATES[blocked];SND.thud();$("#nextBtn").classList.add("shake");setTimeout(()=>$("#nextBtn").classList.remove("shake"),700);
+      live("This page is gated. Solve "+G.title+" to continue.");
+      const gb=document.querySelector(".gatebox");if(gb){gb.classList.add("unlockflash");setTimeout(()=>gb.classList.remove("unlockflash"),1000)}
+      return}
+    const lastVisible=Math.max(...visiblePages());
+    if(lastVisible>=PAGES.length-1)return;
+    const target=isMobile()?page+1:leftIndex()+2;
+    animTurn(1,target);
+  }else{
+    if(page<=0)return;
+    const target=isMobile()?page-1:Math.max(0,leftIndex()-2);
+    animTurn(-1,target);
+  }
+}
+function animTurn(dir,target){
+  if(isMobile()||reducedMQ.matches||!prefs.motion){page=target;renderSpread();SND.flip();return}
+  turning=true;SND.flip();
+  const sheet=$("#turnSheet"),front=sheet.querySelector(".ts.front"),back=sheet.querySelector(".ts.back");
+  const oldL=leftIndex();
+  if(dir>0){
+    front.innerHTML=pageInnerHTML(oldL+1<PAGES.length?oldL+1:null);
+    back.innerHTML=pageInnerHTML(target<PAGES.length?target:null);
+    page=target;
+    /* underneath: left stays old-left, right becomes new-right */
+    $("#pageR").innerHTML=pageInnerHTML(target+1<PAGES.length?target+1:null);
+    sheet.className="";sheet.classList.add("show","fwd");
+  }else{
+    front.innerHTML=pageInnerHTML(target+1<PAGES.length?target+1:null);
+    back.innerHTML=pageInnerHTML(oldL);
+    page=target;
+    $("#pageL").innerHTML=pageInnerHTML(target);
+    sheet.className="";sheet.classList.add("show","back");
+  }
+  const done=()=>{sheet.classList.remove("show","fwd","back");sheet.removeEventListener("animationend",done);turning=false;renderSpread()};
+  sheet.addEventListener("animationend",done);
+  setTimeout(()=>{if(turning){done()}},1000);
+}
+
+/* ---------- parallax ---------- */
+let rafPending=false,px=0,py=0;
+function applyParallax(){
+  rafPending=false;
+  if(!prefs.motion||reducedMQ.matches)return;
+  document.querySelectorAll("#spreadWrap .panel3d").forEach(p=>{
+    p.style.transform=`rotateY(${px*4}deg) rotateX(${-py*3}deg)`;
+    p.querySelectorAll("[data-depth]").forEach(l=>{const d=+l.dataset.depth||0;l.style.transform=`translate(${px*d*.6}px,${py*d*.35}px)`});
+  });
+}
+addEventListener("pointermove",e=>{
+  px=(e.clientX/innerWidth-.5)*2;py=(e.clientY/innerHeight-.5)*2;
+  if(!rafPending){rafPending=true;requestAnimationFrame(applyParallax)}
+  const cc=$("#coverCard");
+  if(cc&&!$("#cover").hidden&&prefs.motion&&!reducedMQ.matches){
+    cc.style.transform=`rotateY(${px*9}deg) rotateX(${-py*7}deg)`;
+    cc.querySelectorAll(".cov-layer").forEach(l=>{const d=+l.dataset.depth||0;l.style.transform=`translate(${px*d}px,${py*d*.6}px)`});
+  }
+},{passive:true});
+
+/* note: SVG <g data-depth> transform via style works in modern browsers (SVG2). Wrapped above for safety. */
+
+/* ---------- HUD toggles ---------- */
+function syncToggles(){
+  $("#sndBtn").setAttribute("aria-pressed",prefs.sound);$("#sndBtn").textContent=prefs.sound?"🔊 Sound":"🔇 Sound";
+  $("#motBtn").setAttribute("aria-pressed",prefs.motion);$("#motBtn").textContent=prefs.motion?"3D On":"3D Off";
+  $("#txtBtn").setAttribute("aria-pressed",prefs.bigtext);document.documentElement.dataset.textsize=prefs.bigtext?"lg":"md";
+  $("#hcBtn").setAttribute("aria-pressed",prefs.hc);document.body.classList.toggle("hc",prefs.hc);
+  if(!prefs.motion)document.querySelectorAll(".panel3d").forEach(p=>p.style.transform="");
+  storage.set(K("prefs"),prefs);
+}
+$("#sndBtn").addEventListener("click",()=>{prefs.sound=!prefs.sound;ac();syncToggles();SND.blip()});
+$("#motBtn").addEventListener("click",()=>{prefs.motion=!prefs.motion;syncToggles()});
+$("#txtBtn").addEventListener("click",()=>{prefs.bigtext=!prefs.bigtext;syncToggles()});
+$("#hcBtn").addEventListener("click",()=>{prefs.hc=!prefs.hc;syncToggles()});
+
+/* ---------- teacher panel ---------- */
+function buildTeacher(){
+  $("#teacherBody").innerHTML=`
+    <p style="font:600 .9rem/1.45 'Segoe UI'">${VOLUME.unit} — interactive graphic novel. Story pauses at six <b>reader gates</b>; students must solve grade-level math problems to continue. Progress, badges, and settings persist per device.</p>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">SUGGESTED USE</h3>
+    <p style="font:600 .88rem/1.45 'Segoe UI'">${TEACHER.suggested}</p>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">STANDARDS ALIGNMENT (CCSS)</h3>
+    <table class="tt"><tr><th>Standard</th><th>Description</th><th>Where</th></tr>
+    ${TEACHER.standards.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</table>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">ANSWER KEY</h3>
+    <table class="tt"><tr><th>Gate</th><th>Answer &amp; notes</th></tr>
+    ${TEACHER.answers.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td></tr>`).join("")}</table>
+    <p style="font:600 .8rem/1.4 'Segoe UI';color:#666">Hints escalate: conceptual → procedural → VEX worked example (parallel problem; never reveals the gate answer). Sound is off by default. 3D motion can be disabled (auto-disabled for reduced-motion users). © EduWonderLab — single-file, offline-safe, no data leaves the device.</p>`;
+}
+$("#teacherBtn").addEventListener("click",()=>{buildTeacher();$("#teacherModal").classList.add("open")});
+$("#printTeacher").addEventListener("click",()=>{document.body.classList.add("print-teacher");window.print();setTimeout(()=>document.body.classList.remove("print-teacher"),400)});
+document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",()=>b.closest(".modal").classList.remove("open")));
+
+/* ---------- input ---------- */
+$("#nextBtn").addEventListener("click",()=>{ac();step(1)});
+$("#prevBtn").addEventListener("click",()=>{ac();step(-1)});
+addEventListener("keydown",e=>{
+  if(e.key==="Escape"){$("#teacherModal").classList.remove("open");return}
+  if($(".modal.open"))return;
+  if(["ArrowRight","PageDown"].includes(e.key))step(1);
+  if(["ArrowLeft","PageUp"].includes(e.key))step(-1);
+});
+let tx=null;
+addEventListener("touchstart",e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener("touchend",e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>60&&!$(".modal.open"))step(dx<0?1:-1);tx=null},{passive:true});
+mobileMQ.addEventListener("change",()=>renderSpread());
+
+/* ---------- boot ---------- */
+function openBook(){
+  $("#cover").hidden=true;$("#hud").hidden=false;$("#stage").hidden=false;
+  $("#prevBtn").hidden=false;$("#nextBtn").hidden=false;
+  renderSpread();
+}
+$("#startBtn").addEventListener("click",()=>{ac();page=0;openBook()});
+$("#resumeBtn").addEventListener("click",()=>{ac();openBook()});
+if((storage.get(K("page"))||0)>0||solved.size>0){$("#resumeBtn").hidden=false}
+if(reducedMQ.matches){prefs.motion=false}
+document.body.classList.toggle("reduced",reducedMQ.matches);
+buildBadges();syncToggles();buildProgress();
+</script>
+</body>
+</html>

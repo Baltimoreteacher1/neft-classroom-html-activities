@@ -554,22 +554,33 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       if (kind === "activity") return this.openActivity();
       if (kind === "objectives") return this.openObjectives();
       const id = encodeURIComponent(config.lessonId);
+      const gn = config.graphicNovel || {};
       const meta =
-        kind === "readiness"
+        kind === "graphicnovel"
           ? {
-              src: `/lessons/${id}/readiness/?embed=1`,
-              full: `/lessons/${id}/readiness/`,
-              icon: "📚",
-              title: "Get Ready",
-              desc: "A quick check of the skills you need first — not graded.",
+              src: gn.href,
+              full: gn.href,
+              icon: "📖",
+              title: gn.title || "Graphic Novel",
+              desc:
+                gn.desc ||
+                "Read the Axiom City episode for this lesson — solve the math to turn the page. Open full page for the best experience.",
             }
-          : {
-              src: `/lessons/${id}/notes.html?embed=1`,
-              full: `/lessons/${id}/notes.html`,
-              icon: "📝",
-              title: "Guided Notes",
-              desc: "Read along and fill these in. Use Print for a paper copy.",
-            };
+          : kind === "readiness"
+            ? {
+                src: `/lessons/${id}/readiness/?embed=1`,
+                full: `/lessons/${id}/readiness/`,
+                icon: "📚",
+                title: "Get Ready",
+                desc: "A quick check of the skills you need first — not graded.",
+              }
+            : {
+                src: `/lessons/${id}/notes.html?embed=1`,
+                full: `/lessons/${id}/notes.html`,
+                icon: "📝",
+                title: "Guided Notes",
+                desc: "Read along and fill these in. Use Print for a paper copy.",
+              };
 
       this.setExtraActive(kind);
       phaseContainer.innerHTML = "";
@@ -943,6 +954,8 @@ function buildSidebar(config, state, phaseConfigs) {
 
     ${bonusNavHtml(config)}
 
+    ${graphicNovelNavHtml(config)}
+
     ${printablesNavHtml(config)}
 
     ${projectsNavHtml(config)}
@@ -1006,6 +1019,23 @@ function bonusNavHtml(config) {
       <button class="phase-btn extra-btn" data-extra="activity">
         <span class="phase-num">${escHtml(act.emoji || "🎯")}</span>
         <span>${escHtml(act.name || "Bonus Activity")}</span>
+      </button>
+    </div>`;
+}
+
+// "Graphic Novel" group: a single non-graded tab linking this lesson's matched
+// Axiom City episode (config.graphicNovel — an interactive, story-driven comic
+// where students solve the lesson's math to turn the page). Opens inline via
+// app.openExtra("graphicnovel"); hidden when the lesson has no matched episode.
+function graphicNovelNavHtml(config) {
+  const gn = config.graphicNovel;
+  if (!gn || !gn.href) return "";
+  return `
+    <div class="graphicnovel-nav" data-bind="graphicnovel">
+      <div class="prelesson-label" style="font-size:0.68rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; opacity:0.55; padding:0 var(--sp-2, 8px); margin:var(--sp-3, 12px) 0 var(--sp-1, 4px);">Graphic Novel</div>
+      <button class="phase-btn extra-btn" data-extra="graphicnovel">
+        <span class="phase-num">📖</span>
+        <span>${escHtml(gn.menuTitle || gn.title || "Graphic Novel")}</span>
       </button>
     </div>`;
 }
