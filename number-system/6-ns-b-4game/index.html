@@ -185,138 +185,100 @@
         function commonFactors(a, b) {
           return factorsOf(a).filter((f) => b % f === 0);
         }
-
-        function generateGCFQ(level) {
-          let a, b, answer;
-          if (level <= 2) {
-            a = rand(6, 24);
-            b = rand(6, 24);
-            // Ensure non-trivial GCF
-            const g = rand(2, 6);
-            a = g * rand(2, 5);
-            b = g * rand(2, 5);
-          } else if (level <= 4) {
-            const g = rand(3, 12);
-            a = g * rand(2, 8);
-            b = g * rand(2, 8);
-          } else {
-            const g = rand(4, 15);
-            a = g * rand(3, 10);
-            b = g * rand(3, 10);
+        function primeFactors(n) {
+          const factors = [];
+          let d = 2;
+          let temp = n;
+          while (temp > 1) {
+            while (temp % d === 0) {
+              factors.push(d);
+              temp /= d;
+            }
+            d++;
+            if (d * d > temp) {
+              if (temp > 1) {
+                factors.push(temp);
+                break;
+              }
+            }
           }
-          if (a === b) b += rand(2, 6) * gcd(a, b);
-          answer = gcd(a, b);
-
-          const cf = commonFactors(a, b);
-          const hint =
-            "Factors of " +
-            a +
-            ": " +
-            factorsOf(a).join(", ") +
-            "\nFactors of " +
-            b +
-            ": " +
-            factorsOf(b).join(", ") +
-            "\nCommon: " +
-            cf.join(", ") +
-            " → GCF = " +
-            answer;
-
-          const wrongs = new Set();
-          wrongs.add(lcm(a, b)); // LCM confusion
-          wrongs.add(answer * 2);
-          wrongs.add(Math.max(1, answer - 1));
-          wrongs.add(answer + 2);
-          wrongs.add(a);
-          wrongs.add(b);
-          wrongs.add(a * b);
-          wrongs.delete(answer);
-
-          const wrongArr = [...wrongs]
-            .filter((w) => w > 0 && w !== answer && w <= a * b)
-            .slice(0, 3);
-          while (wrongArr.length < 3) wrongArr.push(answer + rand(3, 15));
-
-          return {
-            a,
-            b,
-            answer,
-            type: "GCF",
-            stem: "GCF of " + a + " and " + b,
-            prompt: "Find the Greatest Common Factor",
-            hint,
-            choices: shuffle([
-              { text: String(answer), correct: true },
-              ...wrongArr
-                .slice(0, 3)
-                .map((w) => ({ text: String(w), correct: false })),
-            ]),
-          };
+          return factors.sort((x, y) => x - y);
         }
-
-        function generateLCMQ(level) {
-          let a, b, answer;
-          if (level <= 2) {
-            a = rand(2, 8);
-            b = rand(2, 8);
-          } else if (level <= 4) {
-            a = rand(3, 12);
-            b = rand(3, 12);
-          } else {
-            a = rand(4, 15);
-            b = rand(4, 15);
-          }
-          if (a === b) b = a + rand(1, 4);
-          answer = lcm(a, b);
-
-          const hint =
-            "Multiples of " +
-            a +
-            ": " +
-            Array.from({ length: 8 }, (_, i) => a * (i + 1)).join(", ") +
-            "\nMultiples of " +
-            b +
-            ": " +
-            Array.from({ length: 8 }, (_, i) => b * (i + 1)).join(", ") +
-            "\nLCM = " +
-            answer;
-
-          const wrongs = new Set();
-          wrongs.add(gcd(a, b)); // GCF confusion
-          wrongs.add(a * b); // Just multiplied
-          wrongs.add(answer + a);
-          wrongs.add(answer + b);
-          wrongs.add(Math.max(1, answer - a));
-          wrongs.add(answer * 2);
-          wrongs.delete(answer);
-
-          const wrongArr = [...wrongs]
-            .filter((w) => w > 0 && w !== answer)
-            .slice(0, 3);
-          while (wrongArr.length < 3) wrongArr.push(answer + rand(2, 20));
-
-          return {
-            a,
-            b,
-            answer,
-            type: "LCM",
-            stem: "LCM of " + a + " and " + b,
-            prompt: "Find the Least Common Multiple",
-            hint,
-            choices: shuffle([
-              { text: String(answer), correct: true },
-              ...wrongArr
-                .slice(0, 3)
-                .map((w) => ({ text: String(w), correct: false })),
-            ]),
-          };
+        function multisetIntersection(a, b) {
+          const countsA = {}, countsB = {};
+          a.forEach(x => countsA[x] = (countsA[x] || 0) + 1);
+          b.forEach(x => countsB[x] = (countsB[x] || 0) + 1);
+          const intersection = [];
+          const keys = new Set([...Object.keys(countsA), ...Object.keys(countsB)]);
+          keys.forEach(k => {
+            const val = parseInt(k, 10);
+            const count = Math.min(countsA[val] || 0, countsB[val] || 0);
+            for (let i = 0; i < count; i++) intersection.push(val);
+          });
+          return intersection.sort((x, y) => x - y);
+        }
+        function multisetUnion(a, b) {
+          const countsA = {}, countsB = {};
+          a.forEach(x => countsA[x] = (countsA[x] || 0) + 1);
+          b.forEach(x => countsB[x] = (countsB[x] || 0) + 1);
+          const union = [];
+          const keys = new Set([...Object.keys(countsA), ...Object.keys(countsB)]);
+          keys.forEach(k => {
+            const val = parseInt(k, 10);
+            const count = Math.max(countsA[val] || 0, countsB[val] || 0);
+            for (let i = 0; i < count; i++) union.push(val);
+          });
+          return union.sort((x, y) => x - y);
         }
 
         function generateQuestion(level) {
-          // Alternate GCF and LCM, with some randomness
-          return Math.random() > 0.45
-            ? generateGCFQ(level)
-            : generateLCMQ(level);
+          let a, b, g, l, primeA, primeB, union;
+          let attempts = 0;
+          const maxVal = level <= 2 ? 30 : level <= 4 ? 60 : 100;
+          const minVal = level <= 2 ? 6 : 12;
+          
+          do {
+            a = rand(minVal, maxVal);
+            b = rand(minVal, maxVal);
+            g = gcd(a, b);
+            l = lcm(a, b);
+            primeA = primeFactors(a);
+            primeB = primeFactors(b);
+            union = multisetUnion(primeA, primeB);
+            attempts++;
+          } while (
+            (a === b || g === 1 || primeA.length > 4 || primeB.length > 4 || union.length > 5 || union.length < 2) &&
+            attempts < 200
+          );
+
+          if (attempts >= 200) {
+            a = 12;
+            b = 18;
+            g = 6;
+            l = 36;
+            primeA = [2, 2, 3];
+            primeB = [2, 3, 3];
+            union = [2, 2, 3, 3];
+          }
+
+          const type = Math.random() > 0.5 ? "GCF" : "LCM";
+
+          return {
+            a,
+            b,
+            gcf: g,
+            lcm: l,
+            primeA,
+            primeB,
+            union,
+            type,
+            prompt: type === "GCF" ? "Find the GCF of " + a + " and " + b : "Find the LCM of " + a + " and " + b,
+            stem: type === "GCF" ? "Greatest Common Factor" : "Least Common Multiple",
+            hint: "Prime Factors of " + a + ": " + primeA.join(" × ") + "\n" +
+                  "Prime Factors of " + b + ": " + primeB.join(" × ") + "\n" +
+                  "GCF (Overlap): " + multisetIntersection(primeA, primeB).join(" × ") + " = " + g + "\n" +
+                  "LCM (Union): " + union.join(" × ") + " = " + l
+          };
         }
 
         // --- Phaser ---
@@ -592,11 +554,11 @@
             }
 
             const lines = [
-              "Explore the dungeon and unlock treasure chests!",
-              "Find GCF and LCM to open each lock.",
-              "Move through rooms, avoid traps and ghosts.",
-              "Collect keys and gold along the way.",
-              "Arrow keys / WASD / Touch to move, click answers",
+              "Explore the dungeon and find locked treasure chests!",
+              "Collect keys to unlock chests, avoid traps and ghosts.",
+              "Organize prime factors into the Venn diagram zones.",
+              "Match circle products to the chest's target numbers.",
+              "Arrow keys / WASD / Touch to move, Click to tile diagram",
             ];
             lines.forEach((t, i) =>
               this.add
@@ -822,63 +784,8 @@
             // HUD
             this.createHUD();
 
-            // Answer panel (hidden initially)
-            this.answerPanel = this.add
-              .rectangle(W / 2, H - 80, W - 40, 140, 0x0a0a14, 0.92)
-              .setStrokeStyle(2, 0xfbbf24, 0.4)
-              .setDepth(50)
-              .setVisible(false);
-            this.answerTitle = this.add
-              .text(W / 2, H - 140, "", {
-                fontSize: "20px",
-                fontStyle: "bold",
-                color: "#fbbf24",
-              })
-              .setOrigin(0.5)
-              .setDepth(51)
-              .setVisible(false);
-            this.answerStem = this.add
-              .text(W / 2, H - 115, "", { fontSize: "16px", color: "#e5e7eb" })
-              .setOrigin(0.5)
-              .setDepth(51)
-              .setVisible(false);
-
-            // Answer buttons
-            this.answerBtns = [];
-            this.answerLabels = [];
-            for (let i = 0; i < 4; i++) {
-              const x = 120 + i * 200;
-              const y = H - 55;
-              const bg = this.add
-                .image(x, y, "stone")
-                .setScale(1)
-                .setDepth(52)
-                .setInteractive({ useHandCursor: true })
-                .setVisible(false);
-              bg.on("pointerover", () => {
-                if (!this.answered) bg.setScale(1.08);
-              });
-              bg.on("pointerout", () => bg.setScale(1));
-              const idx = i;
-              bg.on("pointerdown", () => this.selectAnswer(idx));
-              const label = this.add
-                .text(x, y, "", {
-                  fontSize: "18px",
-                  fontStyle: "bold",
-                  color: "#fef3c7",
-                })
-                .setOrigin(0.5)
-                .setDepth(53)
-                .setVisible(false);
-              this.answerBtns.push(bg);
-              this.answerLabels.push(label);
-            }
-
-            // Keyboard answer
-            this.input.keyboard.on("keydown-ONE", () => this.selectAnswer(0));
-            this.input.keyboard.on("keydown-TWO", () => this.selectAnswer(1));
-            this.input.keyboard.on("keydown-THREE", () => this.selectAnswer(2));
-            this.input.keyboard.on("keydown-FOUR", () => this.selectAnswer(3));
+            // Answer panel flag (will hold active Venn overlay container when visible)
+            this.answerPanel = { visible: false };
 
             // Feedback
             this.feedbackText = this.add
@@ -1134,53 +1041,313 @@
           }
 
           showAnswerPanel(chest) {
-            this.answerPanel.setVisible(true);
-            this.answerTitle
-              .setVisible(true)
-              .setText(this.currentQ.prompt + " (" + this.currentQ.type + ")");
-            this.answerStem.setVisible(true).setText(this.currentQ.stem);
+            this.physics.pause();
+            this.player.body.setVelocity(0, 0);
 
-            this.currentQ.choices.forEach((c, i) => {
-              if (i < 4) {
-                this.answerBtns[i]
-                  .setVisible(true)
-                  .setTint(0xffffff)
-                  .setScale(1);
-                this.answerLabels[i]
-                  .setVisible(true)
-                  .setText(c.text)
-                  .setColor("#fef3c7");
-              }
+            // Create overlay container
+            this.vennContainer = this.add.container(0, 0).setDepth(200);
+            this.answerPanel = this.vennContainer; // Map to answerPanel for update checks
+
+            this.overlayTexts = [];
+            this.overlayButtons = [];
+            this.overlayTileTexts = [];
+            this.overlayTileRects = [];
+
+            // Backdrop
+            const backdrop = this.add.rectangle(W / 2, H / 2, W, H, 0x000000, 0.85)
+              .setInteractive();
+            backdrop.on('pointerdown', (pointer) => { pointer.event.stopPropagation(); });
+            this.vennContainer.add(backdrop);
+
+            // Dialog Card
+            const cardX = W / 2;
+            const cardY = H / 2;
+            const cardW = 750;
+            const cardH = 480;
+            const card = this.add.rectangle(cardX, cardY, cardW, cardH, 0x0f0f1b, 0.98);
+            card.setStrokeStyle(3, 0xfbbf24, 1);
+            this.vennContainer.add(card);
+
+            // Header Title
+            const title = this.add.text(cardX, cardY - cardH / 2 + 30, "CHEST VENNLOCK DECRYPTOR", {
+              fontSize: "24px",
+              fontStyle: "bold",
+              color: "#fcd34d",
+              fontFamily: "Inter, system-ui, sans-serif"
+            }).setOrigin(0.5);
+            this.vennContainer.add(title);
+            this.overlayTexts.push(title);
+
+            // Question Prompt
+            const promptStr = this.currentQ.prompt + " (" + this.currentQ.type + ")";
+            const promptText = this.add.text(cardX, cardY - cardH / 2 + 65, promptStr, {
+              fontSize: "18px",
+              fontStyle: "bold",
+              color: "#ffffff",
+              fontFamily: "Inter, system-ui, sans-serif"
+            }).setOrigin(0.5);
+            this.vennContainer.add(promptText);
+            this.overlayTexts.push(promptText);
+
+            // Active Zone state
+            this.selectedZone = 'overlap'; // defaults to overlap GCF zone
+
+            // Venn circles center / graphics
+            this.vennGraphics = this.add.graphics();
+            this.vennContainer.add(this.vennGraphics);
+
+            // Add Equations Labels
+            this.aEqText = this.add.text(cardX - 200, cardY - 170, "", { fontSize: "12px", fontStyle: "bold", fontFamily: "Inter" }).setOrigin(0.5);
+            this.bEqText = this.add.text(cardX + 200, cardY - 170, "", { fontSize: "12px", fontStyle: "bold", fontFamily: "Inter" }).setOrigin(0.5);
+            this.gcfEqText = this.add.text(cardX, cardY + 140, "", { fontSize: "12px", fontStyle: "bold", fontFamily: "Inter" }).setOrigin(0.5);
+            this.lcmEqText = this.add.text(cardX, cardY + 165, "", { fontSize: "12px", fontStyle: "bold", fontFamily: "Inter" }).setOrigin(0.5);
+            this.vennContainer.add([this.aEqText, this.bEqText, this.gcfEqText, this.lcmEqText]);
+            this.overlayTexts.push(this.aEqText, this.bEqText, this.gcfEqText, this.lcmEqText);
+
+            // Zone Selection Buttons
+            const createZoneButton = (scene, x, y, width, height, zoneKey, label) => {
+              const btn = scene.add.rectangle(x, y, width, height, 0x1e1b4b).setInteractive({ useHandCursor: true });
+              btn.setStrokeStyle(1.5, 0x4f46e5, 1);
+              const txt = scene.add.text(x, y, label, { fontSize: "12px", fontStyle: "bold", color: "#c7d2fe", fontFamily: "Inter" }).setOrigin(0.5);
+              btn.on("pointerdown", () => {
+                scene.selectedZone = zoneKey;
+                playTone(480, 0.05);
+                scene.drawVenn();
+              });
+              scene.vennContainer.add([btn, txt]);
+              scene.overlayButtons.push(btn);
+              scene.overlayTexts.push(txt);
+              return btn;
+            };
+
+            const btnY = cardY - 120;
+            this.zoneA_Btn = createZoneButton(this, cardX - 180, btnY, 110, 26, 'left', "A ONLY");
+            this.zoneOverlap_Btn = createZoneButton(this, cardX, btnY, 140, 26, 'overlap', "GCF (SHARED)");
+            this.zoneB_Btn = createZoneButton(this, cardX + 180, btnY, 110, 26, 'right', "B ONLY");
+
+            // Setup state for tiles
+            this.vennTiles = this.currentQ.union.map((val, idx) => ({ id: idx, value: val, zone: 'pool' }));
+            
+            // Placed numbers text container
+            this.placedTexts = [];
+
+            // Submit / Reset / Swim Away Buttons at the very bottom
+            const bottomBtnY = cardY + 205;
+            
+            const createBottomButton = (scene, x, y, width, height, label, color, textColor, onClick) => {
+              const btn = scene.add.rectangle(x, y, width, height, color).setInteractive({ useHandCursor: true });
+              const txt = scene.add.text(x, y, label, { fontSize: "14px", fontStyle: "bold", color: textColor, fontFamily: "Inter" }).setOrigin(0.5);
+              btn.on("pointerover", () => btn.setAlpha(0.85));
+              btn.on("pointerout", () => btn.setAlpha(1));
+              btn.on("pointerdown", () => {
+                onClick();
+              });
+              scene.vennContainer.add([btn, txt]);
+              scene.overlayButtons.push(btn);
+              scene.overlayTexts.push(txt);
+            };
+
+            // Swim Away (closes and gives back key)
+            createBottomButton(this, cardX - 160, bottomBtnY, 130, 34, "SWIM AWAY", 0x3b82f6, "#fff", () => {
+              this.keys++; // give back key
+              this.hideAnswerPanel();
             });
 
-            // Store reference to chest
+            // Reset
+            createBottomButton(this, cardX, bottomBtnY, 110, 34, "RESET", 0x4b5563, "#fff", () => {
+              this.vennTiles.forEach(t => t.zone = 'pool');
+              this.selectedZone = 'overlap';
+              playTone(440, 0.08);
+              this.drawVenn();
+            });
+
+            // Submit
+            createBottomButton(this, cardX + 160, bottomBtnY, 130, 34, "SUBMIT ANSWER", 0x10b981, "#fff", () => {
+              this.submitVenn(chest);
+            });
+
+            // Error Overlay Feedback
+            this.overlayFeedback = this.add.text(cardX, cardY - 70, "", {
+              fontSize: "16px",
+              fontStyle: "bold",
+              color: "#ef4444",
+              stroke: "#000",
+              strokeThickness: 3,
+              fontFamily: "Inter"
+            }).setOrigin(0.5).setAlpha(0);
+            this.vennContainer.add(this.overlayFeedback);
+            this.overlayTexts.push(this.overlayFeedback);
+
             this.activeChest = chest;
 
-            // Pause player movement during answer
-            this.player.body.setVelocity(0, 0);
+            // Render
+            this.drawVenn();
           }
 
-          hideAnswerPanel() {
-            this.answerPanel.setVisible(false);
-            this.answerTitle.setVisible(false);
-            this.answerStem.setVisible(false);
-            this.answerBtns.forEach((b) => b.setVisible(false));
-            this.answerLabels.forEach((l) => l.setVisible(false));
+          drawVenn() {
+            this.vennGraphics.clear();
+            
+            // Clear old placed texts/rects
+            this.placedTexts.forEach(t => t.destroy());
+            this.placedTexts = [];
+            this.overlayTileTexts.forEach(t => t.destroy());
+            this.overlayTileTexts = [];
+            this.overlayTileRects.forEach(r => r.destroy());
+            this.overlayTileRects = [];
+
+            const cardX = W / 2;
+            const cardY = H / 2;
+            const cxA = cardX - 100;
+            const cxB = cardX + 100;
+            const cy = cardY - 15;
+            const rad = 110;
+
+            // Draw circle backgrounds
+            this.vennGraphics.fillStyle(0x3b82f6, 0.08);
+            this.vennGraphics.fillCircle(cxA, cy, rad);
+            this.vennGraphics.fillStyle(0xa78bfa, 0.08);
+            this.vennGraphics.fillCircle(cxB, cy, rad);
+
+            // Draw circle outlines
+            this.vennGraphics.lineStyle(3, 0x3b82f6, 0.85);
+            this.vennGraphics.strokeCircle(cxA, cy, rad);
+            this.vennGraphics.lineStyle(3, 0xa78bfa, 0.85);
+            this.vennGraphics.strokeCircle(cxB, cy, rad);
+
+            // Highlight active zone button
+            this.zoneA_Btn.setStrokeStyle(1.5, this.selectedZone === 'left' ? 0xfcd34d : 0x4f46e5, 1);
+            this.zoneOverlap_Btn.setStrokeStyle(1.5, this.selectedZone === 'overlap' ? 0xfcd34d : 0x4f46e5, 1);
+            this.zoneB_Btn.setStrokeStyle(1.5, this.selectedZone === 'right' ? 0xfcd34d : 0x4f46e5, 1);
+
+            // Filter tiles in zones
+            const leftTiles = this.vennTiles.filter(t => t.zone === 'left');
+            const overlapTiles = this.vennTiles.filter(t => t.zone === 'overlap');
+            const rightTiles = this.vennTiles.filter(t => t.zone === 'right');
+            const poolTiles = this.vennTiles.filter(t => t.zone === 'pool');
+
+            // Render Circle labels inside diagram
+            const labelA = this.add.text(cxA - 40, cy - 80, "Factors of " + this.currentQ.a, { fontSize: "13px", fontStyle: "bold", color: "#60a5fa" }).setOrigin(0.5);
+            const labelB = this.add.text(cxB + 40, cy - 80, "Factors of " + this.currentQ.b, { fontSize: "13px", fontStyle: "bold", color: "#c084fc" }).setOrigin(0.5);
+            this.placedTexts.push(labelA, labelB);
+            this.vennContainer.add([labelA, labelB]);
+
+            // Draw placed factor tiles in Circle zones
+            const drawPlacedTilesInZone = (tiles, cx, startY) => {
+              tiles.forEach((tile, index) => {
+                const tx = cx;
+                const ty = startY + (index - (tiles.length - 1)/2) * 32;
+                
+                const rect = this.add.rectangle(tx, ty, 28, 26, 0x1e1b4b).setInteractive({ useHandCursor: true });
+                rect.setStrokeStyle(1.5, 0xfcd34d, 1);
+                const txt = this.add.text(tx, ty, String(tile.value), { fontSize: "13px", fontStyle: "bold", color: "#fcd34d" }).setOrigin(0.5);
+                
+                rect.on("pointerdown", () => {
+                  tile.zone = 'pool';
+                  playTone(330, 0.05);
+                  this.drawVenn();
+                });
+                
+                this.vennContainer.add([rect, txt]);
+                this.overlayTileRects.push(rect);
+                this.overlayTileTexts.push(txt);
+              });
+            };
+
+            // Draw for Left Circle
+            drawPlacedTilesInZone(leftTiles, cxA - 45, cy);
+            // Draw for Overlap Zone
+            drawPlacedTilesInZone(overlapTiles, cardX, cy);
+            // Draw for Right Circle
+            drawPlacedTilesInZone(rightTiles, cxB + 45, cy);
+
+            // Draw Pool Tiles Rack at bottom
+            const poolRackY = cardY + 95;
+            poolTiles.forEach((tile, index) => {
+              const px = cardX + (index - (poolTiles.length - 1)/2) * 44;
+              
+              const rect = this.add.rectangle(px, poolRackY, 32, 30, 0x0f172a).setInteractive({ useHandCursor: true });
+              rect.setStrokeStyle(1.5, 0x94a3b8, 0.8);
+              const txt = this.add.text(px, poolRackY, String(tile.value), { fontSize: "14px", fontStyle: "bold", color: "#f8fafc" }).setOrigin(0.5);
+              
+              rect.on("pointerover", () => rect.setScale(1.1));
+              rect.on("pointerout", () => rect.setScale(1));
+              rect.on("pointerdown", () => {
+                tile.zone = this.selectedZone;
+                playTone(600, 0.05);
+                this.drawVenn();
+              });
+
+              this.vennContainer.add([rect, txt]);
+              this.overlayTileRects.push(rect);
+              this.overlayTileTexts.push(txt);
+            });
+
+            // Calculate Dynamic Products
+            const leftVals = leftTiles.map(t => t.value);
+            const overlapVals = overlapTiles.map(t => t.value);
+            const rightVals = rightTiles.map(t => t.value);
+
+            // A contains Left + Overlap
+            const aVals = [...leftVals, ...overlapVals];
+            const prodA = aVals.reduce((x, y) => x * y, 1);
+            const hasA = aVals.length > 0;
+            const matchA = hasA && prodA === this.currentQ.a;
+
+            // B contains Right + Overlap
+            const bVals = [...rightVals, ...overlapVals];
+            const prodB = bVals.reduce((x, y) => x * y, 1);
+            const hasB = bVals.length > 0;
+            const matchB = hasB && prodB === this.currentQ.b;
+
+            // GCF is Overlap product
+            const prodGCF = overlapVals.reduce((x, y) => x * y, 1);
+            const hasGCF = overlapVals.length > 0;
+            const matchGCF = hasGCF && prodGCF === this.currentQ.gcf;
+
+            // LCM is Left + Overlap + Right union product
+            const unionVals = [...leftVals, ...overlapVals, ...rightVals];
+            const prodLCM = unionVals.reduce((x, y) => x * y, 1);
+            const hasLCM = unionVals.length > 0;
+            const matchLCM = hasLCM && prodLCM === this.currentQ.lcm;
+
+            // Update Dynamic Equation text fields
+            this.aEqText.setText("Circle A: " + (hasA ? aVals.join(" × ") : "0") + " = " + (hasA ? prodA : "0") + " (Goal: " + this.currentQ.a + ")")
+              .setColor(matchA ? "#34d399" : "#f87171");
+
+            this.bEqText.setText("Circle B: " + (hasB ? bVals.join(" × ") : "0") + " = " + (hasB ? prodB : "0") + " (Goal: " + this.currentQ.b + ")")
+              .setColor(matchB ? "#34d399" : "#f87171");
+
+            this.gcfEqText.setText("GCF (Overlap): " + (hasGCF ? overlapVals.join(" × ") : "0") + " = " + (hasGCF ? prodGCF : "0") + " (Goal: " + this.currentQ.gcf + ")")
+              .setColor(matchGCF ? "#34d399" : "#fcd34d");
+
+            this.lcmEqText.setText("LCM (Union): " + (hasLCM ? unionVals.join(" × ") : "0") + " = " + (hasLCM ? prodLCM : "0") + " (Goal: " + this.currentQ.lcm + ")")
+              .setColor(matchLCM ? "#34d399" : "#fcd34d");
           }
 
-          selectAnswer(idx) {
-            if (
-              this.answered ||
-              !this.answerPanel.visible ||
-              idx >= this.currentQ.choices.length
-            )
-              return;
-            this.answered = true;
+          submitVenn(chest) {
+            const leftVals = this.vennTiles.filter(t => t.zone === 'left').map(t => t.value);
+            const overlapVals = this.vennTiles.filter(t => t.zone === 'overlap').map(t => t.value);
+            const rightVals = this.vennTiles.filter(t => t.zone === 'right').map(t => t.value);
 
-            const choice = this.currentQ.choices[idx];
-            const chest = this.activeChest;
+            // Compute products
+            const aVals = [...leftVals, ...overlapVals];
+            const prodA = aVals.reduce((x, y) => x * y, 1);
+            const bVals = [...rightVals, ...overlapVals];
+            const prodB = bVals.reduce((x, y) => x * y, 1);
+            const prodGCF = overlapVals.reduce((x, y) => x * y, 1);
+            const unionVals = [...leftVals, ...overlapVals, ...rightVals];
+            const prodLCM = unionVals.reduce((x, y) => x * y, 1);
 
-            if (choice.correct) {
+            // Check correctness of diagram
+            const matchA = aVals.length > 0 && prodA === this.currentQ.a;
+            const matchB = bVals.length > 0 && prodB === this.currentQ.b;
+            const matchGCF = overlapVals.length > 0 && prodGCF === this.currentQ.gcf;
+            const matchLCM = unionVals.length > 0 && prodLCM === this.currentQ.lcm;
+
+            const correct = matchA && matchB && matchGCF && matchLCM;
+
+            if (correct) {
+              this.answered = true;
               sfxUnlock();
               this.combo++;
               this.bestCombo = Math.max(this.bestCombo, this.combo);
@@ -1191,9 +1358,6 @@
               this.score += pts;
               this.gold += rand(10, 25);
               this.chestsOpened++;
-
-              this.answerBtns[idx].setTint(0x34d399);
-              this.answerLabels[idx].setColor("#34d399");
 
               // Open chest
               if (chest) {
@@ -1219,24 +1383,21 @@
                 }
               }
 
+              this.hideAnswerPanel();
               this.showFeedback("Unlocked! +" + pts, 0x34d399);
 
-              // Treasure burst
-              this.add
-                .particles(
-                  chest ? chest.x : W / 2,
-                  chest ? chest.y : 200,
-                  "star",
-                  {
-                    speed: { min: 80, max: 250 },
-                    lifespan: 800,
-                    scale: { start: 1, end: 0 },
-                    tint: [0xfbbf24, 0xfcd34d, 0xfb923c],
-                    quantity: 20,
-                    emitting: false,
-                  },
-                )
-                .explode(20);
+              // Burst particles
+              const px = chest ? chest.x : W / 2;
+              const py = chest ? chest.y : H / 2;
+              const emitter = this.add.particles(px, py, "star", {
+                speed: { min: 80, max: 250 },
+                lifespan: 800,
+                scale: { start: 1, end: 0 },
+                tint: [0xfbbf24, 0xfcd34d, 0xfb923c],
+                quantity: 20,
+                emitting: false,
+              });
+              emitter.explode(20);
 
               this.cameras.main.flash(200, 52, 211, 153);
               this.cameras.main.shake(100, 0.004);
@@ -1247,7 +1408,6 @@
                 this.room++;
                 sfxLevelUp();
                 this.time.delayedCall(800, () => {
-                  this.hideAnswerPanel();
                   this.showFeedback(
                     "Room " + this.room + "! Deeper into the dungeon!",
                     0xa78bfa,
@@ -1260,58 +1420,44 @@
               }
 
               this.updateHUD();
-              this.time.delayedCall(800, () => this.hideAnswerPanel());
             } else {
               sfxWrong();
               this.combo = 0;
               this.lives--;
               this.questionsTotal++;
-
-              this.answerBtns[idx].setTint(0xef4444);
-              this.answerLabels[idx].setColor("#ef4444");
-
-              // Highlight correct
-              this.currentQ.choices.forEach((c, i) => {
-                if (c.correct) {
-                  this.answerBtns[i].setTint(0x34d399);
-                  this.answerLabels[i].setColor("#34d399");
-                }
-              });
-
-              this.showFeedback(
-                "Wrong! Answer: " + this.currentQ.answer,
-                0xef4444,
-              );
-              this.cameras.main.shake(200, 0.008);
-
-              this.add
-                .particles(
-                  this.answerBtns[idx].x,
-                  this.answerBtns[idx].y,
-                  "particle",
-                  {
-                    speed: { min: 30, max: 80 },
-                    lifespan: 400,
-                    tint: 0xef4444,
-                    quantity: 8,
-                    emitting: false,
-                  },
-                )
-                .explode(8);
-
-              // Give back the key since they didn't open it
-              this.keys++;
-
               this.updateHUD();
-              if (this.lives <= 0) {
-                this.time.delayedCall(1200, () => {
-                  this.hideAnswerPanel();
-                  this.endGame();
-                });
+
+              let errorMsg = "";
+              if (!matchA) {
+                errorMsg = "Circle A product does not equal " + this.currentQ.a + "!";
+              } else if (!matchB) {
+                errorMsg = "Circle B product does not equal " + this.currentQ.b + "!";
+              } else if (!matchGCF) {
+                errorMsg = "Overlap product does not equal GCF (" + this.currentQ.gcf + ")!";
+              } else if (!matchLCM) {
+                errorMsg = "Union product does not equal LCM (" + this.currentQ.lcm + ")!";
               } else {
-                this.time.delayedCall(1500, () => this.hideAnswerPanel());
+                errorMsg = "Factors misplaced!";
+              }
+
+              // Show overlay error feedback
+              this.overlayFeedback.setText(errorMsg).setAlpha(1);
+              this.cameras.main.shake(200, 0.006);
+
+              if (this.lives <= 0) {
+                this.hideAnswerPanel();
+                this.time.delayedCall(800, () => this.endGame());
               }
             }
+          }
+
+          hideAnswerPanel() {
+            if (this.vennContainer) {
+              this.vennContainer.destroy(true);
+              this.vennContainer = null;
+            }
+            this.answerPanel = { visible: false }; // Restore flag state
+            this.physics.resume();
           }
 
           collectCoin(coin) {
