@@ -41,7 +41,7 @@ function present(...parts) {
 /** Build the resources map for a lesson, with the route/path each would live at. */
 function resourcesFor(id) {
   const dl = (suffix) => `lessons/${id}/downloads/${id}-${suffix}`;
-  return {
+  const res = {
     lesson: { path: `/lessons/${id}/`, file: `lessons/${id}/index.html`, applicable: true },
     guidedNotes: { path: `/lessons/${id}/notes.html`, file: `lessons/${id}/notes.html`, applicable: true },
     guidedNotesPdf: { path: `/lessons/${id}/downloads/${id}-notes.pdf`, file: dl("notes.pdf"), applicable: true },
@@ -55,6 +55,16 @@ function resourcesFor(id) {
     studentHelp: { path: `/lessons/${id}/student-help/`, file: `lessons/${id}/student-help/index.html`, applicable: true },
     exitTicket: { path: `/lessons/${id}/#reflect`, file: `lessons/${id}/index.html`, applicable: true, inline: true },
   };
+
+  if (present(`lessons/${id}/bundle/interactive.html`)) {
+    res.studentPractice = { path: `/lessons/${id}/bundle/student-practice.md`, file: `lessons/${id}/bundle/student-practice.md`, applicable: true };
+    res.printablePacket = { path: `/lessons/${id}/bundle/sub-packet.html`, file: `lessons/${id}/bundle/sub-packet.html`, applicable: true };
+    res.activityPack = { path: `/lessons/${id}/bundle/activity-pack.html`, file: `lessons/${id}/bundle/activity-pack.html`, applicable: true };
+    res.subPlan = { path: `/lessons/${id}/bundle/sub-packet.html`, file: `lessons/${id}/bundle/sub-packet.html`, applicable: true };
+    res.interactive = { path: `/lessons/${id}/bundle/interactive.html`, file: `lessons/${id}/bundle/interactive.html`, applicable: true };
+  }
+
+  return res;
 }
 
 function vocabTerms(cfg) {

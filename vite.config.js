@@ -189,6 +189,19 @@ function copyStandaloneHtml() {
               cpSync(supportDir, destDir, { recursive: true });
             }
           }
+          // CardForge lesson bundles (interactive.html, activity-pack.html, sub-packet.html)
+          const bundleDir = resolve(lessonsDir, dir.name, "bundle");
+          if (existsSync(bundleDir)) {
+            const destDir = resolve(
+              __dirname,
+              "dist",
+              "lessons",
+              dir.name,
+              "bundle",
+            );
+            mkdirSync(destDir, { recursive: true });
+            cpSync(bundleDir, destDir, { recursive: true });
+          }
         }
       }
     },
