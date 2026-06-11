@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en" data-textsize="md">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Axiom City Vol. 1 — The Pattern Engine | Interactive Graphic Novel | Math Is…</title>
+<meta name="description" content="An interactive 3D graphic novel for Grade 6 Unit 1: benchmark fractions, decimal computation, number patterns, and volume — the origin of VEX. EduWonderLab.">
+<style>
+/* ================= AXIOM CITY ENGINE CSS v1.0 — DO NOT FORK ================= */
+:root{
+  --paper:#F7F4EC; --ink:#24323F; --navy:#17324D; --teal:#1FA6A2; --amber:#F2C15B;
+  --coral:#E2674A; --purple:#4A2580; --accent:var(--teal);
+  --panelborder:3px solid var(--navy);
+  --balloonfont:600 1rem/1.32 'Segoe UI',system-ui,-apple-system,sans-serif;
+  --capfont:italic 500 .92rem/1.35 Georgia,'Times New Roman',serif;
+  --pagew:560px;
+}
+:root{--accent:var(--amber)} /* VOL 1: amber accent */
+html[data-textsize="lg"]{font-size:18px}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:radial-gradient(120% 120% at 50% 0%,#23425f 0%,#101e2e 55%,#0a1420 100%);color:var(--ink);font:400 16px/1.45 'Segoe UI',system-ui,sans-serif;overflow:hidden}
+body.hc{--ink:#000;--paper:#fff}
+button{font:inherit;cursor:pointer}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:4px}
+
+/* ---------- COVER SCREEN ---------- */
+#cover{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:18px;background:radial-gradient(110% 110% at 50% 10%,#1c3a57 0%,#0a1420 100%);perspective:1400px;overflow:auto}
+#coverCard{position:relative;width:min(88vw,520px,calc((100vh - 200px)*0.714));aspect-ratio:5/7;border-radius:10px 18px 18px 10px;box-shadow:0 40px 80px rgba(0,0,0,.6),0 8px 22px rgba(0,0,0,.5);transform-style:preserve-3d;transition:transform .18s ease-out;background:var(--navy);overflow:hidden}
+#coverCard .spine{position:absolute;left:0;top:0;bottom:0;width:26px;background:linear-gradient(90deg,#0d1f33,#17324D 60%,#244a6e);z-index:5}
+#coverCard .spine span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-90deg);white-space:nowrap;color:var(--amber);font:900 .72rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.28em}
+.cov-layer{position:absolute;inset:0;will-change:transform}
+#coverTitle{position:absolute;left:34px;right:18px;top:26px;z-index:6;color:#fff}
+#coverTitle .series{font:900 .9rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.4em;color:var(--amber)}
+#coverTitle h1{font:900 clamp(2rem,7vw,3.1rem)/0.95 'Arial Black',Arial,sans-serif;text-transform:uppercase;margin-top:8px;text-shadow:4px 4px 0 rgba(0,0,0,.35);color:#fff}
+#coverTitle h1 em{font-style:normal;color:var(--accent)}
+#coverTitle .vol{display:inline-block;margin-top:10px;background:var(--accent);color:#fff;font:900 .8rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.18em;padding:7px 12px;border-radius:4px;box-shadow:2px 2px 0 rgba(0,0,0,.4)}
+#coverBottom{position:absolute;left:34px;right:18px;bottom:18px;z-index:6;display:flex;justify-content:space-between;align-items:flex-end;color:#cfe3ea;font:700 .72rem/1.3 'Segoe UI',sans-serif;letter-spacing:.12em}
+#coverActions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.bigbtn{background:var(--amber);color:var(--navy);border:none;border-radius:999px;font:900 1rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.1em;padding:18px 34px;box-shadow:0 6px 0 #b78a2e,0 14px 30px rgba(0,0,0,.5);transition:transform .12s,box-shadow .12s}
+.bigbtn:hover{transform:translateY(-2px)}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 #b78a2e}
+.bigbtn.alt{background:#274a6a;color:#fff;box-shadow:0 6px 0 #122a42,0 14px 30px rgba(0,0,0,.5)}
+
+/* ---------- HUD ---------- */
+#hud{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:10px;padding:8px 14px;background:linear-gradient(180deg,rgba(7,14,22,.92),rgba(7,14,22,.65) 70%,transparent);color:#dfe9ef}
+#hud .brand{font:900 .78rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.22em;color:var(--amber);white-space:nowrap}
+#hud .brand small{display:block;font:700 .56rem/1.4 'Segoe UI',sans-serif;letter-spacing:.18em;color:#9fb7c6}
+#progress{display:flex;gap:5px;margin-left:8px;flex-wrap:wrap}
+#progress .dot{width:9px;height:9px;border-radius:50%;background:#3a576f;border:1px solid #5b7d99}
+#progress .dot.on{background:var(--accent);border-color:var(--accent);box-shadow:0 0 6px var(--accent)}
+#badges{display:flex;gap:6px;margin-left:auto}
+.badge{width:34px;height:34px;border-radius:50%;background:#1c3a52;border:2px solid #35587a;display:flex;align-items:center;justify-content:center;filter:grayscale(1) brightness(.6);transition:filter .4s,transform .4s}
+.badge.earned{filter:none;border-color:var(--amber);background:#234d6b;animation:badgepop .6s cubic-bezier(.2,2,.4,1)}
+.badge svg{width:20px;height:20px}
+@keyframes badgepop{0%{transform:scale(.2) rotate(-40deg)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+.hudbtns{display:flex;gap:6px;margin-left:10px}
+.hudbtn{background:#1c3a52;border:1px solid #35587a;color:#dfe9ef;border-radius:8px;min-width:48px;min-height:38px;padding:4px 10px;font:700 .72rem/1.1 'Segoe UI',sans-serif}
+.hudbtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#06222b}
+.hudbtn.teacher{background:var(--purple);border-color:#6b46a8;color:#fff}
+
+/* ---------- BOOK STAGE ---------- */
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;perspective:2200px;padding:64px 12px 56px}
+#book{position:relative;width:min(96vw,1180px);height:min(calc(100vh - 130px),780px);transform-style:preserve-3d}
+#bookcase{position:absolute;inset:0;border-radius:8px 14px 14px 8px;background:#0e2233;box-shadow:0 50px 90px rgba(0,0,0,.65),0 10px 26px rgba(0,0,0,.5);transform:translateZ(-30px)}
+.edges{position:absolute;top:6px;bottom:6px;width:14px;background:repeating-linear-gradient(90deg,#e8e2d2 0 2px,#cfc7b2 2px 3px);border-radius:3px;transition:width .5s}
+#edgesL{left:-6px;border-right:1px solid #b8ae97}
+#edgesR{right:-6px;border-left:1px solid #b8ae97}
+#spreadWrap{position:absolute;inset:0;display:flex;border-radius:6px;overflow:visible}
+.page{position:relative;width:50%;height:100%;background:var(--paper);overflow:hidden;display:flex;flex-direction:column}
+.page.left{border-radius:8px 0 0 8px;box-shadow:inset -22px 0 28px -22px rgba(36,50,63,.45)}
+.page.right{border-radius:0 8px 8px 0;box-shadow:inset 22px 0 28px -22px rgba(36,50,63,.45)}
+#spine3d{position:absolute;left:50%;top:0;bottom:0;width:4px;transform:translateX(-50%);background:linear-gradient(90deg,rgba(0,0,0,.25),rgba(0,0,0,.45),rgba(0,0,0,.25));z-index:3}
+.page-inner{flex:1;overflow:auto;padding:18px 20px 14px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin}
+.pagefoot{flex:none;display:flex;justify-content:space-between;align-items:center;padding:6px 16px 10px;font:700 .66rem/1 'Segoe UI',sans-serif;letter-spacing:.18em;color:#7d8a8f;text-transform:uppercase}
+.page .chapterband{flex:none;background:var(--navy);color:#fff;font:900 .72rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.24em;padding:8px 20px;text-transform:uppercase}
+.page .chapterband em{color:var(--accent);font-style:normal}
+.gatelockcorner{position:absolute;top:8px;right:10px;z-index:5;width:34px;height:34px;border-radius:50%;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,.3)}
+.gatelockcorner.open{background:var(--teal)}
+.gatelockcorner svg{width:18px;height:18px}
+
+/* turning sheet */
+#turnSheet{position:absolute;top:0;bottom:0;right:0;width:50%;z-index:20;transform-origin:left center;transform-style:preserve-3d;pointer-events:none;display:none}
+#turnSheet.show{display:block}
+#turnSheet .ts{position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;background:var(--paper)}
+#turnSheet .ts.front{border-radius:0 8px 8px 0}
+#turnSheet .ts.back{transform:rotateY(180deg);border-radius:8px 0 0 8px}
+#turnSheet .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.0),rgba(0,0,0,.28));opacity:0;pointer-events:none}
+@keyframes turnFwd{0%{transform:rotateY(0)}100%{transform:rotateY(-180deg)}}
+@keyframes turnBack{0%{transform:rotateY(-180deg)}100%{transform:rotateY(0)}}
+#turnSheet.fwd{animation:turnFwd .8s cubic-bezier(.45,.05,.3,1) forwards}
+#turnSheet.back{animation:turnBack .8s cubic-bezier(.45,.05,.3,1) forwards}
+body.reduced #turnSheet{display:none!important}
+
+/* nav arrows */
+.navarrow{position:fixed;top:50%;transform:translateY(-50%);z-index:40;width:54px;height:88px;border:none;border-radius:12px;background:rgba(20,42,62,.8);color:#fff;font-size:1.6rem;display:flex;align-items:center;justify-content:center;transition:background .2s,opacity .2s}
+.navarrow:hover{background:var(--accent)}
+.navarrow[disabled]{opacity:.25;cursor:not-allowed}
+#prevBtn{left:8px}#nextBtn{right:8px}
+.navarrow.locked{background:var(--coral)}
+@keyframes shake{0%,100%{transform:translateY(-50%)}25%{transform:translateY(-50%) translateX(-6px)}75%{transform:translateY(-50%) translateX(6px)}}
+.navarrow.shake{animation:shake .3s 2}
+
+/* ---------- COMIC ART ---------- */
+.panelrow{display:flex;gap:10px}
+.panelrow>.panel{flex:1}
+.panel{position:relative;border:var(--panelborder);border-radius:6px 10px 7px 9px;background:#fff;overflow:hidden;box-shadow:3px 3px 0 rgba(23,50,77,.18)}
+.panel.tall{min-height:200px}
+.panel svg.scene{display:block;width:100%;height:auto}
+.panel3d{transform-style:preserve-3d;transition:transform .25s ease-out;will-change:transform}
+.panel3d [data-depth]{will-change:transform}
+.balloon{position:absolute;max-width:62%;background:#fff;border:3px solid var(--navy);border-radius:14px;padding:8px 12px;font:var(--balloonfont);color:var(--ink);box-shadow:2px 2px 0 rgba(23,50,77,.25);z-index:4}
+.balloon .who{display:block;font:900 .58rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.16em;color:var(--accent);text-transform:uppercase;margin-bottom:3px}
+.balloon::after{content:"";position:absolute;bottom:-14px;left:28px;width:0;height:0;border:9px solid transparent;border-top:14px solid var(--navy)}
+.balloon::before{content:"";position:absolute;bottom:-9px;left:31px;width:0;height:0;border:7px solid transparent;border-top:11px solid #fff;z-index:1}
+.balloon.tail-r::after{left:auto;right:28px}
+.balloon.tail-r::before{left:auto;right:31px}
+.balloon.vex{background:#062e33;border-color:var(--teal);color:#c8f5f1;border-radius:10px;font-family:'Consolas','Courier New',monospace;font-weight:500;box-shadow:0 0 12px rgba(31,166,162,.5)}
+.balloon.vex .who{color:var(--amber)}
+.balloon.vex::after{border-top-color:var(--teal)}
+.balloon.vex::before{border-top-color:#062e33}
+.balloon.thought{border-radius:30px;border-style:dashed}
+.caption{background:#FFF3D8;border:2px solid var(--amber);border-left-width:8px;padding:7px 12px;font:var(--capfont);color:#5a4a22;border-radius:3px}
+.caption.loc{font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-style:normal;font-family:'Segoe UI',sans-serif;font-size:.74rem}
+.sfx{position:absolute;z-index:5;font:900 1.7rem/1 'Arial Black',Arial,sans-serif;color:var(--coral);-webkit-text-stroke:2px var(--navy);text-stroke:2px var(--navy);transform:rotate(-7deg);text-shadow:3px 3px 0 var(--amber);letter-spacing:.04em;pointer-events:none}
+.splashtitle{font:900 clamp(1.5rem,3.2vw,2.4rem)/1 'Arial Black',Arial,sans-serif;text-transform:uppercase;color:var(--navy)}
+.splashtitle em{color:var(--accent);font-style:normal}
+.kicker{font:900 .68rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.3em;color:var(--coral);text-transform:uppercase}
+
+/* ---------- GATES ---------- */
+.gatebox{border:4px solid var(--accent);border-radius:12px;background:linear-gradient(180deg,#ffffff,#eef7f6);box-shadow:0 6px 0 rgba(23,50,77,.15);overflow:hidden}
+.gatebox header{display:flex;align-items:center;gap:10px;background:var(--accent);color:#fff;padding:9px 14px}
+.gatebox header .gicon{width:30px;height:30px;flex:none}
+.gatebox header h3{font:900 .85rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.gatebody{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.gateprompt{font:600 .95rem/1.4 'Segoe UI',sans-serif}
+.gatecheck{align-self:flex-start;background:var(--navy);color:#fff;border:none;border-radius:999px;font:900 .82rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.1em;padding:13px 26px;min-height:48px;box-shadow:0 4px 0 #0c1d30}
+.gatecheck:active{transform:translateY(2px);box-shadow:0 2px 0 #0c1d30}
+.gatefeedback{min-height:1.3em;font:700 .88rem/1.35 'Segoe UI',sans-serif}
+.gatefeedback.bad{color:var(--coral)}
+.gatefeedback.good{color:#0d7a4f}
+.gatehint{background:#FFF3D8;border:2px dashed var(--amber);border-radius:8px;padding:9px 12px;font:600 .86rem/1.4 'Segoe UI',sans-serif;color:#5a4a22}
+.gatesolved{display:flex;align-items:center;gap:10px;background:#e2f4ee;border:3px solid #0d7a4f;border-radius:10px;padding:10px 14px;font:900 .8rem/1.3 'Arial Black',Arial,sans-serif;color:#0d7a4f;letter-spacing:.08em}
+.stamp{display:inline-block;transform:rotate(-6deg);border:3px solid #0d7a4f;border-radius:6px;padding:3px 8px}
+/* gate widgets */
+.tokenbank,.beakers{display:flex;gap:8px;flex-wrap:wrap}
+.token{width:48px;height:48px;border-radius:50%;border:3px solid var(--navy);background:var(--amber);font:900 .7rem/1 'Arial Black',Arial,sans-serif;color:var(--navy);display:flex;align-items:center;justify-content:center;transition:transform .15s,background .2s}
+.token:hover{transform:scale(1.1)}
+.token.inA{background:var(--teal);color:#fff}
+.token.inB{background:#7db8e8;color:var(--navy)}
+.beaker{flex:1;min-width:120px;border:3px solid var(--navy);border-radius:0 0 14px 14px;border-top-style:dashed;padding:8px;min-height:74px;background:rgba(31,166,162,.08)}
+.beaker h4{font:900 .62rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.12em;color:var(--navy);text-transform:uppercase;margin-bottom:6px}
+.beaker .cnt{font:900 1.2rem/1 'Arial Black',Arial,sans-serif;color:var(--accent)}
+.numin{width:96px;min-height:48px;border:3px solid var(--navy);border-radius:8px;font:900 1.05rem/1 'Arial Black',Arial,sans-serif;text-align:center;color:var(--navy);background:#fff;padding:6px}
+.numin:focus{border-color:var(--accent)}
+.numin.ok{border-color:#0d7a4f;background:#e2f4ee}
+.numin.no{border-color:var(--coral);background:#fdebe6}
+.rt-table{border-collapse:collapse;width:100%}
+.rt-table th,.rt-table td{border:2px solid var(--navy);padding:7px 9px;text-align:center;font:700 .92rem/1.2 'Segoe UI',sans-serif}
+.rt-table th{background:var(--navy);color:#fff;font:900 .7rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.08em}
+.rt-table td.given{background:#eef7f6;font-weight:800}
+.choicebtns{display:flex;gap:10px;flex-wrap:wrap}
+.choicebtn{flex:1;min-width:140px;min-height:48px;border:3px solid var(--navy);border-radius:10px;background:#fff;font:700 .9rem/1.3 'Segoe UI',sans-serif;padding:10px 12px;text-align:left;transition:background .15s}
+.choicebtn:hover{background:#eef7f6}
+.choicebtn[aria-pressed="true"]{background:var(--navy);color:#fff}
+.gategrid{touch-action:manipulation}
+.gategrid .gp{cursor:pointer}
+.unlockflash{animation:unlockflash 1s ease-out}
+@keyframes unlockflash{0%{box-shadow:0 0 0 0 rgba(242,193,91,.9)}100%{box-shadow:0 0 0 26px rgba(242,193,91,0)}}
+
+/* ---------- MODALS ---------- */
+.modal{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(5,12,19,.72);padding:16px}
+.modal.open{display:flex}
+.modalcard{background:var(--paper);border-radius:14px;max-width:780px;width:100%;max-height:88vh;overflow:auto;box-shadow:0 30px 70px rgba(0,0,0,.6)}
+.modalcard>header{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;background:var(--navy);color:#fff;padding:12px 18px;z-index:2}
+.modalcard>header h2{font:900 1rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.modalcard .x{background:var(--coral);border:none;color:#fff;border-radius:8px;width:40px;height:40px;font:900 1rem/1 Arial}
+.modalbody{padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.tt{border-collapse:collapse;width:100%}
+.tt th,.tt td{border:2px solid var(--navy);padding:8px 10px;font:600 .85rem/1.35 'Segoe UI',sans-serif;text-align:left;vertical-align:top}
+.tt th{background:var(--navy);color:#fff;font:900 .68rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.tt tr:nth-child(even) td{background:#fff}
+.workedsteps{display:flex;flex-direction:column;gap:8px}
+.workedsteps .st{display:flex;gap:10px;align-items:flex-start;background:#fff;border:2px solid var(--navy);border-radius:8px;padding:9px 12px;font:600 .9rem/1.4 'Segoe UI',sans-serif}
+.workedsteps .st b.n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font:900 .8rem/1 Arial}
+
+/* ---------- END MATTER ---------- */
+.castcard{display:flex;gap:12px;align-items:center;border:3px solid var(--navy);border-radius:10px;background:#fff;padding:8px 12px}
+.castcard svg{width:64px;height:76px;flex:none}
+.castcard h4{font:900 .8rem/1.2 'Arial Black',Arial,sans-serif;color:var(--navy);letter-spacing:.06em}
+.castcard p{font:600 .8rem/1.35 'Segoe UI',sans-serif;color:#4c5a66}
+.journal{border:3px solid var(--amber);background:#FFFDF4;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.journal h4{font:900 .8rem/1.2 'Arial Black',Arial,sans-serif;color:#8a6a1c;letter-spacing:.14em;text-transform:uppercase}
+.journal .jrow{display:flex;gap:10px;align-items:flex-start;font:600 .88rem/1.4 Georgia,serif;color:#4a3d18}
+.journal .jrow b{color:var(--navy)}
+#certificate{border:6px double var(--navy);border-radius:8px;background:#fff;padding:18px;text-align:center;display:flex;flex-direction:column;gap:8px}
+#certificate h3{font:900 1.2rem/1.1 'Arial Black',Arial,sans-serif;color:var(--navy);letter-spacing:.1em}
+#certName{border:none;border-bottom:3px solid var(--navy);font:900 1.3rem/1.2 Georgia,serif;text-align:center;background:transparent;min-height:48px;width:80%;align-self:center;color:var(--ink)}
+.certbadges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.certbadges .badge{filter:none;border-color:var(--amber);background:#fdf6e7}
+.certbadges .badge.locked{filter:grayscale(1) opacity(.35)}
+
+/* ---------- MOBILE ---------- */
+@media (max-width:820px){
+  #book{height:min(calc(100vh - 120px),760px)}
+  #spreadWrap .page{width:100%}
+  #spreadWrap .page.offscreen{display:none}
+  #spine3d,#edgesL{display:none}
+  .navarrow{width:44px;height:72px}
+  .balloon{max-width:78%}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important;transition-duration:.001s!important}
+}
+/* ---------- PRINT ---------- */
+@media print{
+  body{overflow:visible;background:#fff}
+  body *{visibility:hidden}
+  body.print-teacher #teacherModal,body.print-teacher #teacherModal *{visibility:visible}
+  body.print-teacher #teacherModal{position:static;display:block;background:#fff;padding:0}
+  body.print-teacher #teacherModal .modalcard{max-height:none;box-shadow:none}
+  body.print-cert #certificate,body.print-cert #certificate *{visibility:visible}
+  body.print-cert #certificate{position:fixed;inset:5% 8%;background:#fff}
+  .x,.gatecheck{display:none!important}
+}
+/* ================= VOL OVERRIDES (Vol 1 · amber accent — contrast fixes) ================= */
+.gatebox header{color:var(--navy)}
+#coverTitle .vol{color:var(--navy)}
+.workedsteps .st b.n{color:var(--navy)}
+.balloon .who{color:#8a6a1c}
+.balloon.vex .who{color:var(--amber)}
+.splashtitle em{color:#b78a2e}
+.beaker .cnt{color:#8a6a1c}
+.navarrow:hover{color:var(--navy)}
+</style>
+</head>
+<body>
+<!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<pattern id="halftone" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.4" fill="#17324D" opacity=".18"/></pattern>
+<pattern id="halftoneT" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.4" fill="#1FA6A2" opacity=".3"/></pattern>
+<linearGradient id="skygrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd8e8"/><stop offset="1" stop-color="#e8f4ee"/></linearGradient>
+<linearGradient id="duskgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A2580"/><stop offset=".6" stop-color="#E2674A"/><stop offset="1" stop-color="#F2C15B"/></linearGradient>
+<radialGradient id="vexglow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#7CF2EC"/><stop offset=".6" stop-color="#1FA6A2"/><stop offset="1" stop-color="#1FA6A2" stop-opacity="0"/></radialGradient>
+
+<!-- MAYA: teal jacket, black high bun, star pin -->
+<g id="sym-maya"><path d="M22 118 L24 84 Q24 70 50 70 Q76 70 76 84 L78 118 Z" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><path d="M40 73 L50 86 L60 73" fill="#F7F4EC" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="44" r="24" fill="#C68642" stroke="#17324D" stroke-width="4"/><path d="M27 40 Q26 18 50 18 Q74 18 73 40 Q66 26 50 26 Q34 26 27 40Z" fill="#1B1B23" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="13" r="9" fill="#1B1B23" stroke="#17324D" stroke-width="3"/><path d="M62 8 l2.2 4.4 4.8.6-3.5 3.4.9 4.8-4.4-2.3-4.4 2.3.9-4.8-3.5-3.4 4.8-.6z" fill="#F2C15B" stroke="#17324D" stroke-width="1.5"/><circle cx="42" cy="44" r="2.6" fill="#17324D"/><circle cx="58" cy="44" r="2.6" fill="#17324D"/><path d="M37 37 q5 -3 9 -1 M54 36 q5 -2 9 1" fill="none" stroke="#17324D" stroke-width="2.4" stroke-linecap="round"/><path d="M44 55 q6 5 12 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- THEO: navy hoodie, flat-top, amber glasses -->
+<g id="sym-theo"><path d="M22 118 L24 86 Q24 72 50 72 Q76 72 76 86 L78 118 Z" fill="#17324D" stroke="#17324D" stroke-width="4"/><path d="M36 72 Q50 80 64 72 L64 80 Q50 88 36 80Z" fill="#0d2238" stroke="#17324D" stroke-width="2"/><circle cx="50" cy="45" r="24" fill="#6B4226" stroke="#17324D" stroke-width="4"/><path d="M27 38 Q27 16 50 16 Q73 16 73 38 L70 30 L30 30 Z" fill="#10101a" stroke="#17324D" stroke-width="3"/><rect x="33" y="38" width="14" height="11" rx="3" fill="#fff" stroke="#F2C15B" stroke-width="3"/><rect x="53" y="38" width="14" height="11" rx="3" fill="#fff" stroke="#F2C15B" stroke-width="3"/><line x1="47" y1="43" x2="53" y2="43" stroke="#F2C15B" stroke-width="3"/><circle cx="40" cy="44" r="2.4" fill="#17324D"/><circle cx="60" cy="44" r="2.4" fill="#17324D"/><path d="M43 57 q7 3 14 -1" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- ZARA: coral overalls, side ponytail -->
+<g id="sym-zara"><path d="M22 118 L24 88 Q24 74 50 74 Q76 74 76 88 L78 118 Z" fill="#fff" stroke="#17324D" stroke-width="4"/><path d="M30 78 L34 118 L44 118 L42 80 M70 78 L66 118 L56 118 L58 80" fill="#E2674A" stroke="#17324D" stroke-width="3"/><rect x="40" y="92" width="20" height="16" rx="3" fill="#E2674A" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="46" r="24" fill="#F1C27D" stroke="#17324D" stroke-width="4"/><path d="M27 44 Q24 20 50 19 Q76 20 74 38 Q70 28 52 27 Q34 27 32 44 Z" fill="#E2674A" stroke="#17324D" stroke-width="3"/><path d="M71 30 Q88 36 84 58 Q80 70 72 72 Q78 58 72 46Z" fill="#E2674A" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="46" r="2.6" fill="#17324D"/><circle cx="58" cy="46" r="2.6" fill="#17324D"/><path d="M42 57 q8 6 16 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/><circle cx="36" cy="53" r="3" fill="#E2674A" opacity=".5"/><circle cx="64" cy="53" r="3" fill="#E2674A" opacity=".5"/></g>
+<!-- DEV: purple tee, headphones -->
+<g id="sym-dev"><path d="M22 118 L24 88 Q24 74 50 74 Q76 74 76 88 L78 118 Z" fill="#4A2580" stroke="#17324D" stroke-width="4"/><path d="M43 92 l7 -6 7 6 -7 6z" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="50" cy="46" r="24" fill="#8D5524" stroke="#17324D" stroke-width="4"/><path d="M28 40 Q26 18 50 17 Q74 18 72 40 L66 28 L60 34 L52 26 L44 34 L36 27 Z" fill="#171722" stroke="#17324D" stroke-width="3"/><path d="M24 64 Q20 50 26 42 M76 64 Q80 50 74 42" fill="none" stroke="#4A2580" stroke-width="6" stroke-linecap="round"/><circle cx="25" cy="64" r="7" fill="#4A2580" stroke="#17324D" stroke-width="3"/><circle cx="75" cy="64" r="7" fill="#4A2580" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="46" r="2.6" fill="#17324D"/><circle cx="58" cy="46" r="2.6" fill="#17324D"/><path d="M43 57 q7 5 14 1" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- VEX: glowing orb AI -->
+<g id="sym-vex"><circle cx="50" cy="50" r="38" fill="url(#vexglow)" opacity=".55"/><polygon points="50,22 73,36 73,64 50,78 27,64 27,36" fill="#0b3a40" stroke="#1FA6A2" stroke-width="3.5"/><polygon points="50,30 66,40 66,60 50,70 34,60 34,40" fill="none" stroke="#7CF2EC" stroke-width="1.6" opacity=".8"/><circle cx="50" cy="50" r="10" fill="#F2C15B"/><circle cx="50" cy="50" r="4.5" fill="#17324D"/><circle cx="50" cy="14" r="3" fill="#F2C15B"/><circle cx="78" cy="70" r="2.4" fill="#7CF2EC"/><circle cx="22" cy="72" r="2" fill="#7CF2EC"/></g>
+<!-- props -->
+<g id="sym-bike"><circle cx="22" cy="46" r="14" fill="none" stroke="#17324D" stroke-width="4"/><circle cx="74" cy="46" r="14" fill="none" stroke="#17324D" stroke-width="4"/><path d="M22 46 L40 22 L62 22 L74 46 M40 22 L48 46 L22 46 M48 46 L62 22 M36 16 L46 16 M62 22 L58 14 L66 14" fill="none" stroke="#E2674A" stroke-width="4" stroke-linecap="round"/></g>
+<g id="sym-skyline"><rect x="0" y="34" width="14" height="46" fill="#17324D"/><rect x="16" y="20" width="18" height="60" fill="#22456a"/><rect x="36" y="42" width="12" height="38" fill="#17324D"/><rect x="50" y="10" width="20" height="70" fill="#2c567f"/><polygon points="60,0 50,12 70,12" fill="#1FA6A2"/><rect x="72" y="30" width="14" height="50" fill="#17324D"/><rect x="88" y="46" width="12" height="34" fill="#22456a"/><g fill="#F2C15B" opacity=".9"><rect x="20" y="26" width="3" height="4"/><rect x="27" y="36" width="3" height="4"/><rect x="54" y="18" width="3" height="4"/><rect x="61" y="30" width="3" height="4"/><rect x="54" y="44" width="3" height="4"/><rect x="75" y="36" width="3" height="4"/></g></g>
+<g id="sym-trophy"><path d="M30 14 H70 V34 Q70 52 50 56 Q30 52 30 34 Z" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><path d="M30 20 H16 Q16 38 32 40 M70 20 H84 Q84 38 68 40" fill="none" stroke="#F2C15B" stroke-width="6"/><rect x="44" y="56" width="12" height="12" fill="#b78a2e" stroke="#17324D" stroke-width="3"/><rect x="34" y="68" width="32" height="10" rx="2" fill="#17324D"/></g>
+<!-- badge sigils -->
+<g id="sig-flask"><path d="M40 15 h20 v18 l16 30 a8 8 0 0 1 -7 12 H31 a8 8 0 0 1 -7 -12 l16 -30 z" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><path d="M33 52 h34 l6 11 a4 4 0 0 1 -4 6 H31 a4 4 0 0 1 -4 -6 z" fill="#F2C15B"/></g>
+<g id="sig-watch"><circle cx="50" cy="55" r="28" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><path d="M50 55 L50 36 M50 55 L64 60" stroke="#17324D" stroke-width="4" stroke-linecap="round"/><rect x="42" y="12" width="16" height="8" rx="2" fill="#17324D"/><line x1="50" y1="20" x2="50" y2="27" stroke="#17324D" stroke-width="4"/></g>
+<g id="sig-table"><rect x="18" y="22" width="64" height="56" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><line x1="18" y1="40" x2="82" y2="40" stroke="#17324D" stroke-width="4"/><line x1="50" y1="22" x2="50" y2="78" stroke="#17324D" stroke-width="4"/><rect x="18" y="22" width="64" height="18" fill="#1FA6A2" opacity=".5"/></g>
+<g id="sig-graph"><rect x="16" y="16" width="68" height="68" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><path d="M24 76 L76 30" stroke="#1FA6A2" stroke-width="5" stroke-linecap="round"/><circle cx="38" cy="64" r="5" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="56" cy="48" r="5" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="68" cy="58" r="5" fill="#E2674A" stroke="#17324D" stroke-width="2"/></g>
+<g id="sig-swap"><path d="M24 38 H64 l-10 -12 M76 62 H36 l10 12" fill="none" stroke="#1FA6A2" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="sig-boss"><path d="M50 10 l11 22 24 4 -17 17 4 24 -22 -11 -22 11 4 -24 -17 -17 24 -4 z" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="52" r="9" fill="#E2674A" stroke="#17324D" stroke-width="3"/></g>
+<g id="sig-lock"><rect x="28" y="44" width="44" height="36" rx="6" fill="currentColor"/><path d="M36 44 v-8 a14 14 0 0 1 28 0 v8" fill="none" stroke="currentColor" stroke-width="8"/></g>
+<g id="sig-open"><rect x="28" y="44" width="44" height="36" rx="6" fill="currentColor"/><path d="M36 44 v-8 a14 14 0 0 1 28 0" fill="none" stroke="currentColor" stroke-width="8"/></g>
+<!-- VOL 1 additions: props + sigils -->
+<linearGradient id="raingrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d1f33"/><stop offset=".55" stop-color="#22456a"/><stop offset="1" stop-color="#2c567f"/></linearGradient>
+<!-- MS. ORTIZ: purple cardigan, gray bun, round glasses -->
+<g id="sym-ortiz"><path d="M20 118 L23 82 Q23 68 50 68 Q77 68 77 82 L80 118 Z" fill="#4A2580" stroke="#17324D" stroke-width="4"/><path d="M38 70 L50 84 L62 70" fill="#F7F4EC" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="42" r="23" fill="#E0AC69" stroke="#17324D" stroke-width="4"/><path d="M28 38 Q27 17 50 17 Q73 17 72 38 Q65 25 50 25 Q35 25 28 38Z" fill="#8c8c96" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="12" r="8" fill="#8c8c96" stroke="#17324D" stroke-width="3"/><circle cx="41" cy="42" r="7" fill="#fff" stroke="#17324D" stroke-width="2.5"/><circle cx="59" cy="42" r="7" fill="#fff" stroke="#17324D" stroke-width="2.5"/><line x1="48" y1="42" x2="52" y2="42" stroke="#17324D" stroke-width="2.5"/><circle cx="41" cy="42" r="2.2" fill="#17324D"/><circle cx="59" cy="42" r="2.2" fill="#17324D"/><path d="M43 54 q7 5 14 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- props -->
+<g id="sym-obsv"><rect x="14" y="58" width="72" height="34" fill="#22456a" stroke="#17324D" stroke-width="3"/><path d="M18 58 Q18 22 50 22 Q82 22 82 58 Z" fill="#2c567f" stroke="#17324D" stroke-width="3"/><path d="M44 24 L56 24 L58 58 L42 58 Z" fill="#F2C15B" opacity=".85"/><rect x="42" y="68" width="16" height="24" fill="#17324D"/><rect x="24" y="68" width="10" height="10" fill="#F2C15B" opacity=".8"/><rect x="66" y="68" width="10" height="10" fill="#F2C15B" opacity=".8"/></g>
+<g id="sym-journal"><rect x="20" y="14" width="60" height="76" rx="6" fill="#7a4a21" stroke="#17324D" stroke-width="4"/><rect x="26" y="20" width="48" height="64" rx="4" fill="#a2683a"/><path d="M80 38 h10 v28 h-10" fill="#b78a2e" stroke="#17324D" stroke-width="3"/><circle cx="85" cy="52" r="6" fill="#F2C15B" stroke="#17324D" stroke-width="2.5"/><path d="M38 36 l8 8 m0 -8 l-8 8 M56 60 a6 6 0 1 1 .1 0" stroke="#F2C15B" stroke-width="3" fill="none"/></g>
+<g id="sym-box"><polygon points="20,38 60,22 92,34 52,50" fill="#d9a84e" stroke="#17324D" stroke-width="3"/><polygon points="20,38 52,50 52,86 20,74" fill="#b78a2e" stroke="#17324D" stroke-width="3"/><polygon points="52,50 92,34 92,70 52,86" fill="#8a6a1c" stroke="#17324D" stroke-width="3"/><path d="M30 42 L62 54 M40 46 L72 58 M50 50 L82 62" stroke="#17324D" stroke-width="1.5" opacity=".55"/><path d="M20 56 L52 68 M52 68 L92 52" stroke="#17324D" stroke-width="1.5" opacity=".55"/></g>
+<!-- badge sigils -->
+<g id="sig-half"><circle cx="50" cy="50" r="33" fill="#fff" stroke="#17324D" stroke-width="4"/><path d="M50 17 A33 33 0 0 1 50 83 Z" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><line x1="50" y1="17" x2="50" y2="83" stroke="#17324D" stroke-width="4"/></g>
+<g id="sig-keypad"><rect x="24" y="12" width="52" height="76" rx="8" fill="#fff" stroke="#17324D" stroke-width="4"/><rect x="30" y="18" width="40" height="16" rx="3" fill="#F2C15B"/><g fill="#1FA6A2"><rect x="31" y="42" width="11" height="10" rx="2"/><rect x="45" y="42" width="11" height="10" rx="2"/><rect x="59" y="42" width="11" height="10" rx="2"/><rect x="31" y="56" width="11" height="10" rx="2"/><rect x="45" y="56" width="11" height="10" rx="2"/><rect x="59" y="56" width="11" height="10" rx="2"/><rect x="31" y="70" width="11" height="10" rx="2"/><rect x="45" y="70" width="11" height="10" rx="2"/><rect x="59" y="70" width="11" height="10" rx="2"/></g></g>
+<g id="sig-steps"><rect x="16" y="64" width="15" height="20" fill="#F2C15B" stroke="#17324D" stroke-width="3"/><rect x="35" y="50" width="15" height="34" fill="#F2C15B" stroke="#17324D" stroke-width="3"/><rect x="54" y="32" width="15" height="52" fill="#F2C15B" stroke="#17324D" stroke-width="3"/><rect x="73" y="12" width="15" height="72" fill="#E2674A" stroke="#17324D" stroke-width="3"/></g>
+<g id="sig-cube"><polygon points="50,14 82,30 50,46 18,30" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><polygon points="18,30 50,46 50,84 18,68" fill="#b78a2e" stroke="#17324D" stroke-width="4"/><polygon points="82,30 50,46 50,84 82,68" fill="#8a6a1c" stroke="#17324D" stroke-width="4"/></g>
+<g id="sig-gear"><g stroke="#17324D" stroke-width="9" stroke-linecap="round"><line x1="50" y1="16" x2="50" y2="28"/><line x1="50" y1="72" x2="50" y2="84"/><line x1="16" y1="50" x2="28" y2="50"/><line x1="72" y1="50" x2="84" y2="50"/><line x1="27" y1="27" x2="35" y2="35"/><line x1="65" y1="65" x2="73" y2="73"/><line x1="73" y1="27" x2="65" y2="35"/><line x1="35" y1="65" x2="27" y2="73"/></g><circle cx="50" cy="50" r="23" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="50" r="8" fill="#17324D"/></g>
+</defs>
+</svg>
+
+<!-- ============ COVER ============ -->
+<div id="cover">
+  <div id="coverCard" role="img" aria-label="Cover of Axiom City Volume 1: The Pattern Engine. Four kids dash through the rain toward a domed observatory glowing amber on a hill.">
+    <div class="cov-layer" data-depth="6" style="z-index:1">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><rect width="500" height="700" fill="url(#raingrad)"/><circle cx="120" cy="130" r="62" fill="#F2C15B" opacity=".18"/><circle cx="120" cy="130" r="34" fill="#FFF3D8" opacity=".45"/><g stroke="#9fc6e8" stroke-width="3" opacity=".45" stroke-linecap="round"><line x1="90" y1="60" x2="68" y2="140"/><line x1="200" y1="30" x2="178" y2="110"/><line x1="320" y1="70" x2="298" y2="150"/><line x1="430" y1="40" x2="408" y2="120"/><line x1="150" y1="220" x2="128" y2="300"/><line x1="380" y1="240" x2="358" y2="320"/></g></svg>
+    </div>
+    <div class="cov-layer" data-depth="12" style="z-index:2">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><g transform="translate(0,330) scale(5,3)" opacity=".55"><use href="#sym-skyline"/></g><path d="M60 480 Q250 380 440 480 L440 700 L60 700 Z" fill="#1c3a52"/><g transform="translate(140,200) scale(2.2)"><use href="#sym-obsv"/></g><circle cx="250" cy="252" r="30" fill="url(#vexglow)" opacity=".8"/><rect y="640" width="500" height="60" fill="#0d1f33"/></svg>
+    </div>
+    <div class="cov-layer" data-depth="22" style="z-index:3">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+        <rect x="0" y="612" width="500" height="88" fill="#0d1f33"/>
+        <g transform="translate(64,478) scale(.95)"><use href="#sym-maya"/></g>
+        <g transform="translate(162,498) scale(.86)"><use href="#sym-theo"/></g>
+        <g transform="translate(258,484) scale(.9)"><use href="#sym-zara"/></g>
+        <g transform="translate(352,502) scale(.82)"><use href="#sym-dev"/></g>
+        <path d="M250 478 Q310 428 372 478 Z" fill="#E2674A" stroke="#17324D" stroke-width="5"/>
+        <line x1="311" y1="462" x2="311" y2="500" stroke="#17324D" stroke-width="5"/>
+        <g stroke="#9fc6e8" stroke-width="4" opacity=".7" stroke-linecap="round"><line x1="40" y1="430" x2="26" y2="486"/><line x1="140" y1="400" x2="126" y2="456"/><line x1="240" y1="560" x2="226" y2="616"/><line x1="430" y1="420" x2="416" y2="476"/><line x1="470" y1="560" x2="456" y2="616"/></g>
+        <polyline points="430,180 452,200 436,216 460,236" fill="none" stroke="#F2C15B" stroke-width="4" opacity=".85"/>
+      </svg>
+    </div>
+    <div class="spine"><span>AXIOM CITY · EDUWONDERLAB</span></div>
+    <div id="coverTitle">
+      <div class="series">AXIOM CITY</div>
+      <h1>THE PATTERN<br><em>ENGINE</em></h1>
+      <span class="vol">VOL. 1 · MATH IS…</span>
+    </div>
+    <div id="coverBottom"><span>AN INTERACTIVE<br>GRAPHIC NOVEL</span><span>GRADE 6 · UNIT 1<br>EDUWONDERLAB</span></div>
+  </div>
+  <div id="coverActions">
+      <button class="bigbtn" id="startBtn">START READING</button>
+      <button class="bigbtn alt" id="resumeBtn" hidden>RESUME</button>
+  </div>
+</div>
+
+<!-- ============ HUD ============ -->
+<header id="hud" hidden>
+  <div class="brand">AXIOM CITY<small>VOL 1 · THE PATTERN ENGINE</small></div>
+  <div id="progress" aria-label="Reading progress"></div>
+  <div id="badges" aria-label="Badges earned"></div>
+  <div class="hudbtns">
+    <button class="hudbtn" id="sndBtn" aria-pressed="false" title="Sound effects">🔇 Sound</button>
+    <button class="hudbtn" id="motBtn" aria-pressed="true" title="3D motion effects">3D On</button>
+    <button class="hudbtn" id="txtBtn" aria-pressed="false" title="Larger text">A+</button>
+    <button class="hudbtn" id="hcBtn" aria-pressed="false" title="High contrast">HC</button>
+    <button class="hudbtn teacher" id="teacherBtn">Teacher</button>
+  </div>
+</header>
+
+<!-- ============ BOOK ============ -->
+<main id="stage" hidden>
+  <div id="book">
+    <div id="bookcase"></div>
+    <div class="edges" id="edgesL"></div>
+    <div class="edges" id="edgesR"></div>
+    <div id="spreadWrap">
+      <section class="page left" id="pageL" aria-live="polite"></section>
+      <section class="page right" id="pageR" aria-live="polite"></section>
+    </div>
+    <div id="spine3d"></div>
+    <div id="turnSheet" aria-hidden="true"><div class="ts front"></div><div class="ts back"></div><div class="shade"></div></div>
+  </div>
+</main>
+<button class="navarrow" id="prevBtn" aria-label="Previous page" hidden>‹</button>
+<button class="navarrow" id="nextBtn" aria-label="Next page" hidden>›</button>
+<div class="sr-only" role="status" aria-live="polite" id="live"></div>
+
+<!-- ============ MODALS ============ -->
+<div class="modal" id="teacherModal" role="dialog" aria-modal="true" aria-labelledby="tmTitle">
+  <div class="modalcard">
+    <header><h2 id="tmTitle">Teacher Guide — Vol. 1</h2><div><button class="hudbtn" id="printTeacher">Print</button> <button class="x" data-close aria-label="Close">✕</button></div></header>
+    <div class="modalbody" id="teacherBody"></div>
+  </div>
+</div>
+<div class="modal" id="workedModal" role="dialog" aria-modal="true" aria-labelledby="wmTitle">
+  <div class="modalcard">
+    <header><h2 id="wmTitle">VEX · Worked Example</h2></header>
+    <div class="modalbody" id="workedBody"></div>
+  </div>
+</div>
+<script>
+/* ================================================================
+   ===== CONTENT START (per-volume: swap everything in here) =====
+   ================================================================ */
+const VOLUME = {
+  num: 1, slug: "v1", title: "The Pattern Engine", unit: "Unit 1 · Math Is…",
+  accent: "#F2C15B",
+  nextTeaser: "VOL. 2 — THE CROOKED CENSUS"
+};
+
+const BADGES = [
+  {id:"g1", icon:"#sig-half",   label:"Benchmark Scout — Fractions"},
+  {id:"g2", icon:"#sig-keypad", label:"Code Cracker — Decimals"},
+  {id:"g3", icon:"#sig-steps",  label:"Pattern Hunter — Sequences"},
+  {id:"g4", icon:"#sig-cube",   label:"Box Mapper — Volume"},
+  {id:"g5", icon:"#sig-gear",   label:"Rule Weaver — Two-Rule Patterns"},
+  {id:"boss",icon:"#sig-boss",  label:"Engine Waker — Boss Gate"}
+];
+
+/* tiny scene helpers (content-side, fine to reuse) */
+const SC = (vb,inner,depth)=>`<svg class="scene" viewBox="${vb}" role="img" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
+const STORM='<rect width="400" height="240" fill="#22456a"/><rect width="400" height="240" fill="url(#halftone)" opacity=".5"/>';
+const RAIN='<g stroke="#9fc6e8" stroke-width="2.5" opacity=".65" stroke-linecap="round"><line x1="42" y1="4" x2="30" y2="42"/><line x1="112" y1="-6" x2="100" y2="34"/><line x1="182" y1="8" x2="170" y2="46"/><line x1="252" y1="-4" x2="240" y2="36"/><line x1="322" y1="6" x2="310" y2="44"/><line x1="382" y1="-2" x2="370" y2="38"/><line x1="78" y1="58" x2="66" y2="96"/><line x1="218" y1="62" x2="206" y2="100"/><line x1="348" y1="56" x2="336" y2="94"/></g>';
+const LIBBG='<rect width="400" height="200" fill="#f3ead9"/><rect width="400" height="200" fill="url(#halftone)" opacity=".4"/>';
+
+const PAGES = [
+/* ---- p1: title page + crew strip (FIRST volume — fresh introductions) ---- */
+{ ch:"Axiom City · Volume One", html:`
+  <div style="text-align:center;margin-top:10px"><div class="kicker">EduWonderLab Presents</div>
+  <h2 class="splashtitle" style="margin:8px 0">THE PATTERN <em>ENGINE</em></h2>
+  <div class="caption" style="display:inline-block">Where it all begins — five chapters, six reader gates. Solve the math to move the story.</div></div>
+  <div class="panel panel3d tall" style="margin-top:8px">${SC("0 0 400 210",`
+    ${STORM}<g data-depth="8" transform="translate(0,44) scale(4,1.6)" opacity=".4"><use href="#sym-skyline"/></g>
+    ${RAIN}
+    <rect data-depth="10" x="6" y="64" width="388" height="14" rx="6" fill="#E2674A" stroke="#17324D" stroke-width="3"/>
+    <rect data-depth="10" x="14" y="78" width="8" height="120" fill="#17324D"/><rect data-depth="10" x="378" y="78" width="8" height="120" fill="#17324D"/>
+    <g data-depth="16" transform="translate(28,86)"><use href="#sym-maya"/></g>
+    <g data-depth="16" transform="translate(118,86)"><use href="#sym-theo"/></g>
+    <g data-depth="16" transform="translate(208,86)"><use href="#sym-zara"/></g>
+    <g data-depth="16" transform="translate(298,86)"><use href="#sym-dev"/></g>
+    <g data-depth="26" opacity=".8"><polyline points="186,16 202,28 192,38 210,50" fill="none" stroke="#F2C15B" stroke-width="3"/><circle cx="212" cy="54" r="3" fill="#F2C15B"/></g>`)}
+    <div class="balloon" style="bottom:14px;left:10px;max-width:48%"><span class="who">MAYA</span>Field day: cancelled. Crew: soaked. My notebook: still dry. Priorities.</div>
+    <div class="balloon tail-r" style="top:6px;right:8px;max-width:44%"><span class="who">THEO</span>I'm Theo. I said it would rain. I had <b>charts</b>.</div>
+  </div>
+  <div class="caption loc">Axiom City — a coastal city built on math by a vanished genius named Ada Vex. Meet Maya, Theo, Zara, and Dev. You're the fifth.</div>`},
+
+/* ---- p2: ch1 splash ---- */
+{ ch:"Chapter 1 · The Rained-Out Day", html:`
+  <div class="kicker">Chapter One</div><h2 class="splashtitle">THE RAINED-OUT <em>DAY</em></h2>
+  <div class="panel panel3d tall">${SC("0 0 400 230",`
+    ${STORM}
+    <path data-depth="6" d="M0 192 Q200 130 400 188 L400 230 L0 230 Z" fill="#1c3a52"/>
+    <circle data-depth="12" cx="200" cy="78" r="46" fill="#F2C15B" opacity=".16"/>
+    <g data-depth="12" transform="translate(122,38) scale(1.6)"><use href="#sym-obsv"/></g>
+    <g data-depth="20" transform="translate(26,128) scale(.62)"><use href="#sym-maya"/></g>
+    <g data-depth="20" transform="translate(78,140) scale(.56)"><use href="#sym-theo"/></g>
+    <g data-depth="20" transform="translate(296,132) scale(.6)"><use href="#sym-zara"/></g>
+    <g data-depth="20" transform="translate(344,144) scale(.54)"><use href="#sym-dev"/></g>
+    <path data-depth="20" d="M290 128 Q330 96 372 128 Z" fill="#E2674A" stroke="#17324D" stroke-width="4"/><line data-depth="20" x1="331" y1="118" x2="331" y2="146" stroke="#17324D" stroke-width="4"/>
+    ${RAIN}`)}
+    <div class="sfx" style="bottom:12px;left:14px">SPLOSH!</div>
+    <div class="balloon" style="top:8px;left:8px;max-width:46%"><span class="who">ZARA</span>That dome! The door's propped open — GO GO GO!</div>
+    <div class="balloon tail-r" style="bottom:14px;right:8px;max-width:46%"><span class="who">DEV</span>Vexhall Observatory? Sealed since forever. Five stars for spooky.</div>
+  </div>
+  <div class="panelrow"><div class="panel">${SC("0 0 200 120",`<rect width="200" height="120" fill="#eef7f6"/><g transform="translate(24,8) scale(.7)"><use href="#sym-maya"/></g><g transform="translate(110,12) scale(.66)"><use href="#sym-theo"/></g>`)}
+    <div class="balloon" style="top:6px;left:6px;max-width:72%"><span class="who">MAYA</span>I'm Maya — that's Theo, Zara, and Dev. We come in peace. And puddles.</div></div>
+  <div class="panel">${SC("0 0 200 120",`<rect width="200" height="120" fill="#f3ead9"/><rect x="20" y="14" width="56" height="100" rx="4" fill="#7a4a21" stroke="#17324D" stroke-width="3"/><g transform="translate(96,8) scale(.78)"><use href="#sym-ortiz"/></g>`)}
+    <div class="balloon tail-r" style="top:6px;right:6px;max-width:74%"><span class="who">MS. ORTIZ</span>I know. Librarians know everything. Ms. Ortiz — welcome to Vexhall.</div></div></div>
+  <div class="caption">Vexhall Observatory — built by <b>Ada Vex</b>, the mathematician-architect who designed half of Axiom City. Then she vanished.</div>`},
+
+/* ---- p3: ch1 the sealed journal ---- */
+{ ch:"Chapter 1 · The Rained-Out Day", html:`
+  <div class="caption loc">Inside: brass, dust, and ten thousand books.</div>
+  <div class="panel panel3d tall">${SC("0 0 400 200",`
+    ${LIBBG}
+    <g data-depth="6" fill="#a2683a" stroke="#17324D" stroke-width="2"><rect x="8" y="18" width="66" height="126"/><rect x="326" y="18" width="66" height="126"/></g>
+    <g data-depth="6" stroke="#17324D" stroke-width="1.5" opacity=".5"><line x1="8" y1="50" x2="74" y2="50"/><line x1="8" y1="82" x2="74" y2="82"/><line x1="8" y1="114" x2="74" y2="114"/><line x1="326" y1="50" x2="392" y2="50"/><line x1="326" y1="82" x2="392" y2="82"/><line x1="326" y1="114" x2="392" y2="114"/></g>
+    <rect data-depth="10" x="118" y="122" width="164" height="56" rx="6" fill="#b78a2e" stroke="#17324D" stroke-width="3"/>
+    <g data-depth="14" transform="translate(158,42) scale(.85)"><use href="#sym-journal"/></g>
+    <g data-depth="16" transform="translate(258,44) scale(.74)"><use href="#sym-ortiz"/></g>
+    <g data-depth="16" transform="translate(58,52) scale(.7)"><use href="#sym-theo"/></g>
+    <rect data-depth="18" x="122" y="10" width="156" height="28" rx="4" fill="#fff" stroke="#17324D" stroke-width="2.5"/>
+    <text data-depth="18" x="200" y="29" text-anchor="middle" font-family="Arial" font-weight="800" font-size="13" fill="#17324D">3/8 · 5/9 · 7/12</text>`)}
+    <div class="balloon tail-r" style="top:36px;right:6px;max-width:46%"><span class="who">MS. ORTIZ</span>Ada Vex's last journal. Sealed sixty years. The clasp only opens for the right fraction.</div>
+    <div class="balloon" style="bottom:10px;left:8px;max-width:50%"><span class="who">THEO</span>Three engravings — and one instruction: <b>"FEED ME THE ONE BELOW ONE-HALF."</b></div>
+  </div>
+  <div class="panelrow"><div class="panel">${SC("0 0 200 116",`<rect width="200" height="116" fill="#eef7f6"/><g transform="translate(62,4) scale(.78)"><use href="#sym-maya"/></g>`)}
+    <div class="balloon" style="top:4px;left:4px;max-width:74%"><span class="who">MAYA</span>Use a <b>benchmark</b> — test each fraction against 1/2: is the top number more or less than half the bottom?</div></div>
+  <div class="panel">${SC("0 0 200 116",`<rect width="200" height="116" fill="#f3ead9"/><circle cx="160" cy="26" r="12" fill="#F2C15B"/><polyline points="148,40 160,52 150,62 164,74" fill="none" stroke="#F2C15B" stroke-width="3"/><g transform="translate(28,8) scale(.78)"><use href="#sym-dev"/></g>`)}
+    <div class="sfx" style="top:2px;right:6px;font-size:1.1rem">BZZT!</div>
+    <div class="balloon" style="bottom:4px;left:4px;max-width:74%"><span class="who">DEV</span>Uh… did the lamps just blink three times, then nine, then twenty-seven?</div></div></div>
+  <div class="caption">A <b>benchmark</b> is a friendly reference number — like 1/2 — that you measure other numbers against.</div>`},
+
+/* ---- p4: GATE 1 ---- */
+{ ch:"Chapter 1 · Reader Gate", gate:"g1", html:`
+  <div class="panel">${SC("0 0 400 90",`<rect width="400" height="90" fill="#f3ead9"/><g transform="translate(8,2) scale(.7)"><use href="#sym-ortiz"/></g><g transform="translate(330,14) scale(.62)"><use href="#sym-journal"/></g>`)}
+    <div class="balloon" style="top:6px;left:84px;max-width:60%"><span class="who">MS. ORTIZ</span>Reader — you're the fifth crew member now. Feed the clasp the right fraction.</div>
+  </div>`},
+
+/* ---- p5: ch2 the brass door ---- */
+{ ch:"Chapter 2 · The Brass Door", html:`
+  <div class="kicker">Chapter Two</div><h2 class="splashtitle">THE BRASS <em>DOOR</em></h2>
+  <div class="caption loc">Beneath the reading room. The journal's map points DOWN.</div>
+  <div class="panel panel3d tall">${SC("0 0 400 200",`
+    <rect width="400" height="200" fill="#251c33"/><rect width="400" height="200" fill="url(#halftone)" opacity=".4"/>
+    <g data-depth="6" fill="#1a1226"><polygon points="0,200 120,200 120,176 96,176 96,152 72,152 72,128 48,128 48,104 0,104"/></g>
+    <rect data-depth="12" x="150" y="26" width="120" height="158" rx="8" fill="#b78a2e" stroke="#17324D" stroke-width="4"/>
+    <g data-depth="12" fill="#8a6a1c"><circle cx="162" cy="40" r="4"/><circle cx="258" cy="40" r="4"/><circle cx="162" cy="170" r="4"/><circle cx="258" cy="170" r="4"/></g>
+    <rect data-depth="16" x="162" y="58" width="96" height="30" rx="4" fill="#FFF3D8" stroke="#17324D" stroke-width="2.5"/>
+    <text data-depth="16" x="210" y="78" text-anchor="middle" font-family="Arial" font-weight="800" font-size="13" fill="#17324D">3.6 + 2.85</text>
+    <rect data-depth="16" x="162" y="100" width="96" height="30" rx="4" fill="#FFF3D8" stroke="#17324D" stroke-width="2.5"/>
+    <text data-depth="16" x="210" y="120" text-anchor="middle" font-family="Arial" font-weight="800" font-size="13" fill="#17324D">12.5 − 4.75</text>
+    <g data-depth="14" stroke="#F2C15B" stroke-width="2.5" fill="none" opacity=".6"><path d="M286 90 q10 16 0 32"/><path d="M298 80 q16 26 0 52"/></g>
+    <g data-depth="20" transform="translate(34,66) scale(.8)"><use href="#sym-zara"/></g>
+    <g data-depth="20" transform="translate(300,72) scale(.76)"><use href="#sym-theo"/></g>`)}
+    <div class="sfx" style="top:8px;right:14px">HMMM…</div>
+    <div class="balloon" style="top:8px;left:8px;max-width:44%"><span class="who">ZARA</span>A door with a combination. Ada didn't trust keys, I guess.</div>
+    <div class="balloon tail-r" style="bottom:10px;right:6px;max-width:46%"><span class="who">THEO</span>Decimal dials. Easy to wreck if you don't respect place value.</div>
+  </div>
+  <div class="panelrow"><div class="panel">${SC("0 0 200 112",`<rect width="200" height="112" fill="#eef7f6"/><g transform="translate(62,2) scale(.76)"><use href="#sym-theo"/></g>`)}
+    <div class="balloon" style="top:4px;left:4px;max-width:74%"><span class="who">THEO</span>Write 3.6 as 3.60 — give it a hundredths digit. Tenths add with tenths, hundredths with hundredths.</div></div>
+  <div class="panel">${SC("0 0 200 112",`<rect width="200" height="112" fill="#251c33"/><g stroke="#F2C15B" stroke-width="2.5" fill="none" opacity=".7"><path d="M86 46 q10 14 0 28"/><path d="M100 38 q16 22 0 44"/><path d="M114 30 q22 30 0 60"/></g><g transform="translate(12,6) scale(.74)"><use href="#sym-zara"/></g>`)}
+    <div class="balloon tail-r" style="top:4px;right:4px;max-width:56%"><span class="who">ZARA</span>The door is humming. Doors should NOT hum.</div></div></div>
+  <div class="caption">A <b>decimal</b> names part of a whole by place value: 3.6 means 3 ones and 6 tenths — the same value as 3.60.</div>`},
+
+/* ---- p6: GATE 2 ---- */
+{ ch:"Chapter 2 · Reader Gate", gate:"g2", html:`
+  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#251c33"/><g transform="translate(10,0) scale(.66)"><use href="#sym-theo"/></g>`)}
+    <div class="balloon" style="top:6px;left:80px;max-width:64%"><span class="who">THEO</span>Dial carefully, reader. This door has opinions.</div>
+  </div>`},
+
+/* ---- p7: ch3 hall of sequences ---- */
+{ ch:"Chapter 3 · The Hall of Sequences", html:`
+  <div class="kicker">Chapter Three</div><h2 class="splashtitle">THE HALL OF <em>SEQUENCES</em></h2>
+  <div class="caption loc">Past the brass door: a corridor of glowing floor tiles.</div>
+  <div class="panel panel3d tall">${SC("0 0 400 210",`
+    <rect width="400" height="210" fill="#10243a"/>
+    <polygon data-depth="6" points="0,210 400,210 310,118 90,118" fill="#1c3a52"/>
+    <g data-depth="10" fill="#7CF2EC" font-family="Arial" font-weight="800" font-size="11" text-anchor="middle"><circle cx="70" cy="28" r="10" fill="#06222b" stroke="#7CF2EC" stroke-width="2"/><text x="70" y="32">1</text><circle cx="150" cy="20" r="10" fill="#06222b" stroke="#7CF2EC" stroke-width="2"/><text x="150" y="24">4</text><circle cx="230" cy="26" r="10" fill="#06222b" stroke="#7CF2EC" stroke-width="2"/><text x="230" y="30">9</text><circle cx="310" cy="18" r="10" fill="#06222b" stroke="#7CF2EC" stroke-width="2"/><text x="310" y="22">16</text><circle cx="368" cy="30" r="10" fill="#06222b" stroke="#F2C15B" stroke-width="2"/><text x="368" y="34" fill="#F2C15B">?</text></g>
+    <g data-depth="14" font-family="Arial Black,Arial" font-weight="900" font-size="14" text-anchor="middle">
+      <rect x="56" y="146" width="48" height="34" rx="5" fill="#06222b" stroke="#1FA6A2" stroke-width="3"/><text x="80" y="169" fill="#F2C15B">2</text>
+      <rect x="120" y="146" width="48" height="34" rx="5" fill="#06222b" stroke="#1FA6A2" stroke-width="3"/><text x="144" y="169" fill="#F2C15B">6</text>
+      <rect x="184" y="146" width="48" height="34" rx="5" fill="#06222b" stroke="#1FA6A2" stroke-width="3"/><text x="208" y="169" fill="#F2C15B">18</text>
+      <rect x="248" y="146" width="48" height="34" rx="5" fill="#06222b" stroke="#1FA6A2" stroke-width="3"/><text x="272" y="169" fill="#F2C15B">54</text>
+      <rect x="312" y="146" width="48" height="34" rx="5" fill="#06222b" stroke="#E2674A" stroke-width="3"/><text x="336" y="169" fill="#E2674A">?</text></g>
+    <g data-depth="20" transform="translate(14,76) scale(.85)"><use href="#sym-dev"/></g>
+    <g data-depth="18" transform="translate(322,84) scale(.74)"><use href="#sym-maya"/></g>`)}
+    <div class="balloon" style="top:8px;left:8px;max-width:46%"><span class="who">DEV</span>It's a level select! Every path is a <b>sequence</b> — an ordered list with a RULE.</div>
+    <div class="balloon tail-r" style="bottom:12px;right:6px;max-width:44%"><span class="who">MAYA</span>And the ceiling counts in squares. Ada hid math in the architecture.</div>
+  </div>
+  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#eef7f6"/><g transform="translate(316,0) scale(.66)"><use href="#sym-dev"/></g>`)}
+    <div class="balloon" style="top:8px;left:10px;max-width:70%"><span class="who">DEV</span>2 to 6 could be +4… but 6 to 18 isn't +4. When adding fails, test <b>multiplying</b>.</div>
+  </div>
+  <div class="caption">A <b>sequence</b> follows a rule from term to term. Test your rule on EVERY pair of neighbors — one miss means wrong rule. <i>From somewhere below, a static whisper: "…w-wake…"</i></div>`},
+
+/* ---- p8: GATE 3 ---- */
+{ ch:"Chapter 3 · Reader Gate", gate:"g3", html:`
+  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#10243a"/><g transform="translate(8,-4) scale(.62)"><use href="#sym-dev"/></g>`)}
+    <div class="balloon" style="top:6px;left:78px;max-width:70%"><span class="who">DEV</span>Reader, call the next numbers — wrong step, glitter trap. Probably.</div>
+  </div>`},
+
+/* ---- p9: ch4 the flicker — VEX first appears (weak, glitching) ---- */
+{ ch:"Chapter 4 · The Flicker", html:`
+  <div class="kicker">Chapter Four</div><h2 class="splashtitle">THE <em>FLICKER</em></h2>
+  <div class="panel panel3d tall">${SC("0 0 400 210",`
+    <rect width="400" height="210" fill="#1a1030"/>
+    <circle data-depth="6" cx="200" cy="120" r="110" fill="#4A2580" opacity=".35"/>
+    <rect data-depth="10" x="168" y="128" width="64" height="64" rx="4" fill="#2c2440" stroke="#17324D" stroke-width="3"/>
+    <g data-depth="14" transform="translate(152,52)"><use href="#sym-box"/></g>
+    <g data-depth="22" transform="translate(248,14) scale(.72)" opacity=".55"><use href="#sym-vex"/></g>
+    <g data-depth="22" stroke="#F2C15B" stroke-width="2.5" opacity=".7"><line x1="288" y1="26" x2="310" y2="26"/><line x1="282" y1="78" x2="304" y2="84"/><polyline points="318,44 328,52 320,60" fill="none"/></g>
+    <g data-depth="20" transform="translate(34,76) scale(.85)"><use href="#sym-zara"/></g>
+    <g data-depth="16" transform="translate(326,92) scale(.72)"><use href="#sym-ortiz"/></g>`)}
+    <div class="sfx" style="top:6px;left:14px;font-size:1.2rem">FZZT!</div>
+    <div class="balloon vex" style="top:8px;left:88px;max-width:52%"><span class="who">???</span>h-hello. crew detected. i am VEX — fragment of the P-Pattern Engine. power: low. manners: loading.</div>
+    <div class="balloon" style="bottom:10px;left:8px;max-width:48%"><span class="who">ZARA</span>It's a sealed puzzle box — built from unit cubes. 4 long, 3 wide, 2 tall.</div>
+  </div>
+  <div class="panelrow"><div class="panel">${SC("0 0 200 112",`<rect width="200" height="112" fill="#eef7f6"/><g transform="translate(60,2) scale(.76)"><use href="#sym-zara"/></g>`)}
+    <div class="balloon" style="top:4px;left:4px;max-width:74%"><span class="who">ZARA</span>Builder's shortcut: count one full layer of cubes, then stack the layers.</div></div>
+  <div class="panel">${SC("0 0 200 112",`<rect width="200" height="112" fill="#f3ead9"/><g transform="translate(16,4) scale(.76)"><use href="#sym-ortiz"/></g>`)}
+    <div class="balloon tail-r" style="top:4px;right:4px;max-width:62%"><span class="who">MS. ORTIZ</span>Ada's journal says her key sleeps inside that box. Sixty years — and tonight it blinks awake.</div></div></div>
+  <div class="caption"><b>Volume</b> is the space inside a solid, measured in <b>cubic units</b> — cubes 1 unit long on every edge.</div>`},
+
+/* ---- p10: GATE 4 ---- */
+{ ch:"Chapter 4 · Reader Gate", gate:"g4", html:`
+  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#1a1030"/><g transform="translate(8,-2) scale(.62)"><use href="#sym-zara"/></g><g transform="translate(330,16) scale(.6)"><use href="#sym-box"/></g>`)}
+    <div class="balloon" style="top:6px;left:78px;max-width:62%"><span class="who">ZARA</span>Reader — how many cubes fill the box? Crack it open.</div>
+  </div>`},
+
+/* ---- p11: ch5 splash — the engine chamber ---- */
+{ ch:"Chapter 5 · The Pattern Engine", html:`
+  <div class="kicker">Chapter Five</div><h2 class="splashtitle">THE PATTERN <em>ENGINE</em></h2>
+  <div class="caption loc">Inside the box: a brass key. Below the observatory: a door that was waiting for it.</div>
+  <div class="panel panel3d tall">${SC("0 0 400 220",`
+    <rect width="400" height="220" fill="#0b0a1c"/>
+    <circle data-depth="8" cx="200" cy="150" r="120" fill="none" stroke="#b78a2e" stroke-width="8" opacity=".5"/>
+    <circle data-depth="8" cx="200" cy="150" r="92" fill="none" stroke="#F2C15B" stroke-width="4" opacity=".4"/>
+    <g data-depth="8" stroke="#b78a2e" stroke-width="5" opacity=".4"><line x1="200" y1="30" x2="200" y2="58"/><line x1="92" y1="100" x2="116" y2="114"/><line x1="308" y1="100" x2="284" y2="114"/></g>
+    <rect data-depth="14" x="44" y="56" width="312" height="38" rx="19" fill="#06222b" stroke="#F2C15B" stroke-width="3"/>
+    <text data-depth="14" x="200" y="81" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="16" fill="#F2C15B">3 · 8 · 16 · 21 · 42 · 47 · ? · ?</text>
+    <g data-depth="22" transform="translate(26,104) scale(.8)"><use href="#sym-maya"/></g>
+    <g data-depth="18" transform="translate(312,110) scale(.74)"><use href="#sym-theo"/></g>
+    <g data-depth="26" transform="translate(172,118) scale(.62)" opacity=".6"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:8px;left:8px;max-width:46%"><span class="who">VEX</span>the engine ring counts in TWO rules. ada's favorite: add five… then d-double.</div>
+    <div class="balloon tail-r" style="bottom:10px;right:6px;max-width:46%"><span class="who">MAYA</span>3, 8, 16, 21, 42, 47 — and the ring stops where the next numbers should glow.</div>
+  </div>
+  <div class="panelrow"><div class="panel">${SC("0 0 200 104",`<rect width="200" height="104" fill="#eef7f6"/><g transform="translate(62,0) scale(.7)"><use href="#sym-theo"/></g>`)}
+    <div class="balloon" style="top:4px;left:4px;max-width:70%"><span class="who">THEO</span>Two-rule patterns. Sneaky. I respect it.</div></div>
+  <div class="panel">${SC("0 0 200 104",`<rect width="200" height="104" fill="#0b0a1c"/><g fill="#F2C15B" stroke="#17324D" stroke-width="2"><circle cx="70" cy="52" r="14"/><rect x="82" y="48" width="46" height="8" rx="3"/><rect x="112" y="56" width="6" height="10"/><rect x="122" y="56" width="6" height="14"/></g>`)}
+    <div class="balloon" style="top:4px;left:4px;max-width:64%"><span class="who">ZARA</span>Key fits. The ring's waiting on you, reader.</div></div></div>
+  <div class="caption">Some patterns alternate <b>two rules</b>. Keep the order: +5, then ×2, then +5 again…</div>`},
+
+/* ---- p12: GATE 5 ---- */
+{ ch:"Chapter 5 · Reader Gate", gate:"g5", html:`
+  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#0b0a1c"/><g transform="translate(8,-4) scale(.62)"><use href="#sym-maya"/></g>`)}
+    <div class="balloon" style="top:6px;left:78px;max-width:68%"><span class="who">MAYA</span>Light the last two numbers on the ring, reader!</div>
+  </div>`},
+
+/* ---- p13: boss setup ---- */
+{ ch:"Chapter 5 · Three Locks", html:`
+  <div class="caption loc">The engine core. Three locks. Power at two percent.</div>
+  <div class="panel panel3d tall">${SC("0 0 400 200",`
+    <rect width="400" height="200" fill="#10243a"/>
+    <rect data-depth="10" x="60" y="40" width="280" height="110" rx="10" fill="#06222b" stroke="#F2C15B" stroke-width="3"/>
+    <g data-depth="10" font-family="Arial Black,Arial" font-weight="900" font-size="12" text-anchor="middle" fill="#F2C15B">
+      <circle cx="130" cy="86" r="24" fill="#10243a" stroke="#F2C15B" stroke-width="3"/><text x="130" y="91">×?</text>
+      <circle cx="200" cy="86" r="24" fill="#10243a" stroke="#F2C15B" stroke-width="3"/><text x="200" y="91">0.00</text>
+      <circle cx="270" cy="86" r="24" fill="#10243a" stroke="#F2C15B" stroke-width="3"/><text x="270" y="91">½</text></g>
+    <text data-depth="10" x="200" y="136" text-anchor="middle" font-family="Consolas,monospace" font-size="11" fill="#7CF2EC">PATTERN · DECIMAL · BENCHMARK</text>
+    <g data-depth="20" transform="translate(10,86) scale(.7)"><use href="#sym-maya"/></g>
+    <g data-depth="22" transform="translate(330,16) scale(.6)" opacity=".6"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:6px;left:8px;max-width:54%"><span class="who">VEX</span>three locks: one p-pattern, one decimal, one fraction. solve all three and i can finally W-WAKE.</div>
+    <div class="balloon tail-r" style="bottom:8px;right:8px;max-width:42%"><span class="who">MAYA</span>Everyone takes their strength. Reader — you take the math.</div>
+  </div>
+  <div class="panelrow"><div class="panel">${SC("0 0 200 108",`<rect width="200" height="108" fill="#eef7f6"/><g transform="translate(18,4) scale(.7)"><use href="#sym-dev"/></g><g transform="translate(106,8) scale(.66)"><use href="#sym-theo"/></g>`)}
+    <div class="balloon" style="top:2px;left:2px;max-width:52%"><span class="who">DEV</span>Pattern lock: my kind of level.</div>
+    <div class="balloon tail-r" style="bottom:2px;right:2px;max-width:48%"><span class="who">THEO</span>Decimals: mine.</div></div>
+  <div class="panel">${SC("0 0 200 108",`<rect width="200" height="108" fill="#fdf2ee"/><g transform="translate(18,4) scale(.7)"><use href="#sym-zara"/></g><g transform="translate(106,8) scale(.66)"><use href="#sym-maya"/></g>`)}
+    <div class="balloon" style="top:2px;left:2px;max-width:52%"><span class="who">ZARA</span>Flywheel: mine.</div>
+    <div class="balloon tail-r" style="bottom:2px;right:2px;max-width:52%"><span class="who">MAYA</span>Benchmarks: ours.</div></div></div>
+  <div class="caption">Boss Gate: use everything from this volume — patterns, decimals, and the 1/2 benchmark.</div>`},
+
+/* ---- p14: BOSS GATE ---- */
+{ ch:"Boss Gate · Wake the Engine", gate:"boss", html:`
+  <div class="panel">${SC("0 0 400 76",`<rect width="400" height="76" fill="#10243a"/><g transform="translate(330,4) scale(.56)" opacity=".6"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:6px;left:10px;max-width:74%"><span class="who">VEX</span>BOSS GATE. three locks. p-power at one percent. accuracy over speed, reader.</div>
+  </div>`},
+
+/* ---- p15: victory — VEX wakes ---- */
+{ ch:"Chapter 5 · Online", html:`
+  <div class="panel panel3d tall">${SC("0 0 400 220",`
+    <rect width="400" height="220" fill="#2a1c06"/>
+    <circle data-depth="6" cx="200" cy="110" r="160" fill="#F2C15B" opacity=".2"/>
+    <circle data-depth="6" cx="200" cy="110" r="86" fill="#F2C15B" opacity=".25"/>
+    <g data-depth="8" stroke="#F2C15B" stroke-width="3" opacity=".6" stroke-linecap="round"><line x1="200" y1="8" x2="200" y2="34"/><line x1="96" y1="40" x2="114" y2="58"/><line x1="304" y1="40" x2="286" y2="58"/></g>
+    <g data-depth="24" transform="translate(146,18) scale(1.1)"><use href="#sym-vex"/></g>
+    <g data-depth="16" transform="translate(20,104) scale(.78)"><use href="#sym-maya"/></g>
+    <g data-depth="16" transform="translate(96,116) scale(.72)"><use href="#sym-theo"/></g>
+    <g data-depth="16" transform="translate(238,108) scale(.76)"><use href="#sym-zara"/></g>
+    <g data-depth="16" transform="translate(318,118) scale(.7)"><use href="#sym-dev"/></g>`)}
+    <div class="sfx" style="top:8px;left:14px">VWOOOM!</div>
+    <div class="balloon vex" style="top:34px;right:6px;max-width:44%"><span class="who">VEX</span>Systems ONLINE. Hello, crew. I am VEX. Ada Vex left me listening for minds like yours.</div>
+    <div class="balloon" style="bottom:10px;left:10px;max-width:40%"><span class="who">MAYA</span>Minds like <i>ours</i>?</div>
+  </div>
+  <div class="panelrow">
+    <div class="panel">${SC("0 0 200 116",`<rect width="200" height="116" fill="#eef7f6"/><g transform="translate(62,10) scale(.8)"><use href="#sym-vex"/></g>`)}
+      <div class="balloon vex" style="top:2px;left:2px;max-width:84%"><span class="who">VEX</span>A question-asker. An evidence-checker. A builder. A pattern-hunter. And a reader who does the math — I sense distortions, but I cannot compute. That part is you.</div></div>
+    <div class="panel">${SC("0 0 200 116",`<rect width="200" height="116" fill="#1a1030"/><rect x="44" y="22" width="112" height="74" rx="6" fill="#FFF3D8" stroke="#F2C15B" stroke-width="3"/><text x="100" y="46" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="9" fill="#E2674A">HARVEST FESTIVAL CENSUS</text><text x="100" y="66" text-anchor="middle" font-family="Arial" font-weight="700" font-size="10" fill="#17324D">DAY 1 COUNT: 312?!</text><text x="100" y="84" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#4A2580">…who counted this?</text>`)}
+      <div class="balloon vex" style="top:2px;left:4px;max-width:62%"><span class="who">VEX</span>new distortion already. it smells like… crooked data. to be continued…</div></div>
+  </div>
+  <div class="caption" style="text-align:center"><b>NEXT: ${VOLUME.nextTeaser}</b></div>`},
+
+/* ---- p16: cast ---- */
+{ ch:"End Matter · The Crew", html:`
+  <h2 class="splashtitle" style="font-size:1.4rem">MEET THE <em>CREW</em></h2>
+  <div class="castcard"><svg viewBox="0 0 100 120"><use href="#sym-maya"/></svg><div><h4>MAYA CHEN</h4><p>Crew captain. Keeps the notebook, asks the next question. This volume: benchmarked the clasp fractions against 1/2.</p></div></div>
+  <div class="castcard"><svg viewBox="0 0 100 120"><use href="#sym-theo"/></svg><div><h4>THEO OKAFOR</h4><p>Evidence officer. Charts for every occasion. This volume: dialed open the decimal door, place value intact.</p></div></div>
+  <div class="castcard"><svg viewBox="0 0 100 120"><use href="#sym-zara"/></svg><div><h4>ZARA QUINN</h4><p>Builder and fixer. This volume: unpacked the puzzle box layer by layer — 24 cubic units of patience.</p></div></div>
+  <div class="castcard"><svg viewBox="0 0 100 120"><use href="#sym-dev"/></svg><div><h4>DEV PATEL</h4><p>Pattern hunter with a gamer brain. This volume: beat the Hall of Sequences without a single glitter trap.</p></div></div>
+  <div class="castcard"><svg viewBox="0 0 100 120"><use href="#sym-vex"/></svg><div><h4>VEX</h4><p>Fragment of Ada Vex's Pattern Engine — newly awake. Senses distortions; cannot compute. That's your job.</p></div></div>
+  <div class="castcard"><svg viewBox="0 0 100 120"><use href="#sym-ortiz"/></svg><div><h4>MS. ORTIZ</h4><p>Vexhall's librarian and caretaker. Keeper of Ada's journals — and now of four loud kids and one glowing polyhedron.</p></div></div>`},
+
+/* ---- p17: journal recap ---- */
+{ ch:"End Matter · Ada Vex's Journal", html:`
+  <h2 class="splashtitle" style="font-size:1.4rem">ADA VEX'S <em>JOURNAL</em></h2>
+  <div class="journal"><h4>Unit 1 · What the observatory taught us</h4>
+    <div class="jrow"><b>Benchmark.</b><span>Compare a fraction to a friendly number like 1/2: test the numerator against half the denominator. 3/8 sits below 1/2; 5/9 floats just above it.</span></div>
+    <div class="jrow"><b>Decimals.</b><span>Line up place values, not end digits: 3.6 + 2.85 = 6.45 and 12.5 − 4.75 = 7.75.</span></div>
+    <div class="jrow"><b>Sequence.</b><span>An ordered list with a rule — test it on every pair. 2, 6, 18, 54 multiplies by 3 → 162. 1, 4, 9, 16 are the squares → 25.</span></div>
+    <div class="jrow"><b>Volume.</b><span>Cubes that fill a box: one layer (4 × 3 = 12) times the layers (× 2) = 24 cubic units.</span></div>
+    <div class="jrow"><b>Two-rule pattern.</b><span>Rules can take turns. With +5 then ×2, the ring runs 3, 8, 16, 21, 42, 47, 94, 99.</span></div>
+  </div>
+  <div class="caption">"Patterns are the city's heartbeat. Learn to count it, and the city will talk to you." — A.V.</div>`},
+
+/* ---- p18: certificate ---- */
+{ ch:"End Matter · Certificate", html:`
+  <div id="certificate">
+    <div class="kicker">Axiom City · EduWonderLab</div>
+    <h3>READER CERTIFICATE</h3>
+    <p style="font:600 .9rem Georgia,serif">This certifies that</p>
+    <input id="certName" maxlength="40" placeholder="write your name" aria-label="Your name for the certificate">
+    <p style="font:600 .9rem Georgia,serif">completed <b>Volume 1: The Pattern Engine</b> and proved mastery over benchmark fractions, decimal computation, number patterns, two-rule sequences, and volume.</p>
+    <div class="certbadges" id="certBadges"></div>
+    <button class="gatecheck" id="printCert" style="align-self:center">PRINT CERTIFICATE</button>
+  </div>
+  <div class="caption" style="text-align:center">Thank you for waking VEX. Volume 2 is waiting at the festival gates.</div>`}
+];
+
+/* ================= GATES ================= */
+function mkfeed(el,msg,ok){el.textContent=msg;el.className="gatefeedback "+(ok?"good":"bad");}
+const GATES = {
+g1:{ title:"Gate 1 · Feed the Clasp", icon:"#sig-half",
+  prompt:`The clasp offers <b>3/8, 5/9, 7/12</b> and demands <b>the one below one-half</b>. Then it double-checks your reasoning. Tap one answer in each row.`,
+  hints:[ "Conceptual: compare each fraction to the benchmark 1/2. A fraction is less than 1/2 when its numerator is smaller than HALF its denominator.",
+          "Procedural: half of 8 is 4. Half of 9 is 4.5. Half of 12 is 6. Compare each numerator to that half. For Clasp B, find how far 5/9 is from 1/2 and from 1." ],
+  worked:{ steps:[ "A practice clasp offers 2/5 and 4/7, asking for the one below 1/2.",
+    "Half of 5 is 2.5 — and 2 < 2.5, so 2/5 sits below the benchmark.",
+    "Half of 7 is 3.5 — and 4 > 3.5, so 4/7 sits above. Feed it 2/5." ],
+    q:"What numerator makes ?/8 land exactly ON the 1/2 benchmark?", a:"4" },
+  render(body,api){
+    body.innerHTML=`<div style="font:900 .72rem 'Arial Black',Arial;letter-spacing:.08em;color:var(--navy)">CLASP A — WHICH FRACTION IS LESS THAN 1/2?</div>
+      <div class="choicebtns" role="group" aria-label="Which fraction is less than one-half?">
+        <button class="choicebtn" data-v="38" aria-pressed="false">3/8</button>
+        <button class="choicebtn" data-v="59" aria-pressed="false">5/9</button>
+        <button class="choicebtn" data-v="712" aria-pressed="false">7/12</button></div>
+      <div style="font:900 .72rem 'Arial Black',Arial;letter-spacing:.08em;color:var(--navy)">CLASP B — IS 5/9 CLOSER TO 1/2 OR TO 1?</div>
+      <div class="choicebtns" role="group" aria-label="Is five ninths closer to one-half or to one?">
+        <button class="choicebtn" data-w="half" aria-pressed="false">Closer to 1/2</button>
+        <button class="choicebtn" data-w="one" aria-pressed="false">Closer to 1</button></div>`;
+    let pa=null,pb=null;
+    body.querySelectorAll("[data-v]").forEach(b=>b.addEventListener("click",()=>{body.querySelectorAll("[data-v]").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");pa=b.dataset.v;api.sound("blip");}));
+    body.querySelectorAll("[data-w]").forEach(b=>b.addEventListener("click",()=>{body.querySelectorAll("[data-w]").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");pb=b.dataset.w;api.sound("blip");}));
+    api.onCheck(()=>{
+      if(!pa||!pb)return api.fail("Both clasps need a choice — tap one button in each row.");
+      if(pa!=="38")api.fail("Clasp A stays shut. Test your pick: is its numerator more or less than half its denominator?");
+      else if(pb!=="half")api.fail("Clasp B stays shut. 5/9 is only a sliver above 1/2 — measure both distances before you decide.");
+      else api.pass("3/8 < 1/2 (3 is less than 4), and 5/9 hugs the 1/2 benchmark. The clasp springs open!");});
+  }},
+g2:{ title:"Gate 2 · The Brass Door", icon:"#sig-keypad",
+  prompt:`Two decimal dials, one rule: <b>"Sum, then difference."</b> Compute <b>3.6 + 2.85</b> and <b>12.5 − 4.75</b> to open the door.`,
+  hints:[ "Conceptual: decimals add and subtract like whole numbers IF every digit sits in its place-value column. Give 3.6 a hundredths digit: 3.60.",
+          "Procedural: Dial 1: 3.60 + 2.85 — add hundredths, then tenths, then ones. Dial 2: 12.50 − 4.75 — you'll need to regroup." ],
+  worked:{ steps:[ "A practice door wants 2.4 + 1.35.",
+    "Write 2.4 as 2.40 so the hundredths line up: 2.40 + 1.35.",
+    "Add by place: 0+5 hundredths, 4+3 tenths, 2+1 ones → 3.75. The dial turns." ],
+    q:"Same practice door, dial 2: 5.2 − 1.45 = ?", a:"3.75" },
+  render(body,api){
+    body.innerHTML=`<div style="display:flex;flex-direction:column;gap:10px">
+      <label style="font:700 .9rem 'Segoe UI'">DIAL 1 · 3.6 + 2.85 = <input class="numin" id="d1" inputmode="decimal" aria-label="Dial one: 3.6 plus 2.85"></label>
+      <label style="font:700 .9rem 'Segoe UI'">DIAL 2 · 12.5 − 4.75 = <input class="numin" id="d2" inputmode="decimal" aria-label="Dial two: 12.5 minus 4.75"></label></div>`;
+    api.onCheck(()=>{const v1=parseFloat(body.querySelector("#d1").value),v2=parseFloat(body.querySelector("#d2").value);
+      const ok1=Math.abs(v1-6.45)<.005,ok2=Math.abs(v2-7.75)<.005;
+      body.querySelector("#d1").className="numin "+(ok1?"ok":"no");body.querySelector("#d2").className="numin "+(ok2?"ok":"no");
+      if(ok1&&ok2)api.pass("6.45 and 7.75 — the dials clack, the brass door rolls aside!");
+      else api.fail("A dial sticks. Line up the decimal points — tenths under tenths — then work place by place.");});
+  }},
+g3:{ title:"Gate 3 · The Hall of Sequences", icon:"#sig-steps",
+  prompt:`Two paths, two rules. Light the next number in each sequence: the floor tiles read <b>2, 6, 18, 54, __</b> and the ceiling stars read <b>1, 4, 9, 16, __</b>.`,
+  hints:[ "Conceptual: a rule can multiply, not just add. Whatever move you choose must work between EVERY pair of neighbors.",
+          "Procedural: Tiles — 6 ÷ 2 = 3 and 18 ÷ 6 = 3, so apply that same multiplier after 54. Stars — 1 = 1×1, 4 = 2×2, 9 = 3×3, 16 = 4×4… what's 5th?" ],
+  worked:{ steps:[ "A practice corridor glows 3, 6, 12, 24.",
+    "Test +3: 6 + 3 = 9, but the tile says 12 — adding fails. Test ×2: 3×2=6 ✓, 6×2=12 ✓, 12×2=24 ✓.",
+    "Rule found: ×2. So the next tile is 24 × 2 = 48." ],
+    q:"Practice corridor 5, 10, 20, 40 — what's the next tile?", a:"80" },
+  render(body,api){
+    body.innerHTML=`<div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><b style="font:900 .72rem 'Arial Black',Arial">TILES</b><span style="font:700 1rem 'Segoe UI'">2, 6, 18, 54,</span><input class="numin" id="p1" inputmode="numeric" aria-label="Next tile after 54"></div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><b style="font:900 .72rem 'Arial Black',Arial">STARS</b><span style="font:700 1rem 'Segoe UI'">1, 4, 9, 16,</span><input class="numin" id="p2" inputmode="numeric" aria-label="Next star after 16"></div></div>`;
+    api.onCheck(()=>{const v1=parseFloat(body.querySelector("#p1").value),v2=parseFloat(body.querySelector("#p2").value);
+      const ok1=v1===162,ok2=v2===25;
+      body.querySelector("#p1").className="numin "+(ok1?"ok":"no");body.querySelector("#p2").className="numin "+(ok2?"ok":"no");
+      if(ok1&&ok2)api.pass("×3 marches on to 162, and the stars are squares: 5 × 5 = 25. The corridor lights your path!");
+      else api.fail("A number stays dark. Test your rule on EVERY pair of neighbors — does it survive all of them?");});
+  }},
+g4:{ title:"Gate 4 · The Puzzle Box", icon:"#sig-cube",
+  prompt:`The sealed box is built from unit cubes: <b>4 long, 3 wide, 2 tall</b>. Count its volume the builder's way — one layer, then the stack.`,
+  hints:[ "Conceptual: volume counts the unit cubes that FILL the box. Find how many cubes make one full layer, then how many layers stack up.",
+          "Procedural: the bottom layer is 4 rows of 3 cubes — multiply. The box is 2 layers tall — multiply again." ],
+  worked:{ steps:[ "A practice box: 5 long, 2 wide, 3 tall.",
+    "One layer: 5 × 2 = 10 cubes. The box stacks 3 layers high.",
+    "Volume = 10 × 3 = 30 cubic units. Length × width × height — always." ],
+    q:"Volume of a practice box 2 long, 2 wide, 5 tall?", a:"20" },
+  render(body,api){
+    body.innerHTML=`<div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font:700 .9rem 'Segoe UI'">Cubes in ONE layer (4 × 3):</span><input class="numin" id="v1" inputmode="numeric" aria-label="Cubes in one layer, 4 by 3"></div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font:700 .9rem 'Segoe UI'">Layers tall:</span><input class="numin" id="v2" inputmode="numeric" aria-label="Number of layers"></div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font:700 .9rem 'Segoe UI'">Total volume:</span><input class="numin" id="v3" inputmode="numeric" aria-label="Total volume in cubic units"><span style="font:700 .9rem 'Segoe UI'">cubic units</span></div></div>`;
+    api.onCheck(()=>{const v=id=>parseFloat(body.querySelector(id).value);
+      const ok1=v("#v1")===12,ok2=v("#v2")===2,ok3=v("#v3")===24;
+      body.querySelector("#v1").className="numin "+(ok1?"ok":"no");
+      body.querySelector("#v2").className="numin "+(ok2?"ok":"no");
+      body.querySelector("#v3").className="numin "+(ok3?"ok":"no");
+      if(ok1&&ok2&&ok3)api.pass("12 cubes a layer, 2 layers — 24 cubic units. CLICK. The box unfolds like a flower!");
+      else api.fail("The box stays shut. Build it in order: count one 4-by-3 layer first, then stack.");});
+  }},
+g5:{ title:"Gate 5 · The Engine Ring", icon:"#sig-gear",
+  prompt:`The ring alternates TWO rules — <b>+5, then ×2</b> — and reads <b>3, 8, 16, 21, 42, 47, __, __</b>. Light the next two numbers.`,
+  hints:[ "Conceptual: two rules take turns. Track which rule was used LAST — the other one goes next.",
+          "Procedural: 3→8 is +5. 8→16 is ×2. 16→21 is +5 again. The step into 47 was +5… so which rule takes the next turn, and which one after that?" ],
+  worked:{ steps:[ "A practice ring alternates +3, then ×2: it reads 2, 5, 10, 13, 26.",
+    "Check the turns: 2→5 (+3), 5→10 (×2), 10→13 (+3), 13→26 (×2).",
+    "The last move was ×2, so +3 goes next: 26 + 3 = 29." ],
+    q:"That practice ring again — what comes after 29?", a:"58" },
+  render(body,api){
+    body.innerHTML=`<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font:900 1rem 'Arial Black',Arial;color:var(--navy)">…42, 47,</span>
+      <input class="numin" id="s1" inputmode="numeric" aria-label="Seventh number on the ring">
+      <input class="numin" id="s2" inputmode="numeric" aria-label="Eighth number on the ring"></div>`;
+    api.onCheck(()=>{const v1=parseFloat(body.querySelector("#s1").value),v2=parseFloat(body.querySelector("#s2").value);
+      const ok1=v1===94,ok2=v2===99;
+      body.querySelector("#s1").className="numin "+(ok1?"ok":"no");body.querySelector("#s2").className="numin "+(ok2?"ok":"no");
+      if(ok1&&ok2)api.pass("47 doubles to 94, then +5 makes 99. The ring spins — the engine door grinds open!");
+      else api.fail("The ring jams. Trace the moves: which rule carried you INTO 47, and which takes the next turn?");});
+  }},
+boss:{ title:"BOSS GATE · Wake the Engine", icon:"#sig-boss",
+  prompt:`Three locks stand between the crew and VEX. <b>Lock 1</b>: the engine ring runs <b>4, 12, 36, 108, __</b>. <b>Lock 2</b>: the power feed needs <b>5.75 + 3.5</b>. <b>Lock 3</b>: pick the fraction <b>greater than 1/2</b>.`,
+  hints:[ "Conceptual: three skills, one console — find the multiplying rule; line up decimal place values; test each fraction against the 1/2 benchmark.",
+          "Procedural: Lock 1: 12 ÷ 4 = 3, so multiply 108 by that same factor. Lock 2: write 3.5 as 3.50, then add by place. Lock 3: half of each denominator is 4.5, 6, and 5 — compare numerators." ],
+  worked:{ steps:[ "Practice console — ring 7, 14, 28: each term doubles, so the next is 56.",
+    "Power feed 1.2 + 3.45 → line up places: 1.20 + 3.45 = 4.65.",
+    "Fraction check 5/8 vs 1/2: half of 8 is 4, and 5 > 4 — so 5/8 is above the benchmark." ],
+    q:"Practice ring once more: what comes after 56 (rule ×2)?", a:"112" },
+  render(body,api){
+    body.innerHTML=`<div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b style="font:900 .75rem 'Arial Black',Arial">LOCK 1</b><span style="font:600 .88rem 'Segoe UI'">4, 12, 36, 108,</span><input class="numin" id="b1" inputmode="numeric" aria-label="Next number after 108"></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b style="font:900 .75rem 'Arial Black',Arial">LOCK 2</b><span style="font:600 .88rem 'Segoe UI'">5.75 + 3.5 =</span><input class="numin" id="b2" inputmode="decimal" aria-label="5.75 plus 3.5"></div>
+      <div><b style="font:900 .75rem 'Arial Black',Arial">LOCK 3</b><div style="font:600 .88rem 'Segoe UI';margin:4px 0">Which fraction is GREATER than 1/2?</div>
+      <div class="choicebtns" role="group" aria-label="Which fraction is greater than one-half?"><button class="choicebtn" data-w="a" aria-pressed="false">4/9</button><button class="choicebtn" data-w="b" aria-pressed="false">5/12</button><button class="choicebtn" data-w="c" aria-pressed="false">7/10</button></div></div></div>`;
+    let p3=null;
+    body.querySelectorAll("[data-w]").forEach(b=>b.addEventListener("click",()=>{body.querySelectorAll("[data-w]").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");p3=b.dataset.w;api.sound("blip");}));
+    api.onCheck(()=>{const t=parseFloat(body.querySelector("#b1").value);const ok1=Math.abs(t-324)<.01;
+      body.querySelector("#b1").className="numin "+(ok1?"ok":"no");
+      if(!ok1)return api.fail("Lock 1 holds. The ring multiplies by the same factor every time — find it with 12 ÷ 4.");
+      const f=parseFloat(body.querySelector("#b2").value);const ok2=Math.abs(f-9.25)<.005;
+      body.querySelector("#b2").className="numin "+(ok2?"ok":"no");
+      if(!ok2)return api.fail("Lock 2 holds. Write 3.5 as 3.50, line up the decimal points, then add.");
+      if(p3!=="c")return api.fail("Lock 3 holds. Take half of each denominator — which numerator actually beats it?");
+      api.pass("ALL LOCKS OPEN. Gears catch, rings sing, amber light floods the hall — VEX IS WAKING. Turn the page!");});
+  }}
+};
+
+/* ================= TEACHER PANEL DATA ================= */
+const TEACHER = {
+  suggested:"Use during Unit 1 \"Math Is…\" as a 5th→6th review bridge: Ch. 1 alongside benchmark-fraction warm-ups, Ch. 2 with decimal fluency review, Ch. 3 and Ch. 5 with pattern talks, Ch. 4 as a preview of volume before Unit 5. Whole-class on projector, pairs on devices, or independent enrichment. Progress saves on the device.",
+  standards:[
+    ["5.NF (review)","Compare fractions using the 1/2 benchmark","Ch. 1 + Gate 1, Boss Lock 3"],
+    ["5.NBT.B.7 (review)","Add and subtract decimals to hundredths","Ch. 2 + Gate 2, Boss Lock 2"],
+    ["5.OA.B.3 (review)","Generate and analyze numerical patterns","Ch. 3 + Gates 3 & 5, Boss Lock 1"],
+    ["6.G.A.2 (intro)","Find volume by packing unit cubes; V = l × w × h","Ch. 4 + Gate 4"],
+    ["MP1 · MP7","Make sense and persevere; look for and use structure","All gates: hint ladder, rule-testing, two-rule patterns"]
+  ],
+  answers:[
+    ["Gate 1","Clasp A: 3/8 (3 < 4, half of 8). 5/9 and 7/12 exceed 1/2. Clasp B: 5/9 is closer to 1/2 (≈0.56; distance 0.06 vs 0.44). Misconception trapped: judging size by denominator alone."],
+    ["Gate 2","Dial 1: 3.6 + 2.85 = 6.45. Dial 2: 12.5 − 4.75 = 7.75. Misconception: right-aligning final digits instead of lining up decimal points."],
+    ["Gate 3","Tiles: ×3 rule → 54 × 3 = 162. Stars: square numbers → 5 × 5 = 25. Misconception: forcing an addition rule onto a multiplicative pattern."],
+    ["Gate 4","One layer 4 × 3 = 12; 2 layers; volume = 24 cubic units (4 × 3 × 2)."],
+    ["Gate 5","Alternating +5, ×2: 47 × 2 = 94, then 94 + 5 = 99. Misconception: applying one rule twice in a row."],
+    ["Boss","Lock 1: 108 × 3 = 324. Lock 2: 5.75 + 3.5 = 9.25. Lock 3: 7/10 (0.7 > 1/2; 4/9 and 5/12 fall below)."]
+  ]
+};
+/* ================================================================
+   ===== CONTENT END ==============================================
+   ================================================================ */
+</script>
+<script>
+/* ================================================================
+   ===== AXIOM CITY ENGINE v1.0 — identical in every volume =======
+   ================================================================ */
+"use strict";
+/* ---------- storage (exact wrapper, ewl_ prefix) ---------- */
+const storage={_m:{},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){this._m[k]=v}},get(k,d=null){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return this._m[k]??d}}};
+const K=s=>`ewl_axiom_${VOLUME.slug}_${s}`;
+
+const $=s=>document.querySelector(s);
+const live=msg=>{$("#live").textContent=msg};
+const reducedMQ=matchMedia("(prefers-reduced-motion: reduce)");
+const mobileMQ=matchMedia("(max-width: 820px)");
+
+const prefs=Object.assign({sound:false,motion:true,bigtext:false,hc:false},storage.get(K("prefs"))||{});
+let solved=new Set(storage.get(K("gates"))||[]);
+let page=storage.get(K("page"))||0;            // index of left/visible page
+let turning=false;
+const attempts={};
+
+/* ---------- audio (Web Audio oscillators only, muted default) ---------- */
+let actx=null;
+function ac(){if(!actx){try{actx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return actx}
+function tone(f,t,dur,type="square",vol=.04){const c=ac();if(!c||!prefs.sound)return;const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(vol,c.currentTime+t);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+t+dur);o.connect(g).connect(c.destination);o.start(c.currentTime+t);o.stop(c.currentTime+t+dur+.02)}
+const SND={blip(){tone(660,0,.07)},flip(){tone(220,0,.09,"triangle",.05);tone(330,.05,.08,"triangle",.04)},win(){[523,659,784,1046].forEach((f,i)=>tone(f,i*.09,.14,"triangle",.05))},thud(){tone(110,0,.18,"sawtooth",.05)}};
+
+/* ---------- helpers ---------- */
+function gateLockIcon(open){return `<div class="gatelockcorner ${open?"open":""}" aria-hidden="true"><svg viewBox="0 0 100 100" style="color:#fff"><use href="${open?"#sig-open":"#sig-lock"}"/></svg></div>`}
+
+function pageInnerHTML(i){
+  if(i==null||i<0||i>=PAGES.length) return `<div class="page-inner" style="align-items:center;justify-content:center"><div class="kicker" style="opacity:.4">AXIOM CITY</div></div><div class="pagefoot"><span></span><span></span></div>`;
+  const p=PAGES[i];
+  const gateHTML=p.gate?`<div class="gatemount" data-gate="${p.gate}"></div>`:"";
+  const lock=p.gate?gateLockIcon(solved.has(p.gate)):"";
+  return `${lock}<div class="chapterband">${p.ch.replace("·","· <em>").concat(p.ch.includes("·")?"</em>":"")}</div><div class="page-inner">${p.html}${gateHTML}</div><div class="pagefoot"><span>${VOLUME.unit}</span><span>PAGE ${i+1} / ${PAGES.length}</span></div>`;
+}
+
+/* ---------- gate framework ---------- */
+function mountGates(scope){
+  scope.querySelectorAll(".gatemount").forEach(m=>{
+    const id=m.dataset.gate,G=GATES[id];
+    if(!G)return;
+    if(solved.has(id)){m.innerHTML=`<div class="gatesolved"><span class="stamp">SOLVED</span> ${G.title} — badge earned.</div>`;return}
+    m.innerHTML=`<div class="gatebox"><header><svg class="gicon" viewBox="0 0 100 100"><use href="${G.icon}"/></svg><h3>${G.title}</h3></header>
+      <div class="gatebody"><div class="gateprompt">${G.prompt}</div><div class="gwidget"></div>
+      <div class="gatehint" hidden></div>
+      <button class="gatecheck">CHECK</button>
+      <div class="gatefeedback" aria-live="polite"></div></div></div>`;
+    const box=m.querySelector(".gatebox"),body=m.querySelector(".gwidget"),fb=m.querySelector(".gatefeedback"),hint=m.querySelector(".gatehint"),btn=m.querySelector(".gatecheck");
+    let checker=null;
+    const api={
+      sound:n=>SND[n]&&SND[n](),
+      onCheck(fn){checker=fn},
+      fail(msg){
+        attempts[id]=(attempts[id]||0)+1;SND.thud();mkfeed(fb,msg,false);
+        const n=attempts[id];
+        if(n===1){hint.hidden=false;hint.innerHTML="💡 <b>Hint:</b> "+G.hints[0]}
+        else if(n===2){hint.hidden=false;hint.innerHTML="🧭 <b>Hint 2:</b> "+G.hints[1]}
+        else if(n>=3&&!hint.querySelector(".askvex")){
+          const b=document.createElement("button");b.className="gatecheck askvex";b.style.marginTop="8px";b.textContent="ASK VEX — WORKED EXAMPLE";
+          b.addEventListener("click",()=>openWorked(G));hint.appendChild(b);
+        }
+        live("Not yet. "+msg);
+      },
+      pass(msg){
+        solved.add(id);storage.set(K("gates"),[...solved]);SND.win();
+        m.innerHTML=`<div class="gatesolved unlockflash"><span class="stamp">SOLVED</span> ${msg}</div>`;
+        const corner=m.closest(".page,#pageL,#pageR")?.querySelector(".gatelockcorner");
+        if(corner){corner.classList.add("open");corner.innerHTML=`<svg viewBox="0 0 100 100" style="color:#fff"><use href="#sig-open"/></svg>`}
+        earnBadge(id);updateNav();live("Gate solved! "+msg);
+      }
+    };
+    G.render(body,api);
+    btn.addEventListener("click",()=>{ac();checker&&checker()});
+  });
+}
+function openWorked(G){
+  $("#workedBody").innerHTML=`<div class="workedsteps">${G.worked.steps.map((s,i)=>`<div class="st"><b class="n">${i+1}</b><span>${s}</span></div>`).join("")}</div>
+    <div class="caption">Your turn — same idea, different numbers:</div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span style="font:600 .92rem 'Segoe UI'">${G.worked.q}</span>
+    <input class="numin" id="wkin" aria-label="worked example answer"><button class="gatecheck" id="wkgo">CHECK</button></div>
+    <div class="gatefeedback" id="wkfb" aria-live="polite"></div>`;
+  $("#workedModal").classList.add("open");
+  $("#wkgo").addEventListener("click",()=>{
+    const v=($("#wkin").value||"").trim().replace(/\s+/g,"");
+    if(v===G.worked.a||parseFloat(v)===parseFloat(G.worked.a)){
+      mkfeed($("#wkfb"),"Yes! Now head back and open that gate.",true);SND.win();
+      setTimeout(()=>$("#workedModal").classList.remove("open"),1100);
+    }else{mkfeed($("#wkfb"),"Walk the steps above again — you've got this.",false);SND.thud()}
+  });
+}
+
+/* ---------- badges ---------- */
+function buildBadges(){
+  $("#badges").innerHTML=BADGES.map(b=>`<div class="badge ${solved.has(b.id)?"earned":""}" id="badge-${b.id}" title="${b.label}" role="img" aria-label="${b.label}${solved.has(b.id)?" — earned":" — locked"}"><svg viewBox="0 0 100 100"><use href="${b.icon}"/></svg></div>`).join("");
+}
+function earnBadge(id){buildBadges();const el=$("#badge-"+id);if(el){el.classList.remove("earned");void el.offsetWidth;el.classList.add("earned")}const b=BADGES.find(x=>x.id===id);if(b)live("Badge earned: "+b.label)}
+
+/* ---------- progress ---------- */
+function buildProgress(){$("#progress").innerHTML=PAGES.map((_,i)=>`<span class="dot ${i<=page?"on":""}"></span>`).join("")}
+
+/* ---------- navigation & rendering ---------- */
+const isMobile=()=>mobileMQ.matches;
+function leftIndex(){return isMobile()?page:page-(page%2)}
+function visiblePages(){return isMobile()?[page]:[leftIndex(),leftIndex()+1].filter(i=>i<PAGES.length)}
+function blockedBy(){for(const i of visiblePages()){const g=PAGES[i]&&PAGES[i].gate;if(g&&!solved.has(g))return g}return null}
+
+function renderSpread(){
+  const L=$("#pageL"),R=$("#pageR");
+  if(isMobile()){L.innerHTML=pageInnerHTML(page);L.classList.remove("offscreen");R.classList.add("offscreen");R.innerHTML="";mountGates(L)}
+  else{const li=leftIndex();L.innerHTML=pageInnerHTML(li);R.innerHTML=pageInnerHTML(li+1<PAGES.length?li+1:null);L.classList.remove("offscreen");R.classList.remove("offscreen");mountGates(L);mountGates(R)}
+  buildProgress();updateNav();updateEdges();
+  if(PAGES[page])live(`Page ${page+1} of ${PAGES.length}. ${PAGES[page].ch}.`);
+  storage.set(K("page"),page);
+  if($("#certName")){$("#certName").value=storage.get(K("name"))||"";$("#certName").addEventListener("input",e=>storage.set(K("name"),e.target.value));
+    $("#certBadges").innerHTML=BADGES.map(b=>`<div class="badge ${solved.has(b.id)?"":"locked"}"><svg viewBox="0 0 100 100"><use href="${b.icon}"/></svg></div>`).join("");
+    $("#printCert").addEventListener("click",()=>{document.body.classList.add("print-cert");window.print();setTimeout(()=>document.body.classList.remove("print-cert"),400)});}
+}
+function updateEdges(){const f=page/Math.max(1,PAGES.length-1);$("#edgesL").style.width=(4+f*12)+"px";$("#edgesR").style.width=(16-f*12)+"px"}
+function updateNav(){
+  $("#prevBtn").disabled=page<=0||turning;
+  const lastVisible=Math.max(...visiblePages());
+  const end=lastVisible>=PAGES.length-1;
+  const blocked=blockedBy();
+  $("#nextBtn").disabled=end||turning;
+  $("#nextBtn").classList.toggle("locked",!!blocked&&!end);
+  $("#nextBtn").innerHTML=blocked&&!end?"🔒":"›";
+  $("#nextBtn").setAttribute("aria-label",blocked?"Locked — solve the gate on this page to continue":"Next page");
+}
+function step(dir){
+  if(turning)return;
+  if(dir>0){
+    const blocked=blockedBy();
+    if(blocked){const G=GATES[blocked];SND.thud();$("#nextBtn").classList.add("shake");setTimeout(()=>$("#nextBtn").classList.remove("shake"),700);
+      live("This page is gated. Solve "+G.title+" to continue.");
+      const gb=document.querySelector(".gatebox");if(gb){gb.classList.add("unlockflash");setTimeout(()=>gb.classList.remove("unlockflash"),1000)}
+      return}
+    const lastVisible=Math.max(...visiblePages());
+    if(lastVisible>=PAGES.length-1)return;
+    const target=isMobile()?page+1:leftIndex()+2;
+    animTurn(1,target);
+  }else{
+    if(page<=0)return;
+    const target=isMobile()?page-1:Math.max(0,leftIndex()-2);
+    animTurn(-1,target);
+  }
+}
+function animTurn(dir,target){
+  if(isMobile()||reducedMQ.matches||!prefs.motion){page=target;renderSpread();SND.flip();return}
+  turning=true;SND.flip();
+  const sheet=$("#turnSheet"),front=sheet.querySelector(".ts.front"),back=sheet.querySelector(".ts.back");
+  const oldL=leftIndex();
+  if(dir>0){
+    front.innerHTML=pageInnerHTML(oldL+1<PAGES.length?oldL+1:null);
+    back.innerHTML=pageInnerHTML(target<PAGES.length?target:null);
+    page=target;
+    /* underneath: left stays old-left, right becomes new-right */
+    $("#pageR").innerHTML=pageInnerHTML(target+1<PAGES.length?target+1:null);
+    sheet.className="";sheet.classList.add("show","fwd");
+  }else{
+    front.innerHTML=pageInnerHTML(target+1<PAGES.length?target+1:null);
+    back.innerHTML=pageInnerHTML(oldL);
+    page=target;
+    $("#pageL").innerHTML=pageInnerHTML(target);
+    sheet.className="";sheet.classList.add("show","back");
+  }
+  const done=()=>{sheet.classList.remove("show","fwd","back");sheet.removeEventListener("animationend",done);turning=false;renderSpread()};
+  sheet.addEventListener("animationend",done);
+  setTimeout(()=>{if(turning){done()}},1000);
+}
+
+/* ---------- parallax ---------- */
+let rafPending=false,px=0,py=0;
+function applyParallax(){
+  rafPending=false;
+  if(!prefs.motion||reducedMQ.matches)return;
+  document.querySelectorAll("#spreadWrap .panel3d").forEach(p=>{
+    p.style.transform=`rotateY(${px*4}deg) rotateX(${-py*3}deg)`;
+    p.querySelectorAll("[data-depth]").forEach(l=>{const d=+l.dataset.depth||0;l.style.transform=`translate(${px*d*.6}px,${py*d*.35}px)`});
+  });
+}
+addEventListener("pointermove",e=>{
+  px=(e.clientX/innerWidth-.5)*2;py=(e.clientY/innerHeight-.5)*2;
+  if(!rafPending){rafPending=true;requestAnimationFrame(applyParallax)}
+  const cc=$("#coverCard");
+  if(cc&&!$("#cover").hidden&&prefs.motion&&!reducedMQ.matches){
+    cc.style.transform=`rotateY(${px*9}deg) rotateX(${-py*7}deg)`;
+    cc.querySelectorAll(".cov-layer").forEach(l=>{const d=+l.dataset.depth||0;l.style.transform=`translate(${px*d}px,${py*d*.6}px)`});
+  }
+},{passive:true});
+
+/* note: SVG <g data-depth> transform via style works in modern browsers (SVG2). Wrapped above for safety. */
+
+/* ---------- HUD toggles ---------- */
+function syncToggles(){
+  $("#sndBtn").setAttribute("aria-pressed",prefs.sound);$("#sndBtn").textContent=prefs.sound?"🔊 Sound":"🔇 Sound";
+  $("#motBtn").setAttribute("aria-pressed",prefs.motion);$("#motBtn").textContent=prefs.motion?"3D On":"3D Off";
+  $("#txtBtn").setAttribute("aria-pressed",prefs.bigtext);document.documentElement.dataset.textsize=prefs.bigtext?"lg":"md";
+  $("#hcBtn").setAttribute("aria-pressed",prefs.hc);document.body.classList.toggle("hc",prefs.hc);
+  if(!prefs.motion)document.querySelectorAll(".panel3d").forEach(p=>p.style.transform="");
+  storage.set(K("prefs"),prefs);
+}
+$("#sndBtn").addEventListener("click",()=>{prefs.sound=!prefs.sound;ac();syncToggles();SND.blip()});
+$("#motBtn").addEventListener("click",()=>{prefs.motion=!prefs.motion;syncToggles()});
+$("#txtBtn").addEventListener("click",()=>{prefs.bigtext=!prefs.bigtext;syncToggles()});
+$("#hcBtn").addEventListener("click",()=>{prefs.hc=!prefs.hc;syncToggles()});
+
+/* ---------- teacher panel ---------- */
+function buildTeacher(){
+  $("#teacherBody").innerHTML=`
+    <p style="font:600 .9rem/1.45 'Segoe UI'">${VOLUME.unit} — interactive graphic novel. Story pauses at six <b>reader gates</b>; students must solve grade-level math problems to continue. Progress, badges, and settings persist per device.</p>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">SUGGESTED USE</h3>
+    <p style="font:600 .88rem/1.45 'Segoe UI'">${TEACHER.suggested}</p>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">STANDARDS ALIGNMENT (CCSS)</h3>
+    <table class="tt"><tr><th>Standard</th><th>Description</th><th>Where</th></tr>
+    ${TEACHER.standards.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</table>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">ANSWER KEY</h3>
+    <table class="tt"><tr><th>Gate</th><th>Answer &amp; notes</th></tr>
+    ${TEACHER.answers.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td></tr>`).join("")}</table>
+    <p style="font:600 .8rem/1.4 'Segoe UI';color:#666">Hints escalate: conceptual → procedural → VEX worked example (parallel problem; never reveals the gate answer). Sound is off by default. 3D motion can be disabled (auto-disabled for reduced-motion users). © EduWonderLab — single-file, offline-safe, no data leaves the device.</p>`;
+}
+$("#teacherBtn").addEventListener("click",()=>{buildTeacher();$("#teacherModal").classList.add("open")});
+$("#printTeacher").addEventListener("click",()=>{document.body.classList.add("print-teacher");window.print();setTimeout(()=>document.body.classList.remove("print-teacher"),400)});
+document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",()=>b.closest(".modal").classList.remove("open")));
+
+/* ---------- input ---------- */
+$("#nextBtn").addEventListener("click",()=>{ac();step(1)});
+$("#prevBtn").addEventListener("click",()=>{ac();step(-1)});
+addEventListener("keydown",e=>{
+  if(e.key==="Escape"){$("#teacherModal").classList.remove("open");return}
+  if($(".modal.open"))return;
+  if(["ArrowRight","PageDown"].includes(e.key))step(1);
+  if(["ArrowLeft","PageUp"].includes(e.key))step(-1);
+});
+let tx=null;
+addEventListener("touchstart",e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener("touchend",e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>60&&!$(".modal.open"))step(dx<0?1:-1);tx=null},{passive:true});
+mobileMQ.addEventListener("change",()=>renderSpread());
+
+/* ---------- boot ---------- */
+function openBook(){
+  $("#cover").hidden=true;$("#hud").hidden=false;$("#stage").hidden=false;
+  $("#prevBtn").hidden=false;$("#nextBtn").hidden=false;
+  renderSpread();
+}
+$("#startBtn").addEventListener("click",()=>{ac();page=0;openBook()});
+$("#resumeBtn").addEventListener("click",()=>{ac();openBook()});
+if((storage.get(K("page"))||0)>0||solved.size>0){$("#resumeBtn").hidden=false}
+if(reducedMQ.matches){prefs.motion=false}
+document.body.classList.toggle("reduced",reducedMQ.matches);
+buildBadges();syncToggles();buildProgress();
+</script>
+</body>
+</html>

@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en" data-textsize="md">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Axiom City U2·E2 — The Middle of Everything | Interactive Graphic Novel | Median, Box Plots, IQR</title>
+<meta name="description" content="An interactive graphic novel episode teaching Grade 6 median, box plots, range and IQR (Lessons 2-3 to 2-5). EduWonderLab.">
+<style>
+/* ================= AXIOM CITY ENGINE CSS v1.0 — DO NOT FORK ================= */
+:root{
+  --paper:#F7F4EC; --ink:#24323F; --navy:#17324D; --teal:#1FA6A2; --amber:#F2C15B;
+  --coral:#E2674A; --purple:#4A2580; --accent:var(--teal);
+  --panelborder:3px solid var(--navy);
+  --balloonfont:600 1rem/1.32 'Segoe UI',system-ui,-apple-system,sans-serif;
+  --capfont:italic 500 .92rem/1.35 Georgia,'Times New Roman',serif;
+  --pagew:560px;
+}
+html[data-textsize="lg"]{font-size:18px}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:radial-gradient(120% 120% at 50% 0%,#23425f 0%,#101e2e 55%,#0a1420 100%);color:var(--ink);font:400 16px/1.45 'Segoe UI',system-ui,sans-serif;overflow:hidden}
+body.hc{--ink:#000;--paper:#fff}
+button{font:inherit;cursor:pointer}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:4px}
+
+/* ---------- COVER SCREEN ---------- */
+#cover{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:18px;background:radial-gradient(110% 110% at 50% 10%,#1c3a57 0%,#0a1420 100%);perspective:1400px;overflow:auto}
+#coverCard{position:relative;width:min(88vw,520px,calc((100vh - 200px)*0.714));aspect-ratio:5/7;border-radius:10px 18px 18px 10px;box-shadow:0 40px 80px rgba(0,0,0,.6),0 8px 22px rgba(0,0,0,.5);transform-style:preserve-3d;transition:transform .18s ease-out;background:var(--navy);overflow:hidden}
+#coverCard .spine{position:absolute;left:0;top:0;bottom:0;width:26px;background:linear-gradient(90deg,#0d1f33,#17324D 60%,#244a6e);z-index:5}
+#coverCard .spine span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-90deg);white-space:nowrap;color:var(--amber);font:900 .72rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.28em}
+.cov-layer{position:absolute;inset:0;will-change:transform}
+#coverTitle{position:absolute;left:34px;right:18px;top:26px;z-index:6;color:#fff}
+#coverTitle .series{font:900 .9rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.4em;color:var(--amber)}
+#coverTitle h1{font:900 clamp(2rem,7vw,3.1rem)/0.95 'Arial Black',Arial,sans-serif;text-transform:uppercase;margin-top:8px;text-shadow:4px 4px 0 rgba(0,0,0,.35);color:#fff}
+#coverTitle h1 em{font-style:normal;color:var(--accent)}
+#coverTitle .vol{display:inline-block;margin-top:10px;background:var(--accent);color:#fff;font:900 .8rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.18em;padding:7px 12px;border-radius:4px;box-shadow:2px 2px 0 rgba(0,0,0,.4)}
+#coverBottom{position:absolute;left:34px;right:18px;bottom:18px;z-index:6;display:flex;justify-content:space-between;align-items:flex-end;color:#cfe3ea;font:700 .72rem/1.3 'Segoe UI',sans-serif;letter-spacing:.12em}
+#coverActions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.bigbtn{background:var(--amber);color:var(--navy);border:none;border-radius:999px;font:900 1rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.1em;padding:18px 34px;box-shadow:0 6px 0 #b78a2e,0 14px 30px rgba(0,0,0,.5);transition:transform .12s,box-shadow .12s}
+.bigbtn:hover{transform:translateY(-2px)}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 #b78a2e}
+.bigbtn.alt{background:#274a6a;color:#fff;box-shadow:0 6px 0 #122a42,0 14px 30px rgba(0,0,0,.5)}
+
+/* ---------- HUD ---------- */
+#hud{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:10px;padding:8px 14px;background:linear-gradient(180deg,rgba(7,14,22,.92),rgba(7,14,22,.65) 70%,transparent);color:#dfe9ef}
+#hud .brand{font:900 .78rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.22em;color:var(--amber);white-space:nowrap}
+#hud .brand small{display:block;font:700 .56rem/1.4 'Segoe UI',sans-serif;letter-spacing:.18em;color:#9fb7c6}
+#progress{display:flex;gap:5px;margin-left:8px;flex-wrap:wrap}
+#progress .dot{width:9px;height:9px;border-radius:50%;background:#3a576f;border:1px solid #5b7d99}
+#progress .dot.on{background:var(--accent);border-color:var(--accent);box-shadow:0 0 6px var(--accent)}
+#badges{display:flex;gap:6px;margin-left:auto}
+.badge{width:34px;height:34px;border-radius:50%;background:#1c3a52;border:2px solid #35587a;display:flex;align-items:center;justify-content:center;filter:grayscale(1) brightness(.6);transition:filter .4s,transform .4s}
+.badge.earned{filter:none;border-color:var(--amber);background:#234d6b;animation:badgepop .6s cubic-bezier(.2,2,.4,1)}
+.badge svg{width:20px;height:20px}
+@keyframes badgepop{0%{transform:scale(.2) rotate(-40deg)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+.hudbtns{display:flex;gap:6px;margin-left:10px}
+.hudbtn{background:#1c3a52;border:1px solid #35587a;color:#dfe9ef;border-radius:8px;min-width:48px;min-height:38px;padding:4px 10px;font:700 .72rem/1.1 'Segoe UI',sans-serif}
+.hudbtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#06222b}
+.hudbtn.teacher{background:var(--purple);border-color:#6b46a8;color:#fff}
+
+/* ---------- BOOK STAGE ---------- */
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;perspective:2200px;padding:64px 12px 56px}
+#book{position:relative;width:min(96vw,1180px);height:min(calc(100vh - 130px),780px);transform-style:preserve-3d}
+#bookcase{position:absolute;inset:0;border-radius:8px 14px 14px 8px;background:#0e2233;box-shadow:0 50px 90px rgba(0,0,0,.65),0 10px 26px rgba(0,0,0,.5);transform:translateZ(-30px)}
+.edges{position:absolute;top:6px;bottom:6px;width:14px;background:repeating-linear-gradient(90deg,#e8e2d2 0 2px,#cfc7b2 2px 3px);border-radius:3px;transition:width .5s}
+#edgesL{left:-6px;border-right:1px solid #b8ae97}
+#edgesR{right:-6px;border-left:1px solid #b8ae97}
+#spreadWrap{position:absolute;inset:0;display:flex;border-radius:6px;overflow:visible}
+.page{position:relative;width:50%;height:100%;background:var(--paper);overflow:hidden;display:flex;flex-direction:column}
+.page.left{border-radius:8px 0 0 8px;box-shadow:inset -22px 0 28px -22px rgba(36,50,63,.45)}
+.page.right{border-radius:0 8px 8px 0;box-shadow:inset 22px 0 28px -22px rgba(36,50,63,.45)}
+#spine3d{position:absolute;left:50%;top:0;bottom:0;width:4px;transform:translateX(-50%);background:linear-gradient(90deg,rgba(0,0,0,.25),rgba(0,0,0,.45),rgba(0,0,0,.25));z-index:3}
+.page-inner{flex:1;overflow:auto;padding:18px 20px 14px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin}
+.pagefoot{flex:none;display:flex;justify-content:space-between;align-items:center;padding:6px 16px 10px;font:700 .66rem/1 'Segoe UI',sans-serif;letter-spacing:.18em;color:#7d8a8f;text-transform:uppercase}
+.page .chapterband{flex:none;background:var(--navy);color:#fff;font:900 .72rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.24em;padding:8px 20px;text-transform:uppercase}
+.page .chapterband em{color:var(--accent);font-style:normal}
+.gatelockcorner{position:absolute;top:8px;right:10px;z-index:5;width:34px;height:34px;border-radius:50%;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,.3)}
+.gatelockcorner.open{background:var(--teal)}
+.gatelockcorner svg{width:18px;height:18px}
+
+/* turning sheet */
+#turnSheet{position:absolute;top:0;bottom:0;right:0;width:50%;z-index:20;transform-origin:left center;transform-style:preserve-3d;pointer-events:none;display:none}
+#turnSheet.show{display:block}
+#turnSheet .ts{position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;background:var(--paper)}
+#turnSheet .ts.front{border-radius:0 8px 8px 0}
+#turnSheet .ts.back{transform:rotateY(180deg);border-radius:8px 0 0 8px}
+#turnSheet .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.0),rgba(0,0,0,.28));opacity:0;pointer-events:none}
+@keyframes turnFwd{0%{transform:rotateY(0)}100%{transform:rotateY(-180deg)}}
+@keyframes turnBack{0%{transform:rotateY(-180deg)}100%{transform:rotateY(0)}}
+#turnSheet.fwd{animation:turnFwd .8s cubic-bezier(.45,.05,.3,1) forwards}
+#turnSheet.back{animation:turnBack .8s cubic-bezier(.45,.05,.3,1) forwards}
+body.reduced #turnSheet{display:none!important}
+
+/* nav arrows */
+.navarrow{position:fixed;top:50%;transform:translateY(-50%);z-index:40;width:54px;height:88px;border:none;border-radius:12px;background:rgba(20,42,62,.8);color:#fff;font-size:1.6rem;display:flex;align-items:center;justify-content:center;transition:background .2s,opacity .2s}
+.navarrow:hover{background:var(--accent)}
+.navarrow[disabled]{opacity:.25;cursor:not-allowed}
+#prevBtn{left:8px}#nextBtn{right:8px}
+.navarrow.locked{background:var(--coral)}
+@keyframes shake{0%,100%{transform:translateY(-50%)}25%{transform:translateY(-50%) translateX(-6px)}75%{transform:translateY(-50%) translateX(6px)}}
+.navarrow.shake{animation:shake .3s 2}
+
+/* ---------- COMIC ART ---------- */
+.panelrow{display:flex;gap:10px}
+.panelrow>.panel{flex:1}
+.panel{position:relative;border:var(--panelborder);border-radius:6px 10px 7px 9px;background:#fff;overflow:hidden;box-shadow:3px 3px 0 rgba(23,50,77,.18)}
+.panel.tall{min-height:200px}
+.panel svg.scene{display:block;width:100%;height:auto}
+.panel3d{transform-style:preserve-3d;transition:transform .25s ease-out;will-change:transform}
+.panel3d [data-depth]{will-change:transform}
+.balloon{position:absolute;max-width:62%;background:#fff;border:3px solid var(--navy);border-radius:14px;padding:8px 12px;font:var(--balloonfont);color:var(--ink);box-shadow:2px 2px 0 rgba(23,50,77,.25);z-index:4}
+.balloon .who{display:block;font:900 .58rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.16em;color:var(--accent);text-transform:uppercase;margin-bottom:3px}
+.balloon::after{content:"";position:absolute;bottom:-14px;left:28px;width:0;height:0;border:9px solid transparent;border-top:14px solid var(--navy)}
+.balloon::before{content:"";position:absolute;bottom:-9px;left:31px;width:0;height:0;border:7px solid transparent;border-top:11px solid #fff;z-index:1}
+.balloon.tail-r::after{left:auto;right:28px}
+.balloon.tail-r::before{left:auto;right:31px}
+.balloon.vex{background:#062e33;border-color:var(--teal);color:#c8f5f1;border-radius:10px;font-family:'Consolas','Courier New',monospace;font-weight:500;box-shadow:0 0 12px rgba(31,166,162,.5)}
+.balloon.vex .who{color:var(--amber)}
+.balloon.vex::after{border-top-color:var(--teal)}
+.balloon.vex::before{border-top-color:#062e33}
+.balloon.thought{border-radius:30px;border-style:dashed}
+.caption{background:#FFF3D8;border:2px solid var(--amber);border-left-width:8px;padding:7px 12px;font:var(--capfont);color:#5a4a22;border-radius:3px}
+.caption.loc{font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-style:normal;font-family:'Segoe UI',sans-serif;font-size:.74rem}
+.sfx{position:absolute;z-index:5;font:900 1.7rem/1 'Arial Black',Arial,sans-serif;color:var(--coral);-webkit-text-stroke:2px var(--navy);text-stroke:2px var(--navy);transform:rotate(-7deg);text-shadow:3px 3px 0 var(--amber);letter-spacing:.04em;pointer-events:none}
+.splashtitle{font:900 clamp(1.5rem,3.2vw,2.4rem)/1 'Arial Black',Arial,sans-serif;text-transform:uppercase;color:var(--navy)}
+.splashtitle em{color:var(--accent);font-style:normal}
+.kicker{font:900 .68rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.3em;color:var(--coral);text-transform:uppercase}
+
+/* ---------- GATES ---------- */
+.gatebox{border:4px solid var(--accent);border-radius:12px;background:linear-gradient(180deg,#ffffff,#eef7f6);box-shadow:0 6px 0 rgba(23,50,77,.15);overflow:hidden}
+.gatebox header{display:flex;align-items:center;gap:10px;background:var(--accent);color:#fff;padding:9px 14px}
+.gatebox header .gicon{width:30px;height:30px;flex:none}
+.gatebox header h3{font:900 .85rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.gatebody{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.gateprompt{font:600 .95rem/1.4 'Segoe UI',sans-serif}
+.gatecheck{align-self:flex-start;background:var(--navy);color:#fff;border:none;border-radius:999px;font:900 .82rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.1em;padding:13px 26px;min-height:48px;box-shadow:0 4px 0 #0c1d30}
+.gatecheck:active{transform:translateY(2px);box-shadow:0 2px 0 #0c1d30}
+.gatefeedback{min-height:1.3em;font:700 .88rem/1.35 'Segoe UI',sans-serif}
+.gatefeedback.bad{color:var(--coral)}
+.gatefeedback.good{color:#0d7a4f}
+.gatehint{background:#FFF3D8;border:2px dashed var(--amber);border-radius:8px;padding:9px 12px;font:600 .86rem/1.4 'Segoe UI',sans-serif;color:#5a4a22}
+.gatesolved{display:flex;align-items:center;gap:10px;background:#e2f4ee;border:3px solid #0d7a4f;border-radius:10px;padding:10px 14px;font:900 .8rem/1.3 'Arial Black',Arial,sans-serif;color:#0d7a4f;letter-spacing:.08em}
+.stamp{display:inline-block;transform:rotate(-6deg);border:3px solid #0d7a4f;border-radius:6px;padding:3px 8px}
+/* gate widgets */
+.tokenbank,.beakers{display:flex;gap:8px;flex-wrap:wrap}
+.token{width:48px;height:48px;border-radius:50%;border:3px solid var(--navy);background:var(--amber);font:900 .7rem/1 'Arial Black',Arial,sans-serif;color:var(--navy);display:flex;align-items:center;justify-content:center;transition:transform .15s,background .2s}
+.token:hover{transform:scale(1.1)}
+.token.inA{background:var(--teal);color:#fff}
+.token.inB{background:#7db8e8;color:var(--navy)}
+.beaker{flex:1;min-width:120px;border:3px solid var(--navy);border-radius:0 0 14px 14px;border-top-style:dashed;padding:8px;min-height:74px;background:rgba(31,166,162,.08)}
+.beaker h4{font:900 .62rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.12em;color:var(--navy);text-transform:uppercase;margin-bottom:6px}
+.beaker .cnt{font:900 1.2rem/1 'Arial Black',Arial,sans-serif;color:var(--accent)}
+.numin{width:96px;min-height:48px;border:3px solid var(--navy);border-radius:8px;font:900 1.05rem/1 'Arial Black',Arial,sans-serif;text-align:center;color:var(--navy);background:#fff;padding:6px}
+.numin:focus{border-color:var(--accent)}
+.numin.ok{border-color:#0d7a4f;background:#e2f4ee}
+.numin.no{border-color:var(--coral);background:#fdebe6}
+.rt-table{border-collapse:collapse;width:100%}
+.rt-table th,.rt-table td{border:2px solid var(--navy);padding:7px 9px;text-align:center;font:700 .92rem/1.2 'Segoe UI',sans-serif}
+.rt-table th{background:var(--navy);color:#fff;font:900 .7rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.08em}
+.rt-table td.given{background:#eef7f6;font-weight:800}
+.choicebtns{display:flex;gap:10px;flex-wrap:wrap}
+.choicebtn{flex:1;min-width:140px;min-height:48px;border:3px solid var(--navy);border-radius:10px;background:#fff;font:700 .9rem/1.3 'Segoe UI',sans-serif;padding:10px 12px;text-align:left;transition:background .15s}
+.choicebtn:hover{background:#eef7f6}
+.choicebtn[aria-pressed="true"]{background:var(--navy);color:#fff}
+.gategrid{touch-action:manipulation}
+.gategrid .gp{cursor:pointer}
+.unlockflash{animation:unlockflash 1s ease-out}
+@keyframes unlockflash{0%{box-shadow:0 0 0 0 rgba(242,193,91,.9)}100%{box-shadow:0 0 0 26px rgba(242,193,91,0)}}
+
+/* ---------- MODALS ---------- */
+.modal{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(5,12,19,.72);padding:16px}
+.modal.open{display:flex}
+.modalcard{background:var(--paper);border-radius:14px;max-width:780px;width:100%;max-height:88vh;overflow:auto;box-shadow:0 30px 70px rgba(0,0,0,.6)}
+.modalcard>header{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;background:var(--navy);color:#fff;padding:12px 18px;z-index:2}
+.modalcard>header h2{font:900 1rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.modalcard .x{background:var(--coral);border:none;color:#fff;border-radius:8px;width:40px;height:40px;font:900 1rem/1 Arial}
+.modalbody{padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.tt{border-collapse:collapse;width:100%}
+.tt th,.tt td{border:2px solid var(--navy);padding:8px 10px;font:600 .85rem/1.35 'Segoe UI',sans-serif;text-align:left;vertical-align:top}
+.tt th{background:var(--navy);color:#fff;font:900 .68rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.tt tr:nth-child(even) td{background:#fff}
+.workedsteps{display:flex;flex-direction:column;gap:8px}
+.workedsteps .st{display:flex;gap:10px;align-items:flex-start;background:#fff;border:2px solid var(--navy);border-radius:8px;padding:9px 12px;font:600 .9rem/1.4 'Segoe UI',sans-serif}
+.workedsteps .st b.n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font:900 .8rem/1 Arial}
+
+/* ---------- END MATTER ---------- */
+.castcard{display:flex;gap:12px;align-items:center;border:3px solid var(--navy);border-radius:10px;background:#fff;padding:8px 12px}
+.castcard svg{width:64px;height:76px;flex:none}
+.castcard h4{font:900 .8rem/1.2 'Arial Black',Arial,sans-serif;color:var(--navy);letter-spacing:.06em}
+.castcard p{font:600 .8rem/1.35 'Segoe UI',sans-serif;color:#4c5a66}
+.journal{border:3px solid var(--amber);background:#FFFDF4;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.journal h4{font:900 .8rem/1.2 'Arial Black',Arial,sans-serif;color:#8a6a1c;letter-spacing:.14em;text-transform:uppercase}
+.journal .jrow{display:flex;gap:10px;align-items:flex-start;font:600 .88rem/1.4 Georgia,serif;color:#4a3d18}
+.journal .jrow b{color:var(--navy)}
+#certificate{border:6px double var(--navy);border-radius:8px;background:#fff;padding:18px;text-align:center;display:flex;flex-direction:column;gap:8px}
+#certificate h3{font:900 1.2rem/1.1 'Arial Black',Arial,sans-serif;color:var(--navy);letter-spacing:.1em}
+#certName{border:none;border-bottom:3px solid var(--navy);font:900 1.3rem/1.2 Georgia,serif;text-align:center;background:transparent;min-height:48px;width:80%;align-self:center;color:var(--ink)}
+.certbadges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.certbadges .badge{filter:none;border-color:var(--amber);background:#fdf6e7}
+.certbadges .badge.locked{filter:grayscale(1) opacity(.35)}
+
+/* ---------- MOBILE ---------- */
+@media (max-width:820px){
+  #book{height:min(calc(100vh - 120px),760px)}
+  #spreadWrap .page{width:100%}
+  #spreadWrap .page.offscreen{display:none}
+  #spine3d,#edgesL{display:none}
+  .navarrow{width:44px;height:72px}
+  .balloon{max-width:78%}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important;transition-duration:.001s!important}
+}
+/* ---------- PRINT ---------- */
+@media print{
+  body{overflow:visible;background:#fff}
+  body *{visibility:hidden}
+  body.print-teacher #teacherModal,body.print-teacher #teacherModal *{visibility:visible}
+  body.print-teacher #teacherModal{position:static;display:block;background:#fff;padding:0}
+  body.print-teacher #teacherModal .modalcard{max-height:none;box-shadow:none}
+  body.print-cert #certificate,body.print-cert #certificate *{visibility:visible}
+  body.print-cert #certificate{position:fixed;inset:5% 8%;background:#fff}
+  .x,.gatecheck{display:none!important}
+}
+/* ================= VOL OVERRIDES — U2·E2 "The Middle of Everything" (accent #3D74A8, matches Vol 2 story world) ================= */
+:root{--accent:#3D74A8} /* brightened navy-blue accent (navy itself is too dark for accent UI) */
+.hudbtn[aria-pressed="true"]{color:#fff} /* contrast fix: dark teal text fails AA on the blue accent */
+.gatebox{background:linear-gradient(180deg,#ffffff,#edf3f9)} /* blue-tinted gate paper */
+.beaker{background:rgba(61,116,168,.08)}
+.rt-table td.given{background:#edf3f9}
+.choicebtn:hover{background:#edf3f9}
+</style>
+</head>
+<body>
+<!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<pattern id="halftone" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.4" fill="#17324D" opacity=".18"/></pattern>
+<pattern id="halftoneT" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.4" fill="#1FA6A2" opacity=".3"/></pattern>
+<linearGradient id="skygrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd8e8"/><stop offset="1" stop-color="#e8f4ee"/></linearGradient>
+<linearGradient id="duskgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A2580"/><stop offset=".6" stop-color="#E2674A"/><stop offset="1" stop-color="#F2C15B"/></linearGradient>
+<radialGradient id="vexglow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#7CF2EC"/><stop offset=".6" stop-color="#1FA6A2"/><stop offset="1" stop-color="#1FA6A2" stop-opacity="0"/></radialGradient>
+
+<!-- MAYA: teal jacket, black high bun, star pin -->
+<g id="sym-maya"><path d="M22 118 L24 84 Q24 70 50 70 Q76 70 76 84 L78 118 Z" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><path d="M40 73 L50 86 L60 73" fill="#F7F4EC" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="44" r="24" fill="#C68642" stroke="#17324D" stroke-width="4"/><path d="M27 40 Q26 18 50 18 Q74 18 73 40 Q66 26 50 26 Q34 26 27 40Z" fill="#1B1B23" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="13" r="9" fill="#1B1B23" stroke="#17324D" stroke-width="3"/><path d="M62 8 l2.2 4.4 4.8.6-3.5 3.4.9 4.8-4.4-2.3-4.4 2.3.9-4.8-3.5-3.4 4.8-.6z" fill="#F2C15B" stroke="#17324D" stroke-width="1.5"/><circle cx="42" cy="44" r="2.6" fill="#17324D"/><circle cx="58" cy="44" r="2.6" fill="#17324D"/><path d="M37 37 q5 -3 9 -1 M54 36 q5 -2 9 1" fill="none" stroke="#17324D" stroke-width="2.4" stroke-linecap="round"/><path d="M44 55 q6 5 12 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- THEO: navy hoodie, flat-top, amber glasses -->
+<g id="sym-theo"><path d="M22 118 L24 86 Q24 72 50 72 Q76 72 76 86 L78 118 Z" fill="#17324D" stroke="#17324D" stroke-width="4"/><path d="M36 72 Q50 80 64 72 L64 80 Q50 88 36 80Z" fill="#0d2238" stroke="#17324D" stroke-width="2"/><circle cx="50" cy="45" r="24" fill="#6B4226" stroke="#17324D" stroke-width="4"/><path d="M27 38 Q27 16 50 16 Q73 16 73 38 L70 30 L30 30 Z" fill="#10101a" stroke="#17324D" stroke-width="3"/><rect x="33" y="38" width="14" height="11" rx="3" fill="#fff" stroke="#F2C15B" stroke-width="3"/><rect x="53" y="38" width="14" height="11" rx="3" fill="#fff" stroke="#F2C15B" stroke-width="3"/><line x1="47" y1="43" x2="53" y2="43" stroke="#F2C15B" stroke-width="3"/><circle cx="40" cy="44" r="2.4" fill="#17324D"/><circle cx="60" cy="44" r="2.4" fill="#17324D"/><path d="M43 57 q7 3 14 -1" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- ZARA: coral overalls, side ponytail -->
+<g id="sym-zara"><path d="M22 118 L24 88 Q24 74 50 74 Q76 74 76 88 L78 118 Z" fill="#fff" stroke="#17324D" stroke-width="4"/><path d="M30 78 L34 118 L44 118 L42 80 M70 78 L66 118 L56 118 L58 80" fill="#E2674A" stroke="#17324D" stroke-width="3"/><rect x="40" y="92" width="20" height="16" rx="3" fill="#E2674A" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="46" r="24" fill="#F1C27D" stroke="#17324D" stroke-width="4"/><path d="M27 44 Q24 20 50 19 Q76 20 74 38 Q70 28 52 27 Q34 27 32 44 Z" fill="#E2674A" stroke="#17324D" stroke-width="3"/><path d="M71 30 Q88 36 84 58 Q80 70 72 72 Q78 58 72 46Z" fill="#E2674A" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="46" r="2.6" fill="#17324D"/><circle cx="58" cy="46" r="2.6" fill="#17324D"/><path d="M42 57 q8 6 16 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/><circle cx="36" cy="53" r="3" fill="#E2674A" opacity=".5"/><circle cx="64" cy="53" r="3" fill="#E2674A" opacity=".5"/></g>
+<!-- DEV: purple tee, headphones -->
+<g id="sym-dev"><path d="M22 118 L24 88 Q24 74 50 74 Q76 74 76 88 L78 118 Z" fill="#4A2580" stroke="#17324D" stroke-width="4"/><path d="M43 92 l7 -6 7 6 -7 6z" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="50" cy="46" r="24" fill="#8D5524" stroke="#17324D" stroke-width="4"/><path d="M28 40 Q26 18 50 17 Q74 18 72 40 L66 28 L60 34 L52 26 L44 34 L36 27 Z" fill="#171722" stroke="#17324D" stroke-width="3"/><path d="M24 64 Q20 50 26 42 M76 64 Q80 50 74 42" fill="none" stroke="#4A2580" stroke-width="6" stroke-linecap="round"/><circle cx="25" cy="64" r="7" fill="#4A2580" stroke="#17324D" stroke-width="3"/><circle cx="75" cy="64" r="7" fill="#4A2580" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="46" r="2.6" fill="#17324D"/><circle cx="58" cy="46" r="2.6" fill="#17324D"/><path d="M43 57 q7 5 14 1" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- VEX: glowing orb AI -->
+<g id="sym-vex"><circle cx="50" cy="50" r="38" fill="url(#vexglow)" opacity=".55"/><polygon points="50,22 73,36 73,64 50,78 27,64 27,36" fill="#0b3a40" stroke="#1FA6A2" stroke-width="3.5"/><polygon points="50,30 66,40 66,60 50,70 34,60 34,40" fill="none" stroke="#7CF2EC" stroke-width="1.6" opacity=".8"/><circle cx="50" cy="50" r="10" fill="#F2C15B"/><circle cx="50" cy="50" r="4.5" fill="#17324D"/><circle cx="50" cy="14" r="3" fill="#F2C15B"/><circle cx="78" cy="70" r="2.4" fill="#7CF2EC"/><circle cx="22" cy="72" r="2" fill="#7CF2EC"/></g>
+<!-- props -->
+<g id="sym-bike"><circle cx="22" cy="46" r="14" fill="none" stroke="#17324D" stroke-width="4"/><circle cx="74" cy="46" r="14" fill="none" stroke="#17324D" stroke-width="4"/><path d="M22 46 L40 22 L62 22 L74 46 M40 22 L48 46 L22 46 M48 46 L62 22 M36 16 L46 16 M62 22 L58 14 L66 14" fill="none" stroke="#E2674A" stroke-width="4" stroke-linecap="round"/></g>
+<g id="sym-skyline"><rect x="0" y="34" width="14" height="46" fill="#17324D"/><rect x="16" y="20" width="18" height="60" fill="#22456a"/><rect x="36" y="42" width="12" height="38" fill="#17324D"/><rect x="50" y="10" width="20" height="70" fill="#2c567f"/><polygon points="60,0 50,12 70,12" fill="#1FA6A2"/><rect x="72" y="30" width="14" height="50" fill="#17324D"/><rect x="88" y="46" width="12" height="34" fill="#22456a"/><g fill="#F2C15B" opacity=".9"><rect x="20" y="26" width="3" height="4"/><rect x="27" y="36" width="3" height="4"/><rect x="54" y="18" width="3" height="4"/><rect x="61" y="30" width="3" height="4"/><rect x="54" y="44" width="3" height="4"/><rect x="75" y="36" width="3" height="4"/></g></g>
+<g id="sym-trophy"><path d="M30 14 H70 V34 Q70 52 50 56 Q30 52 30 34 Z" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><path d="M30 20 H16 Q16 38 32 40 M70 20 H84 Q84 38 68 40" fill="none" stroke="#F2C15B" stroke-width="6"/><rect x="44" y="56" width="12" height="12" fill="#b78a2e" stroke="#17324D" stroke-width="3"/><rect x="34" y="68" width="32" height="10" rx="2" fill="#17324D"/></g>
+<!-- badge sigils -->
+<g id="sig-flask"><path d="M40 15 h20 v18 l16 30 a8 8 0 0 1 -7 12 H31 a8 8 0 0 1 -7 -12 l16 -30 z" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><path d="M33 52 h34 l6 11 a4 4 0 0 1 -4 6 H31 a4 4 0 0 1 -4 -6 z" fill="#F2C15B"/></g>
+<g id="sig-watch"><circle cx="50" cy="55" r="28" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><path d="M50 55 L50 36 M50 55 L64 60" stroke="#17324D" stroke-width="4" stroke-linecap="round"/><rect x="42" y="12" width="16" height="8" rx="2" fill="#17324D"/><line x1="50" y1="20" x2="50" y2="27" stroke="#17324D" stroke-width="4"/></g>
+<g id="sig-table"><rect x="18" y="22" width="64" height="56" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><line x1="18" y1="40" x2="82" y2="40" stroke="#17324D" stroke-width="4"/><line x1="50" y1="22" x2="50" y2="78" stroke="#17324D" stroke-width="4"/><rect x="18" y="22" width="64" height="18" fill="#1FA6A2" opacity=".5"/></g>
+<g id="sig-graph"><rect x="16" y="16" width="68" height="68" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><path d="M24 76 L76 30" stroke="#1FA6A2" stroke-width="5" stroke-linecap="round"/><circle cx="38" cy="64" r="5" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="56" cy="48" r="5" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="68" cy="58" r="5" fill="#E2674A" stroke="#17324D" stroke-width="2"/></g>
+<g id="sig-swap"><path d="M24 38 H64 l-10 -12 M76 62 H36 l10 12" fill="none" stroke="#1FA6A2" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="sig-boss"><path d="M50 10 l11 22 24 4 -17 17 4 24 -22 -11 -22 11 4 -24 -17 -17 24 -4 z" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="52" r="9" fill="#E2674A" stroke="#17324D" stroke-width="3"/></g>
+<!-- u2·e4 additions: Rosa the vendor, her stall (from vol 2), episode sigils -->
+<g id="sym-rosa"><path d="M22 118 L24 86 Q24 72 50 72 Q76 72 76 86 L78 118 Z" fill="#E2674A" stroke="#17324D" stroke-width="4"/><path d="M34 80 L36 118 L64 118 L66 80 Q58 76 50 76 Q42 76 34 80Z" fill="#F2C15B" stroke="#17324D" stroke-width="3"/><path d="M40 92 h20 M40 102 h20" stroke="#17324D" stroke-width="2" stroke-linecap="round"/><circle cx="50" cy="46" r="24" fill="#B5764A" stroke="#17324D" stroke-width="4"/><path d="M27 44 Q25 20 50 19 Q75 20 73 44 Q68 28 50 27 Q32 28 27 44Z" fill="#3A3A44" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="14" r="8" fill="#3A3A44" stroke="#17324D" stroke-width="3"/><path d="M44 12 q6 -4 12 0" stroke="#9aa0ad" stroke-width="2" fill="none"/><circle cx="64" cy="16" r="4" fill="#E2674A" stroke="#17324D" stroke-width="1.5"/><circle cx="42" cy="46" r="2.6" fill="#17324D"/><circle cx="58" cy="46" r="2.6" fill="#17324D"/><path d="M37 39 q5 -3 9 -1 M54 38 q5 -2 9 1" fill="none" stroke="#17324D" stroke-width="2.2" stroke-linecap="round"/><path d="M42 56 q8 7 16 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/><circle cx="28" cy="64" r="2.4" fill="#F2C15B"/><circle cx="72" cy="64" r="2.4" fill="#F2C15B"/></g>
+<g id="sym-stall"><rect x="12" y="46" width="76" height="40" fill="#fff" stroke="#17324D" stroke-width="4"/><rect x="12" y="46" width="76" height="12" fill="#F2C15B" stroke="#17324D" stroke-width="3"/><path d="M6 46 L14 20 H86 L94 46 Z" fill="#E2674A" stroke="#17324D" stroke-width="4"/><path d="M26 22 L22 46 M44 21 L42 46 M60 21 L60 46 M76 22 L80 46" stroke="#F7F4EC" stroke-width="5"/><path d="M6 46 H94" stroke="#17324D" stroke-width="3"/><rect x="20" y="64" width="26" height="14" rx="3" fill="#3D74A8" stroke="#17324D" stroke-width="2.5"/><circle cx="66" cy="70" r="8" fill="#b78a2e" stroke="#17324D" stroke-width="2.5"/></g>
+<g id="sig-mad"><line x1="8" y1="62" x2="92" y2="62" stroke="#17324D" stroke-width="4"/><circle cx="22" cy="62" r="5.5" fill="#7db8e8" stroke="#17324D" stroke-width="2.5"/><circle cx="36" cy="62" r="5.5" fill="#7db8e8" stroke="#17324D" stroke-width="2.5"/><circle cx="50" cy="62" r="6.5" fill="#F2C15B" stroke="#17324D" stroke-width="2.5"/><circle cx="64" cy="62" r="5.5" fill="#7db8e8" stroke="#17324D" stroke-width="2.5"/><circle cx="78" cy="62" r="5.5" fill="#7db8e8" stroke="#17324D" stroke-width="2.5"/><line x1="50" y1="20" x2="50" y2="50" stroke="#E2674A" stroke-width="5" stroke-linecap="round"/><path d="M50 32 H30 m0 0 l7 -6 m-7 6 l7 6 M50 32 h20 m0 0 l-7 -6 m7 6 l-7 6" fill="none" stroke="#E2674A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="sig-pick"><rect x="10" y="26" width="36" height="30" rx="6" fill="#7db8e8" stroke="#17324D" stroke-width="3"/><rect x="54" y="26" width="36" height="30" rx="6" fill="#F2C15B" stroke="#17324D" stroke-width="3"/><path d="M61 40 l8 9 14 -16" fill="none" stroke="#17324D" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M50 62 v18 m-7 -9 l7 9 7 -9" fill="none" stroke="#E2674A" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="sig-med"><rect x="20" y="50" width="14" height="30" fill="#3D74A8"/><rect x="43" y="28" width="14" height="52" fill="#F2C15B" stroke="#17324D" stroke-width="3"/><rect x="66" y="40" width="14" height="40" fill="#3D74A8"/><line x1="14" y1="80" x2="86" y2="80" stroke="#17324D" stroke-width="4"/></g>
+<g id="sig-box"><line x1="12" y1="55" x2="28" y2="55" stroke="#17324D" stroke-width="5"/><rect x="28" y="38" width="44" height="34" fill="#fff" stroke="#17324D" stroke-width="5"/><line x1="50" y1="38" x2="50" y2="72" stroke="#E2674A" stroke-width="5"/><line x1="72" y1="55" x2="88" y2="55" stroke="#17324D" stroke-width="5"/></g>
+<g id="sig-lock"><rect x="28" y="44" width="44" height="36" rx="6" fill="currentColor"/><path d="M36 44 v-8 a14 14 0 0 1 28 0 v8" fill="none" stroke="currentColor" stroke-width="8"/></g>
+<g id="sig-open"><rect x="28" y="44" width="44" height="36" rx="6" fill="currentColor"/><path d="M36 44 v-8 a14 14 0 0 1 28 0" fill="none" stroke="currentColor" stroke-width="8"/></g>
+</defs>
+</svg>
+
+<!-- ============ COVER ============ -->
+<div id="cover">
+  <div id="coverCard" role="img" aria-label="Cover of Axiom City Unit 2, Episode 2: The Middle of Everything. In the festival plaza, kids hoist a giant banner painted with a box plot while a glowing orb floats overhead.">
+    <div class="cov-layer" data-depth="6" style="z-index:1">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="e4hall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d1f33"/><stop offset=".55" stop-color="#1c3a57"/><stop offset="1" stop-color="#3D74A8"/></linearGradient></defs><rect width="500" height="700" fill="url(#e4hall)"/><g fill="#FFF3D8" opacity=".8"><rect x="56" y="56" width="64" height="156" rx="32"/><rect x="218" y="36" width="64" height="176" rx="32"/><rect x="380" y="56" width="64" height="156" rx="32"/></g><g fill="#F2C15B" opacity=".9"><circle cx="160" cy="120" r="4"/><circle cx="340" cy="120" r="4"/><circle cx="250" cy="250" r="3"/></g></svg>
+    </div>
+    <div class="cov-layer" data-depth="12" style="z-index:2">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><rect x="36" y="296" width="428" height="22" rx="6" fill="#0d1f33"/><rect x="58" y="318" width="384" height="96" rx="8" fill="#22456a" stroke="#0d1f33" stroke-width="4"/><g stroke="#0d1f33" stroke-width="3"><circle cx="150" cy="272" r="23" fill="#8D5524"/><path d="M118 318 q32 -28 64 0 z" fill="#17324D"/><circle cx="250" cy="262" r="26" fill="#C68642"/><path d="M214 318 q36 -34 72 0 z" fill="#17324D"/><circle cx="350" cy="272" r="23" fill="#F1C27D"/><path d="M318 318 q32 -28 64 0 z" fill="#17324D"/></g><rect x="150" y="336" width="200" height="52" rx="8" fill="#FFFDF4" stroke="#0d1f33" stroke-width="4"/><line x1="170" y1="362" x2="196" y2="362" stroke="#17324D" stroke-width="4"/><rect x="196" y="346" width="96" height="32" fill="rgba(61,116,168,.45)" stroke="#17324D" stroke-width="4"/><line x1="238" y1="346" x2="238" y2="378" stroke="#E2674A" stroke-width="5"/><line x1="292" y1="362" x2="324" y2="362" stroke="#17324D" stroke-width="4"/><g transform="translate(404,338)" stroke="#0d1f33" stroke-width="3" stroke-linecap="round"><rect width="30" height="16" rx="5" fill="#b78a2e"/><line x1="15" y1="16" x2="15" y2="38"/></g></svg>
+    </div>
+    <div class="cov-layer" data-depth="22" style="z-index:3">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+        <rect x="0" y="612" width="500" height="88" fill="#0d1f33"/>
+        <g transform="rotate(-4 120 500)"><rect x="52" y="424" width="136" height="124" rx="8" fill="#F7F4EC" stroke="#17324D" stroke-width="5"/><line x1="68" y1="530" x2="172" y2="530" stroke="#17324D" stroke-width="3"/><rect x="74" y="492" width="14" height="38" fill="#3D74A8"/><rect x="94" y="484" width="14" height="46" fill="#3D74A8"/><rect x="114" y="476" width="14" height="54" fill="#3D74A8"/><rect x="134" y="468" width="14" height="62" fill="#3D74A8"/><rect x="154" y="460" width="14" height="70" fill="#3D74A8"/><text x="120" y="450" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="14" fill="#17324D">STEADY</text></g>
+        <g transform="rotate(3 385 500)"><rect x="318" y="430" width="134" height="118" rx="8" fill="#F7F4EC" stroke="#17324D" stroke-width="5"/><line x1="332" y1="534" x2="438" y2="534" stroke="#17324D" stroke-width="3"/><line x1="332" y1="498" x2="438" y2="498" stroke="#E2674A" stroke-width="3" stroke-dasharray="8 6"/><polyline points="332,504 352,492 372,502 392,494 412,500 432,496" fill="none" stroke="#3D74A8" stroke-width="4"/><text x="385" y="454" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="12" fill="#17324D">MAD = SMALL</text></g>
+        <rect x="206" y="468" width="108" height="150" rx="8" fill="#17324D" stroke="#0d1f33" stroke-width="4"/>
+        <rect x="194" y="452" width="132" height="22" rx="6" fill="#22456a" stroke="#0d1f33" stroke-width="3"/>
+        <g transform="translate(212,366) scale(.92)"><use href="#sym-maya"/></g>
+        <g transform="translate(118,556) scale(.82)"><use href="#sym-theo"/></g>
+        <g transform="translate(286,562) scale(.78)"><use href="#sym-zara"/></g>
+        <g transform="translate(352,572) scale(.74)"><use href="#sym-dev"/></g>
+        <g transform="translate(34,566) scale(.8)"><use href="#sym-rosa"/></g>
+        <g transform="translate(386,310) scale(.8)"><use href="#sym-vex"/></g>
+      </svg>
+    </div>
+    <div class="spine"><span>AXIOM CITY · EDUWONDERLAB</span></div>
+    <div id="coverTitle">
+      <div class="series">AXIOM CITY</div>
+      <h1>THE MIDDLE OF<br><em>EVERYTHING</em></h1>
+      <span class="vol">UNIT 2 · EPISODE 2 · STATISTICS</span>
+    </div>
+    <div id="coverBottom"><span>AN INTERACTIVE<br>GRAPHIC NOVEL EPISODE</span><span>GRADE 6 · UNIT 2<br>EDUWONDERLAB</span></div>
+  </div>
+  <div id="coverActions">
+      <button class="bigbtn" id="startBtn">START READING</button>
+      <button class="bigbtn alt" id="resumeBtn" hidden>RESUME</button>
+  </div>
+</div>
+
+<!-- ============ HUD ============ -->
+<header id="hud" hidden>
+  <div class="brand">AXIOM CITY<small>U2 · E2 · THE MIDDLE OF EVERYTHING</small></div>
+  <div id="progress" aria-label="Reading progress"></div>
+  <div id="badges" aria-label="Badges earned"></div>
+  <div class="hudbtns">
+    <button class="hudbtn" id="sndBtn" aria-pressed="false" title="Sound effects">🔇 Sound</button>
+    <button class="hudbtn" id="motBtn" aria-pressed="true" title="3D motion effects">3D On</button>
+    <button class="hudbtn" id="txtBtn" aria-pressed="false" title="Larger text">A+</button>
+    <button class="hudbtn" id="hcBtn" aria-pressed="false" title="High contrast">HC</button>
+    <button class="hudbtn teacher" id="teacherBtn">Teacher</button>
+  </div>
+</header>
+
+<!-- ============ BOOK ============ -->
+<main id="stage" hidden>
+  <div id="book">
+    <div id="bookcase"></div>
+    <div class="edges" id="edgesL"></div>
+    <div class="edges" id="edgesR"></div>
+    <div id="spreadWrap">
+      <section class="page left" id="pageL" aria-live="polite"></section>
+      <section class="page right" id="pageR" aria-live="polite"></section>
+    </div>
+    <div id="spine3d"></div>
+    <div id="turnSheet" aria-hidden="true"><div class="ts front"></div><div class="ts back"></div><div class="shade"></div></div>
+  </div>
+</main>
+<button class="navarrow" id="prevBtn" aria-label="Previous page" hidden>‹</button>
+<button class="navarrow" id="nextBtn" aria-label="Next page" hidden>›</button>
+<div class="sr-only" role="status" aria-live="polite" id="live"></div>
+
+<!-- ============ MODALS ============ -->
+<div class="modal" id="teacherModal" role="dialog" aria-modal="true" aria-labelledby="tmTitle">
+  <div class="modalcard">
+    <header><h2 id="tmTitle">Teacher Guide — U2 · E2</h2><div><button class="hudbtn" id="printTeacher">Print</button> <button class="x" data-close aria-label="Close">✕</button></div></header>
+    <div class="modalbody" id="teacherBody"></div>
+  </div>
+</div>
+<div class="modal" id="workedModal" role="dialog" aria-modal="true" aria-labelledby="wmTitle">
+  <div class="modalcard">
+    <header><h2 id="wmTitle">VEX · Worked Example</h2></header>
+    <div class="modalbody" id="workedBody"></div>
+  </div>
+</div>
+<script>
+/* ================================================================
+   ===== CONTENT START (per-volume: swap everything in here) =====
+   ================================================================ */
+const VOLUME = {
+  num: 202, slug: "u2e2", title: "The Middle of Everything", unit: "Unit 2 · Episode 2 · Lessons 2-3, 2-4, 2-5",
+  accent: "#3D74A8",
+  nextTeaser: "EPISODE 3 — FAIR SHARES"
+};
+
+const BADGES = [
+  {id:"g1", icon:"#sig-med", label:"Middle Finder — Median"},
+  {id:"g2", icon:"#sig-box", label:"Box Builder — Box Plots"},
+  {id:"g3", icon:"#sig-swap",label:"Spread Reader — Range & IQR"},
+  {id:"boss",icon:"#sig-boss",label:"The Middle of Everything — Boss Gate"}
+];
+
+const SC = (vb,inner)=>`<svg class="scene" viewBox="${vb}" role="img" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
+const SKY='<rect width="400" height="200" fill="url(#skygrad)"/>';
+const GROUND='<rect y="168" width="400" height="32" fill="#cdc6ad"/><rect y="168" width="400" height="32" fill="url(#halftone)"/>';
+/* plaza backdrop with bunting */
+const PLAZA=`<rect width="400" height="210" fill="url(#skygrad)"/><g transform="translate(0,66) scale(4,1.5)" opacity=".4"><use href="#sym-skyline"/></g><path d="M0 18 L66 38 L133 18 L200 38 L266 18 L333 38 L400 18" fill="none" stroke="#E2674A" stroke-width="3"/><g fill="#F2C15B"><path d="M60 32 l8 12 -16 0 z"/><path d="M194 32 l8 12 -16 0 z"/><path d="M327 32 l8 12 -16 0 z"/></g>`;
+/* a long banner with a box plot painted on it */
+const BANNERART=`<rect x="20" y="20" width="360" height="84" rx="10" fill="#FFFDF4" stroke="#17324D" stroke-width="4"/><line x1="48" y1="62" x2="96" y2="62" stroke="#17324D" stroke-width="4"/><line x1="48" y1="46" x2="48" y2="78" stroke="#17324D" stroke-width="4"/><rect x="96" y="40" width="180" height="44" fill="rgba(61,116,168,.4)" stroke="#17324D" stroke-width="4"/><line x1="168" y1="40" x2="168" y2="84" stroke="#E2674A" stroke-width="5"/><line x1="276" y1="62" x2="344" y2="62" stroke="#17324D" stroke-width="4"/><line x1="344" y1="46" x2="344" y2="78" stroke="#17324D" stroke-width="4"/>`;
+
+const PAGES = [
+/* p1 */
+{ ch:"Unit 2 · Episode 2", html:`
+  <div style="text-align:center;margin-top:8px"><div class="kicker">EduWonderLab Presents</div>
+  <h2 class="splashtitle" style="margin:8px 0">THE MIDDLE OF <em>EVERYTHING</em></h2>
+  <div class="caption" style="display:inline-block">Lessons 2-3, 2-4 &amp; 2-5 — median, box plots, range &amp; IQR. Four reader gates stand between Rosa and her hearing.</div></div>
+  <div class="panel panel3d tall" style="margin-top:8px">${SC("0 0 400 200",`${PLAZA}
+    <g data-depth="16" transform="translate(30,80) scale(.9)"><use href="#sym-maya"/></g>
+    <g data-depth="16" transform="translate(130,80) scale(.9)"><use href="#sym-zara"/></g>
+    <g data-depth="14" transform="translate(238,92) scale(.85)"><use href="#sym-rosa"/></g>
+    <g data-depth="24" transform="translate(320,18) scale(.5)"><use href="#sym-vex"/></g>${GROUND}`)}
+    <div class="balloon vex" style="top:6px;left:8px;max-width:50%"><span class="who">VEX</span>Previously: the reader proved Pimm's census questions measured nothing. Distortion level: still rising.</div>
+  </div>
+  <div class="caption loc">Previously, in Episode 1: the crew tore apart the "official census form" — and the council noticed. Rosa's permit hearing is now on the calendar.</div>`},
+
+/* p2 */
+{ ch:"Chapter 1 · The Hearing Date", html:`
+  <div class="kicker">Chapter One</div><h2 class="splashtitle">THE HEARING <em>DATE</em></h2>
+  <div class="panel panel3d tall">${SC("0 0 400 210",`${PLAZA}
+    <rect data-depth="10" x="110" y="30" width="180" height="52" rx="8" fill="#17324D"/>
+    <text data-depth="10" x="200" y="52" text-anchor="middle" fill="#F2C15B" font-family="Arial Black,Arial" font-weight="900" font-size="13">PERMIT HEARING</text>
+    <text data-depth="10" x="200" y="72" text-anchor="middle" fill="#fff" font-family="Arial" font-weight="700" font-size="11">FRIDAY — COUNCIL HALL</text>
+    <g data-depth="18" transform="translate(50,86) scale(.95)"><use href="#sym-maya"/></g>
+    <g data-depth="18" transform="translate(150,92) scale(.9)"><use href="#sym-theo"/></g>
+    <g data-depth="14" transform="translate(260,96) scale(.88)"><use href="#sym-rosa"/></g>${GROUND}`)}
+    <div class="balloon" style="bottom:14px;left:8px;max-width:52%"><span class="who">MAYA</span>Friday. That's how long we have to show the council Rosa's REAL numbers.</div>
+    <div class="balloon tail-r" style="top:88px;right:6px;max-width:42%"><span class="who">ROSA</span>Pimm keeps waving one terrible Tuesday at everyone. One day isn't my stall!</div>
+  </div>
+  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#edf3f9"/><g transform="translate(10,2) scale(.66)"><use href="#sym-theo"/></g>`)}
+    <div class="balloon" style="top:8px;left:84px;max-width:68%"><span class="who">THEO</span>Then we don't show them one day. We show them the <b>middle</b> of all her days — the value her data actually centers on.</div>
+  </div>
+  <div class="caption">The <b>median</b> is the middle value when the data is in order. Half the days sit at or below it, half at or above.</div>`},
+
+/* p3 */
+{ ch:"Chapter 1 · Five Market Days", html:`
+  <div class="caption loc">Rosa's notebook. Five market days, five visitor counts — scribbled in churro grease.</div>
+  <div class="panel panel3d tall">${SC("0 0 400 190",`
+    <rect width="400" height="190" fill="#fff8ea"/>
+    <rect data-depth="8" x="40" y="20" width="320" height="120" rx="8" fill="#FFFDF4" stroke="#b78a2e" stroke-width="4"/>
+    <g data-depth="12" font-family="Arial Black,Arial" font-weight="900" font-size="22" fill="#17324D">
+      <text x="84" y="86">22</text><text x="144" y="86">17</text><text x="204" y="86">30</text><text x="264" y="86">25</text><text x="324" y="86" text-anchor="middle">19</text></g>
+    <text data-depth="12" x="200" y="44" text-anchor="middle" font-family="Arial" font-weight="800" font-size="12" fill="#b78a2e">VISITORS PER MARKET DAY</text>
+    <g data-depth="16" transform="translate(8,76) scale(.8)"><use href="#sym-dev"/></g>`)}
+    <div class="balloon" style="bottom:8px;left:90px;max-width:56%"><span class="who">DEV</span>Raw loot log. But it's shuffled — a middle only counts if the list is <b>sorted</b> first.</div>
+  </div>
+  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#edf3f9"/><g transform="translate(318,4) scale(.6)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>Sorting protocol: line the counts up smallest to largest. THEN the middle one — position three of five — is the median. No averaging required.</div>
+  </div>`},
+
+/* p4 GATE1 */
+{ ch:"Chapter 1 · Reader Gate", gate:"g1", html:`
+  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#fff8ea"/><g transform="translate(8,0) scale(.64)"><use href="#sym-maya"/></g>`)}
+    <div class="balloon" style="top:6px;left:80px;max-width:66%"><span class="who">MAYA</span>Reader — sort Rosa's five days and find her true middle!</div>
+  </div>`},
+
+/* p5 */
+{ ch:"Chapter 2 · The Banner", html:`
+  <div class="kicker">Chapter Two</div><h2 class="splashtitle">ZARA'S <em>BANNER</em></h2>
+  <div class="panel panel3d tall">${SC("0 0 400 210",`${PLAZA}
+    <g data-depth="12" transform="translate(0,96)">${BANNERART}</g>
+    <g data-depth="18" transform="translate(20,90) scale(.9)"><use href="#sym-zara"/></g>
+    <g data-depth="22" transform="translate(330,30) scale(.5)"><use href="#sym-vex"/></g>${GROUND}`)}
+    <div class="sfx" style="top:8px;left:14px">FWUMP!</div>
+    <div class="balloon" style="top:30px;right:8px;max-width:48%"><span class="who">ZARA</span>If the council won't read a table, they'll read a BANNER. One box, five numbers, zero lies.</div>
+  </div>
+  <div class="panel">${SC("0 0 400 100",`<rect width="400" height="100" fill="#edf3f9"/><g transform="translate(10,4) scale(.64)"><use href="#sym-theo"/></g>`)}
+    <div class="balloon" style="top:6px;left:82px;max-width:70%"><span class="who">THEO</span>It's a <b>box plot</b>. Five numbers tell the whole story: minimum, quartile 1, median, quartile 3, maximum. The box holds the middle half of the data.</div>
+  </div>
+  <div class="caption"><b>Q1</b> is the median of the lower half; <b>Q3</b> is the median of the upper half. The box stretches from Q1 to Q3.</div>`},
+
+/* p6 GATE2 */
+{ ch:"Chapter 2 · Reader Gate", gate:"g2", html:`
+  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#edf3f9"/><g transform="translate(8,-2) scale(.6)"><use href="#sym-zara"/></g>`)}
+    <div class="balloon" style="top:6px;left:76px;max-width:70%"><span class="who">ZARA</span>Paint the three missing marks on the banner — Q1, median, Q3!</div>
+  </div>`},
+
+/* p7 */
+{ ch:"Chapter 3 · How Wide Is True?", html:`
+  <div class="kicker">Chapter Three</div><h2 class="splashtitle">HOW WIDE IS <em>TRUE?</em></h2>
+  <div class="panel panel3d tall">${SC("0 0 400 200",`
+    <rect width="400" height="200" fill="#f0e9d8"/>
+    <rect data-depth="8" x="30" y="24" width="200" height="150" rx="8" fill="#fff" stroke="#17324D" stroke-width="4"/>
+    <text data-depth="8" x="130" y="52" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="12" fill="#E2674A">PIMM'S POSTER</text>
+    <text data-depth="8" x="130" y="84" text-anchor="middle" font-family="Arial" font-weight="700" font-size="11" fill="#17324D">"Attendance swings WILDLY</text>
+    <text data-depth="8" x="130" y="102" text-anchor="middle" font-family="Arial" font-weight="700" font-size="11" fill="#17324D">from 4 to 20!!"</text>
+    <text data-depth="8" x="130" y="140" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="20" fill="#E2674A">UNRELIABLE!</text>
+    <g data-depth="16" transform="translate(252,68) scale(.92)"><use href="#sym-theo"/></g>`)}
+    <div class="balloon tail-r" style="top:8px;right:6px;max-width:40%"><span class="who">THEO</span>He's quoting the <b>range</b> — max minus min. Two numbers. The two flukiest ones.</div>
+  </div>
+  <div class="panel">${SC("0 0 400 100",`<rect width="400" height="100" fill="#edf3f9"/><g transform="translate(318,6) scale(.6)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>Counter-protocol: the <b>IQR</b> — Q3 minus Q1 — measures the spread of the middle half. Outliers can't touch it. It is the honest width.</div>
+  </div>
+  <div class="caption"><b>Range</b> = max − min (fragile). <b>IQR</b> = Q3 − Q1 (sturdy). Same data, very different stories.</div>`},
+
+/* p8 GATE3 */
+{ ch:"Chapter 3 · Reader Gate", gate:"g3", html:`
+  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#f0e9d8"/><g transform="translate(8,-2) scale(.6)"><use href="#sym-theo"/></g>`)}
+    <div class="balloon" style="top:6px;left:76px;max-width:72%"><span class="who">THEO</span>Compute both widths, reader. Let's see which one Pimm is hiding behind.</div>
+  </div>`},
+
+/* p9 */
+{ ch:"Chapter 4 · Pimm's Counter-Move", html:`
+  <div class="caption loc">Thursday night. A new poster appears on the council board — four numbers, no middle.</div>
+  <div class="panel panel3d tall">${SC("0 0 400 190",`
+    <rect width="400" height="190" fill="#10243a"/>
+    <rect data-depth="10" x="80" y="20" width="240" height="120" rx="8" fill="#FFFDF4" stroke="#E2674A" stroke-width="4"/>
+    <text data-depth="10" x="200" y="48" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="12" fill="#E2674A">PIMM'S "AUDIT"</text>
+    <g data-depth="10" font-family="Arial Black,Arial" font-weight="900" font-size="20" fill="#17324D"><text x="116" y="92">8</text><text x="166" y="92">10</text><text x="226" y="92">14</text><text x="286" y="92">18</text></g>
+    <text data-depth="10" x="200" y="124" text-anchor="middle" font-family="Arial" font-weight="700" font-size="10" fill="#5a4a22">"FOUR DAYS — NO MIDDLE — NO MEDIAN — CASE CLOSED"</text>
+    <g data-depth="18" transform="translate(8,70) scale(.85)"><use href="#sym-dev"/></g>`)}
+    <div class="balloon" style="bottom:8px;left:96px;max-width:58%"><span class="who">DEV</span>Ha! He thinks an even count breaks the median. Boss fight unlocked.</div>
+  </div>
+  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#edf3f9"/><g transform="translate(318,2) scale(.6)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>When two values share the middle, the median is the number exactly halfway between them. Add the two middles. Split evenly. The middle of everything.</div>
+  </div>`},
+
+/* p10 boss setup */
+{ ch:"Chapter 4 · The Night Before", html:`
+  <div class="panel panel3d tall">${SC("0 0 400 200",`
+    <rect width="400" height="200" fill="url(#duskgrad)"/>
+    <g data-depth="8" transform="translate(0,60) scale(4,1.6)" opacity=".7"><use href="#sym-skyline"/></g>
+    <g data-depth="16" transform="translate(36,86) scale(.9)"><use href="#sym-maya"/></g>
+    <g data-depth="16" transform="translate(136,86) scale(.9)"><use href="#sym-zara"/></g>
+    <g data-depth="16" transform="translate(236,86) scale(.9)"><use href="#sym-theo"/></g>
+    <g data-depth="24" transform="translate(330,24) scale(.55)"><use href="#sym-vex"/></g>
+    <rect data-depth="10" y="172" width="400" height="28" fill="#0d1f33"/>`)}
+    <div class="balloon" style="top:8px;left:8px;max-width:48%"><span class="who">MAYA</span>Tomorrow we hand the council the middle AND the width. Tonight, we crack Pimm's even-count puzzle.</div>
+    <div class="balloon tail-r" style="bottom:12px;right:8px;max-width:44%"><span class="who">ZARA</span>Reader takes this one. Banner's already painted — don't make me redo it.</div>
+  </div>
+  <div class="caption">Boss Gate: find the median of an even-count data set, then say what a small IQR actually proves.</div>`},
+
+/* p11 BOSS */
+{ ch:"Boss Gate · The Middle of Everything", gate:"boss", html:`
+  <div class="panel">${SC("0 0 400 76",`<rect width="400" height="76" fill="#10243a"/><g transform="translate(330,2) scale(.56)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>BOSS GATE. Two locks. Pimm's "no median" claim ends here.</div>
+  </div>`},
+
+/* p12 victory */
+{ ch:"Chapter 5 · Banner Day", html:`
+  <div class="panel panel3d tall">${SC("0 0 400 210",`${PLAZA}
+    <g data-depth="10" transform="translate(0,30)">${BANNERART}</g>
+    <g data-depth="18" transform="translate(40,108) scale(.85)"><use href="#sym-maya"/></g>
+    <g data-depth="18" transform="translate(130,108) scale(.85)"><use href="#sym-zara"/></g>
+    <g data-depth="18" transform="translate(220,108) scale(.85)"><use href="#sym-theo"/></g>
+    <g data-depth="14" transform="translate(305,116) scale(.8)"><use href="#sym-rosa"/></g>${GROUND}`)}
+    <div class="sfx" style="top:6px;left:14px">UNFURL!</div>
+    <div class="balloon" style="bottom:12px;left:8px;max-width:50%"><span class="who">ROSA</span>Median 22, box snug around the middle… my stall looks exactly as steady as it feels.</div>
+  </div>
+  <div class="panelrow">
+    <div class="panel">${SC("0 0 200 104",`<rect width="200" height="104" fill="#edf3f9"/><g transform="translate(56,2) scale(.74)"><use href="#sym-dev"/></g>`)}
+      <div class="balloon" style="top:4px;left:4px;max-width:74%"><span class="who">DEV</span>Friday: payout day. Pimm "rounds" every vendor's share. Guess who checks his division?</div></div>
+    <div class="panel">${SC("0 0 200 104",`<rect width="200" height="104" fill="#fff8ea"/><rect x="50" y="16" width="100" height="72" rx="6" fill="#FFFDF4" stroke="#b78a2e" stroke-width="3"/><text x="100" y="44" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="10" fill="#E2674A">CO-OP LEDGER</text><text x="100" y="64" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#17324D">1512 tickets · 12 stalls</text><text x="100" y="80" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#4A2580">"already divided" — PIMM</text>`)}</div>
+  </div>
+  <div class="caption" style="text-align:center"><b>NEXT: ${VOLUME.nextTeaser}</b></div>`},
+
+/* p13 journal */
+{ ch:"End Matter · Ada Vex's Journal", html:`
+  <h2 class="splashtitle" style="font-size:1.4rem">ADA VEX'S <em>JOURNAL</em></h2>
+  <div class="journal"><h4>Lessons 2-3 · 2-4 · 2-5 — what the hearing prep taught us</h4>
+    <div class="jrow"><b>Median.</b><span>Sort first. The middle value of an odd count is one number; for an even count, it's halfway between the two middles.</span></div>
+    <div class="jrow"><b>Box plot.</b><span>Five numbers — min, Q1, median, Q3, max. The box holds the middle half of all the data.</span></div>
+    <div class="jrow"><b>Range.</b><span>Max minus min. Easy to compute, easy for one weird day to wreck.</span></div>
+    <div class="jrow"><b>IQR.</b><span>Q3 minus Q1 — the width of the box. Outliers can't bully it.</span></div>
+  </div>
+  <div class="caption">"Anyone can shout the loudest number. The middle whispers, and it is almost always right." — A.V.</div>`},
+
+/* p14 certificate */
+{ ch:"End Matter · Certificate", html:`
+  <div id="certificate">
+    <div class="kicker">Axiom City · EduWonderLab</div>
+    <h3>READER CERTIFICATE</h3>
+    <p style="font:600 .9rem Georgia,serif">This certifies that</p>
+    <input id="certName" maxlength="40" placeholder="write your name" aria-label="Your name for the certificate">
+    <p style="font:600 .9rem Georgia,serif">completed <b>Unit 2 · Episode 2: The Middle of Everything</b> and proved mastery over medians, box plots, range, and interquartile range.</p>
+    <div class="certbadges" id="certBadges"></div>
+    <button class="gatecheck" id="printCert" style="align-self:center">PRINT CERTIFICATE</button>
+  </div>
+  <div class="caption" style="text-align:center">Episode 3 — Fair Shares — is waiting at the ticket booth.</div>`}
+];
+
+function mkfeed(el,msg,ok){el.textContent=msg;el.className="gatefeedback "+(ok?"good":"bad");}
+const GATES = {
+g1:{ title:"Gate 1 · The True Middle", icon:"#sig-med",
+  prompt:`Rosa's five market days: <b>22, 17, 30, 25, 19</b> visitors. Sort them in your head (or on paper), then enter the <b>median</b>.`,
+  hints:[ "Conceptual: the median is the middle of the SORTED list — half the days sit below it, half above. Sorting first is not optional.",
+          "Procedural: order them: 17, 19, ?, ?, ?. With five values, the median is the 3rd one in order." ],
+  worked:{ steps:[ "Different stall, five days: 14, 8, 21, 11, 16.",
+    "Sort: 8, 11, 14, 16, 21.",
+    "Five values → the 3rd is the median: 14." ],
+    q:"Find the median of 9, 4, 12, 7, 10.", a:"9" },
+  render(body,api){
+    body.innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px">${[22,17,30,25,19].map(v=>`<span style="border:3px solid var(--navy);border-radius:8px;padding:8px 12px;font:900 1.1rem 'Arial Black',Arial;background:#fff">${v}</span>`).join("")}</div>
+      <div style="display:flex;align-items:center;gap:10px"><span style="font:900 1rem 'Arial Black',Arial;color:var(--navy)">Median =</span><input class="numin" id="med" inputmode="numeric" aria-label="median"> <span style="font:600 .85rem 'Segoe UI'">visitors</span></div>`;
+    api.onCheck(()=>{const v=parseFloat(body.querySelector("#med").value);
+      if(v===22){body.querySelector("#med").className="numin ok";api.pass("17, 19, 22, 25, 30 — the middle is 22. Rosa's typical day, certified.");}
+      else if(v===30){body.querySelector("#med").className="numin no";api.fail("30 is the middle of the UNSORTED list. Sort first — order changes everything.");}
+      else{body.querySelector("#med").className="numin no";api.fail("Line the five counts up smallest to largest, then take the one in position three.");}});
+  }},
+g2:{ title:"Gate 2 · Paint the Box", icon:"#sig-box",
+  prompt:`The co-op's seven recorded crowds, already sorted: <b>4, 7, 9, 11, 13, 16, 20</b>. The whiskers are painted (min 4, max 20). Enter the three missing marks.`,
+  hints:[ "Conceptual: the median splits the sorted list in half; Q1 is the median of the LOWER half, Q3 the median of the UPPER half.",
+          "Procedural: 7 values → median is the 4th. Lower half is 4, 7, 9 (middle: ?). Upper half is 13, 16, 20 (middle: ?)." ],
+  worked:{ steps:[ "Different data: 2, 5, 6, 8, 10, 12, 14 (seven values).",
+    "Median = 4th value = 8. Lower half 2, 5, 6 → Q1 = 5.",
+    "Upper half 10, 12, 14 → Q3 = 12. Box runs 5 to 12, line at 8." ],
+    q:"For 1, 3, 5, 7, 9, 11, 13 — what is Q3?", a:"11" },
+  render(body,api){
+    body.innerHTML=`<svg viewBox="0 0 360 110" style="width:100%;border:3px solid var(--navy);border-radius:8px;background:#fff" role="img" aria-label="Box plot under construction. Whiskers at 4 and 20. Box edges and median line missing.">
+      <line x1="20" y1="86" x2="340" y2="86" stroke="#17324D" stroke-width="2"/>
+      ${[4,7,9,11,13,16,20].map(v=>`<g><line x1="${20+(v-2)*17}" y1="82" x2="${20+(v-2)*17}" y2="90" stroke="#17324D" stroke-width="2"/><text x="${20+(v-2)*17}" y="104" text-anchor="middle" font-size="11" font-family="Arial" fill="#17324D">${v}</text></g>`).join("")}
+      <line x1="${20+2*17}" y1="40" x2="${20+2*17}" y2="60" stroke="#17324D" stroke-width="4"/><line x1="${20+2*17}" y1="50" x2="105" y2="50" stroke="#17324D" stroke-width="3"/>
+      <line x1="${20+18*17}" y1="40" x2="${20+18*17}" y2="60" stroke="#17324D" stroke-width="4"/><line x1="275" y1="50" x2="${20+18*17}" y2="50" stroke="#17324D" stroke-width="3"/>
+      <rect x="105" y="30" width="170" height="40" fill="rgba(61,116,168,.25)" stroke="#3D74A8" stroke-width="3" stroke-dasharray="7 5"/>
+      <text x="190" y="22" text-anchor="middle" font-size="11" font-family="Arial" font-weight="700" fill="#3D74A8">? — box and median still wet paint — ?</text></svg>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+      <label style="font:700 .85rem 'Segoe UI'">Q1 <input class="numin" id="q1" style="width:70px" inputmode="numeric" aria-label="first quartile"></label>
+      <label style="font:700 .85rem 'Segoe UI'">Median <input class="numin" id="q2" style="width:70px" inputmode="numeric" aria-label="median"></label>
+      <label style="font:700 .85rem 'Segoe UI'">Q3 <input class="numin" id="q3" style="width:70px" inputmode="numeric" aria-label="third quartile"></label></div>`;
+    api.onCheck(()=>{const v=id=>parseFloat(body.querySelector(id).value);
+      const ok1=v("#q1")===7,ok2=v("#q2")===11,ok3=v("#q3")===16;
+      body.querySelector("#q1").className="numin "+(ok1?"ok":"no");
+      body.querySelector("#q2").className="numin "+(ok2?"ok":"no");
+      body.querySelector("#q3").className="numin "+(ok3?"ok":"no");
+      if(ok1&&ok2&&ok3)api.pass("Box from 7 to 16, line at 11 — the banner is complete and the middle half is on display.");
+      else api.fail("Split the sorted list: median is the 4th of 7. Then take the middle of each half.");});
+  }},
+g3:{ title:"Gate 3 · Two Widths", icon:"#sig-swap",
+  prompt:`Same data: <b>4, 7, 9, 11, 13, 16, 20</b> (Q1 = 7, Q3 = 16). Pimm quotes one width; the crew answers with the other. Compute both.`,
+  hints:[ "Conceptual: range uses the two END values — the most extreme days. IQR uses the box edges — the steady middle half.",
+          "Procedural: Range = max − min = 20 − 4. IQR = Q3 − Q1 = 16 − 7." ],
+  worked:{ steps:[ "Different set: min 3, Q1 6, Q3 10, max 19.",
+    "Range = 19 − 3 = 16.",
+    "IQR = 10 − 6 = 4. Big range, small IQR → the middle is calm; the edges are noise." ],
+    q:"If Q1 = 8 and Q3 = 15, what is the IQR?", a:"7" },
+  render(body,api){
+    body.innerHTML=`<div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+      <label style="font:700 .9rem 'Segoe UI'">Range = <input class="numin" id="rng" style="width:80px" inputmode="numeric" aria-label="range"></label>
+      <label style="font:700 .9rem 'Segoe UI'">IQR = <input class="numin" id="iqr" style="width:80px" inputmode="numeric" aria-label="interquartile range"></label></div>`;
+    api.onCheck(()=>{const r=parseFloat(body.querySelector("#rng").value),q=parseFloat(body.querySelector("#iqr").value);
+      const ok1=r===16,ok2=q===9;
+      body.querySelector("#rng").className="numin "+(ok1?"ok":"no");
+      body.querySelector("#iqr").className="numin "+(ok2?"ok":"no");
+      if(ok1&&ok2)api.pass("Range 16 — but IQR only 9. Pimm quoted the noise; the box tells the calm truth.");
+      else if(!ok1)api.fail("Range is the FULL stretch: biggest value minus smallest value.");
+      else api.fail("IQR is the box width: Q3 minus Q1 — check Gate 2's marks.");});
+  }},
+boss:{ title:"BOSS GATE · No Middle? No Problem.", icon:"#sig-boss",
+  prompt:`Pimm's "audit" lists four days: <b>8, 10, 14, 18</b> — and claims an even count has NO median. Two locks:`,
+  hints:[ "Conceptual: with an even count, TWO values share the middle. The median is the value exactly halfway between them — add them, then split evenly.",
+          "Procedural: the two middles of 8, 10, 14, 18 are 10 and 14. Halfway between: (10 + 14) ÷ 2." ],
+  worked:{ steps:[ "Different even set: 6, 9, 13, 16.",
+    "Middle pair: 9 and 13.",
+    "Median = (9 + 13) ÷ 2 = 11. Even counts have medians — they're just shy." ],
+    q:"Find the median of 5, 7, 11, 13.", a:"9" },
+  render(body,api){
+    body.innerHTML=`<div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b style="font:900 .75rem 'Arial Black'">LOCK 1</b><span style="font:600 .88rem 'Segoe UI'">Median of 8, 10, 14, 18 =</span><input class="numin" id="b1" inputmode="decimal" aria-label="median of the even count"></div>
+      <div><b style="font:900 .75rem 'Arial Black'">LOCK 2</b><div style="font:600 .88rem 'Segoe UI';margin:4px 0">Rosa's box plot shows a small IQR hugging her median. At the hearing, that PROVES:</div>
+      <div class="choicebtns">
+        <button class="choicebtn" data-v="steady" aria-pressed="false">Her crowd sizes are steady near the middle</button>
+        <button class="choicebtn" data-v="big" aria-pressed="false">Her biggest day was enormous</button>
+        <button class="choicebtn" data-v="mean" aria-pressed="false">Her mean must equal her median</button>
+        <button class="choicebtn" data-v="none" aria-pressed="false">She never had a slow day</button></div></div></div>`;
+    let pick=null;
+    body.querySelectorAll("[data-v]").forEach(b=>b.addEventListener("click",()=>{body.querySelectorAll("[data-v]").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");pick=b.dataset.v;api.sound("blip");}));
+    api.onCheck(()=>{const v=parseFloat(body.querySelector("#b1").value);const ok1=v===12;
+      body.querySelector("#b1").className="numin "+(ok1?"ok":"no");
+      if(!ok1)return api.fail("Lock 1 holds. Find the two middle values first — then meet them exactly halfway.");
+      if(pick!=="steady")return api.fail("Lock 2 holds. A small IQR says the middle half of the days are CLOSE TOGETHER. What does that mean for Rosa?");
+      api.pass("ALL LOCKS OPEN. Median 12 — even counts can't hide. And a snug box means steady crowds. See you at the hearing, Pimm.");});
+  }}
+};
+
+const TEACHER = {
+  suggested:"Use after lessons 2-3, 2-4, and 2-5 as a 1–2 day review anchor before the unit's second half. Whole-class on projector, pairs on devices, or independent practice. Progress saves on the device.",
+  standards:[
+    ["6.SP.B.5c","Give quantitative measures of center (median)","Gate 1 (odd count), Boss Lock 1 (even count)"],
+    ["6.SP.B.4","Display numerical data in plots (box plots)","Gate 2 (five-number summary)"],
+    ["6.SP.B.5c","Give measures of variability (range, IQR)","Gate 3"],
+    ["6.SP.A.2 / 6.SP.A.3","Distributions: center, spread, shape; measure summarizes","Boss Lock 2 (interpretation)"]
+  ],
+  answers:[
+    ["Gate 1","Sorted: 17, 19, 22, 25, 30 → median 22. Misconception trapped: taking the unsorted middle (30)."],
+    ["Gate 2","Q1 = 7, median = 11, Q3 = 16 (data 4,7,9,11,13,16,20). Halves exclude the median."],
+    ["Gate 3","Range = 20 − 4 = 16; IQR = 16 − 7 = 9. Misconception: confusing the two widths."],
+    ["Boss","Lock 1: (10+14) ÷ 2 = 12. Lock 2: 'steady near the middle' — small IQR = consistent attendance."]
+  ]
+};
+
+/* ================================================================
+   ===== CONTENT END ==============================================
+   ================================================================ */
+</script>
+<script>
+/* ================================================================
+   ===== AXIOM CITY ENGINE v1.0 — identical in every volume =======
+   ================================================================ */
+"use strict";
+/* ---------- storage (exact wrapper, ewl_ prefix) ---------- */
+const storage={_m:{},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){this._m[k]=v}},get(k,d=null){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return this._m[k]??d}}};
+const K=s=>`ewl_axiom_${VOLUME.slug}_${s}`;
+
+const $=s=>document.querySelector(s);
+const live=msg=>{$("#live").textContent=msg};
+const reducedMQ=matchMedia("(prefers-reduced-motion: reduce)");
+const mobileMQ=matchMedia("(max-width: 820px)");
+
+const prefs=Object.assign({sound:false,motion:true,bigtext:false,hc:false},storage.get(K("prefs"))||{});
+let solved=new Set(storage.get(K("gates"))||[]);
+let page=storage.get(K("page"))||0;            // index of left/visible page
+let turning=false;
+const attempts={};
+
+/* ---------- audio (Web Audio oscillators only, muted default) ---------- */
+let actx=null;
+function ac(){if(!actx){try{actx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return actx}
+function tone(f,t,dur,type="square",vol=.04){const c=ac();if(!c||!prefs.sound)return;const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(vol,c.currentTime+t);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+t+dur);o.connect(g).connect(c.destination);o.start(c.currentTime+t);o.stop(c.currentTime+t+dur+.02)}
+const SND={blip(){tone(660,0,.07)},flip(){tone(220,0,.09,"triangle",.05);tone(330,.05,.08,"triangle",.04)},win(){[523,659,784,1046].forEach((f,i)=>tone(f,i*.09,.14,"triangle",.05))},thud(){tone(110,0,.18,"sawtooth",.05)}};
+
+/* ---------- helpers ---------- */
+function gateLockIcon(open){return `<div class="gatelockcorner ${open?"open":""}" aria-hidden="true"><svg viewBox="0 0 100 100" style="color:#fff"><use href="${open?"#sig-open":"#sig-lock"}"/></svg></div>`}
+
+function pageInnerHTML(i){
+  if(i==null||i<0||i>=PAGES.length) return `<div class="page-inner" style="align-items:center;justify-content:center"><div class="kicker" style="opacity:.4">AXIOM CITY</div></div><div class="pagefoot"><span></span><span></span></div>`;
+  const p=PAGES[i];
+  const gateHTML=p.gate?`<div class="gatemount" data-gate="${p.gate}"></div>`:"";
+  const lock=p.gate?gateLockIcon(solved.has(p.gate)):"";
+  return `${lock}<div class="chapterband">${p.ch.replace("·","· <em>").concat(p.ch.includes("·")?"</em>":"")}</div><div class="page-inner">${p.html}${gateHTML}</div><div class="pagefoot"><span>${VOLUME.unit}</span><span>PAGE ${i+1} / ${PAGES.length}</span></div>`;
+}
+
+/* ---------- gate framework ---------- */
+function mountGates(scope){
+  scope.querySelectorAll(".gatemount").forEach(m=>{
+    const id=m.dataset.gate,G=GATES[id];
+    if(!G)return;
+    if(solved.has(id)){m.innerHTML=`<div class="gatesolved"><span class="stamp">SOLVED</span> ${G.title} — badge earned.</div>`;return}
+    m.innerHTML=`<div class="gatebox"><header><svg class="gicon" viewBox="0 0 100 100"><use href="${G.icon}"/></svg><h3>${G.title}</h3></header>
+      <div class="gatebody"><div class="gateprompt">${G.prompt}</div><div class="gwidget"></div>
+      <div class="gatehint" hidden></div>
+      <button class="gatecheck">CHECK</button>
+      <div class="gatefeedback" aria-live="polite"></div></div></div>`;
+    const box=m.querySelector(".gatebox"),body=m.querySelector(".gwidget"),fb=m.querySelector(".gatefeedback"),hint=m.querySelector(".gatehint"),btn=m.querySelector(".gatecheck");
+    let checker=null;
+    const api={
+      sound:n=>SND[n]&&SND[n](),
+      onCheck(fn){checker=fn},
+      fail(msg){
+        attempts[id]=(attempts[id]||0)+1;SND.thud();mkfeed(fb,msg,false);
+        const n=attempts[id];
+        if(n===1){hint.hidden=false;hint.innerHTML="💡 <b>Hint:</b> "+G.hints[0]}
+        else if(n===2){hint.hidden=false;hint.innerHTML="🧭 <b>Hint 2:</b> "+G.hints[1]}
+        else if(n>=3&&!hint.querySelector(".askvex")){
+          const b=document.createElement("button");b.className="gatecheck askvex";b.style.marginTop="8px";b.textContent="ASK VEX — WORKED EXAMPLE";
+          b.addEventListener("click",()=>openWorked(G));hint.appendChild(b);
+        }
+        live("Not yet. "+msg);
+      },
+      pass(msg){
+        solved.add(id);storage.set(K("gates"),[...solved]);SND.win();
+        m.innerHTML=`<div class="gatesolved unlockflash"><span class="stamp">SOLVED</span> ${msg}</div>`;
+        const corner=m.closest(".page,#pageL,#pageR")?.querySelector(".gatelockcorner");
+        if(corner){corner.classList.add("open");corner.innerHTML=`<svg viewBox="0 0 100 100" style="color:#fff"><use href="#sig-open"/></svg>`}
+        earnBadge(id);updateNav();live("Gate solved! "+msg);
+      }
+    };
+    G.render(body,api);
+    btn.addEventListener("click",()=>{ac();checker&&checker()});
+  });
+}
+function openWorked(G){
+  $("#workedBody").innerHTML=`<div class="workedsteps">${G.worked.steps.map((s,i)=>`<div class="st"><b class="n">${i+1}</b><span>${s}</span></div>`).join("")}</div>
+    <div class="caption">Your turn — same idea, different numbers:</div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span style="font:600 .92rem 'Segoe UI'">${G.worked.q}</span>
+    <input class="numin" id="wkin" aria-label="worked example answer"><button class="gatecheck" id="wkgo">CHECK</button></div>
+    <div class="gatefeedback" id="wkfb" aria-live="polite"></div>`;
+  $("#workedModal").classList.add("open");
+  $("#wkgo").addEventListener("click",()=>{
+    const v=($("#wkin").value||"").trim().replace(/\s+/g,"");
+    if(v===G.worked.a||parseFloat(v)===parseFloat(G.worked.a)){
+      mkfeed($("#wkfb"),"Yes! Now head back and open that gate.",true);SND.win();
+      setTimeout(()=>$("#workedModal").classList.remove("open"),1100);
+    }else{mkfeed($("#wkfb"),"Walk the steps above again — you've got this.",false);SND.thud()}
+  });
+}
+
+/* ---------- badges ---------- */
+function buildBadges(){
+  $("#badges").innerHTML=BADGES.map(b=>`<div class="badge ${solved.has(b.id)?"earned":""}" id="badge-${b.id}" title="${b.label}" role="img" aria-label="${b.label}${solved.has(b.id)?" — earned":" — locked"}"><svg viewBox="0 0 100 100"><use href="${b.icon}"/></svg></div>`).join("");
+}
+function earnBadge(id){buildBadges();const el=$("#badge-"+id);if(el){el.classList.remove("earned");void el.offsetWidth;el.classList.add("earned")}const b=BADGES.find(x=>x.id===id);if(b)live("Badge earned: "+b.label)}
+
+/* ---------- progress ---------- */
+function buildProgress(){$("#progress").innerHTML=PAGES.map((_,i)=>`<span class="dot ${i<=page?"on":""}"></span>`).join("")}
+
+/* ---------- navigation & rendering ---------- */
+const isMobile=()=>mobileMQ.matches;
+function leftIndex(){return isMobile()?page:page-(page%2)}
+function visiblePages(){return isMobile()?[page]:[leftIndex(),leftIndex()+1].filter(i=>i<PAGES.length)}
+function blockedBy(){for(const i of visiblePages()){const g=PAGES[i]&&PAGES[i].gate;if(g&&!solved.has(g))return g}return null}
+
+function renderSpread(){
+  const L=$("#pageL"),R=$("#pageR");
+  if(isMobile()){L.innerHTML=pageInnerHTML(page);L.classList.remove("offscreen");R.classList.add("offscreen");R.innerHTML="";mountGates(L)}
+  else{const li=leftIndex();L.innerHTML=pageInnerHTML(li);R.innerHTML=pageInnerHTML(li+1<PAGES.length?li+1:null);L.classList.remove("offscreen");R.classList.remove("offscreen");mountGates(L);mountGates(R)}
+  buildProgress();updateNav();updateEdges();
+  if(PAGES[page])live(`Page ${page+1} of ${PAGES.length}. ${PAGES[page].ch}.`);
+  storage.set(K("page"),page);
+  if($("#certName")){$("#certName").value=storage.get(K("name"))||"";$("#certName").addEventListener("input",e=>storage.set(K("name"),e.target.value));
+    $("#certBadges").innerHTML=BADGES.map(b=>`<div class="badge ${solved.has(b.id)?"":"locked"}"><svg viewBox="0 0 100 100"><use href="${b.icon}"/></svg></div>`).join("");
+    $("#printCert").addEventListener("click",()=>{document.body.classList.add("print-cert");window.print();setTimeout(()=>document.body.classList.remove("print-cert"),400)});}
+}
+function updateEdges(){const f=page/Math.max(1,PAGES.length-1);$("#edgesL").style.width=(4+f*12)+"px";$("#edgesR").style.width=(16-f*12)+"px"}
+function updateNav(){
+  $("#prevBtn").disabled=page<=0||turning;
+  const lastVisible=Math.max(...visiblePages());
+  const end=lastVisible>=PAGES.length-1;
+  const blocked=blockedBy();
+  $("#nextBtn").disabled=end||turning;
+  $("#nextBtn").classList.toggle("locked",!!blocked&&!end);
+  $("#nextBtn").innerHTML=blocked&&!end?"🔒":"›";
+  $("#nextBtn").setAttribute("aria-label",blocked?"Locked — solve the gate on this page to continue":"Next page");
+}
+function step(dir){
+  if(turning)return;
+  if(dir>0){
+    const blocked=blockedBy();
+    if(blocked){const G=GATES[blocked];SND.thud();$("#nextBtn").classList.add("shake");setTimeout(()=>$("#nextBtn").classList.remove("shake"),700);
+      live("This page is gated. Solve "+G.title+" to continue.");
+      const gb=document.querySelector(".gatebox");if(gb){gb.classList.add("unlockflash");setTimeout(()=>gb.classList.remove("unlockflash"),1000)}
+      return}
+    const lastVisible=Math.max(...visiblePages());
+    if(lastVisible>=PAGES.length-1)return;
+    const target=isMobile()?page+1:leftIndex()+2;
+    animTurn(1,target);
+  }else{
+    if(page<=0)return;
+    const target=isMobile()?page-1:Math.max(0,leftIndex()-2);
+    animTurn(-1,target);
+  }
+}
+function animTurn(dir,target){
+  if(isMobile()||reducedMQ.matches||!prefs.motion){page=target;renderSpread();SND.flip();return}
+  turning=true;SND.flip();
+  const sheet=$("#turnSheet"),front=sheet.querySelector(".ts.front"),back=sheet.querySelector(".ts.back");
+  const oldL=leftIndex();
+  if(dir>0){
+    front.innerHTML=pageInnerHTML(oldL+1<PAGES.length?oldL+1:null);
+    back.innerHTML=pageInnerHTML(target<PAGES.length?target:null);
+    page=target;
+    /* underneath: left stays old-left, right becomes new-right */
+    $("#pageR").innerHTML=pageInnerHTML(target+1<PAGES.length?target+1:null);
+    sheet.className="";sheet.classList.add("show","fwd");
+  }else{
+    front.innerHTML=pageInnerHTML(target+1<PAGES.length?target+1:null);
+    back.innerHTML=pageInnerHTML(oldL);
+    page=target;
+    $("#pageL").innerHTML=pageInnerHTML(target);
+    sheet.className="";sheet.classList.add("show","back");
+  }
+  const done=()=>{sheet.classList.remove("show","fwd","back");sheet.removeEventListener("animationend",done);turning=false;renderSpread()};
+  sheet.addEventListener("animationend",done);
+  setTimeout(()=>{if(turning){done()}},1000);
+}
+
+/* ---------- parallax ---------- */
+let rafPending=false,px=0,py=0;
+function applyParallax(){
+  rafPending=false;
+  if(!prefs.motion||reducedMQ.matches)return;
+  document.querySelectorAll("#spreadWrap .panel3d").forEach(p=>{
+    p.style.transform=`rotateY(${px*4}deg) rotateX(${-py*3}deg)`;
+    p.querySelectorAll("[data-depth]").forEach(l=>{const d=+l.dataset.depth||0;l.style.transform=`translate(${px*d*.6}px,${py*d*.35}px)`});
+  });
+}
+addEventListener("pointermove",e=>{
+  px=(e.clientX/innerWidth-.5)*2;py=(e.clientY/innerHeight-.5)*2;
+  if(!rafPending){rafPending=true;requestAnimationFrame(applyParallax)}
+  const cc=$("#coverCard");
+  if(cc&&!$("#cover").hidden&&prefs.motion&&!reducedMQ.matches){
+    cc.style.transform=`rotateY(${px*9}deg) rotateX(${-py*7}deg)`;
+    cc.querySelectorAll(".cov-layer").forEach(l=>{const d=+l.dataset.depth||0;l.style.transform=`translate(${px*d}px,${py*d*.6}px)`});
+  }
+},{passive:true});
+
+/* note: SVG <g data-depth> transform via style works in modern browsers (SVG2). Wrapped above for safety. */
+
+/* ---------- HUD toggles ---------- */
+function syncToggles(){
+  $("#sndBtn").setAttribute("aria-pressed",prefs.sound);$("#sndBtn").textContent=prefs.sound?"🔊 Sound":"🔇 Sound";
+  $("#motBtn").setAttribute("aria-pressed",prefs.motion);$("#motBtn").textContent=prefs.motion?"3D On":"3D Off";
+  $("#txtBtn").setAttribute("aria-pressed",prefs.bigtext);document.documentElement.dataset.textsize=prefs.bigtext?"lg":"md";
+  $("#hcBtn").setAttribute("aria-pressed",prefs.hc);document.body.classList.toggle("hc",prefs.hc);
+  if(!prefs.motion)document.querySelectorAll(".panel3d").forEach(p=>p.style.transform="");
+  storage.set(K("prefs"),prefs);
+}
+$("#sndBtn").addEventListener("click",()=>{prefs.sound=!prefs.sound;ac();syncToggles();SND.blip()});
+$("#motBtn").addEventListener("click",()=>{prefs.motion=!prefs.motion;syncToggles()});
+$("#txtBtn").addEventListener("click",()=>{prefs.bigtext=!prefs.bigtext;syncToggles()});
+$("#hcBtn").addEventListener("click",()=>{prefs.hc=!prefs.hc;syncToggles()});
+
+/* ---------- teacher panel ---------- */
+function buildTeacher(){
+  $("#teacherBody").innerHTML=`
+    <p style="font:600 .9rem/1.45 'Segoe UI'">${VOLUME.unit} — interactive graphic novel. Story pauses at six <b>reader gates</b>; students must solve grade-level math problems to continue. Progress, badges, and settings persist per device.</p>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">SUGGESTED USE</h3>
+    <p style="font:600 .88rem/1.45 'Segoe UI'">${TEACHER.suggested}</p>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">STANDARDS ALIGNMENT (CCSS)</h3>
+    <table class="tt"><tr><th>Standard</th><th>Description</th><th>Where</th></tr>
+    ${TEACHER.standards.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</table>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">ANSWER KEY</h3>
+    <table class="tt"><tr><th>Gate</th><th>Answer &amp; notes</th></tr>
+    ${TEACHER.answers.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td></tr>`).join("")}</table>
+    <p style="font:600 .8rem/1.4 'Segoe UI';color:#666">Hints escalate: conceptual → procedural → VEX worked example (parallel problem; never reveals the gate answer). Sound is off by default. 3D motion can be disabled (auto-disabled for reduced-motion users). © EduWonderLab — single-file, offline-safe, no data leaves the device.</p>`;
+}
+$("#teacherBtn").addEventListener("click",()=>{buildTeacher();$("#teacherModal").classList.add("open")});
+$("#printTeacher").addEventListener("click",()=>{document.body.classList.add("print-teacher");window.print();setTimeout(()=>document.body.classList.remove("print-teacher"),400)});
+document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",()=>b.closest(".modal").classList.remove("open")));
+
+/* ---------- input ---------- */
+$("#nextBtn").addEventListener("click",()=>{ac();step(1)});
+$("#prevBtn").addEventListener("click",()=>{ac();step(-1)});
+addEventListener("keydown",e=>{
+  if(e.key==="Escape"){$("#teacherModal").classList.remove("open");return}
+  if($(".modal.open"))return;
+  if(["ArrowRight","PageDown"].includes(e.key))step(1);
+  if(["ArrowLeft","PageUp"].includes(e.key))step(-1);
+});
+let tx=null;
+addEventListener("touchstart",e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener("touchend",e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>60&&!$(".modal.open"))step(dx<0?1:-1);tx=null},{passive:true});
+mobileMQ.addEventListener("change",()=>renderSpread());
+
+/* ---------- boot ---------- */
+function openBook(){
+  $("#cover").hidden=true;$("#hud").hidden=false;$("#stage").hidden=false;
+  $("#prevBtn").hidden=false;$("#nextBtn").hidden=false;
+  renderSpread();
+}
+$("#startBtn").addEventListener("click",()=>{ac();page=0;openBook()});
+$("#resumeBtn").addEventListener("click",()=>{ac();openBook()});
+if((storage.get(K("page"))||0)>0||solved.size>0){$("#resumeBtn").hidden=false}
+if(reducedMQ.matches){prefs.motion=false}
+document.body.classList.toggle("reduced",reducedMQ.matches);
+buildBadges();syncToggles();buildProgress();
+</script>
+</body>
+</html>
