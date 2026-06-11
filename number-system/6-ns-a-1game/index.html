@@ -178,6 +178,12 @@
         function mulFrac(a, b) {
           return simplify(a.n * b.n, a.d * b.d);
         }
+        function addFrac(a, b) {
+          return simplify(a.n * b.d + b.n * a.d, a.d * b.d);
+        }
+        function subtractFrac(a, b) {
+          return simplify(a.n * b.d - b.n * a.d, a.d * b.d);
+        }
         function rand(min, max) {
           return Math.floor(Math.random() * (max - min + 1)) + min;
         }
@@ -195,74 +201,51 @@
 
         // --- Question generator ---
         function generateQuestion(level) {
-          const dens =
+          const divisorDens =
             level <= 2
               ? [2, 3, 4]
               : level <= 4
                 ? [2, 3, 4, 5, 6]
                 : [2, 3, 4, 5, 6, 8];
-          const maxN = level <= 2 ? 5 : level <= 4 ? 7 : 9;
-          let a, b, answer;
+          
+          let quotients;
+          if (level <= 1) {
+            quotients = [2, 3, 4];
+          } else if (level <= 3) {
+            quotients = [1.5, 2, 2.5, 3, 4];
+          } else {
+            quotients = [1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
+          }
+
+          let a, b, qVal;
           let attempts = 0;
+          
           do {
-            a = { n: rand(1, maxN), d: pick(dens) };
-            b = { n: rand(1, Math.min(maxN, a.d)), d: pick(dens) };
-            answer = divFrac(a, b);
+            const db = pick(divisorDens);
+            const nb = rand(1, db - 1);
+            b = simplify(nb, db);
+
+            qVal = pick(quotients);
+            const qFrac = qVal % 1 === 0 ? { n: qVal, d: 1 } : { n: Math.round(qVal * 2), d: 2 };
+            
+            a = simplify(b.n * qFrac.n, b.d * qFrac.d);
             attempts++;
           } while (
-            ((answer.d === 1 && Math.abs(answer.n) > 12) ||
-              Math.abs(answer.n) > 20 ||
-              answer.d > 12) &&
-            attempts < 30
+            (a.d > 12 || (a.n / a.d) > 4.5) && attempts < 100
           );
 
-          const correct = fracStr(answer);
-          const wrongs = new Set();
-          // Wrong: forgot reciprocal (just multiply straight)
-          wrongs.add(fracStr(mulFrac(a, b)));
-          // Wrong: flipped first fraction
-          wrongs.add(fracStr(simplify(a.d * b.n, a.n * b.d)));
-          // Wrong: unsimplified
-          wrongs.add(answer.n * 2 + "/" + answer.d * 2);
-          // Wrong: random
-          wrongs.add(fracStr({ n: answer.n + 1, d: answer.d }));
-          wrongs.add(fracStr({ n: Math.max(1, answer.n - 1), d: answer.d }));
-          wrongs.add(fracStr({ n: rand(1, 8), d: rand(2, 8) }));
-
-          wrongs.delete(correct);
-          const wrongArr = [...wrongs].slice(0, 3);
-          while (wrongArr.length < 3)
-            wrongArr.push(fracStr({ n: rand(1, 10), d: rand(2, 10) }));
-
-          const choices = shuffle([
-            { text: correct, correct: true },
-            ...wrongArr.map((w) => ({ text: w, correct: false })),
-          ]);
+          if (attempts >= 100) {
+            b = { n: 1, d: 2 };
+            a = { n: 3, d: 2 }; // 1.5
+            qVal = 3;
+          }
 
           return {
             a,
             b,
-            answer,
-            prompt: fracStr(a) + " ÷ " + fracStr(b),
-            hint:
-              "Keep " +
-              fracStr(a) +
-              ", flip " +
-              fracStr(b) +
-              " to " +
-              fracStr({ n: b.d, d: b.n }) +
-              ", multiply.",
-            choices,
-            steps: [
-              "Start: " + fracStr(a) + " ÷ " + fracStr(b),
-              "Keep first: " + fracStr(a),
-              "Flip second: " +
-                fracStr(b) +
-                " → " +
-                fracStr({ n: b.d, d: b.n }),
-              "Multiply: " + fracStr(a) + " × " + fracStr({ n: b.d, d: b.n }),
-              "Result: " + fracDisplay(answer),
-            ],
+            qVal,
+            prompt: fracDisplay(a) + " ÷ " + fracDisplay(b),
+            hint: "How many times does " + fracDisplay(b) + " fit into " + fracDisplay(a) + "?"
           };
         }
 
@@ -450,9 +433,9 @@
             // Instructions
             const info = [
               "Dive deep and solve fraction division!",
-              "Swim into the answer bubble with the correct result.",
-              "Avoid sea creatures carrying wrong answers.",
-              "Keep → Flip → Multiply → Simplify",
+              "Find the locked treasure chests hidden in the deep.",
+              "Tile the target corridor exactly using the divisor tiles.",
+              "Avoid roaming sea creatures that cost you lives.",
               "Arrow keys / WASD / Touch to move",
             ];
             info.forEach((t, i) => {
@@ -606,8 +589,8 @@
               })
               .setDepth(9);
 
-            // Answer pods group
-            this.pods = this.physics.add.group();
+            // Locked chests group
+            this.chests = this.physics.add.group();
 
             // Enemy creatures group
             this.enemies = this.physics.add.group();
@@ -642,8 +625,8 @@
             // Collisions
             this.physics.add.overlap(
               this.player,
-              this.pods,
-              (p, pod) => this.hitPod(pod),
+              this.chests,
+              (p, chest) => this.hitChest(chest),
               null,
               this,
             );
@@ -803,70 +786,32 @@
           }
 
           nextQuestion() {
-            // Clear old pods and enemies
-            this.pods.clear(true, true);
+            // Clear old chests and enemies
+            this.chests.clear(true, true);
             this.enemies.clear(true, true);
             this.answered = false;
 
             // Generate question
             this.currentQ = generateQuestion(this.level);
-            this.qText.setText(this.currentQ.prompt);
-            this.qHint.setText("Swim into the correct answer!");
+            this.qText.setText("Target: " + this.currentQ.prompt);
+            this.qHint.setText("Swim to the locked chest to decrypt it!");
 
-            // Spawn answer pods
-            const startX = W * 0.4;
-            const choices = this.currentQ.choices;
-            choices.forEach((c, i) => {
-              const x = startX + rand(50, 350);
-              const y = 80 + (i * (H - 200)) / choices.length + rand(-20, 20);
-
-              const pod = this.physics.add
-                .image(x, y, "pod")
-                .setScale(1.2)
-                .setDepth(5);
-              pod.setData("correct", c.correct);
-              pod.setData("text", c.text);
-              pod.setData("bobOffset", Math.random() * Math.PI * 2);
-              pod.body.setImmovable(true);
-
-              // Answer label
-              const label = this.add
-                .text(x, y, c.text, {
-                  fontSize: "18px",
-                  fontStyle: "bold",
-                  color: "#ecfbff",
-                  align: "center",
-                })
-                .setOrigin(0.5)
-                .setDepth(6);
-              pod.setData("label", label);
-
-              // Bob animation
-              this.tweens.add({
-                targets: [pod, label],
-                y: y + 12,
-                duration: 1500 + rand(0, 500),
-                yoyo: true,
-                repeat: -1,
-                ease: "Sine.easeInOut",
-                delay: rand(0, 500),
-              });
-
-              this.pods.add(pod);
-
-              // If wrong answer, also spawn an enemy near it
-              if (!c.correct && Math.random() > 0.4) {
-                const ex = x + rand(-60, 60);
-                const ey = y + rand(-40, 40);
-                const enemy = this.physics.add
-                  .image(ex, ey, pick(["enemy", "jellyfish"]))
-                  .setScale(1.3)
-                  .setDepth(4);
-                enemy.setData("speed", rand(30, 80));
-                enemy.setData("dir", Math.random() > 0.5 ? 1 : -1);
-                this.enemies.add(enemy);
-              }
+            // Spawn locked chest
+            const cx = rand(300, W - 80);
+            const cy = rand(100, H - 150);
+            const chest = this.physics.add.image(cx, cy, "chest").setScale(2.2).setDepth(8);
+            chest.body.setImmovable(true);
+            
+            // Add bobbing tween
+            this.tweens.add({
+              targets: chest,
+              y: cy - 6,
+              duration: 1200,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.easeInOut"
             });
+            this.chests.add(chest);
 
             // Spawn some extra roaming enemies
             for (let i = 0; i < this.level; i++) {
@@ -883,6 +828,7 @@
             }
 
             // Spawn collectible bubbles
+            this.collectibles.clear(true, true);
             for (let i = 0; i < rand(1, 3); i++) {
               const cx = rand(200, W - 80);
               const cy = rand(80, H - 150);
@@ -903,53 +849,328 @@
             }
           }
 
-          hitPod(pod) {
+          hitChest(chest) {
             if (this.answered) return;
-            this.answered = true;
+            this.openTilingOverlay(chest);
+          }
 
-            const correct = pod.getData("correct");
-            const label = pod.getData("label");
+          openTilingOverlay(chest) {
+            this.physics.pause();
+            this.player.body.setVelocity(0, 0);
 
-            if (correct) {
-              // Correct answer
+            // Container for overlay elements
+            this.tilingContainer = this.add.container(0, 0).setDepth(200);
+
+            // Keep track of dynamically created texts and buttons for cleanup
+            this.overlayTexts = [];
+            this.overlayButtons = [];
+            this.overlayTileTexts = [];
+
+            // 1. Backdrop
+            const backdrop = this.add.rectangle(W / 2, H / 2, W, H, 0x000000, 0.82)
+              .setInteractive();
+            backdrop.on('pointerdown', (pointer) => { pointer.event.stopPropagation(); });
+            this.tilingContainer.add(backdrop);
+
+            // 2. Dialog Card
+            const cardX = W / 2;
+            const cardY = H / 2;
+            const cardW = 740;
+            const cardH = 460;
+            const card = this.add.rectangle(cardX, cardY, cardW, cardH, 0x0a1e3a, 0.96);
+            card.setStrokeStyle(3, 0x61dafb, 1);
+            this.tilingContainer.add(card);
+
+            // 3. Header Texts
+            const title = this.add.text(cardX, cardY - cardH / 2 + 35, "CHEST SECURITY LOCK", {
+              fontSize: "24px",
+              fontStyle: "bold",
+              color: "#ffd166",
+              fontFamily: "Inter, system-ui, sans-serif"
+            }).setOrigin(0.5);
+            this.tilingContainer.add(title);
+            this.overlayTexts.push(title);
+
+            const equationText = this.add.text(cardX, cardY - cardH / 2 + 80, 
+              fracDisplay(this.currentQ.a) + "  ÷  " + fracDisplay(this.currentQ.b) + "  =  ?", {
+              fontSize: "36px",
+              fontStyle: "bold",
+              color: "#ffffff",
+              stroke: "#020a18",
+              strokeThickness: 5,
+              fontFamily: "Inter, system-ui, sans-serif"
+            }).setOrigin(0.5);
+            this.tilingContainer.add(equationText);
+            this.overlayTexts.push(equationText);
+
+            // 4. Drawing Corridor
+            const corridorX = cardX - 250;
+            const corridorY = cardY - 30;
+            const corridorW = 500;
+            const corridorH = 50;
+
+            this.corridorGraphics = this.add.graphics();
+            this.tilingContainer.add(this.corridorGraphics);
+
+            this.corridorGraphics.fillStyle(0x020a18, 0.85);
+            this.corridorGraphics.fillRect(corridorX, corridorY, corridorW, corridorH);
+            this.corridorGraphics.lineStyle(2, 0x61dafb, 0.8);
+            this.corridorGraphics.strokeRect(corridorX, corridorY, corridorW, corridorH);
+
+            // Ticks drawing
+            const targetVal = this.currentQ.a.n / this.currentQ.a.d;
+            const pixelsPerUnit = corridorW / targetVal;
+            const maxInteger = Math.ceil(targetVal);
+
+            for (let i = 0; i <= maxInteger; i++) {
+              const tx = corridorX + i * pixelsPerUnit;
+              if (tx <= corridorX + corridorW + 0.1) {
+                this.corridorGraphics.lineStyle(1.5, 0x7ec8e3, 0.4);
+                this.corridorGraphics.lineBetween(tx, corridorY, tx, corridorY + corridorH);
+
+                const tickTxt = this.add.text(tx, corridorY + corridorH + 6, String(i), {
+                  fontSize: "12px",
+                  color: "#a8d7e5",
+                  fontFamily: "Inter, system-ui, sans-serif"
+                }).setOrigin(0.5, 0);
+                this.tilingContainer.add(tickTxt);
+                this.overlayTexts.push(tickTxt);
+              }
+            }
+
+            // Draw goal mark at end
+            if (targetVal % 1 !== 0) {
+              const endTxt = this.add.text(corridorX + corridorW, corridorY + corridorH + 6, fracDisplay(this.currentQ.a), {
+                fontSize: "12px",
+                fontStyle: "bold",
+                color: "#ffd166",
+                fontFamily: "Inter, system-ui, sans-serif"
+              }).setOrigin(0.5, 0);
+              this.tilingContainer.add(endTxt);
+              this.overlayTexts.push(endTxt);
+            }
+
+            // Tiling State
+            this.placedTiles = [];
+            this.tilesGraphics = this.add.graphics();
+            this.tilingContainer.add(this.tilesGraphics);
+
+            // Dynamic equation text
+            this.progressText = this.add.text(cardX, cardY + 50, "", {
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#a8d7e5",
+              fontFamily: "Inter, system-ui, sans-serif"
+            }).setOrigin(0.5);
+            this.tilingContainer.add(this.progressText);
+            this.overlayTexts.push(this.progressText);
+
+            this.groupsText = this.add.text(cardX, cardY + 75, "", {
+              fontSize: "14px",
+              color: "#61dafb",
+              fontFamily: "Inter, system-ui, sans-serif"
+            }).setOrigin(0.5);
+            this.tilingContainer.add(this.groupsText);
+            this.overlayTexts.push(this.groupsText);
+
+            // Overlay Feedback (for incorrect trials)
+            this.overlayFeedback = this.add.text(cardX, cardY - cardH / 2 + 130, "", {
+              fontSize: "18px",
+              fontStyle: "bold",
+              color: "#ff6b6b",
+              stroke: "#000",
+              strokeThickness: 3,
+              fontFamily: "Inter, system-ui, sans-serif"
+            }).setOrigin(0.5).setAlpha(0);
+            this.tilingContainer.add(this.overlayFeedback);
+            this.overlayTexts.push(this.overlayFeedback);
+
+            // Render initial state
+            this.drawTiles();
+
+            // Local helper for buttons inside container
+            const createOverlayButton = (scene, x, y, width, height, label, color, textColor, onClick) => {
+              const btn = scene.add.rectangle(x, y, width, height, color).setInteractive({ useHandCursor: true });
+              const txt = scene.add.text(x, y, label, { fontSize: "14px", fontStyle: "bold", color: textColor, fontFamily: "Inter, system-ui, sans-serif" }).setOrigin(0.5);
+              btn.on("pointerover", () => btn.setAlpha(0.85));
+              btn.on("pointerout", () => btn.setAlpha(1.0));
+              btn.on("pointerdown", () => {
+                onClick();
+              });
+              scene.tilingContainer.add([btn, txt]);
+              scene.overlayButtons.push(btn);
+              scene.overlayTexts.push(txt);
+            };
+
+            // 5. Buttons Placement
+            const btnY1 = cardY + 135;
+            const btnW = 120;
+            const btnH = 36;
+
+            // Row 1 buttons: Tiling actions
+            createOverlayButton(this, cardX - 195, btnY1, btnW, btnH, "+1 Tile", 0x18d2ba, "#000", () => {
+              this.placedTiles.push('whole');
+              this.drawTiles();
+            });
+
+            createOverlayButton(this, cardX - 65, btnY1, btnW, btnH, "+1/2 Tile", 0xf59e0b, "#000", () => {
+              this.placedTiles.push('half');
+              this.drawTiles();
+            });
+
+            createOverlayButton(this, cardX + 65, btnY1, btnW, btnH, "Remove", 0xef4444, "#fff", () => {
+              this.placedTiles.pop();
+              this.drawTiles();
+            });
+
+            createOverlayButton(this, cardX + 195, btnY1, btnW, btnH, "Reset", 0x4b5563, "#fff", () => {
+              this.placedTiles = [];
+              this.drawTiles();
+            });
+
+            // Row 2 buttons: submit or leave
+            const btnY2 = cardY + 195;
+            
+            createOverlayButton(this, cardX - 100, btnY2, 160, 42, "SWIM AWAY", 0x3b82f6, "#fff", () => {
+              // Knock back player and close
+              this.closeTilingOverlay();
+              this.player.x = this.player.x > chest.x ? chest.x + 85 : chest.x - 85;
+              this.player.y = this.player.y > chest.y ? chest.y + 85 : chest.y - 85;
+            });
+
+            createOverlayButton(this, cardX + 100, btnY2, 160, 42, "SUBMIT ANSWER", 0x10b981, "#fff", () => {
+              this.submitTiling(chest);
+            });
+          }
+
+          drawTiles() {
+            this.tilesGraphics.clear();
+            this.overlayTileTexts.forEach(t => t.destroy());
+            this.overlayTileTexts = [];
+
+            const cardX = W / 2;
+            const cardY = H / 2;
+            const corridorX = cardX - 250;
+            const corridorY = cardY - 30;
+            const corridorW = 500;
+            const corridorH = 50;
+
+            const targetVal = this.currentQ.a.n / this.currentQ.a.d;
+            const divisorVal = this.currentQ.b.n / this.currentQ.b.d;
+            const pixelsPerUnit = corridorW / targetVal;
+
+            const wholeWidth = divisorVal * pixelsPerUnit;
+            const halfWidth = wholeWidth / 2;
+
+            let currentX = corridorX;
+            let sum = { n: 0, d: 1 };
+            let totalGroups = 0;
+
+            this.placedTiles.forEach((tileType) => {
+              let w = 0;
+              let name = "";
+              let color = 0;
+              let strokeColor = 0;
+              let tileFrac;
+
+              if (tileType === 'whole') {
+                w = wholeWidth;
+                name = fracDisplay(this.currentQ.b);
+                color = 0x61dafb; // Cyan
+                strokeColor = 0x072a44;
+                tileFrac = this.currentQ.b;
+                totalGroups += 1;
+              } else {
+                w = halfWidth;
+                const halfFrac = simplify(this.currentQ.b.n, this.currentQ.b.d * 2);
+                name = fracDisplay(halfFrac);
+                color = 0xffd166; // Gold/Yellow
+                strokeColor = 0xd97706;
+                tileFrac = halfFrac;
+                totalGroups += 0.5;
+              }
+
+              sum = addFrac(sum, tileFrac);
+
+              // Draw tile graphics
+              this.tilesGraphics.fillStyle(color, 0.85);
+              this.tilesGraphics.fillRect(currentX, corridorY + 3, w, corridorH - 6);
+              this.tilesGraphics.lineStyle(2, strokeColor, 1);
+              this.tilesGraphics.strokeRect(currentX, corridorY + 3, w, corridorH - 6);
+
+              // Tile label text
+              if (w > 26) {
+                const labelTxt = name;
+                const tText = this.add.text(currentX + w / 2, corridorY + corridorH / 2, labelTxt, {
+                  fontSize: "11px",
+                  fontStyle: "bold",
+                  color: "#0a1e3a",
+                  fontFamily: "Inter, system-ui, sans-serif"
+                }).setOrigin(0.5);
+                this.tilingContainer.add(tText);
+                this.overlayTileTexts.push(tText);
+              }
+
+              currentX += w;
+            });
+
+            const sumVal = sum.n / sum.d;
+            const percentage = Math.round((sumVal / targetVal) * 100);
+            
+            this.progressText.setText("Tiled Length: " + fracDisplay(sum) + " / " + fracDisplay(this.currentQ.a) + "  (" + percentage + "%)");
+            
+            let groupLabel = "Total Tiles: " + totalGroups;
+            if (totalGroups > 0) {
+              groupLabel += "  (Equation: " + fracDisplay(this.currentQ.b) + " × " + totalGroups + " = " + fracDisplay(sum) + ")";
+            }
+            this.groupsText.setText(groupLabel);
+          }
+
+          submitTiling(chest) {
+            let sum = { n: 0, d: 1 };
+            this.placedTiles.forEach((tileType) => {
+              if (tileType === 'whole') {
+                sum = addFrac(sum, this.currentQ.b);
+              } else {
+                sum = addFrac(sum, simplify(this.currentQ.b.n, this.currentQ.b.d * 2));
+              }
+            });
+
+            const target = this.currentQ.a;
+            const isCorrect = (sum.n * target.d === target.n * sum.d);
+
+            if (isCorrect) {
+              this.answered = true; // Mark as answered to prevent double overlap trigger
               sfxCorrect();
+              
               this.combo++;
               this.bestCombo = Math.max(this.bestCombo, this.combo);
               this.questionsCorrect++;
               this.questionsAnswered++;
-
+              
               const points = 100 + this.combo * 20 + this.level * 30;
               this.score += points;
 
-              // Visual feedback
-              pod.setTint(0x34d399);
-              label.setColor("#34d399");
+              this.closeTilingOverlay();
+              this.showFeedback("CORRECT! Chest Unlocked! +" + points, 0x34d399);
 
-              this.showFeedback("CORRECT! +" + points, 0x34d399);
+              const emitter = this.add.particles(chest.x, chest.y, "star", {
+                speed: { min: 60, max: 200 },
+                lifespan: 800,
+                scale: { start: 1, end: 0 },
+                alpha: { start: 1, end: 0 },
+                quantity: 20,
+                tint: 0xffd166,
+                emitting: false,
+              });
+              emitter.explode(20);
 
-              // Particles burst
-              this.add
-                .particles(pod.x, pod.y, "star", {
-                  speed: { min: 60, max: 200 },
-                  lifespan: 800,
-                  scale: { start: 1, end: 0 },
-                  alpha: { start: 1, end: 0 },
-                  quantity: 15,
-                  tint: 0xffd166,
-                  emitting: false,
-                })
-                .explode(15);
-
-              // Camera flash
-              this.cameras.main.flash(200, 52, 211, 153, false, null, this);
-
-              // Screen shake
+              this.cameras.main.flash(200, 52, 211, 153);
               this.cameras.main.shake(150, 0.005);
 
-              // Increase depth
+              chest.destroy();
               this.depth += 10 + this.level * 5;
 
-              // Level up check
               if (
                 this.questionsCorrect > 0 &&
                 this.questionsCorrect % 4 === 0 &&
@@ -964,65 +1185,77 @@
                 );
               }
 
-              // Update HUD
               this.updateHUD();
 
-              // Next question after delay
               this.time.delayedCall(1200, () => {
                 if (this.lives > 0) this.nextQuestion();
               });
+
             } else {
-              // Wrong answer
               sfxWrong();
               this.combo = 0;
               this.lives--;
-              this.questionsAnswered++;
-
-              pod.setTint(0xff6b6b);
-              label.setColor("#ff6b6b");
-
-              // Show the correct answer
-              const correctPod = this.pods
-                .getChildren()
-                .find((p) => p.getData("correct"));
-              if (correctPod) {
-                correctPod.setTint(0x34d399);
-                const cl = correctPod.getData("label");
-                if (cl) cl.setColor("#34d399");
-              }
-
-              this.showFeedback(
-                "Not quite! Answer: " + fracDisplay(this.currentQ.answer),
-                0xff6b6b,
-              );
-
-              // Show hint
-              this.qHint.setText(this.currentQ.hint);
-
-              // Camera shake
-              this.cameras.main.shake(300, 0.01);
-              this.cameras.main.flash(200, 255, 107, 107, false, null, this);
-
-              // Particles
-              this.add
-                .particles(pod.x, pod.y, "particle", {
-                  speed: { min: 40, max: 150 },
-                  lifespan: 600,
-                  scale: { start: 0.8, end: 0 },
-                  tint: 0xff6b6b,
-                  quantity: 10,
-                  emitting: false,
-                })
-                .explode(10);
-
               this.updateHUD();
 
-              if (this.lives <= 0) {
-                this.time.delayedCall(1500, () => this.endGame());
+              const sumVal = sum.n / sum.d;
+              const targetVal = target.n / target.d;
+
+              let feedbackMsg = "";
+              if (sumVal < targetVal) {
+                const diff = subtractFrac(target, sum);
+                feedbackMsg = "Gap of " + fracDisplay(diff) + "! The corridor is not full.";
+                
+                const cardX = W / 2;
+                const cardY = H / 2;
+                const corridorX = cardX - 250;
+                const corridorY = cardY - 30;
+                const corridorW = 500;
+                const pixelsPerUnit = corridorW / targetVal;
+                
+                const startGapX = corridorX + sumVal * pixelsPerUnit;
+                const gapW = (targetVal - sumVal) * pixelsPerUnit;
+
+                this.tilesGraphics.fillStyle(0xff6b6b, 0.4);
+                this.tilesGraphics.fillRect(startGapX, corridorY + 3, gapW, 44);
+                this.tilesGraphics.lineStyle(2, 0xff6b6b, 0.8);
+                this.tilesGraphics.strokeRect(startGapX, corridorY + 3, gapW, 44);
+
               } else {
-                this.time.delayedCall(2000, () => this.nextQuestion());
+                const diff = subtractFrac(sum, target);
+                feedbackMsg = "Overlapped by " + fracDisplay(diff) + "! Too many tiles.";
+                
+                const cardX = W / 2;
+                const cardY = H / 2;
+                const corridorX = cardX - 250;
+                const corridorY = cardY - 30;
+                const corridorW = 500;
+                const pixelsPerUnit = corridorW / targetVal;
+
+                const startOverlapX = corridorX + corridorW;
+                const overlapW = (sumVal - targetVal) * pixelsPerUnit;
+
+                this.tilesGraphics.fillStyle(0xff6b6b, 0.5);
+                this.tilesGraphics.fillRect(startOverlapX, corridorY + 3, overlapW, 44);
+                this.tilesGraphics.lineStyle(2, 0xff6b6b, 1);
+                this.tilesGraphics.strokeRect(startOverlapX, corridorY + 3, overlapW, 44);
+              }
+
+              this.overlayFeedback.setText(feedbackMsg).setAlpha(1);
+              this.cameras.main.shake(200, 0.005);
+              
+              if (this.lives <= 0) {
+                this.closeTilingOverlay();
+                this.time.delayedCall(1000, () => this.endGame());
               }
             }
+          }
+
+          closeTilingOverlay() {
+            if (this.tilingContainer) {
+              this.tilingContainer.destroy(true);
+              this.tilingContainer = null;
+            }
+            this.physics.resume();
           }
 
           hitEnemy(enemy) {
