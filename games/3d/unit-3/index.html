@@ -64,153 +64,6 @@
         color: #fff;
         text-align: center;
       }
-
-      /* ---------------------------------------------------------------------
-         Bespoke DOM/CSS overlay polish for Ratio Rally (additive only).
-         These layers sit ABOVE the WebGL canvas and NEVER touch the three.js
-         scene, render loop, camera, controls, scoring or answer-checking.
-         They react only to the existing ARIA-live status text the engine
-         already emits ("Correct! Boost!", "Wrong lane.", etc.). Every motion
-         is disabled under prefers-reduced-motion.
-         ------------------------------------------------------------------- */
-
-      .rr-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 14;
-        pointer-events: none;
-        overflow: hidden;
-      }
-      /* Ambient neon side-glow "pylon rails" — alternating left/right colors
-         for depth. Lives in a [data-parallax-layer] so the shared GameFX kit
-         can float it slightly on pointer move (gate-number parallax feel). */
-      .rr-rails {
-        position: absolute;
-        inset: 0;
-        z-index: 14;
-        pointer-events: none;
-        will-change: transform;
-      }
-      .rr-rails::before,
-      .rr-rails::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 16%;
-        opacity: 0.45;
-      }
-      /* Left rail = warm amber pylons; right rail = cool cyan pylons. */
-      .rr-rails::before {
-        left: 0;
-        background: linear-gradient(
-          90deg,
-          rgba(240, 164, 0, 0.5) 0%,
-          rgba(240, 164, 0, 0) 100%
-        );
-      }
-      .rr-rails::after {
-        right: 0;
-        background: linear-gradient(
-          270deg,
-          rgba(58, 196, 214, 0.5) 0%,
-          rgba(58, 196, 214, 0) 100%
-        );
-      }
-
-      /* Full-screen tint flashes (green = boost, red = crash). */
-      .rr-flash {
-        position: fixed;
-        inset: 0;
-        z-index: 22;
-        pointer-events: none;
-        opacity: 0;
-      }
-      .rr-flash.rr-good {
-        background: radial-gradient(
-          ellipse at 50% 70%,
-          rgba(46, 220, 140, 0.4),
-          rgba(46, 220, 140, 0) 60%
-        );
-        animation: rrGoodFlash 0.5s ease-out;
-      }
-      .rr-flash.rr-bad {
-        background: radial-gradient(
-          ellipse at 50% 60%,
-          rgba(224, 64, 47, 0.55),
-          rgba(224, 64, 47, 0) 65%
-        );
-        animation: rrBadFlash 0.45s ease-out;
-      }
-      @keyframes rrGoodFlash {
-        0% {
-          opacity: 0;
-        }
-        25% {
-          opacity: 1;
-        }
-        100% {
-          opacity: 0;
-        }
-      }
-      @keyframes rrBadFlash {
-        0% {
-          opacity: 0;
-        }
-        15% {
-          opacity: 1;
-        }
-        100% {
-          opacity: 0;
-        }
-      }
-
-      /* Crash screen-shake applied to the overlay shell only (not the canvas
-         camera — the engine handles its own world shake). */
-      .rr-shake {
-        animation: rrShake 0.36s cubic-bezier(0.36, 0.07, 0.19, 0.97);
-      }
-      @keyframes rrShake {
-        10%,
-        90% {
-          transform: translate(-1px, 0);
-        }
-        20%,
-        80% {
-          transform: translate(2px, 0);
-        }
-        30%,
-        50%,
-        70% {
-          transform: translate(-4px, 0);
-        }
-        40%,
-        60% {
-          transform: translate(4px, 0);
-        }
-      }
-
-      /* Confetti/spark canvas for correct gates (procedural, capped). */
-      #rr-confetti {
-        position: fixed;
-        inset: 0;
-        z-index: 21;
-        pointer-events: none;
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        .rr-flash,
-        .rr-shake {
-          animation: none !important;
-          opacity: 0 !important;
-        }
-        .rr-rails {
-          transform: none !important;
-        }
-        #rr-confetti {
-          display: none !important;
-        }
-      }
     </style>
     <script type="importmap">
       {
@@ -223,32 +76,20 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
-    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-    <link rel="stylesheet" href="/assets/game-fx.css" />
-    <!-- gfx-injected:end -->
   </head>
   <body>
     <div
       id="game"
       role="application"
       tabindex="0"
-      aria-label="Ratio Rally — neon speedway. Tune unit rates, equivalent ratios, percent and conversions to launch your car. Interactive 3D math game."
+      aria-label="Ratio Rally — cruise to pit stops and tune unit rates, percents, and fuel comparisons to launch your car. Interactive 3D math game."
       aria-describedby="e3d-intro"
     ></div>
-    <!-- Bespoke overlay layers (additive visual polish only). data-parallax
-         lets the shared GameFX kit float the neon rails slightly on pointer
-         move, giving the gate plane a subtle out-of-plane depth feel. -->
-    <div class="rr-overlay" data-parallax aria-hidden="true">
-      <div class="rr-rails" data-parallax-layer></div>
-    </div>
-    <div class="rr-flash" id="rr-flash" aria-hidden="true"></div>
-    <canvas id="rr-confetti" aria-hidden="true"></canvas>
     <div class="e3d-boot-title">Ratio Rally — Tune the Rates to Win</div>
     <p class="e3d-intro" id="e3d-intro">
-      Solve the problem in the "Your Task" panel, then STEER into the lane with
-      the right answer before you hit the gate. Left/Right arrows, A/D, the
-      d-pad, or tap a side of the screen. Right lane = speed boost; wrong lane =
-      you slow down. Clear every gate to win the race!
+      Cruise to each pit stop, then read the problem in "Your Task." Use Up/Down
+      to dial your answer (or Left/Right to pick a fuel lane on compare rounds),
+      then press Space to launch. Press Enter for a hint.
     </p>
     <div class="e3d-fallback" id="fallback">
       <div>
@@ -259,7 +100,7 @@
         </p>
         <p class="e3d-fallback-2d" style="margin-top: 14px">
           <a
-            href="/math/unit-3/games/unit3-ratio-rally.html"
+            href="/games/unit3-ratio-rally.html"
             style="
               display: inline-block;
               padding: 10px 18px;
@@ -289,165 +130,8 @@
         document.getElementById("fallback").style.display = "flex";
       }
     </script>
-    <!-- Bespoke overlay FX controller. Pure DOM/CSS/canvas — observes the
-         engine's existing ARIA-live status text and never touches the WebGL
-         scene, render loop, camera, controls, scoring or answer-checking. -->
-    <script>
-      (function () {
-        "use strict";
-        var mql =
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)");
-        function reduced() {
-          return !!(mql && mql.matches);
-        }
-
-        var game = document.getElementById("game");
-        var flash = document.getElementById("rr-flash");
-        var canvas = document.getElementById("rr-confetti");
-        if (!game || !flash || !canvas) return;
-        var ctx = canvas.getContext && canvas.getContext("2d");
-
-        // --- Confetti (procedural, capped, rAF-driven) ------------------
-        var DPR = Math.min(2, window.devicePixelRatio || 1);
-        var COLORS = ["#2edc8c", "#f0a400", "#3ac4d6", "#9b5de5", "#ffffff"];
-        var parts = [];
-        var MAX = 90; // hard cap, Chromebook-friendly
-        var raf = 0;
-
-        function size() {
-          if (!ctx) return;
-          canvas.width = Math.floor(window.innerWidth * DPR);
-          canvas.height = Math.floor(window.innerHeight * DPR);
-          canvas.style.width = window.innerWidth + "px";
-          canvas.style.height = window.innerHeight + "px";
-        }
-        size();
-        window.addEventListener("resize", size, { passive: true });
-
-        function spawnConfetti() {
-          if (!ctx || reduced()) return;
-          // Burst from lower-center, "behind the car".
-          var cx = window.innerWidth / 2;
-          var cy = window.innerHeight * 0.72;
-          var add = Math.min(34, MAX - parts.length);
-          for (var i = 0; i < add; i++) {
-            var ang = -Math.PI / 2 + (Math.random() - 0.5) * 1.7;
-            var sp = 4 + Math.random() * 7;
-            parts.push({
-              x: cx + (Math.random() - 0.5) * 60,
-              y: cy,
-              vx: Math.cos(ang) * sp,
-              vy: Math.sin(ang) * sp - 2,
-              g: 0.18 + Math.random() * 0.12,
-              r: 3 + Math.random() * 4,
-              rot: Math.random() * 6.28,
-              vr: (Math.random() - 0.5) * 0.4,
-              life: 1,
-              decay: 0.012 + Math.random() * 0.01,
-              c: COLORS[(Math.random() * COLORS.length) | 0],
-            });
-          }
-          if (!raf) raf = requestAnimationFrame(tick);
-        }
-
-        function tick() {
-          raf = 0;
-          if (!ctx) return;
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.save();
-          ctx.scale(DPR, DPR);
-          for (var i = parts.length - 1; i >= 0; i--) {
-            var p = parts[i];
-            p.vy += p.g;
-            p.x += p.vx;
-            p.y += p.vy;
-            p.rot += p.vr;
-            p.life -= p.decay;
-            if (p.life <= 0 || p.y > window.innerHeight + 20) {
-              parts.splice(i, 1);
-              continue;
-            }
-            ctx.globalAlpha = Math.max(0, p.life);
-            ctx.fillStyle = p.c;
-            ctx.save();
-            ctx.translate(p.x, p.y);
-            ctx.rotate(p.rot);
-            ctx.fillRect(-p.r, -p.r * 0.5, p.r * 2, p.r);
-            ctx.restore();
-          }
-          ctx.restore();
-          if (parts.length) raf = requestAnimationFrame(tick);
-          else ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-
-        // --- Flash + shake ---------------------------------------------
-        function doFlash(cls) {
-          if (reduced()) return;
-          flash.classList.remove("rr-good", "rr-bad");
-          void flash.offsetWidth;
-          flash.classList.add(cls);
-        }
-        flash.addEventListener("animationend", function () {
-          flash.classList.remove("rr-good", "rr-bad");
-        });
-
-        function doShake() {
-          if (reduced()) return;
-          game.classList.remove("rr-shake");
-          void game.offsetWidth;
-          game.classList.add("rr-shake");
-        }
-        game.addEventListener("animationend", function (e) {
-          if (e.animationName === "rrShake") game.classList.remove("rr-shake");
-        });
-
-        // --- React to the engine's ARIA-live status text ---------------
-        var GOOD = /\b(correct|boost)\b/i;
-        var BAD = /\b(wrong|crash|out of lives|race over|last answer)\b/i;
-        function onStatus(text) {
-          if (!text) return;
-          if (GOOD.test(text)) {
-            spawnConfetti();
-            doFlash("rr-good");
-          } else if (BAD.test(text)) {
-            doFlash("rr-bad");
-            doShake();
-          }
-        }
-
-        // The live region is created lazily by the engine inside #game.
-        // Poll briefly for it, then observe its text mutations.
-        var observed = null;
-        function wire(region) {
-          if (observed === region || !window.MutationObserver) return;
-          observed = region;
-          var mo = new MutationObserver(function () {
-            onStatus(region.textContent);
-          });
-          mo.observe(region, {
-            childList: true,
-            characterData: true,
-            subtree: true,
-          });
-        }
-        var tries = 0;
-        var poll = setInterval(function () {
-          var region = game.querySelector('[data-e3d="aria-live"]');
-          if (region) {
-            wire(region);
-            clearInterval(poll);
-          } else if (++tries > 80) {
-            clearInterval(poll);
-          }
-        }, 250);
-      })();
-    </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
-    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-    <script src="/assets/game-fx.js" defer></script>
-    <!-- gfx-injected:end -->
   </body>
 </html>
