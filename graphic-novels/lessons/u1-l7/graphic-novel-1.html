@@ -426,6 +426,10 @@
                 btn.disabled = true;
                 fb.className = "feedback show bad";
                 fb.innerHTML = opts.badEn + '<span class="es">' + opts.badEs + "</span>";
+                /* locks removed: reveal correct + let them proceed (Neft 2026-06-11) */
+                solved = true;
+                qa(".choice", $(opts.choicesId)).forEach(function (b) { if (b.dataset.correct === "true") b.classList.add("correct"); b.disabled = true; });
+                if (opts.onSolve) opts.onSolve();
               }
             });
           });

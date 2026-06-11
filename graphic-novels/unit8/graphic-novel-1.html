@@ -2237,10 +2237,13 @@ window.GN_STORY = {
           list.classList.add("solved");
           if (onSolve) onSolve();
         } else {
-          list.classList.add("nudge");
-          setTimeout(function () {
-            list.classList.remove("nudge");
-          }, 500);
+          /* locks removed: reveal correct + let them proceed (Neft 2026-06-11) */
+          solved = true;
+          Array.prototype.slice.call(list.children).sort(function (a, b) { return step.items[+a.dataset.idx].order - step.items[+b.dataset.idx].order; }).forEach(function (li) { list.appendChild(li); });
+          list.classList.add("solved");
+          btn.disabled = true;
+          var mark = el("button", "choice correct"); mark.style.display = "none"; mark.dataset.correct = "true"; groupEl.appendChild(mark);
+          if (onSolve) onSolve();
         }
       });
     },
@@ -3260,6 +3263,10 @@ window.GN_STORY = {
             fb.innerHTML =
               (step.badEn || "Not quite — look back at the panel.") +
               (step.badEs ? '<span class="es">' + step.badEs + "</span>" : "");
+            /* locks removed: reveal correct + let them proceed (Neft 2026-06-11) */
+            solved = true;
+            Array.prototype.slice.call($(groupId).querySelectorAll(".choice")).forEach(function (b) { if (b.dataset.correct === "true") b.classList.add("correct"); b.disabled = true; });
+            if (onSolve) onSolve();
           }
         });
       });
