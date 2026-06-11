@@ -1202,7 +1202,7 @@
           const qNum = this.add
             .text(
               W / 2,
-              100,
+              95,
               `Distance Challenge ${this.distQIndex + 1}/${this.distQuestions.length}`,
               {
                 fontSize: "13px",
@@ -1215,7 +1215,7 @@
           this.qElements.push(qNum);
 
           const qText = this.add
-            .text(W / 2, 170, q.q, {
+            .text(W / 2, 145, q.q, {
               fontSize: "20px",
               color: "#e2e8f0",
               fontStyle: "bold",
@@ -1228,114 +1228,266 @@
             .setDepth(601);
           this.qElements.push(qText);
 
-          const formula = this.add
-            .text(W / 2, 220, "Formula: d = |coord1 - coord2|", {
-              fontSize: "13px",
-              color: "#64748b",
-            })
-            .setOrigin(0.5)
-            .setDepth(601);
-          this.qElements.push(formula);
+          const isQuadrant = q.q.includes("quadrant");
+          let chosenVal = null;
+          let submitBtn = null;
+          let submitTxt = null;
 
-          const opts = [...new Set(q.opts)];
-          if (!opts.includes(q.ans)) {
-            opts[0] = q.ans;
-          }
-          while (opts.length < 3)
-            opts.push(`${parseInt(q.ans) + Phaser.Math.Between(2, 5)}`);
+          const createSubmitButton = (y = 420) => {
+            submitBtn = this.add
+              .image(W / 2, y, "btn")
+              .setScale(1.1)
+              .setDepth(601)
+              .setInteractive({ useHandCursor: true });
+            submitTxt = this.add
+              .text(W / 2, y, "SUBMIT ANSWER", {
+                fontSize: "18px",
+                color: "#fbbf24",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5)
+              .setDepth(602);
+            this.qElements.push(submitBtn, submitTxt);
 
-          shuffle(opts)
-            .slice(0, 3)
-            .forEach((opt, i) => {
-              const bx = W / 2 - 180 + i * 180;
-              const by = 300;
-              const btn = this.add
-                .image(bx, by, "ans_btn")
-                .setScale(1.1)
-                .setDepth(601)
-                .setInteractive({ useHandCursor: true });
-              const txt = this.add
-                .text(bx, by, opt, {
-                  fontSize: "20px",
-                  color: "#e2e8f0",
+            submitBtn.on("pointerdown", () => submitAnswer());
+            submitBtn.on("pointerover", () => submitBtn.setScale(1.15));
+            submitBtn.on("pointerout", () => submitBtn.setScale(1.1));
+          };
+
+          const submitAnswer = () => {
+            if (submitBtn) submitBtn.disableInteractive();
+            this.qElements.forEach(e => {
+              if (e.input) e.disableInteractive();
+            });
+
+            this.qTotal++;
+            const isCorrect = String(chosenVal) === String(q.ans);
+
+            if (isCorrect) {
+              sndCorrect();
+              this.qCorrect++;
+              this.combo++;
+              if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+              const pts = 250 * this.combo;
+              this.score += pts;
+
+              const fb = this.add
+                .text(W / 2, 370, `Correct! +${pts}`, {
+                  fontSize: "18px",
+                  color: "#4ade80",
                   fontStyle: "bold",
+                  stroke: "#000000",
+                  strokeThickness: 3
                 })
                 .setOrigin(0.5)
-                .setDepth(602);
-              this.qElements.push(btn, txt);
+                .setDepth(601);
+              this.qElements.push(fb);
+            } else {
+              sndWrong();
+              this.combo = 0;
+              this.lives--;
 
-              btn.on("pointerdown", () => {
-                this.qElements.forEach((e) => {
-                  if (e.input) e.disableInteractive();
-                });
-                this.qTotal++;
+              const fb = this.add
+                .text(W / 2, 370, `Incorrect. Answer is ${q.ans}`, {
+                  fontSize: "18px",
+                  color: "#f87171",
+                  fontStyle: "bold",
+                  stroke: "#000000",
+                  strokeThickness: 3
+                })
+                .setOrigin(0.5)
+                .setDepth(601);
+              this.qElements.push(fb);
+            }
 
-                if (opt === q.ans) {
-                  sndCorrect();
-                  btn.setTexture("ans_ok");
-                  txt.setColor("#4ade80");
-                  this.qCorrect++;
-                  this.combo++;
-                  if (this.combo > this.maxCombo) this.maxCombo = this.combo;
-                  const pts = 250 * this.combo;
-                  this.score += pts;
+            // Show explanation
+            const exp = this.add
+              .text(W / 2, 410, q.explanation, {
+                fontSize: "13px",
+                color: "#94a3b8",
+                wordWrap: { width: 540 },
+                align: "center",
+                stroke: "#000000",
+                strokeThickness: 3
+              })
+              .setOrigin(0.5)
+              .setDepth(601);
+            this.qElements.push(exp);
 
-                  const fb = this.add
-                    .text(W / 2, 370, `Correct! +${pts}`, {
-                      fontSize: "18px",
-                      color: "#4ade80",
-                      fontStyle: "bold",
-                    })
-                    .setOrigin(0.5)
-                    .setDepth(601);
-                  this.qElements.push(fb);
-                } else {
-                  sndWrong();
-                  btn.setTexture("ans_bad");
-                  txt.setColor("#f87171");
-                  this.combo = 0;
-                  this.lives--;
+            this.updateHUD();
 
-                  const fb = this.add
-                    .text(W / 2, 370, `Answer: ${q.ans}`, {
-                      fontSize: "18px",
-                      color: "#f87171",
-                      fontStyle: "bold",
-                    })
-                    .setOrigin(0.5)
-                    .setDepth(601);
-                  this.qElements.push(fb);
-                }
-
-                // Show explanation
-                const exp = this.add
-                  .text(W / 2, 410, q.explanation, {
-                    fontSize: "13px",
-                    color: "#94a3b8",
-                    wordWrap: { width: 500 },
-                    align: "center",
-                  })
-                  .setOrigin(0.5)
-                  .setDepth(601);
-                this.qElements.push(exp);
-
-                this.updateHUD();
-
-                this.time.delayedCall(2000, () => {
-                  this.qElements.forEach((e) => e.destroy());
-                  this.qOverlay.destroy();
-                  this.distQIndex++;
-                  if (this.lives <= 0) {
-                    this.endGame();
-                    return;
-                  }
-                  this.showDistQuestion();
-                });
-              });
-
-              btn.on("pointerover", () => btn.setScale(1.15));
-              btn.on("pointerout", () => btn.setScale(1.1));
+            this.time.delayedCall(2400, () => {
+              this.qElements.forEach((e) => e.destroy());
+              this.qOverlay.destroy();
+              this.distQIndex++;
+              if (this.lives <= 0) {
+                this.endGame();
+                return;
+              }
+              this.showDistQuestion();
             });
+          };
+
+          if (isQuadrant) {
+            // Quadrant Pads (I, II, III, IV)
+            const gridX = W / 2;
+            const gridY = 270;
+            const size = 90;
+
+            const quads = [
+              { name: "II", x: gridX - size/2 - 5, y: gridY - size/2 - 5, color: 0x3b82f6 },
+              { name: "I", x: gridX + size/2 + 5, y: gridY - size/2 - 5, color: 0x10b981 },
+              { name: "III", x: gridX - size/2 - 5, y: gridY + size/2 + 5, color: 0xf59e0b },
+              { name: "IV", x: gridX + size/2 + 5, y: gridY + size/2 + 5, color: 0xec4899 }
+            ];
+
+            const visualCards = [];
+            quads.forEach(qd => {
+              const bg = this.add.rectangle(qd.x, qd.y, size, size, 0x1e293b)
+                .setDepth(601)
+                .setStrokeStyle(2, 0x475569)
+                .setInteractive({ useHandCursor: true });
+              const label = this.add.text(qd.x, qd.y, qd.name, {
+                fontSize: "24px",
+                fontStyle: "bold",
+                color: "#94a3b8"
+              }).setOrigin(0.5).setDepth(602);
+              this.qElements.push(bg, label);
+              visualCards.push({ bg, label, qd });
+
+              bg.on("pointerdown", () => {
+                visualCards.forEach(c => {
+                  c.bg.setFillStyle(0x1e293b);
+                  c.bg.setStrokeStyle(2, 0x475569);
+                  c.label.setColor("#94a3b8");
+                });
+                bg.setFillStyle(qd.color, 0.4);
+                bg.setStrokeStyle(3, qd.color);
+                label.setColor("#ffffff");
+                chosenVal = qd.name;
+                sndMove();
+              });
+            });
+
+            createSubmitButton(350);
+
+          } else {
+            // Distance slider (positive numbers only, 0 to 18)
+            const nlWidth = 520;
+            const nlY = 240;
+            let qRange = 16;
+            const ansNum = parseInt(q.ans, 10);
+            if (ansNum > qRange) qRange = Math.ceil(ansNum / 5) * 5;
+
+            // Draw line
+            const line = this.add.rectangle(W / 2, nlY, nlWidth, 3, 0x38bdf8, 0.6)
+              .setDepth(601);
+            this.qElements.push(line);
+
+            // Ticks
+            for (let v = 0; v <= qRange; v++) {
+              const px = W / 2 - nlWidth / 2 + (v / qRange) * nlWidth;
+              const tick = this.add.rectangle(px, nlY, 1, v === 0 ? 16 : 8, v === 0 ? 0xfbbf24 : 0x38bdf8, 0.6)
+                .setDepth(601);
+              this.qElements.push(tick);
+
+              if (v % 2 === 0) {
+                const lbl = this.add.text(px, nlY + 14, `${v}`, {
+                  fontSize: "10px",
+                  color: v === 0 ? "#fbbf24" : "#64748b"
+                }).setOrigin(0.5, 0).setDepth(601);
+                this.qElements.push(lbl);
+              }
+            }
+
+            // Drag Selector Container (starts at 0)
+            const selectorCont = this.add.container(W / 2 - nlWidth / 2, nlY).setDepth(605);
+            this.qElements.push(selectorCont);
+            chosenVal = 0;
+
+            const pointerGfx = this.add.graphics();
+            pointerGfx.fillStyle(0xfbbf24, 1);
+            pointerGfx.fillTriangle(0, 0, -10, -18, 10, -18);
+            selectorCont.add(pointerGfx);
+
+            const valText = this.add.text(0, -36, "0", {
+              fontSize: "18px",
+              fontFamily: "Segoe UI, Arial, sans-serif",
+              fontStyle: "bold",
+              color: "#fbbf24",
+              stroke: "#000000",
+              strokeThickness: 3
+            }).setOrigin(0.5);
+            selectorCont.add(valText);
+
+            // Draggable
+            const hitArea = new Phaser.Geom.Rectangle(-25, -45, 50, 50);
+            selectorCont.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains);
+            this.input.setDraggable(selectorCont);
+
+            const updateSelectorFromValue = (v) => {
+              const currentVal = Phaser.Math.Clamp(v, 0, qRange);
+              const snappedX = W / 2 - nlWidth / 2 + (currentVal / qRange) * nlWidth;
+              selectorCont.x = snappedX;
+              valText.setText(String(currentVal));
+              chosenVal = String(currentVal);
+              sndMove();
+            };
+
+            selectorCont.on('drag', (pointer, dragX, dragY) => {
+              const minX = W / 2 - nlWidth / 2;
+              const maxX = W / 2 + nlWidth / 2;
+              const clampedX = Phaser.Math.Clamp(dragX, minX, maxX);
+              const val = Math.round(((clampedX - (W / 2 - nlWidth / 2)) / nlWidth) * qRange);
+              updateSelectorFromValue(val);
+            });
+
+            // Tap zone
+            const clickZone = this.add.rectangle(W / 2, nlY, nlWidth + 40, 50, 0x000000, 0.001)
+              .setDepth(601)
+              .setInteractive({ useHandCursor: true });
+            this.qElements.push(clickZone);
+
+            clickZone.on('pointerdown', (pointer) => {
+              const minX = W / 2 - nlWidth / 2;
+              const maxX = W / 2 + nlWidth / 2;
+              const clampedX = Phaser.Math.Clamp(pointer.x, minX, maxX);
+              const val = Math.round(((clampedX - (W / 2 - nlWidth / 2)) / nlWidth) * qRange);
+              updateSelectorFromValue(val);
+            });
+
+            // Help guide text
+            const guideTxt = this.add.text(W / 2, 310, "Drag pointer or Tap line  |  Use ←/→ and ENTER keys", {
+              fontSize: "12px",
+              color: "#94a3b8",
+              fontStyle: "italic"
+            }).setOrigin(0.5).setDepth(601);
+            this.qElements.push(guideTxt);
+
+            // Keyboard support
+            const onKeyDown = (event) => {
+              if (this.phase !== "questions") return;
+              const currentVal = parseInt(valText.text, 10);
+              if (event.key === "ArrowLeft" || event.key === "a" || event.key === "A") {
+                event.preventDefault();
+                updateSelectorFromValue(currentVal - 1);
+              } else if (event.key === "ArrowRight" || event.key === "d" || event.key === "D") {
+                event.preventDefault();
+                updateSelectorFromValue(currentVal + 1);
+              } else if (event.key === "Enter") {
+                event.preventDefault();
+                submitAnswer();
+              }
+            };
+            this.input.keyboard.on("keydown", onKeyDown);
+
+            // Clean up keyboard listener on destroy
+            this.qElements.push({
+              destroy: () => this.input.keyboard.off("keydown", onKeyDown)
+            });
+
+            createSubmitButton(350);
+          }
         }
 
         levelComplete() {

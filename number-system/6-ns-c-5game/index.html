@@ -1191,7 +1191,7 @@
             .setDepth(600);
           this.qElements = [];
 
-          // Category icon
+          // Category label
           const catColors = {
             temp: "#ef4444",
             elev: "#38bdf8",
@@ -1208,7 +1208,7 @@
           };
 
           const catLabel = this.add
-            .text(W / 2, 100, catNames[q.cat] || "Question", {
+            .text(W / 2, 95, catNames[q.cat] || "Question", {
               fontSize: "14px",
               color: catColors[q.cat] || "#94a3b8",
               fontStyle: "bold",
@@ -1219,10 +1219,45 @@
             .setDepth(601);
           this.qElements.push(catLabel);
 
-          // Thermometer visual
-          this.drawQuestionThermo(170, q, this.qElements);
+          // Calculate dynamic range and steps
+          let maxAbs = Math.max(Math.abs(q.ans), 10);
+          q.opts.forEach(o => maxAbs = Math.max(maxAbs, Math.abs(o)));
+          
+          let qRange = 10;
+          let snapStep = 1;
+          if (maxAbs > 1000) {
+            qRange = 3000;
+            snapStep = 100;
+          } else if (maxAbs > 500) {
+            qRange = 1000;
+            snapStep = 50;
+          } else if (maxAbs > 200) {
+            qRange = 500;
+            snapStep = 20;
+          } else if (maxAbs > 100) {
+            qRange = 300;
+            snapStep = 10;
+          } else if (maxAbs > 50) {
+            qRange = 150;
+            snapStep = 5;
+          } else if (maxAbs > 20) {
+            qRange = 80;
+            snapStep = 2;
+          } else if (maxAbs > 10) {
+            qRange = 20;
+            snapStep = 1;
+          } else {
+            qRange = 10;
+            snapStep = 1;
+          }
 
-          // Question
+          const tw = 480;
+          const nlY = 175;
+
+          // Draw visual thermometer line
+          this.drawQuestionThermo(nlY, q, this.qElements, qRange, tw);
+
+          // Question Text
           const qText = this.add
             .text(W / 2, 260, q.q, {
               fontSize: "22px",
@@ -1238,112 +1273,218 @@
             .setDepth(601);
           this.qElements.push(qText);
 
-          // Options
-          const opts = shuffle([...q.opts]);
-          opts.forEach((opt, i) => {
-            const bx = W / 2 - 200 + i * 200;
-            const by = 370;
-            const btn = this.add
-              .image(bx, by, "ans_btn")
-              .setScale(1.1)
-              .setScrollFactor(0)
-              .setDepth(601)
-              .setInteractive({ useHandCursor: true });
-            const txt = this.add
-              .text(bx, by, `${opt}`, {
-                fontSize: "22px",
-                color: "#e2e8f0",
+          // Drag Selector (starts at 0)
+          const selectorCont = this.add.container(W / 2, nlY).setDepth(605).setScrollFactor(0);
+          this.qElements.push(selectorCont);
+
+          const pointer = this.add.graphics();
+          pointer.fillStyle(0xfbbf24, 1);
+          pointer.fillCircle(0, 0, 9);
+          pointer.lineStyle(2, 0x000000, 0.5);
+          pointer.strokeCircle(0, 0, 9);
+          selectorCont.add(pointer);
+
+          const valText = this.add.text(0, -24, "0", {
+            fontSize: "18px",
+            fontFamily: "Segoe UI, Arial, sans-serif",
+            fontStyle: "bold",
+            color: "#fbbf24",
+            stroke: "#000000",
+            strokeThickness: 3
+          }).setOrigin(0.5);
+          selectorCont.add(valText);
+
+          // Make draggable
+          const hitArea = new Phaser.Geom.Circle(0, 0, 20);
+          selectorCont.setInteractive(hitArea, Phaser.Geom.Circle.Contains);
+          this.input.setDraggable(selectorCont);
+
+          const updateSelectorFromValue = (v) => {
+            const currentVal = Phaser.Math.Clamp(v, -qRange, qRange);
+            const snappedX = W / 2 + (currentVal / qRange) * (tw / 2 - 20);
+            selectorCont.x = snappedX;
+            valText.setText(String(currentVal));
+            sndMove();
+          };
+
+          selectorCont.on('drag', (pointer, dragX, dragY) => {
+            const minX = W / 2 - (tw / 2 - 20);
+            const maxX = W / 2 + (tw / 2 - 20);
+            const clampedX = Phaser.Math.Clamp(dragX, minX, maxX);
+            // Translate position to value snapped to snapStep
+            const rawVal = ((clampedX - (W / 2)) / (tw / 2 - 20)) * qRange;
+            const snappedVal = Math.round(rawVal / snapStep) * snapStep;
+            updateSelectorFromValue(snappedVal);
+          });
+
+          // Click zone to position selector
+          const clickZone = this.add.rectangle(W / 2, nlY, tw + 40, 50, 0x000000, 0.001)
+            .setScrollFactor(0)
+            .setDepth(601)
+            .setInteractive({ useHandCursor: true });
+          this.qElements.push(clickZone);
+
+          clickZone.on('pointerdown', (pointer) => {
+            const minX = W / 2 - (tw / 2 - 20);
+            const maxX = W / 2 + (tw / 2 - 20);
+            const clampedX = Phaser.Math.Clamp(pointer.x, minX, maxX);
+            const rawVal = ((clampedX - (W / 2)) / (tw / 2 - 20)) * qRange;
+            const snappedVal = Math.round(rawVal / snapStep) * snapStep;
+            updateSelectorFromValue(snappedVal);
+          });
+
+          // Submit Button
+          const submitBtn = this.add
+            .image(W / 2, 360, "btn")
+            .setScale(1.1)
+            .setScrollFactor(0)
+            .setDepth(601)
+            .setInteractive({ useHandCursor: true });
+          const submitTxt = this.add
+            .text(W / 2, 360, "SUBMIT ANSWER", {
+              fontSize: "18px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(602);
+          this.qElements.push(submitBtn, submitTxt);
+
+          // Keyboard listeners
+          const onKeyDown = (event) => {
+            if (!this.questionActive) return;
+            const currentVal = parseInt(valText.text, 10);
+            if (event.key === "ArrowLeft" || event.key === "a" || event.key === "A") {
+              event.preventDefault();
+              updateSelectorFromValue(currentVal - snapStep);
+            } else if (event.key === "ArrowRight" || event.key === "d" || event.key === "D") {
+              event.preventDefault();
+              updateSelectorFromValue(currentVal + snapStep);
+            } else if (event.key === "Enter") {
+              event.preventDefault();
+              submitAnswer();
+            }
+          };
+          this.input.keyboard.on("keydown", onKeyDown);
+
+          const submitAnswer = () => {
+            this.input.keyboard.off("keydown", onKeyDown);
+            if (selectorCont.input) selectorCont.disableInteractive();
+            if (clickZone.input) clickZone.disableInteractive();
+            if (submitBtn.input) submitBtn.disableInteractive();
+
+            this.questionsTotal++;
+            const chosenVal = parseInt(valText.text, 10);
+            const isCorrect = chosenVal === q.ans;
+
+            if (isCorrect) {
+              sndCorrect();
+              valText.setColor("#4ade80");
+              pointer.clear();
+              pointer.fillStyle(0x4ade80, 1);
+              pointer.fillCircle(0, 0, 9);
+              pointer.lineStyle(2, 0x000000, 0.5);
+              pointer.strokeCircle(0, 0, 9);
+
+              this.questionsCorrect++;
+              this.combo++;
+              if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+              const pts = 200 * this.combo;
+              this.score += pts;
+
+              const fb = this.add
+                .text(W / 2, 430, `Correct! +${pts}`, {
+                  fontSize: "20px",
+                  color: "#4ade80",
+                  fontStyle: "bold",
+                  stroke: "#000000",
+                  strokeThickness: 3
+                })
+                .setOrigin(0.5)
+                .setScrollFactor(0)
+                .setDepth(601);
+              this.qElements.push(fb);
+            } else {
+              sndWrong();
+              valText.setColor("#f87171");
+              pointer.clear();
+              pointer.fillStyle(0xf87171, 1);
+              pointer.fillCircle(0, 0, 9);
+              pointer.lineStyle(2, 0x000000, 0.5);
+              pointer.strokeCircle(0, 0, 9);
+
+              this.combo = 0;
+              this.lives--;
+
+              // Draw correct marker
+              const correctX = W / 2 + (q.ans / qRange) * (tw / 2 - 20);
+              const correctMarker = this.add.circle(correctX, nlY, 7, 0x4ade80)
+                .setScrollFactor(0)
+                .setDepth(604);
+              const correctLabel = this.add.text(correctX, nlY + 18, `Correct: ${q.ans}`, {
+                fontSize: "12px",
+                color: "#4ade80",
                 fontStyle: "bold",
+                stroke: "#000000",
+                strokeThickness: 3
+              }).setOrigin(0.5, 0).setDepth(604).setScrollFactor(0);
+              this.qElements.push(correctMarker, correctLabel);
+
+              const fb = this.add
+                .text(W / 2, 430, `Incorrect. Answer is ${q.ans}`, {
+                  fontSize: "20px",
+                  color: "#f87171",
+                  fontStyle: "bold",
+                  stroke: "#000000",
+                  strokeThickness: 3
+                })
+                .setOrigin(0.5)
+                .setScrollFactor(0)
+                .setDepth(601);
+              this.qElements.push(fb);
+            }
+
+            // Explanation
+            const exp = this.add
+              .text(W / 2, 475, this.getExplanation(q), {
+                fontSize: "14px",
+                color: "#94a3b8",
+                wordWrap: { width: 540 },
+                align: "center",
+                stroke: "#000000",
+                strokeThickness: 3
               })
               .setOrigin(0.5)
               .setScrollFactor(0)
-              .setDepth(602);
-            this.qElements.push(btn, txt);
+              .setDepth(601);
+            this.qElements.push(exp);
 
-            btn.on("pointerdown", () => {
-              this.qElements.forEach((e) => {
-                if (e.input) e.disableInteractive();
-              });
-              this.questionsTotal++;
+            this.updateHUD();
 
-              if (opt === q.ans) {
-                sndCorrect();
-                btn.setTexture("ans_ok");
-                txt.setColor("#4ade80");
-                this.questionsCorrect++;
-                this.combo++;
-                if (this.combo > this.maxCombo) this.maxCombo = this.combo;
-                const pts = 200 * this.combo;
-                this.score += pts;
-
-                const fb = this.add
-                  .text(W / 2, 440, `Correct! +${pts}`, {
-                    fontSize: "20px",
-                    color: "#4ade80",
-                    fontStyle: "bold",
-                  })
-                  .setOrigin(0.5)
-                  .setScrollFactor(0)
-                  .setDepth(601);
-                this.qElements.push(fb);
-
-                // Explanation
-                const exp = this.add
-                  .text(W / 2, 480, this.getExplanation(q), {
-                    fontSize: "14px",
-                    color: "#94a3b8",
-                    wordWrap: { width: 500 },
-                    align: "center",
-                  })
-                  .setOrigin(0.5)
-                  .setScrollFactor(0)
-                  .setDepth(601);
-                this.qElements.push(exp);
-              } else {
-                sndWrong();
-                btn.setTexture("ans_bad");
-                txt.setColor("#f87171");
-                this.combo = 0;
-                this.lives--;
-
-                const fb = this.add
-                  .text(W / 2, 440, `Answer: ${q.ans}`, {
-                    fontSize: "20px",
-                    color: "#f87171",
-                    fontStyle: "bold",
-                  })
-                  .setOrigin(0.5)
-                  .setScrollFactor(0)
-                  .setDepth(601);
-                this.qElements.push(fb);
-
-                const exp = this.add
-                  .text(W / 2, 480, this.getExplanation(q), {
-                    fontSize: "14px",
-                    color: "#94a3b8",
-                    wordWrap: { width: 500 },
-                    align: "center",
-                  })
-                  .setOrigin(0.5)
-                  .setScrollFactor(0)
-                  .setDepth(601);
-                this.qElements.push(exp);
-              }
-
-              this.updateHUD();
-
-              this.time.delayedCall(2000, () => {
-                this.qElements.forEach((e) => e.destroy());
-                this.qOverlay.destroy();
-                this.questionActive = false;
-                this.canMove = true;
-                if (this.lives <= 0) this.endGame();
-              });
+            this.time.delayedCall(2800, () => {
+              this.qElements.forEach((e) => e.destroy());
+              this.qOverlay.destroy();
+              this.questionActive = false;
+              this.canMove = true;
+              if (this.lives <= 0) this.endGame();
             });
+          };
 
-            btn.on("pointerover", () => btn.setScale(1.15));
-            btn.on("pointerout", () => btn.setScale(1.1));
+          submitBtn.on("pointerdown", () => {
+            submitAnswer();
           });
+
+          submitBtn.on("pointerover", () => submitBtn.setScale(1.15));
+          submitBtn.on("pointerout", () => submitBtn.setScale(1.1));
+
+          // Guide line
+          const guideTxt = this.add.text(W / 2, 310, "Drag scale pointer or Tap  |  Use ←/→ and ENTER keys", {
+            fontSize: "12px",
+            color: "#94a3b8",
+            fontStyle: "italic"
+          }).setOrigin(0.5).setScrollFactor(0).setDepth(601);
+          this.qElements.push(guideTxt);
         }
 
         getExplanation(q) {
@@ -1371,9 +1512,8 @@
           return "";
         }
 
-        drawQuestionThermo(y, q, container) {
-          // Simple horizontal thermometer
-          const tw = 400;
+        drawQuestionThermo(y, q, container, qRange, tw = 400) {
+          // Horizontal thermometer line
           const bg = this.add
             .rectangle(W / 2, y, tw, 12, 0x1e293b)
             .setScrollFactor(0)
@@ -1387,33 +1527,43 @@
             .setDepth(601);
           container.push(zero);
           const zLabel = this.add
-            .text(W / 2, y + 16, "0°", { fontSize: "11px", color: "#fbbf24" })
+            .text(W / 2, y + 16, "0", { fontSize: "11px", color: "#fbbf24" })
             .setOrigin(0.5, 0)
             .setScrollFactor(0)
             .setDepth(601);
           container.push(zLabel);
 
-          // Answer marker
-          const maxAbs = Math.max(Math.abs(q.ans), 50);
-          const px = W / 2 + (q.ans / maxAbs) * (tw / 2 - 20);
-          const marker = this.add
-            .circle(px, y, 7, q.ans >= 0 ? 0xef4444 : 0x38bdf8)
-            .setScrollFactor(0)
-            .setDepth(601);
-          container.push(marker);
+          // Draw tick marks at +/- half range and end points
+          const ticks = [-qRange, -Math.round(qRange / 2), Math.round(qRange / 2), qRange];
+          ticks.forEach(v => {
+            const px = W / 2 + (v / qRange) * (tw / 2 - 20);
+            const tick = this.add
+              .rectangle(px, y, 1, 12, 0x64748b)
+              .setScrollFactor(0)
+              .setDepth(601);
+            container.push(tick);
+            const lbl = this.add
+              .text(px, y + 16, `${v > 0 ? '+' : ''}${v}`, { fontSize: "10px", color: "#64748b" })
+              .setOrigin(0.5, 0)
+              .setScrollFactor(0)
+              .setDepth(601);
+            container.push(lbl);
+          });
 
           // -/+ labels
           const neg = this.add
-            .text(W / 2 - tw / 2, y - 16, "NEGATIVE", {
+            .text(W / 2 - tw / 2, y - 18, "NEGATIVE (-)", {
               fontSize: "10px",
               color: "#38bdf8",
+              fontStyle: "bold"
             })
             .setScrollFactor(0)
             .setDepth(601);
           const pos = this.add
-            .text(W / 2 + tw / 2, y - 16, "POSITIVE", {
+            .text(W / 2 + tw / 2, y - 18, "POSITIVE (+)", {
               fontSize: "10px",
               color: "#ef4444",
+              fontStyle: "bold"
             })
             .setOrigin(1, 0)
             .setScrollFactor(0)

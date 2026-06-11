@@ -1073,7 +1073,7 @@
           const qNum = this.add
             .text(
               W / 2,
-              120,
+              95,
               `Question ${this.currentQIndex + 1} of ${this.currentQuestions.length}`,
               {
                 fontSize: "14px",
@@ -1087,8 +1087,8 @@
 
           // Question text
           const qText = this.add
-            .text(W / 2, 180, q.q, {
-              fontSize: "24px",
+            .text(W / 2, 145, q.q, {
+              fontSize: "22px",
               color: "#e2e8f0",
               fontStyle: "bold",
               wordWrap: { width: 600 },
@@ -1101,103 +1101,218 @@
             .setDepth(601);
           container.push(qText);
 
-          // Number line visualization for this question
-          this.drawQuestionNumberLine(240, container);
+          // Dynamic range based on question and answer values
+          let maxVal = Math.max(10, Math.abs(q.ans));
+          const matches = q.q.match(/-?\d+/g);
+          if (matches) {
+            matches.forEach(m => {
+              maxVal = Math.max(maxVal, Math.abs(parseInt(m, 10)));
+            });
+          }
+          const qRange = Math.ceil(maxVal / 5) * 5;
 
-          // Answer buttons
-          const opts = q.opts.slice(0, 3);
-          opts.forEach((opt, i) => {
-            const bx = W / 2 - 200 + i * 200;
-            const by = 360;
+          const nlWidth = 540;
+          const nlY = 240;
 
-            const btn = this.add
-              .image(bx, by, "ans_btn")
-              .setScale(1.1)
-              .setScrollFactor(0)
-              .setDepth(601)
-              .setInteractive({ useHandCursor: true });
-            const txt = this.add
-              .text(bx, by, `${opt}`, {
-                fontSize: "22px",
-                color: "#e2e8f0",
-                fontStyle: "bold",
-              })
-              .setOrigin(0.5)
-              .setScrollFactor(0)
-              .setDepth(602);
+          // Number line visualization
+          this.drawQuestionNumberLine(nlY, container, qRange, nlWidth);
 
-            container.push(btn, txt);
+          // Selector Container (starts at v = 0)
+          const selectorCont = this.add.container(W / 2, nlY).setDepth(605).setScrollFactor(0);
+          container.push(selectorCont);
 
-            btn.on("pointerdown", () => {
-              // Disable all buttons
-              container.forEach((c) => {
-                if (c.input) c.disableInteractive();
-              });
+          const pointer = this.add.graphics();
+          pointer.fillStyle(0xfbbf24, 1);
+          pointer.fillTriangle(0, 0, -10, -18, 10, -18);
+          selectorCont.add(pointer);
 
-              if (opt === q.ans) {
-                sndCorrect();
-                btn.setTexture("ans_correct");
-                txt.setColor("#4ade80");
-                this.qCorrect++;
-                this.questionsCorrect++;
-                this.combo++;
-                if (this.combo > this.maxCombo) this.maxCombo = this.combo;
-                this.score += 200 * this.combo;
+          const valText = this.add.text(0, -36, "0", {
+            fontSize: "20px",
+            fontFamily: "Segoe UI, Arial, sans-serif",
+            fontStyle: "bold",
+            color: "#fbbf24",
+            stroke: "#000000",
+            strokeThickness: 3
+          }).setOrigin(0.5);
+          selectorCont.add(valText);
 
-                const fb = this.add
-                  .text(W / 2, 430, "Correct! +" + 200 * this.combo, {
-                    fontSize: "20px",
-                    color: "#4ade80",
-                    fontStyle: "bold",
-                  })
-                  .setOrigin(0.5)
-                  .setScrollFactor(0)
-                  .setDepth(601);
-                container.push(fb);
-              } else {
-                sndWrong();
-                btn.setTexture("ans_wrong");
-                txt.setColor("#f87171");
-                this.combo = 0;
+          // Make selector container draggable
+          const hitArea = new Phaser.Geom.Rectangle(-25, -45, 50, 50);
+          selectorCont.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains);
+          this.input.setDraggable(selectorCont);
 
-                // Highlight correct
-                container.forEach((c) => {
-                  if (c.text === `${q.ans}`) c.setColor("#4ade80");
-                });
+          const updateSelectorFromValue = (v) => {
+            const currentVal = Phaser.Math.Clamp(v, -qRange, qRange);
+            const snappedX = W / 2 + (currentVal / qRange) * (nlWidth / 2);
+            selectorCont.x = snappedX;
+            valText.setText(String(currentVal));
+            synth(300, 0.02, "sine", 0.05); // Play subtle tick sound
+          };
 
-                const fb = this.add
-                  .text(W / 2, 430, `Answer: ${q.ans}`, {
-                    fontSize: "20px",
-                    color: "#f87171",
-                    fontStyle: "bold",
-                  })
-                  .setOrigin(0.5)
-                  .setScrollFactor(0)
-                  .setDepth(601);
-                container.push(fb);
-              }
+          selectorCont.on('drag', (pointer, dragX, dragY) => {
+            const minX = W / 2 - nlWidth / 2;
+            const maxX = W / 2 + nlWidth / 2;
+            const clampedX = Phaser.Math.Clamp(dragX, minX, maxX);
+            const val = Math.round(((clampedX - (W / 2)) / (nlWidth / 2)) * qRange);
+            updateSelectorFromValue(val);
+          });
 
-              this.questionsAnswered++;
+          // Tap to position selector on number line
+          const clickZone = this.add.rectangle(W / 2, nlY, nlWidth + 40, 60, 0x000000, 0.001)
+            .setScrollFactor(0)
+            .setDepth(601)
+            .setInteractive({ useHandCursor: true });
+          container.push(clickZone);
+
+          clickZone.on('pointerdown', (pointer) => {
+            const minX = W / 2 - nlWidth / 2;
+            const maxX = W / 2 + nlWidth / 2;
+            const clampedX = Phaser.Math.Clamp(pointer.x, minX, maxX);
+            const val = Math.round(((clampedX - (W / 2)) / (nlWidth / 2)) * qRange);
+            updateSelectorFromValue(val);
+          });
+
+          // Submit Button
+          const submitBtn = this.add
+            .image(W / 2, 360, "btn")
+            .setScale(1.1)
+            .setScrollFactor(0)
+            .setDepth(601)
+            .setInteractive({ useHandCursor: true });
+          const submitTxt = this.add
+            .text(W / 2, 360, "SUBMIT ANSWER", {
+              fontSize: "18px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(602);
+          container.push(submitBtn, submitTxt);
+
+          // Keyboard listeners
+          const onKeyDown = (event) => {
+            if (!this.isQuestionActive) return;
+            const currentVal = parseInt(valText.text, 10);
+            if (event.key === "ArrowLeft" || event.key === "a" || event.key === "A") {
+              event.preventDefault();
+              updateSelectorFromValue(currentVal - 1);
+            } else if (event.key === "ArrowRight" || event.key === "d" || event.key === "D") {
+              event.preventDefault();
+              updateSelectorFromValue(currentVal + 1);
+            } else if (event.key === "Enter") {
+              event.preventDefault();
+              submitAnswer();
+            }
+          };
+          this.input.keyboard.on("keydown", onKeyDown);
+
+          const submitAnswer = () => {
+            // Unbind listeners
+            this.input.keyboard.off("keydown", onKeyDown);
+            if (selectorCont.input) selectorCont.disableInteractive();
+            if (clickZone.input) clickZone.disableInteractive();
+            if (submitBtn.input) submitBtn.disableInteractive();
+
+            const chosenVal = parseInt(valText.text, 10);
+            const isCorrect = chosenVal === q.ans;
+
+            if (isCorrect) {
+              sndCorrect();
+              valText.setColor("#4ade80");
+              pointer.clear();
+              pointer.fillStyle(0x4ade80, 1);
+              pointer.fillTriangle(0, 0, -10, -18, 10, -18);
+
+              this.qCorrect++;
+              this.questionsCorrect++;
+              this.combo++;
+              if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+              this.score += 200 * this.combo;
               this.updateHUD();
 
-              this.time.delayedCall(1500, () => {
-                container.forEach((c) => c.destroy());
-                this.qOverlay.destroy();
-                this.currentQIndex++;
-                this.showSingleQuestion();
-              });
-            });
+              const fb = this.add
+                .text(W / 2, 430, `Correct! +${200 * this.combo}`, {
+                  fontSize: "20px",
+                  color: "#4ade80",
+                  fontStyle: "bold",
+                  stroke: "#000000",
+                  strokeThickness: 3
+                })
+                .setOrigin(0.5)
+                .setScrollFactor(0)
+                .setDepth(601);
+              container.push(fb);
+            } else {
+              sndWrong();
+              valText.setColor("#f87171");
+              pointer.clear();
+              pointer.fillStyle(0xf87171, 1);
+              pointer.fillTriangle(0, 0, -10, -18, 10, -18);
 
-            btn.on("pointerover", () => btn.setScale(1.2));
-            btn.on("pointerout", () => btn.setScale(1.1));
+              this.combo = 0;
+              this.updateHUD();
+
+              // Draw a secondary pointer showing correct answer
+              const correctX = W / 2 + (q.ans / qRange) * (nlWidth / 2);
+              const correctPointer = this.add.graphics().setDepth(604).setScrollFactor(0);
+              correctPointer.fillStyle(0x4ade80, 0.85);
+              correctPointer.fillTriangle(correctX, nlY, correctX - 8, nlY - 16, correctX + 8, nlY - 16);
+              container.push(correctPointer);
+
+              const correctLbl = this.add.text(correctX, nlY - 32, `Correct: ${q.ans}`, {
+                fontSize: "14px",
+                color: "#4ade80",
+                fontStyle: "bold",
+                stroke: "#000000",
+                strokeThickness: 3
+              }).setOrigin(0.5).setDepth(604).setScrollFactor(0);
+              container.push(correctLbl);
+
+              const fb = this.add
+                .text(W / 2, 430, `Incorrect. You selected ${chosenVal}.`, {
+                  fontSize: "18px",
+                  color: "#f87171",
+                  fontStyle: "bold",
+                  stroke: "#000000",
+                  strokeThickness: 3
+                })
+                .setOrigin(0.5)
+                .setScrollFactor(0)
+                .setDepth(601);
+              container.push(fb);
+            }
+
+            this.questionsAnswered++;
+            this.updateHUD();
+
+            this.time.delayedCall(2200, () => {
+              container.forEach((c) => c.destroy());
+              this.qOverlay.destroy();
+              this.currentQIndex++;
+              this.showSingleQuestion();
+            });
+          };
+
+          submitBtn.on("pointerdown", () => {
+            submitAnswer();
           });
+
+          submitBtn.on("pointerover", () => submitBtn.setScale(1.15));
+          submitBtn.on("pointerout", () => submitBtn.setScale(1.1));
+
+          // Controls help guide
+          const guideTxt = this.add.text(W / 2, 310, "Drag pointer or Tap line  |  Use ←/→ and ENTER keys", {
+            fontSize: "12px",
+            color: "#94a3b8",
+            fontStyle: "italic"
+          }).setOrigin(0.5).setScrollFactor(0).setDepth(601);
+          container.push(guideTxt);
 
           this.qContainer = { list: container };
         }
 
-        drawQuestionNumberLine(y, container) {
-          const nlWidth = 500;
-          const nlX = W / 2 - nlWidth / 2;
+        drawQuestionNumberLine(y, container, qRange, nlWidth = 500) {
           // line
           const line = this.add
             .rectangle(W / 2, y, nlWidth, 3, 0x38bdf8, 0.6)
@@ -1206,9 +1321,10 @@
           container.push(line);
 
           // Ticks
-          const range = 10;
-          for (let v = -range; v <= range; v++) {
-            const px = W / 2 + (v / range) * (nlWidth / 2);
+          // If range is large (like 20), draw every 2 ticks instead of every tick to avoid overlap.
+          const step = qRange > 15 ? 2 : 1;
+          for (let v = -qRange; v <= qRange; v += step) {
+            const px = W / 2 + (v / qRange) * (nlWidth / 2);
             const tick = this.add
               .rectangle(
                 px,
@@ -1222,7 +1338,9 @@
               .setDepth(601);
             container.push(tick);
 
-            if (v % 2 === 0) {
+            // Label step based on scale
+            const labelStep = qRange > 15 ? 5 : 2;
+            if (v % labelStep === 0) {
               const lbl = this.add
                 .text(px, y + 14, `${v}`, {
                   fontSize: "10px",

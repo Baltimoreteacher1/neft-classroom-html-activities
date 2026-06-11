@@ -1117,7 +1117,7 @@
           this.qElements = [];
 
           const title = this.add
-            .text(W / 2, 110, "TREASURE FOUND!", {
+            .text(W / 2, 85, "TREASURE FOUND!", {
               fontSize: "24px",
               color: "#fbbf24",
               fontStyle: "bold",
@@ -1129,7 +1129,7 @@
           this.qElements.push(title);
 
           const qText = this.add
-            .text(W / 2, 200, q.q, {
+            .text(W / 2, 135, q.q, {
               fontSize: "20px",
               color: "#e2e8f0",
               fontStyle: "bold",
@@ -1142,106 +1142,323 @@
             .setDepth(601);
           this.qElements.push(qText);
 
-          // Quadrant reference
-          const ref = this.add
-            .text(W / 2, 150, "I(+,+)  II(-,+)  III(-,-)  IV(+,-)", {
-              fontSize: "12px",
-              color: "#64748b",
-            })
-            .setOrigin(0.5)
-            .setDepth(601);
-          this.qElements.push(ref);
+          // We will render different visual interfaces based on the question answer type
+          const isQuadrant = ["I", "II", "III", "IV", "Axis"].includes(q.ans);
+          const isSign = ["Positive", "Negative", "Zero"].includes(q.ans);
+          const isDir = ["Left", "Right", "On y-axis"].includes(q.ans);
+          const isNumeric = !isQuadrant && !isSign && !isDir;
 
-          const opts = q.opts.includes(q.ans)
-            ? q.opts
-            : shuffle([q.ans, ...q.opts.slice(0, 2)]);
-          const uniqueOpts = [...new Set(opts)].slice(0, 3);
-          while (uniqueOpts.length < 3) uniqueOpts.push("N/A");
-          if (!uniqueOpts.includes(q.ans)) {
-            uniqueOpts[0] = q.ans;
-          }
+          let chosenVal = null;
+          let submitBtn = null;
+          let submitTxt = null;
 
-          shuffle(uniqueOpts).forEach((opt, i) => {
-            const bx = W / 2 - 180 + i * 180;
-            const by = 310;
-            const btn = this.add
-              .image(bx, by, "ans_btn")
+          const createSubmitButton = (y = 420) => {
+            submitBtn = this.add
+              .image(W / 2, y, "btn")
               .setScale(1.1)
               .setDepth(601)
               .setInteractive({ useHandCursor: true });
-            const txt = this.add
-              .text(bx, by, opt, {
+            submitTxt = this.add
+              .text(W / 2, y, "SUBMIT ANSWER", {
                 fontSize: "18px",
-                color: "#e2e8f0",
+                color: "#fbbf24",
                 fontStyle: "bold",
               })
               .setOrigin(0.5)
               .setDepth(602);
-            this.qElements.push(btn, txt);
+            this.qElements.push(submitBtn, submitTxt);
 
-            btn.on("pointerdown", () => {
-              this.qElements.forEach((e) => {
-                if (e.input) e.disableInteractive();
-              });
-              this.qTotal++;
+            submitBtn.on("pointerdown", () => submitAnswer());
+            submitBtn.on("pointerover", () => submitBtn.setScale(1.15));
+            submitBtn.on("pointerout", () => submitBtn.setScale(1.1));
+          };
 
-              if (opt === q.ans) {
-                sndCorrect();
-                btn.setTexture("ans_ok");
-                txt.setColor("#4ade80");
-                this.qCorrect++;
-                this.combo++;
-                if (this.combo > this.maxCombo) this.maxCombo = this.combo;
-                const pts = 300 * this.combo;
-                this.score += pts;
+          const submitAnswer = () => {
+            if (submitBtn) submitBtn.disableInteractive();
+            this.qElements.forEach(e => {
+              if (e.input) e.disableInteractive();
+            });
 
-                const fb = this.add
-                  .text(W / 2, 380, `Correct! +${pts}`, {
-                    fontSize: "20px",
-                    color: "#4ade80",
-                    fontStyle: "bold",
-                  })
-                  .setOrigin(0.5)
-                  .setDepth(601);
-                this.qElements.push(fb);
-              } else {
-                sndWrong();
-                btn.setTexture("ans_bad");
-                txt.setColor("#f87171");
-                this.combo = 0;
-                this.lives--;
+            this.qTotal++;
+            const isCorrect = String(chosenVal) === String(q.ans);
 
-                const fb = this.add
-                  .text(W / 2, 380, `Answer: ${q.ans}`, {
-                    fontSize: "20px",
-                    color: "#f87171",
-                    fontStyle: "bold",
-                  })
-                  .setOrigin(0.5)
-                  .setDepth(601);
-                this.qElements.push(fb);
+            if (isCorrect) {
+              sndCorrect();
+              this.qCorrect++;
+              this.combo++;
+              if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+              const pts = 300 * this.combo;
+              this.score += pts;
+
+              const fb = this.add
+                .text(W / 2, 490, `Correct! +${pts}`, {
+                  fontSize: "22px",
+                  color: "#4ade80",
+                  fontStyle: "bold",
+                  stroke: "#000000",
+                  strokeThickness: 3
+                })
+                .setOrigin(0.5)
+                .setDepth(601);
+              this.qElements.push(fb);
+            } else {
+              sndWrong();
+              this.combo = 0;
+              this.lives--;
+
+              const fb = this.add
+                .text(W / 2, 490, `Incorrect. Correct Answer: ${q.ans}`, {
+                  fontSize: "20px",
+                  color: "#f87171",
+                  fontStyle: "bold",
+                  stroke: "#000000",
+                  strokeThickness: 3
+                })
+                .setOrigin(0.5)
+                .setDepth(601);
+              this.qElements.push(fb);
+            }
+
+            this.updateHUD();
+
+            this.time.delayedCall(2200, () => {
+              this.qElements.forEach((e) => e.destroy());
+              this.qOverlay.destroy();
+              this.questionActive = false;
+              this.canMove = true;
+
+              if (this.lives <= 0) {
+                this.endGame();
+                return;
               }
+              if (this.treasuresFound >= this.totalTreasures)
+                this.levelComplete();
+            });
+          };
 
-              this.updateHUD();
+          // RENDER INTERFACES
+          if (isQuadrant) {
+            // Quadrant Clicker (visual 2x2 grid)
+            const gridX = W / 2;
+            const gridY = 270;
+            const size = 100; // size of each quadrant box
 
-              this.time.delayedCall(1800, () => {
-                this.qElements.forEach((e) => e.destroy());
-                this.qOverlay.destroy();
-                this.questionActive = false;
-                this.canMove = true;
+            const quads = [
+              { name: "II", x: gridX - size/2 - 5, y: gridY - size/2 - 5, color: 0x3b82f6 },
+              { name: "I", x: gridX + size/2 + 5, y: gridY - size/2 - 5, color: 0x10b981 },
+              { name: "III", x: gridX - size/2 - 5, y: gridY + size/2 + 5, color: 0xf59e0b },
+              { name: "IV", x: gridX + size/2 + 5, y: gridY + size/2 + 5, color: 0xec4899 }
+            ];
 
-                if (this.lives <= 0) {
-                  this.endGame();
-                  return;
-                }
-                if (this.treasuresFound >= this.totalTreasures)
-                  this.levelComplete();
+            const visualCards = [];
+            quads.forEach(qd => {
+              const bg = this.add.rectangle(qd.x, qd.y, size, size, 0x1e293b)
+                .setDepth(601)
+                .setStrokeStyle(2, 0x475569)
+                .setInteractive({ useHandCursor: true });
+              const label = this.add.text(qd.x, qd.y, qd.name, {
+                fontSize: "24px",
+                fontStyle: "bold",
+                color: "#94a3b8"
+              }).setOrigin(0.5).setDepth(602);
+              this.qElements.push(bg, label);
+              visualCards.push({ bg, label, qd });
+
+              bg.on("pointerdown", () => {
+                visualCards.forEach(c => {
+                  c.bg.setFillStyle(0x1e293b);
+                  c.bg.setStrokeStyle(2, 0x475569);
+                  c.label.setColor("#94a3b8");
+                });
+                bg.setFillStyle(qd.color, 0.4);
+                bg.setStrokeStyle(3, qd.color);
+                label.setColor("#ffffff");
+                chosenVal = qd.name;
+                sndMove();
               });
             });
 
-            btn.on("pointerover", () => btn.setScale(1.15));
-            btn.on("pointerout", () => btn.setScale(1.1));
-          });
+            // Axis button below
+            const axisBtn = this.add.rectangle(gridX, gridY + size + 20, size * 2 + 10, 32, 0x1e293b)
+              .setDepth(601)
+              .setStrokeStyle(2, 0x475569)
+              .setInteractive({ useHandCursor: true });
+            const axisTxt = this.add.text(gridX, gridY + size + 20, "On Axis (x or y = 0)", {
+              fontSize: "13px",
+              color: "#94a3b8"
+            }).setOrigin(0.5).setDepth(602);
+            this.qElements.push(axisBtn, axisTxt);
+
+            axisBtn.on("pointerdown", () => {
+              visualCards.forEach(c => {
+                c.bg.setFillStyle(0x1e293b);
+                c.bg.setStrokeStyle(2, 0x475569);
+                c.label.setColor("#94a3b8");
+              });
+              axisBtn.setFillStyle(0x64748b, 0.4);
+              axisBtn.setStrokeStyle(3, 0xfbbf24);
+              axisTxt.setColor("#ffffff");
+              chosenVal = "Axis";
+              sndMove();
+            });
+
+            createSubmitButton(400);
+
+          } else if (isSign || isDir) {
+            // Option switches (e.g. POSITIVE / ZERO / NEGATIVE)
+            const options = isSign ? ["Positive", "Negative", "Zero"] : ["Left", "Right", "On y-axis"];
+            const labels = isSign ? ["POSITIVE (+)", "NEGATIVE (-)", "ZERO (0)"] : ["LEFT (←)", "RIGHT (→)", "ON Y-AXIS (•)"];
+            const colors = [0x10b981, 0xef4444, 0xfbbf24];
+
+            const visualBtns = [];
+            options.forEach((opt, i) => {
+              const bx = W / 2 - 170 + i * 170;
+              const by = 260;
+              const bg = this.add.rectangle(bx, by, 150, 48, 0x1e293b)
+                .setDepth(601)
+                .setStrokeStyle(2, 0x475569)
+                .setInteractive({ useHandCursor: true });
+              const label = this.add.text(bx, by, labels[i], {
+                fontSize: "14px",
+                fontStyle: "bold",
+                color: "#94a3b8"
+              }).setOrigin(0.5).setDepth(602);
+              this.qElements.push(bg, label);
+              visualBtns.push({ bg, label, opt, color: colors[i] });
+
+              bg.on("pointerdown", () => {
+                visualBtns.forEach(b => {
+                  b.bg.setFillStyle(0x1e293b);
+                  b.bg.setStrokeStyle(2, 0x475569);
+                  b.label.setColor("#94a3b8");
+                });
+                bg.setFillStyle(colors[i], 0.3);
+                bg.setStrokeStyle(3, colors[i]);
+                label.setColor("#ffffff");
+                chosenVal = opt;
+                sndMove();
+              });
+            });
+
+            createSubmitButton(350);
+
+          } else {
+            // Numeric number line drag slider (range from -12 to 12)
+            const nlWidth = 520;
+            const nlY = 240;
+            const qRange = 12;
+
+            // Draw line
+            const line = this.add.rectangle(W / 2, nlY, nlWidth, 3, 0x38bdf8, 0.6)
+              .setDepth(601);
+            this.qElements.push(line);
+
+            // Ticks
+            for (let v = -qRange; v <= qRange; v++) {
+              const px = W / 2 + (v / qRange) * (nlWidth / 2);
+              const tick = this.add.rectangle(px, nlY, 1, v === 0 ? 16 : 8, v === 0 ? 0xfbbf24 : 0x38bdf8, 0.6)
+                .setDepth(601);
+              this.qElements.push(tick);
+
+              if (v % 2 === 0) {
+                const lbl = this.add.text(px, nlY + 14, `${v}`, {
+                  fontSize: "10px",
+                  color: v === 0 ? "#fbbf24" : "#64748b"
+                }).setOrigin(0.5, 0).setDepth(601);
+                this.qElements.push(lbl);
+              }
+            }
+
+            // Drag Selector Container (starts at 0)
+            const selectorCont = this.add.container(W / 2, nlY).setDepth(605);
+            this.qElements.push(selectorCont);
+            chosenVal = 0;
+
+            const pointerGfx = this.add.graphics();
+            pointerGfx.fillStyle(0xfbbf24, 1);
+            pointerGfx.fillTriangle(0, 0, -10, -18, 10, -18);
+            selectorCont.add(pointerGfx);
+
+            const valText = this.add.text(0, -36, "0", {
+              fontSize: "18px",
+              fontFamily: "Segoe UI, Arial, sans-serif",
+              fontStyle: "bold",
+              color: "#fbbf24",
+              stroke: "#000000",
+              strokeThickness: 3
+            }).setOrigin(0.5);
+            selectorCont.add(valText);
+
+            // Draggable
+            const hitArea = new Phaser.Geom.Rectangle(-25, -45, 50, 50);
+            selectorCont.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains);
+            this.input.setDraggable(selectorCont);
+
+            const updateSelectorFromValue = (v) => {
+              const currentVal = Phaser.Math.Clamp(v, -qRange, qRange);
+              const snappedX = W / 2 + (currentVal / qRange) * (nlWidth / 2);
+              selectorCont.x = snappedX;
+              valText.setText(String(currentVal));
+              chosenVal = String(currentVal);
+              sndMove();
+            };
+
+            selectorCont.on('drag', (pointer, dragX, dragY) => {
+              const minX = W / 2 - nlWidth / 2;
+              const maxX = W / 2 + nlWidth / 2;
+              const clampedX = Phaser.Math.Clamp(dragX, minX, maxX);
+              const val = Math.round(((clampedX - (W / 2)) / (nlWidth / 2)) * qRange);
+              updateSelectorFromValue(val);
+            });
+
+            // Tap zone
+            const clickZone = this.add.rectangle(W / 2, nlY, nlWidth + 40, 50, 0x000000, 0.001)
+              .setDepth(601)
+              .setInteractive({ useHandCursor: true });
+            this.qElements.push(clickZone);
+
+            clickZone.on('pointerdown', (pointer) => {
+              const minX = W / 2 - nlWidth / 2;
+              const maxX = W / 2 + nlWidth / 2;
+              const clampedX = Phaser.Math.Clamp(pointer.x, minX, maxX);
+              const val = Math.round(((clampedX - (W / 2)) / (nlWidth / 2)) * qRange);
+              updateSelectorFromValue(val);
+            });
+
+            // Help guide text
+            const guideTxt = this.add.text(W / 2, 310, "Drag pointer or Tap line  |  Use ←/→ and ENTER keys", {
+              fontSize: "12px",
+              color: "#94a3b8",
+              fontStyle: "italic"
+            }).setOrigin(0.5).setDepth(601);
+            this.qElements.push(guideTxt);
+
+            // Keyboard support for numeric values
+            const onKeyDown = (event) => {
+              if (!this.questionActive) return;
+              const currentVal = parseInt(valText.text, 10);
+              if (event.key === "ArrowLeft" || event.key === "a" || event.key === "A") {
+                event.preventDefault();
+                updateSelectorFromValue(currentVal - 1);
+              } else if (event.key === "ArrowRight" || event.key === "d" || event.key === "D") {
+                event.preventDefault();
+                updateSelectorFromValue(currentVal + 1);
+              } else if (event.key === "Enter") {
+                event.preventDefault();
+                submitAnswer();
+              }
+            };
+            this.input.keyboard.on("keydown", onKeyDown);
+
+            // Clean up keyboard listener on destroy
+            const oldSubmit = submitAnswer;
+            // override to clean up key listener
+            this.qElements.push({
+              destroy: () => this.input.keyboard.off("keydown", onKeyDown)
+            });
+
+            createSubmitButton(360);
+          }
         }
 
         levelComplete() {

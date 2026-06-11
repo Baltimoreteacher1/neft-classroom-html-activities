@@ -443,6 +443,10 @@
             this.goal = this.tier === 1 ? 10 : 14;
             this.jamTimer = 0; // seconds the line is jammed (frozen)
             this.bins = binBrackets(this.tier);
+            // Honor prefers-reduced-motion (GameFX exposes the OS flag). When on,
+            // the decorative belt tread stops scrolling; boxes still travel since
+            // the timed sort IS the mechanic — but at a calmer base speed.
+            this.reduce = !!(window.GameFX && window.GameFX.reduce);
 
             // belt geometry
             this.beltTop = 150;
@@ -451,7 +455,8 @@
             this.beltStartX = -120;
             this.beltEndX = W + 80;
             this.dropZoneY = this.beltBottom + 40; // boxes "fall off" past here
-            this.beltSpeed = this.tier === 1 ? 42 : 70; // px/sec base
+            this.beltSpeed =
+              (this.tier === 1 ? 42 : 70) * (this.reduce ? 0.8 : 1); // px/sec base
             this.beltPhase = 0;
 
             this.activeBox = null; // the box currently on the belt
@@ -936,7 +941,8 @@
           // ── belt animation + box travel ──
           update(time, delta) {
             const dt = delta / 1000;
-            this.beltPhase = (this.beltPhase + dt * 60) % 28;
+            // Decorative tread scroll only advances when motion is allowed.
+            if (!this.reduce) this.beltPhase = (this.beltPhase + dt * 60) % 28;
             this.drawBelt();
 
             if (this.jamTimer > 0) {
