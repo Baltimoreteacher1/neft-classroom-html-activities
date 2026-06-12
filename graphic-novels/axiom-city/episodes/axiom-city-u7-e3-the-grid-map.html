@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en" data-textsize="md">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Axiom City U7·E3 — The Grid Map | Interactive Graphic Novel Episode | COORDINATE PLANE</title>
+<meta name="description" content="Interactive Grade 6 math graphic novel episode (Lessons 7-4, 7-5 & 7-6) from the Axiom City Below Zero arc. Free-read, gates coach but never block. EduWonderLab.">
+<style>
+/* ================= AXIOM CITY ENGINE CSS v1.0 — DO NOT FORK ================= */
+:root{
+  --paper:#F7F4EC; --ink:#24323F; --navy:#17324D; --teal:#1FA6A2; --amber:#F2C15B;
+  --coral:#E2674A; --purple:#4A2580; --accent:var(--teal);
+  --panelborder:3px solid var(--navy);
+  --balloonfont:600 1rem/1.32 'Segoe UI',system-ui,-apple-system,sans-serif;
+  --capfont:italic 500 .92rem/1.35 Georgia,'Times New Roman',serif;
+  --pagew:560px;
+}
+html[data-textsize="lg"]{font-size:18px}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:radial-gradient(120% 120% at 50% 0%,#23425f 0%,#101e2e 55%,#0a1420 100%);color:var(--ink);font:400 16px/1.45 'Segoe UI',system-ui,sans-serif;overflow:hidden}
+body.hc{--ink:#000;--paper:#fff}
+button{font:inherit;cursor:pointer}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:4px}
+
+/* ---------- COVER SCREEN ---------- */
+#cover{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:18px;background:radial-gradient(110% 110% at 50% 10%,#1c3a57 0%,#0a1420 100%);perspective:1400px;overflow:auto}
+#coverCard{position:relative;width:min(88vw,520px,calc((100vh - 200px)*0.714));aspect-ratio:5/7;border-radius:10px 18px 18px 10px;box-shadow:0 40px 80px rgba(0,0,0,.6),0 8px 22px rgba(0,0,0,.5);transform-style:preserve-3d;transition:transform .18s ease-out;background:var(--navy);overflow:hidden}
+#coverCard .spine{position:absolute;left:0;top:0;bottom:0;width:26px;background:linear-gradient(90deg,#0d1f33,#17324D 60%,#244a6e);z-index:5}
+#coverCard .spine span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-90deg);white-space:nowrap;color:var(--amber);font:900 .72rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.28em}
+.cov-layer{position:absolute;inset:0;will-change:transform}
+#coverTitle{position:absolute;left:34px;right:18px;top:26px;z-index:6;color:#fff}
+#coverTitle .series{font:900 .9rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.4em;color:var(--amber)}
+#coverTitle h1{font:900 clamp(2rem,7vw,3.1rem)/0.95 'Arial Black',Arial,sans-serif;text-transform:uppercase;margin-top:8px;text-shadow:4px 4px 0 rgba(0,0,0,.35);color:#fff}
+#coverTitle h1 em{font-style:normal;color:var(--accent)}
+#coverTitle .vol{display:inline-block;margin-top:10px;background:var(--accent);color:#fff;font:900 .8rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.18em;padding:7px 12px;border-radius:4px;box-shadow:2px 2px 0 rgba(0,0,0,.4)}
+#coverBottom{position:absolute;left:34px;right:18px;bottom:18px;z-index:6;display:flex;justify-content:space-between;align-items:flex-end;color:#cfe3ea;font:700 .72rem/1.3 'Segoe UI',sans-serif;letter-spacing:.12em}
+#coverActions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.bigbtn{background:var(--amber);color:var(--navy);border:none;border-radius:999px;font:900 1rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.1em;padding:18px 34px;box-shadow:0 6px 0 #b78a2e,0 14px 30px rgba(0,0,0,.5);transition:transform .12s,box-shadow .12s}
+.bigbtn:hover{transform:translateY(-2px)}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 #b78a2e}
+.bigbtn.alt{background:#274a6a;color:#fff;box-shadow:0 6px 0 #122a42,0 14px 30px rgba(0,0,0,.5)}
+
+/* ---------- HUD ---------- */
+#hud{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:10px;padding:8px 14px;background:linear-gradient(180deg,rgba(7,14,22,.92),rgba(7,14,22,.65) 70%,transparent);color:#dfe9ef}
+#hud .brand{font:900 .78rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.22em;color:var(--amber);white-space:nowrap}
+#hud .brand small{display:block;font:700 .56rem/1.4 'Segoe UI',sans-serif;letter-spacing:.18em;color:#9fb7c6}
+#progress{display:flex;gap:5px;margin-left:8px;flex-wrap:wrap}
+#progress .dot{width:9px;height:9px;border-radius:50%;background:#3a576f;border:1px solid #5b7d99}
+#progress .dot.on{background:var(--accent);border-color:var(--accent);box-shadow:0 0 6px var(--accent)}
+#badges{display:flex;gap:6px;margin-left:auto}
+.badge{width:34px;height:34px;border-radius:50%;background:#1c3a52;border:2px solid #35587a;display:flex;align-items:center;justify-content:center;filter:grayscale(1) brightness(.6);transition:filter .4s,transform .4s}
+.badge.earned{filter:none;border-color:var(--amber);background:#234d6b;animation:badgepop .6s cubic-bezier(.2,2,.4,1)}
+.badge svg{width:20px;height:20px}
+@keyframes badgepop{0%{transform:scale(.2) rotate(-40deg)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+.hudbtns{display:flex;gap:6px;margin-left:10px}
+.hudbtn{background:#1c3a52;border:1px solid #35587a;color:#dfe9ef;border-radius:8px;min-width:48px;min-height:38px;padding:4px 10px;font:700 .72rem/1.1 'Segoe UI',sans-serif}
+.hudbtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#06222b}
+.hudbtn.teacher{background:var(--purple);border-color:#6b46a8;color:#fff}
+
+/* ---------- BOOK STAGE ---------- */
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;perspective:2200px;padding:64px 12px 56px}
+#book{position:relative;width:min(96vw,1180px);height:min(calc(100vh - 130px),780px);transform-style:preserve-3d}
+#bookcase{position:absolute;inset:0;border-radius:8px 14px 14px 8px;background:#0e2233;box-shadow:0 50px 90px rgba(0,0,0,.65),0 10px 26px rgba(0,0,0,.5);transform:translateZ(-30px)}
+.edges{position:absolute;top:6px;bottom:6px;width:14px;background:repeating-linear-gradient(90deg,#e8e2d2 0 2px,#cfc7b2 2px 3px);border-radius:3px;transition:width .5s}
+#edgesL{left:-6px;border-right:1px solid #b8ae97}
+#edgesR{right:-6px;border-left:1px solid #b8ae97}
+#spreadWrap{position:absolute;inset:0;display:flex;border-radius:6px;overflow:visible}
+.page{position:relative;width:50%;height:100%;background:var(--paper);overflow:hidden;display:flex;flex-direction:column}
+.page.left{border-radius:8px 0 0 8px;box-shadow:inset -22px 0 28px -22px rgba(36,50,63,.45)}
+.page.right{border-radius:0 8px 8px 0;box-shadow:inset 22px 0 28px -22px rgba(36,50,63,.45)}
+#spine3d{position:absolute;left:50%;top:0;bottom:0;width:4px;transform:translateX(-50%);background:linear-gradient(90deg,rgba(0,0,0,.25),rgba(0,0,0,.45),rgba(0,0,0,.25));z-index:3}
+.page-inner{flex:1;overflow:auto;padding:18px 20px 14px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin}
+.pagefoot{flex:none;display:flex;justify-content:space-between;align-items:center;padding:6px 16px 10px;font:700 .66rem/1 'Segoe UI',sans-serif;letter-spacing:.18em;color:#7d8a8f;text-transform:uppercase}
+.page .chapterband{flex:none;background:var(--navy);color:#fff;font:900 .72rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.24em;padding:8px 20px;text-transform:uppercase}
+.page .chapterband em{color:var(--accent);font-style:normal}
+.gatelockcorner{position:absolute;top:8px;right:10px;z-index:5;width:34px;height:34px;border-radius:50%;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,.3)}
+.gatelockcorner.open{background:var(--teal)}
+.gatelockcorner svg{width:18px;height:18px}
+
+/* turning sheet */
+#turnSheet{position:absolute;top:0;bottom:0;right:0;width:50%;z-index:20;transform-origin:left center;transform-style:preserve-3d;pointer-events:none;display:none}
+#turnSheet.show{display:block}
+#turnSheet .ts{position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;background:var(--paper)}
+#turnSheet .ts.front{border-radius:0 8px 8px 0}
+#turnSheet .ts.back{transform:rotateY(180deg);border-radius:8px 0 0 8px}
+#turnSheet .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.0),rgba(0,0,0,.28));opacity:0;pointer-events:none}
+@keyframes turnFwd{0%{transform:rotateY(0)}100%{transform:rotateY(-180deg)}}
+@keyframes turnBack{0%{transform:rotateY(-180deg)}100%{transform:rotateY(0)}}
+#turnSheet.fwd{animation:turnFwd .8s cubic-bezier(.45,.05,.3,1) forwards}
+#turnSheet.back{animation:turnBack .8s cubic-bezier(.45,.05,.3,1) forwards}
+body.reduced #turnSheet{display:none!important}
+
+/* nav arrows */
+.navarrow{position:fixed;top:50%;transform:translateY(-50%);z-index:40;width:54px;height:88px;border:none;border-radius:12px;background:rgba(20,42,62,.8);color:#fff;font-size:1.6rem;display:flex;align-items:center;justify-content:center;transition:background .2s,opacity .2s}
+.navarrow:hover{background:var(--accent)}
+.navarrow[disabled]{opacity:.25;cursor:not-allowed}
+#prevBtn{left:8px}#nextBtn{right:8px}
+.navarrow.locked{background:var(--coral)}
+@keyframes shake{0%,100%{transform:translateY(-50%)}25%{transform:translateY(-50%) translateX(-6px)}75%{transform:translateY(-50%) translateX(6px)}}
+.navarrow.shake{animation:shake .3s 2}
+
+/* ---------- COMIC ART ---------- */
+.panelrow{display:flex;gap:10px}
+.panelrow>.panel{flex:1}
+.panel{position:relative;border:var(--panelborder);border-radius:6px 10px 7px 9px;background:#fff;overflow:hidden;box-shadow:3px 3px 0 rgba(23,50,77,.18)}
+.panel.tall{min-height:200px}
+.panel svg.scene{display:block;width:100%;height:auto}
+.panel3d{transform-style:preserve-3d;transition:transform .25s ease-out;will-change:transform}
+.panel3d [data-depth]{will-change:transform}
+.balloon{position:absolute;max-width:62%;background:#fff;border:3px solid var(--navy);border-radius:14px;padding:8px 12px;font:var(--balloonfont);color:var(--ink);box-shadow:2px 2px 0 rgba(23,50,77,.25);z-index:4}
+.balloon .who{display:block;font:900 .58rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.16em;color:var(--accent);text-transform:uppercase;margin-bottom:3px}
+.balloon::after{content:"";position:absolute;bottom:-14px;left:28px;width:0;height:0;border:9px solid transparent;border-top:14px solid var(--navy)}
+.balloon::before{content:"";position:absolute;bottom:-9px;left:31px;width:0;height:0;border:7px solid transparent;border-top:11px solid #fff;z-index:1}
+.balloon.tail-r::after{left:auto;right:28px}
+.balloon.tail-r::before{left:auto;right:31px}
+.balloon.vex{background:#062e33;border-color:var(--teal);color:#c8f5f1;border-radius:10px;font-family:'Consolas','Courier New',monospace;font-weight:500;box-shadow:0 0 12px rgba(31,166,162,.5)}
+.balloon.vex .who{color:var(--amber)}
+.balloon.vex::after{border-top-color:var(--teal)}
+.balloon.vex::before{border-top-color:#062e33}
+.balloon.thought{border-radius:30px;border-style:dashed}
+.caption{background:#FFF3D8;border:2px solid var(--amber);border-left-width:8px;padding:7px 12px;font:var(--capfont);color:#5a4a22;border-radius:3px}
+.caption.loc{font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-style:normal;font-family:'Segoe UI',sans-serif;font-size:.74rem}
+.sfx{position:absolute;z-index:5;font:900 1.7rem/1 'Arial Black',Arial,sans-serif;color:var(--coral);-webkit-text-stroke:2px var(--navy);text-stroke:2px var(--navy);transform:rotate(-7deg);text-shadow:3px 3px 0 var(--amber);letter-spacing:.04em;pointer-events:none}
+.splashtitle{font:900 clamp(1.5rem,3.2vw,2.4rem)/1 'Arial Black',Arial,sans-serif;text-transform:uppercase;color:var(--navy)}
+.splashtitle em{color:var(--accent);font-style:normal}
+.kicker{font:900 .68rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.3em;color:var(--coral);text-transform:uppercase}
+
+/* ---------- GATES ---------- */
+.gatebox{border:4px solid var(--accent);border-radius:12px;background:linear-gradient(180deg,#ffffff,#eef7f6);box-shadow:0 6px 0 rgba(23,50,77,.15);overflow:hidden}
+.gatebox header{display:flex;align-items:center;gap:10px;background:var(--accent);color:#fff;padding:9px 14px}
+.gatebox header .gicon{width:30px;height:30px;flex:none}
+.gatebox header h3{font:900 .85rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.gatebody{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.gateprompt{font:600 .95rem/1.4 'Segoe UI',sans-serif}
+.gatecheck{align-self:flex-start;background:var(--navy);color:#fff;border:none;border-radius:999px;font:900 .82rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.1em;padding:13px 26px;min-height:48px;box-shadow:0 4px 0 #0c1d30}
+.gatecheck:active{transform:translateY(2px);box-shadow:0 2px 0 #0c1d30}
+.gatefeedback{min-height:1.3em;font:700 .88rem/1.35 'Segoe UI',sans-serif}
+.gatefeedback.bad{color:var(--coral)}
+.gatefeedback.good{color:#0d7a4f}
+.gatehint{background:#FFF3D8;border:2px dashed var(--amber);border-radius:8px;padding:9px 12px;font:600 .86rem/1.4 'Segoe UI',sans-serif;color:#5a4a22}
+.gatesolved{display:flex;align-items:center;gap:10px;background:#e2f4ee;border:3px solid #0d7a4f;border-radius:10px;padding:10px 14px;font:900 .8rem/1.3 'Arial Black',Arial,sans-serif;color:#0d7a4f;letter-spacing:.08em}
+.stamp{display:inline-block;transform:rotate(-6deg);border:3px solid #0d7a4f;border-radius:6px;padding:3px 8px}
+/* gate widgets */
+.tokenbank,.beakers{display:flex;gap:8px;flex-wrap:wrap}
+.token{width:48px;height:48px;border-radius:50%;border:3px solid var(--navy);background:var(--amber);font:900 .7rem/1 'Arial Black',Arial,sans-serif;color:var(--navy);display:flex;align-items:center;justify-content:center;transition:transform .15s,background .2s}
+.token:hover{transform:scale(1.1)}
+.token.inA{background:var(--teal);color:#fff}
+.token.inB{background:#7db8e8;color:var(--navy)}
+.beaker{flex:1;min-width:120px;border:3px solid var(--navy);border-radius:0 0 14px 14px;border-top-style:dashed;padding:8px;min-height:74px;background:rgba(31,166,162,.08)}
+.beaker h4{font:900 .62rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.12em;color:var(--navy);text-transform:uppercase;margin-bottom:6px}
+.beaker .cnt{font:900 1.2rem/1 'Arial Black',Arial,sans-serif;color:var(--accent)}
+.numin{width:96px;min-height:48px;border:3px solid var(--navy);border-radius:8px;font:900 1.05rem/1 'Arial Black',Arial,sans-serif;text-align:center;color:var(--navy);background:#fff;padding:6px}
+.numin:focus{border-color:var(--accent)}
+.numin.ok{border-color:#0d7a4f;background:#e2f4ee}
+.numin.no{border-color:var(--coral);background:#fdebe6}
+.rt-table{border-collapse:collapse;width:100%}
+.rt-table th,.rt-table td{border:2px solid var(--navy);padding:7px 9px;text-align:center;font:700 .92rem/1.2 'Segoe UI',sans-serif}
+.rt-table th{background:var(--navy);color:#fff;font:900 .7rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.08em}
+.rt-table td.given{background:#eef7f6;font-weight:800}
+.choicebtns{display:flex;gap:10px;flex-wrap:wrap}
+.choicebtn{flex:1;min-width:140px;min-height:48px;border:3px solid var(--navy);border-radius:10px;background:#fff;font:700 .9rem/1.3 'Segoe UI',sans-serif;padding:10px 12px;text-align:left;transition:background .15s}
+.choicebtn:hover{background:#eef7f6}
+.choicebtn[aria-pressed="true"]{background:var(--navy);color:#fff}
+.gategrid{touch-action:manipulation}
+.gategrid .gp{cursor:pointer}
+.unlockflash{animation:unlockflash 1s ease-out}
+@keyframes unlockflash{0%{box-shadow:0 0 0 0 rgba(242,193,91,.9)}100%{box-shadow:0 0 0 26px rgba(242,193,91,0)}}
+
+/* ---------- MODALS ---------- */
+.modal{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(5,12,19,.72);padding:16px}
+.modal.open{display:flex}
+.modalcard{background:var(--paper);border-radius:14px;max-width:780px;width:100%;max-height:88vh;overflow:auto;box-shadow:0 30px 70px rgba(0,0,0,.6)}
+.modalcard>header{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;background:var(--navy);color:#fff;padding:12px 18px;z-index:2}
+.modalcard>header h2{font:900 1rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.modalcard .x{background:var(--coral);border:none;color:#fff;border-radius:8px;width:40px;height:40px;font:900 1rem/1 Arial}
+.modalbody{padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.tt{border-collapse:collapse;width:100%}
+.tt th,.tt td{border:2px solid var(--navy);padding:8px 10px;font:600 .85rem/1.35 'Segoe UI',sans-serif;text-align:left;vertical-align:top}
+.tt th{background:var(--navy);color:#fff;font:900 .68rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.tt tr:nth-child(even) td{background:#fff}
+.workedsteps{display:flex;flex-direction:column;gap:8px}
+.workedsteps .st{display:flex;gap:10px;align-items:flex-start;background:#fff;border:2px solid var(--navy);border-radius:8px;padding:9px 12px;font:600 .9rem/1.4 'Segoe UI',sans-serif}
+.workedsteps .st b.n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font:900 .8rem/1 Arial}
+
+/* ---------- END MATTER ---------- */
+.castcard{display:flex;gap:12px;align-items:center;border:3px solid var(--navy);border-radius:10px;background:#fff;padding:8px 12px}
+.castcard svg{width:64px;height:76px;flex:none}
+.castcard h4{font:900 .8rem/1.2 'Arial Black',Arial,sans-serif;color:var(--navy);letter-spacing:.06em}
+.castcard p{font:600 .8rem/1.35 'Segoe UI',sans-serif;color:#4c5a66}
+.journal{border:3px solid var(--amber);background:#FFFDF4;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.journal h4{font:900 .8rem/1.2 'Arial Black',Arial,sans-serif;color:#8a6a1c;letter-spacing:.14em;text-transform:uppercase}
+.journal .jrow{display:flex;gap:10px;align-items:flex-start;font:600 .88rem/1.4 Georgia,serif;color:#4a3d18}
+.journal .jrow b{color:var(--navy)}
+#certificate{border:6px double var(--navy);border-radius:8px;background:#fff;padding:18px;text-align:center;display:flex;flex-direction:column;gap:8px}
+#certificate h3{font:900 1.2rem/1.1 'Arial Black',Arial,sans-serif;color:var(--navy);letter-spacing:.1em}
+#certName{border:none;border-bottom:3px solid var(--navy);font:900 1.3rem/1.2 Georgia,serif;text-align:center;background:transparent;min-height:48px;width:80%;align-self:center;color:var(--ink)}
+.certbadges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.certbadges .badge{filter:none;border-color:var(--amber);background:#fdf6e7}
+.certbadges .badge.locked{filter:grayscale(1) opacity(.35)}
+
+/* ---------- MOBILE ---------- */
+@media (max-width:820px){
+  #book{height:min(calc(100vh - 120px),760px)}
+  #spreadWrap .page{width:100%}
+  #spreadWrap .page.offscreen{display:none}
+  #spine3d,#edgesL{display:none}
+  .navarrow{width:44px;height:72px}
+  .balloon{max-width:78%}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important;transition-duration:.001s!important}
+}
+/* ---------- PRINT ---------- */
+@media print{
+  body{overflow:visible;background:#fff}
+  body *{visibility:hidden}
+  body.print-teacher #teacherModal,body.print-teacher #teacherModal *{visibility:visible}
+  body.print-teacher #teacherModal{position:static;display:block;background:#fff;padding:0}
+  body.print-teacher #teacherModal .modalcard{max-height:none;box-shadow:none}
+  body.print-cert #certificate,body.print-cert #certificate *{visibility:visible}
+  body.print-cert #certificate{position:fixed;inset:5% 8%;background:#fff}
+  .x,.gatecheck{display:none!important}
+}
+/* ===== VOL OVERRIDES — Vol 7 · Below Zero (accent icy blue) ===== */
+:root{--accent:#4A90C2}
+/* contrast fixes: icy blue is too light for small white text / too dim on navy */
+#coverTitle h1 em{color:#9CC8E8}              /* raw accent fails 3:1 on the navy cover; lifted ice for display text */
+#coverTitle .vol{background:#28628F}          /* white small-caps need a deeper blue for 4.5:1 */
+.gatebox header{background:#28628F}
+.workedsteps .st b.n{background:#28628F}
+.balloon .who{color:#28628F}
+.balloon.vex .who{color:var(--amber)}
+.splashtitle em{color:#28628F}
+.chapterband em{color:#9CC8E8}                /* accent on navy band fails 4.5:1; lifted ice passes */
+.gatebox{background:linear-gradient(180deg,#ffffff,#edf4fa)}
+.rt-table td.given{background:#edf4fa}
+.choicebtn:hover{background:#edf4fa}
+.beaker{background:rgba(74,144,194,.08)}
+</style>
+</head>
+<body>
+<!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<pattern id="halftone" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.4" fill="#17324D" opacity=".18"/></pattern>
+<pattern id="halftoneT" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.4" fill="#1FA6A2" opacity=".3"/></pattern>
+<linearGradient id="skygrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd8e8"/><stop offset="1" stop-color="#e8f4ee"/></linearGradient>
+<linearGradient id="duskgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A2580"/><stop offset=".6" stop-color="#E2674A"/><stop offset="1" stop-color="#F2C15B"/></linearGradient>
+<radialGradient id="vexglow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#7CF2EC"/><stop offset=".6" stop-color="#1FA6A2"/><stop offset="1" stop-color="#1FA6A2" stop-opacity="0"/></radialGradient>
+
+<!-- MAYA: teal jacket, black high bun, star pin -->
+<g id="sym-maya"><path d="M22 118 L24 84 Q24 70 50 70 Q76 70 76 84 L78 118 Z" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><path d="M40 73 L50 86 L60 73" fill="#F7F4EC" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="44" r="24" fill="#C68642" stroke="#17324D" stroke-width="4"/><path d="M27 40 Q26 18 50 18 Q74 18 73 40 Q66 26 50 26 Q34 26 27 40Z" fill="#1B1B23" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="13" r="9" fill="#1B1B23" stroke="#17324D" stroke-width="3"/><path d="M62 8 l2.2 4.4 4.8.6-3.5 3.4.9 4.8-4.4-2.3-4.4 2.3.9-4.8-3.5-3.4 4.8-.6z" fill="#F2C15B" stroke="#17324D" stroke-width="1.5"/><circle cx="42" cy="44" r="2.6" fill="#17324D"/><circle cx="58" cy="44" r="2.6" fill="#17324D"/><path d="M37 37 q5 -3 9 -1 M54 36 q5 -2 9 1" fill="none" stroke="#17324D" stroke-width="2.4" stroke-linecap="round"/><path d="M44 55 q6 5 12 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- THEO: navy hoodie, flat-top, amber glasses -->
+<g id="sym-theo"><path d="M22 118 L24 86 Q24 72 50 72 Q76 72 76 86 L78 118 Z" fill="#17324D" stroke="#17324D" stroke-width="4"/><path d="M36 72 Q50 80 64 72 L64 80 Q50 88 36 80Z" fill="#0d2238" stroke="#17324D" stroke-width="2"/><circle cx="50" cy="45" r="24" fill="#6B4226" stroke="#17324D" stroke-width="4"/><path d="M27 38 Q27 16 50 16 Q73 16 73 38 L70 30 L30 30 Z" fill="#10101a" stroke="#17324D" stroke-width="3"/><rect x="33" y="38" width="14" height="11" rx="3" fill="#fff" stroke="#F2C15B" stroke-width="3"/><rect x="53" y="38" width="14" height="11" rx="3" fill="#fff" stroke="#F2C15B" stroke-width="3"/><line x1="47" y1="43" x2="53" y2="43" stroke="#F2C15B" stroke-width="3"/><circle cx="40" cy="44" r="2.4" fill="#17324D"/><circle cx="60" cy="44" r="2.4" fill="#17324D"/><path d="M43 57 q7 3 14 -1" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- ZARA: coral overalls, side ponytail -->
+<g id="sym-zara"><path d="M22 118 L24 88 Q24 74 50 74 Q76 74 76 88 L78 118 Z" fill="#fff" stroke="#17324D" stroke-width="4"/><path d="M30 78 L34 118 L44 118 L42 80 M70 78 L66 118 L56 118 L58 80" fill="#E2674A" stroke="#17324D" stroke-width="3"/><rect x="40" y="92" width="20" height="16" rx="3" fill="#E2674A" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="46" r="24" fill="#F1C27D" stroke="#17324D" stroke-width="4"/><path d="M27 44 Q24 20 50 19 Q76 20 74 38 Q70 28 52 27 Q34 27 32 44 Z" fill="#E2674A" stroke="#17324D" stroke-width="3"/><path d="M71 30 Q88 36 84 58 Q80 70 72 72 Q78 58 72 46Z" fill="#E2674A" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="46" r="2.6" fill="#17324D"/><circle cx="58" cy="46" r="2.6" fill="#17324D"/><path d="M42 57 q8 6 16 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/><circle cx="36" cy="53" r="3" fill="#E2674A" opacity=".5"/><circle cx="64" cy="53" r="3" fill="#E2674A" opacity=".5"/></g>
+<!-- DEV: purple tee, headphones -->
+<g id="sym-dev"><path d="M22 118 L24 88 Q24 74 50 74 Q76 74 76 88 L78 118 Z" fill="#4A2580" stroke="#17324D" stroke-width="4"/><path d="M43 92 l7 -6 7 6 -7 6z" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="50" cy="46" r="24" fill="#8D5524" stroke="#17324D" stroke-width="4"/><path d="M28 40 Q26 18 50 17 Q74 18 72 40 L66 28 L60 34 L52 26 L44 34 L36 27 Z" fill="#171722" stroke="#17324D" stroke-width="3"/><path d="M24 64 Q20 50 26 42 M76 64 Q80 50 74 42" fill="none" stroke="#4A2580" stroke-width="6" stroke-linecap="round"/><circle cx="25" cy="64" r="7" fill="#4A2580" stroke="#17324D" stroke-width="3"/><circle cx="75" cy="64" r="7" fill="#4A2580" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="46" r="2.6" fill="#17324D"/><circle cx="58" cy="46" r="2.6" fill="#17324D"/><path d="M43 57 q7 5 14 1" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- VEX: glowing orb AI -->
+<g id="sym-vex"><circle cx="50" cy="50" r="38" fill="url(#vexglow)" opacity=".55"/><polygon points="50,22 73,36 73,64 50,78 27,64 27,36" fill="#0b3a40" stroke="#1FA6A2" stroke-width="3.5"/><polygon points="50,30 66,40 66,60 50,70 34,60 34,40" fill="none" stroke="#7CF2EC" stroke-width="1.6" opacity=".8"/><circle cx="50" cy="50" r="10" fill="#F2C15B"/><circle cx="50" cy="50" r="4.5" fill="#17324D"/><circle cx="50" cy="14" r="3" fill="#F2C15B"/><circle cx="78" cy="70" r="2.4" fill="#7CF2EC"/><circle cx="22" cy="72" r="2" fill="#7CF2EC"/></g>
+<!-- props -->
+<g id="sym-bike"><circle cx="22" cy="46" r="14" fill="none" stroke="#17324D" stroke-width="4"/><circle cx="74" cy="46" r="14" fill="none" stroke="#17324D" stroke-width="4"/><path d="M22 46 L40 22 L62 22 L74 46 M40 22 L48 46 L22 46 M48 46 L62 22 M36 16 L46 16 M62 22 L58 14 L66 14" fill="none" stroke="#E2674A" stroke-width="4" stroke-linecap="round"/></g>
+<g id="sym-skyline"><rect x="0" y="34" width="14" height="46" fill="#17324D"/><rect x="16" y="20" width="18" height="60" fill="#22456a"/><rect x="36" y="42" width="12" height="38" fill="#17324D"/><rect x="50" y="10" width="20" height="70" fill="#2c567f"/><polygon points="60,0 50,12 70,12" fill="#1FA6A2"/><rect x="72" y="30" width="14" height="50" fill="#17324D"/><rect x="88" y="46" width="12" height="34" fill="#22456a"/><g fill="#F2C15B" opacity=".9"><rect x="20" y="26" width="3" height="4"/><rect x="27" y="36" width="3" height="4"/><rect x="54" y="18" width="3" height="4"/><rect x="61" y="30" width="3" height="4"/><rect x="54" y="44" width="3" height="4"/><rect x="75" y="36" width="3" height="4"/></g></g>
+<g id="sym-trophy"><path d="M30 14 H70 V34 Q70 52 50 56 Q30 52 30 34 Z" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><path d="M30 20 H16 Q16 38 32 40 M70 20 H84 Q84 38 68 40" fill="none" stroke="#F2C15B" stroke-width="6"/><rect x="44" y="56" width="12" height="12" fill="#b78a2e" stroke="#17324D" stroke-width="3"/><rect x="34" y="68" width="32" height="10" rx="2" fill="#17324D"/></g>
+<!-- badge sigils -->
+<g id="sig-flask"><path d="M40 15 h20 v18 l16 30 a8 8 0 0 1 -7 12 H31 a8 8 0 0 1 -7 -12 l16 -30 z" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><path d="M33 52 h34 l6 11 a4 4 0 0 1 -4 6 H31 a4 4 0 0 1 -4 -6 z" fill="#F2C15B"/></g>
+<g id="sig-watch"><circle cx="50" cy="55" r="28" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><path d="M50 55 L50 36 M50 55 L64 60" stroke="#17324D" stroke-width="4" stroke-linecap="round"/><rect x="42" y="12" width="16" height="8" rx="2" fill="#17324D"/><line x1="50" y1="20" x2="50" y2="27" stroke="#17324D" stroke-width="4"/></g>
+<g id="sig-table"><rect x="18" y="22" width="64" height="56" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><line x1="18" y1="40" x2="82" y2="40" stroke="#17324D" stroke-width="4"/><line x1="50" y1="22" x2="50" y2="78" stroke="#17324D" stroke-width="4"/><rect x="18" y="22" width="64" height="18" fill="#1FA6A2" opacity=".5"/></g>
+<g id="sig-graph"><rect x="16" y="16" width="68" height="68" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><path d="M24 76 L76 30" stroke="#1FA6A2" stroke-width="5" stroke-linecap="round"/><circle cx="38" cy="64" r="5" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="56" cy="48" r="5" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="68" cy="58" r="5" fill="#E2674A" stroke="#17324D" stroke-width="2"/></g>
+<g id="sig-swap"><path d="M24 38 H64 l-10 -12 M76 62 H36 l10 12" fill="none" stroke="#1FA6A2" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="sig-boss"><path d="M50 10 l11 22 24 4 -17 17 4 24 -22 -11 -22 11 4 -24 -17 -17 24 -4 z" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="52" r="9" fill="#E2674A" stroke="#17324D" stroke-width="3"/></g>
+<g id="sig-lock"><rect x="28" y="44" width="44" height="36" rx="6" fill="currentColor"/><path d="M36 44 v-8 a14 14 0 0 1 28 0 v8" fill="none" stroke="currentColor" stroke-width="8"/></g>
+<g id="sig-open"><rect x="28" y="44" width="44" height="36" rx="6" fill="currentColor"/><path d="M36 44 v-8 a14 14 0 0 1 28 0" fill="none" stroke="currentColor" stroke-width="8"/></g>
+<!-- VOL 7 additions -->
+<pattern id="snowdots" width="26" height="26" patternUnits="userSpaceOnUse"><circle cx="4" cy="6" r="1.6" fill="#fff" opacity=".8"/><circle cx="16" cy="14" r="1.2" fill="#fff" opacity=".6"/><circle cx="9" cy="21" r="1.4" fill="#fff" opacity=".7"/><circle cx="22" cy="3" r="1.1" fill="#fff" opacity=".5"/></pattern>
+<linearGradient id="nightgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1626"/><stop offset="1" stop-color="#1c3a57"/></linearGradient>
+<g id="sym-darkline"><rect x="0" y="34" width="14" height="46" fill="#0c1a2a"/><rect x="16" y="20" width="18" height="60" fill="#10243a"/><rect x="36" y="42" width="12" height="38" fill="#0c1a2a"/><rect x="50" y="10" width="20" height="70" fill="#13293f"/><polygon points="60,0 50,12 70,12" fill="#1d3a52"/><rect x="72" y="30" width="14" height="50" fill="#0c1a2a"/><rect x="88" y="46" width="12" height="34" fill="#10243a"/></g>
+<g id="sig-thermo"><rect x="42" y="10" width="16" height="54" rx="8" fill="#fff" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="76" r="14" fill="#E2674A" stroke="#17324D" stroke-width="4"/><rect x="46" y="40" width="8" height="28" fill="#E2674A"/><line x1="58" y1="22" x2="68" y2="22" stroke="#17324D" stroke-width="3"/><line x1="58" y1="34" x2="68" y2="34" stroke="#17324D" stroke-width="3"/><line x1="58" y1="46" x2="68" y2="46" stroke="#17324D" stroke-width="3"/></g>
+<g id="sig-order"><rect x="14" y="54" width="18" height="26" rx="3" fill="#4A90C2" stroke="#17324D" stroke-width="3"/><rect x="40" y="40" width="18" height="40" rx="3" fill="#7db8e8" stroke="#17324D" stroke-width="3"/><rect x="66" y="24" width="18" height="56" rx="3" fill="#F2C15B" stroke="#17324D" stroke-width="3"/><path d="M16 16 H70 M70 16 l-9 -8 M70 16 l-9 8" fill="none" stroke="#17324D" stroke-width="5" stroke-linecap="round"/></g>
+<g id="sig-signal"><path d="M50 82 V48" stroke="#17324D" stroke-width="6" stroke-linecap="round"/><circle cx="50" cy="40" r="8" fill="#F2C15B" stroke="#17324D" stroke-width="3"/><path d="M32 30 a26 26 0 0 1 36 0" fill="none" stroke="#4A90C2" stroke-width="6" stroke-linecap="round"/><path d="M23 18 a38 38 0 0 1 54 0" fill="none" stroke="#4A90C2" stroke-width="6" stroke-linecap="round"/></g>
+<g id="sig-grid4"><rect x="16" y="16" width="68" height="68" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><line x1="50" y1="16" x2="50" y2="84" stroke="#17324D" stroke-width="4"/><line x1="16" y1="50" x2="84" y2="50" stroke="#17324D" stroke-width="4"/><circle cx="33" cy="33" r="6" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="67" cy="67" r="6" fill="#4A90C2" stroke="#17324D" stroke-width="2"/></g>
+<g id="sig-span"><circle cx="20" cy="50" r="9" fill="#F2C15B" stroke="#17324D" stroke-width="3"/><circle cx="80" cy="50" r="9" fill="#4A90C2" stroke="#17324D" stroke-width="3"/><path d="M32 50 H68" stroke="#17324D" stroke-width="5" stroke-dasharray="8 6" stroke-linecap="round"/><path d="M50 34 v32" stroke="#E2674A" stroke-width="4" stroke-linecap="round"/></g>
+</defs>
+</svg>
+
+<!-- ============ COVER ============ -->
+<div id="cover">
+  <div id="coverCard" role="img" aria-label="Cover of Axiom City Unit 7, Episode 3: The Grid Map, part of the Below Zero arc.">
+    <div class="cov-layer" data-depth="6" style="z-index:1">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><rect width="500" height="700" fill="url(#nightgrad)"/><circle cx="392" cy="116" r="54" fill="#dfe9ef" opacity=".85"/><circle cx="392" cy="116" r="76" fill="#dfe9ef" opacity=".16"/><rect width="500" height="700" fill="url(#snowdots)" opacity=".45"/></svg>
+    </div>
+    <div class="cov-layer" data-depth="12" style="z-index:2">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><g transform="translate(0,250) scale(5,3.5)" opacity=".95"><use href="#sym-darkline"/></g><g fill="#F2C15B" opacity=".92"><rect x="58" y="378" width="9" height="11"/><rect x="76" y="356" width="9" height="11"/><rect x="58" y="408" width="9" height="11"/><rect x="94" y="392" width="9" height="11"/><rect x="76" y="430" width="9" height="11"/><rect x="112" y="372" width="9" height="11"/></g><rect y="640" width="500" height="60" fill="#060e18"/></svg>
+    </div>
+    <div class="cov-layer" data-depth="22" style="z-index:3">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+        <g stroke="#4A90C2" stroke-width="2" opacity=".55"><line x1="0" y1="500" x2="500" y2="500"/><line x1="0" y1="545" x2="500" y2="545"/><line x1="0" y1="635" x2="500" y2="635"/><line x1="60" y1="470" x2="60" y2="700"/><line x1="155" y1="470" x2="155" y2="700"/><line x1="345" y1="470" x2="345" y2="700"/><line x1="440" y1="470" x2="440" y2="700"/></g>
+        <line x1="0" y1="590" x2="500" y2="590" stroke="#7CF2EC" stroke-width="4" opacity=".9"/>
+        <line x1="250" y1="470" x2="250" y2="700" stroke="#7CF2EC" stroke-width="4" opacity=".9"/>
+        <circle cx="250" cy="590" r="12" fill="#7CF2EC" opacity=".9"/><circle cx="250" cy="590" r="26" fill="#7CF2EC" opacity=".2"/>
+        <polygon points="190,492 110,535 110,575" fill="#F2C15B" opacity=".22"/>
+        <polygon points="320,500 408,540 408,580" fill="#F2C15B" opacity=".22"/>
+        <g transform="translate(150,408) scale(.95)"><use href="#sym-maya"/><path d="M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z" fill="#E2674A" stroke="#17324D" stroke-width="2.5"/><path d="M58 72 l7 18 9 -3 -7 -17z" fill="#E2674A" stroke="#17324D" stroke-width="2.5"/></g>
+        <g transform="translate(248,418) scale(.88)"><use href="#sym-theo"/><path d="M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z" fill="#F2C15B" stroke="#17324D" stroke-width="2.5"/><path d="M58 72 l7 18 9 -3 -7 -17z" fill="#F2C15B" stroke="#17324D" stroke-width="2.5"/></g>
+        <g transform="translate(66,448) scale(.8)"><use href="#sym-zara"/><path d="M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z" fill="#1FA6A2" stroke="#17324D" stroke-width="2.5"/><path d="M58 72 l7 18 9 -3 -7 -17z" fill="#1FA6A2" stroke="#17324D" stroke-width="2.5"/></g>
+        <g transform="translate(352,452) scale(.78)"><use href="#sym-dev"/><path d="M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z" fill="#7db8e8" stroke="#17324D" stroke-width="2.5"/><path d="M58 72 l7 18 9 -3 -7 -17z" fill="#7db8e8" stroke="#17324D" stroke-width="2.5"/></g>
+        <g transform="translate(208,278) scale(.95)"><use href="#sym-vex"/></g>
+        <circle cx="255" cy="325" r="64" fill="url(#vexglow)" opacity=".35"/>
+        <rect width="500" height="700" fill="url(#snowdots)" opacity=".55"/>
+      </svg>
+    </div>
+    <div class="spine"><span>AXIOM CITY · EDUWONDERLAB</span></div>
+    <div id="coverTitle">
+      <div class="series">AXIOM CITY</div>
+      <h1>The<br>Grid <em>Map</em></h1>
+      <span class="vol">UNIT 7 · EP 3 · COORDINATE PLANE</span>
+    </div>
+    <div id="coverBottom"><span>AN INTERACTIVE<br>GRAPHIC NOVEL EPISODE</span><span>GRADE 6 · UNIT 7<br>EDUWONDERLAB</span></div>
+  </div>
+  <div id="coverActions">
+      <button class="bigbtn" id="startBtn">START READING</button>
+      <button class="bigbtn alt" id="resumeBtn" hidden>RESUME</button>
+  </div>
+</div>
+
+<!-- ============ HUD ============ -->
+<header id="hud" hidden>
+  <div class="brand">AXIOM CITY<small>U7 · E3 · THE GRID MAP</small></div>
+  <div id="progress" aria-label="Reading progress"></div>
+  <div id="badges" aria-label="Badges earned"></div>
+  <div class="hudbtns">
+    <button class="hudbtn" id="sndBtn" aria-pressed="false" title="Sound effects">🔇 Sound</button>
+    <button class="hudbtn" id="motBtn" aria-pressed="true" title="3D motion effects">3D On</button>
+    <button class="hudbtn" id="txtBtn" aria-pressed="false" title="Larger text">A+</button>
+    <button class="hudbtn" id="hcBtn" aria-pressed="false" title="High contrast">HC</button>
+    <button class="hudbtn teacher" id="teacherBtn">Teacher</button>
+  </div>
+</header>
+
+<!-- ============ BOOK ============ -->
+<main id="stage" hidden>
+  <div id="book">
+    <div id="bookcase"></div>
+    <div class="edges" id="edgesL"></div>
+    <div class="edges" id="edgesR"></div>
+    <div id="spreadWrap">
+      <section class="page left" id="pageL" aria-live="polite"></section>
+      <section class="page right" id="pageR" aria-live="polite"></section>
+    </div>
+    <div id="spine3d"></div>
+    <div id="turnSheet" aria-hidden="true"><div class="ts front"></div><div class="ts back"></div><div class="shade"></div></div>
+  </div>
+</main>
+<button class="navarrow" id="prevBtn" aria-label="Previous page" hidden>‹</button>
+<button class="navarrow" id="nextBtn" aria-label="Next page" hidden>›</button>
+<div class="sr-only" role="status" aria-live="polite" id="live"></div>
+
+<!-- ============ MODALS ============ -->
+<div class="modal" id="teacherModal" role="dialog" aria-modal="true" aria-labelledby="tmTitle">
+  <div class="modalcard">
+    <header><h2 id="tmTitle">Teacher Guide — U7 · E3</h2><div><button class="hudbtn" id="printTeacher">Print</button> <button class="x" data-close aria-label="Close">✕</button></div></header>
+    <div class="modalbody" id="teacherBody"></div>
+  </div>
+</div>
+<div class="modal" id="workedModal" role="dialog" aria-modal="true" aria-labelledby="wmTitle">
+  <div class="modalcard">
+    <header><h2 id="wmTitle">VEX · Worked Example</h2></header>
+    <div class="modalbody" id="workedBody"></div>
+  </div>
+</div>
+<script>
+/* ===== CONTENT START (episode — generated from axiom-city-vol-07- by tools/build-axiom-episodes.mjs) ===== */
+const VOLUME = {
+  num: 703,
+  slug: "u7e3",
+  title: "The Grid Map",
+  unit: "Unit 7 · Episode 3 · Lessons 7-4, 7-5 & 7-6",
+  accent: "#4A90C2",
+  nextTeaser: "THE FULL STORY — BELOW ZERO"
+};
+
+const BADGES = [{"id":"g4","icon":"#sig-grid4","label":"Grid Cartographer — Four Quadrants"},{"id":"g5","icon":"#sig-span","label":"Cable Counter — Distance"},{"id":"boss","icon":"#sig-boss","label":"Light Ring — Boss Gate"}];
+
+/* scene helpers (verbatim from source volume) */
+/* tiny scene helpers (content-side, fine to reuse) */
+const SC = (vb,inner,depth)=>`<svg class="scene" viewBox="${vb}" role="img" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
+const NT = h=>`<rect width="400" height="${h}" fill="url(#nightgrad)"/>`;
+const SNOWR = (h,o=".5")=>`<rect width="400" height="${h}" fill="url(#snowdots)" opacity="${o}"/>`;
+const DRIFT = y=>`<path d="M0 ${y} Q60 ${y-12} 130 ${y-4} Q210 ${y+6} 290 ${y-8} Q350 ${y-14} 400 ${y-2} L400 ${y+40} L0 ${y+40} Z" fill="#dfe9ef"/><path d="M0 ${y} Q60 ${y-12} 130 ${y-4} Q210 ${y+6} 290 ${y-8} Q350 ${y-14} 400 ${y-2} L400 ${y+40} L0 ${y+40} Z" fill="url(#halftone)" opacity=".4"/>`;
+/* winter scarf drawn OVER a crew symbol (extra paths, shared symbols untouched) */
+const SCARF = c=>`<path d="M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z" fill="${c}" stroke="#17324D" stroke-width="2.5"/><path d="M58 72 l7 18 9 -3 -7 -17z" fill="${c}" stroke="#17324D" stroke-width="2.5"/>`;
+const BEAM = (x,y,a,b)=>`<polygon points="${x},${y} ${x+a},${y+b-16} ${x+a},${y+b+16}" fill="#F2C15B" opacity=".22"/>`;
+
+function mkfeed(el,msg,ok){el.textContent=msg;el.className="gatefeedback "+(ok?"good":"bad");}
+
+const PAGES = [
+{ ch:"Unit 7 · Episode 3", html:"\n  <div style=\"text-align:center;margin-top:8px\"><div class=\"kicker\">EduWonderLab Presents</div>\n  <h2 class=\"splashtitle\" style=\"margin:8px 0\">THE GRID <em>MAP</em></h2>\n  <div class=\"caption\" style=\"display:inline-block\">Lessons 7-4, 7-5 &amp; 7-6 &mdash; part of the <b>Below Zero</b> arc. four quadrants &middot; distance &middot; polygons &middot; 6.NS.C.6/8 · 6.G.A.3. Read straight through: each reader gate coaches you with hints and a worked example, but never blocks the page.</div></div>\n  <div class=\"panel\"><svg class=\"scene\" viewBox=\"0 0 400 120\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\"><rect width=\"400\" height=\"120\" fill=\"#141031\"/><g transform=\"translate(330,2) scale(.6)\"><use href=\"#sym-vex\"/></g><g transform=\"translate(20,6) scale(.74)\"><use href=\"#sym-maya\"/></g><g transform=\"translate(112,6) scale(.74)\"><use href=\"#sym-theo\"/></g><g transform=\"translate(204,6) scale(.74)\"><use href=\"#sym-zara\"/></g><g transform=\"translate(296,6) scale(.74)\"><use href=\"#sym-dev\"/></g></svg>\n    <div class=\"balloon vex\" style=\"top:6px;left:10px;max-width:64%\"><span class=\"who\">VEX</span>Episode 3. Same crew, same city — one focused stretch of the case. Turn the page when you're ready.</div>\n  </div>" },
+{ ch:"Chapter 4 · The Grid Map", html:"\n  <div class=\"kicker\">Chapter Four</div><h2 class=\"splashtitle\">THE GRID <em>MAP</em></h2>\n  <div class=\"panel panel3d tall\"><svg class=\"scene\" viewBox=\"0 0 400 210\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\">\n    <rect width=\"400\" height=\"210\" fill=\"#10243a\"/>\n    <g data-depth=\"12\"><rect x=\"90\" y=\"14\" width=\"220\" height=\"182\" rx=\"8\" fill=\"#06222b\" stroke=\"#4A90C2\" stroke-width=\"3\"/>\n    <g stroke=\"#4A90C2\" opacity=\".3\"><line x1=\"134\" y1=\"14\" x2=\"134\" y2=\"196\"/><line x1=\"178\" y1=\"14\" x2=\"178\" y2=\"196\"/><line x1=\"222\" y1=\"14\" x2=\"222\" y2=\"196\"/><line x1=\"266\" y1=\"14\" x2=\"266\" y2=\"196\"/><line x1=\"90\" y1=\"59.5\" x2=\"310\" y2=\"59.5\"/><line x1=\"90\" y1=\"105\" x2=\"310\" y2=\"105\"/><line x1=\"90\" y1=\"150.5\" x2=\"310\" y2=\"150.5\"/></g>\n    <line x1=\"200\" y1=\"14\" x2=\"200\" y2=\"196\" stroke=\"#7db8e8\" stroke-width=\"2.5\"/><line x1=\"90\" y1=\"105\" x2=\"310\" y2=\"105\" stroke=\"#7db8e8\" stroke-width=\"2.5\"/>\n    <circle cx=\"200\" cy=\"105\" r=\"6\" fill=\"#7CF2EC\"/>\n    <text x=\"255\" y=\"62\" text-anchor=\"middle\" font-family=\"Georgia\" font-size=\"22\" fill=\"#7db8e8\" opacity=\".8\">I</text>\n    <text x=\"145\" y=\"62\" text-anchor=\"middle\" font-family=\"Georgia\" font-size=\"22\" fill=\"#7db8e8\" opacity=\".8\">II</text>\n    <text x=\"145\" y=\"160\" text-anchor=\"middle\" font-family=\"Georgia\" font-size=\"22\" fill=\"#7db8e8\" opacity=\".8\">III</text>\n    <text x=\"255\" y=\"160\" text-anchor=\"middle\" font-family=\"Georgia\" font-size=\"22\" fill=\"#7db8e8\" opacity=\".8\">IV</text>\n    <g fill=\"#F2C15B\"><circle cx=\"156\" cy=\"76\" r=\"5\"/><circle cx=\"244\" cy=\"76\" r=\"5\"/><circle cx=\"156\" cy=\"134\" r=\"5\"/><circle cx=\"259\" cy=\"120\" r=\"5\"/><circle cx=\"141\" cy=\"90\" r=\"5\"/></g></g>\n    <g data-depth=\"18\" transform=\"translate(2,88) scale(.86)\"><use href=\"#sym-maya\"/><path d=\"M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z\" fill=\"#E2674A\" stroke=\"#17324D\" stroke-width=\"2.5\"/><path d=\"M58 72 l7 18 9 -3 -7 -17z\" fill=\"#E2674A\" stroke=\"#17324D\" stroke-width=\"2.5\"/></g>\n    <g data-depth=\"18\" transform=\"translate(316,88) scale(.86)\"><use href=\"#sym-theo\"/><path d=\"M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z\" fill=\"#F2C15B\" stroke=\"#17324D\" stroke-width=\"2.5\"/><path d=\"M58 72 l7 18 9 -3 -7 -17z\" fill=\"#F2C15B\" stroke=\"#17324D\" stroke-width=\"2.5\"/></g>\n    <rect width=\"400\" height=\"210\" fill=\"url(#snowdots)\" opacity=\".25\"/></svg>\n    <div class=\"balloon\" style=\"top:6px;left:6px;max-width:42%\"><span class=\"who\">MAYA</span>Ada's map cuts the city into four <b>quadrants</b> — counterclockwise from the upper right: I, II, III, IV.</div>\n    <div class=\"balloon tail-r\" style=\"bottom:8px;right:6px;max-width:46%\"><span class=\"who\">THEO</span>Every station is an <b>ordered pair</b> (x, y): blocks east–west first, then north–south. (2, 5) is NOT (5, 2).</div>\n  </div>\n  <div class=\"panel\"><svg class=\"scene\" viewBox=\"0 0 400 84\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\"><rect width=\"400\" height=\"84\" fill=\"#0e2233\"/><g transform=\"translate(320,0) scale(.56)\"><use href=\"#sym-vex\"/></g><rect width=\"400\" height=\"84\" fill=\"url(#snowdots)\" opacity=\".3\"/></svg>\n    <div class=\"balloon vex\" style=\"top:6px;left:10px;max-width:76%\"><span class=\"who\">VEX</span>Two relays must light next: (−3, 2) and (4, −1). But the blackout scrambled my map — five dots flicker, and only two are real.</div>\n  </div>\n  <div class=\"caption\">An <b>ordered pair</b> (x, y) locates a point: x first (left–right), then y (up–down).</div>" },
+{ ch:"Chapter 4 · Reader Gate", gate:"g4", html:"\n  <div class=\"panel\"><svg class=\"scene\" viewBox=\"0 0 400 80\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\"><rect width=\"400\" height=\"80\" fill=\"#10243a\"/><g transform=\"translate(8,-4) scale(.62)\"><use href=\"#sym-theo\"/><path d=\"M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z\" fill=\"#F2C15B\" stroke=\"#17324D\" stroke-width=\"2.5\"/><path d=\"M58 72 l7 18 9 -3 -7 -17z\" fill=\"#F2C15B\" stroke=\"#17324D\" stroke-width=\"2.5\"/></g><rect width=\"400\" height=\"80\" fill=\"url(#snowdots)\" opacity=\".3\"/></svg>\n    <div class=\"balloon\" style=\"top:6px;left:78px;max-width:70%\"><span class=\"who\">THEO</span>Read the pairs carefully, reader. Light the wrong relay and we waste the power we have.</div>\n  </div>" },
+{ ch:"Chapter 5 · The Coldest Mile", html:"\n  <div class=\"kicker\">Chapter Five</div><h2 class=\"splashtitle\">THE COLDEST <em>MILE</em></h2>\n  <div class=\"panel panel3d tall\"><svg class=\"scene\" viewBox=\"0 0 400 210\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\">\n    <rect width=\"400\" height=\"210\" fill=\"#0c1a2a\"/>\n    <path data-depth=\"8\" d=\"M0 60 Q200 10 400 60 L400 210 L0 210 Z\" fill=\"#10243a\"/>\n    <g data-depth=\"12\"><rect x=\"30\" y=\"150\" width=\"340\" height=\"10\" rx=\"5\" fill=\"#17324D\" stroke=\"#4A90C2\" stroke-width=\"2\"/>\n    <text x=\"44\" y=\"142\" font-family=\"Consolas,monospace\" font-size=\"10\" fill=\"#7db8e8\">PLATFORM ELEV −6 m</text>\n    <text x=\"280\" y=\"142\" font-family=\"Consolas,monospace\" font-size=\"10\" fill=\"#7db8e8\">STREET ELEV 0 m</text></g>\n    <g data-depth=\"18\" transform=\"translate(40,76) scale(.9)\"><use href=\"#sym-zara\"/><path d=\"M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z\" fill=\"#1FA6A2\" stroke=\"#17324D\" stroke-width=\"2.5\"/><path d=\"M58 72 l7 18 9 -3 -7 -17z\" fill=\"#1FA6A2\" stroke=\"#17324D\" stroke-width=\"2.5\"/></g>\n    <g data-depth=\"14\"><circle cx=\"180\" cy=\"140\" r=\"22\" fill=\"none\" stroke=\"#E2674A\" stroke-width=\"6\"/><circle cx=\"180\" cy=\"140\" r=\"8\" fill=\"#17324D\"/><path d=\"M202 140 Q260 120 320 140\" fill=\"none\" stroke=\"#E2674A\" stroke-width=\"4\" stroke-dasharray=\"8 6\"/></g>\n    <g data-depth=\"18\" transform=\"translate(290,76) scale(.9)\"><use href=\"#sym-dev\"/><path d=\"M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z\" fill=\"#7db8e8\" stroke=\"#17324D\" stroke-width=\"2.5\"/><path d=\"M58 72 l7 18 9 -3 -7 -17z\" fill=\"#7db8e8\" stroke=\"#17324D\" stroke-width=\"2.5\"/></g>\n    <rect width=\"400\" height=\"210\" fill=\"url(#snowdots)\" opacity=\".2\"/></svg>\n    <div class=\"sfx\" style=\"top:8px;left:14px\">CLUNK!</div>\n    <div class=\"balloon\" style=\"top:6px;left:96px;max-width:48%\"><span class=\"who\">ZARA</span>Cable time. Even elevation runs below zero down here — the old platform sits at −6 meters.</div>\n    <div class=\"balloon tail-r\" style=\"bottom:10px;right:6px;max-width:46%\"><span class=\"who\">DEV</span>And cable doesn't stretch. We count exact blocks between stations. No guessing.</div>\n  </div>\n  <div class=\"panel\"><svg class=\"scene\" viewBox=\"0 0 400 88\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\"><rect width=\"400\" height=\"88\" fill=\"#0e2233\"/><g transform=\"translate(10,4) scale(.6)\"><use href=\"#sym-theo\"/><path d=\"M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z\" fill=\"#F2C15B\" stroke=\"#17324D\" stroke-width=\"2.5\"/><path d=\"M58 72 l7 18 9 -3 -7 -17z\" fill=\"#F2C15B\" stroke=\"#17324D\" stroke-width=\"2.5\"/></g><rect width=\"400\" height=\"88\" fill=\"url(#snowdots)\" opacity=\".3\"/></svg>\n    <div class=\"balloon\" style=\"top:6px;left:80px;max-width:74%\"><span class=\"who\">THEO</span>Two runs tonight: across Fourth Street from (−3, 4) to (5, 4), and down Second Avenue from (2, −1) to (2, −6).</div>\n  </div>\n  <div class=\"caption\">When two points share a coordinate, the path between them is straight — measure it with absolute values.</div>" },
+{ ch:"Chapter 5 · Reader Gate", gate:"g5", html:"\n  <div class=\"panel\"><svg class=\"scene\" viewBox=\"0 0 400 80\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\"><rect width=\"400\" height=\"80\" fill=\"#0c1a2a\"/><g transform=\"translate(8,-4) scale(.62)\"><use href=\"#sym-zara\"/><path d=\"M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z\" fill=\"#1FA6A2\" stroke=\"#17324D\" stroke-width=\"2.5\"/><path d=\"M58 72 l7 18 9 -3 -7 -17z\" fill=\"#1FA6A2\" stroke=\"#17324D\" stroke-width=\"2.5\"/></g><rect width=\"400\" height=\"80\" fill=\"url(#snowdots)\" opacity=\".3\"/></svg>\n    <div class=\"balloon\" style=\"top:6px;left:78px;max-width:70%\"><span class=\"who\">ZARA</span>Measure both cable runs, reader. I cut once.</div>\n  </div>" },
+{ ch:"Chapter 5 · The Light Ring", html:"\n  <div class=\"caption loc\">Midnight. One move left: ring the engine district with cable, and the whole grid relights.</div>\n  <div class=\"panel panel3d tall\"><svg class=\"scene\" viewBox=\"0 0 400 230\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\">\n    <rect width=\"400\" height=\"230\" fill=\"#0e2233\"/>\n    <g data-depth=\"12\"><g stroke=\"#4A90C2\" opacity=\".25\"><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"222\"/><line x1=\"64\" y1=\"10\" x2=\"64\" y2=\"222\"/><line x1=\"98\" y1=\"10\" x2=\"98\" y2=\"222\"/><line x1=\"132\" y1=\"10\" x2=\"132\" y2=\"222\"/><line x1=\"166\" y1=\"10\" x2=\"166\" y2=\"222\"/><line x1=\"234\" y1=\"10\" x2=\"234\" y2=\"222\"/><line x1=\"268\" y1=\"10\" x2=\"268\" y2=\"222\"/><line x1=\"302\" y1=\"10\" x2=\"302\" y2=\"222\"/><line x1=\"336\" y1=\"10\" x2=\"336\" y2=\"222\"/><line x1=\"370\" y1=\"10\" x2=\"370\" y2=\"222\"/><line x1=\"30\" y1=\"220\" x2=\"370\" y2=\"220\"/><line x1=\"30\" y1=\"186\" x2=\"370\" y2=\"186\"/><line x1=\"30\" y1=\"152\" x2=\"370\" y2=\"152\"/><line x1=\"30\" y1=\"84\" x2=\"370\" y2=\"84\"/><line x1=\"30\" y1=\"50\" x2=\"370\" y2=\"50\"/><line x1=\"30\" y1=\"16\" x2=\"370\" y2=\"16\"/></g>\n    <line x1=\"30\" y1=\"118\" x2=\"370\" y2=\"118\" stroke=\"#7db8e8\" stroke-width=\"2.5\"/><line x1=\"200\" y1=\"10\" x2=\"200\" y2=\"222\" stroke=\"#7db8e8\" stroke-width=\"2.5\"/>\n    <circle cx=\"200\" cy=\"118\" r=\"6\" fill=\"#7CF2EC\"/>\n    <polygon points=\"64,16 302,16 302,186 64,186\" fill=\"rgba(242,193,91,.08)\" stroke=\"#F2C15B\" stroke-width=\"3\" stroke-dasharray=\"10 7\"/>\n    <g fill=\"#F2C15B\" stroke=\"#fff\" stroke-width=\"2\"><circle cx=\"64\" cy=\"186\" r=\"6\"/><circle cx=\"302\" cy=\"186\" r=\"6\"/><circle cx=\"302\" cy=\"16\" r=\"6\"/><circle cx=\"64\" cy=\"16\" r=\"6\"/></g>\n    <g font-family=\"Arial\" font-size=\"11\" font-weight=\"700\" fill=\"#F2C15B\"><text x=\"58\" y=\"204\" text-anchor=\"middle\">(−4, −2)</text><text x=\"308\" y=\"204\" text-anchor=\"middle\">(3, −2)</text><text x=\"308\" y=\"12\" text-anchor=\"middle\">(3, 3)</text><text x=\"58\" y=\"12\" text-anchor=\"middle\">(−4, 3)</text></g></g>\n    <g data-depth=\"20\" transform=\"translate(150,120) scale(.5)\"><use href=\"#sym-vex\"/></g>\n    <rect width=\"400\" height=\"230\" fill=\"url(#snowdots)\" opacity=\".2\"/></svg>\n    <div class=\"balloon vex\" style=\"top:6px;left:8px;max-width:46%\"><span class=\"who\">VEX</span>The Light Ring: a rectangle of cable through four corner relays. I can sense its shape. You must measure it.</div>\n    <div class=\"balloon tail-r\" style=\"bottom:8px;right:8px;max-width:42%\"><span class=\"who\">MAYA</span>Width, height, then total cable. Three locks, one ring. Reader — bring us home.</div>\n  </div>\n  <div class=\"caption\">Boss Gate: distances on the plane, plus the perimeter of a polygon drawn on the grid.</div>" },
+{ ch:"Boss Gate · The Light Ring", gate:"boss", html:"\n  <div class=\"panel\"><svg class=\"scene\" viewBox=\"0 0 400 76\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\"><rect width=\"400\" height=\"76\" fill=\"#0e2233\"/><g transform=\"translate(330,4) scale(.56)\"><use href=\"#sym-vex\"/></g><rect width=\"400\" height=\"76\" fill=\"url(#snowdots)\" opacity=\".3\"/></svg>\n    <div class=\"balloon vex\" style=\"top:6px;left:10px;max-width:72%\"><span class=\"who\">VEX</span>BOSS GATE. Three locks. The city is watching. (The city is also freezing.)</div>\n  </div>" },
+{ ch:"Chapter 5 · Relight", html:"\n  <div class=\"panel panel3d tall\"><svg class=\"scene\" viewBox=\"0 0 400 220\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\">\n    <rect width=\"400\" height=\"220\" fill=\"url(#nightgrad)\"/>\n    <g data-depth=\"10\" transform=\"translate(0,56) scale(4,1.7)\" opacity=\".95\"><use href=\"#sym-darkline\"/></g>\n    <g data-depth=\"10\" fill=\"#F2C15B\"><rect x=\"30\" y=\"110\" width=\"7\" height=\"9\" opacity=\".95\"/><rect x=\"58\" y=\"96\" width=\"7\" height=\"9\" opacity=\".95\"/><rect x=\"86\" y=\"118\" width=\"7\" height=\"9\" opacity=\".95\"/><rect x=\"122\" y=\"90\" width=\"7\" height=\"9\" opacity=\".95\"/><rect x=\"150\" y=\"112\" width=\"7\" height=\"9\" opacity=\".95\"/><rect x=\"186\" y=\"98\" width=\"7\" height=\"9\" opacity=\".95\"/><rect x=\"214\" y=\"120\" width=\"7\" height=\"9\" opacity=\".95\"/><rect x=\"250\" y=\"92\" width=\"7\" height=\"9\" opacity=\".95\"/><rect x=\"278\" y=\"114\" width=\"7\" height=\"9\" opacity=\".95\"/><rect x=\"314\" y=\"100\" width=\"7\" height=\"9\" opacity=\".95\"/><rect x=\"342\" y=\"118\" width=\"7\" height=\"9\" opacity=\".95\"/><rect x=\"370\" y=\"94\" width=\"7\" height=\"9\" opacity=\".95\"/></g>\n    <path d=\"M0 186 Q60 174 130 182 Q210 192 290 178 Q350 172 400 184 L400 226 L0 226 Z\" fill=\"#dfe9ef\"/><path d=\"M0 186 Q60 174 130 182 Q210 192 290 178 Q350 172 400 184 L400 226 L0 226 Z\" fill=\"url(#halftone)\" opacity=\".4\"/>\n    <g data-depth=\"18\" transform=\"translate(36,98) scale(.8)\"><use href=\"#sym-maya\"/><path d=\"M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z\" fill=\"#E2674A\" stroke=\"#17324D\" stroke-width=\"2.5\"/><path d=\"M58 72 l7 18 9 -3 -7 -17z\" fill=\"#E2674A\" stroke=\"#17324D\" stroke-width=\"2.5\"/></g>\n    <g data-depth=\"18\" transform=\"translate(116,98) scale(.8)\"><use href=\"#sym-theo\"/><path d=\"M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z\" fill=\"#F2C15B\" stroke=\"#17324D\" stroke-width=\"2.5\"/><path d=\"M58 72 l7 18 9 -3 -7 -17z\" fill=\"#F2C15B\" stroke=\"#17324D\" stroke-width=\"2.5\"/></g>\n    <g data-depth=\"18\" transform=\"translate(196,98) scale(.8)\"><use href=\"#sym-zara\"/><path d=\"M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z\" fill=\"#1FA6A2\" stroke=\"#17324D\" stroke-width=\"2.5\"/><path d=\"M58 72 l7 18 9 -3 -7 -17z\" fill=\"#1FA6A2\" stroke=\"#17324D\" stroke-width=\"2.5\"/></g>\n    <g data-depth=\"18\" transform=\"translate(276,98) scale(.8)\"><use href=\"#sym-dev\"/><path d=\"M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z\" fill=\"#7db8e8\" stroke=\"#17324D\" stroke-width=\"2.5\"/><path d=\"M58 72 l7 18 9 -3 -7 -17z\" fill=\"#7db8e8\" stroke=\"#17324D\" stroke-width=\"2.5\"/></g>\n    <g data-depth=\"26\" transform=\"translate(338,16) scale(.55)\"><use href=\"#sym-vex\"/></g>\n    <rect width=\"400\" height=\"220\" fill=\"url(#snowdots)\" opacity=\".3\"/></svg>\n    <div class=\"sfx\" style=\"top:10px;left:16px\">FZZZT-ON!</div>\n    <div class=\"balloon\" style=\"top:8px;right:8px;max-width:44%\" ><span class=\"who\">MAYA</span>Quadrant by quadrant — look at it glow!</div>\n    <div class=\"balloon\" style=\"bottom:12px;left:10px;max-width:50%\"><span class=\"who\">THEO</span>Twenty-four blocks of cable, zero slack. Co-led, counted, confirmed.</div>\n  </div>\n  <div class=\"panelrow\">\n    <div class=\"panel\"><svg class=\"scene\" viewBox=\"0 0 200 110\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\"><rect width=\"200\" height=\"110\" fill=\"#10243a\"/><g transform=\"translate(58,4) scale(.78)\"><use href=\"#sym-dev\"/><path d=\"M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z\" fill=\"#7db8e8\" stroke=\"#17324D\" stroke-width=\"2.5\"/><path d=\"M58 72 l7 18 9 -3 -7 -17z\" fill=\"#7db8e8\" stroke=\"#17324D\" stroke-width=\"2.5\"/></g><rect width=\"200\" height=\"110\" fill=\"url(#snowdots)\" opacity=\".3\"/></svg>\n      <div class=\"balloon\" style=\"top:4px;left:4px;max-width:72%\"><span class=\"who\">DEV</span>Achievement unlocked: city un-frozen. Hot cocoa speedrun starts now.</div></div>\n    <div class=\"panel\"><svg class=\"scene\" viewBox=\"0 0 200 110\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\"><rect width=\"200\" height=\"110\" fill=\"#0c1020\"/><rect x=\"55\" y=\"26\" width=\"90\" height=\"78\" rx=\"8\" fill=\"#1c3a52\" stroke=\"#F2C15B\" stroke-width=\"3\"/><path d=\"M100 38 v14 M72 52 h56 M72 52 l-8 18 h16 z M128 52 l-8 18 h16 z\" stroke=\"#F2C15B\" stroke-width=\"3\" fill=\"none\"/><circle cx=\"100\" cy=\"84\" r=\"9\" fill=\"none\" stroke=\"#F2C15B\" stroke-width=\"3\"/><text x=\"100\" y=\"20\" text-anchor=\"middle\" font-family=\"Arial Black,Arial\" font-weight=\"900\" font-size=\"9\" fill=\"#E2674A\">UNDER CITY HALL</text></svg>\n      <div class=\"balloon vex\" style=\"bottom:4px;left:4px;max-width:64%\"><span class=\"who\">VEX</span>New distortion below city hall. A door shaped like a balance scale. It wants things EQUAL. To be continued…</div></div>\n  </div>\n  <div class=\"caption\" style=\"text-align:center\"><b>NEXT: VOL. 8 — THE BALANCE VAULT</b></div>" },
+{ ch:"End Matter · Ada Vex's Journal", html:"\n  <h2 class=\"splashtitle\" style=\"font-size:1.4rem\">ADA VEX'S <em>JOURNAL</em></h2>\n  <div class=\"journal\"><h4>Lessons 7-4, 7-5 &amp; 7-6 &mdash; what this stretch of the case taught us</h4>\n    <div class=\"jrow\"><b>6.NS.C.6</b><span>Understand rational numbers as points; plot in all four quadrants of the plane</span></div><div class=\"jrow\"><b>6.NS.C.8</b><span>Graph points in all four quadrants; find distances using absolute value</span></div><div class=\"jrow\"><b>6.G.A.3</b><span>Draw polygons in the coordinate plane; use coordinates to find side lengths</span></div>\n  </div>\n  <div class=\"caption\">The full story — <b>Below Zero</b> — is glowing at the city gate. — A.V.</div>" },
+{ ch:"End Matter · Certificate", html:"\n  <div id=\"certificate\">\n    <div class=\"kicker\">Axiom City · EduWonderLab</div>\n    <h3>READER CERTIFICATE</h3>\n    <p style=\"font:600 .9rem Georgia,serif\">This certifies that</p>\n    <input id=\"certName\" maxlength=\"40\" placeholder=\"write your name\" aria-label=\"Your name for the certificate\">\n    <p style=\"font:600 .9rem Georgia,serif\">completed <b>Unit 7 · Episode 3: The Grid Map</b> in the Below Zero arc, and proved mastery over four quadrants · distance · polygons · 6.NS.C.6/8 · 6.G.A.3.</p>\n    <div class=\"certbadges\" id=\"certBadges\"></div>\n    <button class=\"gatecheck\" id=\"printCert\" style=\"align-self:center\">PRINT CERTIFICATE</button>\n  </div>\n  <div class=\"caption\" style=\"text-align:center\">Next up: the full anchor volume — Below Zero.</div>" }
+];
+
+const GATES = {
+"g4":{title:"Gate 4 · Light the Relays", icon:"#sig-grid4", prompt:"Five dots flicker on Ada's map, but only the relays at <b>(−3, 2)</b> and <b>(4, −1)</b> are real. Tap to light <b>exactly those two</b> (tap again to switch off). Then name their quadrants.",hints:["Conceptual: an ordered pair is (x, y). The first number moves you left (negative) or right (positive) from the origin; the second moves you down (negative) or up (positive).","Procedural: walk each pair: for (−1, 4) you'd go 1 block left, then 4 blocks up. Quadrants count counterclockwise from the upper right: I, then II, then III, then IV."],worked:{"steps":["Plot (−2, −5): start at the origin (0, 0).","x = −2 → walk two blocks LEFT. y = −5 → walk five blocks DOWN.","Left and down lands in Quadrant III — that's where both signs are negative."],"q":"A point has positive x and negative y. Which quadrant number, 1–4?","a":"4"},render(body,api){
+    const PTS=[[-3,2],[3,2],[-3,-2],[4,-1],[-4,1]];
+    const cx=x=>180+x*30, cy=y=>120-y*30;
+    body.innerHTML=`<svg class="gategrid" viewBox="0 0 360 260" style="width:100%;border:3px solid var(--navy);border-radius:8px;background:#06222b" role="group" aria-label="City grid map, x from negative 5 to 5, y from negative 3 to 3. Five candidate relay dots. Select exactly two.">
+      <g stroke="#1FA6A2" opacity=".25">${[-5,-4,-3,-2,-1,1,2,3,4,5].map(i=>`<line x1="${cx(i)}" y1="20" x2="${cx(i)}" y2="220"/>`).join("")}${[-3,-2,-1,1,2,3].map(i=>`<line x1="30" y1="${cy(i)}" x2="330" y2="${cy(i)}"/>`).join("")}</g>
+      <line x1="30" y1="120" x2="330" y2="120" stroke="#7CF2EC" stroke-width="2"/><line x1="180" y1="20" x2="180" y2="220" stroke="#7CF2EC" stroke-width="2"/>
+      <circle cx="180" cy="120" r="5" fill="#7CF2EC"/><text x="192" y="136" fill="#7CF2EC" font-size="10" font-family="Arial">(0,0)</text>
+      <g fill="#5b7d99" font-size="16" font-family="Georgia" opacity=".7"><text x="255" y="70">I</text><text x="100" y="70">II</text><text x="100" y="180">III</text><text x="255" y="180">IV</text></g>
+      ${PTS.map(([x,y],i)=>`<g class="gp" data-i="${i}" tabindex="0" role="button" aria-pressed="false" aria-label="Candidate dot at ${x}, ${y}"><circle cx="${cx(x)}" cy="${cy(y)}" r="14" fill="rgba(242,193,91,.15)"/><circle class="pc" cx="${cx(x)}" cy="${cy(y)}" r="8" fill="#F2C15B" stroke="#fff" stroke-width="2"/><text x="${cx(x)}" y="${cy(y)-16}" text-anchor="middle" fill="#fff" font-size="11" font-family="Arial">(${x}, ${y})</text></g>`).join("")}
+      </svg><div style="font:700 .8rem 'Segoe UI'" id="g4pick" aria-live="polite">0 of 2 relays lit.</div>
+      <div style="font:600 .88rem 'Segoe UI'">Their quadrants are…</div>
+      <div class="choicebtns" role="group" aria-label="Which quadrants hold the two relays?">${["I and III","II and IV","II and III","I and IV"].map(q=>`<button class="choicebtn" data-q="${q}" aria-pressed="false" style="min-width:110px;text-align:center">${q}</button>`).join("")}</div>`;
+    const sel=new Set();let qpick=null;
+    body.querySelectorAll(".gp").forEach(g=>{const i=+g.dataset.i;const act=()=>{
+      if(sel.has(i))sel.delete(i);else sel.add(i);
+      g.setAttribute("aria-pressed",String(sel.has(i)));
+      g.querySelector(".pc").setAttribute("fill",sel.has(i)?"#E2674A":"#F2C15B");
+      body.querySelector("#g4pick").textContent=sel.size+" of 2 relays lit.";api.sound("blip");};
+      g.addEventListener("click",act);g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();act();}});});
+    body.querySelectorAll("[data-q]").forEach(b=>b.addEventListener("click",()=>{
+      body.querySelectorAll("[data-q]").forEach(x=>x.setAttribute("aria-pressed","false"));
+      b.setAttribute("aria-pressed","true");qpick=b.dataset.q;api.sound("blip");}));
+    api.onCheck(()=>{
+      if(sel.size!==2)return api.fail("Light exactly TWO relays — the map shows "+sel.size+" lit.");
+      if(!(sel.has(0)&&sel.has(3))){
+        if(sel.has(1))return api.fail("Check the signs: in (−3, 2), the −3 means 3 blocks LEFT of the engine, not right.");
+        if(sel.has(2))return api.fail("The second number is the up–down move: (−3, 2) climbs UP 2 — it doesn't drop down.");
+        return api.fail("Re-walk each pair from the origin: left–right first, then up–down.");}
+      if(qpick!=="II and IV")return api.fail("Relays lit! Now the quadrants — count counterclockwise from the upper right: I, II, III, IV.");
+      api.pass("(−3, 2) glows in Quadrant II and (4, −1) in Quadrant IV — relays linked across the city!");});
+  }},
+"g5":{title:"Gate 5 · The Cable Count", icon:"#sig-span", prompt:"Measure both cable runs in blocks. <b>Cable A</b>: (−3, 4) to (5, 4). <b>Cable B</b>: (2, −1) to (2, −6). Count exactly — Zara cuts once.",hints:["Conceptual: when two points share a coordinate, the cable runs straight. If the changing numbers sit on OPPOSITE sides of zero, ADD their absolute values. Same side of zero? SUBTRACT them.","Procedural: like (−4, 1) to (2, 1): x crosses zero, so |−4| + |2| = 6 blocks. Like (7, −2) to (7, −9): same side, so 9 − 2 = 7 blocks."],worked:{"steps":["Measure (−6, 3) to (3, 3): the y-values match, so the run is sideways.","x goes from −6 to 3 — opposite sides of zero — so add the distances: |−6| + |3| = 9 blocks.","Now (4, −1) to (4, −7): both y-values are below zero — same side — so subtract: 7 − 1 = 6 blocks."],"q":"How far is (−2, 0) from (7, 0)?","a":"9"},render(body,api){
+    body.innerHTML=`<div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b style="font:900 .75rem 'Arial Black'">CABLE A</b><span style="font:600 .9rem 'Segoe UI'">(−3, 4) to (5, 4) =</span><input class="numin" id="d1" inputmode="numeric" aria-label="Cable A length in blocks"><span style="font:600 .9rem 'Segoe UI'">blocks</span></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b style="font:900 .75rem 'Arial Black'">CABLE B</b><span style="font:600 .9rem 'Segoe UI'">(2, −1) to (2, −6) =</span><input class="numin" id="d2" inputmode="numeric" aria-label="Cable B length in blocks"><span style="font:600 .9rem 'Segoe UI'">blocks</span></div></div>`;
+    api.onCheck(()=>{const e1=body.querySelector("#d1"),e2=body.querySelector("#d2");
+      const v1=parseFloat(e1.value),v2=parseFloat(e2.value);
+      const ok1=v1===8,ok2=v2===5;
+      e1.className="numin "+(ok1?"ok":"no");e2.className="numin "+(ok2?"ok":"no");
+      if(!ok1){if(v1===2)return api.fail("Cable A crosses x = 0 — don't subtract straight across zero. Add each end's distance from the y-axis.");
+        return api.fail("Cable A runs sideways: only the x-numbers change. Count the blocks between them.");}
+      if(!ok2){if(v2===7)return api.fail("Both y-values sit on the SAME side of zero — subtract the smaller distance from the bigger one.");
+        return api.fail("Cable B runs up–down: only the y-numbers change. Count carefully below zero.");}
+      api.pass("8 blocks across, 5 blocks down — both cables measured with zero slack!");});
+  }},
+"boss":{title:"BOSS GATE · The Light Ring", icon:"#sig-boss", prompt:"The ring's corner relays: <b>(−4, −2), (3, −2), (3, 3), (−4, 3)</b>. Open all three locks to close the circuit:",hints:["Conceptual: a side's length is the distance between the coordinates that CHANGE. If they sit on opposite sides of zero, add the two distances. The perimeter is the full trip around all four sides.","Procedural: a side from x = −2 to x = 6 crosses zero: 2 + 6 = 8 blocks. Perimeter shortcut: 2 × (width + height)."],worked:{"steps":["A smaller ring has corners (−1, −2), (3, −2), (3, 1), (−1, 1).","Width: x runs from −1 to 3, crossing zero → 1 + 3 = 4. Height: y runs from −2 to 1 → 2 + 1 = 3.","Cable needed = perimeter = 2 × (4 + 3) = 14 blocks."],"q":"A grid rectangle is 6 wide and 3 tall. How much cable rings it?","a":"18"},render(body,api){
+    body.innerHTML=`<svg viewBox="0 0 360 200" style="width:100%;border:3px solid var(--navy);border-radius:8px;background:#06222b" role="img" aria-label="Grid showing the Light Ring rectangle with corners at negative 4 negative 2, 3 negative 2, 3 3, and negative 4 3.">
+      <g stroke="#1FA6A2" opacity=".25">${[-5,-4,-3,-2,-1,1,2,3,4,5].map(i=>`<line x1="${180+i*26}" y1="10" x2="${180+i*26}" y2="190"/>`).join("")}${[-3,-2,-1,1,2,3].map(i=>`<line x1="50" y1="${100-i*26}" x2="310" y2="${100-i*26}"/>`).join("")}</g>
+      <line x1="50" y1="100" x2="310" y2="100" stroke="#7CF2EC" stroke-width="1.5"/><line x1="180" y1="10" x2="180" y2="190" stroke="#7CF2EC" stroke-width="1.5"/>
+      <polygon points="${180-4*26},${100-3*26} ${180+3*26},${100-3*26} ${180+3*26},${100+2*26} ${180-4*26},${100+2*26}" fill="rgba(242,193,91,.1)" stroke="#F2C15B" stroke-width="3" stroke-dasharray="9 6"/>
+      <g fill="#F2C15B" stroke="#fff" stroke-width="1.5"><circle cx="${180-4*26}" cy="${100+2*26}" r="5"/><circle cx="${180+3*26}" cy="${100+2*26}" r="5"/><circle cx="${180+3*26}" cy="${100-3*26}" r="5"/><circle cx="${180-4*26}" cy="${100-3*26}" r="5"/></g>
+      <g font-family="Arial" font-size="10" font-weight="700" fill="#F2C15B"><text x="${180-4*26}" y="${100+2*26+16}" text-anchor="middle">(−4, −2)</text><text x="${180+3*26}" y="${100+2*26+16}" text-anchor="middle">(3, −2)</text><text x="${180+3*26}" y="${100-3*26-8}" text-anchor="middle">(3, 3)</text><text x="${180-4*26}" y="${100-3*26-8}" text-anchor="middle">(−4, 3)</text></g></svg>
+      <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b style="font:900 .75rem 'Arial Black'">LOCK 1</b><span style="font:600 .88rem 'Segoe UI'">Width of the ring (blocks):</span><input class="numin" id="b1" inputmode="numeric" aria-label="width in blocks"></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b style="font:900 .75rem 'Arial Black'">LOCK 2</b><span style="font:600 .88rem 'Segoe UI'">Height of the ring (blocks):</span><input class="numin" id="b2" inputmode="numeric" aria-label="height in blocks"></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b style="font:900 .75rem 'Arial Black'">LOCK 3</b><span style="font:600 .88rem 'Segoe UI'">Total cable to close the ring (perimeter):</span><input class="numin" id="b3" inputmode="numeric" aria-label="perimeter in blocks"></div></div>`;
+    api.onCheck(()=>{const E=id=>body.querySelector(id);
+      const v1=parseFloat(E("#b1").value),v2=parseFloat(E("#b2").value),v3=parseFloat(E("#b3").value);
+      const ok1=v1===7,ok2=v2===5,ok3=v3===24;
+      E("#b1").className="numin "+(ok1?"ok":"no");E("#b2").className="numin "+(ok2?"ok":"no");E("#b3").className="numin "+(ok3?"ok":"no");
+      if(!ok1)return api.fail("Lock 1 holds. Width: x runs from −4 to 3 — opposite sides of zero, so ADD each end's distance from the y-axis.");
+      if(!ok2)return api.fail("Lock 2 holds. Height: y runs from −2 up to 3 — opposite sides again. Add the distances.");
+      if(v3===35)return api.fail("Lock 3 holds. 35 is the AREA inside the ring — the cable runs around the EDGE. Add all four sides.");
+      if(v3===12)return api.fail("Lock 3 holds. That's one width plus one height — the ring needs BOTH widths and BOTH heights.");
+      if(!ok3)return api.fail("Lock 3 holds. Perimeter is the whole trip around: width + height + width + height.");
+      api.pass("ALL LOCKS OPEN. 24 blocks of cable close the ring — the Light Ring blazes and Axiom City relights, quadrant by quadrant!");});
+  }}
+};
+
+const TEACHER = {
+  suggested: "Use as the Episode 3 slice of Below Zero — a focused 1-day read covering Lessons 7-4, 7-5 & 7-6. Whole-class on projector, pairs, or independent. Progress saves on the device. For the full arc, open the anchor volume Below Zero.",
+  standards: [
+    [
+      "6.NS.C.6",
+      "Understand rational numbers as points; plot in all four quadrants of the plane",
+      "Ch. 4 + Gate 4 (relay stations, quadrants)"
+    ],
+    [
+      "6.NS.C.8",
+      "Graph points in all four quadrants; find distances using absolute value",
+      "Gate 5 (cable runs)"
+    ],
+    [
+      "6.G.A.3",
+      "Draw polygons in the coordinate plane; use coordinates to find side lengths",
+      "Boss Gate (the Light Ring rectangle)"
+    ]
+  ],
+  answers: [
+    [
+      "Gate 4",
+      "Real relays: (−3, 2) and (4, −1); quadrants II and IV. Distractors trap sign errors: (3, 2) right-vs-left, (−3, −2) up-vs-down, (−4, 1) wrong pair."
+    ],
+    [
+      "Gate 5",
+      "Cable A (−3, 4) to (5, 4): opposite sides of zero → |−3| + |5| = 8 blocks. Cable B (2, −1) to (2, −6): same side → |−6| − |−1| = 5 blocks."
+    ],
+    [
+      "Boss",
+      "Lock 1 width: |−4| + |3| = 7. Lock 2 height: |−2| + |3| = 5. Lock 3 cable = perimeter: 2 × (7 + 5) = 24 blocks. Traps: 35 (area) and 12 (semi-perimeter) get targeted feedback."
+    ]
+  ]
+};
+/* ===== CONTENT END ===== */
+</script>
+<script>
+/* ================================================================
+   ===== AXIOM CITY ENGINE v1.0 — identical in every volume =======
+   ================================================================ */
+"use strict";
+/* ---------- storage (exact wrapper, ewl_ prefix) ---------- */
+const storage={_m:{},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){this._m[k]=v}},get(k,d=null){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return this._m[k]??d}}};
+const K=s=>`ewl_axiom_${VOLUME.slug}_${s}`;
+
+const $=s=>document.querySelector(s);
+const live=msg=>{$("#live").textContent=msg};
+const reducedMQ=matchMedia("(prefers-reduced-motion: reduce)");
+const mobileMQ=matchMedia("(max-width: 820px)");
+
+const prefs=Object.assign({sound:false,motion:true,bigtext:false,hc:false},storage.get(K("prefs"))||{});
+let solved=new Set(storage.get(K("gates"))||[]);
+let page=storage.get(K("page"))||0;            // index of left/visible page
+let turning=false;
+const attempts={};
+
+/* ---------- audio (Web Audio oscillators only, muted default) ---------- */
+let actx=null;
+function ac(){if(!actx){try{actx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return actx}
+function tone(f,t,dur,type="square",vol=.04){const c=ac();if(!c||!prefs.sound)return;const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(vol,c.currentTime+t);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+t+dur);o.connect(g).connect(c.destination);o.start(c.currentTime+t);o.stop(c.currentTime+t+dur+.02)}
+const SND={blip(){tone(660,0,.07)},flip(){tone(220,0,.09,"triangle",.05);tone(330,.05,.08,"triangle",.04)},win(){[523,659,784,1046].forEach((f,i)=>tone(f,i*.09,.14,"triangle",.05))},thud(){tone(110,0,.18,"sawtooth",.05)}};
+
+/* ---------- helpers ---------- */
+function gateLockIcon(open){return `<div class="gatelockcorner ${open?"open":""}" aria-hidden="true"><svg viewBox="0 0 100 100" style="color:#fff"><use href="${open?"#sig-open":"#sig-lock"}"/></svg></div>`}
+
+function pageInnerHTML(i){
+  if(i==null||i<0||i>=PAGES.length) return `<div class="page-inner" style="align-items:center;justify-content:center"><div class="kicker" style="opacity:.4">AXIOM CITY</div></div><div class="pagefoot"><span></span><span></span></div>`;
+  const p=PAGES[i];
+  const gateHTML=p.gate?`<div class="gatemount" data-gate="${p.gate}"></div>`:"";
+  const lock=p.gate?gateLockIcon(solved.has(p.gate)):"";
+  return `${lock}<div class="chapterband">${p.ch.replace("·","· <em>").concat(p.ch.includes("·")?"</em>":"")}</div><div class="page-inner">${p.html}${gateHTML}</div><div class="pagefoot"><span>${VOLUME.unit}</span><span>PAGE ${i+1} / ${PAGES.length}</span></div>`;
+}
+
+/* ---------- gate framework ---------- */
+function mountGates(scope){
+  scope.querySelectorAll(".gatemount").forEach(m=>{
+    const id=m.dataset.gate,G=GATES[id];
+    if(!G)return;
+    if(solved.has(id)){m.innerHTML=`<div class="gatesolved"><span class="stamp">SOLVED</span> ${G.title} — badge earned.</div>`;return}
+    m.innerHTML=`<div class="gatebox"><header><svg class="gicon" viewBox="0 0 100 100"><use href="${G.icon}"/></svg><h3>${G.title}</h3></header>
+      <div class="gatebody"><div class="gateprompt">${G.prompt}</div><div class="gwidget"></div>
+      <div class="gatehint" hidden></div>
+      <button class="gatecheck">CHECK</button>
+      <div class="gatefeedback" aria-live="polite"></div></div></div>`;
+    const box=m.querySelector(".gatebox"),body=m.querySelector(".gwidget"),fb=m.querySelector(".gatefeedback"),hint=m.querySelector(".gatehint"),btn=m.querySelector(".gatecheck");
+    let checker=null;
+    const api={
+      sound:n=>SND[n]&&SND[n](),
+      onCheck(fn){checker=fn},
+      fail(msg){
+        attempts[id]=(attempts[id]||0)+1;SND.thud();mkfeed(fb,msg,false);
+        const n=attempts[id];
+        if(n===1){hint.hidden=false;hint.innerHTML="💡 <b>Hint:</b> "+G.hints[0]}
+        else if(n===2){hint.hidden=false;hint.innerHTML="🧭 <b>Hint 2:</b> "+G.hints[1]}
+        else if(n>=3&&!hint.querySelector(".askvex")){
+          const b=document.createElement("button");b.className="gatecheck askvex";b.style.marginTop="8px";b.textContent="ASK VEX — WORKED EXAMPLE";
+          b.addEventListener("click",()=>openWorked(G));hint.appendChild(b);
+        }
+        live("Not yet. "+msg);
+      },
+      pass(msg){
+        solved.add(id);storage.set(K("gates"),[...solved]);SND.win();
+        m.innerHTML=`<div class="gatesolved unlockflash"><span class="stamp">SOLVED</span> ${msg}</div>`;
+        const corner=m.closest(".page,#pageL,#pageR")?.querySelector(".gatelockcorner");
+        if(corner){corner.classList.add("open");corner.innerHTML=`<svg viewBox="0 0 100 100" style="color:#fff"><use href="#sig-open"/></svg>`}
+        earnBadge(id);updateNav();live("Gate solved! "+msg);
+      }
+    };
+    G.render(body,api);
+    btn.addEventListener("click",()=>{ac();checker&&checker()});
+  });
+}
+function openWorked(G){
+  $("#workedBody").innerHTML=`<div class="workedsteps">${G.worked.steps.map((s,i)=>`<div class="st"><b class="n">${i+1}</b><span>${s}</span></div>`).join("")}</div>
+    <div class="caption">Your turn — same idea, different numbers:</div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span style="font:600 .92rem 'Segoe UI'">${G.worked.q}</span>
+    <input class="numin" id="wkin" aria-label="worked example answer"><button class="gatecheck" id="wkgo">CHECK</button></div>
+    <div class="gatefeedback" id="wkfb" aria-live="polite"></div>`;
+  $("#workedModal").classList.add("open");
+  $("#wkgo").addEventListener("click",()=>{
+    const v=($("#wkin").value||"").trim().replace(/\s+/g,"");
+    if(v===G.worked.a||parseFloat(v)===parseFloat(G.worked.a)){
+      mkfeed($("#wkfb"),"Yes! Now head back and open that gate.",true);SND.win();
+      setTimeout(()=>$("#workedModal").classList.remove("open"),1100);
+    }else{mkfeed($("#wkfb"),"Walk the steps above again — you've got this.",false);SND.thud()}
+  });
+}
+
+/* ---------- badges ---------- */
+function buildBadges(){
+  $("#badges").innerHTML=BADGES.map(b=>`<div class="badge ${solved.has(b.id)?"earned":""}" id="badge-${b.id}" title="${b.label}" role="img" aria-label="${b.label}${solved.has(b.id)?" — earned":" — locked"}"><svg viewBox="0 0 100 100"><use href="${b.icon}"/></svg></div>`).join("");
+}
+function earnBadge(id){buildBadges();const el=$("#badge-"+id);if(el){el.classList.remove("earned");void el.offsetWidth;el.classList.add("earned")}const b=BADGES.find(x=>x.id===id);if(b)live("Badge earned: "+b.label)}
+
+/* ---------- progress ---------- */
+function buildProgress(){$("#progress").innerHTML=PAGES.map((_,i)=>`<span class="dot ${i<=page?"on":""}"></span>`).join("")}
+
+/* ---------- navigation & rendering ---------- */
+const isMobile=()=>mobileMQ.matches;
+function leftIndex(){return isMobile()?page:page-(page%2)}
+function visiblePages(){return isMobile()?[page]:[leftIndex(),leftIndex()+1].filter(i=>i<PAGES.length)}
+function blockedBy(){return null/* locks removed: gates still teach via hints + Ask VEX worked examples, but never block turning the page (Neft 2026-06-11) */}
+
+function renderSpread(){
+  const L=$("#pageL"),R=$("#pageR");
+  if(isMobile()){L.innerHTML=pageInnerHTML(page);L.classList.remove("offscreen");R.classList.add("offscreen");R.innerHTML="";mountGates(L)}
+  else{const li=leftIndex();L.innerHTML=pageInnerHTML(li);R.innerHTML=pageInnerHTML(li+1<PAGES.length?li+1:null);L.classList.remove("offscreen");R.classList.remove("offscreen");mountGates(L);mountGates(R)}
+  buildProgress();updateNav();updateEdges();
+  if(PAGES[page])live(`Page ${page+1} of ${PAGES.length}. ${PAGES[page].ch}.`);
+  storage.set(K("page"),page);
+  if($("#certName")){$("#certName").value=storage.get(K("name"))||"";$("#certName").addEventListener("input",e=>storage.set(K("name"),e.target.value));
+    $("#certBadges").innerHTML=BADGES.map(b=>`<div class="badge ${solved.has(b.id)?"":"locked"}"><svg viewBox="0 0 100 100"><use href="${b.icon}"/></svg></div>`).join("");
+    $("#printCert").addEventListener("click",()=>{document.body.classList.add("print-cert");window.print();setTimeout(()=>document.body.classList.remove("print-cert"),400)});}
+}
+function updateEdges(){const f=page/Math.max(1,PAGES.length-1);$("#edgesL").style.width=(4+f*12)+"px";$("#edgesR").style.width=(16-f*12)+"px"}
+function updateNav(){
+  $("#prevBtn").disabled=page<=0||turning;
+  const lastVisible=Math.max(...visiblePages());
+  const end=lastVisible>=PAGES.length-1;
+  const blocked=blockedBy();
+  $("#nextBtn").disabled=end||turning;
+  $("#nextBtn").classList.toggle("locked",!!blocked&&!end);
+  $("#nextBtn").innerHTML=blocked&&!end?"🔒":"›";
+  $("#nextBtn").setAttribute("aria-label",blocked?"Locked — solve the gate on this page to continue":"Next page");
+}
+function step(dir){
+  if(turning)return;
+  if(dir>0){
+    const blocked=blockedBy();
+    if(blocked){const G=GATES[blocked];SND.thud();$("#nextBtn").classList.add("shake");setTimeout(()=>$("#nextBtn").classList.remove("shake"),700);
+      live("This page is gated. Solve "+G.title+" to continue.");
+      const gb=document.querySelector(".gatebox");if(gb){gb.classList.add("unlockflash");setTimeout(()=>gb.classList.remove("unlockflash"),1000)}
+      return}
+    const lastVisible=Math.max(...visiblePages());
+    if(lastVisible>=PAGES.length-1)return;
+    const target=isMobile()?page+1:leftIndex()+2;
+    animTurn(1,target);
+  }else{
+    if(page<=0)return;
+    const target=isMobile()?page-1:Math.max(0,leftIndex()-2);
+    animTurn(-1,target);
+  }
+}
+function animTurn(dir,target){
+  if(isMobile()||reducedMQ.matches||!prefs.motion){page=target;renderSpread();SND.flip();return}
+  turning=true;SND.flip();
+  const sheet=$("#turnSheet"),front=sheet.querySelector(".ts.front"),back=sheet.querySelector(".ts.back");
+  const oldL=leftIndex();
+  if(dir>0){
+    front.innerHTML=pageInnerHTML(oldL+1<PAGES.length?oldL+1:null);
+    back.innerHTML=pageInnerHTML(target<PAGES.length?target:null);
+    page=target;
+    /* underneath: left stays old-left, right becomes new-right */
+    $("#pageR").innerHTML=pageInnerHTML(target+1<PAGES.length?target+1:null);
+    sheet.className="";sheet.classList.add("show","fwd");
+  }else{
+    front.innerHTML=pageInnerHTML(target+1<PAGES.length?target+1:null);
+    back.innerHTML=pageInnerHTML(oldL);
+    page=target;
+    $("#pageL").innerHTML=pageInnerHTML(target);
+    sheet.className="";sheet.classList.add("show","back");
+  }
+  const done=()=>{sheet.classList.remove("show","fwd","back");sheet.removeEventListener("animationend",done);turning=false;renderSpread()};
+  sheet.addEventListener("animationend",done);
+  setTimeout(()=>{if(turning){done()}},1000);
+}
+
+/* ---------- parallax ---------- */
+let rafPending=false,px=0,py=0;
+function applyParallax(){
+  rafPending=false;
+  if(!prefs.motion||reducedMQ.matches)return;
+  document.querySelectorAll("#spreadWrap .panel3d").forEach(p=>{
+    p.style.transform=`rotateY(${px*4}deg) rotateX(${-py*3}deg)`;
+    p.querySelectorAll("[data-depth]").forEach(l=>{const d=+l.dataset.depth||0;l.style.transform=`translate(${px*d*.6}px,${py*d*.35}px)`});
+  });
+}
+addEventListener("pointermove",e=>{
+  px=(e.clientX/innerWidth-.5)*2;py=(e.clientY/innerHeight-.5)*2;
+  if(!rafPending){rafPending=true;requestAnimationFrame(applyParallax)}
+  const cc=$("#coverCard");
+  if(cc&&!$("#cover").hidden&&prefs.motion&&!reducedMQ.matches){
+    cc.style.transform=`rotateY(${px*9}deg) rotateX(${-py*7}deg)`;
+    cc.querySelectorAll(".cov-layer").forEach(l=>{const d=+l.dataset.depth||0;l.style.transform=`translate(${px*d}px,${py*d*.6}px)`});
+  }
+},{passive:true});
+
+/* note: SVG <g data-depth> transform via style works in modern browsers (SVG2). Wrapped above for safety. */
+
+/* ---------- HUD toggles ---------- */
+function syncToggles(){
+  $("#sndBtn").setAttribute("aria-pressed",prefs.sound);$("#sndBtn").textContent=prefs.sound?"🔊 Sound":"🔇 Sound";
+  $("#motBtn").setAttribute("aria-pressed",prefs.motion);$("#motBtn").textContent=prefs.motion?"3D On":"3D Off";
+  $("#txtBtn").setAttribute("aria-pressed",prefs.bigtext);document.documentElement.dataset.textsize=prefs.bigtext?"lg":"md";
+  $("#hcBtn").setAttribute("aria-pressed",prefs.hc);document.body.classList.toggle("hc",prefs.hc);
+  if(!prefs.motion)document.querySelectorAll(".panel3d").forEach(p=>p.style.transform="");
+  storage.set(K("prefs"),prefs);
+}
+$("#sndBtn").addEventListener("click",()=>{prefs.sound=!prefs.sound;ac();syncToggles();SND.blip()});
+$("#motBtn").addEventListener("click",()=>{prefs.motion=!prefs.motion;syncToggles()});
+$("#txtBtn").addEventListener("click",()=>{prefs.bigtext=!prefs.bigtext;syncToggles()});
+$("#hcBtn").addEventListener("click",()=>{prefs.hc=!prefs.hc;syncToggles()});
+
+/* ---------- teacher panel ---------- */
+function buildTeacher(){
+  $("#teacherBody").innerHTML=`
+    <p style="font:600 .9rem/1.45 'Segoe UI'">${VOLUME.unit} — interactive graphic novel. Story pauses at six <b>reader gates</b>; students must solve grade-level math problems to continue. Progress, badges, and settings persist per device.</p>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">SUGGESTED USE</h3>
+    <p style="font:600 .88rem/1.45 'Segoe UI'">${TEACHER.suggested}</p>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">STANDARDS ALIGNMENT (CCSS)</h3>
+    <table class="tt"><tr><th>Standard</th><th>Description</th><th>Where</th></tr>
+    ${TEACHER.standards.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</table>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">ANSWER KEY</h3>
+    <table class="tt"><tr><th>Gate</th><th>Answer &amp; notes</th></tr>
+    ${TEACHER.answers.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td></tr>`).join("")}</table>
+    <p style="font:600 .8rem/1.4 'Segoe UI';color:#666">Hints escalate: conceptual → procedural → VEX worked example (parallel problem; never reveals the gate answer). Sound is off by default. 3D motion can be disabled (auto-disabled for reduced-motion users). © EduWonderLab — single-file, offline-safe, no data leaves the device.</p>`;
+}
+$("#teacherBtn").addEventListener("click",()=>{buildTeacher();$("#teacherModal").classList.add("open")});
+$("#printTeacher").addEventListener("click",()=>{document.body.classList.add("print-teacher");window.print();setTimeout(()=>document.body.classList.remove("print-teacher"),400)});
+document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",()=>b.closest(".modal").classList.remove("open")));
+
+/* ---------- input ---------- */
+$("#nextBtn").addEventListener("click",()=>{ac();step(1)});
+$("#prevBtn").addEventListener("click",()=>{ac();step(-1)});
+addEventListener("keydown",e=>{
+  if(e.key==="Escape"){$("#teacherModal").classList.remove("open");return}
+  if($(".modal.open"))return;
+  if(["ArrowRight","PageDown"].includes(e.key))step(1);
+  if(["ArrowLeft","PageUp"].includes(e.key))step(-1);
+});
+let tx=null;
+addEventListener("touchstart",e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener("touchend",e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>60&&!$(".modal.open"))step(dx<0?1:-1);tx=null},{passive:true});
+mobileMQ.addEventListener("change",()=>renderSpread());
+
+/* ---------- boot ---------- */
+function openBook(){
+  $("#cover").hidden=true;$("#hud").hidden=false;$("#stage").hidden=false;
+  $("#prevBtn").hidden=false;$("#nextBtn").hidden=false;
+  renderSpread();
+}
+$("#startBtn").addEventListener("click",()=>{ac();page=0;openBook()});
+$("#resumeBtn").addEventListener("click",()=>{ac();openBook()});
+if((storage.get(K("page"))||0)>0||solved.size>0){$("#resumeBtn").hidden=false}
+if(reducedMQ.matches){prefs.motion=false}
+document.body.classList.toggle("reduced",reducedMQ.matches);
+buildBadges();syncToggles();buildProgress();
+</script>
+</body>
+</html>

@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en" data-textsize="md">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Axiom City U7·E2 — Signal in the Snow | Interactive Graphic Novel Episode | ABSOLUTE VALUE</title>
+<meta name="description" content="Interactive Grade 6 math graphic novel episode (Lesson 7-3) from the Axiom City Below Zero arc. Free-read, gates coach but never block. EduWonderLab.">
+<style>
+/* ================= AXIOM CITY ENGINE CSS v1.0 — DO NOT FORK ================= */
+:root{
+  --paper:#F7F4EC; --ink:#24323F; --navy:#17324D; --teal:#1FA6A2; --amber:#F2C15B;
+  --coral:#E2674A; --purple:#4A2580; --accent:var(--teal);
+  --panelborder:3px solid var(--navy);
+  --balloonfont:600 1rem/1.32 'Segoe UI',system-ui,-apple-system,sans-serif;
+  --capfont:italic 500 .92rem/1.35 Georgia,'Times New Roman',serif;
+  --pagew:560px;
+}
+html[data-textsize="lg"]{font-size:18px}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:radial-gradient(120% 120% at 50% 0%,#23425f 0%,#101e2e 55%,#0a1420 100%);color:var(--ink);font:400 16px/1.45 'Segoe UI',system-ui,sans-serif;overflow:hidden}
+body.hc{--ink:#000;--paper:#fff}
+button{font:inherit;cursor:pointer}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:4px}
+
+/* ---------- COVER SCREEN ---------- */
+#cover{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:18px;background:radial-gradient(110% 110% at 50% 10%,#1c3a57 0%,#0a1420 100%);perspective:1400px;overflow:auto}
+#coverCard{position:relative;width:min(88vw,520px,calc((100vh - 200px)*0.714));aspect-ratio:5/7;border-radius:10px 18px 18px 10px;box-shadow:0 40px 80px rgba(0,0,0,.6),0 8px 22px rgba(0,0,0,.5);transform-style:preserve-3d;transition:transform .18s ease-out;background:var(--navy);overflow:hidden}
+#coverCard .spine{position:absolute;left:0;top:0;bottom:0;width:26px;background:linear-gradient(90deg,#0d1f33,#17324D 60%,#244a6e);z-index:5}
+#coverCard .spine span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-90deg);white-space:nowrap;color:var(--amber);font:900 .72rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.28em}
+.cov-layer{position:absolute;inset:0;will-change:transform}
+#coverTitle{position:absolute;left:34px;right:18px;top:26px;z-index:6;color:#fff}
+#coverTitle .series{font:900 .9rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.4em;color:var(--amber)}
+#coverTitle h1{font:900 clamp(2rem,7vw,3.1rem)/0.95 'Arial Black',Arial,sans-serif;text-transform:uppercase;margin-top:8px;text-shadow:4px 4px 0 rgba(0,0,0,.35);color:#fff}
+#coverTitle h1 em{font-style:normal;color:var(--accent)}
+#coverTitle .vol{display:inline-block;margin-top:10px;background:var(--accent);color:#fff;font:900 .8rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.18em;padding:7px 12px;border-radius:4px;box-shadow:2px 2px 0 rgba(0,0,0,.4)}
+#coverBottom{position:absolute;left:34px;right:18px;bottom:18px;z-index:6;display:flex;justify-content:space-between;align-items:flex-end;color:#cfe3ea;font:700 .72rem/1.3 'Segoe UI',sans-serif;letter-spacing:.12em}
+#coverActions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.bigbtn{background:var(--amber);color:var(--navy);border:none;border-radius:999px;font:900 1rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.1em;padding:18px 34px;box-shadow:0 6px 0 #b78a2e,0 14px 30px rgba(0,0,0,.5);transition:transform .12s,box-shadow .12s}
+.bigbtn:hover{transform:translateY(-2px)}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 #b78a2e}
+.bigbtn.alt{background:#274a6a;color:#fff;box-shadow:0 6px 0 #122a42,0 14px 30px rgba(0,0,0,.5)}
+
+/* ---------- HUD ---------- */
+#hud{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:10px;padding:8px 14px;background:linear-gradient(180deg,rgba(7,14,22,.92),rgba(7,14,22,.65) 70%,transparent);color:#dfe9ef}
+#hud .brand{font:900 .78rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.22em;color:var(--amber);white-space:nowrap}
+#hud .brand small{display:block;font:700 .56rem/1.4 'Segoe UI',sans-serif;letter-spacing:.18em;color:#9fb7c6}
+#progress{display:flex;gap:5px;margin-left:8px;flex-wrap:wrap}
+#progress .dot{width:9px;height:9px;border-radius:50%;background:#3a576f;border:1px solid #5b7d99}
+#progress .dot.on{background:var(--accent);border-color:var(--accent);box-shadow:0 0 6px var(--accent)}
+#badges{display:flex;gap:6px;margin-left:auto}
+.badge{width:34px;height:34px;border-radius:50%;background:#1c3a52;border:2px solid #35587a;display:flex;align-items:center;justify-content:center;filter:grayscale(1) brightness(.6);transition:filter .4s,transform .4s}
+.badge.earned{filter:none;border-color:var(--amber);background:#234d6b;animation:badgepop .6s cubic-bezier(.2,2,.4,1)}
+.badge svg{width:20px;height:20px}
+@keyframes badgepop{0%{transform:scale(.2) rotate(-40deg)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+.hudbtns{display:flex;gap:6px;margin-left:10px}
+.hudbtn{background:#1c3a52;border:1px solid #35587a;color:#dfe9ef;border-radius:8px;min-width:48px;min-height:38px;padding:4px 10px;font:700 .72rem/1.1 'Segoe UI',sans-serif}
+.hudbtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#06222b}
+.hudbtn.teacher{background:var(--purple);border-color:#6b46a8;color:#fff}
+
+/* ---------- BOOK STAGE ---------- */
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;perspective:2200px;padding:64px 12px 56px}
+#book{position:relative;width:min(96vw,1180px);height:min(calc(100vh - 130px),780px);transform-style:preserve-3d}
+#bookcase{position:absolute;inset:0;border-radius:8px 14px 14px 8px;background:#0e2233;box-shadow:0 50px 90px rgba(0,0,0,.65),0 10px 26px rgba(0,0,0,.5);transform:translateZ(-30px)}
+.edges{position:absolute;top:6px;bottom:6px;width:14px;background:repeating-linear-gradient(90deg,#e8e2d2 0 2px,#cfc7b2 2px 3px);border-radius:3px;transition:width .5s}
+#edgesL{left:-6px;border-right:1px solid #b8ae97}
+#edgesR{right:-6px;border-left:1px solid #b8ae97}
+#spreadWrap{position:absolute;inset:0;display:flex;border-radius:6px;overflow:visible}
+.page{position:relative;width:50%;height:100%;background:var(--paper);overflow:hidden;display:flex;flex-direction:column}
+.page.left{border-radius:8px 0 0 8px;box-shadow:inset -22px 0 28px -22px rgba(36,50,63,.45)}
+.page.right{border-radius:0 8px 8px 0;box-shadow:inset 22px 0 28px -22px rgba(36,50,63,.45)}
+#spine3d{position:absolute;left:50%;top:0;bottom:0;width:4px;transform:translateX(-50%);background:linear-gradient(90deg,rgba(0,0,0,.25),rgba(0,0,0,.45),rgba(0,0,0,.25));z-index:3}
+.page-inner{flex:1;overflow:auto;padding:18px 20px 14px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin}
+.pagefoot{flex:none;display:flex;justify-content:space-between;align-items:center;padding:6px 16px 10px;font:700 .66rem/1 'Segoe UI',sans-serif;letter-spacing:.18em;color:#7d8a8f;text-transform:uppercase}
+.page .chapterband{flex:none;background:var(--navy);color:#fff;font:900 .72rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.24em;padding:8px 20px;text-transform:uppercase}
+.page .chapterband em{color:var(--accent);font-style:normal}
+.gatelockcorner{position:absolute;top:8px;right:10px;z-index:5;width:34px;height:34px;border-radius:50%;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,.3)}
+.gatelockcorner.open{background:var(--teal)}
+.gatelockcorner svg{width:18px;height:18px}
+
+/* turning sheet */
+#turnSheet{position:absolute;top:0;bottom:0;right:0;width:50%;z-index:20;transform-origin:left center;transform-style:preserve-3d;pointer-events:none;display:none}
+#turnSheet.show{display:block}
+#turnSheet .ts{position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;background:var(--paper)}
+#turnSheet .ts.front{border-radius:0 8px 8px 0}
+#turnSheet .ts.back{transform:rotateY(180deg);border-radius:8px 0 0 8px}
+#turnSheet .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.0),rgba(0,0,0,.28));opacity:0;pointer-events:none}
+@keyframes turnFwd{0%{transform:rotateY(0)}100%{transform:rotateY(-180deg)}}
+@keyframes turnBack{0%{transform:rotateY(-180deg)}100%{transform:rotateY(0)}}
+#turnSheet.fwd{animation:turnFwd .8s cubic-bezier(.45,.05,.3,1) forwards}
+#turnSheet.back{animation:turnBack .8s cubic-bezier(.45,.05,.3,1) forwards}
+body.reduced #turnSheet{display:none!important}
+
+/* nav arrows */
+.navarrow{position:fixed;top:50%;transform:translateY(-50%);z-index:40;width:54px;height:88px;border:none;border-radius:12px;background:rgba(20,42,62,.8);color:#fff;font-size:1.6rem;display:flex;align-items:center;justify-content:center;transition:background .2s,opacity .2s}
+.navarrow:hover{background:var(--accent)}
+.navarrow[disabled]{opacity:.25;cursor:not-allowed}
+#prevBtn{left:8px}#nextBtn{right:8px}
+.navarrow.locked{background:var(--coral)}
+@keyframes shake{0%,100%{transform:translateY(-50%)}25%{transform:translateY(-50%) translateX(-6px)}75%{transform:translateY(-50%) translateX(6px)}}
+.navarrow.shake{animation:shake .3s 2}
+
+/* ---------- COMIC ART ---------- */
+.panelrow{display:flex;gap:10px}
+.panelrow>.panel{flex:1}
+.panel{position:relative;border:var(--panelborder);border-radius:6px 10px 7px 9px;background:#fff;overflow:hidden;box-shadow:3px 3px 0 rgba(23,50,77,.18)}
+.panel.tall{min-height:200px}
+.panel svg.scene{display:block;width:100%;height:auto}
+.panel3d{transform-style:preserve-3d;transition:transform .25s ease-out;will-change:transform}
+.panel3d [data-depth]{will-change:transform}
+.balloon{position:absolute;max-width:62%;background:#fff;border:3px solid var(--navy);border-radius:14px;padding:8px 12px;font:var(--balloonfont);color:var(--ink);box-shadow:2px 2px 0 rgba(23,50,77,.25);z-index:4}
+.balloon .who{display:block;font:900 .58rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.16em;color:var(--accent);text-transform:uppercase;margin-bottom:3px}
+.balloon::after{content:"";position:absolute;bottom:-14px;left:28px;width:0;height:0;border:9px solid transparent;border-top:14px solid var(--navy)}
+.balloon::before{content:"";position:absolute;bottom:-9px;left:31px;width:0;height:0;border:7px solid transparent;border-top:11px solid #fff;z-index:1}
+.balloon.tail-r::after{left:auto;right:28px}
+.balloon.tail-r::before{left:auto;right:31px}
+.balloon.vex{background:#062e33;border-color:var(--teal);color:#c8f5f1;border-radius:10px;font-family:'Consolas','Courier New',monospace;font-weight:500;box-shadow:0 0 12px rgba(31,166,162,.5)}
+.balloon.vex .who{color:var(--amber)}
+.balloon.vex::after{border-top-color:var(--teal)}
+.balloon.vex::before{border-top-color:#062e33}
+.balloon.thought{border-radius:30px;border-style:dashed}
+.caption{background:#FFF3D8;border:2px solid var(--amber);border-left-width:8px;padding:7px 12px;font:var(--capfont);color:#5a4a22;border-radius:3px}
+.caption.loc{font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-style:normal;font-family:'Segoe UI',sans-serif;font-size:.74rem}
+.sfx{position:absolute;z-index:5;font:900 1.7rem/1 'Arial Black',Arial,sans-serif;color:var(--coral);-webkit-text-stroke:2px var(--navy);text-stroke:2px var(--navy);transform:rotate(-7deg);text-shadow:3px 3px 0 var(--amber);letter-spacing:.04em;pointer-events:none}
+.splashtitle{font:900 clamp(1.5rem,3.2vw,2.4rem)/1 'Arial Black',Arial,sans-serif;text-transform:uppercase;color:var(--navy)}
+.splashtitle em{color:var(--accent);font-style:normal}
+.kicker{font:900 .68rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.3em;color:var(--coral);text-transform:uppercase}
+
+/* ---------- GATES ---------- */
+.gatebox{border:4px solid var(--accent);border-radius:12px;background:linear-gradient(180deg,#ffffff,#eef7f6);box-shadow:0 6px 0 rgba(23,50,77,.15);overflow:hidden}
+.gatebox header{display:flex;align-items:center;gap:10px;background:var(--accent);color:#fff;padding:9px 14px}
+.gatebox header .gicon{width:30px;height:30px;flex:none}
+.gatebox header h3{font:900 .85rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.gatebody{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.gateprompt{font:600 .95rem/1.4 'Segoe UI',sans-serif}
+.gatecheck{align-self:flex-start;background:var(--navy);color:#fff;border:none;border-radius:999px;font:900 .82rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.1em;padding:13px 26px;min-height:48px;box-shadow:0 4px 0 #0c1d30}
+.gatecheck:active{transform:translateY(2px);box-shadow:0 2px 0 #0c1d30}
+.gatefeedback{min-height:1.3em;font:700 .88rem/1.35 'Segoe UI',sans-serif}
+.gatefeedback.bad{color:var(--coral)}
+.gatefeedback.good{color:#0d7a4f}
+.gatehint{background:#FFF3D8;border:2px dashed var(--amber);border-radius:8px;padding:9px 12px;font:600 .86rem/1.4 'Segoe UI',sans-serif;color:#5a4a22}
+.gatesolved{display:flex;align-items:center;gap:10px;background:#e2f4ee;border:3px solid #0d7a4f;border-radius:10px;padding:10px 14px;font:900 .8rem/1.3 'Arial Black',Arial,sans-serif;color:#0d7a4f;letter-spacing:.08em}
+.stamp{display:inline-block;transform:rotate(-6deg);border:3px solid #0d7a4f;border-radius:6px;padding:3px 8px}
+/* gate widgets */
+.tokenbank,.beakers{display:flex;gap:8px;flex-wrap:wrap}
+.token{width:48px;height:48px;border-radius:50%;border:3px solid var(--navy);background:var(--amber);font:900 .7rem/1 'Arial Black',Arial,sans-serif;color:var(--navy);display:flex;align-items:center;justify-content:center;transition:transform .15s,background .2s}
+.token:hover{transform:scale(1.1)}
+.token.inA{background:var(--teal);color:#fff}
+.token.inB{background:#7db8e8;color:var(--navy)}
+.beaker{flex:1;min-width:120px;border:3px solid var(--navy);border-radius:0 0 14px 14px;border-top-style:dashed;padding:8px;min-height:74px;background:rgba(31,166,162,.08)}
+.beaker h4{font:900 .62rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.12em;color:var(--navy);text-transform:uppercase;margin-bottom:6px}
+.beaker .cnt{font:900 1.2rem/1 'Arial Black',Arial,sans-serif;color:var(--accent)}
+.numin{width:96px;min-height:48px;border:3px solid var(--navy);border-radius:8px;font:900 1.05rem/1 'Arial Black',Arial,sans-serif;text-align:center;color:var(--navy);background:#fff;padding:6px}
+.numin:focus{border-color:var(--accent)}
+.numin.ok{border-color:#0d7a4f;background:#e2f4ee}
+.numin.no{border-color:var(--coral);background:#fdebe6}
+.rt-table{border-collapse:collapse;width:100%}
+.rt-table th,.rt-table td{border:2px solid var(--navy);padding:7px 9px;text-align:center;font:700 .92rem/1.2 'Segoe UI',sans-serif}
+.rt-table th{background:var(--navy);color:#fff;font:900 .7rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.08em}
+.rt-table td.given{background:#eef7f6;font-weight:800}
+.choicebtns{display:flex;gap:10px;flex-wrap:wrap}
+.choicebtn{flex:1;min-width:140px;min-height:48px;border:3px solid var(--navy);border-radius:10px;background:#fff;font:700 .9rem/1.3 'Segoe UI',sans-serif;padding:10px 12px;text-align:left;transition:background .15s}
+.choicebtn:hover{background:#eef7f6}
+.choicebtn[aria-pressed="true"]{background:var(--navy);color:#fff}
+.gategrid{touch-action:manipulation}
+.gategrid .gp{cursor:pointer}
+.unlockflash{animation:unlockflash 1s ease-out}
+@keyframes unlockflash{0%{box-shadow:0 0 0 0 rgba(242,193,91,.9)}100%{box-shadow:0 0 0 26px rgba(242,193,91,0)}}
+
+/* ---------- MODALS ---------- */
+.modal{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(5,12,19,.72);padding:16px}
+.modal.open{display:flex}
+.modalcard{background:var(--paper);border-radius:14px;max-width:780px;width:100%;max-height:88vh;overflow:auto;box-shadow:0 30px 70px rgba(0,0,0,.6)}
+.modalcard>header{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;background:var(--navy);color:#fff;padding:12px 18px;z-index:2}
+.modalcard>header h2{font:900 1rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.modalcard .x{background:var(--coral);border:none;color:#fff;border-radius:8px;width:40px;height:40px;font:900 1rem/1 Arial}
+.modalbody{padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.tt{border-collapse:collapse;width:100%}
+.tt th,.tt td{border:2px solid var(--navy);padding:8px 10px;font:600 .85rem/1.35 'Segoe UI',sans-serif;text-align:left;vertical-align:top}
+.tt th{background:var(--navy);color:#fff;font:900 .68rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.tt tr:nth-child(even) td{background:#fff}
+.workedsteps{display:flex;flex-direction:column;gap:8px}
+.workedsteps .st{display:flex;gap:10px;align-items:flex-start;background:#fff;border:2px solid var(--navy);border-radius:8px;padding:9px 12px;font:600 .9rem/1.4 'Segoe UI',sans-serif}
+.workedsteps .st b.n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font:900 .8rem/1 Arial}
+
+/* ---------- END MATTER ---------- */
+.castcard{display:flex;gap:12px;align-items:center;border:3px solid var(--navy);border-radius:10px;background:#fff;padding:8px 12px}
+.castcard svg{width:64px;height:76px;flex:none}
+.castcard h4{font:900 .8rem/1.2 'Arial Black',Arial,sans-serif;color:var(--navy);letter-spacing:.06em}
+.castcard p{font:600 .8rem/1.35 'Segoe UI',sans-serif;color:#4c5a66}
+.journal{border:3px solid var(--amber);background:#FFFDF4;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.journal h4{font:900 .8rem/1.2 'Arial Black',Arial,sans-serif;color:#8a6a1c;letter-spacing:.14em;text-transform:uppercase}
+.journal .jrow{display:flex;gap:10px;align-items:flex-start;font:600 .88rem/1.4 Georgia,serif;color:#4a3d18}
+.journal .jrow b{color:var(--navy)}
+#certificate{border:6px double var(--navy);border-radius:8px;background:#fff;padding:18px;text-align:center;display:flex;flex-direction:column;gap:8px}
+#certificate h3{font:900 1.2rem/1.1 'Arial Black',Arial,sans-serif;color:var(--navy);letter-spacing:.1em}
+#certName{border:none;border-bottom:3px solid var(--navy);font:900 1.3rem/1.2 Georgia,serif;text-align:center;background:transparent;min-height:48px;width:80%;align-self:center;color:var(--ink)}
+.certbadges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.certbadges .badge{filter:none;border-color:var(--amber);background:#fdf6e7}
+.certbadges .badge.locked{filter:grayscale(1) opacity(.35)}
+
+/* ---------- MOBILE ---------- */
+@media (max-width:820px){
+  #book{height:min(calc(100vh - 120px),760px)}
+  #spreadWrap .page{width:100%}
+  #spreadWrap .page.offscreen{display:none}
+  #spine3d,#edgesL{display:none}
+  .navarrow{width:44px;height:72px}
+  .balloon{max-width:78%}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important;transition-duration:.001s!important}
+}
+/* ---------- PRINT ---------- */
+@media print{
+  body{overflow:visible;background:#fff}
+  body *{visibility:hidden}
+  body.print-teacher #teacherModal,body.print-teacher #teacherModal *{visibility:visible}
+  body.print-teacher #teacherModal{position:static;display:block;background:#fff;padding:0}
+  body.print-teacher #teacherModal .modalcard{max-height:none;box-shadow:none}
+  body.print-cert #certificate,body.print-cert #certificate *{visibility:visible}
+  body.print-cert #certificate{position:fixed;inset:5% 8%;background:#fff}
+  .x,.gatecheck{display:none!important}
+}
+/* ===== VOL OVERRIDES — Vol 7 · Below Zero (accent icy blue) ===== */
+:root{--accent:#4A90C2}
+/* contrast fixes: icy blue is too light for small white text / too dim on navy */
+#coverTitle h1 em{color:#9CC8E8}              /* raw accent fails 3:1 on the navy cover; lifted ice for display text */
+#coverTitle .vol{background:#28628F}          /* white small-caps need a deeper blue for 4.5:1 */
+.gatebox header{background:#28628F}
+.workedsteps .st b.n{background:#28628F}
+.balloon .who{color:#28628F}
+.balloon.vex .who{color:var(--amber)}
+.splashtitle em{color:#28628F}
+.chapterband em{color:#9CC8E8}                /* accent on navy band fails 4.5:1; lifted ice passes */
+.gatebox{background:linear-gradient(180deg,#ffffff,#edf4fa)}
+.rt-table td.given{background:#edf4fa}
+.choicebtn:hover{background:#edf4fa}
+.beaker{background:rgba(74,144,194,.08)}
+</style>
+</head>
+<body>
+<!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<pattern id="halftone" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.4" fill="#17324D" opacity=".18"/></pattern>
+<pattern id="halftoneT" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.4" fill="#1FA6A2" opacity=".3"/></pattern>
+<linearGradient id="skygrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd8e8"/><stop offset="1" stop-color="#e8f4ee"/></linearGradient>
+<linearGradient id="duskgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A2580"/><stop offset=".6" stop-color="#E2674A"/><stop offset="1" stop-color="#F2C15B"/></linearGradient>
+<radialGradient id="vexglow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#7CF2EC"/><stop offset=".6" stop-color="#1FA6A2"/><stop offset="1" stop-color="#1FA6A2" stop-opacity="0"/></radialGradient>
+
+<!-- MAYA: teal jacket, black high bun, star pin -->
+<g id="sym-maya"><path d="M22 118 L24 84 Q24 70 50 70 Q76 70 76 84 L78 118 Z" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><path d="M40 73 L50 86 L60 73" fill="#F7F4EC" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="44" r="24" fill="#C68642" stroke="#17324D" stroke-width="4"/><path d="M27 40 Q26 18 50 18 Q74 18 73 40 Q66 26 50 26 Q34 26 27 40Z" fill="#1B1B23" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="13" r="9" fill="#1B1B23" stroke="#17324D" stroke-width="3"/><path d="M62 8 l2.2 4.4 4.8.6-3.5 3.4.9 4.8-4.4-2.3-4.4 2.3.9-4.8-3.5-3.4 4.8-.6z" fill="#F2C15B" stroke="#17324D" stroke-width="1.5"/><circle cx="42" cy="44" r="2.6" fill="#17324D"/><circle cx="58" cy="44" r="2.6" fill="#17324D"/><path d="M37 37 q5 -3 9 -1 M54 36 q5 -2 9 1" fill="none" stroke="#17324D" stroke-width="2.4" stroke-linecap="round"/><path d="M44 55 q6 5 12 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- THEO: navy hoodie, flat-top, amber glasses -->
+<g id="sym-theo"><path d="M22 118 L24 86 Q24 72 50 72 Q76 72 76 86 L78 118 Z" fill="#17324D" stroke="#17324D" stroke-width="4"/><path d="M36 72 Q50 80 64 72 L64 80 Q50 88 36 80Z" fill="#0d2238" stroke="#17324D" stroke-width="2"/><circle cx="50" cy="45" r="24" fill="#6B4226" stroke="#17324D" stroke-width="4"/><path d="M27 38 Q27 16 50 16 Q73 16 73 38 L70 30 L30 30 Z" fill="#10101a" stroke="#17324D" stroke-width="3"/><rect x="33" y="38" width="14" height="11" rx="3" fill="#fff" stroke="#F2C15B" stroke-width="3"/><rect x="53" y="38" width="14" height="11" rx="3" fill="#fff" stroke="#F2C15B" stroke-width="3"/><line x1="47" y1="43" x2="53" y2="43" stroke="#F2C15B" stroke-width="3"/><circle cx="40" cy="44" r="2.4" fill="#17324D"/><circle cx="60" cy="44" r="2.4" fill="#17324D"/><path d="M43 57 q7 3 14 -1" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- ZARA: coral overalls, side ponytail -->
+<g id="sym-zara"><path d="M22 118 L24 88 Q24 74 50 74 Q76 74 76 88 L78 118 Z" fill="#fff" stroke="#17324D" stroke-width="4"/><path d="M30 78 L34 118 L44 118 L42 80 M70 78 L66 118 L56 118 L58 80" fill="#E2674A" stroke="#17324D" stroke-width="3"/><rect x="40" y="92" width="20" height="16" rx="3" fill="#E2674A" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="46" r="24" fill="#F1C27D" stroke="#17324D" stroke-width="4"/><path d="M27 44 Q24 20 50 19 Q76 20 74 38 Q70 28 52 27 Q34 27 32 44 Z" fill="#E2674A" stroke="#17324D" stroke-width="3"/><path d="M71 30 Q88 36 84 58 Q80 70 72 72 Q78 58 72 46Z" fill="#E2674A" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="46" r="2.6" fill="#17324D"/><circle cx="58" cy="46" r="2.6" fill="#17324D"/><path d="M42 57 q8 6 16 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/><circle cx="36" cy="53" r="3" fill="#E2674A" opacity=".5"/><circle cx="64" cy="53" r="3" fill="#E2674A" opacity=".5"/></g>
+<!-- DEV: purple tee, headphones -->
+<g id="sym-dev"><path d="M22 118 L24 88 Q24 74 50 74 Q76 74 76 88 L78 118 Z" fill="#4A2580" stroke="#17324D" stroke-width="4"/><path d="M43 92 l7 -6 7 6 -7 6z" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="50" cy="46" r="24" fill="#8D5524" stroke="#17324D" stroke-width="4"/><path d="M28 40 Q26 18 50 17 Q74 18 72 40 L66 28 L60 34 L52 26 L44 34 L36 27 Z" fill="#171722" stroke="#17324D" stroke-width="3"/><path d="M24 64 Q20 50 26 42 M76 64 Q80 50 74 42" fill="none" stroke="#4A2580" stroke-width="6" stroke-linecap="round"/><circle cx="25" cy="64" r="7" fill="#4A2580" stroke="#17324D" stroke-width="3"/><circle cx="75" cy="64" r="7" fill="#4A2580" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="46" r="2.6" fill="#17324D"/><circle cx="58" cy="46" r="2.6" fill="#17324D"/><path d="M43 57 q7 5 14 1" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- VEX: glowing orb AI -->
+<g id="sym-vex"><circle cx="50" cy="50" r="38" fill="url(#vexglow)" opacity=".55"/><polygon points="50,22 73,36 73,64 50,78 27,64 27,36" fill="#0b3a40" stroke="#1FA6A2" stroke-width="3.5"/><polygon points="50,30 66,40 66,60 50,70 34,60 34,40" fill="none" stroke="#7CF2EC" stroke-width="1.6" opacity=".8"/><circle cx="50" cy="50" r="10" fill="#F2C15B"/><circle cx="50" cy="50" r="4.5" fill="#17324D"/><circle cx="50" cy="14" r="3" fill="#F2C15B"/><circle cx="78" cy="70" r="2.4" fill="#7CF2EC"/><circle cx="22" cy="72" r="2" fill="#7CF2EC"/></g>
+<!-- props -->
+<g id="sym-bike"><circle cx="22" cy="46" r="14" fill="none" stroke="#17324D" stroke-width="4"/><circle cx="74" cy="46" r="14" fill="none" stroke="#17324D" stroke-width="4"/><path d="M22 46 L40 22 L62 22 L74 46 M40 22 L48 46 L22 46 M48 46 L62 22 M36 16 L46 16 M62 22 L58 14 L66 14" fill="none" stroke="#E2674A" stroke-width="4" stroke-linecap="round"/></g>
+<g id="sym-skyline"><rect x="0" y="34" width="14" height="46" fill="#17324D"/><rect x="16" y="20" width="18" height="60" fill="#22456a"/><rect x="36" y="42" width="12" height="38" fill="#17324D"/><rect x="50" y="10" width="20" height="70" fill="#2c567f"/><polygon points="60,0 50,12 70,12" fill="#1FA6A2"/><rect x="72" y="30" width="14" height="50" fill="#17324D"/><rect x="88" y="46" width="12" height="34" fill="#22456a"/><g fill="#F2C15B" opacity=".9"><rect x="20" y="26" width="3" height="4"/><rect x="27" y="36" width="3" height="4"/><rect x="54" y="18" width="3" height="4"/><rect x="61" y="30" width="3" height="4"/><rect x="54" y="44" width="3" height="4"/><rect x="75" y="36" width="3" height="4"/></g></g>
+<g id="sym-trophy"><path d="M30 14 H70 V34 Q70 52 50 56 Q30 52 30 34 Z" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><path d="M30 20 H16 Q16 38 32 40 M70 20 H84 Q84 38 68 40" fill="none" stroke="#F2C15B" stroke-width="6"/><rect x="44" y="56" width="12" height="12" fill="#b78a2e" stroke="#17324D" stroke-width="3"/><rect x="34" y="68" width="32" height="10" rx="2" fill="#17324D"/></g>
+<!-- badge sigils -->
+<g id="sig-flask"><path d="M40 15 h20 v18 l16 30 a8 8 0 0 1 -7 12 H31 a8 8 0 0 1 -7 -12 l16 -30 z" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><path d="M33 52 h34 l6 11 a4 4 0 0 1 -4 6 H31 a4 4 0 0 1 -4 -6 z" fill="#F2C15B"/></g>
+<g id="sig-watch"><circle cx="50" cy="55" r="28" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><path d="M50 55 L50 36 M50 55 L64 60" stroke="#17324D" stroke-width="4" stroke-linecap="round"/><rect x="42" y="12" width="16" height="8" rx="2" fill="#17324D"/><line x1="50" y1="20" x2="50" y2="27" stroke="#17324D" stroke-width="4"/></g>
+<g id="sig-table"><rect x="18" y="22" width="64" height="56" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><line x1="18" y1="40" x2="82" y2="40" stroke="#17324D" stroke-width="4"/><line x1="50" y1="22" x2="50" y2="78" stroke="#17324D" stroke-width="4"/><rect x="18" y="22" width="64" height="18" fill="#1FA6A2" opacity=".5"/></g>
+<g id="sig-graph"><rect x="16" y="16" width="68" height="68" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><path d="M24 76 L76 30" stroke="#1FA6A2" stroke-width="5" stroke-linecap="round"/><circle cx="38" cy="64" r="5" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="56" cy="48" r="5" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="68" cy="58" r="5" fill="#E2674A" stroke="#17324D" stroke-width="2"/></g>
+<g id="sig-swap"><path d="M24 38 H64 l-10 -12 M76 62 H36 l10 12" fill="none" stroke="#1FA6A2" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="sig-boss"><path d="M50 10 l11 22 24 4 -17 17 4 24 -22 -11 -22 11 4 -24 -17 -17 24 -4 z" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="52" r="9" fill="#E2674A" stroke="#17324D" stroke-width="3"/></g>
+<g id="sig-lock"><rect x="28" y="44" width="44" height="36" rx="6" fill="currentColor"/><path d="M36 44 v-8 a14 14 0 0 1 28 0 v8" fill="none" stroke="currentColor" stroke-width="8"/></g>
+<g id="sig-open"><rect x="28" y="44" width="44" height="36" rx="6" fill="currentColor"/><path d="M36 44 v-8 a14 14 0 0 1 28 0" fill="none" stroke="currentColor" stroke-width="8"/></g>
+<!-- VOL 7 additions -->
+<pattern id="snowdots" width="26" height="26" patternUnits="userSpaceOnUse"><circle cx="4" cy="6" r="1.6" fill="#fff" opacity=".8"/><circle cx="16" cy="14" r="1.2" fill="#fff" opacity=".6"/><circle cx="9" cy="21" r="1.4" fill="#fff" opacity=".7"/><circle cx="22" cy="3" r="1.1" fill="#fff" opacity=".5"/></pattern>
+<linearGradient id="nightgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1626"/><stop offset="1" stop-color="#1c3a57"/></linearGradient>
+<g id="sym-darkline"><rect x="0" y="34" width="14" height="46" fill="#0c1a2a"/><rect x="16" y="20" width="18" height="60" fill="#10243a"/><rect x="36" y="42" width="12" height="38" fill="#0c1a2a"/><rect x="50" y="10" width="20" height="70" fill="#13293f"/><polygon points="60,0 50,12 70,12" fill="#1d3a52"/><rect x="72" y="30" width="14" height="50" fill="#0c1a2a"/><rect x="88" y="46" width="12" height="34" fill="#10243a"/></g>
+<g id="sig-thermo"><rect x="42" y="10" width="16" height="54" rx="8" fill="#fff" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="76" r="14" fill="#E2674A" stroke="#17324D" stroke-width="4"/><rect x="46" y="40" width="8" height="28" fill="#E2674A"/><line x1="58" y1="22" x2="68" y2="22" stroke="#17324D" stroke-width="3"/><line x1="58" y1="34" x2="68" y2="34" stroke="#17324D" stroke-width="3"/><line x1="58" y1="46" x2="68" y2="46" stroke="#17324D" stroke-width="3"/></g>
+<g id="sig-order"><rect x="14" y="54" width="18" height="26" rx="3" fill="#4A90C2" stroke="#17324D" stroke-width="3"/><rect x="40" y="40" width="18" height="40" rx="3" fill="#7db8e8" stroke="#17324D" stroke-width="3"/><rect x="66" y="24" width="18" height="56" rx="3" fill="#F2C15B" stroke="#17324D" stroke-width="3"/><path d="M16 16 H70 M70 16 l-9 -8 M70 16 l-9 8" fill="none" stroke="#17324D" stroke-width="5" stroke-linecap="round"/></g>
+<g id="sig-signal"><path d="M50 82 V48" stroke="#17324D" stroke-width="6" stroke-linecap="round"/><circle cx="50" cy="40" r="8" fill="#F2C15B" stroke="#17324D" stroke-width="3"/><path d="M32 30 a26 26 0 0 1 36 0" fill="none" stroke="#4A90C2" stroke-width="6" stroke-linecap="round"/><path d="M23 18 a38 38 0 0 1 54 0" fill="none" stroke="#4A90C2" stroke-width="6" stroke-linecap="round"/></g>
+<g id="sig-grid4"><rect x="16" y="16" width="68" height="68" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><line x1="50" y1="16" x2="50" y2="84" stroke="#17324D" stroke-width="4"/><line x1="16" y1="50" x2="84" y2="50" stroke="#17324D" stroke-width="4"/><circle cx="33" cy="33" r="6" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="67" cy="67" r="6" fill="#4A90C2" stroke="#17324D" stroke-width="2"/></g>
+<g id="sig-span"><circle cx="20" cy="50" r="9" fill="#F2C15B" stroke="#17324D" stroke-width="3"/><circle cx="80" cy="50" r="9" fill="#4A90C2" stroke="#17324D" stroke-width="3"/><path d="M32 50 H68" stroke="#17324D" stroke-width="5" stroke-dasharray="8 6" stroke-linecap="round"/><path d="M50 34 v32" stroke="#E2674A" stroke-width="4" stroke-linecap="round"/></g>
+</defs>
+</svg>
+
+<!-- ============ COVER ============ -->
+<div id="cover">
+  <div id="coverCard" role="img" aria-label="Cover of Axiom City Unit 7, Episode 2: Signal in the Snow, part of the Below Zero arc.">
+    <div class="cov-layer" data-depth="6" style="z-index:1">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><rect width="500" height="700" fill="url(#nightgrad)"/><circle cx="392" cy="116" r="54" fill="#dfe9ef" opacity=".85"/><circle cx="392" cy="116" r="76" fill="#dfe9ef" opacity=".16"/><rect width="500" height="700" fill="url(#snowdots)" opacity=".45"/></svg>
+    </div>
+    <div class="cov-layer" data-depth="12" style="z-index:2">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><g transform="translate(0,250) scale(5,3.5)" opacity=".95"><use href="#sym-darkline"/></g><g fill="#F2C15B" opacity=".92"><rect x="58" y="378" width="9" height="11"/><rect x="76" y="356" width="9" height="11"/><rect x="58" y="408" width="9" height="11"/><rect x="94" y="392" width="9" height="11"/><rect x="76" y="430" width="9" height="11"/><rect x="112" y="372" width="9" height="11"/></g><rect y="640" width="500" height="60" fill="#060e18"/></svg>
+    </div>
+    <div class="cov-layer" data-depth="22" style="z-index:3">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+        <g stroke="#4A90C2" stroke-width="2" opacity=".55"><line x1="0" y1="500" x2="500" y2="500"/><line x1="0" y1="545" x2="500" y2="545"/><line x1="0" y1="635" x2="500" y2="635"/><line x1="60" y1="470" x2="60" y2="700"/><line x1="155" y1="470" x2="155" y2="700"/><line x1="345" y1="470" x2="345" y2="700"/><line x1="440" y1="470" x2="440" y2="700"/></g>
+        <line x1="0" y1="590" x2="500" y2="590" stroke="#7CF2EC" stroke-width="4" opacity=".9"/>
+        <line x1="250" y1="470" x2="250" y2="700" stroke="#7CF2EC" stroke-width="4" opacity=".9"/>
+        <circle cx="250" cy="590" r="12" fill="#7CF2EC" opacity=".9"/><circle cx="250" cy="590" r="26" fill="#7CF2EC" opacity=".2"/>
+        <polygon points="190,492 110,535 110,575" fill="#F2C15B" opacity=".22"/>
+        <polygon points="320,500 408,540 408,580" fill="#F2C15B" opacity=".22"/>
+        <g transform="translate(150,408) scale(.95)"><use href="#sym-maya"/><path d="M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z" fill="#E2674A" stroke="#17324D" stroke-width="2.5"/><path d="M58 72 l7 18 9 -3 -7 -17z" fill="#E2674A" stroke="#17324D" stroke-width="2.5"/></g>
+        <g transform="translate(248,418) scale(.88)"><use href="#sym-theo"/><path d="M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z" fill="#F2C15B" stroke="#17324D" stroke-width="2.5"/><path d="M58 72 l7 18 9 -3 -7 -17z" fill="#F2C15B" stroke="#17324D" stroke-width="2.5"/></g>
+        <g transform="translate(66,448) scale(.8)"><use href="#sym-zara"/><path d="M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z" fill="#1FA6A2" stroke="#17324D" stroke-width="2.5"/><path d="M58 72 l7 18 9 -3 -7 -17z" fill="#1FA6A2" stroke="#17324D" stroke-width="2.5"/></g>
+        <g transform="translate(352,452) scale(.78)"><use href="#sym-dev"/><path d="M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z" fill="#7db8e8" stroke="#17324D" stroke-width="2.5"/><path d="M58 72 l7 18 9 -3 -7 -17z" fill="#7db8e8" stroke="#17324D" stroke-width="2.5"/></g>
+        <g transform="translate(208,278) scale(.95)"><use href="#sym-vex"/></g>
+        <circle cx="255" cy="325" r="64" fill="url(#vexglow)" opacity=".35"/>
+        <rect width="500" height="700" fill="url(#snowdots)" opacity=".55"/>
+      </svg>
+    </div>
+    <div class="spine"><span>AXIOM CITY · EDUWONDERLAB</span></div>
+    <div id="coverTitle">
+      <div class="series">AXIOM CITY</div>
+      <h1>Signal<br>in the <em>Snow</em></h1>
+      <span class="vol">UNIT 7 · EP 2 · ABSOLUTE VALUE</span>
+    </div>
+    <div id="coverBottom"><span>AN INTERACTIVE<br>GRAPHIC NOVEL EPISODE</span><span>GRADE 6 · UNIT 7<br>EDUWONDERLAB</span></div>
+  </div>
+  <div id="coverActions">
+      <button class="bigbtn" id="startBtn">START READING</button>
+      <button class="bigbtn alt" id="resumeBtn" hidden>RESUME</button>
+  </div>
+</div>
+
+<!-- ============ HUD ============ -->
+<header id="hud" hidden>
+  <div class="brand">AXIOM CITY<small>U7 · E2 · SIGNAL IN THE SNOW</small></div>
+  <div id="progress" aria-label="Reading progress"></div>
+  <div id="badges" aria-label="Badges earned"></div>
+  <div class="hudbtns">
+    <button class="hudbtn" id="sndBtn" aria-pressed="false" title="Sound effects">🔇 Sound</button>
+    <button class="hudbtn" id="motBtn" aria-pressed="true" title="3D motion effects">3D On</button>
+    <button class="hudbtn" id="txtBtn" aria-pressed="false" title="Larger text">A+</button>
+    <button class="hudbtn" id="hcBtn" aria-pressed="false" title="High contrast">HC</button>
+    <button class="hudbtn teacher" id="teacherBtn">Teacher</button>
+  </div>
+</header>
+
+<!-- ============ BOOK ============ -->
+<main id="stage" hidden>
+  <div id="book">
+    <div id="bookcase"></div>
+    <div class="edges" id="edgesL"></div>
+    <div class="edges" id="edgesR"></div>
+    <div id="spreadWrap">
+      <section class="page left" id="pageL" aria-live="polite"></section>
+      <section class="page right" id="pageR" aria-live="polite"></section>
+    </div>
+    <div id="spine3d"></div>
+    <div id="turnSheet" aria-hidden="true"><div class="ts front"></div><div class="ts back"></div><div class="shade"></div></div>
+  </div>
+</main>
+<button class="navarrow" id="prevBtn" aria-label="Previous page" hidden>‹</button>
+<button class="navarrow" id="nextBtn" aria-label="Next page" hidden>›</button>
+<div class="sr-only" role="status" aria-live="polite" id="live"></div>
+
+<!-- ============ MODALS ============ -->
+<div class="modal" id="teacherModal" role="dialog" aria-modal="true" aria-labelledby="tmTitle">
+  <div class="modalcard">
+    <header><h2 id="tmTitle">Teacher Guide — U7 · E2</h2><div><button class="hudbtn" id="printTeacher">Print</button> <button class="x" data-close aria-label="Close">✕</button></div></header>
+    <div class="modalbody" id="teacherBody"></div>
+  </div>
+</div>
+<div class="modal" id="workedModal" role="dialog" aria-modal="true" aria-labelledby="wmTitle">
+  <div class="modalcard">
+    <header><h2 id="wmTitle">VEX · Worked Example</h2></header>
+    <div class="modalbody" id="workedBody"></div>
+  </div>
+</div>
+<script>
+/* ===== CONTENT START (episode — generated from axiom-city-vol-07- by tools/build-axiom-episodes.mjs) ===== */
+const VOLUME = {
+  num: 702,
+  slug: "u7e2",
+  title: "Signal in the Snow",
+  unit: "Unit 7 · Episode 2 · Lesson 7-3",
+  accent: "#4A90C2",
+  nextTeaser: "THE FULL STORY — BELOW ZERO"
+};
+
+const BADGES = [{"id":"g3","icon":"#sig-signal","label":"Signal Finder — Absolute Value"}];
+
+/* scene helpers (verbatim from source volume) */
+/* tiny scene helpers (content-side, fine to reuse) */
+const SC = (vb,inner,depth)=>`<svg class="scene" viewBox="${vb}" role="img" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
+const NT = h=>`<rect width="400" height="${h}" fill="url(#nightgrad)"/>`;
+const SNOWR = (h,o=".5")=>`<rect width="400" height="${h}" fill="url(#snowdots)" opacity="${o}"/>`;
+const DRIFT = y=>`<path d="M0 ${y} Q60 ${y-12} 130 ${y-4} Q210 ${y+6} 290 ${y-8} Q350 ${y-14} 400 ${y-2} L400 ${y+40} L0 ${y+40} Z" fill="#dfe9ef"/><path d="M0 ${y} Q60 ${y-12} 130 ${y-4} Q210 ${y+6} 290 ${y-8} Q350 ${y-14} 400 ${y-2} L400 ${y+40} L0 ${y+40} Z" fill="url(#halftone)" opacity=".4"/>`;
+/* winter scarf drawn OVER a crew symbol (extra paths, shared symbols untouched) */
+const SCARF = c=>`<path d="M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z" fill="${c}" stroke="#17324D" stroke-width="2.5"/><path d="M58 72 l7 18 9 -3 -7 -17z" fill="${c}" stroke="#17324D" stroke-width="2.5"/>`;
+const BEAM = (x,y,a,b)=>`<polygon points="${x},${y} ${x+a},${y+b-16} ${x+a},${y+b+16}" fill="#F2C15B" opacity=".22"/>`;
+
+function mkfeed(el,msg,ok){el.textContent=msg;el.className="gatefeedback "+(ok?"good":"bad");}
+
+const PAGES = [
+{ ch:"Unit 7 · Episode 2", html:"\n  <div style=\"text-align:center;margin-top:8px\"><div class=\"kicker\">EduWonderLab Presents</div>\n  <h2 class=\"splashtitle\" style=\"margin:8px 0\">SIGNAL IN THE <em>SNOW</em></h2>\n  <div class=\"caption\" style=\"display:inline-block\">Lesson 7-3 &mdash; part of the <b>Below Zero</b> arc. absolute value as distance &middot; 6.NS.C.7. Read straight through: each reader gate coaches you with hints and a worked example, but never blocks the page.</div></div>\n  <div class=\"panel\"><svg class=\"scene\" viewBox=\"0 0 400 120\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\"><rect width=\"400\" height=\"120\" fill=\"#141031\"/><g transform=\"translate(330,2) scale(.6)\"><use href=\"#sym-vex\"/></g><g transform=\"translate(20,6) scale(.74)\"><use href=\"#sym-maya\"/></g><g transform=\"translate(112,6) scale(.74)\"><use href=\"#sym-theo\"/></g><g transform=\"translate(204,6) scale(.74)\"><use href=\"#sym-zara\"/></g><g transform=\"translate(296,6) scale(.74)\"><use href=\"#sym-dev\"/></g></svg>\n    <div class=\"balloon vex\" style=\"top:6px;left:10px;max-width:64%\"><span class=\"who\">VEX</span>Episode 2. Same crew, same city — one focused stretch of the case. Turn the page when you're ready.</div>\n  </div>" },
+{ ch:"Chapter 3 · Signal in the Snow", html:"\n  <div class=\"kicker\">Chapter Three</div><h2 class=\"splashtitle\">SIGNAL IN THE <em>SNOW</em></h2>\n  <div class=\"caption loc\">The relay tunnel under Meridian Avenue. Dev taps the wall map awake.</div>\n  <div class=\"panel panel3d tall\"><svg class=\"scene\" viewBox=\"0 0 400 200\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\">\n    <rect width=\"400\" height=\"200\" fill=\"#10243a\"/><rect width=\"400\" height=\"200\" fill=\"url(#halftone)\" opacity=\".5\"/>\n    <g data-depth=\"12\"><line x1=\"24\" y1=\"110\" x2=\"376\" y2=\"110\" stroke=\"#7db8e8\" stroke-width=\"3\"/><line x1=\"39\" y1=\"103\" x2=\"39\" y2=\"117\" stroke=\"#7db8e8\" stroke-width=\"2\"/><text x=\"39\" y=\"132\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"9\" fill=\"#cfe3ea\">-7</text><line x1=\"62\" y1=\"103\" x2=\"62\" y2=\"117\" stroke=\"#7db8e8\" stroke-width=\"2\"/><text x=\"62\" y=\"132\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"9\" fill=\"#cfe3ea\">-6</text><line x1=\"85\" y1=\"103\" x2=\"85\" y2=\"117\" stroke=\"#7db8e8\" stroke-width=\"2\"/><text x=\"85\" y=\"132\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"9\" fill=\"#cfe3ea\">-5</text><line x1=\"108\" y1=\"103\" x2=\"108\" y2=\"117\" stroke=\"#7db8e8\" stroke-width=\"2\"/><text x=\"108\" y=\"132\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"9\" fill=\"#cfe3ea\">-4</text><line x1=\"131\" y1=\"103\" x2=\"131\" y2=\"117\" stroke=\"#7db8e8\" stroke-width=\"2\"/><text x=\"131\" y=\"132\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"9\" fill=\"#cfe3ea\">-3</text><line x1=\"154\" y1=\"103\" x2=\"154\" y2=\"117\" stroke=\"#7db8e8\" stroke-width=\"2\"/><text x=\"154\" y=\"132\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"9\" fill=\"#cfe3ea\">-2</text><line x1=\"177\" y1=\"103\" x2=\"177\" y2=\"117\" stroke=\"#7db8e8\" stroke-width=\"2\"/><text x=\"177\" y=\"132\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"9\" fill=\"#cfe3ea\">-1</text><line x1=\"200\" y1=\"103\" x2=\"200\" y2=\"117\" stroke=\"#7db8e8\" stroke-width=\"2\"/><text x=\"200\" y=\"132\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"9\" fill=\"#cfe3ea\">0</text><line x1=\"223\" y1=\"103\" x2=\"223\" y2=\"117\" stroke=\"#7db8e8\" stroke-width=\"2\"/><text x=\"223\" y=\"132\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"9\" fill=\"#cfe3ea\">1</text><line x1=\"246\" y1=\"103\" x2=\"246\" y2=\"117\" stroke=\"#7db8e8\" stroke-width=\"2\"/><text x=\"246\" y=\"132\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"9\" fill=\"#cfe3ea\">2</text><line x1=\"269\" y1=\"103\" x2=\"269\" y2=\"117\" stroke=\"#7db8e8\" stroke-width=\"2\"/><text x=\"269\" y=\"132\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"9\" fill=\"#cfe3ea\">3</text><line x1=\"292\" y1=\"103\" x2=\"292\" y2=\"117\" stroke=\"#7db8e8\" stroke-width=\"2\"/><text x=\"292\" y=\"132\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"9\" fill=\"#cfe3ea\">4</text><line x1=\"315\" y1=\"103\" x2=\"315\" y2=\"117\" stroke=\"#7db8e8\" stroke-width=\"2\"/><text x=\"315\" y=\"132\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"9\" fill=\"#cfe3ea\">5</text><line x1=\"338\" y1=\"103\" x2=\"338\" y2=\"117\" stroke=\"#7db8e8\" stroke-width=\"2\"/><text x=\"338\" y=\"132\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"9\" fill=\"#cfe3ea\">6</text><line x1=\"361\" y1=\"103\" x2=\"361\" y2=\"117\" stroke=\"#7db8e8\" stroke-width=\"2\"/><text x=\"361\" y=\"132\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"9\" fill=\"#cfe3ea\">7</text>\n    <circle cx=\"200\" cy=\"110\" r=\"8\" fill=\"#7CF2EC\"/><text x=\"200\" y=\"94\" text-anchor=\"middle\" font-family=\"Arial\" font-weight=\"800\" font-size=\"9\" fill=\"#7CF2EC\">ENGINE</text>\n    <circle cx=\"62\" cy=\"110\" r=\"7\" fill=\"#F2C15B\" stroke=\"#fff\" stroke-width=\"2\"/><text x=\"62\" y=\"92\" text-anchor=\"middle\" font-family=\"Arial\" font-weight=\"800\" font-size=\"9\" fill=\"#F2C15B\">STATION W</text>\n    <circle cx=\"292\" cy=\"110\" r=\"7\" fill=\"#E2674A\" stroke=\"#fff\" stroke-width=\"2\"/><text x=\"292\" y=\"92\" text-anchor=\"middle\" font-family=\"Arial\" font-weight=\"800\" font-size=\"9\" fill=\"#E2674A\">STATION E</text></g>\n    <g data-depth=\"18\" transform=\"translate(20,86) scale(.9)\"><use href=\"#sym-dev\"/><path d=\"M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z\" fill=\"#7db8e8\" stroke=\"#17324D\" stroke-width=\"2.5\"/><path d=\"M58 72 l7 18 9 -3 -7 -17z\" fill=\"#7db8e8\" stroke=\"#17324D\" stroke-width=\"2.5\"/></g>\n    <g data-depth=\"18\" transform=\"translate(296,86) scale(.9)\"><use href=\"#sym-theo\"/><path d=\"M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z\" fill=\"#F2C15B\" stroke=\"#17324D\" stroke-width=\"2.5\"/><path d=\"M58 72 l7 18 9 -3 -7 -17z\" fill=\"#F2C15B\" stroke=\"#17324D\" stroke-width=\"2.5\"/></g></svg>\n    <div class=\"balloon\" style=\"top:4px;left:8px;max-width:46%\"><span class=\"who\">DEV</span>Two relay stations on the line: W at −6, E at 4. Farther from the engine at zero means a stronger booster.</div>\n    <div class=\"balloon tail-r\" style=\"bottom:6px;right:6px;max-width:46%\"><span class=\"who\">THEO</span>Distance, not direction. The bars in |−6| mean <b>absolute value</b> — how far from zero, sign ignored.</div>\n  </div>\n  <div class=\"panel\"><svg class=\"scene\" viewBox=\"0 0 400 80\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\"><rect width=\"400\" height=\"80\" fill=\"#0e2233\"/><g transform=\"translate(320,0) scale(.56)\"><use href=\"#sym-vex\"/></g><rect width=\"400\" height=\"80\" fill=\"url(#snowdots)\" opacity=\".3\"/></svg>\n    <div class=\"balloon vex\" style=\"top:6px;left:10px;max-width:74%\"><span class=\"who\">VEX</span>Absolute value is never negative. Direction is a sign's job. Distance is the bars' job.</div>\n  </div>\n  <div class=\"caption\"><b>Absolute value</b> |n| = a number's distance from 0. |−6| asks: how many steps from zero?</div>" },
+{ ch:"Chapter 3 · Reader Gate", gate:"g3", html:"\n  <div class=\"panel\"><svg class=\"scene\" viewBox=\"0 0 400 84\" role=\"img\" preserveAspectRatio=\"xMidYMid meet\"><rect width=\"400\" height=\"84\" fill=\"#10243a\"/><g transform=\"translate(8,-4) scale(.62)\"><use href=\"#sym-dev\"/><path d=\"M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z\" fill=\"#7db8e8\" stroke=\"#17324D\" stroke-width=\"2.5\"/><path d=\"M58 72 l7 18 9 -3 -7 -17z\" fill=\"#7db8e8\" stroke=\"#17324D\" stroke-width=\"2.5\"/></g><rect width=\"400\" height=\"84\" fill=\"url(#snowdots)\" opacity=\".3\"/></svg>\n    <div class=\"balloon\" style=\"top:6px;left:78px;max-width:70%\"><span class=\"who\">DEV</span>Set the booster strengths, reader. Then call which station sits farther out.</div>\n  </div>" },
+{ ch:"End Matter · Ada Vex's Journal", html:"\n  <h2 class=\"splashtitle\" style=\"font-size:1.4rem\">ADA VEX'S <em>JOURNAL</em></h2>\n  <div class=\"journal\"><h4>Lesson 7-3 &mdash; what this stretch of the case taught us</h4>\n    <div class=\"jrow\"><b>6.NS.C.7</b><span>Order rational numbers; understand absolute value as distance and magnitude</span></div>\n  </div>\n  <div class=\"caption\">The full story — <b>Below Zero</b> — is glowing at the city gate. — A.V.</div>" },
+{ ch:"End Matter · Certificate", html:"\n  <div id=\"certificate\">\n    <div class=\"kicker\">Axiom City · EduWonderLab</div>\n    <h3>READER CERTIFICATE</h3>\n    <p style=\"font:600 .9rem Georgia,serif\">This certifies that</p>\n    <input id=\"certName\" maxlength=\"40\" placeholder=\"write your name\" aria-label=\"Your name for the certificate\">\n    <p style=\"font:600 .9rem Georgia,serif\">completed <b>Unit 7 · Episode 2: Signal in the Snow</b> in the Below Zero arc, and proved mastery over absolute value as distance · 6.NS.C.7.</p>\n    <div class=\"certbadges\" id=\"certBadges\"></div>\n    <button class=\"gatecheck\" id=\"printCert\" style=\"align-self:center\">PRINT CERTIFICATE</button>\n  </div>\n  <div class=\"caption\" style=\"text-align:center\">Next up: the full anchor volume — Below Zero.</div>" }
+];
+
+const GATES = {
+"g3":{title:"Gate 3 · Signal Strength", icon:"#sig-signal", prompt:"Booster strength = the station's <b>absolute value</b> (its distance from the engine at zero). Set both: <b>|−6|</b> for Station W and <b>|4|</b> for Station E — then call which station is <b>farther from zero</b>.",hints:["Conceptual: absolute value bars measure DISTANCE from zero, and distance has no sign — |−9| and |9| are both 9.","Procedural: count steps from 0 to the station on the number line. For 'farther from zero,' compare the two distances and pick the station whose distance is bigger."],worked:{"steps":["Two stations sit at −8 and 3.","|−8| = 8 steps from zero. |3| = 3 steps from zero.","8 > 3, so the station at −8 is farther from zero — even though −8 is the SMALLER number."],"q":"What is |−12|?","a":"12"},render(body,api){
+    body.innerHTML=`<div class="panelrow" style="align-items:center;gap:14px;flex-wrap:wrap">
+      <label style="font:700 .85rem 'Segoe UI'">|−6| = <input class="numin" id="s1" inputmode="numeric" aria-label="absolute value of negative 6"></label>
+      <label style="font:700 .85rem 'Segoe UI'">|4| = <input class="numin" id="s2" inputmode="numeric" aria-label="absolute value of 4"></label></div>
+      <div class="choicebtns" role="group" aria-label="Which station is farther from zero?">
+        <button class="choicebtn" data-f="-6" aria-pressed="false">📡 Station W, at −6</button>
+        <button class="choicebtn" data-f="4" aria-pressed="false">📡 Station E, at 4</button></div>`;
+    let pick=null;body.querySelectorAll("[data-f]").forEach(b=>b.addEventListener("click",()=>{
+      body.querySelectorAll("[data-f]").forEach(x=>x.setAttribute("aria-pressed","false"));
+      b.setAttribute("aria-pressed","true");pick=b.dataset.f;api.sound("blip");}));
+    api.onCheck(()=>{const e1=body.querySelector("#s1"),e2=body.querySelector("#s2");
+      const v1=parseFloat(e1.value),v2=parseFloat(e2.value);
+      const ok1=v1===6,ok2=v2===4;
+      e1.className="numin "+(ok1?"ok":"no");e2.className="numin "+(ok2?"ok":"no");
+      if(!ok1||!ok2){
+        if(v1===-6)return api.fail("Distance is never negative — drop the sign inside the bars.");
+        return api.fail("Absolute value asks: how many steps from 0? Count them on the line.");}
+      if(pick!=="-6")return api.fail("Strengths are set… now compare the two distances you just found. Which one is bigger?");
+      api.pass("Boosters set: 6 and 4. Station W at −6 sits farther from zero — it gets the big booster. Signal restored!");});
+  }}
+};
+
+const TEACHER = {
+  suggested: "Use as the Episode 2 slice of Below Zero — a focused 1-day read covering Lesson 7-3. Whole-class on projector, pairs, or independent. Progress saves on the device. For the full arc, open the anchor volume Below Zero.",
+  standards: [
+    [
+      "6.NS.C.7",
+      "Order rational numbers; understand absolute value as distance and magnitude",
+      "Gate 2 (ordering readings) + Gate 3 (signal strength)"
+    ]
+  ],
+  answers: [
+    [
+      "Gate 3",
+      "|−6| = 6 and |4| = 4; the station at −6 is farther from zero (6 > 4). Misconception: treating 'negative' as 'closer/less' — absolute value is distance, not direction."
+    ]
+  ]
+};
+/* ===== CONTENT END ===== */
+</script>
+<script>
+/* ================================================================
+   ===== AXIOM CITY ENGINE v1.0 — identical in every volume =======
+   ================================================================ */
+"use strict";
+/* ---------- storage (exact wrapper, ewl_ prefix) ---------- */
+const storage={_m:{},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){this._m[k]=v}},get(k,d=null){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return this._m[k]??d}}};
+const K=s=>`ewl_axiom_${VOLUME.slug}_${s}`;
+
+const $=s=>document.querySelector(s);
+const live=msg=>{$("#live").textContent=msg};
+const reducedMQ=matchMedia("(prefers-reduced-motion: reduce)");
+const mobileMQ=matchMedia("(max-width: 820px)");
+
+const prefs=Object.assign({sound:false,motion:true,bigtext:false,hc:false},storage.get(K("prefs"))||{});
+let solved=new Set(storage.get(K("gates"))||[]);
+let page=storage.get(K("page"))||0;            // index of left/visible page
+let turning=false;
+const attempts={};
+
+/* ---------- audio (Web Audio oscillators only, muted default) ---------- */
+let actx=null;
+function ac(){if(!actx){try{actx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return actx}
+function tone(f,t,dur,type="square",vol=.04){const c=ac();if(!c||!prefs.sound)return;const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(vol,c.currentTime+t);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+t+dur);o.connect(g).connect(c.destination);o.start(c.currentTime+t);o.stop(c.currentTime+t+dur+.02)}
+const SND={blip(){tone(660,0,.07)},flip(){tone(220,0,.09,"triangle",.05);tone(330,.05,.08,"triangle",.04)},win(){[523,659,784,1046].forEach((f,i)=>tone(f,i*.09,.14,"triangle",.05))},thud(){tone(110,0,.18,"sawtooth",.05)}};
+
+/* ---------- helpers ---------- */
+function gateLockIcon(open){return `<div class="gatelockcorner ${open?"open":""}" aria-hidden="true"><svg viewBox="0 0 100 100" style="color:#fff"><use href="${open?"#sig-open":"#sig-lock"}"/></svg></div>`}
+
+function pageInnerHTML(i){
+  if(i==null||i<0||i>=PAGES.length) return `<div class="page-inner" style="align-items:center;justify-content:center"><div class="kicker" style="opacity:.4">AXIOM CITY</div></div><div class="pagefoot"><span></span><span></span></div>`;
+  const p=PAGES[i];
+  const gateHTML=p.gate?`<div class="gatemount" data-gate="${p.gate}"></div>`:"";
+  const lock=p.gate?gateLockIcon(solved.has(p.gate)):"";
+  return `${lock}<div class="chapterband">${p.ch.replace("·","· <em>").concat(p.ch.includes("·")?"</em>":"")}</div><div class="page-inner">${p.html}${gateHTML}</div><div class="pagefoot"><span>${VOLUME.unit}</span><span>PAGE ${i+1} / ${PAGES.length}</span></div>`;
+}
+
+/* ---------- gate framework ---------- */
+function mountGates(scope){
+  scope.querySelectorAll(".gatemount").forEach(m=>{
+    const id=m.dataset.gate,G=GATES[id];
+    if(!G)return;
+    if(solved.has(id)){m.innerHTML=`<div class="gatesolved"><span class="stamp">SOLVED</span> ${G.title} — badge earned.</div>`;return}
+    m.innerHTML=`<div class="gatebox"><header><svg class="gicon" viewBox="0 0 100 100"><use href="${G.icon}"/></svg><h3>${G.title}</h3></header>
+      <div class="gatebody"><div class="gateprompt">${G.prompt}</div><div class="gwidget"></div>
+      <div class="gatehint" hidden></div>
+      <button class="gatecheck">CHECK</button>
+      <div class="gatefeedback" aria-live="polite"></div></div></div>`;
+    const box=m.querySelector(".gatebox"),body=m.querySelector(".gwidget"),fb=m.querySelector(".gatefeedback"),hint=m.querySelector(".gatehint"),btn=m.querySelector(".gatecheck");
+    let checker=null;
+    const api={
+      sound:n=>SND[n]&&SND[n](),
+      onCheck(fn){checker=fn},
+      fail(msg){
+        attempts[id]=(attempts[id]||0)+1;SND.thud();mkfeed(fb,msg,false);
+        const n=attempts[id];
+        if(n===1){hint.hidden=false;hint.innerHTML="💡 <b>Hint:</b> "+G.hints[0]}
+        else if(n===2){hint.hidden=false;hint.innerHTML="🧭 <b>Hint 2:</b> "+G.hints[1]}
+        else if(n>=3&&!hint.querySelector(".askvex")){
+          const b=document.createElement("button");b.className="gatecheck askvex";b.style.marginTop="8px";b.textContent="ASK VEX — WORKED EXAMPLE";
+          b.addEventListener("click",()=>openWorked(G));hint.appendChild(b);
+        }
+        live("Not yet. "+msg);
+      },
+      pass(msg){
+        solved.add(id);storage.set(K("gates"),[...solved]);SND.win();
+        m.innerHTML=`<div class="gatesolved unlockflash"><span class="stamp">SOLVED</span> ${msg}</div>`;
+        const corner=m.closest(".page,#pageL,#pageR")?.querySelector(".gatelockcorner");
+        if(corner){corner.classList.add("open");corner.innerHTML=`<svg viewBox="0 0 100 100" style="color:#fff"><use href="#sig-open"/></svg>`}
+        earnBadge(id);updateNav();live("Gate solved! "+msg);
+      }
+    };
+    G.render(body,api);
+    btn.addEventListener("click",()=>{ac();checker&&checker()});
+  });
+}
+function openWorked(G){
+  $("#workedBody").innerHTML=`<div class="workedsteps">${G.worked.steps.map((s,i)=>`<div class="st"><b class="n">${i+1}</b><span>${s}</span></div>`).join("")}</div>
+    <div class="caption">Your turn — same idea, different numbers:</div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span style="font:600 .92rem 'Segoe UI'">${G.worked.q}</span>
+    <input class="numin" id="wkin" aria-label="worked example answer"><button class="gatecheck" id="wkgo">CHECK</button></div>
+    <div class="gatefeedback" id="wkfb" aria-live="polite"></div>`;
+  $("#workedModal").classList.add("open");
+  $("#wkgo").addEventListener("click",()=>{
+    const v=($("#wkin").value||"").trim().replace(/\s+/g,"");
+    if(v===G.worked.a||parseFloat(v)===parseFloat(G.worked.a)){
+      mkfeed($("#wkfb"),"Yes! Now head back and open that gate.",true);SND.win();
+      setTimeout(()=>$("#workedModal").classList.remove("open"),1100);
+    }else{mkfeed($("#wkfb"),"Walk the steps above again — you've got this.",false);SND.thud()}
+  });
+}
+
+/* ---------- badges ---------- */
+function buildBadges(){
+  $("#badges").innerHTML=BADGES.map(b=>`<div class="badge ${solved.has(b.id)?"earned":""}" id="badge-${b.id}" title="${b.label}" role="img" aria-label="${b.label}${solved.has(b.id)?" — earned":" — locked"}"><svg viewBox="0 0 100 100"><use href="${b.icon}"/></svg></div>`).join("");
+}
+function earnBadge(id){buildBadges();const el=$("#badge-"+id);if(el){el.classList.remove("earned");void el.offsetWidth;el.classList.add("earned")}const b=BADGES.find(x=>x.id===id);if(b)live("Badge earned: "+b.label)}
+
+/* ---------- progress ---------- */
+function buildProgress(){$("#progress").innerHTML=PAGES.map((_,i)=>`<span class="dot ${i<=page?"on":""}"></span>`).join("")}
+
+/* ---------- navigation & rendering ---------- */
+const isMobile=()=>mobileMQ.matches;
+function leftIndex(){return isMobile()?page:page-(page%2)}
+function visiblePages(){return isMobile()?[page]:[leftIndex(),leftIndex()+1].filter(i=>i<PAGES.length)}
+function blockedBy(){return null/* locks removed: gates still teach via hints + Ask VEX worked examples, but never block turning the page (Neft 2026-06-11) */}
+
+function renderSpread(){
+  const L=$("#pageL"),R=$("#pageR");
+  if(isMobile()){L.innerHTML=pageInnerHTML(page);L.classList.remove("offscreen");R.classList.add("offscreen");R.innerHTML="";mountGates(L)}
+  else{const li=leftIndex();L.innerHTML=pageInnerHTML(li);R.innerHTML=pageInnerHTML(li+1<PAGES.length?li+1:null);L.classList.remove("offscreen");R.classList.remove("offscreen");mountGates(L);mountGates(R)}
+  buildProgress();updateNav();updateEdges();
+  if(PAGES[page])live(`Page ${page+1} of ${PAGES.length}. ${PAGES[page].ch}.`);
+  storage.set(K("page"),page);
+  if($("#certName")){$("#certName").value=storage.get(K("name"))||"";$("#certName").addEventListener("input",e=>storage.set(K("name"),e.target.value));
+    $("#certBadges").innerHTML=BADGES.map(b=>`<div class="badge ${solved.has(b.id)?"":"locked"}"><svg viewBox="0 0 100 100"><use href="${b.icon}"/></svg></div>`).join("");
+    $("#printCert").addEventListener("click",()=>{document.body.classList.add("print-cert");window.print();setTimeout(()=>document.body.classList.remove("print-cert"),400)});}
+}
+function updateEdges(){const f=page/Math.max(1,PAGES.length-1);$("#edgesL").style.width=(4+f*12)+"px";$("#edgesR").style.width=(16-f*12)+"px"}
+function updateNav(){
+  $("#prevBtn").disabled=page<=0||turning;
+  const lastVisible=Math.max(...visiblePages());
+  const end=lastVisible>=PAGES.length-1;
+  const blocked=blockedBy();
+  $("#nextBtn").disabled=end||turning;
+  $("#nextBtn").classList.toggle("locked",!!blocked&&!end);
+  $("#nextBtn").innerHTML=blocked&&!end?"🔒":"›";
+  $("#nextBtn").setAttribute("aria-label",blocked?"Locked — solve the gate on this page to continue":"Next page");
+}
+function step(dir){
+  if(turning)return;
+  if(dir>0){
+    const blocked=blockedBy();
+    if(blocked){const G=GATES[blocked];SND.thud();$("#nextBtn").classList.add("shake");setTimeout(()=>$("#nextBtn").classList.remove("shake"),700);
+      live("This page is gated. Solve "+G.title+" to continue.");
+      const gb=document.querySelector(".gatebox");if(gb){gb.classList.add("unlockflash");setTimeout(()=>gb.classList.remove("unlockflash"),1000)}
+      return}
+    const lastVisible=Math.max(...visiblePages());
+    if(lastVisible>=PAGES.length-1)return;
+    const target=isMobile()?page+1:leftIndex()+2;
+    animTurn(1,target);
+  }else{
+    if(page<=0)return;
+    const target=isMobile()?page-1:Math.max(0,leftIndex()-2);
+    animTurn(-1,target);
+  }
+}
+function animTurn(dir,target){
+  if(isMobile()||reducedMQ.matches||!prefs.motion){page=target;renderSpread();SND.flip();return}
+  turning=true;SND.flip();
+  const sheet=$("#turnSheet"),front=sheet.querySelector(".ts.front"),back=sheet.querySelector(".ts.back");
+  const oldL=leftIndex();
+  if(dir>0){
+    front.innerHTML=pageInnerHTML(oldL+1<PAGES.length?oldL+1:null);
+    back.innerHTML=pageInnerHTML(target<PAGES.length?target:null);
+    page=target;
+    /* underneath: left stays old-left, right becomes new-right */
+    $("#pageR").innerHTML=pageInnerHTML(target+1<PAGES.length?target+1:null);
+    sheet.className="";sheet.classList.add("show","fwd");
+  }else{
+    front.innerHTML=pageInnerHTML(target+1<PAGES.length?target+1:null);
+    back.innerHTML=pageInnerHTML(oldL);
+    page=target;
+    $("#pageL").innerHTML=pageInnerHTML(target);
+    sheet.className="";sheet.classList.add("show","back");
+  }
+  const done=()=>{sheet.classList.remove("show","fwd","back");sheet.removeEventListener("animationend",done);turning=false;renderSpread()};
+  sheet.addEventListener("animationend",done);
+  setTimeout(()=>{if(turning){done()}},1000);
+}
+
+/* ---------- parallax ---------- */
+let rafPending=false,px=0,py=0;
+function applyParallax(){
+  rafPending=false;
+  if(!prefs.motion||reducedMQ.matches)return;
+  document.querySelectorAll("#spreadWrap .panel3d").forEach(p=>{
+    p.style.transform=`rotateY(${px*4}deg) rotateX(${-py*3}deg)`;
+    p.querySelectorAll("[data-depth]").forEach(l=>{const d=+l.dataset.depth||0;l.style.transform=`translate(${px*d*.6}px,${py*d*.35}px)`});
+  });
+}
+addEventListener("pointermove",e=>{
+  px=(e.clientX/innerWidth-.5)*2;py=(e.clientY/innerHeight-.5)*2;
+  if(!rafPending){rafPending=true;requestAnimationFrame(applyParallax)}
+  const cc=$("#coverCard");
+  if(cc&&!$("#cover").hidden&&prefs.motion&&!reducedMQ.matches){
+    cc.style.transform=`rotateY(${px*9}deg) rotateX(${-py*7}deg)`;
+    cc.querySelectorAll(".cov-layer").forEach(l=>{const d=+l.dataset.depth||0;l.style.transform=`translate(${px*d}px,${py*d*.6}px)`});
+  }
+},{passive:true});
+
+/* note: SVG <g data-depth> transform via style works in modern browsers (SVG2). Wrapped above for safety. */
+
+/* ---------- HUD toggles ---------- */
+function syncToggles(){
+  $("#sndBtn").setAttribute("aria-pressed",prefs.sound);$("#sndBtn").textContent=prefs.sound?"🔊 Sound":"🔇 Sound";
+  $("#motBtn").setAttribute("aria-pressed",prefs.motion);$("#motBtn").textContent=prefs.motion?"3D On":"3D Off";
+  $("#txtBtn").setAttribute("aria-pressed",prefs.bigtext);document.documentElement.dataset.textsize=prefs.bigtext?"lg":"md";
+  $("#hcBtn").setAttribute("aria-pressed",prefs.hc);document.body.classList.toggle("hc",prefs.hc);
+  if(!prefs.motion)document.querySelectorAll(".panel3d").forEach(p=>p.style.transform="");
+  storage.set(K("prefs"),prefs);
+}
+$("#sndBtn").addEventListener("click",()=>{prefs.sound=!prefs.sound;ac();syncToggles();SND.blip()});
+$("#motBtn").addEventListener("click",()=>{prefs.motion=!prefs.motion;syncToggles()});
+$("#txtBtn").addEventListener("click",()=>{prefs.bigtext=!prefs.bigtext;syncToggles()});
+$("#hcBtn").addEventListener("click",()=>{prefs.hc=!prefs.hc;syncToggles()});
+
+/* ---------- teacher panel ---------- */
+function buildTeacher(){
+  $("#teacherBody").innerHTML=`
+    <p style="font:600 .9rem/1.45 'Segoe UI'">${VOLUME.unit} — interactive graphic novel. Story pauses at six <b>reader gates</b>; students must solve grade-level math problems to continue. Progress, badges, and settings persist per device.</p>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">SUGGESTED USE</h3>
+    <p style="font:600 .88rem/1.45 'Segoe UI'">${TEACHER.suggested}</p>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">STANDARDS ALIGNMENT (CCSS)</h3>
+    <table class="tt"><tr><th>Standard</th><th>Description</th><th>Where</th></tr>
+    ${TEACHER.standards.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</table>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">ANSWER KEY</h3>
+    <table class="tt"><tr><th>Gate</th><th>Answer &amp; notes</th></tr>
+    ${TEACHER.answers.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td></tr>`).join("")}</table>
+    <p style="font:600 .8rem/1.4 'Segoe UI';color:#666">Hints escalate: conceptual → procedural → VEX worked example (parallel problem; never reveals the gate answer). Sound is off by default. 3D motion can be disabled (auto-disabled for reduced-motion users). © EduWonderLab — single-file, offline-safe, no data leaves the device.</p>`;
+}
+$("#teacherBtn").addEventListener("click",()=>{buildTeacher();$("#teacherModal").classList.add("open")});
+$("#printTeacher").addEventListener("click",()=>{document.body.classList.add("print-teacher");window.print();setTimeout(()=>document.body.classList.remove("print-teacher"),400)});
+document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",()=>b.closest(".modal").classList.remove("open")));
+
+/* ---------- input ---------- */
+$("#nextBtn").addEventListener("click",()=>{ac();step(1)});
+$("#prevBtn").addEventListener("click",()=>{ac();step(-1)});
+addEventListener("keydown",e=>{
+  if(e.key==="Escape"){$("#teacherModal").classList.remove("open");return}
+  if($(".modal.open"))return;
+  if(["ArrowRight","PageDown"].includes(e.key))step(1);
+  if(["ArrowLeft","PageUp"].includes(e.key))step(-1);
+});
+let tx=null;
+addEventListener("touchstart",e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener("touchend",e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>60&&!$(".modal.open"))step(dx<0?1:-1);tx=null},{passive:true});
+mobileMQ.addEventListener("change",()=>renderSpread());
+
+/* ---------- boot ---------- */
+function openBook(){
+  $("#cover").hidden=true;$("#hud").hidden=false;$("#stage").hidden=false;
+  $("#prevBtn").hidden=false;$("#nextBtn").hidden=false;
+  renderSpread();
+}
+$("#startBtn").addEventListener("click",()=>{ac();page=0;openBook()});
+$("#resumeBtn").addEventListener("click",()=>{ac();openBook()});
+if((storage.get(K("page"))||0)>0||solved.size>0){$("#resumeBtn").hidden=false}
+if(reducedMQ.matches){prefs.motion=false}
+document.body.classList.toggle("reduced",reducedMQ.matches);
+buildBadges();syncToggles();buildProgress();
+</script>
+</body>
+</html>
