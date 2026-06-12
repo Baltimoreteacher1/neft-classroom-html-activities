@@ -560,7 +560,7 @@
     return `
       <section class="support-box">
         <h4>Key vocabulary</h4>
-        <dl>${terms.map(([term, meaning, spanish]) => `<div><dt>${escapeHtml(term)}</dt><dd>${escapeHtml(meaning)}${spanish ? `<span class="vocab-es" lang="es">🌐 ${escapeHtml(spanish)}</span>` : ""}</dd></div>`).join("")}</dl>
+        <dl>${terms.map(([term, meaning, spanish]) => `<div><dt>${escapeHtml(term)}</dt><dd>${escapeHtml(meaning)}${spanish ? `<span class="vocab-es" lang="es">🌐 ${escapeHtml(spanish)}<button type="button" class="vocab-es-speak" data-es="${escapeHtml(spanish)}" aria-label="Escuchar en español">🔊</button></span>` : ""}</dd></div>`).join("")}</dl>
         ${essential.length ? `<p class="spanish-mini"><strong>English / Spanish:</strong> ${essential.map(([en, es]) => `${escapeHtml(en)} / ${escapeHtml(es)}`).join("; ")}</p>` : ""}
       </section>
     `;
@@ -897,20 +897,23 @@
     renderAll();
   }
 
-  function speakPrompt() {
-    const activity = activeActivity();
-    if (!activity || !("speechSynthesis" in window)) {
+  function speakText(text, lang = "en-US") {
+    if (!text || !("speechSynthesis" in window)) {
       showSaveStatus("Read aloud is not available in this browser.");
       return;
     }
     window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(
-      `${activity.title}. ${activity.prompt || activity.directions}`,
-    );
+    const utter = new SpeechSynthesisUtterance(text);
     // Slower, clearer pace for multilingual learners (mirrors ACCESS audio).
-    utter.lang = "en-US";
+    utter.lang = lang;
     utter.rate = 0.9;
     window.speechSynthesis.speak(utter);
+  }
+
+  function speakPrompt() {
+    const activity = activeActivity();
+    if (!activity) return;
+    speakText(`${activity.title}. ${activity.prompt || activity.directions}`);
   }
 
   function showSaveStatus(message) {
@@ -993,6 +996,8 @@
       }
       if (event.target.closest("[data-check]")) checkAnswer();
       if (event.target.closest("[data-speak]")) speakPrompt();
+      const esBtn = event.target.closest("[data-es]");
+      if (esBtn) speakText(esBtn.getAttribute("data-es"), "es-US");
       if (event.target.closest("[data-prev]")) {
         const prev = activities()[state.activityIndex - 1];
         if (prev) navigate(practiceUrl(state.domain, state.level, prev.id));
