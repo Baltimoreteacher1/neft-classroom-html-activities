@@ -8,11 +8,11 @@ const redirectsPath = resolve(root, '_redirects');
 const registry = JSON.parse(readFileSync(registryPath, 'utf8'));
 
 validateRegistry(registry);
-writeRedirects(registry.redirects || []);
+writeRedirects(registry.redirects || [], registry.rewrites || []);
 
 console.log('Generated Cloudflare route files from data/routes.json');
 
-function writeRedirects(redirects) {
+function writeRedirects(redirects, rewrites) {
   const lines = [
     '# Cloudflare Pages redirects for Neft Hub static site',
     '# Generated from data/routes.json by tools/generate-route-files.mjs',
@@ -22,6 +22,16 @@ function writeRedirects(redirects) {
 
   for (const redirect of redirects) {
     lines.push(`${redirect.source} ${redirect.destination} ${redirect.status || 301}`);
+  }
+
+  // Status-200 rewrites (SPA fallbacks). Existing static assets always take
+  // precedence over a 200 rewrite, so these only catch otherwise-unmatched
+  // paths under their source prefix (e.g. clean History-API deep links).
+  if (rewrites.length) {
+    lines.push('', '# SPA rewrites (status 200) — keep below redirects');
+    for (const rewrite of rewrites) {
+      lines.push(`${rewrite.source} ${rewrite.destination} ${rewrite.status || 200}`);
+    }
   }
 
   lines.push('');
@@ -35,6 +45,7 @@ function validateRegistry(value) {
 
   if (!Array.isArray(value.routes)) errors.push('routes must be an array');
   if (!Array.isArray(value.redirects)) errors.push('redirects must be an array');
+  if (value.rewrites !== undefined && !Array.isArray(value.rewrites)) errors.push('rewrites must be an array when present');
 
   for (const route of value.routes || []) {
     if (!route.id) errors.push('route missing id');
@@ -51,6 +62,12 @@ function validateRegistry(value) {
     if (!redirect.source?.startsWith('/')) errors.push(`invalid redirect source: ${redirect.source}`);
     if (!redirect.destination?.startsWith('/')) errors.push(`invalid redirect destination for ${redirect.source}`);
     if (![301, 302, 307, 308].includes(Number(redirect.status || 301))) errors.push(`invalid redirect status for ${redirect.source}`);
+  }
+
+  for (const rewrite of value.rewrites || []) {
+    if (!rewrite.source?.startsWith('/')) errors.push(`invalid rewrite source: ${rewrite.source}`);
+    if (!rewrite.destination?.startsWith('/')) errors.push(`invalid rewrite destination for ${rewrite.source}`);
+    if (Number(rewrite.status || 200) !== 200) errors.push(`rewrite status must be 200 for ${rewrite.source}`);
   }
 
   if (errors.length) {
