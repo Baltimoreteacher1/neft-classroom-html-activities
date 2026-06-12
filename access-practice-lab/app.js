@@ -436,11 +436,12 @@
     const list = activities();
     const itemLabel = state.domain === "Model-Test" ? "Item" : "Activity";
     $("activityGrid").innerHTML =
-      list
-        .map((activity, index) => {
-          const href = practiceUrl(state.domain, state.level, activity.id);
-          const done = state.complete.has(activity.id);
-          return `
+      modelTestRecapHTML() +
+        list
+          .map((activity, index) => {
+            const href = practiceUrl(state.domain, state.level, activity.id);
+            const done = state.complete.has(activity.id);
+            return `
         <article class="activity-card-hub ${done ? "is-done" : ""}">
           <div class="activity-card-head">
             <span class="activity-card-num">${done ? "✓" : `${itemLabel} ${index + 1}`}</span>
@@ -455,8 +456,8 @@
           </div>
         </article>
       `;
-        })
-        .join("") ||
+          })
+          .join("") ||
       `<p class="empty-state">No activities for this level yet.</p>`;
   }
 
@@ -740,6 +741,64 @@
       <section class="certificate-box">
         <h3>Completion slip</h3>
         <p><strong>${escapeHtml(name)}</strong> completed ${escapeHtml(domainLabel(state.domain))} ${escapeHtml(levelLabel(state.level, activeLevel()))}.</p>
+      </section>
+    `;
+  }
+
+  function modelTestPartLabel(activity) {
+    const raw = activity.testPart || domainLabel(state.domain);
+    return raw.replace(/\s*Part\s+[AB0-9-]+$/i, "").trim() || raw;
+  }
+
+  function modelTestRecapHTML() {
+    if (state.domain !== "Model-Test") return "";
+    const list = activities();
+    const auto = list.filter((a) => a.type !== "constructed");
+    // Score only items the student actually checked; data-mark toggles are ignored.
+    const graded = auto.filter((a) => state.feedback[a.id]);
+    if (!graded.length) return "";
+    const correct = graded.filter((a) => state.feedback[a.id]?.ok).length;
+    const written = list.filter(
+      (a) => a.type === "constructed" && state.complete.has(a.id),
+    ).length;
+    const totalConstructed = list.filter(
+      (a) => a.type === "constructed",
+    ).length;
+    const pct = Math.round((correct / graded.length) * 100);
+    const tone =
+      pct >= 80
+        ? "Strong work — you are ACCESS-ready on these items."
+        : pct >= 50
+          ? "Good progress — review the items you missed and try again."
+          : "Keep practicing — reread the prompts and use the help drawer.";
+
+    const parts = {};
+    for (const a of graded) {
+      const key = modelTestPartLabel(a);
+      parts[key] = parts[key] || { correct: 0, total: 0 };
+      parts[key].total += 1;
+      if (state.feedback[a.id]?.ok) parts[key].correct += 1;
+    }
+    const partRows = Object.entries(parts)
+      .map(
+        ([label, s]) =>
+          `<li><span>${escapeHtml(label)}</span><strong>${s.correct}/${s.total}</strong></li>`,
+      )
+      .join("");
+
+    return `
+      <section class="lab-results" aria-label="Practice test results">
+        <div class="lab-results-score">
+          <span class="lab-results-pct">${pct}%</span>
+          <span class="lab-results-frac">${correct} of ${graded.length} auto-scored items correct</span>
+        </div>
+        <p class="lab-results-tone">${escapeHtml(tone)}</p>
+        <ul class="lab-results-parts">${partRows}</ul>
+        ${
+          totalConstructed
+            ? `<p class="lab-results-note">${written}/${totalConstructed} written response${totalConstructed === 1 ? "" : "s"} submitted for teacher review (not auto-scored).</p>`
+            : ""
+        }
       </section>
     `;
   }
