@@ -122,6 +122,15 @@ function resolveSitePath(link, fromFile) {
   return abs;
 }
 
+const ACCESS_PRACTICE_SPA_RE =
+  /^\/access-practice-lab\/(Listening|Speaking|Reading|Writing|Model-Test)\//;
+
+/** Routes served by functions/access-practice-lab/[[path]].js, not static files. */
+function isFunctionBackedRoute(link) {
+  const path = link.split('#')[0].split('?')[0];
+  return ACCESS_PRACTICE_SPA_RE.test(path);
+}
+
 /** Does this absolute path exist as a file, or as a dir with index.html? */
 function targetExists(abs) {
   if (existsSync(abs)) {
@@ -239,6 +248,7 @@ for (const file of htmlFiles) {
     if (seenBroken.has(key)) continue;
     seenBroken.add(key);
     if (!targetExists(abs)) {
+      if (isFunctionBackedRoute(link)) continue;
       add('error', 'link', `broken link → ${link}`, relFile);
     } else if (link.startsWith('/') && !existsExactCase(abs.endsWith('index.html') && link.endsWith('/') ? dirname(abs) : abs)) {
       add('warn', 'case', `link case mismatch (404s on Cloudflare) → ${link}`, relFile);
