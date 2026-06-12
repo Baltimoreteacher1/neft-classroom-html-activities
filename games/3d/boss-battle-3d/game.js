@@ -119,6 +119,7 @@ export default {
     let correctValue = ""; // the correct choice string
     let clarity = null; // clarity-kit controller (start/help/end overlays)
     let started = false; // gameplay begins only after the Start overlay
+    let shardSpeedMult = 1.0;
     const timers = new Set();
     const frameUnsubs = [];
 
@@ -270,10 +271,9 @@ export default {
       emissiveIntensity: 2.2,
       roughness: 0.1,
     });
-    const bolt = new THREE.Mesh(
-      new THREE.SphereGeometry(0.32, 16, 16),
-      boltMat,
-    );
+    const boltGeo = new THREE.CylinderGeometry(0.06, 0.06, 2.0, 8);
+    boltGeo.rotateX(Math.PI / 2);
+    const bolt = new THREE.Mesh(boltGeo, boltMat);
     bolt.visible = false;
     scene.add(bolt);
 
@@ -615,6 +615,9 @@ export default {
       );
 
       phaseIndex += 1;
+      // Spike shard rotation speed for phase transition
+      shardSpeedMult = 15.0;
+
       if (phaseIndex >= plan.phaseUnits.length) {
         later(() => winGame(), 1700);
         return;
@@ -652,13 +655,16 @@ export default {
       start.y -= 0.6;
       const end = boss.position.clone().add(new THREE.Vector3(0, 0.3, 1));
       bolt.position.copy(start);
+      bolt.lookAt(end);
+
       feel.tween({
         from: 0,
         to: 1,
-        duration: 0.32,
+        duration: 0.35,
         onUpdate: (v) => {
           bolt.position.lerpVectors(start, end, v);
-          bolt.scale.setScalar(0.6 + v * 0.8);
+          const scaleZ = 1 + v * 1.5;
+          bolt.scale.set(1.0, 1.0, scaleZ);
         },
         onComplete: () => {
           bolt.visible = false;
@@ -689,16 +695,28 @@ export default {
     }
 
     function bossRecoil() {
-      const base = boss.position.z;
+      const baseZ = boss.position.z;
+      const baseY = boss.position.y;
       feel.tween({
         from: 0,
         to: 1,
-        duration: 0.28,
-        onUpdate: (v) => {
-          boss.position.z = base - Math.sin(v * Math.PI) * 0.9;
+        duration: 0.5,
+        onUpdate: (t) => {
+          const recoil = Math.sin(t * Math.PI) * Math.exp(-t * 2);
+          boss.position.z = baseZ - recoil * 2.2;
+          boss.position.y = baseY + recoil * 0.5;
+
+          const s = 1.0 - recoil * 0.3;
+          boss.scale.set(1.3 * s, s, s);
+
+          boss.rotation.x = -recoil * 0.6;
+          boss.rotation.z = (Math.random() - 0.5) * recoil * 0.4;
         },
         onComplete: () => {
-          boss.position.z = base;
+          boss.position.z = baseZ;
+          boss.position.y = baseY;
+          boss.scale.set(1, 1, 1);
+          boss.rotation.set(0, 0, 0);
         },
       });
     }
@@ -786,7 +804,10 @@ export default {
         boss.rotation.y += dt * 0.25;
         core.rotation.y -= dt * 0.8;
         core.rotation.x += dt * 0.4;
-        shards.rotation.y += dt * 0.6;
+        shards.rotation.y += dt * 0.6 * shardSpeedMult;
+        if (shardSpeedMult > 1.0) {
+          shardSpeedMult -= dt * (shardSpeedMult - 1.0) * 1.5;
+        }
         shards.children.forEach((s, i) => {
           const a = s.userData.a + elapsed * 0.5;
           s.position.y = Math.sin(a * 1.3 + i) * 0.6;
@@ -1025,6 +1046,9 @@ export default {
         [panel, vignette, banner, hpWrap].forEach((el) => {
           if (el && el.parentNode) el.parentNode.removeChild(el);
         });
+        scene.remove(bolt);
+        boltGeo.dispose();
+        boltMat.dispose();
       },
     };
   },

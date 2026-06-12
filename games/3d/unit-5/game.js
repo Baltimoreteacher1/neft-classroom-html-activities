@@ -23,6 +23,20 @@ const COLORS = {
 
 const CELL = 1;
 
+function easeOutBounce(x) {
+  const n1 = 7.5625;
+  const d1 = 2.75;
+  if (x < 1 / d1) {
+    return n1 * x * x;
+  } else if (x < 2 / d1) {
+    return n1 * (x -= 1.5 / d1) * x + 0.75;
+  } else if (x < 2.5 / d1) {
+    return n1 * (x -= 2.25 / d1) * x + 0.9375;
+  } else {
+    return n1 * (x -= 2.625 / d1) * x + 0.984375;
+  }
+}
+
 // ---- Level definitions -----------------------------------------------------
 // Level 1 (support): smaller grid, only rectangles & simple L composites,
 // piece labels + hints, smaller numbers. 6 rounds.
@@ -612,16 +626,35 @@ export default {
         mesh.scale.setScalar(1);
         return;
       }
+      const startY = targetY + 3.0;
+      mesh.position.y = startY;
       mesh.scale.setScalar(0.01);
       feel.tween({
         from: 0,
         to: 1,
-        duration: 0.32,
-        onUpdate: (v) => {
-          const s = 0.3 + v * 0.7;
-          mesh.scale.set(s, 0.4 + v * 0.6, s);
+        duration: 0.5,
+        onUpdate: (t) => {
+          const progress = easeOutBounce(t);
+          mesh.position.y = startY - progress * 3.0;
+          mesh.scale.setScalar(Math.min(1.0, t * 1.5));
         },
-        onComplete: () => mesh.scale.set(1, 1, 1),
+        onComplete: () => {
+          mesh.position.y = targetY;
+          feel.tween({
+            from: 1.0,
+            to: 0.8,
+            duration: 0.08,
+            onUpdate: (s) => mesh.scale.set(1.15, s, 1.15),
+            onComplete: () => {
+              feel.tween({
+                from: 0.8,
+                to: 1.0,
+                duration: 0.12,
+                onUpdate: (s) => mesh.scale.set(1, s, 1),
+              });
+            }
+          });
+        }
       });
     }
 
@@ -818,11 +851,36 @@ export default {
         detail: round.kind,
       });
 
+      // Draw glowing neon outline trailing edges
+      createGlowingOutline();
+
+      let centerX = 0, centerZ = 0;
+      if (round.kind === "triangle") {
+        const verts = triVertices(round);
+        const cx = (verts[0].vx + verts[1].vx + verts[2].vx) / 3;
+        const cy = (verts[0].vy + verts[1].vy + verts[2].vy) / 3;
+        const w = vertexWorld(cx, cy);
+        centerX = w.x;
+        centerZ = w.z;
+      } else {
+        let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
+        round.parts.forEach(p => {
+          const w0 = vertexWorld(p.x, p.y);
+          const w2 = vertexWorld(p.x + p.w, p.y + p.h);
+          minX = Math.min(minX, w0.x, w2.x);
+          maxX = Math.max(maxX, w0.x, w2.x);
+          minZ = Math.min(minZ, w0.z, w2.z);
+          maxZ = Math.max(maxZ, w0.z, w2.z);
+        });
+        centerX = (minX + maxX) / 2;
+        centerZ = (minZ + maxZ) / 2;
+      }
+
       feel.sfx("correct");
       feel.shake(0.3);
       feel.burst(
-        { x: 0, y: 1.4, z: 0 },
-        { color: COLORS.target, count: 44, spread: 5.5 },
+        { x: centerX, y: 1.4, z: centerZ },
+        { color: COLORS.cursor, count: 50, spread: 4.5 },
       );
       const bonusMsg = fewBonus ? ` Fewest-pieces bonus +${fewBonus}!` : "";
       const okMsg = `Perfect! Area = ${targetArea} sq units. +${pts}${bonusMsg}`;
@@ -898,6 +956,72 @@ export default {
           stats: `You filled all ${cfg.rounds.length} shapes. Best streak ${bestStreak}. Score saved.`,
         });
       }
+    }
+
+    function createGlowingOutline() {
+      const outlineGroup = new THREE.Group();
+      outlineGroup.position.y = 0.12;
+      group.add(outlineGroup);
+
+      const linesToDraw = [];
+      if (round.kind === "triangle") {
+        const verts = triVertices(round);
+        const w0 = vertexWorld(verts[0].vx, verts[0].vy);
+        const w1 = vertexWorld(verts[1].vx, verts[1].vy);
+        const w2 = vertexWorld(verts[2].vx, verts[2].vy);
+        linesToDraw.push([w0, w1], [w1, w2], [w2, w0]);
+      } else {
+        round.parts.forEach((p) => {
+          const w0 = vertexWorld(p.x, p.y);
+          const w1 = vertexWorld(p.x + p.w, p.y);
+          const w2 = vertexWorld(p.x + p.w, p.y + p.h);
+          const w3 = vertexWorld(p.x, p.y + p.h);
+          linesToDraw.push([w0, w1], [w1, w2], [w2, w3], [w3, w0]);
+        });
+      }
+
+      const meshes = [];
+      linesToDraw.forEach(([p1, p2]) => {
+        const dx = p2.x - p1.x;
+        const dz = p2.z - p1.z;
+        const len = Math.hypot(dx, dz);
+        const mesh = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.06, 0.06, len, 6),
+          new THREE.MeshStandardMaterial({
+            color: COLORS.cursor,
+            emissive: COLORS.cursor,
+            emissiveIntensity: 2.5,
+            roughness: 0.2,
+          })
+        );
+        mesh.castShadow = true;
+        mesh.position.set((p1.x + p2.x) / 2, 0.1, (p1.z + p2.z) / 2);
+        const angle = Math.atan2(dx, dz);
+        mesh.rotation.y = angle;
+        mesh.rotation.x = Math.PI / 2;
+        mesh.scale.set(1, 0.001, 1);
+        outlineGroup.add(mesh);
+        meshes.push(mesh);
+      });
+
+      if (!feel.reducedMotion) {
+        meshes.forEach((m, idx) => {
+          later(() => {
+            feel.tween({
+              from: 0.001,
+              to: 1,
+              duration: 0.25,
+              onUpdate: (v) => {
+                m.scale.set(1, v, 1);
+              }
+            });
+          }, idx * 100);
+        });
+      } else {
+        meshes.forEach((m) => m.scale.set(1, 1, 1));
+      }
+
+      placed.push({ mesh: outlineGroup });
     }
 
     // ---- Input ---------------------------------------------------------------

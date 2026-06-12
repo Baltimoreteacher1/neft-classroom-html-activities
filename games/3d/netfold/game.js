@@ -780,6 +780,34 @@ export default {
       });
       ring.visible = false;
 
+      // Scale-pulse the final 3D model and trigger radiant gold glow
+      if (!reduced) {
+        feel.tween({
+          from: 1.0,
+          to: 1.3,
+          duration: 0.15,
+          onUpdate: (s) => c.net.root.scale.set(s, s, s),
+          onComplete: () => {
+            feel.tween({
+              from: 1.3,
+              to: 1.0,
+              duration: 0.22,
+              onUpdate: (s) => c.net.root.scale.set(s, s, s),
+            });
+          }
+        });
+
+        targetMat.emissiveIntensity = 2.5;
+        feel.tween({
+          from: 2.5,
+          to: 0.42,
+          duration: 0.8,
+          onUpdate: (v) => {
+            targetMat.emissiveIntensity = v;
+          }
+        });
+      }
+
       // SA reveal.
       const worked = cfg.compactSA ? compactWorked(r.target) : r.target.worked;
       const okMsg = `Correct! ${worked}`;
@@ -793,6 +821,42 @@ export default {
       announce(
         `Correct. That net folds into the ${solidName(r.target)}. Surface area is ${r.target.sa} square units.`,
       );
+
+      // Slide-in surface area text toast overlay
+      const saToast = document.createElement("div");
+      saToast.style.position = "absolute";
+      saToast.style.bottom = "120px";
+      saToast.style.right = "-400px";
+      saToast.style.padding = "16px 28px";
+      saToast.style.background = "rgba(10, 25, 50, 0.85)";
+      saToast.style.backdropFilter = "blur(8px)";
+      saToast.style.border = "2px solid #f2c15b";
+      saToast.style.borderRadius = "12px";
+      saToast.style.boxShadow = "0 8px 32px rgba(0, 0, 0, 0.4), 0 0 15px rgba(242, 193, 91, 0.3)";
+      saToast.style.color = "#ffffff";
+      saToast.style.fontFamily = "system-ui, -apple-system, sans-serif";
+      saToast.style.fontSize = "18px";
+      saToast.style.fontWeight = "bold";
+      saToast.style.transition = "right 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+      saToast.style.zIndex = "1000";
+
+      saToast.innerHTML = `
+        <div style="color: #f2c15b; font-size: 12px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1.5px;">Surface Area</div>
+        <div>${worked}</div>
+      `;
+
+      clarityMount.appendChild(saToast);
+      later(() => {
+        saToast.style.right = "30px";
+      }, 100);
+
+      const removeToast = () => {
+        saToast.style.right = "-400px";
+        later(() => {
+          if (saToast.parentElement) saToast.parentElement.removeChild(saToast);
+        }, 600);
+      };
+      timers.push(setTimeout(removeToast, 2800));
 
       const base = 20;
       const levelBonus = level === 2 ? 10 : 0;
@@ -828,13 +892,16 @@ export default {
       announce(`${msg} It will unfold. Try another net.`);
 
       // Unfold it back flat, then resume (unless game over).
-      const dur = feel.reducedMotion ? 0.2 : 0.6;
+      const dur = feel.reducedMotion ? 0.2 : 0.8;
       folding = true;
       feel.tween({
         from: 1,
         to: 0,
         duration: dur,
-        onUpdate: (v) => applyFold(c.net, v),
+        onUpdate: (v) => {
+          const e = Math.pow(v, 3);
+          applyFold(c.net, e);
+        },
         onComplete: () => {
           folding = false;
           if (lives <= 0) loseGame();

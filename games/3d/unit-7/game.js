@@ -508,6 +508,7 @@ export default {
     let traveled = 0; // scroll distance accumulated this round
     let nextWaveDist = 6; // distance before this round's wave spawns
     let waveSpawned = false; // a wave for the current goal is in flight / passed
+    let subTween = null;
 
     let unbindFrame = null;
     let unbindPress = null;
@@ -733,7 +734,7 @@ export default {
       if (!reduced) feel.shake(0.16, 0.25);
       feel.burst(
         { x: SUB_X, y: subGroup.position.y, z: SUB_Z },
-        { color: COLORS.tokenEdge, count: reduced ? 0 : 30, spread: 2.2 },
+        { color: COLORS.tokenEdge, count: reduced ? 0 : 40, spread: 2.8 },
       );
 
       let why;
@@ -817,9 +818,26 @@ export default {
     // ---- Real-time vertical movement ---------------------------------------
     // Held-state polling (smooth continuous dive) + crisp single-step presses.
     function moveStep(dir) {
+      if (surfacing) return;
       const nextInt = Math.max(RANGE_MIN, Math.min(RANGE_MAX, subInt() + dir));
-      subDepthY = yFor(nextInt);
+      const targetY = yFor(nextInt);
+      subDepthY = targetY;
       feel.sfx(dir > 0 ? "add" : "remove");
+      
+      if (!reduced) {
+        subTween = null; // reset reference, feel.js will handle old tween gc
+        const fromY = subGroup.position.y;
+        subTween = feel.tween({
+          from: fromY,
+          to: targetY,
+          duration: 0.3,
+          onUpdate: (v) => {
+            subGroup.position.y = v;
+          }
+        });
+      } else {
+        subGroup.position.y = targetY;
+      }
     }
 
     function readOut() {
@@ -919,10 +937,20 @@ export default {
       }
 
       // Smooth the visible sub toward its depth; depth read-out tracks it.
-      const subY =
-        subGroup.position.y +
-        (subDepthY - subGroup.position.y) * Math.min(1, d * 14);
-      subGroup.position.y = subY;
+      let subY = subGroup.position.y;
+      if (reduced || input.state.up || input.state.down || surfacing) {
+        subY =
+          subGroup.position.y +
+          (subDepthY - subGroup.position.y) * Math.min(1, d * 14);
+        subGroup.position.y = subY;
+      } else {
+        if (!subTween) {
+          subY =
+            subGroup.position.y +
+            (subDepthY - subGroup.position.y) * Math.min(1, d * 14);
+          subGroup.position.y = subY;
+        }
+      }
       depthLabel.position.y = subY;
       updateLabel(depthLabel, String(subInt()));
       // Pitch the nose toward travel direction + gentle bob.
@@ -931,6 +959,9 @@ export default {
         subGroup.rotation.x = -vy * 0.6;
         subGroup.position.x = SUB_X + Math.sin(t * 1.6) * 0.04;
         portMat.emissiveIntensity = 0.7 + Math.sin(t * 3) * 0.25;
+        // Pulse the sea level surface and zero mark
+        surface.material.emissiveIntensity = 0.5 + Math.sin(t * 2.2) * 0.18;
+        zeroMat.emissiveIntensity = 0.7 + Math.sin(t * 3.0) * 0.2;
       }
 
       // ---- Scroll the world toward the camera (forward motion) -------------

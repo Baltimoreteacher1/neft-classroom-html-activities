@@ -210,9 +210,10 @@ export default {
 
     // Ground / stage.
     const groundGeo = track(new THREE.CircleGeometry(22, 48));
+    const groundMat = std(0x0e2b4f, { roughness: 0.95 });
     const ground = new THREE.Mesh(
       groundGeo,
-      std(0x0e2b4f, { roughness: 0.95 }),
+      groundMat,
     );
     ground.rotation.x = -Math.PI / 2;
     ground.position.y = -0.42;
@@ -527,21 +528,42 @@ export default {
       mesh.castShadow = true;
       const idx = scoops.length;
       const targetY = 0.7 + idx * 0.42;
-      mesh.position.set(0, targetY, 0);
+      const startY = 5.2;
+      mesh.position.set(0, startY, 0);
       blenderGroup.add(mesh);
       scoops.push({ mesh, fruit });
       if (!reduced) {
-        mesh.scale.setScalar(0.01);
+        // drop animation with a squash/stretch bounce on impact
         feel.tween({
-          from: 0.01,
-          to: 1,
-          duration: 0.22,
-          onUpdate: (v) => mesh.scale.setScalar(v),
+          from: startY,
+          to: targetY,
+          duration: 0.3,
+          onUpdate: (v) => {
+            mesh.position.y = v;
+          },
+          onComplete: () => {
+            feel.tween({
+              from: 1.0,
+              to: 0.8,
+              duration: 0.08,
+              onUpdate: (s) => mesh.scale.set(1.2, s, 1.2),
+              onComplete: () => {
+                feel.tween({
+                  from: 0.8,
+                  to: 1.0,
+                  duration: 0.12,
+                  onUpdate: (s) => mesh.scale.set(1, s, 1),
+                });
+              }
+            });
+            feel.burst(
+              { x: SERVE_X, y: targetY + 0.2, z: -0.4 },
+              { color: FRUIT[fruit].color, count: 8, spread: 1.2 },
+            );
+          }
         });
-        feel.burst(
-          { x: SERVE_X, y: targetY + 0.4 - 0.4, z: -0.4 },
-          { color: FRUIT[fruit].color, count: 8, spread: 1.8 },
-        );
+      } else {
+        mesh.position.y = targetY;
       }
       feel.sfx("add");
       updateCupLabel();
@@ -645,6 +667,21 @@ export default {
               onUpdate: (v) => blenderGroup.scale.setScalar(v),
             }),
         });
+
+        // Stage/ground green glow pulse
+        groundMat.emissive.set(COLORS.ok);
+        groundMat.emissiveIntensity = 0.5;
+        feel.tween({
+          from: 0.5,
+          to: 0,
+          duration: 0.5,
+          onUpdate: (v) => {
+            groundMat.emissiveIntensity = v;
+          },
+          onComplete: () => {
+            groundMat.emissive.set(0x000000);
+          }
+        });
       }
       if (typeof hud.feedback === "function")
         hud.feedback(
@@ -673,6 +710,44 @@ export default {
           { x: SERVE_X, y: 2.4, z: -0.4 },
           { color: COLORS.bad, count: 22, spread: 3.4 },
         );
+
+        // Blender jar shake on wrong serve
+        feel.tween({
+          from: -0.35,
+          to: 0.35,
+          duration: 0.05,
+          onUpdate: (v) => {
+            blenderGroup.position.x = SERVE_X + v;
+          },
+          onComplete: () => {
+            feel.tween({
+              from: 0.35,
+              to: -0.18,
+              duration: 0.05,
+              onUpdate: (v) => {
+                blenderGroup.position.x = SERVE_X + v;
+              },
+              onComplete: () => {
+                blenderGroup.position.x = SERVE_X;
+              }
+            });
+          }
+        });
+
+        // Stage/ground red glow pulse
+        groundMat.emissive.set(COLORS.bad);
+        groundMat.emissiveIntensity = 0.5;
+        feel.tween({
+          from: 0.5,
+          to: 0,
+          duration: 0.5,
+          onUpdate: (v) => {
+            groundMat.emissiveIntensity = v;
+          },
+          onComplete: () => {
+            groundMat.emissive.set(0x000000);
+          }
+        });
       }
       customer.userData.bodyMat.color.set(COLORS.bad);
       customer.userData.bodyMat.emissive.set(COLORS.bad);

@@ -227,6 +227,8 @@ export default {
           metalness: 0.0,
           clearcoat: 0.6,
           clearcoatRoughness: 0.3,
+          emissive: 0x000000,
+          emissiveIntensity: 0,
         }),
       ),
     );
@@ -685,20 +687,52 @@ export default {
         0.42,
       );
       w.userData.addUnits = units;
+      const targetY = plate.position.y + 0.14;
+      const startY = targetY + 2.5;
       w.position.set(
         plate.position.x,
-        plate.position.y + 0.14,
+        startY,
         plate.position.z,
       );
       w.rotation.y = -sliceMeshes.length * ((Math.PI * 2) / denomForSlice);
       group.add(w);
       sliceMeshes.push(w);
-      popIn(w, 1, 0);
+
+      const sliceColor = PALETTE.slice[colorIdx % PALETTE.slice.length];
+      if (!reduced) {
+        feel.tween({
+          from: startY,
+          to: targetY,
+          duration: 0.25,
+          onUpdate: (y) => {
+            w.position.y = y;
+          },
+          onComplete: () => {
+            feel.tween({
+              from: 1.0,
+              to: 0.7,
+              duration: 0.08,
+              onUpdate: (s) => w.scale.set(1.2, s, 1.2),
+              onComplete: () => {
+                feel.tween({
+                  from: 0.7,
+                  to: 1.0,
+                  duration: 0.12,
+                  onUpdate: (s) => w.scale.set(1, s, 1),
+                });
+              }
+            });
+            feel.burst(
+              { x: plate.position.x, y: targetY + 0.2, z: plate.position.z },
+              { color: sliceColor, count: 14, spread: 1.2 },
+            );
+          }
+        });
+      } else {
+        w.position.y = targetY;
+        w.scale.setScalar(1);
+      }
       feel.sfx("add");
-      feel.burst(
-        { x: plate.position.x, y: 1.6, z: plate.position.z },
-        { color: PALETTE.slice[colorIdx % PALETTE.slice.length], count: 14 },
-      );
       announce("Plate now holds " + currentFraction().text + ".");
       updateLive();
     }
@@ -733,11 +767,12 @@ export default {
         return;
       }
       scoopCount += 1;
+      const color = PALETTE.slice[(scoopCount - 1) % PALETTE.slice.length];
       const disc = track(
         new THREE.Mesh(
           new THREE.CylinderGeometry(0.42, 0.42, 0.18, 20),
           std({
-            color: PALETTE.slice[(scoopCount - 1) % PALETTE.slice.length],
+            color: color,
             roughness: 0.5,
           }),
         ),
@@ -745,15 +780,46 @@ export default {
       disc.castShadow = true;
       const col = (scoopCount - 1) % 5;
       const row = Math.floor((scoopCount - 1) / 5);
-      disc.position.set(-2.4 + col * 0.55, 0.66 + row * 0.22, 1.8);
+      const targetY = 0.66 + row * 0.22;
+      const startY = targetY + 2.5;
+      disc.position.set(-2.4 + col * 0.55, startY, 1.8);
       group.add(disc);
       sliceMeshes.push(disc);
-      popIn(disc, 1, 0);
+
+      if (!reduced) {
+        feel.tween({
+          from: startY,
+          to: targetY,
+          duration: 0.25,
+          onUpdate: (y) => {
+            disc.position.y = y;
+          },
+          onComplete: () => {
+            feel.tween({
+              from: 1.0,
+              to: 0.7,
+              duration: 0.08,
+              onUpdate: (s) => disc.scale.set(1.3, s, 1.3),
+              onComplete: () => {
+                feel.tween({
+                  from: 0.7,
+                  to: 1.0,
+                  duration: 0.12,
+                  onUpdate: (s) => disc.scale.set(1, s, 1),
+                });
+              }
+            });
+            feel.burst(
+              { x: disc.position.x, y: targetY + 0.1, z: disc.position.z },
+              { color: color, count: 12, spread: 0.8 },
+            );
+          }
+        });
+      } else {
+        disc.position.y = targetY;
+        disc.scale.setScalar(1);
+      }
       feel.sfx("add");
-      feel.burst(
-        { x: disc.position.x, y: 1.1, z: disc.position.z },
-        { color: 0xfff0c0, count: 10 },
-      );
       updateLive();
       announce("Scooped serving number " + scoopCount + ".");
     }
@@ -871,7 +937,30 @@ export default {
       const pts = 20 + (level === 2 ? 10 : 0) + (streak >= 3 ? 5 : 0);
       onScore(pts, { round: roundIndex + 1, kind: round.type, answer: detail });
       feel.sfx("correct");
-      if (!reduced) feel.shake(0.28);
+      if (!reduced) {
+        feel.shake(0.28);
+        let splashColor = PALETTE.serve;
+        if (round.type === "build") {
+          splashColor = PALETTE.slice[0];
+        } else if (round.type === "combine") {
+          splashColor = PALETTE.slice[1];
+        } else if (round.type === "divide") {
+          splashColor = PALETTE.slice[(scoopCount - 1) % PALETTE.slice.length];
+        }
+        plate.material.emissive.setHex(splashColor);
+        plate.material.emissiveIntensity = 1.5;
+        feel.tween({
+          from: 1.5,
+          to: 0,
+          duration: 0.8,
+          onUpdate: (v) => {
+            plate.material.emissiveIntensity = v;
+          },
+          onComplete: () => {
+            plate.material.emissive.setHex(0x000000);
+          }
+        });
+      }
       feel.burst(
         { x: plate.position.x, y: 1.8, z: plate.position.z },
         { color: PALETTE.amber, count: 40, spread: 4.5 },

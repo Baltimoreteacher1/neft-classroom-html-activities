@@ -241,6 +241,20 @@ export default {
     fallingCube.visible = false;
     group.add(fallingCube);
 
+    // Target aim reticle plane
+    const aimMat = new THREE.MeshBasicMaterial({
+      color: 0x35c9c3,
+      transparent: true,
+      opacity: 0.35,
+      side: THREE.DoubleSide,
+    });
+    const aimGeo = new THREE.PlaneGeometry(0.9, 0.9);
+    const aimIndicator = new THREE.Mesh(aimGeo, aimMat);
+    aimIndicator.rotation.x = -Math.PI / 2;
+    aimIndicator.visible = false;
+    group.add(aimIndicator);
+    disposables.push(aimMat, aimGeo);
+
     // ---- Column highlight (shows which column the next cube drops into) ----
     const columnMat = new THREE.MeshBasicMaterial({
       color: COLORS.columnOk,
@@ -291,6 +305,7 @@ export default {
         cubeMesh.material.dispose();
         cubeMesh = null;
       }
+      aimIndicator.visible = false;
       gateGroup.visible = false;
     }
 
@@ -346,6 +361,7 @@ export default {
     let bestStreak = 0;
     let lives = cfg.startLives;
     let gameOver = false;
+    let started = false;
 
     // Prism grid (whole-unit cells): nx (length) × ny (height) × nz (width).
     let nx = 0;
@@ -443,6 +459,24 @@ export default {
       );
       group.add(cubeMesh);
 
+      // Reset camera to normal view
+      if (started && !reduced && camera) {
+        const startPos = camera.position.clone();
+        const endPosNormal = new THREE.Vector3(0, 6.5, 12);
+        feel.tween({
+          from: 0,
+          to: 1,
+          duration: 0.5,
+          onUpdate: (v) => {
+            camera.position.lerpVectors(startPos, endPosNormal, v);
+            camera.lookAt(0, ny / 2, 0);
+          },
+          onComplete: () => {
+            feel.syncCamera();
+          }
+        });
+      }
+
       // Drop pacing + round timer.
       curInterval = cfg.dropInterval;
       dropTimer = 0.6; // brief grace before the first cube
@@ -516,6 +550,11 @@ export default {
       columnMesh.scale.set(1, ny, 1);
       const col = full ? COLORS.columnBad : COLORS.columnOk;
       columnMat.color.setHex(col);
+      
+      aimMat.color.setHex(col);
+      aimIndicator.position.set(originX + x + 0.5, stacked + 0.015, originZ + z + 0.5);
+      aimIndicator.visible = (phase === "packing");
+
       // Park the chute above the selected column.
       chute.position.set(originX + x + 0.5, ny + 1.1, originZ + z + 0.5);
     }
@@ -586,22 +625,38 @@ export default {
         cubeMesh.setMatrixAt(idx, dummy.matrix);
         cubeMesh.instanceMatrix.needsUpdate = true;
       };
-      place(reduced ? 1 : 0.6);
+      place(reduced ? 1 : 0.5);
       cubeMesh.setColorAt(idx, new THREE.Color(cubeColHex));
       if (cubeMesh.instanceColor) cubeMesh.instanceColor.needsUpdate = true;
       placedCount += 1;
       cubeMesh.count = placedCount;
       if (!reduced) {
-        feel.tween({ from: 0.6, to: 1, duration: 0.14, onUpdate: place });
+        // scale pop 0.5 -> 1.1 -> 1.0 bounce on landing
+        feel.tween({
+          from: 0.5,
+          to: 1.1,
+          duration: 0.1,
+          onUpdate: place,
+          onComplete: () => {
+            feel.tween({
+              from: 1.1,
+              to: 1.0,
+              duration: 0.08,
+              onUpdate: place,
+            });
+          }
+        });
       }
 
       fallingCube.visible = false;
       cubeFalling = false;
       feel.sfx("add");
-      feel.burst(
-        { x: c.x, y: c.y + 0.2, z: c.z },
-        { color: cubeColHex, count: reduced ? 0 : 7, size: 0.11, spread: 1.2 },
-      );
+      if (!reduced) {
+        feel.burst(
+          { x: c.x, y: c.y + 0.2, z: c.z },
+          { color: cubeColHex, count: 12, size: 0.11, spread: 1.2 },
+        );
+      }
 
       // Layer-complete flash: did we just finish a full horizontal layer?
       if (placedCount % (nx * nz) === 0 && placedCount < targetCount) {
@@ -634,6 +689,7 @@ export default {
       columnMesh.visible = false;
       chute.visible = false;
       fallingCube.visible = false;
+      aimIndicator.visible = false;
 
       const vol = prismVolume(round.l, round.w, round.h);
       const timeBonus = Math.max(0, Math.round(roundTime) * 2);
@@ -646,7 +702,34 @@ export default {
         kind: "pack",
       });
       feel.sfx("correct");
-      if (!reduced) feel.shake(0.26);
+      if (!reduced) {
+        feel.shake(0.26);
+        // Cascading gold confetti
+        for (let i = 0; i < 3; i++) {
+          later(() => {
+            feel.burst(
+              { x: (Math.random() - 0.5) * nx, y: ny + 1.2, z: (Math.random() - 0.5) * nz },
+              { color: COLORS.vault, count: 20, spread: 2.0 }
+            );
+          }, i * 150);
+        }
+
+        // Camera zoom into speed round
+        const startPos = camera.position.clone();
+        const endPosSpeed = new THREE.Vector3(0, ny / 2 + 1.2, 8.5);
+        feel.tween({
+          from: 0,
+          to: 1,
+          duration: 0.65,
+          onUpdate: (v) => {
+            camera.position.lerpVectors(startPos, endPosSpeed, v);
+            camera.lookAt(0, ny / 2, 0);
+          },
+          onComplete: () => {
+            feel.syncCamera();
+          }
+        });
+      }
       feel.burst(
         { x: 0, y: ny * 0.6 + 0.6, z: 0 },
         {
@@ -1030,6 +1113,7 @@ export default {
         }
 
         function beginGameplay() {
+          started = true;
           roundIndex = 0;
           lives = cfg.startLives;
           gameOver = false;

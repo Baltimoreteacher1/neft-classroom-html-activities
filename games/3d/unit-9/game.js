@@ -137,6 +137,25 @@ export default {
 
     const grid = createGrid(ctx, { n: N, cell: 1 });
 
+    // Starfield background
+    const starCount = 300;
+    const starGeo = new THREE.BufferGeometry();
+    const starPos = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount; i++) {
+      starPos[i * 3] = (Math.random() - 0.5) * 80;
+      starPos[i * 3 + 1] = Math.random() * 40 - 10;
+      starPos[i * 3 + 2] = (Math.random() - 0.5) * 80 - 20;
+    }
+    starGeo.setAttribute("position", new THREE.BufferAttribute(starPos, 3));
+    const starMat = new THREE.PointsMaterial({
+      color: 0xffffff,
+      size: 0.22,
+      transparent: true,
+      opacity: 0.8,
+    });
+    const starfield = new THREE.Points(starGeo, starMat);
+    scene.add(starfield);
+
     // Coordinate <-> vertex-index conversions.
     // +y must read "up and away" from the camera (standard coordinate-plane
     // orientation). The grid's +Z runs toward the camera, so invert y→j: larger
@@ -260,6 +279,49 @@ export default {
     labels.push(card);
     function setCard(text) {
       updateLabel(card, text);
+    }
+
+    function sweepAxis(axis) {
+      if (reduced) return;
+      const len = N + 1.0;
+      const beamGeo = new THREE.CylinderGeometry(0.12, 0.12, len, 8);
+      const beamMat = new THREE.MeshStandardMaterial({
+        color: COLORS.reflection,
+        emissive: COLORS.reflection,
+        emissiveIntensity: 3.0,
+        transparent: true,
+        opacity: 0.8,
+      });
+      const beam = new THREE.Mesh(beamGeo, beamMat);
+      beam.position.y = 0.05;
+
+      const w0 = coordToWorld(0, 0);
+      if (axis === "x") {
+        beam.rotation.z = Math.PI / 2;
+        beam.position.set(w0.x, 0.08, w0.z);
+      } else {
+        beam.rotation.x = Math.PI / 2;
+        beam.position.set(w0.x, 0.08, w0.z);
+      }
+
+      scene.add(beam);
+      persistentMarkers.push(beam);
+      disposables.push(beamGeo, beamMat);
+
+      feel.tween({
+        from: 0,
+        to: 1,
+        duration: 0.8,
+        onUpdate: (t) => {
+          beamMat.opacity = Math.sin(t * Math.PI) * 0.8;
+          beamMat.emissiveIntensity = Math.sin(t * Math.PI) * 4.0;
+          const scale = 0.1 + Math.sin(t * Math.PI) * 0.9;
+          beam.scale.set(scale, 1, scale);
+        },
+        onComplete: () => {
+          scene.remove(beam);
+        }
+      });
     }
 
     // ---- Beacon: hero cursor on a lattice point ----
@@ -642,6 +704,7 @@ export default {
       } else if (task.kind === "reflect") {
         placeMarker(task.x, task.y, COLORS.plotted);
         addPointLabel(task.x, task.y, "#9fc4f0");
+        sweepAxis(task.axis);
         const want = reflectTarget(task);
         announce(
           `Flip the point ${task.x}, ${task.y} over the ${task.axis}-axis. Move to ${want.x}, ${want.y} and place it.`,
@@ -780,14 +843,35 @@ export default {
     function drawDistanceBar(a, b) {
       const wa = coordToWorld(a.x, a.y);
       const wb = coordToWorld(b.x, b.y);
-      const g = new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(wa.x, 0.16, wa.z),
-        new THREE.Vector3(wb.x, 0.16, wb.z),
-      ]);
-      const m = new THREE.LineBasicMaterial({ color: COLORS.distance });
+      const p1 = new THREE.Vector3(wa.x, 0.16, wa.z);
+      const p2 = new THREE.Vector3(wb.x, 0.16, wb.z);
+
+      const g = new THREE.BufferGeometry().setFromPoints([p1, p1.clone()]);
+      const m = new THREE.LineDashedMaterial({
+        color: COLORS.distance,
+        dashSize: 0.25,
+        gapSize: 0.15,
+      });
       const line = new THREE.Line(g, m);
       scene.add(line);
       persistentMarkers.push(line);
+      disposables.push(g, m);
+
+      if (!reduced) {
+        feel.tween({
+          from: 0,
+          to: 1,
+          duration: 0.6,
+          onUpdate: (t) => {
+            const currentP2 = new THREE.Vector3().lerpVectors(p1, p2, t);
+            g.setFromPoints([p1, currentP2]);
+            line.computeLineDistances();
+          }
+        });
+      } else {
+        g.setFromPoints([p1, p2]);
+        line.computeLineDistances();
+      }
     }
 
     // Identify/distance reward: the worked answer, shown after a correct pick.
@@ -1072,6 +1156,12 @@ export default {
                 const r = 1 + Math.sin(t * 5) * 0.06;
                 targetRing.scale.set(r, r, 1);
               }
+              if (input.state && input.state.ndc) {
+                const targetX = input.state.ndc.x * 2.5;
+                const targetY = input.state.ndc.y * 2.5;
+                starfield.position.x += (targetX - starfield.position.x) * 0.05;
+                starfield.position.y += (targetY - starfield.position.y) * 0.05;
+              }
             }),
           );
         }
@@ -1098,6 +1188,9 @@ export default {
         scene.remove(targetRing);
         scene.remove(card);
         scene.remove(padGroup);
+        scene.remove(starfield);
+        starGeo.dispose();
+        starMat.dispose();
         grid.dispose();
       },
     };

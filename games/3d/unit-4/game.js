@@ -23,7 +23,7 @@ const PALETTE = {
 };
 
 // ---- Pure math (kept exact; mirrors standard 6.NS.B.2-4) --------------------
-function gcf(a, b) {
+function gcd(a, b) {
   a = Math.abs(a);
   b = Math.abs(b);
   while (b) [a, b] = [b, a % b];
@@ -38,6 +38,19 @@ function round2(n) {
 }
 function fmt(n) {
   return String(round2(n));
+}
+function easeOutBounce(x) {
+  const n1 = 7.5625;
+  const d1 = 2.75;
+  if (x < 1 / d1) {
+    return n1 * x * x;
+  } else if (x < 2 / d1) {
+    return n1 * (x -= 1.5 / d1) * x + 0.75;
+  } else if (x < 2.5 / d1) {
+    return n1 * (x -= 2.25 / d1) * x + 0.9375;
+  } else {
+    return n1 * (x -= 2.625 / d1) * x + 0.984375;
+  }
 }
 
 // ---- Round sets: 6 per level. L1 scaffolded/smaller; L2 enrichment/larger ---
@@ -392,15 +405,25 @@ export default {
           c.castShadow = true;
           crateGroup.add(c);
           // scale-pop spawn
-          c.scale.setScalar(reduced ? 1 : 0.01);
+          const targetY = -0.05;
+          const startY = targetY + 3.0;
           if (!reduced) {
-            const delay = placed * 22;
+            c.scale.setScalar(0.01);
+            const delay = placed * 25;
             later(() => {
               feel.tween({
-                from: 0.01,
+                from: 0,
                 to: 1,
-                duration: 0.28,
-                onUpdate: (v) => c.scale.setScalar(v),
+                duration: 0.5,
+                onUpdate: (t) => {
+                  const progress = easeOutBounce(t);
+                  c.position.y = startY - progress * 3.0;
+                  c.scale.setScalar(Math.min(1.0, t * 1.5));
+                },
+                onComplete: () => {
+                  c.position.y = targetY;
+                  c.scale.setScalar(1);
+                }
               });
             }, delay);
           }
@@ -580,24 +603,77 @@ export default {
       feel.sfx("select");
     }
 
+    function triggerDialPulse(color) {
+      if (reduced) return;
+      dialMat.emissive.setHex(color);
+      dialMat.emissiveIntensity = 1.8;
+      feel.tween({
+        from: 1.0,
+        to: 1.3,
+        duration: 0.12,
+        onUpdate: (s) => dial.scale.setScalar(s),
+        onComplete: () => {
+          feel.tween({
+            from: 1.3,
+            to: 1.0,
+            duration: 0.18,
+            onUpdate: (s) => dial.scale.setScalar(s),
+            onComplete: () => {
+              dialMat.emissive.setHex(PALETTE.dial);
+              dialMat.emissiveIntensity = 0.5;
+            }
+          });
+        }
+      });
+      feel.tween({
+        from: 1.8,
+        to: 0.5,
+        duration: 0.3,
+        onUpdate: (v) => {
+          dialMat.emissiveIntensity = v;
+        }
+      });
+    }
+
     function adjust(dir, coarse) {
       if (locked) return;
-      // Two-tier stepping so big targets are reachable fast:
-      //   fine  (Up/Down)  = one dial step (1 for whole numbers, 0.05/0.1 for decimals)
-      //   coarse(Left/Right) = a big jump (10 for whole numbers, 1.0 for decimals)
-      // Without this, decimal answers like 5.75 took 100+ key presses.
       const coarseStep = spec.step >= 1 ? 10 : 1;
       const amt = coarse ? coarseStep : spec.step;
       const next = round2(value + dir * amt);
       const clamped = Math.max(spec.min, Math.min(spec.max, next));
-      if (clamped === value) return;
+      if (clamped === value) {
+        triggerDialPulse(0xef6a4a);
+        feel.sfx("wrong");
+        return;
+      }
       value = clamped;
       refresh();
-      // Keep the bay crate count in sync only for crate rounds (GCF /
-      // distributive). Dial rounds (LCM / decimals) hide the bay.
+      if (value === spec.answer) {
+        triggerDialPulse(0xf2c15b);
+      }
       if (spec.step >= 1 && !spec.useDial) syncBayCrates();
       feel.sfx(dir > 0 ? "add" : "remove");
       announce(`Dial set to ${readoutText().replace("Dial: ", "")}.`);
+    }
+
+    // Set value directly (clamped to spec), refresh visuals + audio.
+    function setValue(v, silent) {
+      const clamped = round2(Math.max(spec.min, Math.min(spec.max, v)));
+      if (clamped === value) {
+        triggerDialPulse(0xef6a4a);
+        return false;
+      }
+      const up = clamped > value;
+      value = clamped;
+      refresh();
+      if (value === spec.answer) {
+        triggerDialPulse(0xf2c15b);
+      }
+      if (!silent) {
+        feel.sfx(up ? "add" : "remove");
+        announce(`Dial set to ${readoutText().replace("Dial: ", "")}.`);
+      }
+      return true;
     }
 
     // ---- Drag-to-build: physically construct the answer --------------------
@@ -707,13 +783,22 @@ export default {
       layoutBayCrate(c, bayCrates.length);
       group.add(c);
       bayCrates.push(c);
+      const targetY = c.position.y;
+      const startY = targetY + 3.0;
       if (!reduced) {
-        c.scale.setScalar(0.01);
         feel.tween({
-          from: 0.01,
+          from: 0,
           to: 1,
-          duration: 0.24,
-          onUpdate: (v) => c.scale.setScalar(v),
+          duration: 0.5,
+          onUpdate: (t) => {
+            const progress = easeOutBounce(t);
+            c.position.y = startY - progress * 3.0;
+            c.scale.setScalar(Math.min(1.0, t * 1.5));
+          },
+          onComplete: () => {
+            c.position.y = targetY;
+            c.scale.setScalar(1);
+          }
         });
       }
       return c;

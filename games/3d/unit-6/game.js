@@ -806,7 +806,9 @@ export default {
       const i = placed.length;
       const mesh = new THREE.Mesh(blockGeo, makeBlockMaterials(token, 0.15));
       mesh.castShadow = true;
-      mesh.position.set(slotX(i), 0.36, 0.2);
+      const targetY = 0.36;
+      const startY = targetY + 2.5;
+      mesh.position.set(slotX(i), startY, 0.2);
       group.add(mesh);
       placed.push({ token, mesh });
 
@@ -819,19 +821,43 @@ export default {
         { color: tokenColor(token), count: 12, spread: 2.4 },
       );
 
-      // Drop-in scale pop.
+      // Drop-in snap scale bounce.
       if (!reduced) {
-        mesh.scale.set(0.2, 0.2, 0.2);
+        mesh.scale.setScalar(0.01);
         feel.tween({
-          from: 0.2,
-          to: 1,
-          duration: 0.28,
-          onUpdate: (v) => mesh.scale.set(v, v, v),
+          from: startY,
+          to: targetY,
+          duration: 0.25,
+          onUpdate: (y) => {
+            mesh.position.y = y;
+            mesh.scale.setScalar(Math.min(1.0, (startY - y) / 2.5 + 0.1));
+          },
+          onComplete: () => {
+            mesh.position.y = targetY;
+            feel.tween({
+              from: 1.0,
+              to: 0.75,
+              duration: 0.08,
+              onUpdate: (s) => mesh.scale.set(1.2, s, 1.2),
+              onComplete: () => {
+                feel.tween({
+                  from: 0.75,
+                  to: 1.0,
+                  duration: 0.12,
+                  onUpdate: (s) => mesh.scale.set(1, s, 1),
+                });
+              }
+            });
+          }
         });
+      } else {
+        mesh.position.y = targetY;
+        mesh.scale.setScalar(1);
       }
 
       announce(`Placed ${spoken(token)}.`);
       updateObjective();
+      updateVariableGlow();
     }
 
     function removeLast() {
@@ -839,11 +865,30 @@ export default {
       const p = placed.pop();
       group.remove(p.mesh);
       disposeBlockMesh(p.mesh);
-      slots[placed.length].material.opacity = 0.65;
-      slots[placed.length].material.emissiveIntensity = 0.15;
+
+      const slotMat = slots[placed.length].material;
+      slotMat.emissive.setHex(COLORS.bad);
+      slotMat.emissiveIntensity = 1.0;
+      slotMat.opacity = 0.95;
+      feel.tween({
+        from: 1.0,
+        to: 0.15,
+        duration: 0.3,
+        onUpdate: (v) => {
+          slotMat.emissiveIntensity = v;
+          slotMat.opacity = 0.65 + (v - 0.15) * 0.35;
+        },
+        onComplete: () => {
+          slotMat.emissive.setHex(COLORS.slot);
+          slotMat.emissiveIntensity = 0.15;
+          slotMat.opacity = 0.65;
+        }
+      });
+
       feel.sfx("remove");
       announce(`Removed ${spoken(p.token)}.`);
       updateObjective();
+      updateVariableGlow();
     }
 
     function submit() {
@@ -1040,6 +1085,32 @@ export default {
     }
 
     // ---- Input --------------------------------------------------------------
+    function updateVariableGlow() {
+      if (reduced) return;
+      const activeToken = palette[palIndex];
+      const isVarActive = activeToken.type === "var";
+
+      placed.forEach((p) => {
+        if (p.token.type === "var") {
+          const mats = Array.isArray(p.mesh.material) ? p.mesh.material : [p.mesh.material];
+          mats.forEach((m) => {
+            m.emissive.setHex(isVarActive ? COLORS.slotActive : COLORS.variable);
+            m.emissiveIntensity = isVarActive ? 1.6 : 0.28;
+          });
+        }
+      });
+
+      palMeshes.forEach((m) => {
+        if (m.userData.token.type === "var") {
+          const mats = Array.isArray(m.material) ? m.material : [m.material];
+          mats.forEach((mt) => {
+            mt.emissive.setHex(isVarActive ? COLORS.slotActive : COLORS.variable);
+            mt.emissiveIntensity = isVarActive ? 1.6 : 0.28;
+          });
+        }
+      });
+    }
+
     function moveCursor(d) {
       const ni = Math.max(0, Math.min(palette.length - 1, palIndex + d));
       if (ni !== palIndex) {
@@ -1047,6 +1118,7 @@ export default {
         palCursor.position.x = palX(palIndex);
         feel.sfx("select");
         announce(`Selected ${spoken(palette[palIndex])}.`);
+        updateVariableGlow();
       }
     }
 

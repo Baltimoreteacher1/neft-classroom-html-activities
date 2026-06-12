@@ -561,20 +561,44 @@ export default {
       const restY = 0.24 + arr.length * BLOCK + BLOCK / 2;
       m.castShadow = true;
       m.receiveShadow = true;
-      m.position.set(colX(i), restY, Z_DATA);
+      const startY = restY + 3.0;
+      m.position.set(colX(i), startY, Z_DATA);
       group.add(m);
       arr.push(m);
       stacks.set(v, arr);
       data.push(v);
-      // Scale-pop spawn juice.
+
       if (!reduced) {
         m.scale.setScalar(0.01);
         feel.tween({
-          from: 0.01,
-          to: 1,
-          duration: 0.26,
-          onUpdate: (s) => m.scale.setScalar(s),
+          from: startY,
+          to: restY,
+          duration: 0.35,
+          onUpdate: (y) => {
+            m.position.y = y;
+            m.scale.setScalar(Math.min(1.0, (startY - y) / 3.0 + 0.1));
+          },
+          onComplete: () => {
+            m.position.y = restY;
+            feel.tween({
+              from: 1.0,
+              to: 0.8,
+              duration: 0.08,
+              onUpdate: (s) => m.scale.set(1.15, s, 1.15),
+              onComplete: () => {
+                feel.tween({
+                  from: 0.8,
+                  to: 1.0,
+                  duration: 0.12,
+                  onUpdate: (s) => m.scale.set(1, s, 1),
+                });
+              }
+            });
+          }
         });
+      } else {
+        m.position.y = restY;
+        m.scale.setScalar(1);
       }
       return restY;
     }
@@ -809,8 +833,53 @@ export default {
       return spr;
     }
 
+    function staggerDropPlaced() {
+      if (reduced) return;
+      let idx = 0;
+      for (const [v, arr] of stacks) {
+        arr.forEach((m, k) => {
+          const targetY = 0.24 + k * BLOCK + BLOCK / 2;
+          const startY = targetY + 3.0;
+          m.position.y = startY;
+          m.scale.setScalar(0.01);
+
+          const delay = idx * 100;
+          later(() => {
+            feel.tween({
+              from: startY,
+              to: targetY,
+              duration: 0.4,
+              onUpdate: (y) => {
+                m.position.y = y;
+                m.scale.setScalar(Math.min(1.0, (startY - y) / 3.0 + 0.1));
+              },
+              onComplete: () => {
+                m.position.y = targetY;
+                feel.tween({
+                  from: 1.0,
+                  to: 0.8,
+                  duration: 0.08,
+                  onUpdate: (s) => m.scale.set(1.15, s, 1.15),
+                  onComplete: () => {
+                    feel.tween({
+                      from: 0.8,
+                      to: 1.0,
+                      duration: 0.12,
+                      onUpdate: (s) => m.scale.set(1, s, 1),
+                    });
+                  }
+                });
+              }
+            });
+          }, delay);
+          idx++;
+        });
+      }
+    }
+
     function startAnswer() {
       phase = "answer";
+      staggerDropPlaced();
       question = buildQuestion(data, round.ask);
       answerIndex = 0;
       buildPads();
@@ -863,8 +932,26 @@ export default {
       });
       const p = pads[answerIndex];
       if (p) {
-        cursorMesh.position.set(p.position.x, 1.7, Z_PADS);
+        const targetX = p.position.x;
+        const targetY = 1.7;
+        const targetZ = Z_PADS;
+
         if (!reduced) {
+          const startX = cursorMesh.position.x;
+          const startY = cursorMesh.position.y;
+          const startZ = cursorMesh.position.z;
+          feel.tween({
+            from: 0,
+            to: 1,
+            duration: 0.25,
+            onUpdate: (t) => {
+              const ease = 1 - Math.pow(1 - t, 3);
+              cursorMesh.position.x = startX + (targetX - startX) * ease;
+              cursorMesh.position.y = startY + (targetY - startY) * ease;
+              cursorMesh.position.z = startZ + (targetZ - startZ) * ease;
+            }
+          });
+
           feel.tween({
             from: 1,
             to: 1.12,
@@ -872,6 +959,8 @@ export default {
             onUpdate: (s) => p.scale.set(s, 1, s),
             onComplete: () => p.scale.set(1, 1, 1),
           });
+        } else {
+          cursorMesh.position.set(targetX, targetY, targetZ);
         }
       }
     }
