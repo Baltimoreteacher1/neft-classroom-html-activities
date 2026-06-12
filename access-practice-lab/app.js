@@ -904,11 +904,13 @@
       return;
     }
     window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(
-      new SpeechSynthesisUtterance(
-        `${activity.title}. ${activity.prompt || activity.directions}`,
-      ),
+    const utter = new SpeechSynthesisUtterance(
+      `${activity.title}. ${activity.prompt || activity.directions}`,
     );
+    // Slower, clearer pace for multilingual learners (mirrors ACCESS audio).
+    utter.lang = "en-US";
+    utter.rate = 0.9;
+    window.speechSynthesis.speak(utter);
   }
 
   function showSaveStatus(message) {
