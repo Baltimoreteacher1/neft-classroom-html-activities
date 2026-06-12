@@ -560,7 +560,7 @@
     return `
       <section class="support-box">
         <h4>Key vocabulary</h4>
-        <dl>${terms.map(([term, meaning]) => `<div><dt>${escapeHtml(term)}</dt><dd>${escapeHtml(meaning)}</dd></div>`).join("")}</dl>
+        <dl>${terms.map(([term, meaning, spanish]) => `<div><dt>${escapeHtml(term)}</dt><dd>${escapeHtml(meaning)}${spanish ? `<span class="vocab-es" lang="es">🌐 ${escapeHtml(spanish)}</span>` : ""}</dd></div>`).join("")}</dl>
         ${essential.length ? `<p class="spanish-mini"><strong>English / Spanish:</strong> ${essential.map(([en, es]) => `${escapeHtml(en)} / ${escapeHtml(es)}`).join("; ")}</p>` : ""}
       </section>
     `;
