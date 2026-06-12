@@ -18,114 +18,115 @@
       href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Nunito:wght@600;700;800;900&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/access-practice-lab/styles.css?v=20260612-polish" />
+    <link rel="stylesheet" href="/access-practice-lab/styles.css?v=20260612-all-domains" />
   </head>
-  <body>
-    <a class="skip-link" href="#activityPanel">Skip to activity</a>
+  <body class="mode-hub">
+    <a class="skip-link" href="#mainContent">Skip to content</a>
     <div class="lab-shell">
-      <header class="lab-hero" id="labHero">
-        <nav class="top-nav" aria-label="Practice navigation">
-          <a class="home-link" href="/">EduWonderLab</a>
-          <button class="print-btn" type="button" id="printBtn">Print practice</button>
-        </nav>
-
-        <div class="hero-grid">
-          <div class="hero-copy">
-            <p class="eyebrow" id="breadcrumb">ACCESS Practice Lab</p>
-            <h1 id="pageTitle">ACCESS Practice Lab</h1>
-            <p class="hero-subtitle" id="pageSubtitle">
-              Choose a domain and level to begin.
-            </p>
-            <div class="meta-row" id="metaRow" aria-label="Practice details"></div>
-            <div class="level-strip" id="levelGrid" aria-label="Available levels"></div>
+      <header class="site-header">
+        <nav class="top-nav" aria-label="Site navigation">
+          <div class="nav-left">
+            <a class="home-link" href="/">EduWonderLab</a>
+            <a class="hub-link" href="/access-practice-lab/" id="hubHomeLink">Practice Lab</a>
           </div>
-          <section class="goal-card" aria-labelledby="goalTitle">
-            <h2 id="goalTitle">Student Goal</h2>
-            <p id="studentGoal">I can practice ACCESS skills one step at a time.</p>
-            <p class="objective" id="studentObjective"></p>
-          </section>
-        </div>
+          <div class="nav-right">
+            <button class="ghost-btn practice-only" type="button" id="backToHubBtn">All activities</button>
+            <button class="ghost-btn" type="button" id="printBtn">Print</button>
+          </div>
+        </nav>
       </header>
 
-      <main class="lab-main">
-        <section class="learner-tools" aria-label="Student tools">
-          <label>
-            <span>Student name</span>
-            <input id="studentName" type="text" autocomplete="name" placeholder="Type first name or initials" />
-          </label>
-          <div class="tool-actions">
-            <button type="button" id="exportBtn">Copy progress summary</button>
-            <button type="button" id="resetProgressBtn">Reset this path</button>
-          </div>
-          <p id="saveStatus" role="status" aria-live="polite">Progress saves on this device.</p>
+      <div id="hubView" class="hub-view">
+        <header class="hub-hero" id="labHero">
+          <p class="eyebrow" id="hubEyebrow">Teacher dashboard</p>
+          <h1 id="hubTitle">ACCESS Practice Lab</h1>
+          <p class="hub-lead" id="hubLead">
+            Pick a domain and level, then share a direct practice link with students.
+          </p>
+        </header>
+
+        <section class="hub-section hub-section-root" id="rootDomainSection" aria-labelledby="rootDomainTitle">
+          <h2 id="rootDomainTitle">All practice domains</h2>
+          <p class="muted">Choose a domain to browse levels and copy student links.</p>
+          <div class="domain-overview-grid" id="domainOverviewGrid"></div>
         </section>
 
-        <section class="progress-panel" aria-label="Progress">
-          <div class="progress-copy">
-            <strong id="progressSummary">0 of 0 activities complete</strong>
-            <span id="progressDetail">Start with Activity 1.</span>
-          </div>
-          <div class="progress-track" aria-hidden="true">
-            <div class="progress-fill" id="progressFill"></div>
-          </div>
+        <section class="hub-section hub-section-domain" id="domainNavSection" aria-labelledby="domainNavTitle">
+          <h2 id="domainNavTitle">Domains</h2>
+          <div class="domain-tabs" id="domainTabs" role="tablist" aria-label="Practice domains"></div>
         </section>
 
-        <section class="layout-grid">
-          <aside class="activity-list" aria-labelledby="activityListTitle">
-            <h2 id="activityListTitle">Practice Path</h2>
-            <div id="activityList"></div>
-          </aside>
-
-          <section
-            class="activity-panel"
-            id="activityPanel"
-            aria-live="polite"
-            aria-labelledby="activityTitle"
-          ></section>
+        <section class="hub-section hub-section-level" id="levelNavSection" aria-labelledby="levelNavTitle">
+          <h2 id="levelNavTitle">Levels</h2>
+          <div class="level-tabs" id="hubLevelTabs"></div>
         </section>
 
-        <details class="more-practice" id="morePractice">
-          <summary>More practice options &amp; share links</summary>
-          <div class="more-practice-body">
-            <section class="domain-panel" aria-labelledby="chooseTitle">
-              <div class="section-heading">
-                <h2 id="chooseTitle">Choose Another Practice</h2>
-                <p id="chooseSubtitle">Switch domains without losing your current progress.</p>
-              </div>
-              <div class="quick-test-links" aria-label="Practice quick links">
-                <a href="/access-practice-lab/Listening/A/classroom-directions">
-                  <strong>Listening Level A</strong>
-                  <span>Directions, main ideas, details, and evidence</span>
-                </a>
-                <a href="/access-practice-lab/Listening/B/classroom-directions">
-                  <strong>Listening Level B</strong>
-                  <span>Inference, cause/effect, and academic listening</span>
-                </a>
-                <a href="/access-practice-lab/Model-Test/6-8/A/model-68-a-start">
-                  <strong>Model Practice Test Part A</strong>
-                  <span>Grades 6-8 ACCESS-style practice</span>
-                </a>
-                <a href="/access-practice-lab/Model-Test/6-8/B/model-68-b-listening-1">
-                  <strong>Model Practice Test Part B</strong>
-                  <span>Second grades 6-8 practice set</span>
-                </a>
-              </div>
-              <div class="domain-grid" id="domainGrid"></div>
+        <section class="hub-section hub-section-activities" id="activityGridSection" aria-labelledby="activityGridTitle">
+          <div class="section-heading">
+            <h2 id="activityGridTitle">Activities</h2>
+            <p id="activityGridSubtitle">Open a practice page or copy a link for Google Classroom.</p>
+          </div>
+          <div class="activity-grid" id="activityGrid"></div>
+        </section>
+
+        <details class="teacher-drawer" id="hubTeacherDrawer">
+          <summary>For teachers — links, notes &amp; progress</summary>
+          <div class="teacher-drawer-body">
+            <section class="teacher-block" aria-labelledby="goalTitle">
+              <h3 id="goalTitle">Student goal</h3>
+              <p id="studentGoal">I can practice ACCESS skills one step at a time.</p>
+              <p class="objective" id="studentObjective"></p>
             </section>
 
-            <section class="link-board" aria-labelledby="linkBoardTitle">
-              <div class="section-heading">
-                <h2 id="linkBoardTitle">Student Link Board</h2>
-                <p>Use these direct pages when sending a specific activity to students.</p>
+            <section class="teacher-block learner-tools" aria-label="Progress tools">
+              <label>
+                <span>Student name (optional)</span>
+                <input id="studentName" type="text" autocomplete="name" placeholder="First name or initials" />
+              </label>
+              <div class="tool-actions">
+                <button type="button" id="exportBtn">Copy progress summary</button>
+                <button type="button" id="resetProgressBtn">Reset this path</button>
               </div>
+              <p id="saveStatus" role="status" aria-live="polite">Progress saves on this device.</p>
+            </section>
+
+            <section class="teacher-block" aria-labelledby="linkBoardTitle">
+              <h3 id="linkBoardTitle">Share links — all activities</h3>
+              <p class="muted">Copy any URL below when assigning a specific activity.</p>
               <div class="link-board-grid" id="linkBoardGrid"></div>
+            </section>
+
+            <section class="teacher-block" aria-labelledby="quickLinksTitle">
+              <h3 id="quickLinksTitle">Quick paths</h3>
+              <div class="quick-test-links" id="quickTestLinks"></div>
             </section>
           </div>
         </details>
-      </main>
+      </div>
+
+      <div id="practiceView" class="practice-view">
+        <header class="practice-hero">
+          <p class="practice-meta" id="practiceMeta"></p>
+          <div class="practice-level-switch" id="practiceLevelSwitch" aria-label="Switch level"></div>
+        </header>
+
+        <main
+          class="practice-main"
+          id="mainContent"
+          aria-live="polite"
+          aria-labelledby="activityTitle"
+        >
+          <section class="activity-panel" id="activityPanel"></section>
+        </main>
+
+        <details class="teacher-drawer practice-teacher" id="practiceTeacherDrawer">
+          <summary>For teachers</summary>
+          <div class="teacher-drawer-body" id="practiceTeacherPanel"></div>
+        </details>
+      </div>
     </div>
 
-    <script src="/access-practice-lab/access-data.js?v=20260612-polish"></script>
-    <script src="/access-practice-lab/app.js?v=20260612-polish"></script>
+    <script src="/access-practice-lab/access-data.js?v=20260612-all-domains"></script>
+    <script src="/access-practice-lab/app.js?v=20260612-all-domains"></script>
   </body>
 </html>

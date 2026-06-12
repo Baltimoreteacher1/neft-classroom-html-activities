@@ -2,8 +2,10 @@
   const DATA = window.ACCESS_LAB_DATA;
   const $ = (id) => document.getElementById(id);
   const state = {
-    domain: "Listening",
-    level: "A",
+    mode: "hub",
+    hubScope: "root",
+    domain: null,
+    level: null,
     activityIndex: 0,
     selected: {},
     attempts: {},
@@ -14,6 +16,7 @@
     complete: new Set(),
   };
   const storagePrefix = "accessPracticeLab:v1";
+
   function escapeHtml(value) {
     return String(value || "").replace(/[&<>"']/g, (ch) => ({
       "&": "&amp;",
@@ -23,41 +26,105 @@
       "'": "&#39;",
     })[ch]);
   }
-  function routeToState() {
-    const cleanPath = window.location.pathname.replace(/^\/access-practice-lab\/?/, "");
-    const route = cleanPath || window.location.hash.replace(/^#\/?/, "");
-    const parts = route.split("/").filter(Boolean);
-    state.domain = parts[0] || "Listening";
-    if (state.domain === "Model-Test") {
-      state.level = `${parts[1] || "6-8"}-${parts[2] || "A"}`;
-      state.activityIndex = indexFromRoutePart(parts[3]);
-      return;
-    }
-    state.level = parts[1] || "A";
-    state.activityIndex = indexFromRoutePart(parts[2]);
+
+  function routeParts() {
+    return window.location.pathname.replace(/^\/access-practice-lab\/?/, "").split("/").filter(Boolean);
   }
+
+  function parseRoute() {
+    const parts = routeParts();
+    if (parts.length === 0) {
+      return { mode: "hub", hubScope: "root", domain: null, level: null, activityIndex: null };
+    }
+    const domain = parts[0];
+    if (!DATA.domains[domain]) {
+      return { mode: "hub", hubScope: "root", domain: null, level: null, activityIndex: null };
+    }
+    if (domain === "Model-Test") {
+      if (parts.length >= 4) {
+        return {
+          mode: "practice",
+          hubScope: null,
+          domain,
+          level: `${parts[1]}-${parts[2]}`,
+          activityIndex: indexFromRoutePart(domain, `${parts[1]}-${parts[2]}`, parts[3]),
+        };
+      }
+      if (parts.length === 3) {
+        return { mode: "hub", hubScope: "level", domain, level: `${parts[1]}-${parts[2]}`, activityIndex: null };
+      }
+      return { mode: "hub", hubScope: "domain", domain, level: defaultLevel(domain), activityIndex: null };
+    }
+    if (parts.length >= 3) {
+      return {
+        mode: "practice",
+        hubScope: null,
+        domain,
+        level: parts[1],
+        activityIndex: indexFromRoutePart(domain, parts[1], parts[2]),
+      };
+    }
+    if (parts.length === 2) {
+      const level = parts[1];
+      if (!DATA.domains[domain]?.levels?.[level]) {
+        return { mode: "hub", hubScope: "domain", domain, level: defaultLevel(domain), activityIndex: null };
+      }
+      return { mode: "hub", hubScope: "level", domain, level, activityIndex: null };
+    }
+    return { mode: "hub", hubScope: "domain", domain, level: defaultLevel(domain), activityIndex: null };
+  }
+
+  function defaultLevel(domainName) {
+    const domain = DATA.domains[domainName];
+    return Object.keys(domain?.levels || {})[0] || "A";
+  }
+
   function activeDomain() {
+    if (!state.domain) return DATA.domains.Listening;
     return DATA.domains[state.domain] || DATA.domains.Listening;
   }
+
   function activeLevel() {
-    return activeDomain().levels[state.level] || DATA.domains.Listening.levels.A;
+    if (!state.level) return { activities: [] };
+    return activeDomain().levels[state.level] || { activities: [] };
   }
+
+  function domainStats(domainName) {
+    const domain = DATA.domains[domainName];
+    const levels = Object.entries(domain?.levels || {});
+    const activityCount = levels.reduce((sum, [, level]) => sum + (level.activities?.length || 0), 0);
+    return { levelCount: levels.length, activityCount };
+  }
+
+  function promptStepLabel(domainName, activity) {
+    if (activity?.testPart) return "Read / listen";
+    if (domainName === "Speaking") return "Read / say";
+    if (domainName === "Reading") return "Read";
+    if (domainName === "Writing") return "Read / write";
+    if (domainName === "Listening") return "Listen / read";
+    return "Read / listen";
+  }
+
   function activities() {
     return activeLevel().activities || [];
   }
+
   function activeActivity() {
     const list = activities();
     return list[Math.min(state.activityIndex, Math.max(0, list.length - 1))];
   }
-  function indexFromRoutePart(part) {
-    const list = activities();
+
+  function indexFromRoutePart(domainName, levelKey, part) {
+    const list = DATA.domains[domainName]?.levels?.[levelKey]?.activities || [];
     if (!part) return 0;
     if (/^\d+$/.test(part)) return Math.max(0, Number(part) || 0);
     return Math.max(0, list.findIndex((activity) => activity.id === part));
   }
-  function storageKey() {
-    return `${storagePrefix}:${state.domain}:${state.level}`;
+
+  function storageKey(domain = state.domain, level = state.level) {
+    return `${storagePrefix}:${domain}:${level}`;
   }
+
   function safeParse(value, fallback) {
     try {
       return JSON.parse(value);
@@ -65,7 +132,9 @@
       return fallback;
     }
   }
+
   function loadProgress() {
+    if (!state.domain || !state.level) return;
     const saved = safeParse(localStorage.getItem(storageKey()) || "{}", {});
     state.studentName = localStorage.getItem(`${storagePrefix}:studentName`) || "";
     state.complete = new Set(Array.isArray(saved.complete) ? saved.complete : []);
@@ -75,7 +144,9 @@
     state.feedback = saved.feedback || {};
     state.notes = saved.notes || {};
   }
+
   function saveProgress() {
+    if (!state.domain || !state.level) return;
     const payload = {
       complete: [...state.complete],
       selected: state.selected,
@@ -88,186 +159,320 @@
     localStorage.setItem(`${storagePrefix}:studentName`, state.studentName);
     showSaveStatus("Saved on this device.");
   }
-  function setHash(domain, level, index) {
-    const target = activities()[Math.max(0, Math.min(index, activities().length - 1))];
-    const page = target?.id || String(index);
-    let path = "";
+
+  function hubUrl(domain, level) {
+    if (!domain) return "/access-practice-lab/";
+    if (!level) return `/access-practice-lab/${domain}`;
     if (domain === "Model-Test") {
       const [cluster, band, testLevel] = level.split("-");
-      path = `/access-practice-lab/${domain}/${cluster}-${band}/${testLevel}/${page}`;
-    } else {
-      path = `/access-practice-lab/${domain}/${level}/${page}`;
+      return `/access-practice-lab/Model-Test/${cluster}-${band}/${testLevel}`;
     }
-    history.pushState({}, "", path);
+    return `/access-practice-lab/${domain}/${level}`;
+  }
+
+  function practiceUrl(domain, level, activityId) {
+    if (domain === "Model-Test") {
+      const [cluster, band, testLevel] = level.split("-");
+      return `/access-practice-lab/Model-Test/${cluster}-${band}/${testLevel}/${activityId}`;
+    }
+    return `/access-practice-lab/${domain}/${level}/${activityId}`;
+  }
+
+  function navigate(path) {
+    history.pushState({}, "", path.startsWith("/") ? path : `/access-practice-lab/${path}`);
     initFromRoute();
   }
-  function pill(text, tone = "") {
-    return `<span class="pill ${tone}">${escapeHtml(text)}</span>`;
+
+  function setMode(mode) {
+    state.mode = mode;
+    document.body.classList.toggle("mode-hub", mode === "hub");
+    document.body.classList.toggle("mode-practice", mode === "practice");
   }
-  function renderHeader() {
-    const domain = activeDomain();
-    const level = activeLevel();
-    const levelLabel = level.displayLabel || `Level ${state.level}`;
-    const path = `${DATA.productTitle} > ${state.domain} > ${levelLabel}`;
-    $("breadcrumb").textContent = path;
-    $("pageTitle").textContent = DATA.productTitle;
-    $("pageSubtitle").textContent = `${state.domain} ${levelLabel}: ${domain.description}`;
-    $("studentGoal").textContent = level.studentGoal;
-    $("studentObjective").innerHTML = `${escapeHtml(level.objective)} ${escapeHtml(level.target)}${levelNotesHTML()}`;
-    $("metaRow").innerHTML = [
-      pill(state.domain, "domain"),
-      pill(levelLabel, "level"),
-      pill(level.range || "WIDA practice", "range"),
-      pill(level.time || "Flexible time", "time"),
-    ].join("");
-    $("labHero").style.setProperty("--domain-color", domain.color || "#1f766f");
+
+  function domainLabel(name) {
+    return name === "Model-Test" ? "Model Tests" : name;
   }
-  function renderDomains() {
-    $("domainGrid").innerHTML = Object.entries(DATA.domains).map(([name, domain]) => {
-      const firstLevel = Object.keys(domain.levels || {})[0];
-      const hasLevel = Boolean(firstLevel);
-      const isActive = name === state.domain;
-      const firstId = domain.levels?.[firstLevel]?.activities?.[0]?.id || 0;
-      const label = name === "Model-Test" ? "Model Tests" : name;
-      const route = hasLevel && name === "Model-Test" ? `/access-practice-lab/Model-Test/6-8/A/${firstId}` : hasLevel ? `/access-practice-lab/${name}/${firstLevel}/${firstId}` : "/access-practice-lab/Listening/A/classroom-directions";
-      const status = name === "Model-Test" ? "Open grades 6-8 model test" : hasLevel ? `Open ${domain.levels[firstLevel].displayLabel || `Level ${firstLevel}`}` : "Choose Listening Level A first";
-      const domainProgress = getProgressFor(name, firstLevel);
-      return `
-        <a class="domain-card ${isActive ? "active" : ""}" href="${route}" style="--domain-color:${domain.color}">
-          <span class="domain-icon">${escapeHtml(domain.icon)}</span>
-          <strong>${escapeHtml(label)}</strong>
-          <span>${escapeHtml(domain.description)}</span>
-          <em>${escapeHtml(status)} · ${domainProgress}</em>
-        </a>
-      `;
-    }).join("");
+
+  function levelLabel(levelKey, level) {
+    return level?.displayLabel || (levelKey === "Model-Test" ? levelKey : `Level ${levelKey}`);
   }
-  function levelHref(domainName, levelKey, level) {
-    if (domainName === "Model-Test") {
-      return `/access-practice-lab/Model-Test/${levelKey.replace(/-([ABC])$/, "/$1")}/${level.activities[0]?.id || 0}`;
-    }
-    return `/access-practice-lab/${domainName}/${levelKey}/${level.activities[0]?.id || 0}`;
-  }
-  function renderLevels() {
-    const domain = activeDomain();
-    const levels = Object.entries(domain.levels || {});
-    const levelGrid = $("levelGrid");
-    if (!levelGrid) return;
-    levelGrid.innerHTML = levels.map(([levelKey, level]) => {
-      const active = levelKey === state.level;
-      const href = levelHref(state.domain, levelKey, level);
-      return `
-        <a class="level-card ${active ? "active" : ""}" href="${href}">
-          <strong>${escapeHtml(level.displayLabel || `Level ${levelKey}`)}</strong>
-          <span>${escapeHtml(level.time || "Flexible time")}</span>
-          <em>${getProgressFor(state.domain, levelKey)}</em>
-        </a>
-      `;
-    }).join("");
-  }
-  function renderChooseSubtitle() {
-    const subtitle = $("chooseSubtitle");
-    if (!subtitle) return;
-    const levelLabel = activeLevel().displayLabel || `Level ${state.level}`;
-    subtitle.textContent = `Switch domains without losing your ${state.domain} ${levelLabel} progress.`;
-  }
-  function activityHref(domainName, levelKey, activityId) {
-    if (domainName === "Model-Test") {
-      return `/access-practice-lab/Model-Test/${levelKey.replace(/-([ABC])$/, "/$1")}/${activityId}`;
-    }
-    return `/access-practice-lab/${domainName}/${levelKey}/${activityId}`;
-  }
-  function renderLinkBoard() {
-    const board = $("linkBoardGrid");
-    if (!board) return;
-    const sections = [];
-    for (const [domainName, domain] of Object.entries(DATA.domains)) {
-      for (const [levelKey, level] of Object.entries(domain.levels || {})) {
-        const levelLabel = domainName === "Model-Test"
-          ? (level.displayLabel || levelKey.replace("6-8-", "Grades 6-8 · "))
-          : `${domainName} ${level.displayLabel || `Level ${levelKey}`}`;
-        const links = (level.activities || []).map((activity, index) => {
-          const href = activityHref(domainName, levelKey, activity.id);
-          return `<a href="${href}">${index + 1}. ${escapeHtml(activity.title)}</a>`;
-        }).join("");
-        if (links) sections.push(`<section><h3>${escapeHtml(levelLabel)}</h3>${links}</section>`);
-      }
-    }
-    board.innerHTML = sections.join("");
-  }
+
   function getProgressFor(domainName, levelName) {
     const domain = DATA.domains[domainName];
     const total = domain?.levels?.[levelName]?.activities?.length || 0;
-    const saved = safeParse(localStorage.getItem(`${storagePrefix}:${domainName}:${levelName}`) || "{}", {});
+    const saved = safeParse(localStorage.getItem(storageKey(domainName, levelName)) || "{}", {});
     const done = Array.isArray(saved.complete) ? saved.complete.length : 0;
     return total ? `${done}/${total} done` : "coming soon";
   }
-  function renderProgress() {
-    const list = activities();
-    const done = list.filter((activity) => state.complete.has(activity.id)).length;
-    const percent = list.length ? Math.round((done / list.length) * 100) : 0;
-    $("progressSummary").textContent = `${done} of ${list.length} activities complete`;
-    $("progressDetail").textContent = done === list.length
-      ? "Great work. You finished this practice path."
-      : `Current activity: ${Math.min(state.activityIndex + 1, list.length)} of ${list.length}`;
-    $("progressFill").style.width = `${percent}%`;
+
+  function renderHub() {
+    document.body.dataset.hubScope = state.hubScope;
+    const isRoot = state.hubScope === "root";
+    const isDomain = state.hubScope === "domain";
+    const isLevel = state.hubScope === "level";
+    const domain = state.domain ? activeDomain() : null;
+    const level = state.level ? activeLevel() : null;
+    const levelName = level ? levelLabel(state.level, level) : "";
+    const domainName = state.domain ? domainLabel(state.domain) : "";
+
+    if (isRoot) {
+      $("hubEyebrow").textContent = "Teacher dashboard";
+      $("hubTitle").textContent = DATA.productTitle;
+      $("hubLead").textContent = "Browse every ACCESS domain, pick a level, and share a clean practice link with students.";
+      $("studentGoal").textContent = "Students open one activity at a time — directions, prompt, answer, reflection.";
+      $("studentObjective").innerHTML = `<p class="muted">Use the dashboards below to assign practice. Share activity URLs directly in Google Classroom.</p>`;
+      $("activityGridSubtitle").textContent = "Select a domain to see activities.";
+      document.title = `${DATA.productTitle} | EduWonderLab`;
+    } else if (isDomain) {
+      $("hubEyebrow").textContent = domainName;
+      $("hubTitle").textContent = domainName;
+      $("hubLead").textContent = `${domain.description} Pick a level, then share an activity link.`;
+      $("studentGoal").textContent = "";
+      $("studentObjective").innerHTML = "";
+      $("activityGridSubtitle").textContent = `Choose a level for ${domainName}.`;
+      document.title = `${DATA.productTitle} · ${domainName} | EduWonderLab`;
+      $("labHero")?.style.setProperty("--domain-color", domain.color || "#0f766e");
+    } else {
+      $("hubEyebrow").textContent = `${domainName} · ${levelName}`;
+      $("hubTitle").textContent = `${domainName} ${levelName}`;
+      $("hubLead").textContent = `${domain.description} Open a practice page or copy a link for students.`;
+      $("studentGoal").textContent = level.studentGoal || "";
+      $("studentObjective").innerHTML = [
+        level.objective ? `<span>${escapeHtml(level.objective)}</span>` : "",
+        level.target ? `<span>${escapeHtml(level.target)}</span>` : "",
+        level.teacherSummary ? `<p class="muted">${escapeHtml(level.teacherSummary)}</p>` : "",
+      ].filter(Boolean).join(" ");
+      $("activityGridSubtitle").textContent = `${activities().length} activities · ${getProgressFor(state.domain, state.level)} on this device`;
+      document.title = `${DATA.productTitle} · ${domainName} ${levelName} | EduWonderLab`;
+      $("labHero")?.style.setProperty("--domain-color", domain.color || "#0f766e");
+    }
+
+    renderDomainOverview();
+    renderDomainTabs();
+    renderHubLevelTabs();
+    renderActivityGrid();
+    renderQuickLinks();
+    renderLinkBoard();
+    renderLearnerTools();
   }
-  function renderLearnerTools() {
-    const name = $("studentName");
-    if (name && name.value !== state.studentName) name.value = state.studentName;
-  }
-  function renderActivityList() {
-    const list = activities();
-    const itemLabel = state.domain === "Model-Test" ? "Item" : "Activity";
-    $("activityList").innerHTML = list.map((activity, index) => {
-      const isActive = index === state.activityIndex;
-      const done = state.complete.has(activity.id);
+
+  function renderDomainOverview() {
+    const grid = $("domainOverviewGrid");
+    if (!grid) return;
+    grid.innerHTML = Object.entries(DATA.domains).map(([name, domain]) => {
+      const stats = domainStats(name);
+      const levels = Object.entries(domain.levels || {}).map(([levelKey, level]) => {
+        const href = hubUrl(name, levelKey);
+        return `<a class="level-chip" href="${href}">${escapeHtml(levelLabel(levelKey, level))}</a>`;
+      }).join("");
       return `
-        <button class="path-item ${isActive ? "active" : ""}" type="button" data-jump="${index}" aria-current="${isActive ? "step" : "false"}">
-          <span>${done ? "Done" : `${itemLabel} ${index + 1}`}</span>
-          <strong>${escapeHtml(activity.title)}</strong>
-          <small>${escapeHtml(activity.skill)}</small>
-        </button>
+        <article class="domain-overview-card" style="--domain-color:${domain.color}">
+          <div class="domain-overview-head">
+            <span class="domain-tab-icon">${escapeHtml(domain.icon)}</span>
+            <h3>${escapeHtml(domainLabel(name))}</h3>
+          </div>
+          <p>${escapeHtml(domain.description)}</p>
+          <p class="domain-overview-meta">${stats.levelCount} level${stats.levelCount === 1 ? "" : "s"} · ${stats.activityCount} activit${stats.activityCount === 1 ? "y" : "ies"}</p>
+          <div class="level-chip-row">${levels}</div>
+          <a class="primary-link" href="${hubUrl(name, null)}">Open ${escapeHtml(domainLabel(name))} dashboard</a>
+        </article>
       `;
     }).join("");
   }
+
+  function renderDomainTabs() {
+    const tabs = $("domainTabs");
+    if (!tabs) return;
+    tabs.innerHTML = Object.entries(DATA.domains).map(([name, domain]) => {
+      const active = name === state.domain;
+      const href = hubUrl(name, null);
+      return `
+        <a class="domain-tab ${active ? "active" : ""}" href="${href}" style="--domain-color:${domain.color}">
+          <span class="domain-tab-icon">${escapeHtml(domain.icon)}</span>
+          <span class="domain-tab-label">${escapeHtml(domainLabel(name))}</span>
+        </a>
+      `;
+    }).join("");
+  }
+
+  function renderHubLevelTabs() {
+    const tabs = $("hubLevelTabs");
+    if (!tabs || !state.domain) {
+      if (tabs) tabs.innerHTML = "";
+      return;
+    }
+    const domain = activeDomain();
+    tabs.innerHTML = Object.entries(domain.levels || {}).map(([levelKey, level]) => {
+      const active = levelKey === state.level;
+      const href = hubUrl(state.domain, levelKey);
+      const firstActivity = level.activities?.[0];
+      const sampleHref = firstActivity ? practiceUrl(state.domain, levelKey, firstActivity.id) : href;
+      return `
+        <article class="level-tab ${active ? "active" : ""}">
+          <a class="level-tab-main" href="${href}">
+            <strong>${escapeHtml(levelLabel(levelKey, level))}</strong>
+            <span>${escapeHtml(level.time || "Flexible time")} · ${level.activities?.length || 0} activit${(level.activities?.length || 0) === 1 ? "y" : "ies"} · ${getProgressFor(state.domain, levelKey)}</span>
+            ${firstActivity ? `<em class="level-tab-sample">Sample: ${escapeHtml(firstActivity.title)}</em>` : ""}
+          </a>
+          <div class="level-tab-actions">
+            <a class="ghost-btn" href="${href}">Browse activities</a>
+            ${firstActivity ? `<a class="primary-link" href="${sampleHref}">Open first activity</a>` : ""}
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+
+  function renderActivityGrid() {
+    const grid = $("activityGrid");
+    if (!grid) return;
+    if (state.hubScope !== "level") {
+      grid.innerHTML = state.hubScope === "root"
+        ? `<p class="empty-state">Choose a domain above to browse levels and activities.</p>`
+        : `<p class="empty-state">Choose a level above to see shareable activity pages.</p>`;
+      return;
+    }
+    const list = activities();
+    const itemLabel = state.domain === "Model-Test" ? "Item" : "Activity";
+    $("activityGrid").innerHTML = list.map((activity, index) => {
+      const href = practiceUrl(state.domain, state.level, activity.id);
+      const done = state.complete.has(activity.id);
+      return `
+        <article class="activity-card-hub ${done ? "is-done" : ""}">
+          <div class="activity-card-head">
+            <span class="activity-card-num">${done ? "✓" : `${itemLabel} ${index + 1}`}</span>
+            <span class="activity-card-time">${escapeHtml(activity.time)}</span>
+          </div>
+          <h3>${escapeHtml(activity.title)}</h3>
+          <p class="activity-card-skill">${escapeHtml(activity.skill)}</p>
+          <p class="activity-card-directions">${escapeHtml(activity.directions)}</p>
+          <div class="activity-card-actions">
+            <a class="primary-link" href="${href}">Open practice page</a>
+            <button type="button" class="ghost-btn" data-copy-link="${href}">Copy link</button>
+          </div>
+        </article>
+      `;
+    }).join("") || `<p class="empty-state">No activities for this level yet.</p>`;
+  }
+
+  function renderQuickLinks() {
+    const links = [];
+    for (const [domainName, domain] of Object.entries(DATA.domains)) {
+      for (const [levelKey, level] of Object.entries(domain.levels || {})) {
+        const first = level.activities?.[0];
+        if (!first) continue;
+        const href = practiceUrl(domainName, levelKey, first.id);
+        const title = `${domainLabel(domainName)} · ${levelLabel(levelKey, level)}`;
+        const desc = first.title;
+        links.push([href, title, desc]);
+      }
+    }
+    $("quickTestLinks").innerHTML = links.map(([href, title, desc]) => `
+      <a href="${href}">
+        <strong>${escapeHtml(title)}</strong>
+        <span>${escapeHtml(desc)}</span>
+      </a>
+    `).join("");
+  }
+
+  function renderLinkBoard() {
+    const sections = [];
+    for (const [domainName, domain] of Object.entries(DATA.domains)) {
+      for (const [levelKey, level] of Object.entries(domain.levels || {})) {
+        const label = domainName === "Model-Test"
+          ? levelLabel(levelKey, level)
+          : `${domainLabel(domainName)} ${levelLabel(levelKey, level)}`;
+        const links = (level.activities || []).map((activity, index) => {
+          const href = practiceUrl(domainName, levelKey, activity.id);
+          return `<a href="${href}">${index + 1}. ${escapeHtml(activity.title)}</a>`;
+        }).join("");
+        if (links) sections.push(`<section><h4>${escapeHtml(label)}</h4>${links}</section>`);
+      }
+    }
+    $("linkBoardGrid").innerHTML = sections.join("");
+  }
+
+  function renderPracticeHeader() {
+    const level = activeLevel();
+    const activity = activeActivity();
+    const list = activities();
+    const levelName = levelLabel(state.level, level);
+    const itemLabel = state.domain === "Model-Test" ? "Item" : "Activity";
+    const index = Math.min(state.activityIndex, Math.max(0, list.length - 1));
+
+    $("practiceMeta").innerHTML = `
+      <span>${escapeHtml(domainLabel(state.domain))}</span>
+      <span aria-hidden="true">·</span>
+      <span>${escapeHtml(levelName)}</span>
+      <span aria-hidden="true">·</span>
+      <span>${itemLabel} ${index + 1} of ${list.length}</span>
+    `;
+
+    const domain = activeDomain();
+    $("practiceLevelSwitch").innerHTML = Object.entries(domain.levels || {}).map(([levelKey, lvl]) => {
+      const active = levelKey === state.level;
+      const firstId = lvl.activities?.[0]?.id || 0;
+      const href = practiceUrl(state.domain, levelKey, activity?.id && lvl.activities?.some((a) => a.id === activity.id) ? activity.id : firstId);
+      return `<a class="level-pill ${active ? "active" : ""}" href="${href}">${escapeHtml(levelLabel(levelKey, lvl))}</a>`;
+    }).join("");
+
+    document.title = activity
+      ? `${activity.title} · ${domainLabel(state.domain)} ${levelName} | EduWonderLab`
+      : `${DATA.productTitle} | EduWonderLab`;
+
+    $("backToHubBtn").onclick = () => navigate(hubUrl(state.domain, state.level));
+  }
+
   function listHTML(items) {
-    if (!items || !items.length) return "";
+    if (!items?.length) return "";
     return `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
   }
+
   function vocabularyHTML(activity) {
     const terms = activity.vocabulary || [];
     const essential = DATA.essentialTerms || [];
+    if (!terms.length && !essential.length) return "";
     return `
-      <section class="support-box vocab-box" aria-labelledby="vocabTitle">
-        <h3 id="vocabTitle">Key Vocabulary</h3>
-        <dl>
-          ${terms.map(([term, meaning]) => `<div><dt>${escapeHtml(term)}</dt><dd>${escapeHtml(meaning)}</dd></div>`).join("")}
-        </dl>
-        <p class="spanish-mini"><strong>English / Spanish academic words:</strong> ${essential.map(([en, es]) => `${escapeHtml(en)} / ${escapeHtml(es)}`).join("; ")}</p>
+      <section class="support-box">
+        <h4>Key vocabulary</h4>
+        <dl>${terms.map(([term, meaning]) => `<div><dt>${escapeHtml(term)}</dt><dd>${escapeHtml(meaning)}</dd></div>`).join("")}</dl>
+        ${essential.length ? `<p class="spanish-mini"><strong>English / Spanish:</strong> ${essential.map(([en, es]) => `${escapeHtml(en)} / ${escapeHtml(es)}`).join("; ")}</p>` : ""}
       </section>
     `;
   }
+
   function frameHTML(activity) {
-    return `
-      <section class="support-box frame-box" aria-labelledby="frameTitle">
-        <h3 id="frameTitle">Sentence Frames</h3>
-        ${listHTML(activity.frames || [])}
-      </section>
-    `;
+    if (!activity.frames?.length) return "";
+    return `<section class="support-box"><h4>Sentence frames</h4>${listHTML(activity.frames)}</section>`;
   }
+
   function trackerHTML(activity) {
     if (!activity.tracker && !activity.wordBank) return "";
     const tracker = activity.tracker || [];
     const wordBank = activity.wordBank || [];
     return `
-      <section class="support-box tracker-box" aria-labelledby="trackerTitle">
-        <h3 id="trackerTitle">Detail Tracker</h3>
+      <section class="support-box">
+        <h4>Detail tracker</h4>
         ${tracker.map(([label, value]) => `<p><strong>${escapeHtml(label)}</strong> ${escapeHtml(value)}</p>`).join("")}
         ${wordBank.length ? `<p><strong>Word bank:</strong> ${wordBank.map(escapeHtml).join(", ")}</p>` : ""}
       </section>
     `;
   }
+
+  function helpHTML(activity) {
+    const listenFor = activity.listenFor?.length
+      ? `<section class="support-box"><h4>What to listen for</h4>${listHTML(activity.listenFor)}</section>`
+      : "";
+    const support = [listenFor, vocabularyHTML(activity), frameHTML(activity), trackerHTML(activity)].filter(Boolean).join("");
+    if (!support) return "";
+    return `
+      <details class="help-drawer">
+        <summary>Need help? Vocabulary &amp; frames</summary>
+        <div class="help-drawer-body">${support}</div>
+      </details>
+    `;
+  }
+
   function multipleChoiceHTML(activity) {
     const selected = state.selected[activity.id];
     return `
@@ -281,18 +486,20 @@
           </label>
         `).join("")}
       </fieldset>
-      <button class="primary-action" type="button" data-check>${state.domain === "Model-Test" ? "Save and check item" : "Check my listening choice"}</button>
+      <button class="primary-action" type="button" data-check>${state.domain === "Model-Test" ? "Check answer" : "Check my answer"}</button>
     `;
   }
+
   function constructedHTML(activity) {
     return `
       <label class="constructed-response">
         <span>${escapeHtml(activity.responseLabel || "Type your response")}</span>
         <textarea data-note rows="5" placeholder="${escapeHtml(activity.responsePlaceholder || "Use the frame and write your answer here.")}">${escapeHtml(state.notes[activity.id] || "")}</textarea>
       </label>
-      <button class="primary-action" type="button" data-check>Save constructed response</button>
+      <button class="primary-action" type="button" data-check>Save response</button>
     `;
   }
+
   function sortHTML(activity) {
     const answers = state.sortAnswers[activity.id] || {};
     return `
@@ -315,60 +522,19 @@
       <button class="primary-action" type="button" data-check>Check my sort</button>
     `;
   }
+
   function answerHTML(activity) {
     if (activity.type === "sort") return sortHTML(activity);
     if (activity.type === "constructed") return constructedHTML(activity);
     return multipleChoiceHTML(activity);
   }
-  function testModeHTML(activity) {
-    if (!activity.testPart) return "";
-    return `
-      <section class="test-mode-box" aria-label="Practice test information">
-        <div>
-          <strong>${escapeHtml(activity.testPart)}</strong>
-          <span>${escapeHtml(activity.testFormat || "Grades 6-8 ACCESS-style practice")}</span>
-        </div>
-        <p>This is EduWonderLab classroom practice inspired by ACCESS skills. It is not an official WIDA test.</p>
-        ${activity.adminScript ? `<p class="admin-script"><strong>Read aloud:</strong> ${escapeHtml(activity.adminScript)}</p>` : ""}
-      </section>
-    `;
-  }
-  function teacherHTML(activity) {
-    const teacher = activity.teacher;
-    if (!teacher) return "";
-    const rows = [
-      ["Use", teacher.use],
-      ["Language function", teacher.function],
-      ["Lower support", teacher.lower],
-      ["On-level", teacher.onLevel],
-      ["Challenge", teacher.challenge],
-      ["No-tech option", teacher.noTech],
-      ["Discussion prompt", teacher.prompt],
-    ].filter(([, value]) => value);
-    if (!rows.length) return "";
-    return `
-      <details class="teacher-notes">
-        <summary>Teacher notes (optional)</summary>
-        <dl>
-          ${rows.map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}
-        </dl>
-      </details>
-    `;
-  }
-  function levelNotesHTML() {
-    const summary = activeLevel().teacherSummary;
-    if (!summary) return "";
-    return `
-      <details class="level-notes">
-        <summary>About this practice level</summary>
-        <p>${escapeHtml(summary)}</p>
-      </details>
-    `;
-  }
+
   function feedbackHTML(activity) {
     const feedback = state.feedback[activity.id];
     if (!feedback) return "";
-    const heading = feedback.ok ? (state.domain === "Model-Test" ? "Item saved" : `Good ${state.domain.toLowerCase()}`) : "Try this hint";
+    const heading = feedback.ok
+      ? (state.domain === "Model-Test" ? "Saved" : "Nice work")
+      : "Try again";
     return `
       <section class="feedback-box ${feedback.ok ? "correct" : "hint"}" role="status" aria-live="polite">
         <h3>${heading}</h3>
@@ -377,79 +543,87 @@
       </section>
     `;
   }
+
+  function teacherPanelHTML(activity) {
+    const teacher = activity.teacher;
+    const rows = teacher
+      ? [
+          ["Use", teacher.use],
+          ["Language function", teacher.function],
+          ["Lower support", teacher.lower],
+          ["On-level", teacher.onLevel],
+          ["Challenge", teacher.challenge],
+          ["No-tech option", teacher.noTech],
+          ["Discussion prompt", teacher.prompt],
+        ].filter(([, value]) => value)
+      : [];
+
+    const wida = (activity.wida || []).length
+      ? `<section class="teacher-block"><h4>ACCESS alignment</h4><p>${activity.wida.map((item) => escapeHtml(item)).join(" · ")}</p></section>`
+      : "";
+
+    const testInfo = activity.testPart
+      ? `<section class="teacher-block"><h4>${escapeHtml(activity.testPart)}</h4><p>${escapeHtml(activity.testFormat || "Grades 6-8 ACCESS-style practice")}</p><p class="muted">Classroom model practice — not an official WIDA test.</p>${activity.adminScript ? `<p><strong>Read aloud:</strong> ${escapeHtml(activity.adminScript)}</p>` : ""}</section>`
+      : "";
+
+    const teacherNotes = rows.length
+      ? `<section class="teacher-block"><h4>Teacher notes</h4><dl>${rows.map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}</dl></section>`
+      : "";
+
+    const shareLink = `<section class="teacher-block"><h4>Share this activity</h4><p class="share-url" id="shareUrl">${escapeHtml(window.location.href)}</p><button type="button" class="ghost-btn" data-copy-current>Copy link for Classroom</button></section>`;
+
+    return `${shareLink}${testInfo}${wida}${teacherNotes}`;
+  }
+
   function certificateHTML() {
     const list = activities();
-    if (!list.length || list.some((activity) => !state.complete.has(activity.id))) return "";
+    if (!list.length || list.some((a) => !state.complete.has(a.id))) return "";
     const name = state.studentName || "Student";
     return `
       <section class="certificate-box">
-        <h3>Completion Slip</h3>
-        <p><strong>${escapeHtml(name)}</strong> completed ${escapeHtml(state.domain)} ${escapeHtml(activeLevel().displayLabel || `Level ${state.level}`)} practice.</p>
-        <p>I practiced listening, vocabulary, sentence frames, and explaining with evidence.</p>
+        <h3>Completion slip</h3>
+        <p><strong>${escapeHtml(name)}</strong> completed ${escapeHtml(domainLabel(state.domain))} ${escapeHtml(levelLabel(state.level, activeLevel()))}.</p>
       </section>
     `;
   }
-  function renderActivity() {
+
+  function renderPractice() {
     const activity = activeActivity();
+    renderPracticeHeader();
     if (!activity) {
-      $("activityPanel").innerHTML = `<div class="empty-state">This practice path is not available yet. Choose Listening Level A to begin.</div>`;
+      $("activityPanel").innerHTML = `<div class="empty-state">Activity not found. <a href="${hubUrl(state.domain, state.level)}">Back to activities</a></div>`;
+      $("practiceTeacherPanel").innerHTML = "";
       return;
     }
+
     const done = state.complete.has(activity.id);
     const showReflection = activity.type !== "constructed";
+
     $("activityPanel").innerHTML = `
       <article class="activity-card">
-        <header class="activity-intro">
-          <div class="activity-topline">
-            ${pill(`${state.domain === "Model-Test" ? "Item" : "Activity"} ${state.activityIndex + 1}`, "number")}
-            ${pill(activity.skill, "skill")}
-            ${pill(activity.time, "time")}
-            ${done ? pill("Complete", "complete") : ""}
-          </div>
+        <header class="flow-step">
+          <p class="step-label">Directions</p>
           <h2 id="activityTitle">${escapeHtml(activity.title)}</h2>
           <p class="directions">${escapeHtml(activity.directions)}</p>
-          ${testModeHTML(activity)}
         </header>
 
-        <section class="activity-guide" aria-label="How to practice">
-          <div class="student-steps">
-            <section>
-              <h3>Listen / Read / Think</h3>
-              <ol>
-                <li>Listen for the important words.</li>
-                <li>Read each answer choice carefully.</li>
-                <li>Choose the answer that matches the evidence.</li>
-              </ol>
-            </section>
-            <section>
-              <h3>What to listen for</h3>
-              ${listHTML(activity.listenFor || [])}
-            </section>
-          </div>
+        <section class="flow-step prompt-box">
+          <p class="step-label">${escapeHtml(promptStepLabel(state.domain, activity))}</p>
+          <p class="prompt-text">${escapeHtml(activity.prompt || "Sort each phrase into the best category.")}</p>
+          <button class="listen-btn" type="button" data-speak>Read aloud</button>
         </section>
 
-        <section class="prompt-box" aria-labelledby="promptTitle">
-          <h3 id="promptTitle">Practice Prompt</h3>
-          <p>${escapeHtml(activity.prompt || "Sort each phrase into the best category.")}</p>
-          <button class="listen-btn" type="button" data-speak>Read prompt aloud</button>
-        </section>
+        ${helpHTML(activity)}
 
-        <section class="activity-support" aria-label="Vocabulary and frames">
-          <div class="support-grid">
-            ${vocabularyHTML(activity)}
-            ${frameHTML(activity)}
-            ${trackerHTML(activity)}
-          </div>
-        </section>
-
-        <section class="answer-zone" aria-label="Answer area">
+        <section class="flow-step answer-zone">
+          <p class="step-label">Your answer</p>
           ${answerHTML(activity)}
           ${feedbackHTML(activity)}
         </section>
 
         ${showReflection ? `
-          <section class="extension-box" aria-label="Say or write your answer">
-            <h3>Say It or Write It</h3>
+          <section class="flow-step extension-box">
+            <p class="step-label">Reflection</p>
             <p>${escapeHtml(activity.extension)}</p>
             <label class="reflection-label">
               <span>My sentence</span>
@@ -458,23 +632,24 @@
           </section>
         ` : ""}
 
-        <footer class="activity-meta">
-          <section class="alignment-box">
-            <h3>ACCESS Skill Alignment</h3>
-            <div>${(activity.wida || []).map((item) => pill(item, "alignment")).join("")}</div>
-          </section>
-          ${teacherHTML(activity)}
-        </footer>
-
         ${certificateHTML()}
-        <nav class="activity-nav" aria-label="Activity controls">
-          <button type="button" data-prev ${state.activityIndex === 0 ? "disabled" : ""}>Previous activity</button>
-          <button type="button" data-mark>${done ? "Mark not complete" : "Mark complete"}</button>
-          <button type="button" data-next ${state.activityIndex >= activities().length - 1 ? "disabled" : ""}>Next activity</button>
+
+        <nav class="activity-nav" aria-label="Activity navigation">
+          <button type="button" data-prev ${state.activityIndex === 0 ? "disabled" : ""}>Previous</button>
+          <button type="button" class="mark-btn" data-mark>${done ? "Mark incomplete" : "Mark complete"}</button>
+          <button type="button" data-next ${state.activityIndex >= activities().length - 1 ? "disabled" : ""}>Next</button>
         </nav>
       </article>
     `;
+
+    $("practiceTeacherPanel").innerHTML = teacherPanelHTML(activity);
   }
+
+  function renderLearnerTools() {
+    const name = $("studentName");
+    if (name && name.value !== state.studentName) name.value = state.studentName;
+  }
+
   function checkAnswer() {
     const activity = activeActivity();
     if (!activity) return;
@@ -488,19 +663,14 @@
     } else {
       ok = state.selected[activity.id] === activity.answer;
     }
-    if (ok) {
-      state.complete.add(activity.id);
-      state.feedback[activity.id] = { ok: true, message: activity.correct || "Response saved. Review your answer for a clear claim and evidence." };
-    } else {
-      state.feedback[activity.id] = {
-        ok: false,
-        message: activity.hint,
-        support: state.attempts[activity.id] >= 2 ? activity.support : "",
-      };
-    }
+    state.feedback[activity.id] = ok
+      ? { ok: true, message: activity.correct || "Response saved." }
+      : { ok: false, message: activity.hint, support: state.attempts[activity.id] >= 2 ? activity.support : "" };
+    if (ok) state.complete.add(activity.id);
     saveProgress();
     renderAll();
   }
+
   function speakPrompt() {
     const activity = activeActivity();
     if (!activity || !("speechSynthesis" in window)) {
@@ -508,26 +678,41 @@
       return;
     }
     window.speechSynthesis.cancel();
-    const text = `${activity.title}. ${activity.prompt || activity.directions}`;
-    window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+    window.speechSynthesis.speak(new SpeechSynthesisUtterance(`${activity.title}. ${activity.prompt || activity.directions}`));
   }
+
   function showSaveStatus(message) {
     const el = $("saveStatus");
     if (el) el.textContent = message;
   }
-  async function copySummary() {
-    const list = activities();
-    const done = list.filter((activity) => state.complete.has(activity.id)).length;
-    const rows = list.map((activity, index) => `${index + 1}. ${activity.title}: ${state.complete.has(activity.id) ? "complete" : "not complete"}`);
-    const summary = [`${DATA.productTitle}: ${state.domain} Level ${state.level}`, `Student: ${state.studentName || "Not entered"}`, `Progress: ${done}/${list.length} complete`, ...rows].join("\n");
-    showSaveStatus("Progress summary ready.");
+
+  async function copyText(text) {
     try {
-      await navigator.clipboard.writeText(summary);
-      showSaveStatus("Progress summary copied.");
+      await navigator.clipboard.writeText(text);
+      showSaveStatus("Link copied.");
     } catch {
-      showSaveStatus(summary);
+      showSaveStatus(text);
     }
   }
+
+  async function copySummary() {
+    if (!state.domain || !state.level) {
+      showSaveStatus("Choose a domain and level first.");
+      return;
+    }
+    const list = activities();
+    const done = list.filter((a) => state.complete.has(a.id)).length;
+    const rows = list.map((a, i) => `${i + 1}. ${a.title}: ${state.complete.has(a.id) ? "complete" : "not complete"}`);
+    const summary = [
+      `${DATA.productTitle}: ${domainLabel(state.domain)} ${levelLabel(state.level, activeLevel())}`,
+      `Student: ${state.studentName || "Not entered"}`,
+      `Progress: ${done}/${list.length} complete`,
+      ...rows,
+    ].join("\n");
+    await copyText(summary);
+    showSaveStatus("Progress summary copied.");
+  }
+
   function wireEvents() {
     document.addEventListener("change", (event) => {
       const activity = activeActivity();
@@ -535,7 +720,7 @@
       if (event.target.name === "answer") {
         state.selected[activity.id] = event.target.value;
         saveProgress();
-        renderActivity();
+        if (state.mode === "practice") renderPractice();
       }
       if (event.target.matches("[data-sort-item]")) {
         const itemId = event.target.getAttribute("data-sort-item");
@@ -544,6 +729,7 @@
         saveProgress();
       }
     });
+
     document.addEventListener("input", (event) => {
       const activity = activeActivity();
       if (event.target.id === "studentName") {
@@ -554,13 +740,27 @@
         saveProgress();
       }
     });
+
     document.addEventListener("click", (event) => {
-      const jump = event.target.closest("[data-jump]");
-      if (jump) setHash(state.domain, state.level, jump.getAttribute("data-jump"));
+      const copyLink = event.target.closest("[data-copy-link]");
+      if (copyLink) {
+        copyText(new URL(copyLink.getAttribute("data-copy-link"), window.location.origin).href);
+        return;
+      }
+      if (event.target.closest("[data-copy-current]")) {
+        copyText(window.location.href);
+        return;
+      }
       if (event.target.closest("[data-check]")) checkAnswer();
       if (event.target.closest("[data-speak]")) speakPrompt();
-      if (event.target.closest("[data-prev]")) setHash(state.domain, state.level, state.activityIndex - 1);
-      if (event.target.closest("[data-next]")) setHash(state.domain, state.level, state.activityIndex + 1);
+      if (event.target.closest("[data-prev]")) {
+        const prev = activities()[state.activityIndex - 1];
+        if (prev) navigate(practiceUrl(state.domain, state.level, prev.id));
+      }
+      if (event.target.closest("[data-next]")) {
+        const next = activities()[state.activityIndex + 1];
+        if (next) navigate(practiceUrl(state.domain, state.level, next.id));
+      }
       if (event.target.closest("[data-mark]")) {
         const activity = activeActivity();
         if (state.complete.has(activity.id)) state.complete.delete(activity.id);
@@ -569,39 +769,52 @@
         renderAll();
       }
     });
+
     $("printBtn").addEventListener("click", () => window.print());
     $("exportBtn").addEventListener("click", copySummary);
     $("resetProgressBtn").addEventListener("click", () => {
+      if (!state.domain || !state.level) {
+        showSaveStatus("Choose a domain and level first.");
+        return;
+      }
       localStorage.removeItem(storageKey());
       loadProgress();
       renderAll();
       showSaveStatus("This practice path was reset.");
     });
-    window.addEventListener("hashchange", initFromRoute);
     window.addEventListener("popstate", initFromRoute);
   }
+
   function renderAll() {
-    renderHeader();
-    renderDomains();
-    renderLevels();
-    renderChooseSubtitle();
-    renderLinkBoard();
-    renderProgress();
-    renderLearnerTools();
-    renderActivityList();
-    renderActivity();
+    if (state.mode === "hub") {
+      setMode("hub");
+      loadProgress();
+      renderHub();
+    } else {
+      setMode("practice");
+      loadProgress();
+      renderPractice();
+    }
   }
+
   function initFromRoute() {
-    routeToState();
+    const route = parseRoute();
+    state.mode = route.mode;
+    state.hubScope = route.hubScope || "level";
+    state.domain = route.domain;
+    state.level = route.level;
+    state.activityIndex = route.activityIndex ?? 0;
+    if (state.mode === "hub" && state.hubScope === "domain" && state.domain && !state.level) {
+      state.level = defaultLevel(state.domain);
+    }
     loadProgress();
     renderAll();
   }
+
   function init() {
-    if (window.location.pathname.replace(/^\/access-practice-lab\/?/, "") === "" && !window.location.hash) setHash("Listening", "A", 0);
-    routeToState();
-    loadProgress();
     wireEvents();
-    renderAll();
+    initFromRoute();
   }
+
   init();
 })();
