@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en" data-textsize="md">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Axiom City U1·E3 — The Pattern Engine | Interactive Graphic Novel Episode | Prime Factorization, GCF &amp; LCM</title>
+<meta name="description" content="An interactive 3D graphic novel episode teaching Grade 6 prime factorization with factor trees, greatest common factor, and least common multiple (6.NS.4, Lessons 1-1 to 1-3). Unit 1 inside the Pattern Engine. EduWonderLab.">
+<style>
+/* ================= AXIOM CITY ENGINE CSS v1.0 — DO NOT FORK ================= */
+:root{
+  --paper:#F7F4EC; --ink:#24323F; --navy:#17324D; --teal:#1FA6A2; --amber:#F2C15B;
+  --coral:#E2674A; --purple:#4A2580; --accent:var(--teal);
+  --panelborder:3px solid var(--navy);
+  --balloonfont:600 1rem/1.32 'Segoe UI',system-ui,-apple-system,sans-serif;
+  --capfont:italic 500 .92rem/1.35 Georgia,'Times New Roman',serif;
+  --pagew:560px;
+}
+html[data-textsize="lg"]{font-size:18px}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:radial-gradient(120% 120% at 50% 0%,#23425f 0%,#101e2e 55%,#0a1420 100%);color:var(--ink);font:400 16px/1.45 'Segoe UI',system-ui,sans-serif;overflow:hidden}
+body.hc{--ink:#000;--paper:#fff}
+button{font:inherit;cursor:pointer}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:4px}
+
+/* ---------- COVER SCREEN ---------- */
+#cover{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:18px;background:radial-gradient(110% 110% at 50% 10%,#1c3a57 0%,#0a1420 100%);perspective:1400px;overflow:auto}
+#coverCard{position:relative;width:min(88vw,520px,calc((100vh - 200px)*0.714));aspect-ratio:5/7;border-radius:10px 18px 18px 10px;box-shadow:0 40px 80px rgba(0,0,0,.6),0 8px 22px rgba(0,0,0,.5);transform-style:preserve-3d;transition:transform .18s ease-out;background:var(--navy);overflow:hidden}
+#coverCard .spine{position:absolute;left:0;top:0;bottom:0;width:26px;background:linear-gradient(90deg,#0d1f33,#17324D 60%,#244a6e);z-index:5}
+#coverCard .spine span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-90deg);white-space:nowrap;color:var(--amber);font:900 .72rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.28em}
+.cov-layer{position:absolute;inset:0;will-change:transform}
+#coverTitle{position:absolute;left:34px;right:18px;top:26px;z-index:6;color:#fff}
+#coverTitle .series{font:900 .9rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.4em;color:var(--amber)}
+#coverTitle h1{font:900 clamp(2rem,7vw,3.1rem)/0.95 'Arial Black',Arial,sans-serif;text-transform:uppercase;margin-top:8px;text-shadow:4px 4px 0 rgba(0,0,0,.35);color:#fff}
+#coverTitle h1 em{font-style:normal;color:var(--accent)}
+#coverTitle .vol{display:inline-block;margin-top:10px;background:var(--accent);color:#fff;font:900 .8rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.18em;padding:7px 12px;border-radius:4px;box-shadow:2px 2px 0 rgba(0,0,0,.4)}
+#coverBottom{position:absolute;left:34px;right:18px;bottom:18px;z-index:6;display:flex;justify-content:space-between;align-items:flex-end;color:#cfe3ea;font:700 .72rem/1.3 'Segoe UI',sans-serif;letter-spacing:.12em}
+#coverActions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.bigbtn{background:var(--amber);color:var(--navy);border:none;border-radius:999px;font:900 1rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.1em;padding:18px 34px;box-shadow:0 6px 0 #b78a2e,0 14px 30px rgba(0,0,0,.5);transition:transform .12s,box-shadow .12s}
+.bigbtn:hover{transform:translateY(-2px)}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 #b78a2e}
+.bigbtn.alt{background:#274a6a;color:#fff;box-shadow:0 6px 0 #122a42,0 14px 30px rgba(0,0,0,.5)}
+
+/* ---------- HUD ---------- */
+#hud{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:10px;padding:8px 14px;background:linear-gradient(180deg,rgba(7,14,22,.92),rgba(7,14,22,.65) 70%,transparent);color:#dfe9ef}
+#hud .brand{font:900 .78rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.22em;color:var(--amber);white-space:nowrap}
+#hud .brand small{display:block;font:700 .56rem/1.4 'Segoe UI',sans-serif;letter-spacing:.18em;color:#9fb7c6}
+#progress{display:flex;gap:5px;margin-left:8px;flex-wrap:wrap}
+#progress .dot{width:9px;height:9px;border-radius:50%;background:#3a576f;border:1px solid #5b7d99}
+#progress .dot.on{background:var(--accent);border-color:var(--accent);box-shadow:0 0 6px var(--accent)}
+#badges{display:flex;gap:6px;margin-left:auto}
+.badge{width:34px;height:34px;border-radius:50%;background:#1c3a52;border:2px solid #35587a;display:flex;align-items:center;justify-content:center;filter:grayscale(1) brightness(.6);transition:filter .4s,transform .4s}
+.badge.earned{filter:none;border-color:var(--amber);background:#234d6b;animation:badgepop .6s cubic-bezier(.2,2,.4,1)}
+.badge svg{width:20px;height:20px}
+@keyframes badgepop{0%{transform:scale(.2) rotate(-40deg)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+.hudbtns{display:flex;gap:6px;margin-left:10px}
+.hudbtn{background:#1c3a52;border:1px solid #35587a;color:#dfe9ef;border-radius:8px;min-width:48px;min-height:38px;padding:4px 10px;font:700 .72rem/1.1 'Segoe UI',sans-serif}
+.hudbtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#06222b}
+.hudbtn.teacher{background:var(--purple);border-color:#6b46a8;color:#fff}
+
+/* ---------- BOOK STAGE ---------- */
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;perspective:2200px;padding:64px 12px 56px}
+#book{position:relative;width:min(96vw,1180px);height:min(calc(100vh - 130px),780px);transform-style:preserve-3d}
+#bookcase{position:absolute;inset:0;border-radius:8px 14px 14px 8px;background:#0e2233;box-shadow:0 50px 90px rgba(0,0,0,.65),0 10px 26px rgba(0,0,0,.5);transform:translateZ(-30px)}
+.edges{position:absolute;top:6px;bottom:6px;width:14px;background:repeating-linear-gradient(90deg,#e8e2d2 0 2px,#cfc7b2 2px 3px);border-radius:3px;transition:width .5s}
+#edgesL{left:-6px;border-right:1px solid #b8ae97}
+#edgesR{right:-6px;border-left:1px solid #b8ae97}
+#spreadWrap{position:absolute;inset:0;display:flex;border-radius:6px;overflow:visible}
+.page{position:relative;width:50%;height:100%;background:var(--paper);overflow:hidden;display:flex;flex-direction:column}
+.page.left{border-radius:8px 0 0 8px;box-shadow:inset -22px 0 28px -22px rgba(36,50,63,.45)}
+.page.right{border-radius:0 8px 8px 0;box-shadow:inset 22px 0 28px -22px rgba(36,50,63,.45)}
+#spine3d{position:absolute;left:50%;top:0;bottom:0;width:4px;transform:translateX(-50%);background:linear-gradient(90deg,rgba(0,0,0,.25),rgba(0,0,0,.45),rgba(0,0,0,.25));z-index:3}
+.page-inner{flex:1;overflow:auto;padding:18px 20px 14px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin}
+.pagefoot{flex:none;display:flex;justify-content:space-between;align-items:center;padding:6px 16px 10px;font:700 .66rem/1 'Segoe UI',sans-serif;letter-spacing:.18em;color:#7d8a8f;text-transform:uppercase}
+.page .chapterband{flex:none;background:var(--navy);color:#fff;font:900 .72rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.24em;padding:8px 20px;text-transform:uppercase}
+.page .chapterband em{color:var(--accent);font-style:normal}
+.gatelockcorner{position:absolute;top:8px;right:10px;z-index:5;width:34px;height:34px;border-radius:50%;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,.3)}
+.gatelockcorner.open{background:var(--teal)}
+.gatelockcorner svg{width:18px;height:18px}
+
+/* turning sheet */
+#turnSheet{position:absolute;top:0;bottom:0;right:0;width:50%;z-index:20;transform-origin:left center;transform-style:preserve-3d;pointer-events:none;display:none}
+#turnSheet.show{display:block}
+#turnSheet .ts{position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;background:var(--paper)}
+#turnSheet .ts.front{border-radius:0 8px 8px 0}
+#turnSheet .ts.back{transform:rotateY(180deg);border-radius:8px 0 0 8px}
+#turnSheet .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.0),rgba(0,0,0,.28));opacity:0;pointer-events:none}
+@keyframes turnFwd{0%{transform:rotateY(0)}100%{transform:rotateY(-180deg)}}
+@keyframes turnBack{0%{transform:rotateY(-180deg)}100%{transform:rotateY(0)}}
+#turnSheet.fwd{animation:turnFwd .8s cubic-bezier(.45,.05,.3,1) forwards}
+#turnSheet.back{animation:turnBack .8s cubic-bezier(.45,.05,.3,1) forwards}
+body.reduced #turnSheet{display:none!important}
+
+/* nav arrows */
+.navarrow{position:fixed;top:50%;transform:translateY(-50%);z-index:40;width:54px;height:88px;border:none;border-radius:12px;background:rgba(20,42,62,.8);color:#fff;font-size:1.6rem;display:flex;align-items:center;justify-content:center;transition:background .2s,opacity .2s}
+.navarrow:hover{background:var(--accent)}
+.navarrow[disabled]{opacity:.25;cursor:not-allowed}
+#prevBtn{left:8px}#nextBtn{right:8px}
+.navarrow.locked{background:var(--coral)}
+@keyframes shake{0%,100%{transform:translateY(-50%)}25%{transform:translateY(-50%) translateX(-6px)}75%{transform:translateY(-50%) translateX(6px)}}
+.navarrow.shake{animation:shake .3s 2}
+
+/* ---------- COMIC ART ---------- */
+.panelrow{display:flex;gap:10px}
+.panelrow>.panel{flex:1}
+.panel{position:relative;border:var(--panelborder);border-radius:6px 10px 7px 9px;background:#fff;overflow:hidden;box-shadow:3px 3px 0 rgba(23,50,77,.18)}
+.panel.tall{min-height:200px}
+.panel svg.scene{display:block;width:100%;height:auto}
+.panel3d{transform-style:preserve-3d;transition:transform .25s ease-out;will-change:transform}
+.panel3d [data-depth]{will-change:transform}
+.balloon{position:absolute;max-width:62%;background:#fff;border:3px solid var(--navy);border-radius:14px;padding:8px 12px;font:var(--balloonfont);color:var(--ink);box-shadow:2px 2px 0 rgba(23,50,77,.25);z-index:4}
+.balloon .who{display:block;font:900 .58rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.16em;color:var(--accent);text-transform:uppercase;margin-bottom:3px}
+.balloon::after{content:"";position:absolute;bottom:-14px;left:28px;width:0;height:0;border:9px solid transparent;border-top:14px solid var(--navy)}
+.balloon::before{content:"";position:absolute;bottom:-9px;left:31px;width:0;height:0;border:7px solid transparent;border-top:11px solid #fff;z-index:1}
+.balloon.tail-r::after{left:auto;right:28px}
+.balloon.tail-r::before{left:auto;right:31px}
+.balloon.vex{background:#062e33;border-color:var(--teal);color:#c8f5f1;border-radius:10px;font-family:'Consolas','Courier New',monospace;font-weight:500;box-shadow:0 0 12px rgba(31,166,162,.5)}
+.balloon.vex .who{color:var(--amber)}
+.balloon.vex::after{border-top-color:var(--teal)}
+.balloon.vex::before{border-top-color:#062e33}
+.balloon.thought{border-radius:30px;border-style:dashed}
+.caption{background:#FFF3D8;border:2px solid var(--amber);border-left-width:8px;padding:7px 12px;font:var(--capfont);color:#5a4a22;border-radius:3px}
+.caption.loc{font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-style:normal;font-family:'Segoe UI',sans-serif;font-size:.74rem}
+.sfx{position:absolute;z-index:5;font:900 1.7rem/1 'Arial Black',Arial,sans-serif;color:var(--coral);-webkit-text-stroke:2px var(--navy);text-stroke:2px var(--navy);transform:rotate(-7deg);text-shadow:3px 3px 0 var(--amber);letter-spacing:.04em;pointer-events:none}
+.splashtitle{font:900 clamp(1.5rem,3.2vw,2.4rem)/1 'Arial Black',Arial,sans-serif;text-transform:uppercase;color:var(--navy)}
+.splashtitle em{color:var(--accent);font-style:normal}
+.kicker{font:900 .68rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.3em;color:var(--coral);text-transform:uppercase}
+
+/* ---------- GATES ---------- */
+.gatebox{border:4px solid var(--accent);border-radius:12px;background:linear-gradient(180deg,#ffffff,#eef7f6);box-shadow:0 6px 0 rgba(23,50,77,.15);overflow:hidden}
+.gatebox header{display:flex;align-items:center;gap:10px;background:var(--accent);color:#fff;padding:9px 14px}
+.gatebox header .gicon{width:30px;height:30px;flex:none}
+.gatebox header h3{font:900 .85rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.gatebody{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.gateprompt{font:600 .95rem/1.4 'Segoe UI',sans-serif}
+.gatecheck{align-self:flex-start;background:var(--navy);color:#fff;border:none;border-radius:999px;font:900 .82rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.1em;padding:13px 26px;min-height:48px;box-shadow:0 4px 0 #0c1d30}
+.gatecheck:active{transform:translateY(2px);box-shadow:0 2px 0 #0c1d30}
+.gatefeedback{min-height:1.3em;font:700 .88rem/1.35 'Segoe UI',sans-serif}
+.gatefeedback.bad{color:var(--coral)}
+.gatefeedback.good{color:#0d7a4f}
+.gatehint{background:#FFF3D8;border:2px dashed var(--amber);border-radius:8px;padding:9px 12px;font:600 .86rem/1.4 'Segoe UI',sans-serif;color:#5a4a22}
+.gatesolved{display:flex;align-items:center;gap:10px;background:#e2f4ee;border:3px solid #0d7a4f;border-radius:10px;padding:10px 14px;font:900 .8rem/1.3 'Arial Black',Arial,sans-serif;color:#0d7a4f;letter-spacing:.08em}
+.stamp{display:inline-block;transform:rotate(-6deg);border:3px solid #0d7a4f;border-radius:6px;padding:3px 8px}
+/* gate widgets */
+.tokenbank,.beakers{display:flex;gap:8px;flex-wrap:wrap}
+.token{width:48px;height:48px;border-radius:50%;border:3px solid var(--navy);background:var(--amber);font:900 .7rem/1 'Arial Black',Arial,sans-serif;color:var(--navy);display:flex;align-items:center;justify-content:center;transition:transform .15s,background .2s}
+.token:hover{transform:scale(1.1)}
+.token.inA{background:var(--teal);color:#fff}
+.token.inB{background:#7db8e8;color:var(--navy)}
+.beaker{flex:1;min-width:120px;border:3px solid var(--navy);border-radius:0 0 14px 14px;border-top-style:dashed;padding:8px;min-height:74px;background:rgba(31,166,162,.08)}
+.beaker h4{font:900 .62rem/1 'Arial Black',Arial,sans-serif;letter-spacing:.12em;color:var(--navy);text-transform:uppercase;margin-bottom:6px}
+.beaker .cnt{font:900 1.2rem/1 'Arial Black',Arial,sans-serif;color:var(--accent)}
+.numin{width:96px;min-height:48px;border:3px solid var(--navy);border-radius:8px;font:900 1.05rem/1 'Arial Black',Arial,sans-serif;text-align:center;color:var(--navy);background:#fff;padding:6px}
+.numin:focus{border-color:var(--accent)}
+.numin.ok{border-color:#0d7a4f;background:#e2f4ee}
+.numin.no{border-color:var(--coral);background:#fdebe6}
+.rt-table{border-collapse:collapse;width:100%}
+.rt-table th,.rt-table td{border:2px solid var(--navy);padding:7px 9px;text-align:center;font:700 .92rem/1.2 'Segoe UI',sans-serif}
+.rt-table th{background:var(--navy);color:#fff;font:900 .7rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.08em}
+.rt-table td.given{background:#eef7f6;font-weight:800}
+.choicebtns{display:flex;gap:10px;flex-wrap:wrap}
+.choicebtn{flex:1;min-width:140px;min-height:48px;border:3px solid var(--navy);border-radius:10px;background:#fff;font:700 .9rem/1.3 'Segoe UI',sans-serif;padding:10px 12px;text-align:left;transition:background .15s}
+.choicebtn:hover{background:#eef7f6}
+.choicebtn[aria-pressed="true"]{background:var(--navy);color:#fff}
+.gategrid{touch-action:manipulation}
+.gategrid .gp{cursor:pointer}
+.unlockflash{animation:unlockflash 1s ease-out}
+@keyframes unlockflash{0%{box-shadow:0 0 0 0 rgba(242,193,91,.9)}100%{box-shadow:0 0 0 26px rgba(242,193,91,0)}}
+
+/* ---------- MODALS ---------- */
+.modal{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(5,12,19,.72);padding:16px}
+.modal.open{display:flex}
+.modalcard{background:var(--paper);border-radius:14px;max-width:780px;width:100%;max-height:88vh;overflow:auto;box-shadow:0 30px 70px rgba(0,0,0,.6)}
+.modalcard>header{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;background:var(--navy);color:#fff;padding:12px 18px;z-index:2}
+.modalcard>header h2{font:900 1rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.modalcard .x{background:var(--coral);border:none;color:#fff;border-radius:8px;width:40px;height:40px;font:900 1rem/1 Arial}
+.modalbody{padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.tt{border-collapse:collapse;width:100%}
+.tt th,.tt td{border:2px solid var(--navy);padding:8px 10px;font:600 .85rem/1.35 'Segoe UI',sans-serif;text-align:left;vertical-align:top}
+.tt th{background:var(--navy);color:#fff;font:900 .68rem/1.2 'Arial Black',Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.tt tr:nth-child(even) td{background:#fff}
+.workedsteps{display:flex;flex-direction:column;gap:8px}
+.workedsteps .st{display:flex;gap:10px;align-items:flex-start;background:#fff;border:2px solid var(--navy);border-radius:8px;padding:9px 12px;font:600 .9rem/1.4 'Segoe UI',sans-serif}
+.workedsteps .st b.n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font:900 .8rem/1 Arial}
+
+/* ---------- END MATTER ---------- */
+.castcard{display:flex;gap:12px;align-items:center;border:3px solid var(--navy);border-radius:10px;background:#fff;padding:8px 12px}
+.castcard svg{width:64px;height:76px;flex:none}
+.castcard h4{font:900 .8rem/1.2 'Arial Black',Arial,sans-serif;color:var(--navy);letter-spacing:.06em}
+.castcard p{font:600 .8rem/1.35 'Segoe UI',sans-serif;color:#4c5a66}
+.journal{border:3px solid var(--amber);background:#FFFDF4;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.journal h4{font:900 .8rem/1.2 'Arial Black',Arial,sans-serif;color:#8a6a1c;letter-spacing:.14em;text-transform:uppercase}
+.journal .jrow{display:flex;gap:10px;align-items:flex-start;font:600 .88rem/1.4 Georgia,serif;color:#4a3d18}
+.journal .jrow b{color:var(--navy)}
+#certificate{border:6px double var(--navy);border-radius:8px;background:#fff;padding:18px;text-align:center;display:flex;flex-direction:column;gap:8px}
+#certificate h3{font:900 1.2rem/1.1 'Arial Black',Arial,sans-serif;color:var(--navy);letter-spacing:.1em}
+#certName{border:none;border-bottom:3px solid var(--navy);font:900 1.3rem/1.2 Georgia,serif;text-align:center;background:transparent;min-height:48px;width:80%;align-self:center;color:var(--ink)}
+.certbadges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.certbadges .badge{filter:none;border-color:var(--amber);background:#fdf6e7}
+.certbadges .badge.locked{filter:grayscale(1) opacity(.35)}
+
+/* ---------- MOBILE ---------- */
+@media (max-width:820px){
+  #book{height:min(calc(100vh - 120px),760px)}
+  #spreadWrap .page{width:100%}
+  #spreadWrap .page.offscreen{display:none}
+  #spine3d,#edgesL{display:none}
+  .navarrow{width:44px;height:72px}
+  .balloon{max-width:78%}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important;transition-duration:.001s!important}
+}
+/* ---------- PRINT ---------- */
+@media print{
+  body{overflow:visible;background:#fff}
+  body *{visibility:hidden}
+  body.print-teacher #teacherModal,body.print-teacher #teacherModal *{visibility:visible}
+  body.print-teacher #teacherModal{position:static;display:block;background:#fff;padding:0}
+  body.print-teacher #teacherModal .modalcard{max-height:none;box-shadow:none}
+  body.print-cert #certificate,body.print-cert #certificate *{visibility:visible}
+  body.print-cert #certificate{position:fixed;inset:5% 8%;background:#fff}
+  .x,.gatecheck{display:none!important}
+}
+/* ===== VOL OVERRIDES — U1·E3 "The Pattern Engine" (accent deep purple, matches the engine-room world) ===== */
+:root{--accent:#4A2580}
+/* deep purple #4A2580 clears AA on white for text & borders; light tints below match the engine room */
+.gatebox{background:linear-gradient(180deg,#ffffff,#f3eefa)}
+.beaker{background:rgba(74,37,128,.09)}
+.rt-table td.given{background:#f3eefa}
+.choicebtn:hover{background:#f3eefa}
+</style>
+</head>
+<body>
+<!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<pattern id="halftone" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.4" fill="#17324D" opacity=".18"/></pattern>
+<pattern id="halftoneT" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.4" fill="#1FA6A2" opacity=".3"/></pattern>
+<linearGradient id="skygrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd8e8"/><stop offset="1" stop-color="#e8f4ee"/></linearGradient>
+<linearGradient id="duskgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A2580"/><stop offset=".6" stop-color="#E2674A"/><stop offset="1" stop-color="#F2C15B"/></linearGradient>
+<radialGradient id="vexglow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#7CF2EC"/><stop offset=".6" stop-color="#1FA6A2"/><stop offset="1" stop-color="#1FA6A2" stop-opacity="0"/></radialGradient>
+
+<!-- MAYA: teal jacket, black high bun, star pin -->
+<g id="sym-maya"><path d="M22 118 L24 84 Q24 70 50 70 Q76 70 76 84 L78 118 Z" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><path d="M40 73 L50 86 L60 73" fill="#F7F4EC" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="44" r="24" fill="#C68642" stroke="#17324D" stroke-width="4"/><path d="M27 40 Q26 18 50 18 Q74 18 73 40 Q66 26 50 26 Q34 26 27 40Z" fill="#1B1B23" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="13" r="9" fill="#1B1B23" stroke="#17324D" stroke-width="3"/><path d="M62 8 l2.2 4.4 4.8.6-3.5 3.4.9 4.8-4.4-2.3-4.4 2.3.9-4.8-3.5-3.4 4.8-.6z" fill="#F2C15B" stroke="#17324D" stroke-width="1.5"/><circle cx="42" cy="44" r="2.6" fill="#17324D"/><circle cx="58" cy="44" r="2.6" fill="#17324D"/><path d="M37 37 q5 -3 9 -1 M54 36 q5 -2 9 1" fill="none" stroke="#17324D" stroke-width="2.4" stroke-linecap="round"/><path d="M44 55 q6 5 12 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- THEO: navy hoodie, flat-top, amber glasses -->
+<g id="sym-theo"><path d="M22 118 L24 86 Q24 72 50 72 Q76 72 76 86 L78 118 Z" fill="#17324D" stroke="#17324D" stroke-width="4"/><path d="M36 72 Q50 80 64 72 L64 80 Q50 88 36 80Z" fill="#0d2238" stroke="#17324D" stroke-width="2"/><circle cx="50" cy="45" r="24" fill="#6B4226" stroke="#17324D" stroke-width="4"/><path d="M27 38 Q27 16 50 16 Q73 16 73 38 L70 30 L30 30 Z" fill="#10101a" stroke="#17324D" stroke-width="3"/><rect x="33" y="38" width="14" height="11" rx="3" fill="#fff" stroke="#F2C15B" stroke-width="3"/><rect x="53" y="38" width="14" height="11" rx="3" fill="#fff" stroke="#F2C15B" stroke-width="3"/><line x1="47" y1="43" x2="53" y2="43" stroke="#F2C15B" stroke-width="3"/><circle cx="40" cy="44" r="2.4" fill="#17324D"/><circle cx="60" cy="44" r="2.4" fill="#17324D"/><path d="M43 57 q7 3 14 -1" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- ZARA: coral overalls, side ponytail -->
+<g id="sym-zara"><path d="M22 118 L24 88 Q24 74 50 74 Q76 74 76 88 L78 118 Z" fill="#fff" stroke="#17324D" stroke-width="4"/><path d="M30 78 L34 118 L44 118 L42 80 M70 78 L66 118 L56 118 L58 80" fill="#E2674A" stroke="#17324D" stroke-width="3"/><rect x="40" y="92" width="20" height="16" rx="3" fill="#E2674A" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="46" r="24" fill="#F1C27D" stroke="#17324D" stroke-width="4"/><path d="M27 44 Q24 20 50 19 Q76 20 74 38 Q70 28 52 27 Q34 27 32 44 Z" fill="#E2674A" stroke="#17324D" stroke-width="3"/><path d="M71 30 Q88 36 84 58 Q80 70 72 72 Q78 58 72 46Z" fill="#E2674A" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="46" r="2.6" fill="#17324D"/><circle cx="58" cy="46" r="2.6" fill="#17324D"/><path d="M42 57 q8 6 16 0" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/><circle cx="36" cy="53" r="3" fill="#E2674A" opacity=".5"/><circle cx="64" cy="53" r="3" fill="#E2674A" opacity=".5"/></g>
+<!-- DEV: purple tee, headphones -->
+<g id="sym-dev"><path d="M22 118 L24 88 Q24 74 50 74 Q76 74 76 88 L78 118 Z" fill="#4A2580" stroke="#17324D" stroke-width="4"/><path d="M43 92 l7 -6 7 6 -7 6z" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="50" cy="46" r="24" fill="#8D5524" stroke="#17324D" stroke-width="4"/><path d="M28 40 Q26 18 50 17 Q74 18 72 40 L66 28 L60 34 L52 26 L44 34 L36 27 Z" fill="#171722" stroke="#17324D" stroke-width="3"/><path d="M24 64 Q20 50 26 42 M76 64 Q80 50 74 42" fill="none" stroke="#4A2580" stroke-width="6" stroke-linecap="round"/><circle cx="25" cy="64" r="7" fill="#4A2580" stroke="#17324D" stroke-width="3"/><circle cx="75" cy="64" r="7" fill="#4A2580" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="46" r="2.6" fill="#17324D"/><circle cx="58" cy="46" r="2.6" fill="#17324D"/><path d="M43 57 q7 5 14 1" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<!-- VEX: glowing orb AI -->
+<g id="sym-vex"><circle cx="50" cy="50" r="38" fill="url(#vexglow)" opacity=".55"/><polygon points="50,22 73,36 73,64 50,78 27,64 27,36" fill="#0b3a40" stroke="#1FA6A2" stroke-width="3.5"/><polygon points="50,30 66,40 66,60 50,70 34,60 34,40" fill="none" stroke="#7CF2EC" stroke-width="1.6" opacity=".8"/><circle cx="50" cy="50" r="10" fill="#F2C15B"/><circle cx="50" cy="50" r="4.5" fill="#17324D"/><circle cx="50" cy="14" r="3" fill="#F2C15B"/><circle cx="78" cy="70" r="2.4" fill="#7CF2EC"/><circle cx="22" cy="72" r="2" fill="#7CF2EC"/></g>
+<!-- props -->
+<g id="sym-bike"><circle cx="22" cy="46" r="14" fill="none" stroke="#17324D" stroke-width="4"/><circle cx="74" cy="46" r="14" fill="none" stroke="#17324D" stroke-width="4"/><path d="M22 46 L40 22 L62 22 L74 46 M40 22 L48 46 L22 46 M48 46 L62 22 M36 16 L46 16 M62 22 L58 14 L66 14" fill="none" stroke="#E2674A" stroke-width="4" stroke-linecap="round"/></g>
+<g id="sym-skyline"><rect x="0" y="34" width="14" height="46" fill="#17324D"/><rect x="16" y="20" width="18" height="60" fill="#22456a"/><rect x="36" y="42" width="12" height="38" fill="#17324D"/><rect x="50" y="10" width="20" height="70" fill="#2c567f"/><polygon points="60,0 50,12 70,12" fill="#1FA6A2"/><rect x="72" y="30" width="14" height="50" fill="#17324D"/><rect x="88" y="46" width="12" height="34" fill="#22456a"/><g fill="#F2C15B" opacity=".9"><rect x="20" y="26" width="3" height="4"/><rect x="27" y="36" width="3" height="4"/><rect x="54" y="18" width="3" height="4"/><rect x="61" y="30" width="3" height="4"/><rect x="54" y="44" width="3" height="4"/><rect x="75" y="36" width="3" height="4"/></g></g>
+<g id="sym-trophy"><path d="M30 14 H70 V34 Q70 52 50 56 Q30 52 30 34 Z" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><path d="M30 20 H16 Q16 38 32 40 M70 20 H84 Q84 38 68 40" fill="none" stroke="#F2C15B" stroke-width="6"/><rect x="44" y="56" width="12" height="12" fill="#b78a2e" stroke="#17324D" stroke-width="3"/><rect x="34" y="68" width="32" height="10" rx="2" fill="#17324D"/></g>
+<!-- badge sigils -->
+<g id="sig-flask"><path d="M40 15 h20 v18 l16 30 a8 8 0 0 1 -7 12 H31 a8 8 0 0 1 -7 -12 l16 -30 z" fill="#1FA6A2" stroke="#17324D" stroke-width="4"/><path d="M33 52 h34 l6 11 a4 4 0 0 1 -4 6 H31 a4 4 0 0 1 -4 -6 z" fill="#F2C15B"/></g>
+<g id="sig-watch"><circle cx="50" cy="55" r="28" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><path d="M50 55 L50 36 M50 55 L64 60" stroke="#17324D" stroke-width="4" stroke-linecap="round"/><rect x="42" y="12" width="16" height="8" rx="2" fill="#17324D"/><line x1="50" y1="20" x2="50" y2="27" stroke="#17324D" stroke-width="4"/></g>
+<g id="sig-table"><rect x="18" y="22" width="64" height="56" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><line x1="18" y1="40" x2="82" y2="40" stroke="#17324D" stroke-width="4"/><line x1="50" y1="22" x2="50" y2="78" stroke="#17324D" stroke-width="4"/><rect x="18" y="22" width="64" height="18" fill="#1FA6A2" opacity=".5"/></g>
+<g id="sig-graph"><rect x="16" y="16" width="68" height="68" rx="4" fill="#fff" stroke="#17324D" stroke-width="4"/><path d="M24 76 L76 30" stroke="#1FA6A2" stroke-width="5" stroke-linecap="round"/><circle cx="38" cy="64" r="5" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="56" cy="48" r="5" fill="#F2C15B" stroke="#17324D" stroke-width="2"/><circle cx="68" cy="58" r="5" fill="#E2674A" stroke="#17324D" stroke-width="2"/></g>
+<g id="sig-swap"><path d="M24 38 H64 l-10 -12 M76 62 H36 l10 12" fill="none" stroke="#1FA6A2" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="sig-boss"><path d="M50 10 l11 22 24 4 -17 17 4 24 -22 -11 -22 11 4 -24 -17 -17 24 -4 z" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><circle cx="50" cy="52" r="9" fill="#E2674A" stroke="#17324D" stroke-width="3"/></g>
+<g id="sig-lock"><rect x="28" y="44" width="44" height="36" rx="6" fill="currentColor"/><path d="M36 44 v-8 a14 14 0 0 1 28 0 v8" fill="none" stroke="currentColor" stroke-width="8"/></g>
+<g id="sig-open"><rect x="28" y="44" width="44" height="36" rx="6" fill="currentColor"/><path d="M36 44 v-8 a14 14 0 0 1 28 0" fill="none" stroke="currentColor" stroke-width="8"/></g>
+<!-- u4·e2 additions: Bram the rival vendor, market lantern (from vol 4), tag + find-the-whole sigils -->
+<g id="sym-bram"><path d="M20 118 L23 84 Q24 70 50 70 Q76 70 77 84 L80 118 Z" fill="#4A2580" stroke="#17324D" stroke-width="4"/><path d="M32 76 L36 118 L64 118 L68 76 Q58 72 50 72 Q42 72 32 76Z" fill="#3a3a44" stroke="#17324D" stroke-width="3"/><path d="M38 88 h24 M38 100 h24" stroke="#F2C15B" stroke-width="2.5" stroke-linecap="round"/><circle cx="50" cy="45" r="24" fill="#E8BEAC" stroke="#17324D" stroke-width="4"/><path d="M27 40 Q28 16 50 16 Q72 16 73 40 Q70 24 50 23 Q30 24 27 40Z" fill="#2e2e38" stroke="#17324D" stroke-width="3"/><circle cx="42" cy="45" r="2.5" fill="#17324D"/><circle cx="58" cy="45" r="2.5" fill="#17324D"/><path d="M36 38 l10 2 M64 38 l-10 2" stroke="#17324D" stroke-width="2.4" stroke-linecap="round"/><path d="M41 55 q4 -3 9 -2 q6 -2 10 4" fill="none" stroke="#17324D" stroke-width="2.6" stroke-linecap="round"/></g>
+<g id="sym-lantern"><line x1="50" y1="8" x2="50" y2="20" stroke="#17324D" stroke-width="3"/><circle cx="50" cy="45" r="22" fill="#FFF3D8" opacity=".4"/><rect x="40" y="20" width="20" height="8" rx="2" fill="#E2674A" stroke="#17324D" stroke-width="2.5"/><rect x="36" y="28" width="28" height="36" rx="9" fill="#F2C15B" stroke="#17324D" stroke-width="3"/><line x1="50" y1="28" x2="50" y2="64" stroke="#b78a2e" stroke-width="2"/><rect x="40" y="64" width="20" height="7" rx="2" fill="#E2674A" stroke="#17324D" stroke-width="2.5"/></g>
+<g id="sig-tag"><path d="M18 44 L44 18 H80 V54 L54 80 Z" fill="#E2674A" stroke="#17324D" stroke-width="4"/><circle cx="66" cy="32" r="6" fill="#fff" stroke="#17324D" stroke-width="3"/><line x1="34" y1="52" x2="52" y2="70" stroke="#fff" stroke-width="5" stroke-linecap="round"/></g>
+<g id="sig-whole"><circle cx="50" cy="52" r="32" fill="#fff" stroke="#17324D" stroke-width="4" stroke-dasharray="11 7"/><path d="M50 52 L50 20 A32 32 0 0 1 82 52 Z" fill="#E2674A" stroke="#17324D" stroke-width="4"/><path d="M30 81 A34 34 0 0 1 17 45 m0 0 l-6 10 m6 -10 l10 5" fill="none" stroke="#1FA6A2" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></g>
+</defs>
+</svg>
+
+<!-- ============ COVER ============ -->
+<div id="cover">
+  <div id="coverCard" role="img" aria-label="Cover of Axiom City Unit 1, Episode 3: The Pattern Engine. Deep inside the engine room, two giant meshed gears glow over a control console while four young engine-keepers and a hovering orb work the dials, and a rival reaches for an override lever.">
+    <div class="cov-layer" data-depth="6" style="z-index:1">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="u1eng" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0c0a22"/><stop offset=".55" stop-color="#171436"/><stop offset="1" stop-color="#3a2566"/></linearGradient></defs><rect width="500" height="700" fill="url(#u1eng)"/><circle cx="250" cy="300" r="156" fill="none" stroke="#2c2658" stroke-width="34" stroke-dasharray="22 20" opacity=".55"/><circle cx="250" cy="300" r="100" fill="none" stroke="#2c2658" stroke-width="22" stroke-dasharray="16 16" opacity=".4"/><g fill="#7CF2EC" opacity=".55"><circle cx="74" cy="92" r="2.6"/><circle cx="430" cy="70" r="2.2"/><circle cx="120" cy="168" r="2"/><circle cx="392" cy="150" r="2.4"/><circle cx="58" cy="250" r="2"/></g></svg>
+    </div>
+    <div class="cov-layer" data-depth="12" style="z-index:2">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><g transform="translate(0,300) scale(5,3)" opacity=".4"><use href="#sym-skyline"/></g><rect x="0" y="356" width="500" height="16" fill="#241c4a" stroke="#0d1f33" stroke-width="3"/><rect x="0" y="402" width="500" height="12" fill="#1d1740" stroke="#0d1f33" stroke-width="2.5"/><g opacity=".9"><circle cx="92" cy="250" r="46" fill="#4A2580" stroke="#17324D" stroke-width="6"/><circle cx="92" cy="250" r="46" fill="none" stroke="#0d1f33" stroke-width="12" stroke-dasharray="12 16"/><circle cx="92" cy="250" r="15" fill="#13112a" stroke="#17324D" stroke-width="4"/><circle cx="416" cy="232" r="40" fill="#1FA6A2" stroke="#17324D" stroke-width="6"/><circle cx="416" cy="232" r="40" fill="none" stroke="#0d1f33" stroke-width="11" stroke-dasharray="11 15"/><circle cx="416" cy="232" r="13" fill="#13112a" stroke="#17324D" stroke-width="4"/></g><rect y="640" width="500" height="60" fill="#0c0a22"/></svg>
+    </div>
+    <div class="cov-layer" data-depth="22" style="z-index:3">
+      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+        <g>
+          <circle cx="196" cy="356" r="96" fill="#1FA6A2" stroke="#17324D" stroke-width="7"/>
+          <circle cx="196" cy="356" r="96" fill="none" stroke="#0d1f33" stroke-width="18" stroke-dasharray="16 22"/>
+          <circle cx="196" cy="356" r="32" fill="#0c0a22" stroke="#17324D" stroke-width="6"/>
+          <text x="196" y="368" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="34" fill="#fff">12</text>
+          <circle cx="330" cy="300" r="70" fill="#4A2580" stroke="#17324D" stroke-width="7"/>
+          <circle cx="330" cy="300" r="70" fill="none" stroke="#0d1f33" stroke-width="15" stroke-dasharray="14 19"/>
+          <circle cx="330" cy="300" r="24" fill="#0c0a22" stroke="#17324D" stroke-width="6"/>
+          <text x="330" y="310" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="26" fill="#fff">18</text>
+          <circle cx="392" cy="392" r="40" fill="#F2C15B" stroke="#17324D" stroke-width="6"/>
+          <circle cx="392" cy="392" r="40" fill="none" stroke="#0d1f33" stroke-width="10" stroke-dasharray="10 13"/>
+          <circle cx="392" cy="392" r="13" fill="#0c0a22" stroke="#17324D" stroke-width="4"/>
+        </g>
+        <rect x="40" y="470" width="420" height="96" rx="10" fill="#0e1230" stroke="#7CF2EC" stroke-width="4"/>
+        <g opacity=".92"><rect x="62" y="486" width="58" height="30" rx="4" fill="#1FA6A2"/><rect x="132" y="486" width="58" height="30" rx="4" fill="#4A2580"/><rect x="202" y="486" width="58" height="30" rx="4" fill="#F2C15B"/></g>
+        <text x="250" y="550" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="16" fill="#7CF2EC">PATTERN ENGINE · CORE</text>
+        <rect x="0" y="566" width="500" height="134" fill="#0c0a22"/>
+        <g transform="translate(86,556) scale(.86)"><use href="#sym-maya"/></g>
+        <g transform="translate(150,566) scale(.8)"><use href="#sym-theo"/></g>
+        <g transform="translate(286,562) scale(.82)"><use href="#sym-zara"/></g>
+        <g transform="translate(350,572) scale(.78)"><use href="#sym-dev"/></g>
+        <g transform="translate(22,548) scale(.9)"><use href="#sym-bram"/></g>
+        <g transform="translate(388,150) scale(.9)"><use href="#sym-vex"/></g>
+      </svg>
+    </div>
+    <div class="spine"><span>AXIOM CITY · EDUWONDERLAB</span></div>
+    <div id="coverTitle">
+      <div class="series">AXIOM CITY</div>
+      <h1>THE PATTERN<br><em>ENGINE</em></h1>
+      <span class="vol">UNIT 1 · EPISODE 3 · NUMBER SYSTEM</span>
+    </div>
+    <div id="coverBottom"><span>AN INTERACTIVE<br>GRAPHIC NOVEL EPISODE</span><span>GRADE 6 · UNIT 1<br>EDUWONDERLAB</span></div>
+  </div>
+  <div id="coverActions">
+      <button class="bigbtn" id="startBtn">START READING</button>
+      <button class="bigbtn alt" id="resumeBtn" hidden>RESUME</button>
+  </div>
+</div>
+
+<!-- ============ HUD ============ -->
+<header id="hud" hidden>
+  <div class="brand">AXIOM CITY<small>U1 · E3 · THE PATTERN ENGINE</small></div>
+  <div id="progress" aria-label="Reading progress"></div>
+  <div id="badges" aria-label="Badges earned"></div>
+  <div class="hudbtns">
+    <button class="hudbtn" id="sndBtn" aria-pressed="false" title="Sound effects">🔇 Sound</button>
+    <button class="hudbtn" id="motBtn" aria-pressed="true" title="3D motion effects">3D On</button>
+    <button class="hudbtn" id="txtBtn" aria-pressed="false" title="Larger text">A+</button>
+    <button class="hudbtn" id="hcBtn" aria-pressed="false" title="High contrast">HC</button>
+    <button class="hudbtn teacher" id="teacherBtn">Teacher</button>
+  </div>
+</header>
+
+<!-- ============ BOOK ============ -->
+<main id="stage" hidden>
+  <div id="book">
+    <div id="bookcase"></div>
+    <div class="edges" id="edgesL"></div>
+    <div class="edges" id="edgesR"></div>
+    <div id="spreadWrap">
+      <section class="page left" id="pageL" aria-live="polite"></section>
+      <section class="page right" id="pageR" aria-live="polite"></section>
+    </div>
+    <div id="spine3d"></div>
+    <div id="turnSheet" aria-hidden="true"><div class="ts front"></div><div class="ts back"></div><div class="shade"></div></div>
+  </div>
+</main>
+<button class="navarrow" id="prevBtn" aria-label="Previous page" hidden>‹</button>
+<button class="navarrow" id="nextBtn" aria-label="Next page" hidden>›</button>
+<div class="sr-only" role="status" aria-live="polite" id="live"></div>
+
+<!-- ============ MODALS ============ -->
+<div class="modal" id="teacherModal" role="dialog" aria-modal="true" aria-labelledby="tmTitle">
+  <div class="modalcard">
+    <header><h2 id="tmTitle">Teacher Guide — U1 · E3</h2><div><button class="hudbtn" id="printTeacher">Print</button> <button class="x" data-close aria-label="Close">✕</button></div></header>
+    <div class="modalbody" id="teacherBody"></div>
+  </div>
+</div>
+<div class="modal" id="workedModal" role="dialog" aria-modal="true" aria-labelledby="wmTitle">
+  <div class="modalcard">
+    <header><h2 id="wmTitle">VEX · Worked Example</h2></header>
+    <div class="modalbody" id="workedBody"></div>
+  </div>
+</div>
+<script>
+/* ================================================================
+   ===== CONTENT START (per-volume: swap everything in here) =====
+   ================================================================ */
+const VOLUME = {
+  num: 103, slug: "u1e3", title: "The Pattern Engine", unit: "Unit 1 · Episode 3 · Lessons 1-1, 1-2, 1-3",
+  accent: "#4A2580",
+  nextTeaser: "U1·E4 — EXACT CHANGE"
+};
+
+const BADGES = [
+  {id:"g1", icon:"#sig-graph", label:"Tree Cutter — Prime Factorization"},
+  {id:"g2", icon:"#sig-swap",  label:"Gear Mesher — Greatest Common Factor"},
+  {id:"g3", icon:"#sig-watch", label:"Cycle Caller — Least Common Multiple"},
+  {id:"boss",icon:"#sig-boss", label:"Pattern Engine — Boss Gate"}
+];
+
+/* tiny scene helpers (content-side) */
+const SC = (vb,inner)=>`<svg class="scene" viewBox="${vb}" role="img" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
+const ROOM = h=>`<rect width="400" height="${h}" fill="#171436"/><g stroke="#2c2658" stroke-width="1.4" opacity=".55">${Array.from({length:9},(_,i)=>`<line x1="${i*50}" y1="0" x2="${i*50}" y2="${h}"/>`).join("")}${Array.from({length:Math.ceil(h/50)+1},(_,i)=>`<line x1="0" y1="${i*50}" x2="400" y2="${i*50}"/>`).join("")}</g>`;
+const GEAR = (cx,cy,r,col,n=8)=>{let p="";const ir=r*0.74;for(let i=0;i<n*2;i++){const a=Math.PI*i/n;const rr=i%2?ir:r;p+=`${(cx+rr*Math.cos(a)).toFixed(1)},${(cy+rr*Math.sin(a)).toFixed(1)} `;}return `<polygon points="${p.trim()}" fill="${col}" stroke="#17324D" stroke-width="3"/><circle cx="${cx}" cy="${cy}" r="${(r*0.3).toFixed(1)}" fill="#171436" stroke="#17324D" stroke-width="3"/>`;};
+
+const PAGES = [
+/* p1 — title + previously */
+{ ch:"Unit 1 · Episode 3", html:`
+  <div style="text-align:center;margin-top:8px"><div class="kicker">EduWonderLab Presents</div>
+  <h2 class="splashtitle" style="margin:8px 0">THE PATTERN <em>ENGINE</em></h2>
+  <div class="caption" style="display:inline-block">Lessons 1-1, 1-2 &amp; 1-3 — break numbers into prime gears, mesh them with the greatest common factor, and time them with the least common multiple. Four reader gates stand between a jammed engine and a city that needs it running.</div></div>
+  <div class="panel panel3d tall" style="margin-top:8px">${SC("0 0 400 200",`${ROOM(200)}
+    <g data-depth="6" transform="translate(0,40) scale(4,1.4)" opacity=".4"><use href="#sym-skyline"/></g>
+    <g data-depth="10">${GEAR(118,110,50,"#1FA6A2",10)}${GEAR(194,150,38,"#4A2580",8)}${GEAR(248,96,28,"#F2C15B",8)}</g>
+    <g data-depth="16" transform="translate(18,86) scale(.9)"><use href="#sym-maya"/></g>
+    <g data-depth="16" transform="translate(150,90) scale(.9)"><use href="#sym-dev"/></g>
+    <g data-depth="24" transform="translate(322,14) scale(.5)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="bottom:8px;left:8px;max-width:54%"><span class="who">VEX</span>Previously: Axiom City runs on the Pattern Engine — a tower of gears that only turns on whole-number rules. Tonight, gear 12 and gear 18 stopped meshing. The city lights are flickering.</div>
+  </div>
+  <div class="caption loc">Previously: the team mapped every street of Axiom City onto the Engine's number-grid. Now the core gears have seized — and only the math that built them can start them again.</div>`},
+
+/* p2 — chapter 1 splash */
+{ ch:"Chapter 1 · The Jam", html:`
+  <div class="kicker">Chapter One</div><h2 class="splashtitle">THE <em>JAM</em></h2>
+  <div class="panel panel3d tall">${SC("0 0 400 230",`${ROOM(230)}
+    <g data-depth="6" transform="translate(0,52) scale(4,1.7)" opacity=".4"><use href="#sym-skyline"/></g>
+    <g data-depth="10">${GEAR(118,120,58,"#1FA6A2",12)}${GEAR(212,150,44,"#4A2580",10)}</g>
+    <g data-depth="18" transform="translate(28,138) scale(.82)"><use href="#sym-maya"/></g>
+    <g data-depth="18" transform="translate(300,140) scale(.8)"><use href="#sym-bram"/></g>`)}
+    <div class="sfx" style="top:96px;left:150px">GRIND!</div>
+    <div class="balloon" style="top:8px;left:8px;max-width:50%"><span class="who">MAYA</span>The core gears jammed — twelve teeth grinding against eighteen. I'm the keeper tonight: nothing turns until we know what these gears are MADE of.</div>
+    <div class="balloon tail-r" style="bottom:14px;right:6px;max-width:42%"><span class="who">BRAM</span>Made of? Just hit the override and FORCE it, kid! Who has time to take a machine apart?</div>
+  </div>
+  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#1a1740"/><g transform="translate(10,2) scale(.66)"><use href="#sym-theo"/></g>`)}
+    <div class="balloon" style="top:8px;left:84px;max-width:68%"><span class="who">THEO</span>Force snaps teeth. We do it right: every gear breaks down into prime parts — the atoms of the Engine. Find those, and the gears tell us exactly how to fit.</div>
+  </div>`},
+
+/* p3 — lesson 1-1 scene: factor trees */
+{ ch:"Chapter 1 · The Factor Forge", html:`
+  <div class="caption loc">The Factor Forge — where the keepers split any number into the primes it's built from.</div>
+  <div class="panel panel3d tall">${SC("0 0 400 200",`${ROOM(200)}
+    <g data-depth="10">${GEAR(58,150,38,"#1FA6A2",10)}</g>
+    <g data-depth="12" stroke="#7CF2EC" stroke-width="2.5" fill="none"><line x1="250" y1="40" x2="212" y2="76"/><line x1="250" y1="40" x2="288" y2="76"/><line x1="212" y1="92" x2="190" y2="126"/><line x1="212" y1="92" x2="234" y2="126"/><line x1="288" y1="92" x2="266" y2="126"/><line x1="288" y1="92" x2="310" y2="126"/></g>
+    <g data-depth="12" font-family="Arial Black,Arial" font-weight="900" text-anchor="middle"><circle cx="250" cy="32" r="15" fill="#4A2580" stroke="#17324D" stroke-width="3"/><text x="250" y="37" font-size="13" fill="#fff">36</text><circle cx="212" cy="84" r="13" fill="#241c4a" stroke="#17324D" stroke-width="3"/><text x="212" y="89" font-size="11" fill="#fff">4</text><circle cx="288" cy="84" r="13" fill="#241c4a" stroke="#17324D" stroke-width="3"/><text x="288" y="89" font-size="11" fill="#fff">9</text></g>
+    <g data-depth="12" font-family="Arial Black,Arial" font-weight="900" text-anchor="middle">${[[190,"2"],[234,"2"],[266,"3"],[310,"3"]].map(([x,t])=>`<circle cx="${x}" cy="136" r="12" fill="#1FA6A2" stroke="#17324D" stroke-width="3"/><text x="${x}" y="141" font-size="11" fill="#fff">${t}</text>`).join("")}</g>
+    <g data-depth="18" transform="translate(6,80)"><use href="#sym-dev"/></g>`)}
+    <div class="balloon" style="top:6px;left:78px;max-width:44%"><span class="who">DEV</span>Watch: 36 splits into 4 and 9. Neither is prime — so I keep splitting. 4 = 2×2, 9 = 3×3. The teal circles are the primes.</div>
+  </div>
+  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#13112a"/><g transform="translate(318,2) scale(.62)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>Definitions, keepers: a <b>prime number</b> has exactly two factors — 1 and itself (2, 3, 5, 7, 11…). A <b>factor tree</b> keeps splitting until every branch ends on a prime. Those primes are the number's <b>prime factorization</b>.</div>
+  </div>
+  <div class="caption">To find a number's <b>prime factorization</b>, build a <b>factor tree</b>: split into any two factors, then keep splitting the ones that aren't prime. Stop when every branch is a <b>prime number</b>. So 36 = 2 × 2 × 3 × 3.</div>`},
+
+/* p4 — GATE g1 */
+{ ch:"Chapter 1 · Reader Gate", gate:"g1", html:`
+  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#1a1740"/><g transform="translate(8,0) scale(.66)"><use href="#sym-dev"/></g>`)}
+    <div class="balloon" style="top:6px;left:80px;max-width:68%"><span class="who">DEV</span>Your turn, reader — two gears, two trees. Take each one all the way down to primes.</div>
+  </div>`},
+
+/* p5 — lesson 1-2 scene: GCF */
+{ ch:"Chapter 2 · The Mesh Lock", html:`
+  <div class="kicker">Chapter Two</div><h2 class="splashtitle">THE MESH <em>LOCK</em></h2>
+  <div class="panel panel3d tall">${SC("0 0 400 200",`${ROOM(200)}
+    <g data-depth="10">${GEAR(126,110,56,"#1FA6A2",12)}${GEAR(228,128,44,"#4A2580",10)}</g>
+    <g data-depth="12" font-family="Arial Black,Arial" font-weight="900" text-anchor="middle" fill="#fff"><text x="126" y="117" font-size="22">24</text><text x="228" y="135" font-size="19">36</text></g>
+    <g data-depth="18" transform="translate(300,84) scale(.86)"><use href="#sym-zara"/></g>`)}
+    <div class="balloon" style="top:6px;left:8px;max-width:46%"><span class="who">ZARA</span>Gear 24 and gear 36 only mesh on teeth they SHARE. Too big a shared gear won't fit; too small wastes power. We need the GREATEST one that fits both.</div>
+  </div>
+  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#13112a"/><g transform="translate(10,2) scale(.64)"><use href="#sym-theo"/></g><g transform="translate(322,6) scale(.58)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon" style="top:6px;left:80px;max-width:48%"><span class="who">THEO</span>A <b>factor</b> divides a number evenly. List the factors both gears share…</div>
+    <div class="balloon vex tail-r" style="bottom:4px;right:60px;max-width:40%"><span class="who">VEX</span>…and the biggest shared one is the <b>greatest common factor</b>.</div>
+  </div>
+  <div class="caption">A <b>factor</b> divides a number evenly. The <b>greatest common factor (GCF)</b> is the largest factor two numbers share. Fast way: factor both into primes and multiply the primes they have in common. 24 &amp; 36 share 2×2×3 = 12.</div>`},
+
+/* p6 — GATE g2 */
+{ ch:"Chapter 2 · Reader Gate", gate:"g2", html:`
+  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#1a1740"/><g transform="translate(8,-2) scale(.62)"><use href="#sym-zara"/></g>`)}
+    <div class="balloon" style="top:6px;left:78px;max-width:70%"><span class="who">ZARA</span>Reader — find the greatest gear that meshes each pair. The Mesh Lock won't open for anything smaller.</div>
+  </div>`},
+
+/* p7 — lesson 1-3 scene: LCM */
+{ ch:"Chapter 3 · The Realign Ring", html:`
+  <div class="kicker">Chapter Three</div><h2 class="splashtitle">THE REALIGN <em>RING</em></h2>
+  <div class="caption loc">The timing ring. Two gears start tooth-to-tooth, then spin — and the Engine won't fire until they line up again.</div>
+  <div class="panel panel3d tall">${SC("0 0 400 200",`${ROOM(200)}
+    <g data-depth="10">${GEAR(120,112,50,"#1FA6A2",6)}${GEAR(214,112,40,"#F2C15B",8)}</g>
+    <g data-depth="12" font-family="Arial Black,Arial" font-weight="900" text-anchor="middle" fill="#fff"><text x="120" y="119" font-size="22">6</text><text x="214" y="119" font-size="20">8</text></g>
+    <g data-depth="18" transform="translate(300,84) scale(.86)"><use href="#sym-zara"/></g>`)}
+    <div class="balloon" style="top:8px;left:8px;max-width:48%"><span class="who">ZARA</span>Gear 6 and gear 8 click back to their start only after a whole number of teeth pass on BOTH. How many teeth until they realign?</div>
+  </div>
+  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#13112a"/><g transform="translate(318,2) scale(.62)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>A <b>multiple</b> is what you get counting by a number: 6, 12, 18, 24… The <b>least common multiple</b> is the first number that lands in BOTH gears' lists. It's never smaller than the larger gear.</div>
+  </div>
+  <div class="caption">A <b>multiple</b> of a number is that number times 1, 2, 3… The <b>least common multiple (LCM)</b> is the smallest multiple two numbers share. Fast way: factor both, then take each prime the greatest number of times it appears. 6 &amp; 8 → 2×2×2×3 = 24.</div>`},
+
+/* p8 — GATE g3 */
+{ ch:"Chapter 3 · Reader Gate", gate:"g3", html:`
+  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#1a1740"/><g transform="translate(8,-4) scale(.62)"><use href="#sym-zara"/></g>`)}
+    <div class="balloon" style="top:6px;left:78px;max-width:70%"><span class="who">ZARA</span>Run the rings, reader — find the fewest teeth until each pair lines up again.</div>
+  </div>`},
+
+/* p9 — Bram's blunder */
+{ ch:"Chapter 4 · The Override", html:`
+  <div class="caption loc">Late shift. The core gears are nearly ready — and Bram finds the override lever.</div>
+  <div class="panel panel3d tall">${SC("0 0 400 200",`${ROOM(200)}
+    <g data-depth="10">${GEAR(300,108,52,"#4A2580",12)}${GEAR(356,150,32,"#1FA6A2",8)}</g>
+    <rect data-depth="14" x="62" y="62" width="18" height="78" rx="8" fill="#E2674A" stroke="#17324D" stroke-width="3"/>
+    <circle data-depth="14" cx="71" cy="58" r="12" fill="#F2C15B" stroke="#17324D" stroke-width="3"/>
+    <g data-depth="16" transform="translate(20,86)"><use href="#sym-bram"/></g>
+    <g data-depth="18" transform="translate(150,84) scale(.9)"><use href="#sym-maya"/></g>`)}
+    <div class="sfx" style="top:6px;left:120px">KA-CHUNK!</div>
+    <div class="balloon" style="top:8px;left:8px;max-width:46%"><span class="who">BRAM</span>Twelve times eighteen — TWO HUNDRED SIXTEEN turns and they'll realign! I'll just spin it that far and FORCE the start!</div>
+    <div class="balloon tail-r" style="bottom:10px;right:8px;max-width:44%"><span class="who">MAYA</span>216 is WAY too far — you'll grind the teeth to dust before then. These gears share parts; they line up much sooner.</div>
+  </div>
+  <div class="panel">${SC("0 0 400 88",`<rect width="400" height="88" fill="#1a1740"/><g transform="translate(318,2) scale(.6)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>Distortion spike. 12 × 18 is A common multiple, not the LEAST. The gears share a factor — ignore it and you overshoot. Compute the real one before he strips the Engine.</div>
+  </div>`},
+
+/* p10 — boss setup */
+{ ch:"Chapter 4 · Restart Sequence", html:`
+  <div class="panel panel3d tall">${SC("0 0 400 210",`${ROOM(210)}
+    <g data-depth="10">${GEAR(126,120,62,"#1FA6A2",12)}${GEAR(236,150,48,"#4A2580",10)}</g>
+    <g data-depth="12" font-family="Arial Black,Arial" font-weight="900" text-anchor="middle" fill="#fff"><text x="126" y="128" font-size="26">12</text><text x="236" y="158" font-size="21">18</text></g>
+    <rect data-depth="12" x="266" y="30" width="118" height="58" rx="8" fill="#fff" stroke="#4A2580" stroke-width="4"/>
+    <text data-depth="12" x="325" y="52" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="11" fill="#4A2580">CORE GEARS</text>
+    <text data-depth="12" x="325" y="72" text-anchor="middle" font-family="Arial" font-weight="800" font-size="12" fill="#17324D">12 &amp; 18 teeth</text>
+    <g data-depth="16" transform="translate(350,150) scale(.5)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon" style="bottom:10px;left:8px;max-width:52%"><span class="who">MAYA</span>Three locks to restart: the greatest gear that meshes them, the fewest teeth till they realign, and exactly what Bram got wrong.</div>
+    <div class="balloon tail-r" style="top:8px;right:6px;max-width:36%"><span class="who">THEO</span>The gears are honest. The override isn't. Reader — take the boss.</div>
+  </div>
+  <div class="caption">Boss Gate: the core gears are 12 and 18. Find their GCF, their LCM, and name the flaw in Bram's "216 turns."</div>`},
+
+/* p11 — BOSS */
+{ ch:"Boss Gate · Restart the Engine", gate:"boss", html:`
+  <div class="panel">${SC("0 0 400 76",`<rect width="400" height="76" fill="#13112a"/><g transform="translate(330,2) scale(.56)"><use href="#sym-vex"/></g>`)}
+    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>BOSS GATE. Three locks. Mesh the gears, time the gears, and expose the override lie.</div>
+  </div>`},
+
+/* p12 — victory + teaser */
+{ ch:"Chapter 5 · The Engine Turns", html:`
+  <div class="panel panel3d tall">${SC("0 0 400 210",`${ROOM(210)}
+    <g data-depth="6" transform="translate(0,52) scale(4,1.6)" opacity=".4"><use href="#sym-skyline"/></g>
+    <g data-depth="10">${GEAR(116,96,38,"#1FA6A2",12)}${GEAR(182,120,28,"#4A2580",10)}${GEAR(236,90,22,"#F2C15B",8)}</g>
+    <rect data-depth="12" x="40" y="16" width="320" height="38" rx="8" fill="#17324D"/>
+    <text data-depth="12" x="200" y="41" text-anchor="middle" fill="#F2C15B" font-family="Arial Black,Arial" font-weight="900" font-size="14">GCF 6 · LCM 36 · ENGINE ONLINE</text>
+    <g data-depth="18" transform="translate(26,98) scale(.85)"><use href="#sym-maya"/></g>
+    <g data-depth="18" transform="translate(108,98) scale(.85)"><use href="#sym-theo"/></g>
+    <g data-depth="18" transform="translate(190,98) scale(.85)"><use href="#sym-zara"/></g>
+    <g data-depth="18" transform="translate(272,98) scale(.85)"><use href="#sym-dev"/></g>
+    <g data-depth="26" transform="translate(346,72) scale(.55)"><use href="#sym-vex"/></g>`)}
+    <div class="sfx" style="top:58px;left:18px">WHIRRR!</div>
+    <div class="balloon" style="bottom:12px;left:10px;max-width:54%"><span class="who">MAYA</span>Gear 6 meshes them, realign at 36 — and the Engine catches on the FIRST try. No forcing. The city lights are back, steady and bright.</div>
+  </div>
+  <div class="panelrow">
+    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#1a1740"/><g transform="translate(58,6) scale(.76)"><use href="#sym-bram"/></g>`)}
+      <div class="balloon" style="top:4px;left:4px;max-width:72%"><span class="who">BRAM</span>Thirty-six?! Not… two hundred sixteen? Fine. I'll read the gears before I yank a lever next time.</div></div>
+    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#10243a"/><rect x="22" y="16" width="156" height="78" rx="6" fill="#FFF3D8" stroke="#F2C15B" stroke-width="3"/><text x="100" y="40" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="10" fill="#4A2580">NEXT EPISODE —</text><text x="100" y="56" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="10" fill="#4A2580">U1·E4: EXACT CHANGE</text><text x="100" y="78" text-anchor="middle" font-family="Arial" font-weight="700" font-size="8" fill="#17324D">long division · decimal math · the receipt that lied</text>`)}
+      <div class="balloon vex" style="bottom:2px;left:4px;max-width:64%"><span class="who">VEX</span>The Engine runs on whole gears — but the city pays in decimals. To be continued…</div></div>
+  </div>
+  <div class="caption" style="text-align:center"><b>NEXT: ${VOLUME.nextTeaser}</b></div>`},
+
+/* p13 — journal */
+{ ch:"End Matter · Ada Vex's Journal", html:`
+  <h2 class="splashtitle" style="font-size:1.4rem">ADA VEX'S <em>JOURNAL</em></h2>
+  <div class="journal"><h4>Lessons 1-1 · 1-2 · 1-3 — what the Engine taught us</h4>
+    <div class="jrow"><b>Break it down.</b><span>Every whole number is built from primes. A factor tree splits it until every branch is prime — 36 = 2×2×3×3.</span></div>
+    <div class="jrow"><b>Mesh it.</b><span>The greatest common factor is the largest gear two numbers share. Multiply the primes they have in common — GCF(24, 36) = 12.</span></div>
+    <div class="jrow"><b>Time it.</b><span>The least common multiple is the first multiple they share. Take each prime the most times it appears — LCM(6, 8) = 24. It's never smaller than the larger number.</span></div>
+    <div class="jrow"><b>The override trap.</b><span>GCF is small (it fits inside both); LCM is large (both fit inside it). Bram multiplied 12×18 = 216 and ignored the factor of 6 the gears share — the real realign was 36.</span></div>
+  </div>
+  <div class="caption">"A number you can't take apart, you don't really know. Find its primes, and the machine stops being a mystery." — A.V.</div>`},
+
+/* p14 — certificate */
+{ ch:"End Matter · Certificate", html:`
+  <div id="certificate">
+    <div class="kicker">Axiom City · EduWonderLab</div>
+    <h3>READER CERTIFICATE</h3>
+    <p style="font:600 .9rem Georgia,serif">This certifies that</p>
+    <input id="certName" maxlength="40" placeholder="write your name" aria-label="Your name for the certificate">
+    <p style="font:600 .9rem Georgia,serif">completed <b>Unit 1 · Episode 3: The Pattern Engine</b> and proved mastery of prime factorization, greatest common factor, and least common multiple.</p>
+    <div class="certbadges" id="certBadges"></div>
+    <button class="gatecheck" id="printCert" style="align-self:center">PRINT CERTIFICATE</button>
+  </div>
+  <div class="caption" style="text-align:center">Next up — U1·E4: Exact Change — is warming up in the Engine's ledger room.</div>`}
+];
+
+function mkfeed(el,msg,ok){el.textContent=msg;el.className="gatefeedback "+(ok?"good":"bad");}
+const GATES = {
+g1:{ title:"Gate 1 · The Factor Forge", icon:"#sig-graph",
+  prompt:`The Engine only accepts PRIME gears. Break each number all the way down — pick the factor tree that bottoms out with nothing but prime numbers.`,
+  hints:[ "Conceptual: a prime number has exactly two factors — 1 and itself (2, 3, 5, 7, 11…). Keep splitting until every branch ends on a prime.",
+          "Procedural: split off a factor, then split any piece that isn't prime. 36 → 4 × 9 → (2×2) × (3×3). Stop only when every factor is prime." ],
+  worked:{ steps:[ "Different number: build the factor tree for 18.",
+    "18 splits into 2 × 9. The 2 is prime — circle it. 9 is not prime, so split again: 9 = 3 × 3.",
+    "Bottom of the tree: 18 = 2 × 3 × 3 — all primes. Read the circled numbers." ],
+    q:"Finish this tree: 20 = 2 × 2 × ___ ?", a:"5" },
+  render(body,api){
+    const Q=(t,id,opts)=>`<div style="font:700 .9rem 'Segoe UI';margin-top:4px">${t}</div><div class="choicebtns" data-q="${id}">${opts.map(o=>`<button class="choicebtn" data-v="${o.k}" aria-pressed="false">${o.t}</button>`).join("")}</div>`;
+    const A=[{k:"prime",t:"2 × 2 × 3 × 3"},{k:"early",t:"4 × 9"},{k:"six",t:"2 × 3 × 6"},{k:"nine",t:"2 × 2 × 9"}];
+    const B=[{k:"prime",t:"2 × 2 × 3 × 5"},{k:"early",t:"4 × 15"},{k:"thirty",t:"2 × 30"},{k:"ten",t:"2 × 3 × 10"}];
+    body.innerHTML=Q("Core gear — the prime factorization of <b>36</b>:","a",A)+Q("Drive gear — the prime factorization of <b>60</b>:","b",B);
+    const pick={a:null,b:null};
+    body.querySelectorAll(".choicebtns").forEach(g=>g.querySelectorAll(".choicebtn").forEach(b=>b.addEventListener("click",()=>{
+      g.querySelectorAll(".choicebtn").forEach(x=>x.setAttribute("aria-pressed","false"));
+      b.setAttribute("aria-pressed","true");pick[g.dataset.q]=b.dataset.v;api.sound("blip");})));
+    api.onCheck(()=>{
+      if(pick.a===null||pick.b===null)return api.fail("Pick one tree for EACH gear, then check.");
+      if(pick.a!=="prime"){
+        if(pick.a==="early")return api.fail("4 × 9 does multiply to 36, but 4 and 9 are NOT prime — your tree stopped too early. Split 4 = 2×2 and 9 = 3×3.");
+        if(pick.a==="six")return api.fail("6 is not prime — it still splits into 2 × 3. Keep going until every branch is prime.");
+        return api.fail("9 is not prime — split it into 3 × 3. A prime tree has no composite numbers left at the bottom.");
+      }
+      if(pick.b!=="prime"){
+        if(pick.b==="early")return api.fail("4 × 15 equals 60, but neither 4 nor 15 is prime. Split both: 4 = 2×2 and 15 = 3×5.");
+        if(pick.b==="thirty")return api.fail("30 is not prime — that's just the first split. Keep breaking it down: 30 = 2×3×5.");
+        return api.fail("10 is not prime — split it into 2 × 5. Every factor at the bottom must be prime.");
+      }
+      api.pass("36 = 2×2×3×3 and 60 = 2×2×3×5 — pure prime gears. The Forge accepts them.");});
+  }},
+g2:{ title:"Gate 2 · The Mesh Lock", icon:"#sig-swap",
+  prompt:`Two gears mesh only on the teeth they SHARE. Find the greatest common factor — the largest gear that fits both. <b>GCF(24, 36)</b> and <b>GCF(18, 30)</b>.`,
+  hints:[ "Conceptual: the GCF is the largest number that divides into BOTH. It can never be bigger than the smaller number.",
+          "Procedural: factor each, then multiply the primes they share. 24 = 2×2×2×3 and 36 = 2×2×3×3 share 2×2×3 = 12. 18 = 2×3×3 and 30 = 2×3×5 share 2×3 = 6." ],
+  worked:{ steps:[ "Different pair: the GCF of 8 and 12.",
+    "Prime factors: 8 = 2×2×2 and 12 = 2×2×3. Circle what they SHARE: two 2's.",
+    "Multiply the shared primes: 2 × 2 = 4. GCF(8, 12) = 4." ],
+    q:"What is the GCF of 10 and 15?", a:"5" },
+  render(body,api){
+    body.innerHTML=`<div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:700 .9rem 'Segoe UI'">GCF(24, 36) = </span><input class="numin" id="gA" inputmode="numeric" aria-label="greatest common factor of 24 and 36"></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:700 .9rem 'Segoe UI'">GCF(18, 30) = </span><input class="numin" id="gB" inputmode="numeric" aria-label="greatest common factor of 18 and 30"></div></div>`;
+    api.onCheck(()=>{const g=id=>parseFloat(body.querySelector(id).value);
+      const a=g("#gA"),b=g("#gB");const ok1=a===12,ok2=b===6;
+      body.querySelector("#gA").className="numin "+(ok1?"ok":"no");
+      body.querySelector("#gB").className="numin "+(ok2?"ok":"no");
+      if(ok1&&ok2)return api.pass("12 meshes 24 and 36; 6 meshes 18 and 30. Largest shared gears locked in.");
+      if(a===72)return api.fail("72 is the LEAST COMMON MULTIPLE of 24 and 36 — the smallest number they both divide into. The GCF is the largest number that divides into BOTH, so it must be ≤ 24.");
+      if(a===6&&!ok1)return api.fail("6 divides both 24 and 36, but it isn't the GREATEST — 12 does too. Multiply ALL the shared primes (2×2×3), not just some.");
+      if(a===4)return api.fail("4 divides 24 and 36, but you missed the shared 3. The shared primes are 2×2×3 = 12.");
+      if(b===90)return api.fail("90 is the LEAST COMMON MULTIPLE of 18 and 30, not the GCF. The greatest common factor is smaller than both numbers.");
+      if((b===3||b===2)&&!ok2)return api.fail("That divides both, but it isn't the greatest. 18 and 30 share 2 AND 3 — multiply them: 2×3 = 6.");
+      if(!ok1)return api.fail("First box: list the primes 24 and 36 share and multiply them — 2×2×3.");
+      return api.fail("Second box: 18 and 30 share 2 and 3. Multiply the shared primes.");});
+  }},
+g3:{ title:"Gate 3 · The Realign Ring", icon:"#sig-watch",
+  prompt:`Two gears start aligned, then spin. They realign at their least common multiple. <b>LCM(6, 8)</b> and <b>LCM(4, 10)</b> — how many teeth until each pair lines up again?`,
+  hints:[ "Conceptual: a common multiple sits in BOTH counting lists. The LEAST common multiple is the smallest one — and it's never smaller than the larger number.",
+          "Procedural: factor each, then take every prime the MOST times it appears. 6 = 2×3 and 8 = 2×2×2 → 2×2×2×3 = 24. 4 = 2×2 and 10 = 2×5 → 2×2×5 = 20." ],
+  worked:{ steps:[ "Different pair: the LCM of 4 and 6.",
+    "4 = 2×2 and 6 = 2×3. Take each prime the greatest number of times it shows up: 2×2 (from 4) and 3 (from 6).",
+    "Multiply: 2 × 2 × 3 = 12. LCM(4, 6) = 12 — and 12 is in both lists (4, 8, 12 / 6, 12)." ],
+    q:"What is the LCM of 3 and 5?", a:"15" },
+  render(body,api){
+    body.innerHTML=`<div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:700 .9rem 'Segoe UI'">LCM(6, 8) = </span><input class="numin" id="lA" inputmode="numeric" aria-label="least common multiple of 6 and 8"> <span style="font:600 .85rem 'Segoe UI'">teeth</span></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:700 .9rem 'Segoe UI'">LCM(4, 10) = </span><input class="numin" id="lB" inputmode="numeric" aria-label="least common multiple of 4 and 10"> <span style="font:600 .85rem 'Segoe UI'">teeth</span></div></div>`;
+    api.onCheck(()=>{const g=id=>parseFloat(body.querySelector(id).value);
+      const a=g("#lA"),b=g("#lB");const ok1=a===24,ok2=b===20;
+      body.querySelector("#lA").className="numin "+(ok1?"ok":"no");
+      body.querySelector("#lB").className="numin "+(ok2?"ok":"no");
+      if(ok1&&ok2)return api.pass("24 teeth and 20 teeth — the gears click back into place. Cycles synced.");
+      if(a===48)return api.fail("48 is just 6 × 8. That's a common multiple, but not the LEAST — the gears share a factor of 2, so divide it out: 48 ÷ 2 = 24.");
+      if(a===2)return api.fail("2 is the GREATEST COMMON FACTOR of 6 and 8, not the LCM. The least common multiple is the smallest number BOTH divide into, so it must be ≥ 8.");
+      if(a===12)return api.fail("6 divides 12, but 8 does not. The LCM must be in BOTH lists — keep going to 24.");
+      if(b===40)return api.fail("40 is just 4 × 10. They share a factor of 2 — divide it out: 40 ÷ 2 = 20.");
+      if(b===2)return api.fail("2 is the GREATEST COMMON FACTOR of 4 and 10, not the LCM. The LCM must be ≥ 10.");
+      if(!ok1)return api.fail("First pair: take 2 the most times it appears (three times, from 8) times 3 → 24.");
+      return api.fail("Second pair: 2×2 (from 4) times 5 (from 10) = 20.");});
+  }},
+boss:{ title:"BOSS GATE · Restart the Pattern Engine", icon:"#sig-boss",
+  prompt:`The master gears have <b>12 teeth</b> and <b>18 teeth</b>. To restart the Engine you must set both dials — and Bram is already yanking the override lever. Three locks:`,
+  hints:[ "Conceptual: the GCF is the largest gear that fits both (≤ the smaller). The LCM is the fewest teeth until they realign (≥ the larger).",
+          "Procedural: 12 = 2×2×3 and 18 = 2×3×3. GCF = shared 2×3 = 6. LCM = 2×2×3×3 = 36." ],
+  worked:{ steps:[ "Different gears: 8 teeth and 20 teeth.",
+    "8 = 2×2×2 and 20 = 2×2×5. GCF = shared 2×2 = 4. LCM = 2×2×2×5 = 40.",
+    "Check: GCF × LCM = 4 × 40 = 160, and 8 × 20 = 160 — the two always multiply back to the product." ],
+    q:"Two numbers have a GCF of 3 and a product of 90. What is their LCM?", a:"30" },
+  render(body,api){
+    body.innerHTML=`<div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b style="font:900 .75rem 'Arial Black'">LOCK 1</b><span style="font:600 .88rem 'Segoe UI'">Greatest gear that meshes them: GCF(12, 18) = </span><input class="numin" id="bA" inputmode="numeric" aria-label="GCF of 12 and 18"></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b style="font:900 .75rem 'Arial Black'">LOCK 2</b><span style="font:600 .88rem 'Segoe UI'">Fewest teeth until they realign: LCM(12, 18) = </span><input class="numin" id="bB" inputmode="numeric" aria-label="LCM of 12 and 18"></div>
+      <div><b style="font:900 .75rem 'Arial Black'">LOCK 3</b><div style="font:600 .88rem 'Segoe UI';margin:4px 0">Bram yells "the gears realign after 12 × 18 = 216 turns!" What's his error?</div>
+      <div class="choicebtns">
+        <button class="choicebtn" data-v="teeth" aria-pressed="false">He multiplied the teeth instead of adding them</button>
+        <button class="choicebtn" data-v="shared" aria-pressed="false">He ignored the factor the gears share, so 216 overshoots the LEAST common multiple</button>
+        <button class="choicebtn" data-v="gcf" aria-pressed="false">He should have used the GCF, not a multiple</button>
+        <button class="choicebtn" data-v="right" aria-pressed="false">Nothing — 216 is correct</button></div></div></div>`;
+    let pick=null;
+    body.querySelectorAll("[data-v]").forEach(b=>b.addEventListener("click",()=>{body.querySelectorAll("[data-v]").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");pick=b.dataset.v;api.sound("blip");}));
+    api.onCheck(()=>{const g=id=>parseFloat(body.querySelector(id).value);
+      const a=g("#bA"),b=g("#bB");const ok1=a===6;
+      body.querySelector("#bA").className="numin "+(ok1?"ok":"no");
+      if(a===36)return api.fail("Lock 1 wants the GREATEST COMMON FACTOR, but 36 is the LCM — you've swapped them. The GCF is the largest gear that fits BOTH, so it's ≤ 12.");
+      if(!ok1)return api.fail("Lock 1 holds. 12 = 2×2×3 and 18 = 2×3×3 share 2×3 — multiply the shared primes.");
+      const ok2=b===36;
+      body.querySelector("#bB").className="numin "+(ok2?"ok":"no");
+      if(b===6)return api.fail("Lock 2 wants the LEAST COMMON MULTIPLE, but 6 is the GCF — swapped again. The LCM is the fewest teeth until they realign, so it's ≥ 18.");
+      if(b===216)return api.fail("Lock 2 holds, but 216 = 12 × 18 isn't the LEAST. Divide out the shared factor 6: 216 ÷ 6 = 36.");
+      if(!ok2)return api.fail("Lock 2 holds. Take each prime the most it appears: 2×2×3×3 = 36.");
+      if(pick!=="shared"){
+        if(pick==="teeth")return api.fail("Lock 3 holds. Multiplying isn't the slip by itself — the problem is the NUMBER he lands on. Compare 216 to the real LCM.");
+        if(pick==="gcf")return api.fail("Lock 3 holds. Realignment really is about a MULTIPLE, not the GCF — but his multiple is too big. Why?");
+        if(pick==="right")return api.fail("Lock 3 holds. The gears share a factor of 6, so they realign at 36, not 216. Pick what went wrong.");
+        return api.fail("Lock 3 holds. Name Bram's exact slip.");
+      }
+      api.pass("ALL LOCKS OPEN. GCF 6, LCM 36 — and Bram's 216 ignored the factor of 6 the gears share. The Pattern Engine roars back to life.");});
+  }}
+};
+
+const TEACHER = {
+  suggested:"Use after lessons 1-1, 1-2, and 1-3 as the Unit 1 opener for the Pattern Engine arc — a 1–2 day introduction or review of prime factorization, GCF, and LCM. Whole-class on a projector, pairs on devices, or independent practice. Progress, badges, and settings save on the device. Pairs naturally with the follow-up episode, U1·E4: Exact Change.",
+  standards:[
+    ["6.NS.B.4","Write a whole number as a product of its prime factors (factor trees)","Gate 1 (Lesson 1-1)"],
+    ["6.NS.B.4","Find the greatest common factor of two whole numbers ≤ 100","Gate 2 (Lesson 1-2)"],
+    ["6.NS.B.4","Find the least common multiple of two whole numbers ≤ 12","Gate 3 (Lesson 1-3)"],
+    ["6.NS.B.4","Use GCF and LCM together and critique reasoning about multiples","Boss (all three locks)"]
+  ],
+  answers:[
+    ["Gate 1","36 = 2×2×3×3 and 60 = 2×2×3×5. Distractors stop on composite factors: 4×9 and 4×15 quit too early; 2×3×6, 2×2×9, 2×30, and 2×3×10 leave a composite unsplit."],
+    ["Gate 2","GCF(24, 36) = 12 and GCF(18, 30) = 6. Traps: 72 and 90 are the LCMs (GCF/LCM swap); 6 or 4 for the first pair are common factors that aren't the greatest (only some shared primes multiplied)."],
+    ["Gate 3","LCM(6, 8) = 24 and LCM(4, 10) = 20. Traps: 48 = 6×8 and 40 = 4×10 skip dividing out the shared factor of 2; 2 is the GCF (swap); 12 is a multiple of 6 but not of 8."],
+    ["Boss","Lock 1: GCF(12, 18) = 6. Lock 2: LCM(12, 18) = 36. Lock 3: Bram ignored the factor of 6 the gears share, so 12×18 = 216 overshoots — the least common multiple is 216 ÷ 6 = 36."]
+  ]
+};
+/* ================================================================
+   ===== CONTENT END ==============================================
+   ================================================================ */
+</script>
+<script>
+/* ================================================================
+   ===== AXIOM CITY ENGINE v1.0 — identical in every volume =======
+   ================================================================ */
+"use strict";
+/* ---------- storage (exact wrapper, ewl_ prefix) ---------- */
+const storage={_m:{},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){this._m[k]=v}},get(k,d=null){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return this._m[k]??d}}};
+const K=s=>`ewl_axiom_${VOLUME.slug}_${s}`;
+
+const $=s=>document.querySelector(s);
+const live=msg=>{$("#live").textContent=msg};
+const reducedMQ=matchMedia("(prefers-reduced-motion: reduce)");
+const mobileMQ=matchMedia("(max-width: 820px)");
+
+const prefs=Object.assign({sound:false,motion:true,bigtext:false,hc:false},storage.get(K("prefs"))||{});
+let solved=new Set(storage.get(K("gates"))||[]);
+let page=storage.get(K("page"))||0;            // index of left/visible page
+let turning=false;
+const attempts={};
+
+/* ---------- audio (Web Audio oscillators only, muted default) ---------- */
+let actx=null;
+function ac(){if(!actx){try{actx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return actx}
+function tone(f,t,dur,type="square",vol=.04){const c=ac();if(!c||!prefs.sound)return;const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(vol,c.currentTime+t);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+t+dur);o.connect(g).connect(c.destination);o.start(c.currentTime+t);o.stop(c.currentTime+t+dur+.02)}
+const SND={blip(){tone(660,0,.07)},flip(){tone(220,0,.09,"triangle",.05);tone(330,.05,.08,"triangle",.04)},win(){[523,659,784,1046].forEach((f,i)=>tone(f,i*.09,.14,"triangle",.05))},thud(){tone(110,0,.18,"sawtooth",.05)}};
+
+/* ---------- helpers ---------- */
+function gateLockIcon(open){return `<div class="gatelockcorner ${open?"open":""}" aria-hidden="true"><svg viewBox="0 0 100 100" style="color:#fff"><use href="${open?"#sig-open":"#sig-lock"}"/></svg></div>`}
+
+function pageInnerHTML(i){
+  if(i==null||i<0||i>=PAGES.length) return `<div class="page-inner" style="align-items:center;justify-content:center"><div class="kicker" style="opacity:.4">AXIOM CITY</div></div><div class="pagefoot"><span></span><span></span></div>`;
+  const p=PAGES[i];
+  const gateHTML=p.gate?`<div class="gatemount" data-gate="${p.gate}"></div>`:"";
+  const lock=p.gate?gateLockIcon(solved.has(p.gate)):"";
+  return `${lock}<div class="chapterband">${p.ch.replace("·","· <em>").concat(p.ch.includes("·")?"</em>":"")}</div><div class="page-inner">${p.html}${gateHTML}</div><div class="pagefoot"><span>${VOLUME.unit}</span><span>PAGE ${i+1} / ${PAGES.length}</span></div>`;
+}
+
+/* ---------- gate framework ---------- */
+function mountGates(scope){
+  scope.querySelectorAll(".gatemount").forEach(m=>{
+    const id=m.dataset.gate,G=GATES[id];
+    if(!G)return;
+    if(solved.has(id)){m.innerHTML=`<div class="gatesolved"><span class="stamp">SOLVED</span> ${G.title} — badge earned.</div>`;return}
+    m.innerHTML=`<div class="gatebox"><header><svg class="gicon" viewBox="0 0 100 100"><use href="${G.icon}"/></svg><h3>${G.title}</h3></header>
+      <div class="gatebody"><div class="gateprompt">${G.prompt}</div><div class="gwidget"></div>
+      <div class="gatehint" hidden></div>
+      <button class="gatecheck">CHECK</button>
+      <div class="gatefeedback" aria-live="polite"></div></div></div>`;
+    const box=m.querySelector(".gatebox"),body=m.querySelector(".gwidget"),fb=m.querySelector(".gatefeedback"),hint=m.querySelector(".gatehint"),btn=m.querySelector(".gatecheck");
+    let checker=null;
+    const api={
+      sound:n=>SND[n]&&SND[n](),
+      onCheck(fn){checker=fn},
+      fail(msg){
+        attempts[id]=(attempts[id]||0)+1;SND.thud();mkfeed(fb,msg,false);
+        const n=attempts[id];
+        if(n===1){hint.hidden=false;hint.innerHTML="💡 <b>Hint:</b> "+G.hints[0]}
+        else if(n===2){hint.hidden=false;hint.innerHTML="🧭 <b>Hint 2:</b> "+G.hints[1]}
+        else if(n>=3&&!hint.querySelector(".askvex")){
+          const b=document.createElement("button");b.className="gatecheck askvex";b.style.marginTop="8px";b.textContent="ASK VEX — WORKED EXAMPLE";
+          b.addEventListener("click",()=>openWorked(G));hint.appendChild(b);
+        }
+        live("Not yet. "+msg);
+      },
+      pass(msg){
+        solved.add(id);storage.set(K("gates"),[...solved]);SND.win();
+        m.innerHTML=`<div class="gatesolved unlockflash"><span class="stamp">SOLVED</span> ${msg}</div>`;
+        const corner=m.closest(".page,#pageL,#pageR")?.querySelector(".gatelockcorner");
+        if(corner){corner.classList.add("open");corner.innerHTML=`<svg viewBox="0 0 100 100" style="color:#fff"><use href="#sig-open"/></svg>`}
+        earnBadge(id);updateNav();live("Gate solved! "+msg);
+      }
+    };
+    G.render(body,api);
+    btn.addEventListener("click",()=>{ac();checker&&checker()});
+  });
+}
+function openWorked(G){
+  $("#workedBody").innerHTML=`<div class="workedsteps">${G.worked.steps.map((s,i)=>`<div class="st"><b class="n">${i+1}</b><span>${s}</span></div>`).join("")}</div>
+    <div class="caption">Your turn — same idea, different numbers:</div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span style="font:600 .92rem 'Segoe UI'">${G.worked.q}</span>
+    <input class="numin" id="wkin" aria-label="worked example answer"><button class="gatecheck" id="wkgo">CHECK</button></div>
+    <div class="gatefeedback" id="wkfb" aria-live="polite"></div>`;
+  $("#workedModal").classList.add("open");
+  $("#wkgo").addEventListener("click",()=>{
+    const v=($("#wkin").value||"").trim().replace(/\s+/g,"");
+    if(v===G.worked.a||parseFloat(v)===parseFloat(G.worked.a)){
+      mkfeed($("#wkfb"),"Yes! Now head back and open that gate.",true);SND.win();
+      setTimeout(()=>$("#workedModal").classList.remove("open"),1100);
+    }else{mkfeed($("#wkfb"),"Walk the steps above again — you've got this.",false);SND.thud()}
+  });
+}
+
+/* ---------- badges ---------- */
+function buildBadges(){
+  $("#badges").innerHTML=BADGES.map(b=>`<div class="badge ${solved.has(b.id)?"earned":""}" id="badge-${b.id}" title="${b.label}" role="img" aria-label="${b.label}${solved.has(b.id)?" — earned":" — locked"}"><svg viewBox="0 0 100 100"><use href="${b.icon}"/></svg></div>`).join("");
+}
+function earnBadge(id){buildBadges();const el=$("#badge-"+id);if(el){el.classList.remove("earned");void el.offsetWidth;el.classList.add("earned")}const b=BADGES.find(x=>x.id===id);if(b)live("Badge earned: "+b.label)}
+
+/* ---------- progress ---------- */
+function buildProgress(){$("#progress").innerHTML=PAGES.map((_,i)=>`<span class="dot ${i<=page?"on":""}"></span>`).join("")}
+
+/* ---------- navigation & rendering ---------- */
+const isMobile=()=>mobileMQ.matches;
+function leftIndex(){return isMobile()?page:page-(page%2)}
+function visiblePages(){return isMobile()?[page]:[leftIndex(),leftIndex()+1].filter(i=>i<PAGES.length)}
+function blockedBy(){return null/* locks removed: gates still teach via hints + Ask VEX worked examples, but never block turning the page (Neft 2026-06-11) */}
+
+function renderSpread(){
+  const L=$("#pageL"),R=$("#pageR");
+  if(isMobile()){L.innerHTML=pageInnerHTML(page);L.classList.remove("offscreen");R.classList.add("offscreen");R.innerHTML="";mountGates(L)}
+  else{const li=leftIndex();L.innerHTML=pageInnerHTML(li);R.innerHTML=pageInnerHTML(li+1<PAGES.length?li+1:null);L.classList.remove("offscreen");R.classList.remove("offscreen");mountGates(L);mountGates(R)}
+  buildProgress();updateNav();updateEdges();
+  if(PAGES[page])live(`Page ${page+1} of ${PAGES.length}. ${PAGES[page].ch}.`);
+  storage.set(K("page"),page);
+  if($("#certName")){$("#certName").value=storage.get(K("name"))||"";$("#certName").addEventListener("input",e=>storage.set(K("name"),e.target.value));
+    $("#certBadges").innerHTML=BADGES.map(b=>`<div class="badge ${solved.has(b.id)?"":"locked"}"><svg viewBox="0 0 100 100"><use href="${b.icon}"/></svg></div>`).join("");
+    $("#printCert").addEventListener("click",()=>{document.body.classList.add("print-cert");window.print();setTimeout(()=>document.body.classList.remove("print-cert"),400)});}
+}
+function updateEdges(){const f=page/Math.max(1,PAGES.length-1);$("#edgesL").style.width=(4+f*12)+"px";$("#edgesR").style.width=(16-f*12)+"px"}
+function updateNav(){
+  $("#prevBtn").disabled=page<=0||turning;
+  const lastVisible=Math.max(...visiblePages());
+  const end=lastVisible>=PAGES.length-1;
+  const blocked=blockedBy();
+  $("#nextBtn").disabled=end||turning;
+  $("#nextBtn").classList.toggle("locked",!!blocked&&!end);
+  $("#nextBtn").innerHTML=blocked&&!end?"🔒":"›";
+  $("#nextBtn").setAttribute("aria-label",blocked?"Locked — solve the gate on this page to continue":"Next page");
+}
+function step(dir){
+  if(turning)return;
+  if(dir>0){
+    const blocked=blockedBy();
+    if(blocked){const G=GATES[blocked];SND.thud();$("#nextBtn").classList.add("shake");setTimeout(()=>$("#nextBtn").classList.remove("shake"),700);
+      live("This page is gated. Solve "+G.title+" to continue.");
+      const gb=document.querySelector(".gatebox");if(gb){gb.classList.add("unlockflash");setTimeout(()=>gb.classList.remove("unlockflash"),1000)}
+      return}
+    const lastVisible=Math.max(...visiblePages());
+    if(lastVisible>=PAGES.length-1)return;
+    const target=isMobile()?page+1:leftIndex()+2;
+    animTurn(1,target);
+  }else{
+    if(page<=0)return;
+    const target=isMobile()?page-1:Math.max(0,leftIndex()-2);
+    animTurn(-1,target);
+  }
+}
+function animTurn(dir,target){
+  if(isMobile()||reducedMQ.matches||!prefs.motion){page=target;renderSpread();SND.flip();return}
+  turning=true;SND.flip();
+  const sheet=$("#turnSheet"),front=sheet.querySelector(".ts.front"),back=sheet.querySelector(".ts.back");
+  const oldL=leftIndex();
+  if(dir>0){
+    front.innerHTML=pageInnerHTML(oldL+1<PAGES.length?oldL+1:null);
+    back.innerHTML=pageInnerHTML(target<PAGES.length?target:null);
+    page=target;
+    /* underneath: left stays old-left, right becomes new-right */
+    $("#pageR").innerHTML=pageInnerHTML(target+1<PAGES.length?target+1:null);
+    sheet.className="";sheet.classList.add("show","fwd");
+  }else{
+    front.innerHTML=pageInnerHTML(target+1<PAGES.length?target+1:null);
+    back.innerHTML=pageInnerHTML(oldL);
+    page=target;
+    $("#pageL").innerHTML=pageInnerHTML(target);
+    sheet.className="";sheet.classList.add("show","back");
+  }
+  const done=()=>{sheet.classList.remove("show","fwd","back");sheet.removeEventListener("animationend",done);turning=false;renderSpread()};
+  sheet.addEventListener("animationend",done);
+  setTimeout(()=>{if(turning){done()}},1000);
+}
+
+/* ---------- parallax ---------- */
+let rafPending=false,px=0,py=0;
+function applyParallax(){
+  rafPending=false;
+  if(!prefs.motion||reducedMQ.matches)return;
+  document.querySelectorAll("#spreadWrap .panel3d").forEach(p=>{
+    p.style.transform=`rotateY(${px*4}deg) rotateX(${-py*3}deg)`;
+    p.querySelectorAll("[data-depth]").forEach(l=>{const d=+l.dataset.depth||0;l.style.transform=`translate(${px*d*.6}px,${py*d*.35}px)`});
+  });
+}
+addEventListener("pointermove",e=>{
+  px=(e.clientX/innerWidth-.5)*2;py=(e.clientY/innerHeight-.5)*2;
+  if(!rafPending){rafPending=true;requestAnimationFrame(applyParallax)}
+  const cc=$("#coverCard");
+  if(cc&&!$("#cover").hidden&&prefs.motion&&!reducedMQ.matches){
+    cc.style.transform=`rotateY(${px*9}deg) rotateX(${-py*7}deg)`;
+    cc.querySelectorAll(".cov-layer").forEach(l=>{const d=+l.dataset.depth||0;l.style.transform=`translate(${px*d}px,${py*d*.6}px)`});
+  }
+},{passive:true});
+
+/* note: SVG <g data-depth> transform via style works in modern browsers (SVG2). Wrapped above for safety. */
+
+/* ---------- HUD toggles ---------- */
+function syncToggles(){
+  $("#sndBtn").setAttribute("aria-pressed",prefs.sound);$("#sndBtn").textContent=prefs.sound?"🔊 Sound":"🔇 Sound";
+  $("#motBtn").setAttribute("aria-pressed",prefs.motion);$("#motBtn").textContent=prefs.motion?"3D On":"3D Off";
+  $("#txtBtn").setAttribute("aria-pressed",prefs.bigtext);document.documentElement.dataset.textsize=prefs.bigtext?"lg":"md";
+  $("#hcBtn").setAttribute("aria-pressed",prefs.hc);document.body.classList.toggle("hc",prefs.hc);
+  if(!prefs.motion)document.querySelectorAll(".panel3d").forEach(p=>p.style.transform="");
+  storage.set(K("prefs"),prefs);
+}
+$("#sndBtn").addEventListener("click",()=>{prefs.sound=!prefs.sound;ac();syncToggles();SND.blip()});
+$("#motBtn").addEventListener("click",()=>{prefs.motion=!prefs.motion;syncToggles()});
+$("#txtBtn").addEventListener("click",()=>{prefs.bigtext=!prefs.bigtext;syncToggles()});
+$("#hcBtn").addEventListener("click",()=>{prefs.hc=!prefs.hc;syncToggles()});
+
+/* ---------- teacher panel ---------- */
+function buildTeacher(){
+  $("#teacherBody").innerHTML=`
+    <p style="font:600 .9rem/1.45 'Segoe UI'">${VOLUME.unit} — interactive graphic novel. Story pauses at six <b>reader gates</b>; students must solve grade-level math problems to continue. Progress, badges, and settings persist per device.</p>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">SUGGESTED USE</h3>
+    <p style="font:600 .88rem/1.45 'Segoe UI'">${TEACHER.suggested}</p>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">STANDARDS ALIGNMENT (CCSS)</h3>
+    <table class="tt"><tr><th>Standard</th><th>Description</th><th>Where</th></tr>
+    ${TEACHER.standards.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</table>
+    <h3 style="font:900 .8rem 'Arial Black';letter-spacing:.1em">ANSWER KEY</h3>
+    <table class="tt"><tr><th>Gate</th><th>Answer &amp; notes</th></tr>
+    ${TEACHER.answers.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td></tr>`).join("")}</table>
+    <p style="font:600 .8rem/1.4 'Segoe UI';color:#666">Hints escalate: conceptual → procedural → VEX worked example (parallel problem; never reveals the gate answer). Sound is off by default. 3D motion can be disabled (auto-disabled for reduced-motion users). © EduWonderLab — single-file, offline-safe, no data leaves the device.</p>`;
+}
+$("#teacherBtn").addEventListener("click",()=>{buildTeacher();$("#teacherModal").classList.add("open")});
+$("#printTeacher").addEventListener("click",()=>{document.body.classList.add("print-teacher");window.print();setTimeout(()=>document.body.classList.remove("print-teacher"),400)});
+document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",()=>b.closest(".modal").classList.remove("open")));
+
+/* ---------- input ---------- */
+$("#nextBtn").addEventListener("click",()=>{ac();step(1)});
+$("#prevBtn").addEventListener("click",()=>{ac();step(-1)});
+addEventListener("keydown",e=>{
+  if(e.key==="Escape"){$("#teacherModal").classList.remove("open");return}
+  if($(".modal.open"))return;
+  if(["ArrowRight","PageDown"].includes(e.key))step(1);
+  if(["ArrowLeft","PageUp"].includes(e.key))step(-1);
+});
+let tx=null;
+addEventListener("touchstart",e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener("touchend",e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>60&&!$(".modal.open"))step(dx<0?1:-1);tx=null},{passive:true});
+mobileMQ.addEventListener("change",()=>renderSpread());
+
+/* ---------- boot ---------- */
+function openBook(){
+  $("#cover").hidden=true;$("#hud").hidden=false;$("#stage").hidden=false;
+  $("#prevBtn").hidden=false;$("#nextBtn").hidden=false;
+  renderSpread();
+}
+$("#startBtn").addEventListener("click",()=>{ac();page=0;openBook()});
+$("#resumeBtn").addEventListener("click",()=>{ac();openBook()});
+if((storage.get(K("page"))||0)>0||solved.size>0){$("#resumeBtn").hidden=false}
+if(reducedMQ.matches){prefs.motion=false}
+document.body.classList.toggle("reduced",reducedMQ.matches);
+buildBadges();syncToggles();buildProgress();
+</script>
+</body>
+</html>
