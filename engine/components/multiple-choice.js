@@ -190,6 +190,23 @@ export function renderMultipleChoice(
 ) {
   injectMultipleChoiceStyles();
 
+  // Fail safe on malformed authoring rather than throwing at check time
+  // (labels[correctIndex] would be undefined) and blanking the activity.
+  if (!Array.isArray(choices) || choices.length < 2) {
+    const warn = document.createElement("p");
+    warn.className = "problem-stem";
+    warn.textContent = stem || "This question is unavailable.";
+    container.append(warn);
+    return;
+  }
+  if (
+    typeof correctIndex !== "number" ||
+    correctIndex < 0 ||
+    correctIndex >= choices.length
+  ) {
+    correctIndex = 0;
+  }
+
   const id = `mc-${Math.random().toString(36).slice(2, 8)}`;
   const wrapper = document.createElement("div");
   wrapper.className = "mc-problem";

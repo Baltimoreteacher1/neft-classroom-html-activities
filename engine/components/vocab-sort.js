@@ -146,14 +146,17 @@ export function renderVocabSort(container, { terms, onComplete }) {
   shuffledExamples.forEach((ex, i) => {
     const chip = document.createElement("span");
     chip.className = "drag-item vocab-sort-item";
-    chip.dataset.correctTerm = ex.termName;
+    // Only an opaque index is exposed; the correct bucket (ex.termName) stays in
+    // the `shuffledExamples` closure so it can't be read off the DOM. Keying by
+    // idx (not term name) also fixes consuming the wrong chip when two examples
+    // share a term.
     chip.dataset.idx = String(i);
     chip.textContent = ex.text;
     chip.setAttribute("draggable", "true");
 
     chip.addEventListener("dragstart", (e) => {
-      e.dataTransfer.setData("application/json", JSON.stringify(ex));
-      e.dataTransfer.setData("text/plain", ex.termName);
+      e.dataTransfer.setData("application/json", JSON.stringify({ idx: i }));
+      e.dataTransfer.setData("text/plain", ex.text);
       chip.style.opacity = "0.4";
     });
     chip.addEventListener("dragend", () => {
@@ -233,10 +236,7 @@ export function renderVocabSort(container, { terms, onComplete }) {
 
     dropZone.addEventListener("click", () => {
       if (!selectedItem) return;
-      const data = {
-        text: selectedItem.textContent,
-        termName: selectedItem.dataset.correctTerm,
-      };
+      const data = { idx: Number(selectedItem.dataset.idx) };
       handleDrop(data, t.term, dropZone);
       if (selectedItem) selectedItem.style.boxShadow = "";
       selectedItem = null;
@@ -253,9 +253,11 @@ export function renderVocabSort(container, { terms, onComplete }) {
   wrapper.append(feedbackSlot);
 
   function handleDrop(data, bucketTerm, dropZone) {
-    const correct = data.termName === bucketTerm;
+    const ex = shuffledExamples[data.idx];
+    if (!ex) return;
+    const correct = ex.termName === bucketTerm;
     const chipEl = bank.querySelector(
-      `.vocab-sort-item[data-correct-term="${CSS.escape(data.termName)}"][data-idx]:not(.sorted)`,
+      `.vocab-sort-item[data-idx="${data.idx}"]:not(.sorted)`,
     );
 
     if (!chipEl) return;
@@ -263,7 +265,7 @@ export function renderVocabSort(container, { terms, onComplete }) {
     if (correct) {
       const placed = document.createElement("span");
       placed.className = "drag-item correct vs-placed vs-celebrate";
-      placed.textContent = data.text;
+      placed.textContent = ex.text;
       placed.style.cursor = "default";
       dropZone.append(placed);
       // Clean up the one-shot celebration hook after it plays (or immediately

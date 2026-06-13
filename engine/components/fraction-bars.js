@@ -18,6 +18,16 @@ export function renderFractionBars(
 ) {
   injectFractionBarsStyles();
 
+  // `target` is required; without it `target.numerator` throws and blanks the
+  // activity. Fail gracefully on malformed authoring.
+  if (!target || target.denominator == null || target.numerator == null) {
+    const warn = document.createElement("p");
+    warn.style.cssText = "font-weight:600;";
+    warn.textContent = instructions || "This fraction task is unavailable.";
+    container.append(warn);
+    return;
+  }
+
   const wrapper = document.createElement("div");
   wrapper.className = "card";
 

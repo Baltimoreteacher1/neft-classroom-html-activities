@@ -97,6 +97,10 @@ export function renderVocabCloze(container, { terms, onComplete }) {
   sentenceList.style.cssText =
     "display:flex; flex-direction:column; gap:var(--sp-3);";
 
+  // Which term fills each blank, kept in a closure (never in the DOM) so the
+  // answers can't be read off data-* attributes.
+  const blankAnswers = [];
+
   shuffled.forEach((s, idx) => {
     const row = document.createElement("div");
     row.className = "card card-compact";
@@ -109,8 +113,8 @@ export function renderVocabCloze(container, { terms, onComplete }) {
 
     const blank = document.createElement("span");
     blank.className = "vocab-cloze-blank";
-    blank.dataset.answer = s.term;
     blank.dataset.idx = String(idx);
+    blankAnswers[idx] = s.term;
     blank.style.cssText = `
       display:inline-block; min-width:120px; padding:4px 12px; margin:0 4px;
       border:2px dashed var(--teal); border-radius:var(--radius-sm);
@@ -157,8 +161,8 @@ export function renderVocabCloze(container, { terms, onComplete }) {
   function attemptFill(blank, term, chipEl) {
     if (blank.classList.contains("filled")) return;
 
-    const correct =
-      term.toLowerCase().trim() === blank.dataset.answer.toLowerCase().trim();
+    const expected = blankAnswers[Number(blank.dataset.idx)] || "";
+    const correct = term.toLowerCase().trim() === expected.toLowerCase().trim();
 
     if (correct) {
       blank.textContent = term;

@@ -53,7 +53,10 @@ export async function downloadCertificatePng(certEl, config, state) {
   ctx.fillStyle = "#264653";
   ctx.fillText(config.title || "Lesson", W / 2, 200);
 
-  const totalStars = (s.phases || []).reduce((sum, p) => sum + (p.stars || 0), 0);
+  const totalStars = (s.phases || []).reduce(
+    (sum, p) => sum + (p.stars || 0),
+    0,
+  );
   ctx.font = "24px Hanken Grotesk, system-ui, sans-serif";
   ctx.fillStyle = "#C85A3A";
   ctx.fillText(`${totalStars}/18 ★`, W / 2, 245);
@@ -104,7 +107,11 @@ export async function downloadCertificatePng(certEl, config, state) {
     ctx.fillStyle = "#264653";
     ctx.fillText(p.name || "", 80, py);
     ctx.fillStyle = "#F2A93B";
-    ctx.fillText("★".repeat(p.stars || 0) + "☆".repeat(3 - (p.stars || 0)), 320, py);
+    ctx.fillText(
+      "★".repeat(p.stars || 0) + "☆".repeat(3 - (p.stars || 0)),
+      320,
+      py,
+    );
     py += 28;
   });
 
@@ -117,12 +124,17 @@ export async function downloadCertificatePng(certEl, config, state) {
   ctx.fillText(new Date().toLocaleDateString(), W / 2, H - 155);
   ctx.fillText("Neft Teacher", W / 2, H - 130);
 
-  // QR code
-  const url = lessonUrl(config);
-  ctx.font = "12px Hanken Grotesk, system-ui, sans-serif";
-  ctx.fillStyle = "#5a6b75";
-  ctx.fillText(t("scanToRevisit"), W / 2, H - 95);
-  await drawQrOnCanvas(ctx, url, W / 2 - 50, H - 85, 100);
+  // QR code — optional. A QR failure must never block the certificate, so the
+  // code (and its label) are only drawn if generation succeeds.
+  try {
+    const url = lessonUrl(config);
+    await drawQrOnCanvas(ctx, url, W / 2 - 50, H - 85, 100);
+    ctx.font = "12px Hanken Grotesk, system-ui, sans-serif";
+    ctx.fillStyle = "#5a6b75";
+    ctx.fillText(t("scanToRevisit"), W / 2, H - 95);
+  } catch {
+    /* QR unavailable — emit the certificate without it. */
+  }
 
   return new Promise((resolve) => {
     canvas.toBlob((blob) => {
@@ -147,12 +159,17 @@ export function mountCertificateDownload(certEl, config, state) {
   btn.type = "button";
   btn.className = "btn btn-primary certificate-download-btn";
   btn.innerHTML = `<span class="i18n-stack"><span class="i18n-en">${t("downloadCertificate", "en")}</span><span class="i18n-es">${t("downloadCertificate", "es")}</span></span>`;
+  const restoreLabel = `<span class="i18n-stack"><span class="i18n-en">${t("downloadCertificate", "en")}</span><span class="i18n-es">${t("downloadCertificate", "es")}</span></span>`;
   btn.addEventListener("click", async () => {
     btn.disabled = true;
     btn.textContent = "…";
-    await downloadCertificatePng(certEl, config, state);
-    btn.disabled = false;
-    btn.innerHTML = `<span class="i18n-stack"><span class="i18n-en">${t("downloadCertificate", "en")}</span><span class="i18n-es">${t("downloadCertificate", "es")}</span></span>`;
+    try {
+      await downloadCertificatePng(certEl, config, state);
+    } finally {
+      // Always restore the button, even if rendering/QR threw.
+      btn.disabled = false;
+      btn.innerHTML = restoreLabel;
+    }
   });
   const printBtn = certEl.querySelector(".certificate-print-btn");
   if (printBtn) printBtn.before(btn);

@@ -136,6 +136,9 @@ export function renderFillTable(container, config) {
 
   const tbody = document.createElement("tbody");
   const inputs = [];
+  // Correct answers are kept in a closure keyed by cell, never written to the
+  // DOM — otherwise a student can read every answer via "Inspect Element".
+  const answerByKey = new Map();
 
   rows.forEach((row, ri) => {
     const tr = document.createElement("tr");
@@ -152,8 +155,8 @@ export function renderFillTable(container, config) {
           "padding:6px 8px; font-size:0.9rem; width:100%; min-width:60px;";
         input.placeholder = "?";
         input.setAttribute("aria-label", `${headers[ci]} for row ${ri + 1}`);
-        input.dataset.answer = String(editable.answer);
         input.dataset.key = cellKey;
+        answerByKey.set(cellKey, String(editable.answer));
         td.append(input);
         inputs.push(input);
       } else {
@@ -186,8 +189,8 @@ export function renderFillTable(container, config) {
 
     inputs.forEach((input) => {
       const userVal = input.value.trim();
-      const expected = input.dataset.answer;
-      const isMatch = normalizeAnswer(userVal) === normalizeAnswer(expected);
+      const expected = answerByKey.get(input.dataset.key);
+      const isMatch = answersMatch(userVal, expected);
 
       input.style.borderColor = isMatch ? "var(--success)" : "var(--error)";
       input.style.background = isMatch
@@ -358,7 +361,29 @@ function normalizeFillTable(config = {}) {
 }
 
 function normalizeAnswer(s) {
-  return String(s).trim().toLowerCase().replace(/\s+/g, " ");
+  return String(s)
+    .trim()
+    .toLowerCase()
+    .replace(/−/g, "-") // unicode minus → ascii hyphen
+    .replace(/\s+/g, " ");
+}
+
+// Parse a numeric answer, tolerating thousands separators and a unicode minus.
+// Returns null when the string isn't purely a number.
+function asNumber(s) {
+  const cleaned = String(s).trim().replace(/−/g, "-").replace(/,/g, "");
+  if (cleaned === "" || !/^[-+]?(\d+\.?\d*|\.\d+)$/.test(cleaned)) return null;
+  const n = Number(cleaned);
+  return Number.isFinite(n) ? n : null;
+}
+
+// A math answer matches if it's numerically equal (so "0.5"=".5", "1,000"="1000")
+// or, for non-numeric answers, equal after text normalization.
+function answersMatch(userVal, expected) {
+  const un = asNumber(userVal);
+  const en = asNumber(expected);
+  if (un !== null && en !== null) return un === en;
+  return normalizeAnswer(userVal) === normalizeAnswer(expected);
 }
 
 function showFb(slot, type, msg) {

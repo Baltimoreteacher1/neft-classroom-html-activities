@@ -125,12 +125,21 @@ export function renderMatchingGame(
     attemptCount++;
     attempts.textContent = `Attempts: ${attemptCount}`;
 
-    if (a.card.pairId === b.card.pairId) {
+    // Accept the match by VALUE, not pairId identity: when a config has
+    // duplicate match values (e.g. "at most" and "no more than" both → "≤"),
+    // the tiles are interchangeable and either pairing is correct. Track the
+    // unique left-side (term) id so duplicates can't under-count completion.
+    const isMatch =
+      a.card.pairId === b.card.pairId ||
+      pairs[a.card.pairId].match === pairs[b.card.pairId].match;
+    const leftCard = a.card.side === "L" ? a.card : b.card;
+
+    if (isMatch) {
       [a.el, b.el].forEach((node) => {
         node.dataset.matched = "1";
         delete node.dataset.selected;
       });
-      matched.add(a.card.pairId);
+      matched.add(leftCard.pairId);
       matchCount.textContent = `${matched.size} / ${pairs.length} matched`;
       if (matched.size === pairs.length) finishGame();
     } else {
