@@ -3,19 +3,23 @@
   const $ = (id) => document.getElementById(id);
   const storagePrefix = "accessPracticeLab:v1";
 
-  // Official WIDA-style Google Forms (student RESPONSE links). Editor (/edit)
-  // links were converted to /viewform so students can open and submit them.
-  // To change a form, paste its student "viewform" link here.
-  const OFFICIAL_FORMS = {
-    Listening:
-      "https://docs.google.com/forms/d/1bbbIlu-zadD6Pirqbp35U7oUo67Sxt8s1ymef0r6tZs/viewform",
-    Reading:
-      "https://docs.google.com/forms/d/1hxiN6IJB7qP4_bL0HD3NPh6XzqXpsqflCrm94IKxIRo/viewform",
-    Speaking:
-      "https://docs.google.com/forms/d/e/1FAIpQLSfZ-_iZPuRu3d967JqsQBGIxEdbKY7yBRuVW9MLhgrEMnM-hg/viewform",
-    Writing:
-      "https://docs.google.com/forms/d/11KhntaGKT_Pa_tl71sDAGDeLRgqoe3XB8E9K2mXfdpU/viewform",
-  };
+  // Official WIDA-style Google Forms (student RESPONSE links).
+  //
+  // DISABLED 2026-06-13: all four forms are currently UNPUBLISHED ("We're sorry.
+  // This document is not published.") and also require Google sign-in, so every
+  // button 401'd / dead-ended for students. The buttons are hidden until the
+  // forms are published. To re-enable a form:
+  //   1. Open it in Google Forms → Publish (or Send) → "Manage who has access"
+  //      → set the audience (e.g. Anyone, or your school domain).
+  //   2. Copy the PUBLISHED responder link (it looks like
+  //      ".../forms/d/e/<long-id>/viewform" — NOT ".../forms/d/<id>/viewform").
+  //   3. Add it below as e.g.  Listening: "<published link>",
+  // Existing form ids (for reference when republishing):
+  //   Listening: 1bbbIlu-zadD6Pirqbp35U7oUo67Sxt8s1ymef0r6tZs
+  //   Reading:   1hxiN6IJB7qP4_bL0HD3NPh6XzqXpsqflCrm94IKxIRo
+  //   Speaking:  d/e/1FAIpQLSfZ-_iZPuRu3d967JqsQBGIxEdbKY7yBRuVW9MLhgrEMnM-hg
+  //   Writing:   11KhntaGKT_Pa_tl71sDAGDeLRgqoe3XB8E9K2mXfdpU
+  const OFFICIAL_FORMS = {};
 
   // ── v3 content module: additively merge new activities + full practice tests ──
   (function mergeV3() {
