@@ -16,6 +16,7 @@ export function renderCoordinateGrid(
   },
 ) {
   injectCoordinateGridStyles();
+  targets = Array.isArray(targets) ? targets : [];
 
   const wrapper = document.createElement("div");
   wrapper.className = "card cgrid-root";
@@ -201,9 +202,17 @@ export function renderCoordinateGrid(
 
     const coord = fromSvg(sx, sy);
 
-    // Snap to grid
-    coord.x = Math.round(coord.x / xStep) * xStep;
-    coord.y = Math.round(coord.y / yStep) * yStep;
+    // Snap to grid, then clamp back inside the axis range so a click near the
+    // edge can't snap to an off-grid coordinate (which would draw outside the
+    // plot and never match any target).
+    coord.x = Math.min(
+      xMax,
+      Math.max(xMin, Math.round(coord.x / xStep) * xStep),
+    );
+    coord.y = Math.min(
+      yMax,
+      Math.max(yMin, Math.round(coord.y / yStep) * yStep),
+    );
 
     const finalSx = toSvgX(coord.x);
     const finalSy = toSvgY(coord.y);

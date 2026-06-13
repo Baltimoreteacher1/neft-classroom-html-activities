@@ -1,4 +1,7 @@
-import { PHASE_TIME_ESTIMATES, countPracticeProblems } from "./content-enrichment.js";
+import {
+  PHASE_TIME_ESTIMATES,
+  countPracticeProblems,
+} from "./content-enrichment.js";
 import { t, stackHtml, phaseName } from "./i18n.js";
 
 function esc(s) {
@@ -92,9 +95,11 @@ export function mountTeacherPanel(root, config, state) {
     keySlot.remove();
   }
 
-  panel.querySelector(".teacher-print-packet")?.addEventListener("click", () => {
-    window.print();
-  });
+  panel
+    .querySelector(".teacher-print-packet")
+    ?.addEventListener("click", () => {
+      window.print();
+    });
 
   root.append(panel);
   return panel;
@@ -106,7 +111,10 @@ function collectAnswerKey(config) {
   for (const b of buckets) {
     const items = config.practice?.[b] || [];
     items.forEach((item, i) => {
-      if (item.type === "multiple-choice" && item.choices?.[item.correctIndex]) {
+      if (
+        item.type === "multiple-choice" &&
+        item.choices?.[item.correctIndex]
+      ) {
         answers.push(
           `${b} #${i + 1}: ${item.choices[item.correctIndex]}${item.explanation ? ` — ${item.explanation}` : ""}`,
         );
@@ -118,16 +126,12 @@ function collectAnswerKey(config) {
   return answers.slice(0, 12);
 }
 
-/** Collapsible teacher notes for welcome/cover (no ?teacher=1 required). */
+/** Collapsible teacher notes for welcome/cover (no ?teacher=1 required).
+ * NOTE: This panel is rendered to STUDENTS (caller gates on !isTeacherMode()),
+ * so it must never include answer-bearing content. "Listen for" notes (which
+ * spell out the worked answers) are intentionally omitted here — teachers get
+ * them via the ?teacher=1 answer key. Keep this panel to pacing only. */
 export function buildWelcomeTeacherNotes(config) {
-  const listenFors = (config.turnAndTalk || [])
-    .filter((t) => t.listenFor)
-    .slice(0, 4)
-    .map(
-      (t) =>
-        `<li><strong>${esc(t.phase || "Phase")}:</strong> ${esc(t.listenFor)}</li>`,
-    );
-
   const pacing = PHASE_TIME_ESTIMATES.map(
     (p, i) =>
       `<li><span>${p.icon} ${phaseName(i)}</span><span>~${p.minutes} min</span></li>`,
@@ -146,12 +150,7 @@ export function buildWelcomeTeacherNotes(config) {
         <h5>${stackHtml(t("pacingGuide", "en"), t("pacingGuide", "es"))}</h5>
         <ul class="teacher-pacing-list">${pacing}</ul>
       </div>
-      ${
-        listenFors.length
-          ? `<div class="teacher-panel-section"><h5>${stackHtml(t("listenFor", "en"), t("listenFor", "es"))}</h5><ul class="teacher-listen">${listenFors.join("")}</ul></div>`
-          : ""
-      }
-      <p style="font-size:0.82rem; color:var(--muted); margin-top:8px;">${stackHtml("Full answer keys:", "Claves completas:")} <code>?teacher=1</code></p>
+      <p style="font-size:0.82rem; color:var(--muted); margin-top:8px;">${stackHtml("Look-fors & full answer keys:", "Qué observar y claves completas:")} <code>?teacher=1</code></p>
     </div>`;
 
   const toggle = wrap.querySelector(".welcome-teacher-toggle");

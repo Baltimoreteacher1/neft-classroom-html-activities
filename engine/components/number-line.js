@@ -4,6 +4,16 @@ export function renderNumberLine(
 ) {
   injectNumberLineStyles();
 
+  // Guard malformed config: with no targets, the original "correct === targets.length"
+  // check is 0 === 0 on the first click and fires a false success.
+  if (!Array.isArray(targets) || targets.length === 0) {
+    const warn = document.createElement("p");
+    warn.className = "problem-stem";
+    warn.textContent = label || "This number-line task is unavailable.";
+    container.append(warn);
+    return;
+  }
+
   const wrapper = document.createElement("div");
   wrapper.className = "card";
 

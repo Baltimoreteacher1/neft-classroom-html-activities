@@ -210,9 +210,11 @@ export function renderBarModel(
         checkBtn.style.display = "none";
         showFb(fb, "success", `Correct! The answer is ${answer}.`);
 
-        // Reveal editable segments (with a gentle staggered pop-in)
+        // Reveal editable segments (with a gentle staggered pop-in). Iterate the
+        // DIRECT segment children only — querySelectorAll("div") also returns the
+        // nested label/value divs, which misaligns the index with `bars[i]`.
         let revealIndex = 0;
-        segBar.querySelectorAll("div").forEach((seg, i) => {
+        [...segBar.children].forEach((seg, i) => {
           if (bars[i]?.editable) {
             seg.style.background = colors[i % colors.length];
             seg.style.border = "none";

@@ -17,6 +17,7 @@ export function renderCoordinatePlane(
   container,
   { instructions, range, step = 1, targets, label, onComplete },
 ) {
+  targets = Array.isArray(targets) ? targets : [];
   const min = range?.min ?? -10;
   const max = range?.max ?? 10;
 

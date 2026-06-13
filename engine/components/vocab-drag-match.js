@@ -203,7 +203,9 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
   shuffledDefs.forEach((term) => {
     const el = document.createElement("button");
     el.className = "vocab-dm-def";
-    el.dataset.defFor = term.term;
+    // NB: the term this definition belongs to is captured in the closure
+    // (`term`) and used by checkMatch — it is deliberately NOT written to a
+    // data-* attribute, which would expose the answer pairing in the DOM.
     el.style.cssText = `
       padding:12px 16px; border:2px dashed var(--line); border-radius:var(--radius-md);
       background:white; font-size:0.88rem; text-align:left; cursor:pointer;

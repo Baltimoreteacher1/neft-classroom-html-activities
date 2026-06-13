@@ -335,7 +335,7 @@ export function renderNetFolder(
     onComplete?.(1, 1);
   }
 
-  if (question) {
+  if (question && Array.isArray(question.choices) && question.choices.length) {
     const q = document.createElement("p");
     q.style.cssText = "font-weight:600; margin:var(--sp-4) 0 var(--sp-2);";
     q.textContent = question.stem;
