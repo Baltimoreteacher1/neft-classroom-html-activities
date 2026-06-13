@@ -1,0 +1,49 @@
+name: Codex Verify
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+      - "codex/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codex-verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Validate, build, and run Codex checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install --no-audit --no-fund
+          fi
+
+      - name: Run repository validation
+        run: npm run validate --if-present
+
+      - name: Build deployable site
+        run: npm run build --if-present
+
+      - name: Run Codex verification
+        run: scripts/codex/codex-verify.sh

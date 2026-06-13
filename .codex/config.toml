@@ -1,0 +1,56 @@
+# Repo-local Codex configuration for neft-classroom-html-activities.
+# Loaded only after this project is trusted by Codex.
+
+# Keep shell work inside the repository by default. Never set danger-full-access here.
+sandbox_mode = "workspace-write"
+
+# Let Codex ask for approval for privileged or risky actions.
+approval_policy = "on-request"
+
+# Mark this as the repo root for Codex context discovery.
+project_root_markers = ["package.json", "vite.config.js", "wrangler.toml", "AGENTS.md"]
+
+[agents]
+# Enough parallelism for targeted review/test agents without recursive fan-out.
+max_threads = 4
+max_depth = 1
+
+[[hooks.SessionStart]]
+matcher = ".*"
+[[hooks.SessionStart.hooks]]
+type = "command"
+command = "python3 .codex/hooks/session_context.py"
+timeout = 10
+statusMessage = "Loading EduWonderLab repo context"
+
+[[hooks.UserPromptSubmit]]
+matcher = ".*"
+[[hooks.UserPromptSubmit.hooks]]
+type = "command"
+command = "python3 .codex/hooks/prompt_guard.py"
+timeout = 10
+statusMessage = "Checking classroom repo policy"
+
+[[hooks.PreToolUse]]
+matcher = "^(Bash|apply_patch|Edit|Write)$"
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = "python3 .codex/hooks/pre_tool_policy.py"
+timeout = 10
+statusMessage = "Checking command safety"
+
+[[hooks.PostToolUse]]
+matcher = "^(Bash|apply_patch|Edit|Write)$"
+[[hooks.PostToolUse.hooks]]
+type = "command"
+command = "python3 .codex/hooks/post_tool_reviewer.py"
+timeout = 10
+statusMessage = "Reviewing tool output"
+
+[[hooks.Stop]]
+matcher = ".*"
+[[hooks.Stop.hooks]]
+type = "command"
+command = "python3 .codex/hooks/final_qa.py"
+timeout = 10
+statusMessage = "Checking final QA readiness"

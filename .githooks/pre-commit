@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -u
+
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+cd "$ROOT" || exit 1
+
+if [[ -x scripts/codex/codex-verify.sh ]]; then
+  scripts/codex/codex-verify.sh
+else
+  echo "No scripts/codex/codex-verify.sh found; skipping Codex pre-commit checks."
+fi
