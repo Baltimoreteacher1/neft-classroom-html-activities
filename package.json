@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "npm run generate-curriculum-search-index && vite build",
-    "deploy": "npm run validate && npm run build && wrangler pages deploy dist --project-name=neft-classroom-html-activities --branch=main",
+    "deploy": "node scripts/guard-deploy.js && npm run validate && npm run build && wrangler pages deploy dist --project-name=neft-classroom-html-activities --branch=main",
     "preview": "vite preview",
     "validate": "npm run validate:static && npm run validate:reveal-math",
     "validate:static": "node tools/validate-static-site.mjs",

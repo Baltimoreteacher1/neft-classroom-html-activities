@@ -1,6 +1,7 @@
 (() => {
   const DATA = window.ACCESS_LAB_DATA;
   const $ = (id) => document.getElementById(id);
+  const storagePrefix = "accessPracticeLab:v1";
   const state = {
     mode: "hub",
     hubScope: "root",
@@ -12,10 +13,101 @@
     feedback: {},
     sortAnswers: {},
     notes: {},
+    selfChecks: {},
+    practiced: {},
+    results: {},
     studentName: "",
+    pathway: localStorage.getItem(`${storagePrefix}:pathway`) || "A",
     complete: new Set(),
   };
-  const storagePrefix = "accessPracticeLab:v1";
+  const coreDomains = ["Listening", "Speaking", "Reading", "Writing"];
+  const pathwaySupport = {
+    A: {
+      name: "Newcomer",
+      range: "WIDA 1.0-2.4",
+      complexity: "Short directions, short sentences, and many visual clues.",
+      vocabulary: "Large word bank with bilingual vocabulary support.",
+      frames: "Full sentence frames students can copy and complete.",
+      response: "Say or write 1-3 clear sentences.",
+      wordGoal: 25,
+    },
+    B: {
+      name: "Developing",
+      range: "WIDA 2.5-3.5",
+      complexity: "Connected sentences with reasons, examples, and school vocabulary.",
+      vocabulary: "Medium word bank focused on key academic words.",
+      frames: "Sentence starters plus Because / But / So expansion.",
+      response: "Say or write 4-6 connected sentences.",
+      wordGoal: 45,
+    },
+    C: {
+      name: "Expanding",
+      range: "WIDA 3.6-4.5+",
+      complexity: "Longer explanations with evidence and comparison language.",
+      vocabulary: "Smaller word bank so students choose precise words.",
+      frames: "Light frames that prompt elaboration, evidence, and transitions.",
+      response: "Say or write a developed paragraph.",
+      wordGoal: 70,
+    },
+  };
+  const domainPracticePlan = {
+    Listening: {
+      practice: "listen for main ideas, details, directions, and evidence",
+      time: "5-8 minutes per activity",
+      submit: "choose an answer, then explain your evidence",
+    },
+    Speaking: {
+      practice: "plan, speak, record or rehearse, and self-check your answer",
+      time: "5-7 minutes per prompt",
+      submit: "a local recording or spoken practice checklist",
+    },
+    Reading: {
+      practice: "read passages, charts, captions, and short school texts",
+      time: "6-10 minutes per task",
+      submit: "an answer plus a text-evidence sentence",
+    },
+    Writing: {
+      practice: "write responses using vocabulary, frames, and expansion words",
+      time: "8-12 minutes per task",
+      submit: "a written response you can print or copy",
+    },
+  };
+  const speakingCheck = [
+    "Named the topic",
+    "Used details",
+    "Explained thinking",
+    "Spoke clearly",
+  ];
+  const writingCheck = [
+    "I answered every part of the prompt.",
+    "I used vocabulary from the word bank.",
+    "I expanded one idea with because, but, or so.",
+    "I checked capitals, punctuation, and spacing.",
+  ];
+  const teacherPlans = [
+    [
+      "20-minute use plan",
+      "2 minutes: choose domain and pathway. 12 minutes: complete one activity. 4 minutes: add evidence or self-check. 2 minutes: print or copy progress.",
+    ],
+    [
+      "45-minute station rotation",
+      "10 minutes Listening, 10 minutes Reading, 10 minutes Speaking, 10 minutes Writing, 5 minutes progress report and reflection.",
+    ],
+    [
+      "What to tell students",
+      "This is classroom practice inspired by ACCESS tasks. It is not an official WIDA test, and it is safe to try, revise, and ask for help.",
+    ],
+    [
+      "Level guidance",
+      "Newcomer uses full frames and larger word banks. Developing adds reasons and connected sentences. Expanding expects evidence, transitions, and a longer response.",
+    ],
+  ];
+  const recordingState = {
+    recorder: null,
+    chunks: [],
+    url: "",
+    status: "No recording yet.",
+  };
 
   function escapeHtml(value) {
     return String(value || "").replace(
@@ -192,12 +284,12 @@
     }
   }
 
-  function loadProgress() {
-    if (!state.domain || !state.level) return;
-    const saved = safeParse(localStorage.getItem(storageKey()) || "{}", {});
-    state.studentName =
-      localStorage.getItem(`${storagePrefix}:studentName`) || "";
-    state.complete = new Set(
+    function loadProgress() {
+      state.studentName =
+        localStorage.getItem(`${storagePrefix}:studentName`) || "";
+      if (!state.domain || !state.level) return;
+      const saved = safeParse(localStorage.getItem(storageKey()) || "{}", {});
+      state.complete = new Set(
       Array.isArray(saved.complete) ? saved.complete : [],
     );
     state.selected = saved.selected || {};
@@ -205,6 +297,9 @@
     state.attempts = saved.attempts || {};
     state.feedback = saved.feedback || {};
     state.notes = saved.notes || {};
+    state.selfChecks = saved.selfChecks || {};
+    state.practiced = saved.practiced || {};
+    state.results = saved.results || {};
   }
 
   function saveProgress() {
@@ -216,6 +311,9 @@
       attempts: state.attempts,
       feedback: state.feedback,
       notes: state.notes,
+      selfChecks: state.selfChecks,
+      practiced: state.practiced,
+      results: state.results,
     };
     localStorage.setItem(storageKey(), JSON.stringify(payload));
     localStorage.setItem(`${storagePrefix}:studentName`, state.studentName);
@@ -259,12 +357,262 @@
     return name === "Model-Test" ? "Model Tests" : name;
   }
 
-  function levelLabel(levelKey, level) {
-    return (
-      level?.displayLabel ||
-      (levelKey === "Model-Test" ? levelKey : `Level ${levelKey}`)
-    );
+    function levelLabel(levelKey, level) {
+      return (
+        level?.displayLabel ||
+        (levelKey === "Model-Test" ? levelKey : `Level ${levelKey}`)
+      );
+    }
+
+    function pathwayKey(levelKey) {
+      if (/B|3\.6|4\.5|Expanding/i.test(levelKey || "")) return "B";
+      return "A";
+    }
+
+    function pathwayFor(levelKey) {
+      return pathwaySupport[state.pathway] || pathwaySupport[pathwayKey(levelKey)] || pathwaySupport.A;
+    }
+
+  function wordCount(text) {
+    return (text || "").trim().split(/\s+/).filter(Boolean).length;
   }
+
+  function slug(value) {
+    return String(value || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+  }
+
+  function bandFromScore(score, total) {
+    if (!total || score <= 0) return "Not yet";
+    const ratio = score / total;
+    if (ratio >= 0.85) return "Strong practice response";
+    if (ratio >= 0.6) return "Almost there";
+    return "Getting started";
+  }
+
+  function badgeFromResult(result, done = false) {
+    if (!result) return done ? "Practice Complete" : "Not Started";
+    if (result.badge) return result.badge;
+    if (result.band === "Strong practice response") return "Strong Practice";
+    if (result.band === "Almost there") return "Practice Complete";
+    if (result.band === "Not yet" || result.band === "Getting started")
+      return "Needs Review";
+    return "In Progress";
+  }
+
+  function resultStatusClass(label) {
+    return slug(label || "not-started");
+  }
+
+  function bankTerms(activity) {
+    return [
+      ...(activity.wordBank || []),
+      ...(activity.vocabulary || []).map(([term]) => term),
+      ...(DATA.essentialTerms || []).map(([term]) => term),
+    ]
+      .filter(Boolean)
+      .map((term) => String(term).split("/")[0].trim().toLowerCase())
+      .filter(Boolean);
+  }
+
+  function makeResult(activity, details) {
+    return {
+      activityId: activity.id,
+      title: activity.title,
+      domain: state.domain,
+      level: state.level,
+      pathway: pathwayFor(state.level).name,
+      date: new Date().toISOString(),
+      teacherReviewRecommended:
+        state.domain === "Speaking" ||
+        state.domain === "Writing" ||
+        details.badge === "Needs Review",
+      ...details,
+    };
+  }
+
+  function scoreSelectedActivity(activity, ok) {
+    const domainName = domainLabel(state.domain);
+    return makeResult(activity, {
+      score: ok ? 1 : 0,
+      total: 1,
+      band: ok ? "Strong practice response" : "Getting started",
+      badge: ok ? "Strong Practice" : "Needs Review",
+      skillFeedback: ok
+        ? activity.correct || `Strong ${domainName} practice.`
+        : `Skill feedback: look back at the prompt, sentence, table, or chart that supports your answer.`,
+      nextStep: ok
+        ? `Try another ${domainName} task and explain your evidence.`
+        : activity.support ||
+          activity.hint ||
+          "Reread or replay the prompt, then choose the answer with the strongest evidence.",
+    });
+  }
+
+  function scoreSpeakingActivity(activity) {
+    const checks = state.selfChecks[activity.id] || {};
+    const checked = speakingCheck.filter((item) => checks[slug(item)]).length;
+    const practiced = Boolean(state.practiced[activity.id]);
+    const score = practiced ? checked : Math.max(0, checked - 1);
+    const band = practiced ? bandFromScore(score, speakingCheck.length) : "Not yet";
+    const missing = speakingCheck.find((item) => !checks[slug(item)]);
+    return makeResult(activity, {
+      score,
+      total: speakingCheck.length,
+      band,
+      badge:
+        band === "Strong practice response"
+          ? "Strong Practice"
+          : band === "Almost there"
+            ? "Practice Complete"
+            : "Needs Review",
+      skillFeedback:
+        "Speaking practice uses your self-check. A teacher should review the response for language growth.",
+      nextStep: !practiced
+        ? "Record or practice aloud, then complete the self-check."
+        : missing
+          ? `Practice again and focus on: ${missing.toLowerCase()}.`
+          : "Share this response with a teacher or partner for feedback.",
+    });
+  }
+
+  function scoreWritingActivity(activity) {
+    const text = state.notes[activity.id] || "";
+    const lower = text.toLowerCase();
+    const support = pathwayFor(state.level);
+    const words = wordCount(text);
+    const terms = bankTerms(activity);
+    const usedTerms = terms.filter((term) => lower.includes(term)).slice(0, 4);
+    const checks = [
+      {
+        ok: words >= support.wordGoal,
+        next: `Add more detail until you reach about ${support.wordGoal} words.`,
+      },
+      {
+        ok: /\b(because|but|so|therefore|as a result|this shows|i know|explains?)\b/i.test(
+          text,
+        ),
+        next: "Add because, but, or so to explain your thinking.",
+      },
+      {
+        ok: usedTerms.length > 0,
+        next: "Use at least one word from the vocabulary bank.",
+      },
+      {
+        ok: /[.!?]/.test(text) && words >= 6,
+        next: "Write at least one complete sentence with punctuation.",
+      },
+      {
+        ok: /\b(evidence|detail|example|text says|table shows|chart shows|according to|shows)\b/i.test(
+          text,
+        ),
+        next: "Add a detail or evidence word that points back to the prompt.",
+      },
+    ];
+    const score = checks.filter((check) => check.ok).length;
+    const band = bandFromScore(score, checks.length);
+    const next = checks.find((check) => !check.ok)?.next;
+    return makeResult(activity, {
+      score,
+      total: checks.length,
+      band,
+      badge:
+        band === "Strong practice response"
+          ? "Strong Practice"
+          : band === "Almost there"
+            ? "Practice Complete"
+            : "Needs Review",
+      skillFeedback: `Writing practice score checks word count, explanation language, vocabulary, complete sentences, and evidence/detail words. Vocabulary used: ${usedTerms.length ? usedTerms.join(", ") : "none yet"}.`,
+      nextStep: next || "Read your response aloud and ask a teacher to review it.",
+    });
+  }
+
+  function allProgressRows() {
+    return coreDomains.map((domainName) => {
+      const domain = DATA.domains[domainName];
+      const levels = Object.entries(domain?.levels || {});
+      const total = levels.reduce(
+        (sum, [, level]) => sum + (level.activities?.length || 0),
+        0,
+      );
+      const resultList = [];
+      const done = levels.reduce((sum, [levelKey]) => {
+        const saved = safeParse(
+          localStorage.getItem(storageKey(domainName, levelKey)) || "{}",
+          {},
+        );
+        resultList.push(...Object.values(saved.results || {}));
+        return sum + (Array.isArray(saved.complete) ? saved.complete.length : 0);
+      }, 0);
+      const scored = resultList.filter((result) => Number(result.total) > 0);
+      const score = scored.reduce((sum, result) => sum + Number(result.score || 0), 0);
+      const scoreTotal = scored.reduce(
+        (sum, result) => sum + Number(result.total || 0),
+        0,
+      );
+      const latestNeedsReview = [...scored]
+        .reverse()
+        .find((result) => badgeFromResult(result) === "Needs Review");
+      const best = scored.reduce((winner, result) => {
+        const ratio = Number(result.score || 0) / Math.max(1, Number(result.total || 1));
+        const bestRatio = winner
+          ? Number(winner.score || 0) / Math.max(1, Number(winner.total || 1))
+          : -1;
+        return ratio > bestRatio ? result : winner;
+      }, null);
+      const avg = scoreTotal ? score / scoreTotal : 0;
+      const badge = scoreTotal
+        ? avg >= 0.85
+          ? "Strong Practice"
+          : latestNeedsReview
+            ? "Needs Review"
+            : "Practice Complete"
+        : done
+          ? "In Progress"
+          : "Not Started";
+      return {
+        domainName,
+        done,
+        total,
+        score,
+        scoreTotal,
+        resultList,
+        badge,
+        band: scoreTotal ? bandFromScore(score, scoreTotal) : "Not started",
+        strongestBand: best?.band || "Not started",
+        nextStep:
+          latestNeedsReview?.nextStep ||
+          (done
+            ? `Complete another ${domainName} task and explain your evidence.`
+            : `Start one ${domainName} practice task.`),
+      };
+    });
+  }
+
+  function reportSummary() {
+    const rows = allProgressRows();
+    const scored = rows.filter((row) => row.scoreTotal > 0);
+    const strongest =
+      scored.reduce((winner, row) => {
+        const ratio = row.score / Math.max(1, row.scoreTotal);
+        const bestRatio = winner ? winner.score / Math.max(1, winner.scoreTotal) : -1;
+        return ratio > bestRatio ? row : winner;
+      }, null)?.domainName || "Not enough practice yet";
+    const next =
+      rows.find((row) => row.badge === "Needs Review") ||
+      rows.find((row) => row.done < row.total) ||
+      rows[0];
+    return { rows, strongest, nextDomain: next?.domainName || "Choose any domain" };
+  }
+
+    function pathwayLink(domainName, levelKey) {
+      const first = DATA.domains[domainName]?.levels?.[levelKey]?.activities?.[0];
+      return first
+        ? practiceUrl(domainName, levelKey, first.id)
+        : hubUrl(domainName, levelKey);
+    }
 
   function getProgressFor(domainName, levelName) {
     const domain = DATA.domains[domainName];
@@ -287,15 +635,15 @@
     const levelName = level ? levelLabel(state.level, level) : "";
     const domainName = state.domain ? domainLabel(state.domain) : "";
 
-    if (isRoot) {
-      $("hubEyebrow").textContent = "Teacher dashboard";
+      if (isRoot) {
+        $("hubEyebrow").textContent = "WIDA ACCESS-style practice";
       $("hubTitle").textContent = DATA.productTitle;
       $("hubLead").textContent =
-        "Browse every ACCESS domain, pick a level, and share a clean practice link with students.";
+        "Choose a domain, choose your support level, practice, check your work, and print a classroom practice report.";
       $("studentGoal").textContent =
-        "Students open one activity at a time — directions, prompt, answer, reflection.";
-      $("studentObjective").innerHTML =
-        `<p class="muted">Use the dashboards below to assign practice. Share activity URLs directly in Google Classroom.</p>`;
+        "Students practice one task at a time with vocabulary, sentence frames, self-checks, and local feedback.";
+        $("studentObjective").innerHTML =
+          `<p class="muted">Teacher note: these are original classroom practice tasks inspired by ACCESS-style skills, not official WIDA test content.</p>`;
       $("activityGridSubtitle").textContent =
         "Select a domain to see activities.";
       document.title = `${DATA.productTitle} | EduWonderLab`;
@@ -337,8 +685,12 @@
       );
     }
 
-    renderDomainOverview();
-    renderDomainTabs();
+      renderDomainOverview();
+      renderPathways();
+      renderReadinessLab();
+      renderProgressTracker();
+      renderTeacherQuickUse();
+      renderDomainTabs();
     renderHubLevelTabs();
     renderActivityGrid();
     renderQuickLinks();
@@ -346,33 +698,216 @@
     renderLearnerTools();
   }
 
-  function renderDomainOverview() {
-    const grid = $("domainOverviewGrid");
-    if (!grid) return;
-    grid.innerHTML = Object.entries(DATA.domains)
-      .map(([name, domain]) => {
+    function renderDomainOverview() {
+      const grid = $("domainOverviewGrid");
+      if (!grid) return;
+      grid.innerHTML = coreDomains
+        .map((name) => [name, DATA.domains[name]])
+        .filter(([, domain]) => domain)
+        .map(([name, domain]) => {
         const stats = domainStats(name);
+        const plan = domainPracticePlan[name];
+        const progress = allProgressRows().find((row) => row.domainName === name);
+        const badge = progress?.badge || "Not Started";
         const levels = Object.entries(domain.levels || {})
-          .map(([levelKey, level]) => {
-            const href = hubUrl(name, levelKey);
-            return `<a class="level-chip" href="${href}">${escapeHtml(levelLabel(levelKey, level))}</a>`;
-          })
+            .map(([levelKey, level]) => {
+              const href = hubUrl(name, levelKey);
+              return `<a class="level-chip" href="${href}">${escapeHtml(levelLabel(levelKey, level))}</a>`;
+            })
           .join("");
         return `
         <article class="domain-overview-card" style="--domain-color:${domain.color}">
-          <div class="domain-overview-head">
-            <span class="domain-tab-icon">${escapeHtml(domain.icon)}</span>
-            <h3>${escapeHtml(domainLabel(name))}</h3>
+            <div class="domain-overview-head">
+              <span class="domain-tab-icon">${escapeHtml(domain.icon)}</span>
+              <h3>${escapeHtml(domainLabel(name))}</h3>
+              <span class="score-badge ${resultStatusClass(badge)}">${escapeHtml(badge)}</span>
+            </div>
+            <p>${escapeHtml(domain.description)}</p>
+            <dl class="domain-practice-list">
+              <div><dt>Practice</dt><dd>${escapeHtml(plan.practice)}</dd></div>
+              <div><dt>Time</dt><dd>${escapeHtml(plan.time)}</dd></div>
+              <div><dt>Complete</dt><dd>${escapeHtml(plan.submit)}</dd></div>
+            </dl>
+            <p class="domain-overview-meta">${stats.levelCount} pathways · ${stats.activityCount} practice tasks</p>
+            <div class="level-chip-row">${levels}</div>
+            <a class="primary-link" href="${hubUrl(name, null)}">Open ${escapeHtml(domainLabel(name))} dashboard</a>
+          </article>
+        `;
+        })
+        .join("");
+    }
+
+    function renderPathways() {
+      const grid = $("levelPathwayGrid");
+      if (!grid) return;
+      grid.innerHTML = [
+        ["A", "Newcomer", "Listening", "A"],
+        ["B", "Developing", "Reading", "B"],
+        ["C", "Expanding", "Writing", "B"],
+      ]
+        .map(([supportKey, displayName, startDomain, routeLevel]) => {
+          const support =
+            displayName === "Developing"
+              ? { ...pathwaySupport.B, name: displayName, range: "WIDA 2.5-3.5", wordGoal: 45 }
+              : displayName === "Expanding"
+                ? pathwaySupport.C
+                : pathwaySupport.A;
+          const href = pathwayLink(startDomain, routeLevel);
+          return `
+            <article class="pathway-card">
+              <p class="pathway-range">${escapeHtml(support.range)}</p>
+              <h3>${escapeHtml(support.name)}</h3>
+              <ul>
+                <li>${escapeHtml(support.complexity)}</li>
+                <li>${escapeHtml(support.vocabulary)}</li>
+                <li>${escapeHtml(support.frames)}</li>
+                <li>${escapeHtml(support.response)}</li>
+              </ul>
+              <div class="pathway-actions">
+                <button type="button" class="ghost-btn ${state.pathway === supportKey ? "active" : ""}" data-pathway="${supportKey}">Use this support</button>
+                <a class="primary-link" href="${href}">Try ${escapeHtml(support.name)} practice</a>
+              </div>
+            </article>
+          `;
+        })
+        .join("");
+    }
+
+    function renderReadinessLab() {
+      const panel = $("readinessLab");
+      if (!panel) return;
+      panel.innerHTML = `
+        <div class="readiness-card">
+          <h3>1. Click an answer</h3>
+          <fieldset class="mini-choice-set" aria-label="Practice choosing an answer">
+            <label><input type="radio" name="toolClickPractice" /> A</label>
+            <label><input type="radio" name="toolClickPractice" /> B</label>
+            <label><input type="radio" name="toolClickPractice" /> C</label>
+          </fieldset>
+        </div>
+        <div class="readiness-card">
+          <h3>2. Listen or read</h3>
+          <p id="readinessScript">Practice sentence: Read the question, choose an answer, then explain your thinking.</p>
+          <button type="button" class="listen-btn" data-readiness-speak>Read aloud</button>
+        </div>
+        <div class="readiness-card">
+          <h3>3. Type a response</h3>
+          <textarea rows="3" data-readiness-text placeholder="Type one practice sentence here."></textarea>
+        </div>
+        <div class="readiness-card">
+          <h3>4. Speak or simulate</h3>
+          <p>Practice aloud. Recording is available inside Speaking tasks when your browser allows it.</p>
+          <label><input type="checkbox" /> I practiced aloud.</label>
+        </div>
+        <div class="readiness-card">
+          <h3>5. Move and check</h3>
+          <div class="tool-actions">
+            <button type="button" data-readiness-prev>Back</button>
+            <button type="button" data-readiness-next>Next</button>
+            <button type="button" data-readiness-check>Check tools</button>
           </div>
-          <p>${escapeHtml(domain.description)}</p>
-          <p class="domain-overview-meta">${stats.levelCount} level${stats.levelCount === 1 ? "" : "s"} · ${stats.activityCount} activit${stats.activityCount === 1 ? "y" : "ies"}</p>
-          <div class="level-chip-row">${levels}</div>
-          <a class="primary-link" href="${hubUrl(name, null)}">Open ${escapeHtml(domainLabel(name))} dashboard</a>
-        </article>
+          <p class="muted" id="readinessStatus">Try each tool before you begin.</p>
+        </div>
       `;
-      })
-      .join("");
-  }
+    }
+
+    function renderProgressTracker() {
+      const tracker = $("progressTracker");
+      if (!tracker) return;
+      const summary = reportSummary();
+      const rows = summary.rows;
+      const totalDone = rows.reduce((sum, row) => sum + row.done, 0);
+      const totalTasks = rows.reduce((sum, row) => sum + row.total, 0);
+      const today = new Date().toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+      tracker.innerHTML = `
+        <label class="progress-name">
+          <span>Student name or initials (optional)</span>
+          <input id="studentName" type="text" autocomplete="off" placeholder="First name or initials" value="${escapeHtml(state.studentName)}" />
+        </label>
+        <div class="progress-summary">
+          <strong>${totalDone}/${totalTasks}</strong>
+          <span>practice tasks completed on this browser</span>
+          <span class="score-badge ${resultStatusClass(rows.some((row) => row.badge === "Strong Practice") ? "Strong Practice" : totalDone ? "In Progress" : "Not Started")}">${escapeHtml(totalDone ? "ACCESS-style practice report ready" : "Not Started")}</span>
+        </div>
+        <section class="practice-report" aria-label="ACCESS-style practice report">
+          <div class="report-head">
+            <div>
+              <p class="eyebrow">ACCESS-style practice report</p>
+              <h3>${escapeHtml(state.studentName || "Student")} · ${escapeHtml(today)}</h3>
+              <p>This is classroom practice feedback, not an official WIDA ACCESS score.</p>
+            </div>
+            <div class="report-summary-chip">
+              <span>Support level</span>
+              <strong>${escapeHtml(pathwayFor(state.level).name)}</strong>
+            </div>
+          </div>
+          <div class="report-highlights">
+            <p><strong>Strongest domain:</strong> ${escapeHtml(summary.strongest)}</p>
+            <p><strong>Next domain to practice:</strong> ${escapeHtml(summary.nextDomain)}</p>
+            <p><strong>Teacher review:</strong> Recommended for speaking, writing, and any Needs Review band.</p>
+          </div>
+          <div class="progress-domain-grid">
+          ${rows
+            .map(
+              (row) => `
+              <article>
+                <div class="domain-report-title">
+                  <h3>${escapeHtml(row.domainName)}</h3>
+                  <span class="score-badge ${resultStatusClass(row.badge)}">${escapeHtml(row.badge)}</span>
+                </div>
+                <p>${row.done}/${row.total} complete · ${row.scoreTotal ? `${row.score}/${row.scoreTotal} practice points` : "no score yet"}</p>
+                <p><strong>Practice band:</strong> ${escapeHtml(row.band)}</p>
+                <p><strong>Next step:</strong> ${escapeHtml(row.nextStep)}</p>
+              </article>
+            `,
+            )
+            .join("")}
+          </div>
+        </section>
+        <div class="tool-actions">
+          <button type="button" data-update-report>Update My Report</button>
+          <button type="button" data-print-report>Print Practice Report</button>
+          <button type="button" data-clear-all-progress>Clear My Practice Data</button>
+        </div>
+        <p class="muted">No login, upload, or private student data collection. This page only uses this browser's local storage.</p>
+      `;
+    }
+
+    function renderTeacherQuickUse() {
+      const grid = $("teacherQuickUse");
+      if (!grid) return;
+      const scoringGuide = [
+        ["Not yet", "Reteach the task language, model one response, and let the student try again with a partner."],
+        ["Getting started", "Keep the frame visible, reduce choices, and ask for one clear detail or evidence word."],
+        ["Almost there", "Ask the student to add a reason, evidence sentence, or clearer academic vocabulary."],
+        ["Strong practice response", "Invite peer sharing, a second prompt, or teacher feedback for precision and fluency."],
+      ];
+      grid.innerHTML =
+        teacherPlans
+        .map(
+          ([title, text]) => `
+            <article class="teacher-plan-card">
+              <h4>${escapeHtml(title)}</h4>
+              <p>${escapeHtml(text)}</p>
+            </article>
+          `,
+        )
+        .join("") +
+        `
+          <article class="teacher-plan-card scoring-guide-card">
+            <h4>Practice scoring guide</h4>
+            <p>This report gives classroom practice feedback only. It is not an official ACCESS score, level, or placement decision.</p>
+            <dl>
+              ${scoringGuide.map(([band, move]) => `<div><dt>${escapeHtml(band)}</dt><dd>${escapeHtml(move)}</dd></div>`).join("")}
+            </dl>
+            <p><strong>Small-group moves:</strong> replay the prompt, highlight evidence, rehearse sentence frames, and conference briefly on speaking/writing.</p>
+          </article>
+        `;
+    }
 
   function renderDomainTabs() {
     const tabs = $("domainTabs");
@@ -441,6 +976,8 @@
           .map((activity, index) => {
             const href = practiceUrl(state.domain, state.level, activity.id);
             const done = state.complete.has(activity.id);
+            const result = state.results[activity.id];
+            const badge = badgeFromResult(result, done);
             return `
         <article class="activity-card-hub ${done ? "is-done" : ""}">
           <div class="activity-card-head">
@@ -448,6 +985,7 @@
             <span class="activity-card-time">${escapeHtml(activity.time)}</span>
           </div>
           <h3>${escapeHtml(activity.title)}</h3>
+          <span class="score-badge ${resultStatusClass(badge)}">${escapeHtml(badge)}</span>
           <p class="activity-card-skill">${escapeHtml(activity.skill)}</p>
           <p class="activity-card-directions">${escapeHtml(activity.directions)}</p>
           <div class="activity-card-actions">
@@ -525,9 +1063,9 @@
     `;
 
     const domain = activeDomain();
-    $("practiceLevelSwitch").innerHTML = Object.entries(domain.levels || {})
-      .map(([levelKey, lvl]) => {
-        const active = levelKey === state.level;
+      const levelLinks = Object.entries(domain.levels || {})
+        .map(([levelKey, lvl]) => {
+          const active = levelKey === state.level;
         const firstId = lvl.activities?.[0]?.id || 0;
         const href = practiceUrl(
           state.domain,
@@ -535,10 +1073,20 @@
           activity?.id && lvl.activities?.some((a) => a.id === activity.id)
             ? activity.id
             : firstId,
-        );
-        return `<a class="level-pill ${active ? "active" : ""}" href="${href}">${escapeHtml(levelLabel(levelKey, lvl))}</a>`;
-      })
-      .join("");
+          );
+          return `<a class="level-pill ${active ? "active" : ""}" href="${href}">${escapeHtml(levelLabel(levelKey, lvl))}</a>`;
+        })
+        .join("");
+      const supportLinks = Object.entries(pathwaySupport)
+        .map(
+          ([key, support]) =>
+            `<button type="button" class="level-pill pathway-pill ${state.pathway === key ? "active" : ""}" data-pathway="${key}">${escapeHtml(support.name)}</button>`,
+        )
+        .join("");
+      $("practiceLevelSwitch").innerHTML = `
+        <div class="switch-group" aria-label="Activity level">${levelLinks}</div>
+        <div class="switch-group" aria-label="WIDA support pathway">${supportLinks}</div>
+      `;
 
     document.title = activity
       ? `${activity.title} · ${domainLabel(state.domain)} ${levelName} | EduWonderLab`
@@ -633,15 +1181,121 @@
     `;
   }
 
-  function constructedHTML(activity) {
-    return `
-      <label class="constructed-response">
-        <span>${escapeHtml(activity.responseLabel || "Type your response")}</span>
-        <textarea data-note rows="5" placeholder="${escapeHtml(activity.responsePlaceholder || "Use the frame and write your answer here.")}">${escapeHtml(state.notes[activity.id] || "")}</textarea>
-      </label>
-      <button class="primary-action" type="button" data-check>Save response</button>
-    `;
-  }
+    function constructedHTML(activity) {
+      const note = state.notes[activity.id] || "";
+      const count = wordCount(note);
+      const support = pathwayFor(state.level);
+      const isWriting = state.domain === "Writing";
+      const isSpeaking = state.domain === "Speaking";
+      const minWords = isWriting ? support.wordGoal : Math.max(12, Math.round(support.wordGoal / 2));
+      return `
+        ${isWriting ? writingPracticeHTML(activity, count, minWords) : ""}
+        ${isSpeaking ? speakingPracticeHTML(activity) : ""}
+        <label class="constructed-response">
+          <span>${escapeHtml(activity.responseLabel || "Type your response")}</span>
+          <textarea data-note rows="6" placeholder="${escapeHtml(activity.responsePlaceholder || "Use the frame and write your answer here.")}">${escapeHtml(note)}</textarea>
+        </label>
+        <p class="word-meter ${count >= minWords ? "is-ready" : ""}">${count}/${minWords} words for this pathway</p>
+        ${isWriting ? selfCheckHTML("Writing self-check", writingCheck, activity) : ""}
+        ${isSpeaking ? selfCheckHTML("Speaking self-check", speakingCheck, activity) : ""}
+        <button class="primary-action" type="button" data-check>Save response</button>
+      `;
+    }
+
+    function speakingAnswerHTML(activity) {
+      const note = state.notes[activity.id] || "";
+      return `
+        ${speakingPracticeHTML(activity)}
+        <label class="constructed-response">
+          <span>Planning notes (optional)</span>
+          <textarea data-note rows="4" placeholder="Topic: ___. Details: ___. Why: ___.">${escapeHtml(note)}</textarea>
+        </label>
+        ${selfCheckHTML("Speaking self-check", speakingCheck, activity)}
+        <button class="primary-action" type="button" data-check>Save speaking practice</button>
+      `;
+    }
+
+    function selfCheckHTML(title, items, activity) {
+      const checks = state.selfChecks[activity.id] || {};
+      return `
+        <section class="self-check" aria-label="${escapeHtml(title)}">
+          <h4>${escapeHtml(title)}</h4>
+          ${items
+            .map(
+              (item) => {
+                const key = slug(item);
+                return `<label><input type="checkbox" data-self-check="${escapeHtml(key)}" ${checks[key] ? "checked" : ""} /> ${escapeHtml(item)}</label>`;
+              },
+            )
+            .join("")}
+        </section>
+      `;
+    }
+
+    function writingPracticeHTML(activity, count, minWords) {
+      const bank = [
+        ...(activity.wordBank || []),
+        ...(activity.vocabulary || []).map(([term]) => term),
+      ]
+        .filter(Boolean)
+        .slice(0, pathwayKey(state.level) === "A" ? 10 : 7);
+      const frames = activity.frames?.length
+        ? activity.frames
+        : ["I think ___ because ___.", "One detail is ___.", "This is important because ___."];
+      return `
+        <section class="practice-support writing-support">
+          <h3>Writing support</h3>
+          <p>Goal: write at least ${minWords} words. Current count: ${count}.</p>
+          ${bank.length ? `<p><strong>Vocabulary bank:</strong> ${bank.map(escapeHtml).join(", ")}</p>` : ""}
+          <div class="frame-bank">
+            ${frames.map((frame) => `<span>${escapeHtml(frame)}</span>`).join("")}
+          </div>
+          <div class="because-but-so">
+            <strong>Expand one idea:</strong>
+            <span>Because gives a reason.</span>
+            <span>But shows a contrast.</span>
+            <span>So explains a result.</span>
+          </div>
+        </section>
+      `;
+    }
+
+    function speakingPracticeHTML(activity) {
+      const planningWords = [
+        ...(activity.wordBank || []),
+        ...(activity.vocabulary || []).map(([term]) => term),
+      ]
+        .filter(Boolean)
+        .slice(0, 8);
+      const canRecord = Boolean(
+        navigator.mediaDevices?.getUserMedia && window.MediaRecorder,
+      );
+      return `
+        <section class="practice-support speaking-support">
+          <h3>Speaking practice studio</h3>
+          <p>Plan for 30 seconds, speak clearly, then listen to yourself or use the aloud checklist.</p>
+          <label class="practice-confirm"><input type="checkbox" data-practiced-speaking ${state.practiced[activity.id] ? "checked" : ""} /> I recorded or practiced aloud.</label>
+          ${planningWords.length ? `<p><strong>Planning words:</strong> ${planningWords.map(escapeHtml).join(", ")}</p>` : ""}
+          ${activity.frames?.length ? `<div class="frame-bank">${activity.frames.map((frame) => `<span>${escapeHtml(frame)}</span>`).join("")}</div>` : ""}
+          ${
+            canRecord
+              ? `
+                <div class="recording-controls">
+                  <button type="button" data-record-start>Record</button>
+                  <button type="button" data-record-stop>Stop</button>
+                  <button type="button" data-record-clear>Re-record</button>
+                </div>
+                <p class="recording-status" id="recordingStatus">${escapeHtml(recordingState.status)}</p>
+                ${recordingState.url ? `<audio controls src="${recordingState.url}"></audio>` : ""}
+                <p class="muted">Recording stays only in this browser tab and is not uploaded.</p>
+              `
+              : `
+                <p class="fallback-note">Recording is not available in this browser. Practice aloud, then check the boxes.</p>
+              `
+          }
+        </section>
+      `;
+    }
 
   function sortHTML(activity) {
     const answers = state.sortAnswers[activity.id] || {};
@@ -675,6 +1329,7 @@
   }
 
   function answerHTML(activity) {
+    if (state.domain === "Speaking") return speakingAnswerHTML(activity);
     if (activity.type === "sort") return sortHTML(activity);
     if (activity.type === "constructed") return constructedHTML(activity);
     return multipleChoiceHTML(activity);
@@ -683,19 +1338,52 @@
   function feedbackHTML(activity) {
     const feedback = state.feedback[activity.id];
     if (!feedback) return "";
+    const result = state.results[activity.id];
+    const badge = result ? badgeFromResult(result) : feedback.ok ? "Practice Complete" : "Needs Review";
     const heading = feedback.ok
       ? state.domain === "Model-Test"
         ? "Saved"
-        : "Nice work"
-      : "Try again";
+        : "Practice saved"
+      : "Suggested next step";
     return `
       <section class="feedback-box ${feedback.ok ? "correct" : "hint"}" role="status" aria-live="polite">
-        <h3>${heading}</h3>
+        <div class="feedback-heading">
+          <h3>${heading}</h3>
+          <span class="score-badge ${resultStatusClass(badge)}">${escapeHtml(badge)}</span>
+        </div>
         <p>${escapeHtml(feedback.message)}</p>
+        ${result ? `<p><strong>Practice band:</strong> ${escapeHtml(result.band)}</p>` : ""}
         ${feedback.support ? `<p class="model">${escapeHtml(feedback.support)}</p>` : ""}
       </section>
     `;
   }
+
+    function domainSkillSupportHTML(activity) {
+      if (state.domain === "Listening") {
+        return `
+          <section class="flow-step domain-skill-box">
+            <p class="step-label">Listening routine</p>
+            <p><strong>Teacher-readable script:</strong> ${escapeHtml(activity.adminScript || activity.prompt || activity.directions)}</p>
+            <div class="tool-actions">
+              <button type="button" class="listen-btn" data-speak>Play / replay with browser voice</button>
+            </div>
+            <p class="muted">Listen twice if you need to. Then answer and read the feedback to understand why.</p>
+          </section>
+        `;
+      }
+      if (state.domain === "Reading") {
+        return `
+          <section class="flow-step domain-skill-box">
+            <p class="step-label">Show evidence</p>
+            <label class="evidence-prompt">
+              <span>Copy one word, number, or sentence from the text that supports your answer.</span>
+              <textarea data-note rows="3" placeholder="My evidence is...">${escapeHtml(state.notes[activity.id] || "")}</textarea>
+            </label>
+          </section>
+        `;
+      }
+      return "";
+    }
 
   function teacherPanelHTML(activity) {
     const teacher = activity.teacher;
@@ -814,7 +1502,7 @@
     }
 
     const done = state.complete.has(activity.id);
-    const showReflection = activity.type !== "constructed";
+    const showReflection = activity.type !== "constructed" && state.domain !== "Speaking";
 
     $("activityPanel").innerHTML = `
       <article class="activity-card">
@@ -830,9 +1518,10 @@
           <button class="listen-btn" type="button" data-speak>Read aloud</button>
         </section>
 
-        ${helpHTML(activity)}
+          ${helpHTML(activity)}
+          ${domainSkillSupportHTML(activity)}
 
-        <section class="flow-step answer-zone">
+          <section class="flow-step answer-zone">
           <p class="step-label">Your answer</p>
           ${answerHTML(activity)}
           ${feedbackHTML(activity)}
@@ -877,20 +1566,48 @@
     if (!activity) return;
     state.attempts[activity.id] = (state.attempts[activity.id] || 0) + 1;
     let ok = false;
-    if (activity.type === "constructed") {
-      ok = (state.notes[activity.id] || "").trim().length >= 12;
+    let result = null;
+    if (state.domain === "Speaking") {
+      result = scoreSpeakingActivity(activity);
+      ok = result.band === "Almost there" || result.band === "Strong practice response";
+    } else if (activity.type === "constructed") {
+      if (state.domain === "Writing") {
+        result = scoreWritingActivity(activity);
+      } else {
+        const minimumWords = Math.max(8, Math.round(pathwayFor(state.level).wordGoal / 3));
+        ok = wordCount(state.notes[activity.id] || "") >= minimumWords;
+        result = makeResult(activity, {
+          score: ok ? 1 : 0,
+          total: 1,
+          band: ok ? "Strong practice response" : "Getting started",
+          badge: ok ? "Practice Complete" : "Needs Review",
+          skillFeedback: ok ? "Response saved for teacher review." : "Add more detail before saving.",
+          nextStep: ok ? "Ask a teacher to review your response." : "Add one more sentence with evidence.",
+        });
+      }
+      ok = result.band === "Almost there" || result.band === "Strong practice response";
     } else if (activity.type === "sort") {
       const answers = state.sortAnswers[activity.id] || {};
       ok = activity.items.every((item) => answers[item.id] === item.answer);
+      result = scoreSelectedActivity(activity, ok);
     } else {
       ok = state.selected[activity.id] === activity.answer;
+      result = scoreSelectedActivity(activity, ok);
     }
+    state.results[activity.id] = result;
     state.feedback[activity.id] = ok
-      ? { ok: true, message: activity.correct || "Response saved." }
+      ? {
+          ok: true,
+          message: result.skillFeedback || activity.correct || "Practice response saved.",
+          support: `Practice score: ${result.band}. Suggested next step: ${result.nextStep}`,
+        }
       : {
           ok: false,
-          message: activity.hint,
-          support: state.attempts[activity.id] >= 2 ? activity.support : "",
+          message:
+            result.skillFeedback ||
+            activity.hint ||
+            "This practice response needs one more step.",
+          support: `Practice score: ${result.band}. Suggested next step: ${result.nextStep}`,
         };
     if (ok) state.complete.add(activity.id);
     saveProgress();
@@ -916,10 +1633,84 @@
     speakText(`${activity.title}. ${activity.prompt || activity.directions}`);
   }
 
-  function showSaveStatus(message) {
-    const el = $("saveStatus");
-    if (el) el.textContent = message;
-  }
+    function showSaveStatus(message) {
+      const el = $("saveStatus");
+      if (el) el.textContent = message;
+      const readiness = $("readinessStatus");
+      if (readiness && message.startsWith("Tool")) readiness.textContent = message;
+      const recording = $("recordingStatus");
+      if (recording && message.startsWith("Recording")) recording.textContent = message;
+    }
+
+    function clearAllProgress() {
+      if (
+        !window.confirm(
+          "Clear ACCESS Practice Lab progress from this browser? This cannot be undone.",
+        )
+      )
+        return;
+      Object.keys(localStorage)
+        .filter((key) => key.startsWith(storagePrefix))
+        .forEach((key) => localStorage.removeItem(key));
+      state.studentName = "";
+      state.complete = new Set();
+      state.selected = {};
+      state.sortAnswers = {};
+      state.attempts = {};
+      state.feedback = {};
+      state.notes = {};
+      state.selfChecks = {};
+      state.practiced = {};
+      state.results = {};
+      renderAll();
+      showSaveStatus("Progress cleared from this browser.");
+    }
+
+    async function startRecording() {
+      if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
+        showSaveStatus("Recording is not available in this browser.");
+        return;
+      }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        recordingState.chunks = [];
+        recordingState.recorder = new MediaRecorder(stream);
+        recordingState.recorder.addEventListener("dataavailable", (event) => {
+          if (event.data.size > 0) recordingState.chunks.push(event.data);
+        });
+        recordingState.recorder.addEventListener("stop", () => {
+          stream.getTracks().forEach((track) => track.stop());
+          if (recordingState.url) URL.revokeObjectURL(recordingState.url);
+          const blob = new Blob(recordingState.chunks, { type: "audio/webm" });
+          recordingState.url = URL.createObjectURL(blob);
+          recordingState.status = "Recording ready. Play it back or re-record.";
+          renderPractice();
+        });
+        recordingState.recorder.start();
+        recordingState.status = "Recording now. Speak your answer clearly.";
+        showSaveStatus("Recording now. Speak your answer clearly.");
+      } catch {
+        recordingState.status =
+          "Microphone permission was not available. Practice aloud and use the checklist.";
+        showSaveStatus(recordingState.status);
+      }
+    }
+
+    function stopRecording() {
+      if (recordingState.recorder?.state === "recording") {
+        recordingState.recorder.stop();
+        recordingState.status = "Recording stopped.";
+        showSaveStatus("Recording stopped.");
+      }
+    }
+
+    function clearRecording() {
+      if (recordingState.url) URL.revokeObjectURL(recordingState.url);
+      recordingState.url = "";
+      recordingState.chunks = [];
+      recordingState.status = "No recording yet.";
+      renderPractice();
+    }
 
   async function copyText(text) {
     try {
@@ -930,11 +1721,29 @@
     }
   }
 
-  async function copySummary() {
+    async function copySummary() {
     if (!state.domain || !state.level) {
-      showSaveStatus("Choose a domain and level first.");
-      return;
-    }
+      const summary = reportSummary();
+      const rows = summary.rows.map(
+        (row) =>
+          `${row.domainName}: ${row.done}/${row.total} complete, ${row.band}, next step: ${row.nextStep}`,
+      );
+      await copyText(
+        [
+          `${DATA.productTitle}: ACCESS-style practice report`,
+          `Student: ${state.studentName || "Not entered"}`,
+          `Date: ${new Date().toLocaleDateString()}`,
+          `Support level: ${pathwayFor(state.level).name}`,
+          `Strongest domain: ${summary.strongest}`,
+          `Next domain to practice: ${summary.nextDomain}`,
+          ...rows,
+          "Teacher review recommended for speaking, writing, and Needs Review bands.",
+          "This is classroom practice feedback, not an official WIDA ACCESS score.",
+        ].join("\n"),
+      );
+        showSaveStatus("Progress summary copied.");
+        return;
+      }
     const list = activities();
     const done = list.filter((a) => state.complete.has(a.id)).length;
     const rows = list.map(
@@ -966,16 +1775,28 @@
         state.sortAnswers[activity.id][itemId] = event.target.value;
         saveProgress();
       }
+      if (event.target.matches("[data-self-check]")) {
+        const key = event.target.getAttribute("data-self-check");
+        state.selfChecks[activity.id] = state.selfChecks[activity.id] || {};
+        state.selfChecks[activity.id][key] = event.target.checked;
+        saveProgress();
+      }
+      if (event.target.matches("[data-practiced-speaking]")) {
+        state.practiced[activity.id] = event.target.checked;
+        saveProgress();
+      }
     });
 
     document.addEventListener("input", (event) => {
       const activity = activeActivity();
-      if (event.target.id === "studentName") {
-        state.studentName = event.target.value.trim();
-        saveProgress();
-      } else if (activity && event.target.matches("[data-note]")) {
-        state.notes[activity.id] = event.target.value;
-        saveProgress();
+        if (event.target.id === "studentName") {
+          state.studentName = event.target.value.trim();
+          localStorage.setItem(`${storagePrefix}:studentName`, state.studentName);
+          if (state.domain && state.level) saveProgress();
+          else showSaveStatus("Name saved on this device.");
+        } else if (activity && event.target.matches("[data-note]")) {
+          state.notes[activity.id] = event.target.value;
+          saveProgress();
       }
     });
 
@@ -994,9 +1815,58 @@
         copyText(window.location.href);
         return;
       }
-      if (event.target.closest("[data-check]")) checkAnswer();
-      if (event.target.closest("[data-speak]")) speakPrompt();
-      const esBtn = event.target.closest("[data-es]");
+        if (event.target.closest("[data-check]")) checkAnswer();
+        if (event.target.closest("[data-speak]")) speakPrompt();
+        const pathwayBtn = event.target.closest("[data-pathway]");
+        if (pathwayBtn) {
+          state.pathway = pathwayBtn.getAttribute("data-pathway");
+          localStorage.setItem(`${storagePrefix}:pathway`, state.pathway);
+          renderAll();
+          showSaveStatus(`${pathwayFor(state.level).name} support selected.`);
+          return;
+        }
+        if (event.target.closest("[data-readiness-speak]")) {
+          speakText($("readinessScript")?.textContent || "");
+          return;
+        }
+        if (event.target.closest("[data-readiness-check]")) {
+          showSaveStatus("Tool practice complete. You are ready to begin.");
+          return;
+        }
+        if (event.target.closest("[data-update-report]")) {
+          renderProgressTracker();
+          showSaveStatus("Practice report updated.");
+          return;
+        }
+        if (event.target.closest("[data-readiness-prev]")) {
+          showSaveStatus("Tool practice: Back button works.");
+          return;
+        }
+        if (event.target.closest("[data-readiness-next]")) {
+          showSaveStatus("Tool practice: Next button works.");
+          return;
+        }
+        if (event.target.closest("[data-print-report]")) {
+          window.print();
+          return;
+        }
+        if (event.target.closest("[data-clear-all-progress]")) {
+          clearAllProgress();
+          return;
+        }
+        if (event.target.closest("[data-record-start]")) {
+          startRecording();
+          return;
+        }
+        if (event.target.closest("[data-record-stop]")) {
+          stopRecording();
+          return;
+        }
+        if (event.target.closest("[data-record-clear]")) {
+          clearRecording();
+          return;
+        }
+        const esBtn = event.target.closest("[data-es]");
       if (esBtn) speakText(esBtn.getAttribute("data-es"), "es-US");
       if (event.target.closest("[data-prev]")) {
         const prev = activities()[state.activityIndex - 1];

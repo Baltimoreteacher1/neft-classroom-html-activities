@@ -42,6 +42,9 @@ Preserve existing student-facing routes. This repo is live-classroom oriented: c
 - Reveal Math validation: `npm run validate:reveal-math`
 - Deploy command exists: `npm run deploy`
 - Do not deploy unless Joel explicitly requests deployment in the current task.
+- Production deploys require `ALLOW_DEPLOY=1 npm run deploy`; plain `npm run deploy` must fail safely.
+- PR branches should rely on GitHub/Cloudflare preview deployments only unless Joel explicitly approves production deployment.
+- Do not run Cloudflare Pages deploys with `--branch=main` from a feature branch unless the current prompt explicitly approves production deployment.
 - No top-level lint/typecheck/test scripts are currently defined; do not invent them.
 
 ## Default Workflow
@@ -104,6 +107,7 @@ Preserve existing student-facing routes. This repo is live-classroom oriented: c
 - Keep Vite copy rules aligned with standalone activity folders and lesson generated assets.
 - Do not commit secrets or print environment values.
 - Do not run `npm run deploy`, `wrangler deploy`, or `wrangler pages deploy` without explicit request.
+- Do not bypass the production deploy guard. `ALLOW_DEPLOY=1` is only allowed when Joel explicitly asks for production deployment in the current prompt.
 - Do not add dependencies unless clearly justified and approved.
 
 ## QA Expectations
