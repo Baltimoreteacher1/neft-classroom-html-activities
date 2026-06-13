@@ -1126,8 +1126,40 @@ buildBadges();syncToggles();buildProgress();
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
-<!-- nt-gn-teacher-gate:begin (hide Teacher button from students — tools/gate-graphic-novel-teacher.mjs) -->
-<script>(function(){try{if(new URLSearchParams(location.search).get("teacher")!=="1"){var b=document.getElementById("teacherBtn");if(b&&b.parentNode){b.parentNode.removeChild(b);}}}catch(e){}})();</script>
-<!-- nt-gn-teacher-gate:end -->
+<!-- nt-gn-mode-chooser:begin (Student/Teacher entry screen — tools/graphic-novel-mode-chooser.mjs) -->
+<style>
+.ntgn-chooser{position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;background:linear-gradient(160deg,#0f2030,#1c3a52);color:#fff;text-align:center;padding:24px;font-family:'Segoe UI',system-ui,sans-serif}
+.ntgn-chooser h1{font-size:1.5rem;margin:0;max-width:24ch;line-height:1.25}
+.ntgn-chooser p{margin:0;opacity:.82;max-width:40ch}
+.ntgn-row{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-top:6px}
+.ntgn-btn{min-width:210px;padding:22px 26px;border-radius:16px;border:3px solid transparent;cursor:pointer;display:flex;flex-direction:column;gap:6px;align-items:center;font:800 1.15rem/1.2 'Segoe UI',system-ui,sans-serif;transition:transform .12s ease,box-shadow .12s ease}
+.ntgn-btn small{font-weight:600;font-size:.82rem;opacity:.85}
+.ntgn-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.3)}
+.ntgn-btn:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.ntgn-student{background:#f2c15b;color:#12355b}
+.ntgn-teacher{background:#1fa6a2;color:#fff}
+@media (prefers-reduced-motion:reduce){.ntgn-btn{transition:none}.ntgn-btn:hover{transform:none}}
+</style>
+<div class="ntgn-chooser" id="ntgnChooser" role="dialog" aria-modal="true" aria-label="Choose how you are opening this story">
+  <h1>How are you opening this story?</h1>
+  <p>Students read and play the story. Teachers also get the teaching guide.</p>
+  <div class="ntgn-row">
+    <button type="button" class="ntgn-btn ntgn-student" id="ntgnStudent">📖 I'm a Student<small>Read the story</small></button>
+    <button type="button" class="ntgn-btn ntgn-teacher" id="ntgnTeacher">🍎 I'm a Teacher<small>Show the teaching guide</small></button>
+  </div>
+</div>
+<script>(function(){
+  var box=document.getElementById("ntgnChooser");
+  function removeTeacherBtn(){var b=document.getElementById("teacherBtn");if(b&&b.parentNode){b.parentNode.removeChild(b);}}
+  function close(){if(box&&box.parentNode){box.parentNode.removeChild(box);}}
+  try{
+    if(new URLSearchParams(location.search).get("teacher")==="1"){close();return;}
+  }catch(e){}
+  var s=document.getElementById("ntgnStudent"),t=document.getElementById("ntgnTeacher");
+  if(s){s.addEventListener("click",function(){removeTeacherBtn();close();});}
+  if(t){t.addEventListener("click",function(){close();});}
+  if(s){s.focus();}
+})();</script>
+<!-- nt-gn-mode-chooser:end -->
 </body>
 </html>
