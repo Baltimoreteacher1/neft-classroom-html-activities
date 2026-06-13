@@ -157,6 +157,21 @@
     }
   })();
 
+  // ── v9 content module: QA + WIDA-alignment field patches (Object.assign by id) ──
+  (function mergeV9() {
+    const v9 = window.ACCESS_LAB_V9;
+    if (!v9 || !v9.patches) return;
+    for (const domain of Object.values(DATA.domains)) {
+      for (const level of Object.values(domain.levels || {})) {
+        for (const activity of level.activities || []) {
+          if (v9.patches[activity.id]) {
+            Object.assign(activity, v9.patches[activity.id]);
+          }
+        }
+      }
+    }
+  })();
+
   const state = {
     mode: "hub",
     hubScope: "root",
@@ -1466,7 +1481,15 @@
     return `
       <section class="support-box">
         <h4>Key vocabulary</h4>
-        <dl>${terms.map(([term, meaning, spanish]) => `<div><dt>${escapeHtml(term)}</dt><dd>${escapeHtml(meaning)}${spanish ? `<span class="vocab-es" lang="es">🌐 ${escapeHtml(spanish)}<button type="button" class="vocab-es-speak" data-es="${escapeHtml(spanish)}" aria-label="Escuchar en español">🔊</button></span>` : ""}</dd></div>`).join("")}</dl>
+        <dl>${terms
+          .map(([term, meaning, spanishRaw]) => {
+            const spanish = (spanishRaw || "").replace(
+              /^\s*(spanish|español|espanol)\s*:\s*/i,
+              "",
+            );
+            return `<div><dt>${escapeHtml(term)}</dt><dd>${escapeHtml(meaning)}${spanish ? `<span class="vocab-es" lang="es">🌐 ${escapeHtml(spanish)}<button type="button" class="vocab-es-speak" data-es="${escapeHtml(spanish)}" aria-label="Escuchar en español">🔊</button></span>` : ""}</dd></div>`;
+          })
+          .join("")}</dl>
         ${essential.length ? `<p class="spanish-mini"><strong>English / Spanish:</strong> ${essential.map(([en, es]) => `${escapeHtml(en)} / ${escapeHtml(es)}`).join("; ")}</p>` : ""}
       </section>
     `;
