@@ -114,6 +114,32 @@
     }
   })();
 
+  // ── v7 content module: TPT-style catalog expansion (40 new activities across
+  //    all five domains in varied formats) ──
+  (function mergeV7() {
+    const v7 = window.ACCESS_LAB_V7;
+    if (!v7) return;
+    const append = v7.appendActivities || {};
+    for (const [domainName, levels] of Object.entries(append)) {
+      const domain = DATA.domains[domainName];
+      if (!domain) continue;
+      for (const [levelKey, list] of Object.entries(levels)) {
+        const level = domain.levels[levelKey];
+        if (!level || !Array.isArray(list)) continue;
+        const existing = new Set((level.activities || []).map((a) => a.id));
+        level.activities = (level.activities || []).concat(
+          list.filter((a) => a && a.id && !existing.has(a.id)),
+        );
+      }
+    }
+    if (Array.isArray(v7.tests)) {
+      const seen = new Set(DATA.tests.map((t) => t.id));
+      DATA.tests = DATA.tests.concat(
+        v7.tests.filter((t) => t && t.id && !seen.has(t.id)),
+      );
+    }
+  })();
+
   const state = {
     mode: "hub",
     hubScope: "root",
@@ -873,7 +899,7 @@
         `<p class="muted">Teacher note: these are original classroom practice tasks inspired by ACCESS-style skills, not official WIDA test content.</p>`;
       $("activityGridSubtitle").textContent =
         "Select a domain to see activities.";
-      document.title = `${DATA.productTitle} | EduWonderLab`;
+      document.title = `${DATA.productTitle}`;
     } else if (isDomain) {
       $("hubEyebrow").textContent = domainName;
       $("hubTitle").textContent = domainName;
@@ -883,7 +909,7 @@
       $("studentObjective").innerHTML = "";
       $("activityGridSubtitle").textContent =
         `Choose a level for ${domainName}.`;
-      document.title = `${DATA.productTitle} · ${domainName} | EduWonderLab`;
+      document.title = `${DATA.productTitle} · ${domainName}`;
       $("labHero")?.style.setProperty(
         "--domain-color",
         domain.color || "#0f766e",
@@ -905,7 +931,7 @@
         .join(" ");
       $("activityGridSubtitle").textContent =
         `${activities().length} activities · ${getProgressFor(state.domain, state.level)} on this device`;
-      document.title = `${DATA.productTitle} · ${domainName} ${levelName} | EduWonderLab`;
+      document.title = `${DATA.productTitle} · ${domainName} ${levelName}`;
       $("labHero")?.style.setProperty(
         "--domain-color",
         domain.color || "#0f766e",
@@ -1351,8 +1377,8 @@
       `;
 
     document.title = activity
-      ? `${activity.title} · ${domainLabel(state.domain)} ${levelName} | EduWonderLab`
-      : `${DATA.productTitle} | EduWonderLab`;
+      ? `${activity.title} · ${domainLabel(state.domain)} ${levelName}`
+      : `${DATA.productTitle}`;
 
     const backBtn = $("backToHubBtn");
     if (backBtn)
@@ -2596,7 +2622,7 @@
     else if (testState.phase === "results") root.innerHTML = testResultsHTML();
     else if (testState.phase === "review") root.innerHTML = testReviewHTML();
     else root.innerHTML = testRunnerHTML();
-    document.title = `${testState.test.title} | EduWonderLab`;
+    document.title = `${testState.test.title}`;
   }
 
   function testIntroHTML() {
