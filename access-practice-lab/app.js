@@ -3,6 +3,20 @@
   const $ = (id) => document.getElementById(id);
   const storagePrefix = "accessPracticeLab:v1";
 
+  // Official WIDA-style Google Forms (student RESPONSE links). Editor (/edit)
+  // links were converted to /viewform so students can open and submit them.
+  // To change a form, paste its student "viewform" link here.
+  const OFFICIAL_FORMS = {
+    Listening:
+      "https://docs.google.com/forms/d/1bbbIlu-zadD6Pirqbp35U7oUo67Sxt8s1ymef0r6tZs/viewform",
+    Reading:
+      "https://docs.google.com/forms/d/1hxiN6IJB7qP4_bL0HD3NPh6XzqXpsqflCrm94IKxIRo/viewform",
+    Speaking:
+      "https://docs.google.com/forms/d/e/1FAIpQLSfZ-_iZPuRu3d967JqsQBGIxEdbKY7yBRuVW9MLhgrEMnM-hg/viewform",
+    Writing:
+      "https://docs.google.com/forms/d/11KhntaGKT_Pa_tl71sDAGDeLRgqoe3XB8E9K2mXfdpU/viewform",
+  };
+
   // ── v3 content module: additively merge new activities + full practice tests ──
   (function mergeV3() {
     const v3 = window.ACCESS_LAB_V3;
@@ -915,6 +929,10 @@
               )
               .join("")}</div>`
           : "";
+        const officialForm = OFFICIAL_FORMS[name];
+        const officialLink = officialForm
+          ? `<a class="official-form-link" href="${escapeHtml(officialForm)}" target="_blank" rel="noopener">📤 Submit on the official WIDA Google Form</a>`
+          : "";
         return `
         <article class="domain-overview-card" style="--domain-color:${domain.color}">
             <div class="domain-overview-head">
@@ -931,6 +949,7 @@
             <p class="domain-overview-meta">${stats.levelCount} pathways · ${stats.activityCount} practice tasks</p>
             <div class="level-chip-row">${levels}</div>
             ${testLink}
+            ${officialLink}
             <a class="primary-link" href="${hubUrl(name, null)}">Open ${escapeHtml(domainLabel(name))} dashboard</a>
           </article>
         `;
@@ -1677,14 +1696,26 @@
     `;
   }
 
+  // Auto-gradable interactive types render via their own widget regardless of
+  // domain; only open-response Speaking tasks use the speaking notes widget.
+  const INTERACTIVE_TYPES = [
+    "multipleChoice",
+    "multiSelect",
+    "sort",
+    "order",
+    "cloze",
+    "hotText",
+  ];
+
   function answerHTML(activity) {
     if (activity.type === "worksheet") return worksheetHTML(activity);
-    if (state.domain === "Speaking") return speakingAnswerHTML(activity);
     if (activity.type === "sort") return sortHTML(activity);
     if (activity.type === "multiSelect") return multiSelectHTML(activity);
     if (activity.type === "cloze") return clozeHTML(activity);
     if (activity.type === "hotText") return hotTextHTML(activity);
     if (activity.type === "order") return orderHTML(activity);
+    if (activity.type === "multipleChoice") return multipleChoiceHTML(activity);
+    if (state.domain === "Speaking") return speakingAnswerHTML(activity);
     if (activity.type === "constructed") return constructedHTML(activity);
     return multipleChoiceHTML(activity);
   }
@@ -1926,7 +1957,10 @@
     state.attempts[activity.id] = (state.attempts[activity.id] || 0) + 1;
     let ok = false;
     let result = null;
-    if (state.domain === "Speaking") {
+    if (
+      state.domain === "Speaking" &&
+      !INTERACTIVE_TYPES.includes(activity.type)
+    ) {
       result = scoreSpeakingActivity(activity);
       ok =
         result.band === "Almost there" ||
@@ -2466,7 +2500,7 @@
     const a = testState.answers[item.id];
     if (a == null) return false;
     if (item.type === "constructed") return wordCount(a) > 0;
-    if (item.type === "cloze")
+    if (item.type === "cloze" || item.type === "sort")
       return Object.values(a).some((v) => v && v !== "");
     if (Array.isArray(a)) return a.length > 0;
     return a !== "";
@@ -2686,6 +2720,25 @@
   function testInputHTML(item) {
     const a = testState.answers[item.id];
     switch (item.type) {
+      case "sort": {
+        const saved = a || {};
+        const cats = (item.categories || []).map((c) =>
+          typeof c === "string" ? c : c.id,
+        );
+        return `<ul class="order-list">${(item.items || [])
+          .map(
+            (it) =>
+              `<li class="order-row"><label class="order-pos"><span class="visually-hidden">Category for ${escapeHtml(it.text)}</span><select data-test-sort="${escapeHtml(it.id)}"><option value="">Choose…</option>${cats
+                .map(
+                  (c) =>
+                    `<option value="${escapeHtml(c)}" ${saved[it.id] === c ? "selected" : ""}>${escapeHtml(c)}</option>`,
+                )
+                .join("")}</select></label><p>${escapeHtml(it.text)}</p></li>`,
+          )
+          .join(
+            "",
+          )}</ul><p class="field-hint">Choose the correct group for each item.</p>`;
+      }
       case "multiSelect": {
         const chosen = new Set(a || []);
         return `<fieldset class="choice-set multi-select-set"><legend class="visually-hidden">Choose all that apply</legend>${(
@@ -2859,6 +2912,10 @@
       testState.answers[item.id] = [...set];
     } else if (t.matches("[data-test-cloze]")) {
       const id = t.getAttribute("data-test-cloze");
+      testState.answers[item.id] = testState.answers[item.id] || {};
+      testState.answers[item.id][id] = t.value;
+    } else if (t.matches("[data-test-sort]")) {
+      const id = t.getAttribute("data-test-sort");
       testState.answers[item.id] = testState.answers[item.id] || {};
       testState.answers[item.id][id] = t.value;
     } else if (t.matches("[data-test-order]")) {

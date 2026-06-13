@@ -2320,17 +2320,17 @@ window.ACCESS_LAB_V5 = {
       [
        "packet",
        "a small paper bag that holds seeds",
-       "spanish: paquete: una pequeña bolsa de papel con semillas"
+       "paquete: una pequeña bolsa de papel con semillas"
       ],
       [
        "soil",
        "the dirt that plants grow in",
-       "spanish: tierra: la tierra donde crecen las plantas"
+       "tierra: la tierra donde crecen las plantas"
       ],
       [
        "because",
        "a word that gives a reason",
-       "spanish: porque: una palabra que da una razón"
+       "porque: una palabra que da una razón"
       ]
      ],
      "frames": [
@@ -2403,17 +2403,17 @@ window.ACCESS_LAB_V5 = {
       [
        "shoots",
        "the first small green parts of a new plant",
-       "spanish: brotes: las primeras partes verdes de una planta nueva"
+       "brotes: las primeras partes verdes de una planta nueva"
       ],
       [
        "garden beds",
        "areas of soil where plants grow",
-       "spanish: parcelas: áreas de tierra donde crecen las plantas"
+       "parcelas: áreas de tierra donde crecen las plantas"
       ],
       [
        "stems",
        "the parts that hold up a plant",
-       "spanish: tallos: las partes que sostienen una planta"
+       "tallos: las partes que sostienen una planta"
       ]
      ],
      "frames": [
@@ -2480,17 +2480,17 @@ window.ACCESS_LAB_V5 = {
       [
        "market",
        "a place where people buy and sell things",
-       "spanish: mercado: un lugar donde se compra y se vende"
+       "mercado: un lugar donde se compra y se vende"
       ],
       [
        "herbs",
        "small plants used to flavor food",
-       "spanish: hierbas: plantas pequeñas que dan sabor a la comida"
+       "hierbas: plantas pequeñas que dan sabor a la comida"
       ],
       [
        "share",
        "to give part of something to others",
-       "spanish: compartir: dar parte de algo a otros"
+       "compartir: dar parte de algo a otros"
       ]
      ],
      "frames": [
@@ -2556,17 +2556,17 @@ window.ACCESS_LAB_V5 = {
       [
        "reused",
        "used again",
-       "spanish: reutilizado: usado otra vez"
+       "reutilizado: usado otra vez"
       ],
       [
        "bins",
        "containers for collecting things",
-       "spanish: contenedores: recipientes para recoger cosas"
+       "contenedores: recipientes para recoger cosas"
       ],
       [
        "dump",
        "a place where trash is left",
-       "spanish: basurero: un lugar donde se deja la basura"
+       "basurero: un lugar donde se deja la basura"
       ]
      ],
      "frames": [
@@ -2638,17 +2638,17 @@ window.ACCESS_LAB_V5 = {
       [
        "borrow",
        "to take and use, then return",
-       "spanish: pedir prestado: tomar y usar, y luego devolver"
+       "pedir prestado: tomar y usar, y luego devolver"
       ],
       [
        "shelf",
        "a flat board for holding books",
-       "spanish: estante: una tabla plana para guardar libros"
+       "estante: una tabla plana para guardar libros"
       ],
       [
        "chapter book",
        "a longer book divided into parts",
-       "spanish: libro por capítulos: un libro más largo dividido en partes"
+       "libro por capítulos: un libro más largo dividido en partes"
       ]
      ],
      "frames": [
@@ -2729,17 +2729,17 @@ window.ACCESS_LAB_V5 = {
       [
        "routine",
        "things you do the same way each day",
-       "spanish: rutina: cosas que haces igual cada día"
+       "rutina: cosas que haces igual cada día"
       ],
       [
        "then",
        "a word that shows the next step",
-       "spanish: luego: una palabra que muestra el siguiente paso"
+       "luego: una palabra que muestra el siguiente paso"
       ],
       [
        "never",
        "not at any time",
-       "spanish: nunca: en ningún momento"
+       "nunca: en ningún momento"
       ]
      ],
      "frames": [
@@ -2813,17 +2813,17 @@ window.ACCESS_LAB_V5 = {
       [
        "fact",
        "something that can be proven true",
-       "spanish: hecho: algo que se puede probar verdadero"
+       "hecho: algo que se puede probar verdadero"
       ],
       [
        "opinion",
        "what a person feels or believes",
-       "spanish: opinión: lo que una persona siente o cree"
+       "opinión: lo que una persona siente o cree"
       ],
       [
        "proven",
        "shown to be true",
-       "spanish: comprobado: demostrado como verdadero"
+       "comprobado: demostrado como verdadero"
       ]
      ],
      "frames": [
@@ -2872,17 +2872,17 @@ window.ACCESS_LAB_V5 = {
       [
        "teammate",
        "a person on your team",
-       "spanish: compañero de equipo: una persona en tu equipo"
+       "compañero de equipo: una persona en tu equipo"
       ],
       [
        "detail",
        "a small fact from the text",
-       "spanish: detalle: un dato pequeño del texto"
+       "detalle: un dato pequeño del texto"
       ],
       [
        "support",
        "to give a reason or proof",
-       "spanish: apoyar: dar una razón o prueba"
+       "apoyar: dar una razón o prueba"
       ]
      ],
      "frames": [
@@ -2919,17 +2919,17 @@ window.ACCESS_LAB_V5 = {
       [
        "context",
        "the words around a word that give clues",
-       "spanish: contexto: las palabras alrededor que dan pistas"
+       "contexto: las palabras alrededor que dan pistas"
       ],
       [
        "clue",
        "a hint that helps you understand",
-       "spanish: pista: una señal que ayuda a entender"
+       "pista: una señal que ayuda a entender"
       ],
       [
        "meaning",
        "what a word tells you",
-       "spanish: significado: lo que dice una palabra"
+       "significado: lo que dice una palabra"
       ]
      ],
      "frames": [
@@ -2985,17 +2985,17 @@ window.ACCESS_LAB_V5 = {
       [
        "main idea",
        "the most important point of a text",
-       "spanish: idea principal: el punto más importante de un texto"
+       "idea principal: el punto más importante de un texto"
       ],
       [
        "detail",
        "a small fact that supports the main idea",
-       "spanish: detalle: un dato pequeño que apoya la idea principal"
+       "detalle: un dato pequeño que apoya la idea principal"
       ],
       [
        "support",
        "to back up or give proof",
-       "spanish: apoyar: respaldar o dar prueba"
+       "apoyar: respaldar o dar prueba"
       ]
      ],
      "frames": [
@@ -3053,17 +3053,17 @@ window.ACCESS_LAB_V5 = {
       [
        "sequence",
        "events in time order",
-       "spanish: secuencia: eventos en orden de tiempo"
+       "secuencia: eventos en orden de tiempo"
       ],
       [
        "compare",
        "tell how things are alike or different",
-       "spanish: comparar: decir en qué se parecen o diferencian"
+       "comparar: decir en qué se parecen o diferencian"
       ],
       [
        "cause and effect",
        "a reason and its result",
-       "spanish: causa y efecto: una razón y su resultado"
+       "causa y efecto: una razón y su resultado"
       ]
      ],
      "frames": [
@@ -3157,17 +3157,17 @@ window.ACCESS_LAB_V5 = {
       [
        "magma",
        "melted rock under the ground",
-       "spanish: magma: roca derretida bajo la tierra"
+       "magma: roca derretida bajo la tierra"
       ],
       [
        "erupt",
        "to burst out",
-       "spanish: hacer erupción: salir con fuerza"
+       "hacer erupción: salir con fuerza"
       ],
       [
        "layers",
        "things stacked on top of each other",
-       "spanish: capas: cosas apiladas una sobre otra"
+       "capas: cosas apiladas una sobre otra"
       ]
      ],
      "frames": [
@@ -3240,17 +3240,17 @@ window.ACCESS_LAB_V5 = {
       [
        "process",
        "a set of steps that lead to a result",
-       "spanish: proceso: un conjunto de pasos que llevan a un resultado"
+       "proceso: un conjunto de pasos que llevan a un resultado"
       ],
       [
        "vent",
        "an opening where lava comes out",
-       "spanish: chimenea: una abertura por donde sale la lava"
+       "chimenea: una abertura por donde sale la lava"
       ],
       [
        "harden",
        "to become solid",
-       "spanish: endurecerse: volverse sólido"
+       "endurecerse: volverse sólido"
       ]
      ],
      "frames": [
@@ -3317,17 +3317,17 @@ window.ACCESS_LAB_V5 = {
       [
        "infer",
        "to figure out using clues",
-       "spanish: inferir: deducir usando pistas"
+       "inferir: deducir usando pistas"
       ],
       [
        "erupt",
        "to burst out",
-       "spanish: hacer erupción: salir con fuerza"
+       "hacer erupción: salir con fuerza"
       ],
       [
        "safety plan",
        "steps to keep people safe",
-       "spanish: plan de seguridad: pasos para proteger a las personas"
+       "plan de seguridad: pasos para proteger a las personas"
       ]
      ],
      "frames": [
@@ -3408,17 +3408,17 @@ window.ACCESS_LAB_V5 = {
       [
        "data",
        "facts and numbers about something",
-       "spanish: datos: hechos y números sobre algo"
+       "datos: hechos y números sobre algo"
       ],
       [
        "increase",
        "to go up",
-       "spanish: aumentar: subir"
+       "aumentar: subir"
       ],
       [
        "highest",
        "the greatest amount",
-       "spanish: el más alto: la mayor cantidad"
+       "el más alto: la mayor cantidad"
       ]
      ],
      "frames": [
@@ -3489,17 +3489,17 @@ window.ACCESS_LAB_V5 = {
       [
        "glossary",
        "a list of words and their meanings",
-       "spanish: glosario: una lista de palabras y sus significados"
+       "glosario: una lista de palabras y sus significados"
       ],
       [
        "index",
        "an alphabetical list of topics with pages",
-       "spanish: índice: una lista alfabética de temas con páginas"
+       "índice: una lista alfabética de temas con páginas"
       ],
       [
        "caption",
        "words that explain a picture",
-       "spanish: pie de foto: palabras que explican una imagen"
+       "pie de foto: palabras que explican una imagen"
       ]
      ],
      "frames": [
@@ -3574,17 +3574,17 @@ window.ACCESS_LAB_V5 = {
       [
        "cause",
        "the reason something happens",
-       "spanish: causa: la razón por la que algo sucede"
+       "causa: la razón por la que algo sucede"
       ],
       [
        "effect",
        "the result of a cause",
-       "spanish: efecto: el resultado de una causa"
+       "efecto: el resultado de una causa"
       ],
       [
        "electricity",
        "the power that runs lights and machines",
-       "spanish: electricidad: la energía que enciende luces y máquinas"
+       "electricidad: la energía que enciende luces y máquinas"
       ]
      ],
      "frames": [
@@ -3651,17 +3651,17 @@ window.ACCESS_LAB_V5 = {
       [
        "purpose",
        "the reason an author writes",
-       "spanish: propósito: la razón por la que un autor escribe"
+       "propósito: la razón por la que un autor escribe"
       ],
       [
        "persuade",
        "to convince someone",
-       "spanish: persuadir: convencer a alguien"
+       "persuadir: convencer a alguien"
       ],
       [
        "energy",
        "the power to do things",
-       "spanish: energía: la fuerza para hacer cosas"
+       "energía: la fuerza para hacer cosas"
       ]
      ],
      "frames": [
@@ -3710,17 +3710,17 @@ window.ACCESS_LAB_V5 = {
       [
        "compare",
        "to tell how things are alike or different",
-       "spanish: comparar: decir en qué se parecen o se diferencian las cosas"
+       "comparar: decir en qué se parecen o se diferencian las cosas"
       ],
       [
        "provided",
        "given to you",
-       "spanish: proporcionado: que te lo dan"
+       "proporcionado: que te lo dan"
       ],
       [
        "different",
        "not the same",
-       "spanish: diferente: que no es igual"
+       "diferente: que no es igual"
       ]
      ],
      "frames": [
