@@ -2283,3 +2283,29 @@ body.mode-test .site-header {
     break-inside: avoid;
   }
 }
+
+/* ── v4: WIDA practice test link + printable worksheets ── */
+.wida-test-link {
+  display: block;
+  margin: 8px 0 6px;
+  font-weight: 700;
+  color: var(--domain-color, #1f766f);
+}
+.worksheet {
+  border: 1px solid #d7dee6;
+  border-radius: 12px;
+  padding: 18px 20px;
+  background: #fff;
+}
+.worksheet-intro { font-weight: 600; margin: 0 0 12px; }
+.worksheet-section { margin: 0 0 14px; }
+.worksheet-section h4 { margin: 0 0 6px; color: #12355b; }
+.worksheet-lines { margin: 0; padding-left: 18px; line-height: 1.9; }
+.worksheet-name-line { margin-top: 16px; font-weight: 600; }
+.worksheet-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+@media print {
+  body * { visibility: hidden !important; }
+  #worksheetPrintable, #worksheetPrintable * { visibility: visible !important; }
+  #worksheetPrintable { position: absolute; left: 0; top: 0; width: 100%; border: none; }
+  .worksheet-actions { display: none !important; }
+}

@@ -24,6 +24,31 @@
   })();
   if (!Array.isArray(DATA.tests)) DATA.tests = [];
 
+  // ── v4 content module: domain-specific WIDA practice tests + worksheets ──
+  (function mergeV4() {
+    const v4 = window.ACCESS_LAB_V4;
+    if (!v4) return;
+    const append = v4.appendActivities || {};
+    for (const [domainName, levels] of Object.entries(append)) {
+      const domain = DATA.domains[domainName];
+      if (!domain) continue;
+      for (const [levelKey, list] of Object.entries(levels)) {
+        const level = domain.levels[levelKey];
+        if (!level || !Array.isArray(list)) continue;
+        const existing = new Set((level.activities || []).map((a) => a.id));
+        level.activities = (level.activities || []).concat(
+          list.filter((a) => a && a.id && !existing.has(a.id)),
+        );
+      }
+    }
+    if (Array.isArray(v4.tests)) {
+      const seen = new Set(DATA.tests.map((t) => t.id));
+      DATA.tests = DATA.tests.concat(
+        v4.tests.filter((t) => t && t.id && !seen.has(t.id)),
+      );
+    }
+  })();
+
   const state = {
     mode: "hub",
     hubScope: "root",
@@ -855,6 +880,10 @@
             return `<a class="level-chip" href="${href}">${escapeHtml(levelLabel(levelKey, level))}</a>`;
           })
           .join("");
+        const widaTest = (DATA.tests || []).find((t) => t.domain === name);
+        const testLink = widaTest
+          ? `<a class="primary-link wida-test-link" href="/access-practice-lab/test/${escapeHtml(widaTest.id)}">📝 Take the WIDA Practice Test</a>`
+          : "";
         return `
         <article class="domain-overview-card" style="--domain-color:${domain.color}">
             <div class="domain-overview-head">
@@ -870,6 +899,7 @@
             </dl>
             <p class="domain-overview-meta">${stats.levelCount} pathways · ${stats.activityCount} practice tasks</p>
             <div class="level-chip-row">${levels}</div>
+            ${testLink}
             <a class="primary-link" href="${hubUrl(name, null)}">Open ${escapeHtml(domainLabel(name))} dashboard</a>
           </article>
         `;
@@ -1338,6 +1368,34 @@
     `;
   }
 
+  function worksheetHTML(activity) {
+    const sheet = Array.isArray(activity.sheet) ? activity.sheet : [];
+    const body = sheet
+      .map(
+        (sec) => `
+        <section class="worksheet-section">
+          <h4>${escapeHtml(sec.heading || "")}</h4>
+          <ul class="worksheet-lines">
+            ${(sec.items || [])
+              .map((line) => `<li>${escapeHtml(line)}</li>`)
+              .join("")}
+          </ul>
+        </section>`,
+      )
+      .join("");
+    return `
+      <div class="worksheet" id="worksheetPrintable">
+        ${activity.directions ? `<p class="worksheet-intro">${escapeHtml(activity.directions)}</p>` : ""}
+        ${body}
+        <p class="worksheet-name-line">Name: ____________________   Date: ____________</p>
+      </div>
+      <div class="worksheet-actions">
+        <button class="primary-action" type="button" data-print-report>🖨️ Print this worksheet</button>
+        <button class="ghost-btn" type="button" data-mark>Mark as done</button>
+      </div>
+    `;
+  }
+
   function constructedHTML(activity) {
     const note = state.notes[activity.id] || "";
     const count = wordCount(note);
@@ -1589,6 +1647,7 @@
   }
 
   function answerHTML(activity) {
+    if (activity.type === "worksheet") return worksheetHTML(activity);
     if (state.domain === "Speaking") return speakingAnswerHTML(activity);
     if (activity.type === "sort") return sortHTML(activity);
     if (activity.type === "multiSelect") return multiSelectHTML(activity);
