@@ -5,21 +5,19 @@
 
   // Official WIDA-style Google Forms (student RESPONSE links).
   //
-  // DISABLED 2026-06-13: all four forms are currently UNPUBLISHED ("We're sorry.
-  // This document is not published.") and also require Google sign-in, so every
-  // button 401'd / dead-ended for students. The buttons are hidden until the
-  // forms are published. To re-enable a form:
-  //   1. Open it in Google Forms → Publish (or Send) → "Manage who has access"
-  //      → set the audience (e.g. Anyone, or your school domain).
-  //   2. Copy the PUBLISHED responder link (it looks like
-  //      ".../forms/d/e/<long-id>/viewform" — NOT ".../forms/d/<id>/viewform").
-  //   3. Add it below as e.g.  Listening: "<published link>",
-  // Existing form ids (for reference when republishing):
-  //   Listening: 1bbbIlu-zadD6Pirqbp35U7oUo67Sxt8s1ymef0r6tZs
-  //   Reading:   1hxiN6IJB7qP4_bL0HD3NPh6XzqXpsqflCrm94IKxIRo
-  //   Speaking:  d/e/1FAIpQLSfZ-_iZPuRu3d967JqsQBGIxEdbKY7yBRuVW9MLhgrEMnM-hg
-  //   Writing:   11KhntaGKT_Pa_tl71sDAGDeLRgqoe3XB8E9K2mXfdpU
-  const OFFICIAL_FORMS = {};
+  // Published responder links (".../forms/d/e/<long-id>/viewform"). A button
+  // renders only for domains present here, so an unpublished domain stays hidden
+  // instead of dead-ending students. All four verified live 2026-06-13.
+  const OFFICIAL_FORMS = {
+    Listening:
+      "https://docs.google.com/forms/d/e/1FAIpQLSesdW6kl3JWwaxCx4qMsgYUlbYQ3iOAlzNVKTXAwGcawa7t2A/viewform",
+    Reading:
+      "https://docs.google.com/forms/d/e/1FAIpQLSfs4y_tLLyRe1GKEUJY20JtAcNFp7a5Iha7g2iZugKN-GrDMA/viewform",
+    Writing:
+      "https://docs.google.com/forms/d/e/1FAIpQLScgqps4kV3tiFuwkZHqeo_JGS0Z7nyI9dBpRrfN5aknem_LHg/viewform",
+    Speaking:
+      "https://docs.google.com/forms/d/e/1FAIpQLSfZ-_iZPuRu3d967JqsQBGIxEdbKY7yBRuVW9MLhgrEMnM-hg/viewform",
+  };
 
   // ── v3 content module: additively merge new activities + full practice tests ──
   (function mergeV3() {
