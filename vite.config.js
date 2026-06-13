@@ -27,6 +27,7 @@ function copyStandaloneHtml() {
     "engine",
     "lessons",
     "scripts",
+    "tools",
     "docs",
   ]);
   const ROOT_FILES = [
