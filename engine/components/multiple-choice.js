@@ -294,6 +294,8 @@ export function renderMultipleChoice(
   tryAgainBtn.textContent = "Try Again";
   tryAgainBtn.style.display = "none";
 
+  let wrongAttempts = 0;
+
   checkBtn.addEventListener("click", () => {
     if (selected === null || answered) return;
     answered = true;
@@ -304,9 +306,21 @@ export function renderMultipleChoice(
     labels.forEach((l) =>
       l.classList.remove("is-correct", "is-incorrect", "is-selected"),
     );
-    labels[correctIndex].classList.add("is-correct");
 
-    if (!isCorrect) {
+    let fbMsg;
+    // Only reveal the correct choice once the student has had a retry — naming
+    // the answer on the first miss makes "Try Again" pointless.
+    let revealAnswer = isCorrect;
+
+    if (isCorrect) {
+      labels[correctIndex].classList.add("is-correct");
+      wrapper.classList.add("success-glow");
+      if (window.fireConfetti) window.fireConfetti();
+      fireChoiceConfetti(wrapper);
+      fbMsg = explanation || "Correct! Great work.";
+      checkBtn.style.display = "none";
+    } else {
+      wrongAttempts += 1;
       labels[selected].classList.add("is-incorrect");
       wrapper.classList.add("shake-once");
       wrapper.addEventListener(
@@ -314,24 +328,22 @@ export function renderMultipleChoice(
         () => wrapper.classList.remove("shake-once"),
         { once: true },
       );
-    } else {
-      wrapper.classList.add("success-glow");
-      if (window.fireConfetti) window.fireConfetti();
-      fireChoiceConfetti(wrapper);
+      revealAnswer = wrongAttempts >= 2;
+      checkBtn.style.display = "none";
+      if (revealAnswer) {
+        // Out of retries — show the answer so the student isn't stuck.
+        labels[correctIndex].classList.add("is-correct");
+        fbMsg =
+          `The answer is ${LETTERS[correctIndex]}. ${explanation || ""}`.trim();
+      } else {
+        fbMsg = "Not quite — take another look and try again.";
+        tryAgainBtn.style.display = "inline-flex";
+      }
     }
-
-    const fbMsg = isCorrect
-      ? explanation || "Correct! Great work."
-      : `Not quite. The answer is ${LETTERS[correctIndex]}. ${explanation || ""}`;
 
     feedbackSlot.className = `problem-check-result visible ${isCorrect ? "is-correct" : "is-incorrect"}`;
     feedbackSlot.setAttribute("role", "alert");
     feedbackSlot.innerHTML = `<span class="feedback-icon">${isCorrect ? "✓" : "💡"}</span><span>${esc(fbMsg)}</span>`;
-
-    checkBtn.style.display = "none";
-    if (!isCorrect) {
-      tryAgainBtn.style.display = "inline-flex";
-    }
 
     if (onAnswer) onAnswer(isCorrect);
   });

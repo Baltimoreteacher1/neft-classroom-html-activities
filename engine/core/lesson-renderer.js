@@ -126,6 +126,31 @@ function instructionCallout(el, icon, html) {
 // highlightIndex, title, caption }`. Lessons without this field are unaffected.
 // Bars touch (no gaps) to match the definition of a histogram, the tallest (or
 // highlighted) bar is tinted, and each bar shows its frequency on top.
+// Build an accessible label that includes the figure's data, so a screen
+// reader announces the actual values rather than just the chart title.
+function figureAria(cfg, fallback = "Data figure") {
+  const base = cfg && cfg.title ? cfg.title : fallback;
+  const parts = [];
+  if (Array.isArray(cfg?.bars) && cfg.bars.length) {
+    parts.push(
+      "Values — " +
+        cfg.bars
+          .map((b) => `${b.label != null ? b.label + ": " : ""}${b.value}`)
+          .join(", "),
+    );
+  } else if (Array.isArray(cfg?.values) && cfg.values.length) {
+    parts.push("Values — " + cfg.values.join(", "));
+  }
+  if (cfg && ["min", "q1", "median", "q3", "max"].some((k) => cfg[k] != null)) {
+    parts.push(
+      `five-number summary: minimum ${cfg.min}, Q1 ${cfg.q1}, median ${cfg.median}, Q3 ${cfg.q3}, maximum ${cfg.max}`,
+    );
+  }
+  if (cfg?.xLabel) parts.push(`x-axis: ${cfg.xLabel}`);
+  if (cfg?.yLabel) parts.push(`y-axis: ${cfg.yLabel}`);
+  return parts.length ? `${base}. ${parts.join(". ")}` : base;
+}
+
 function histogramSVG(cfg) {
   const bars = Array.isArray(cfg?.bars) ? cfg.bars : [];
   if (!bars.length) return "";
@@ -186,7 +211,7 @@ function histogramSVG(cfg) {
   const caption = cfg.caption
     ? `<div style="font-size:0.82rem; color:var(--muted); margin-top:var(--sp-2); text-align:center; font-style:italic;">${esc(cfg.caption)}</div>`
     : "";
-  return `<div class="histogram-figure" style="margin:var(--sp-3) 0;">${title}<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(cfg.title || "Histogram")}" style="width:100%; height:auto; max-width:560px; display:block; margin:0 auto;">${grid}${axis}${rects}${xLabel}${yLabel}</svg>${caption}</div>`;
+  return `<div class="histogram-figure" style="margin:var(--sp-3) 0;">${title}<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(figureAria(cfg, "Histogram"))}" style="width:100%; height:auto; max-width:560px; display:block; margin:0 auto;">${grid}${axis}${rects}${xLabel}${yLabel}</svg>${caption}</div>`;
 }
 
 // Render a styled "data display" for the Launch scenario so the I-notice /
@@ -346,7 +371,7 @@ function svgFigure(cfg, inner, W, H, padT = 16) {
   const caption = cfg.caption
     ? `<div style="font-size:0.82rem; color:var(--muted); margin-top:var(--sp-2); text-align:center; font-style:italic;">${esc(cfg.caption)}</div>`
     : "";
-  return `<div class="data-figure" style="margin:var(--sp-3) 0;">${title}<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(cfg.title || "Data figure")}" style="width:100%; height:auto; max-width:560px; display:block; margin:0 auto;"><g transform="translate(0,${padT - 16})">${inner}</g></svg>${caption}</div>`;
+  return `<div class="data-figure" style="margin:var(--sp-3) 0;">${title}<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(figureAria(cfg))}" style="width:100%; height:auto; max-width:560px; display:block; margin:0 auto;"><g transform="translate(0,${padT - 16})">${inner}</g></svg>${caption}</div>`;
 }
 
 // Tape / bar diagram: stacked labeled segments per row. Models part–whole,

@@ -218,7 +218,11 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
     "margin-bottom:var(--sp-5); min-height:60px; background:var(--cream);";
   wireZoneKeyboard(bank, "Return the picked-up item to the item bank");
 
-  const shuffled = [...items].sort(() => Math.random() - 0.5);
+  // Tag each item with a stable unique id so grading and drag/drop don't key off
+  // the display text (which collides when two items share the same text).
+  const itemsWithId = items.map((it, i) => ({ ...it, _id: String(i) }));
+  const catById = new Map(itemsWithId.map((it) => [it._id, it.category]));
+  const shuffled = [...itemsWithId].sort(() => Math.random() - 0.5);
   shuffled.forEach((item) => {
     const el = createDragItem(item);
     bank.append(el);
@@ -289,8 +293,7 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
 
     zones.forEach(({ zone, catId }) => {
       zone.querySelectorAll(".drag-item").forEach((el) => {
-        const itemData = items.find((it) => it.text === el.textContent);
-        if (itemData && itemData.category === catId) {
+        if (catById.get(el.dataset.itemId) === catId) {
           el.classList.remove("incorrect");
           el.classList.add("correct");
           correct++;
@@ -383,7 +386,9 @@ function createDragItem(item) {
   el.className = "drag-item";
   el.textContent = item.text;
   el.draggable = true;
-  el.dataset.itemId = item.text;
+  // Unique id (falls back to text for any legacy caller) — keyed on by grading
+  // and drag/drop so duplicate item texts don't collide.
+  el.dataset.itemId = item._id != null ? item._id : item.text;
 
   // Keyboard/tap selection (paired with wireZoneKeyboard on the drop zones).
   el.tabIndex = 0;
@@ -406,7 +411,7 @@ function createDragItem(item) {
   });
 
   el.addEventListener("dragstart", (e) => {
-    e.dataTransfer.setData("text/plain", item.text);
+    e.dataTransfer.setData("text/plain", el.dataset.itemId);
     e.dataTransfer.effectAllowed = "move";
     el.classList.add("dragging");
     requestAnimationFrame(() => el.classList.add("drag-ghost"));

@@ -115,9 +115,18 @@ export function renderNumberLine(
     g.setAttribute("role", "slider");
     g.setAttribute("aria-label", t.label || `Point ${i + 1}`);
     g.setAttribute("tabindex", "0");
+    g.setAttribute("aria-valuemin", String(min));
+    g.setAttribute("aria-valuemax", String(max));
 
     let currentVal = toVal(startX);
+    // Keep the slider's spoken value in sync so screen-reader users hear the
+    // position as they drag or arrow the point.
+    const setAria = (v) => {
+      g.setAttribute("aria-valuenow", String(v));
+      g.setAttribute("aria-valuetext", formatNum(v));
+    };
     valLabel.textContent = formatNum(currentVal);
+    setAria(currentVal);
 
     const state = { x: startX, dragging: false };
     // renderX is the position currently painted; state.x is the logical/target
@@ -154,6 +163,7 @@ export function renderNumberLine(
       currentVal = toVal(state.x);
       valLabel.textContent = formatNum(currentVal);
 
+      setAria(currentVal);
       if (
         prefersReducedMotion() ||
         typeof requestAnimationFrame !== "function"
@@ -200,6 +210,7 @@ export function renderNumberLine(
         renderX = state.x;
         g.setAttribute("transform", `translate(${state.x}, ${TICK_Y})`);
         valLabel.textContent = formatNum(currentVal);
+        setAria(currentVal);
       } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
         e.preventDefault();
         currentVal = Math.max(min, round(currentVal - delta));
@@ -207,6 +218,7 @@ export function renderNumberLine(
         renderX = state.x;
         g.setAttribute("transform", `translate(${state.x}, ${TICK_Y})`);
         valLabel.textContent = formatNum(currentVal);
+        setAria(currentVal);
       }
     });
 
