@@ -184,39 +184,54 @@ export function renderCoordinateGrid(
   instrGroup.append(instrBg, instrTxt);
   svg.append(instrGroup);
 
-  // Click to place points
-  svg.addEventListener("click", (e) => {
+  // Keyboard crosshair cursor — the grid is focusable (tabindex/role) but was
+  // pointer-only. Arrows move the cursor, Enter/Space plots, Backspace removes.
+  const cur = {
+    x: Math.min(xMax, Math.max(xMin, 0)),
+    y: Math.min(yMax, Math.max(yMin, 0)),
+  };
+  const cross = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  cross.classList.add("cgrid-cursor");
+  cross.style.display = "none";
+  const crossV = svgLine(cross, 0, PAD.top, 0, PAD.top + plotH, "#1fa6a2", 1);
+  const crossH = svgLine(cross, PAD.left, 0, PAD.left + plotW, 0, "#1fa6a2", 1);
+  crossV.setAttribute("stroke-dasharray", "3,3");
+  crossH.setAttribute("stroke-dasharray", "3,3");
+  svg.append(cross);
+
+  const live = document.createElement("p");
+  live.setAttribute("aria-live", "polite");
+  live.style.cssText =
+    "position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;";
+
+  function drawCursor() {
+    const sx = toSvgX(cur.x);
+    const sy = toSvgY(cur.y);
+    crossV.setAttribute("x1", sx);
+    crossV.setAttribute("x2", sx);
+    crossH.setAttribute("y1", sy);
+    crossH.setAttribute("y2", sy);
+  }
+
+  function updateRemaining() {
+    const done = placedPoints.length >= targets.length;
+    instrTxt.textContent = done
+      ? "All points plotted"
+      : `${targets.length - placedPoints.length} point(s) remaining`;
+    instrGroup.style.display = done ? "none" : "";
+  }
+
+  function removePoint(rec) {
+    rec.g.remove();
+    const idx = placedPoints.indexOf(rec);
+    if (idx >= 0) placedPoints.splice(idx, 1);
+    updateRemaining();
+  }
+
+  function placePoint(gx, gy, { announce = false } = {}) {
     if (placedPoints.length >= targets.length) return;
-
-    const rect = svg.getBoundingClientRect();
-    const sx = ((e.clientX - rect.left) / rect.width) * W;
-    const sy = ((e.clientY - rect.top) / rect.height) * H;
-
-    if (
-      sx < PAD.left ||
-      sx > PAD.left + plotW ||
-      sy < PAD.top ||
-      sy > PAD.top + plotH
-    )
-      return;
-
-    const coord = fromSvg(sx, sy);
-
-    // Snap to grid, then clamp back inside the axis range so a click near the
-    // edge can't snap to an off-grid coordinate (which would draw outside the
-    // plot and never match any target).
-    coord.x = Math.min(
-      xMax,
-      Math.max(xMin, Math.round(coord.x / xStep) * xStep),
-    );
-    coord.y = Math.min(
-      yMax,
-      Math.max(yMin, Math.round(coord.y / yStep) * yStep),
-    );
-
-    const finalSx = toSvgX(coord.x);
-    const finalSy = toSvgY(coord.y);
-
+    const finalSx = toSvgX(gx);
+    const finalSy = toSvgY(gy);
     const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
     g.classList.add("cgrid-point");
     const dot = svgCircle(g, finalSx, finalSy, 7, "#f2c15b", "#12355b", 2);
@@ -225,13 +240,11 @@ export function renderCoordinateGrid(
       g,
       finalSx + 12,
       finalSy - 8,
-      `(${coord.x}, ${coord.y})`,
+      `(${gx}, ${gy})`,
       "10px",
       "#12355b",
     );
     lbl.setAttribute("font-weight", "700");
-
-    // Animate in
     dot.style.transformOrigin = `${finalSx}px ${finalSy}px`;
     dot.animate(
       [
@@ -241,23 +254,80 @@ export function renderCoordinateGrid(
       ],
       { duration: 300, easing: "cubic-bezier(0.34,1.56,0.64,1)" },
     );
-
     svg.append(g);
-    placedPoints.push({ g, coord, dot });
-
-    instrTxt.textContent = `${targets.length - placedPoints.length} point(s) remaining`;
-    if (placedPoints.length >= targets.length)
-      instrGroup.style.display = "none";
-
-    // Right-click to remove last
+    const rec = { g, coord: { x: gx, y: gy }, dot };
+    placedPoints.push(rec);
+    updateRemaining();
+    if (announce) {
+      live.textContent = `Plotted (${gx}, ${gy}). ${Math.max(0, targets.length - placedPoints.length)} remaining.`;
+    }
+    // Right-click (or Backspace via keyboard) removes the point.
     g.addEventListener("contextmenu", (ev) => {
       ev.preventDefault();
-      g.remove();
-      const idx = placedPoints.findIndex((p) => p.g === g);
-      if (idx >= 0) placedPoints.splice(idx, 1);
-      instrGroup.style.display = "";
-      instrTxt.textContent = `${targets.length - placedPoints.length} point(s) remaining`;
+      removePoint(rec);
     });
+  }
+
+  // Click to place points
+  svg.addEventListener("click", (e) => {
+    if (placedPoints.length >= targets.length) return;
+    const rect = svg.getBoundingClientRect();
+    const sx = ((e.clientX - rect.left) / rect.width) * W;
+    const sy = ((e.clientY - rect.top) / rect.height) * H;
+    if (
+      sx < PAD.left ||
+      sx > PAD.left + plotW ||
+      sy < PAD.top ||
+      sy > PAD.top + plotH
+    )
+      return;
+    const coord = fromSvg(sx, sy);
+    // Snap to grid, then clamp inside the axis range so an edge click can't snap
+    // off-grid (which would draw outside the plot and never match a target).
+    coord.x = Math.min(
+      xMax,
+      Math.max(xMin, Math.round(coord.x / xStep) * xStep),
+    );
+    coord.y = Math.min(
+      yMax,
+      Math.max(yMin, Math.round(coord.y / yStep) * yStep),
+    );
+    placePoint(coord.x, coord.y);
+  });
+
+  // Keyboard placement
+  svg.addEventListener("focus", () => {
+    cross.style.display = "";
+    drawCursor();
+    live.textContent = `Cursor at (${cur.x}, ${cur.y}). Use arrow keys to move, Enter to plot.`;
+  });
+  svg.addEventListener("blur", () => {
+    cross.style.display = "none";
+  });
+  svg.addEventListener("keydown", (e) => {
+    const dx = xStep || 1;
+    const dy = yStep || 1;
+    let handled = true;
+    if (e.key === "ArrowRight") cur.x = Math.min(xMax, cur.x + dx);
+    else if (e.key === "ArrowLeft") cur.x = Math.max(xMin, cur.x - dx);
+    else if (e.key === "ArrowUp") cur.y = Math.min(yMax, cur.y + dy);
+    else if (e.key === "ArrowDown") cur.y = Math.max(yMin, cur.y - dy);
+    else if (e.key === "Enter" || e.key === " ")
+      placePoint(cur.x, cur.y, { announce: true });
+    else if (e.key === "Backspace" || e.key === "Delete") {
+      const last = placedPoints[placedPoints.length - 1];
+      if (last) {
+        removePoint(last);
+        live.textContent = `Removed last point. ${targets.length - placedPoints.length} remaining.`;
+      }
+    } else handled = false;
+    if (handled) {
+      e.preventDefault();
+      drawCursor();
+      if (e.key.startsWith("Arrow")) {
+        live.textContent = `Cursor at (${cur.x}, ${cur.y}).`;
+      }
+    }
   });
 
   // Layout: coordinate plane on the left, the list of coordinates to plot on
@@ -301,6 +371,7 @@ export function renderCoordinateGrid(
 
   layout.append(planeWrap, side);
   wrapper.append(layout);
+  wrapper.append(live);
 
   // Draw line between points toggle
   if (showLine && targets.length >= 2) {

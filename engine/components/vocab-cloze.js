@@ -62,7 +62,15 @@ export function renderVocabCloze(container, { terms, onComplete }) {
     chip.dataset.term = t.term;
     chip.setAttribute("draggable", "true");
     chip.textContent = t.term;
-    chip.style.cssText += "cursor:grab; user-select:none;";
+    if (t.termEs) {
+      const es = document.createElement("span");
+      es.lang = "es";
+      es.style.cssText =
+        "display:block; font-size:0.72rem; font-weight:600; font-style:italic; opacity:0.8;";
+      es.textContent = t.termEs;
+      chip.append(es);
+    }
+    chip.style.cssText += "cursor:grab; user-select:none; text-align:center;";
 
     chip.addEventListener("dragstart", (e) => {
       e.dataTransfer.setData("text/plain", t.term);

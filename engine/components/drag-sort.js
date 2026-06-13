@@ -216,6 +216,7 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
   bank.dataset.zone = "bank";
   bank.style.cssText =
     "margin-bottom:var(--sp-5); min-height:60px; background:var(--cream);";
+  wireZoneKeyboard(bank, "Return the picked-up item to the item bank");
 
   const shuffled = [...items].sort(() => Math.random() - 0.5);
   shuffled.forEach((item) => {
@@ -243,6 +244,7 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
     zone.className = "drag-zone";
     zone.dataset.zone = cat.id;
     zone.style.minHeight = "100px";
+    wireZoneKeyboard(zone, `Place the picked-up item in ${cat.label}`);
     col.append(zone);
 
     zones.push({ zone, catId: cat.id });
@@ -327,12 +329,81 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
   container.append(wrapper);
 }
 
+// Keyboard/tap "pick up then place" fallback so the sort is operable without a
+// mouse drag. A single item is selected at a time; clicking/activating a drop
+// zone moves the selected item there. Shared across items/zones in one render.
+let dsSelected = null;
+function dsClearSelection() {
+  if (dsSelected) {
+    dsSelected.classList.remove("ds-selected");
+    dsSelected.style.outline = "";
+    dsSelected.style.outlineOffset = "";
+    dsSelected.setAttribute("aria-pressed", "false");
+    dsSelected = null;
+  }
+}
+function dsSelect(el) {
+  if (dsSelected === el) {
+    dsClearSelection();
+    return;
+  }
+  dsClearSelection();
+  dsSelected = el;
+  el.classList.add("ds-selected");
+  el.style.outline = "3px solid var(--teal, #1fa6a2)";
+  el.style.outlineOffset = "2px";
+  el.setAttribute("aria-pressed", "true");
+}
+function dsPlaceInto(zone) {
+  if (!dsSelected) return;
+  const el = dsSelected;
+  if (zone !== el.parentElement) {
+    zone.append(el);
+    springBounce(el);
+  }
+  dsClearSelection();
+  el.focus();
+}
+// Make a drop zone able to receive the selected item via click/Enter/Space.
+function wireZoneKeyboard(zone, labelText) {
+  zone.tabIndex = 0;
+  zone.setAttribute("role", "button");
+  zone.setAttribute("aria-label", labelText);
+  zone.addEventListener("click", () => dsPlaceInto(zone));
+  zone.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      dsPlaceInto(zone);
+    }
+  });
+}
+
 function createDragItem(item) {
   const el = document.createElement("div");
   el.className = "drag-item";
   el.textContent = item.text;
   el.draggable = true;
   el.dataset.itemId = item.text;
+
+  // Keyboard/tap selection (paired with wireZoneKeyboard on the drop zones).
+  el.tabIndex = 0;
+  el.setAttribute("role", "button");
+  el.setAttribute("aria-pressed", "false");
+  el.setAttribute(
+    "aria-label",
+    `${item.text} — press Enter to pick up, then choose a category`,
+  );
+  el.addEventListener("click", (e) => {
+    e.stopPropagation(); // don't bubble to the zone's place handler
+    dsSelect(el);
+  });
+  el.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      e.stopPropagation();
+      dsSelect(el);
+    }
+  });
 
   el.addEventListener("dragstart", (e) => {
     e.dataTransfer.setData("text/plain", item.text);

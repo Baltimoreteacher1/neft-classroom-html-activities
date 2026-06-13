@@ -200,6 +200,14 @@ export function renderVocabSort(container, { terms, onComplete }) {
     bucketLabel.style.cssText =
       "font-weight:800; font-size:0.95rem; color:var(--navy);";
     bucketLabel.textContent = t.term;
+    if (t.termEs) {
+      const es = document.createElement("span");
+      es.lang = "es";
+      es.style.cssText =
+        "display:block; font-size:0.78rem; font-weight:600; font-style:italic; color:var(--muted);";
+      es.textContent = t.termEs;
+      bucketLabel.append(es);
+    }
     labelRow.append(bucketLabel);
     bucket.append(labelRow);
 
@@ -207,6 +215,13 @@ export function renderVocabSort(container, { terms, onComplete }) {
     bucketHint.style.cssText =
       "font-size:0.8rem; color:var(--muted); font-style:italic; margin-bottom:var(--sp-2);";
     bucketHint.textContent = t.definition;
+    if (t.definitionEs) {
+      const es = document.createElement("span");
+      es.lang = "es";
+      es.style.cssText = "display:block; margin-top:2px; opacity:0.9;";
+      es.textContent = t.definitionEs;
+      bucketHint.append(es);
+    }
     bucket.append(bucketHint);
 
     const dropZone = document.createElement("div");

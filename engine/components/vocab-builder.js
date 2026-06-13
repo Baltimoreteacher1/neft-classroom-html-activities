@@ -180,6 +180,14 @@ export function renderVocabBuilder(container, { terms, onComplete }) {
       font-family:var(--font-display); font-size:1.4rem; font-weight:800;
     `;
     termDisplay.textContent = term.term;
+    if (term.termEs) {
+      const es = document.createElement("div");
+      es.lang = "es";
+      es.style.cssText =
+        "font-size:0.95rem; font-weight:600; font-style:italic; opacity:0.85; margin-top:4px;";
+      es.textContent = term.termEs;
+      termDisplay.append(es);
+    }
     card.append(termDisplay);
 
     const prompt = document.createElement("p");

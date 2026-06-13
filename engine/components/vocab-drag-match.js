@@ -163,7 +163,19 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
     `;
     el.append(vocabImageEl(term.term, term.definition));
     const termLabel = document.createElement("span");
-    termLabel.textContent = term.term;
+    if (term.termEs) {
+      termLabel.innerHTML = "";
+      const en = document.createElement("span");
+      en.textContent = term.term;
+      const es = document.createElement("span");
+      es.lang = "es";
+      es.style.cssText =
+        "display:block; font-size:0.78rem; font-weight:600; font-style:italic; color:var(--muted);";
+      es.textContent = term.termEs;
+      termLabel.append(en, es);
+    } else {
+      termLabel.textContent = term.term;
+    }
     el.append(termLabel);
 
     el.setAttribute("draggable", "true");
@@ -213,6 +225,14 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
       color:var(--ink);
     `;
     el.textContent = term.definition;
+    if (term.definitionEs) {
+      const es = document.createElement("span");
+      es.lang = "es";
+      es.style.cssText =
+        "display:block; margin-top:4px; font-size:0.8rem; font-style:italic; color:var(--muted);";
+      es.textContent = term.definitionEs;
+      el.append(es);
+    }
 
     el.addEventListener("dragover", (e) => {
       e.preventDefault();

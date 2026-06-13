@@ -201,6 +201,17 @@ export function renderBalanceScale(
     { text: `÷ both sides`, op: "divide" },
   ];
 
+  // Inline value input — replaces a blocking window.prompt(), which is
+  // suppressed in many embedded webviews/iframes and is poor for accessibility.
+  const opInput = document.createElement("input");
+  opInput.type = "number";
+  opInput.inputMode = "decimal";
+  opInput.className = "text-input bs-op-input";
+  opInput.setAttribute("aria-label", "Value to apply to both sides");
+  opInput.placeholder = "value";
+  opInput.style.cssText = "width:84px; padding:8px 10px; font-size:0.9rem;";
+  opsCard.append(opInput);
+
   const history = document.createElement("div");
   history.style.cssText =
     "font-size:0.82rem; color:var(--muted); margin:var(--sp-2) 0; text-align:center; min-height:24px;";
@@ -216,10 +227,16 @@ export function renderBalanceScale(
 
     btn.addEventListener("click", () => {
       pressFeedback(btn);
-      const val = prompt(`${text} — enter the value:`);
-      if (!val || isNaN(Number(val))) return;
-      steps.push(`${op} ${val}`);
+      const raw = opInput.value.trim();
+      if (raw === "" || isNaN(Number(raw))) {
+        history.textContent =
+          "Type a number in the box, then choose an operation.";
+        opInput.focus();
+        return;
+      }
+      steps.push(`${op} ${raw}`);
       history.textContent = `Steps: ${steps.join(" → ")}`;
+      opInput.value = "";
       animateTilt();
     });
 
