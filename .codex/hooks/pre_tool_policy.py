@@ -43,7 +43,7 @@ def main() -> None:
         (r"\b(chmod|chown)\b[^;&|]*\s(/|~|\$HOME)\b", "Blocked broad permission change outside the repo."),
         (r"\b(cat|printenv|env|set)\b[^;&|]*(SECRET|TOKEN|PASSWORD|KEY|AUTH|CREDENTIAL)", "Blocked command that may print secrets."),
         (r"\bcurl\b[^|;&]*\|\s*(sh|bash)\b|\bwget\b[^|;&]*\|\s*(sh|bash)\b", "Blocked curl/wget pipe-to-shell installer."),
-        (r"\b(npm\s+run\s+deploy|wrangler\s+(deploy|pages\s+deploy)|firebase\s+deploy|vercel\s+deploy|netlify\s+deploy)\b", "Blocked deployment command; deployment needs explicit current-task request."),
+        (r"\b(npm\s+run\s+deploy|wrangler\s+(deploy|pages\s+deploy)|firebase\s+deploy|vercel\s+deploy|netlify\s+deploy)\b", "Blocked production deployment command. `npm run deploy`, `wrangler pages deploy`, and `--branch=main` require explicit current-task approval and the repo guard `ALLOW_DEPLOY=1 npm run deploy`. Do not deploy from a PR/feature branch unless explicitly approved."),
     ]
     for pattern, reason in blockers:
         if re.search(pattern, command, flags=re.IGNORECASE):
