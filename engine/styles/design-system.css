@@ -2190,8 +2190,13 @@ body:has(.identity-screen) .export-toolbar {
   background: var(--navy);
   color: white;
   transform: rotateY(180deg);
-  justify-content: center;
+  /* `safe center` keeps content centered when it fits but stays scrollable
+     (top not clipped) once the English + Spanish definition + worked example
+     exceed the fixed card height. */
+  justify-content: safe center;
   align-items: center;
+  gap: var(--sp-1);
+  overflow-y: auto;
 }
 
 .vocab-def {

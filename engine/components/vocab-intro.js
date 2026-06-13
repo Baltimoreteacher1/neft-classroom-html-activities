@@ -139,21 +139,18 @@ export function renderVocabIntro(container, { terms, onComplete }) {
 
     const termH = document.createElement("h3");
     termH.textContent = t.term;
+    front.append(thumbWrap, termH);
 
-    if (t.spanish) {
+    // Spanish term subtitle. Lesson configs carry the translation as `termEs`
+    // (with `spanish` kept as a legacy fallback); show whichever is present so
+    // the Word Wall actually delivers the bilingual support the EL tip promises.
+    const termEs = t.termEs || t.spanish;
+    if (termEs) {
       const es = document.createElement("p");
       es.className = "vocab-es";
-      es.textContent = t.spanish;
-      front.append(thumbWrap, termH, es);
-    } else {
-      front.append(thumbWrap, termH);
-    }
-
-    if (t.visual) {
-      const viz = document.createElement("div");
-      viz.className = "vocab-visual-hint";
-      viz.textContent = t.visual;
-      front.append(viz);
+      es.lang = "es";
+      es.textContent = termEs;
+      front.append(es);
     }
 
     const flipPrompt = document.createElement("span");
@@ -169,13 +166,19 @@ export function renderVocabIntro(container, { terms, onComplete }) {
     def.textContent = t.definition;
     back.append(def);
 
-    if (t.spanish) {
-      const defEs = document.createElement("p");
-      defEs.className = "vocab-def-es";
-      defEs.textContent = t.spanish;
-      back.append(defEs);
+    // Spanish definition under the English one (prefer `definitionEs`, fall back
+    // to a Spanish term/definition if that's all the entry has).
+    const defEs = t.definitionEs || (t.termEs ? null : t.spanish);
+    if (defEs) {
+      const defEsEl = document.createElement("p");
+      defEsEl.className = "vocab-def-es";
+      defEsEl.lang = "es";
+      defEsEl.textContent = defEs;
+      back.append(defEsEl);
     }
 
+    // The worked example ("A box 3 × 2 × 4 holds 24 unit cubes…") belongs with
+    // the definition on the back, not on the front where it pre-empts the flip.
     if (t.visual) {
       const backViz = document.createElement("p");
       backViz.className = "vocab-back-visual";
