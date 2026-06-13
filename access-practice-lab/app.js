@@ -89,6 +89,31 @@
     }
   })();
 
+  // ── v6 content module: Model-Test build-out (activities, worksheets, Form C) ──
+  (function mergeV6() {
+    const v6 = window.ACCESS_LAB_V6;
+    if (!v6) return;
+    const append = v6.appendActivities || {};
+    for (const [domainName, levels] of Object.entries(append)) {
+      const domain = DATA.domains[domainName];
+      if (!domain) continue;
+      for (const [levelKey, list] of Object.entries(levels)) {
+        const level = domain.levels[levelKey];
+        if (!level || !Array.isArray(list)) continue;
+        const existing = new Set((level.activities || []).map((a) => a.id));
+        level.activities = (level.activities || []).concat(
+          list.filter((a) => a && a.id && !existing.has(a.id)),
+        );
+      }
+    }
+    if (Array.isArray(v6.tests)) {
+      const seen = new Set(DATA.tests.map((t) => t.id));
+      DATA.tests = DATA.tests.concat(
+        v6.tests.filter((t) => t && t.id && !seen.has(t.id)),
+      );
+    }
+  })();
+
   const state = {
     mode: "hub",
     hubScope: "root",
@@ -931,7 +956,7 @@
           : "";
         const officialForm = OFFICIAL_FORMS[name];
         const officialLink = officialForm
-          ? `<a class="official-form-link" href="${escapeHtml(officialForm)}" target="_blank" rel="noopener">📤 Submit on the official WIDA Google Form</a>`
+          ? `<a class="official-form-link" href="${escapeHtml(officialForm)}" target="_blank" rel="noopener">📝 Practice WIDA on Google Forms</a>`
           : "";
         return `
         <article class="domain-overview-card" style="--domain-color:${domain.color}">
@@ -1329,8 +1354,9 @@
       ? `${activity.title} · ${domainLabel(state.domain)} ${levelName} | EduWonderLab`
       : `${DATA.productTitle} | EduWonderLab`;
 
-    $("backToHubBtn").onclick = () =>
-      navigate(hubUrl(state.domain, state.level));
+    const backBtn = $("backToHubBtn");
+    if (backBtn)
+      backBtn.onclick = () => navigate(hubUrl(state.domain, state.level));
   }
 
   function listHTML(items) {
