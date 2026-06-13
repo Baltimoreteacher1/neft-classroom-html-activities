@@ -8,19 +8,27 @@
       content="Neft Teacher Grade 6 math curriculum hub — every lesson, notes packet, graphic novel, 3D game, and test organized by unit."
     />
     <title>Curriculum Hub — Neft Teacher Grade 6 Math</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Nunito:wght@600;700;800;900&display=swap"
+    />
     <link rel="stylesheet" href="/assets/curriculum-enhancements.css" />
     <style>
       :root {
-        --navy: #fbbf24; /* Clean amber-gold */
-        --teal: #2dd4bf; /* Crisp teal */
-        --teal-light: rgba(45, 212, 191, 0.08);
-        --amber: #fbbf24;
-        --amber-light: rgba(251, 191, 36, 0.08);
-        --cream: #07080e; /* Sleek deep black-midnight */
-        --ink: #f8fafc; /* Crisp clean off-white */
-        --muted: #94a3b8; /* Professional slate gray */
-        --line: rgba(255, 255, 255, 0.075);
-        --card: #11131f; /* Crisp solid card background */
+        /* ACCESS Practice Lab palette — light, formal, academic */
+        --navy: #15487f; /* deep brand blue */
+        --teal: #205fa6; /* primary accent / links */
+        --teal-light: rgba(32, 95, 166, 0.08);
+        --amber: #2c7d6b; /* secondary accent (green) */
+        --amber-light: rgba(44, 125, 107, 0.08);
+        --cream: #eaf0f7; /* paper background */
+        --ink: #14223a; /* primary text (navy ink) */
+        --muted: #56627a; /* slate gray */
+        --line: rgba(20, 34, 58, 0.1);
+        --card: #ffffff; /* surface */
+        --surface-2: #f3f7fc;
       }
       * {
         box-sizing: border-box;
@@ -29,7 +37,8 @@
         margin: 0;
         background: var(--cream);
         color: var(--ink);
-        font-family: "Hanken Grotesk", system-ui, sans-serif;
+        font-family: "Atkinson Hyperlegible", system-ui, sans-serif;
+        font-size: 17px;
         line-height: 1.6;
         -webkit-font-smoothing: antialiased;
         min-height: 100vh;
@@ -43,25 +52,24 @@
         z-index: -2;
         background:
           radial-gradient(
-            60% 50% at 15% 0%,
-            rgba(251, 191, 36, 0.05),
-            transparent 70%
+            1100px 520px at 88% -8%,
+            rgba(44, 125, 107, 0.14),
+            transparent 60%
           ),
           radial-gradient(
-            55% 55% at 95% 100%,
-            rgba(45, 212, 191, 0.04),
-            transparent 70%
+            1000px 520px at -5% 2%,
+            rgba(32, 95, 166, 0.16),
+            transparent 58%
           ),
-          #07080e;
+          var(--cream);
       }
       body::after {
         content: "";
         position: fixed;
         inset: 0;
         z-index: -1;
-        opacity: 0.04;
+        opacity: 0;
         pointer-events: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
       }
       a {
         color: var(--teal);
@@ -88,7 +96,7 @@
         margin: 0;
       }
       header.hub h1 {
-        font-family: Fraunces, serif;
+        font-family: "Nunito", system-ui, sans-serif;
         color: var(--ink);
         margin: 10px 0 12px;
         font-size: clamp(2.5rem, 7vw, 4rem);
@@ -115,7 +123,7 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        background: #161825;
+        background: #ffffff;
         border: 1px solid var(--line);
         border-radius: 12px;
         padding: 0 14px;
@@ -144,7 +152,7 @@
         min-height: 46px;
         padding: 0 18px;
         border: 1px solid var(--line);
-        background: #161825;
+        background: #ffffff;
         color: var(--ink);
         border-radius: 12px;
         font-weight: 600;
@@ -155,7 +163,7 @@
       }
       .btn:hover,
       .btn:focus-visible {
-        background: #1e2133;
+        background: #f3f7fc;
         border-color: var(--teal);
         color: var(--teal);
       }
@@ -203,7 +211,7 @@
         flex-wrap: wrap;
       }
       .unit-num {
-        font-family: Fraunces, serif;
+        font-family: "Nunito", system-ui, sans-serif;
         font-weight: 600;
         font-size: 20px;
       }
@@ -316,8 +324,8 @@
         text-decoration: none;
         font-size: 13.5px;
         font-weight: 600;
-        color: #cbd5e1;
-        background: #1e293b;
+        color: #15487f;
+        background: #eef3f9;
         border: 1px solid rgba(255, 255, 255, 0.05);
         border-radius: 999px;
         padding: 8px 14px;
@@ -327,7 +335,7 @@
       }
       .res:hover,
       .res:focus-visible {
-        background: #334155;
+        background: #e3edf9;
         border-color: var(--teal);
         outline: none;
         color: #ffffff;
@@ -440,7 +448,7 @@
         gap: 4px;
       }
       .unit-card-num {
-        font-family: Fraunces, serif;
+        font-family: "Nunito", system-ui, sans-serif;
         font-weight: 500;
         font-size: 24px;
         color: var(--ink);
@@ -512,7 +520,7 @@
         overflow: hidden;
       }
       .select-control option {
-        background: #0d0f17;
+        background: #ffffff;
         color: var(--ink);
       }
       .select-control:focus {
@@ -681,7 +689,7 @@
         font-weight: 600;
         color: var(--ink);
         margin-bottom: 6px;
-        font-family: Fraunces, serif;
+        font-family: "Nunito", system-ui, sans-serif;
       }
       .search-result-unit {
         font-size: 11px;
@@ -735,18 +743,18 @@
       .lesson-row {
         border: 1px solid var(--line);
         border-radius: 8px;
-        background: #161825;
+        background: #ffffff;
         transition:
           border-color 0.2s,
           background 0.2s;
         overflow: hidden;
       }
       .lesson-row:hover {
-        background: #1d2133;
+        background: #f3f7fc;
         border-color: var(--teal);
       }
       .lesson-row.active {
-        background: #141622;
+        background: #eef3f9;
         border-color: var(--teal);
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
       }
@@ -793,19 +801,31 @@
 
       /* Light Theme Overrides */
       body.light-theme {
-        --cream: #f7f4ec;
-        --ink: #21313f;
-        --muted: #5f6f80;
-        --line: #d7e2ed;
+        /* ACCESS Practice Lab palette — cool paper, blue primary, green accent */
+        --cream: #eaf0f7;
+        --ink: #14223a;
+        --muted: #56627a;
+        --line: #d6e0ec;
         --card: #ffffff;
-        --navy: #12355b;
-        --teal: #1fa6a2;
-        --teal-light: #dff2ee;
-        --amber: #d97706;
-        --amber-light: #fef0d8;
+        --navy: #15487f;
+        --teal: #205fa6;
+        --teal-light: #e7eff9;
+        --amber: #2c7d6b;
+        --amber-light: #e7f4ef;
       }
       body.light-theme::before {
-        background: var(--cream) !important;
+        background:
+          radial-gradient(
+            1100px 520px at 88% -8%,
+            rgba(44, 125, 107, 0.14),
+            transparent 60%
+          ),
+          radial-gradient(
+            1000px 520px at -5% 2%,
+            rgba(32, 95, 166, 0.16),
+            transparent 58%
+          ),
+          var(--cream) !important;
       }
       body.light-theme::after {
         opacity: 0.01;
@@ -957,7 +977,7 @@
         margin-bottom: 12px;
       }
       .modal-title {
-        font-family: Fraunces, serif;
+        font-family: "Nunito", system-ui, sans-serif;
         font-size: 22px;
         margin: 0 0 12px;
         color: var(--ink);
@@ -6319,11 +6339,17 @@
           // Unit 10 - Geometry
           "10-3": [
             { text: "NetFold Pro Simulator", href: "/netfold-pro/" },
-            { text: "Nets of 3D Figures", href: "/math/unit-5/supplemental/5-6session1/" },
+            {
+              text: "Nets of 3D Figures",
+              href: "/math/unit-5/supplemental/5-6session1/",
+            },
           ],
           "10-5": [
             { text: "NetFold Pro Simulator", href: "/netfold-pro/" },
-            { text: "Nets of 3D Figures", href: "/math/unit-5/supplemental/5-6session1/" },
+            {
+              text: "Nets of 3D Figures",
+              href: "/math/unit-5/supplemental/5-6session1/",
+            },
           ],
         };
 
@@ -6870,9 +6896,8 @@
                 if (href) {
                   var selectedActText =
                     actSelect.options[actSelect.selectedIndex].textContent;
-                  var isMobile = window.matchMedia(
-                    "(max-width: 640px)",
-                  ).matches;
+                  var isMobile =
+                    window.matchMedia("(max-width: 640px)").matches;
                   if (!isMobile) {
                     showLaunchModal(selectedActText, href);
                   }
@@ -7046,13 +7071,18 @@
     <script>
       window.CURRICULUM_SYNC = {
         useApiContent: true,
-        apiBase: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-          ? 'http://localhost:8787'
-          : 'https://neft-school-hub-api.neftjd.workers.dev'
+        apiBase:
+          window.location.hostname === "localhost" ||
+          window.location.hostname === "127.0.0.1"
+            ? "http://localhost:8787"
+            : "https://neft-school-hub-api.neftjd.workers.dev",
       };
     </script>
     <script src="/assets/curriculum-api-loader.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/minisearch@7.1.2/dist/umd/minisearch.min.js" defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/minisearch@7.1.2/dist/umd/minisearch.min.js"
+      defer
+    ></script>
     <script src="/assets/curriculum-enhancements.js" defer></script>
     <script src="/assets/curriculum-audit-badges.js" defer></script>
   </body>
