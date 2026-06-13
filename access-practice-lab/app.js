@@ -142,6 +142,21 @@
     }
   })();
 
+  // ── v8 content module: attach picture scenes to existing activities by id ──
+  (function mergeV8() {
+    const v8 = window.ACCESS_LAB_V8;
+    if (!v8 || !v8.scenes) return;
+    for (const domain of Object.values(DATA.domains)) {
+      for (const level of Object.values(domain.levels || {})) {
+        for (const activity of level.activities || []) {
+          if (v8.scenes[activity.id] && !activity.scene) {
+            activity.scene = v8.scenes[activity.id];
+          }
+        }
+      }
+    }
+  })();
+
   const state = {
     mode: "hub",
     hubScope: "root",
@@ -951,6 +966,7 @@
     renderActivityGrid();
     renderQuickLinks();
     renderLinkBoard();
+    renderTeacherFormsBoard();
     renderLearnerTools();
   }
 
@@ -1313,6 +1329,48 @@
       .join("");
   }
 
+  function renderTeacherFormsBoard() {
+    const grid = $("teacherFormsBoard");
+    if (!grid) return;
+    // Per-domain WIDA Google Forms. editorId enables Edit + Responses links;
+    // when only the published responder link is known, just offer "Open form".
+    const FORMS = [
+      {
+        domain: "Listening",
+        editorId: "1bbbIlu-zadD6Pirqbp35U7oUo67Sxt8s1ymef0r6tZs",
+      },
+      {
+        domain: "Reading",
+        editorId: "1hxiN6IJB7qP4_bL0HD3NPh6XzqXpsqflCrm94IKxIRo",
+      },
+      {
+        domain: "Writing",
+        editorId: "11KhntaGKT_Pa_tl71sDAGDeLRgqoe3XB8E9K2mXfdpU",
+      },
+      { domain: "Speaking", editorId: null },
+    ];
+    grid.innerHTML = FORMS.map(({ domain, editorId }) => {
+      const student = OFFICIAL_FORMS[domain];
+      const links = [];
+      if (editorId) {
+        links.push(
+          `<a href="https://docs.google.com/forms/d/${editorId}/edit" target="_blank" rel="noopener">✏️ Edit form</a>`,
+          `<a href="https://docs.google.com/forms/d/${editorId}/edit#responses" target="_blank" rel="noopener">📊 Responses</a>`,
+        );
+      }
+      if (student) {
+        links.push(
+          `<a href="${escapeHtml(student)}" target="_blank" rel="noopener">🔗 Student link</a>`,
+        );
+      }
+      if (!links.length)
+        links.push(
+          `<span class="muted">Publish in Google Forms to enable.</span>`,
+        );
+      return `<div class="teacher-form-card"><h4>${escapeHtml(domainLabel(domain))}</h4>${links.join("")}</div>`;
+    }).join("");
+  }
+
   function renderLinkBoard() {
     const sections = [];
     for (const [domainName, domain] of Object.entries(DATA.domains)) {
@@ -1385,6 +1443,15 @@
     const backBtn = $("backToHubBtn");
     if (backBtn)
       backBtn.onclick = () => navigate(hubUrl(state.domain, state.level));
+  }
+
+  function sceneHTML(activity) {
+    if (!activity || !activity.scene) return "";
+    return `
+        <section class="flow-step scene-box">
+          <p class="step-label">Picture</p>
+          <div class="activity-scene" role="img" aria-label="Practice picture — look and describe what you see">${escapeHtml(activity.scene)}</div>
+        </section>`;
   }
 
   function listHTML(items) {
@@ -1955,6 +2022,8 @@
           <h2 id="activityTitle">${escapeHtml(activity.title)}</h2>
           <p class="directions">${escapeHtml(activity.directions)}</p>
         </header>
+
+        ${sceneHTML(activity)}
 
         <section class="flow-step prompt-box">
           <p class="step-label">${escapeHtml(promptStepLabel(state.domain, activity))}</p>
