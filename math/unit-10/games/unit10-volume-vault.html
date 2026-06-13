@@ -336,7 +336,7 @@
           this.score = 0;
           this.floor = 1;
           this.lives = 3;
-          this.cubesInCrate = 0; // current packed volume
+          this.placed = 0; // current packed volume (cubes placed so far)
           this.fallingCubes = [];
           this.spawnTimer = 0;
           this.spawnEvery = 1100;
@@ -391,7 +391,7 @@
 
           // ── ADDITIVE: animated layer-fill gauge (packed vs target). A vertical
           //    bar on the left that fills as cubes are packed; turns green at the
-          //    exact target. Mechanic-neutral readout of cubesInCrate / target.
+          //    exact target. Mechanic-neutral readout of placed / target.
           this.buildFillGauge();
 
           // crate container (slides left/right)
@@ -415,7 +415,7 @@
         }
 
         // ── ADDITIVE: vertical layer-fill gauge. Frame + animated fill rect +
-        //    a "TARGET" tick at 100%. Reflects cubesInCrate/target only.
+        //    a "TARGET" tick at 100%. Reflects placed/target only.
         buildFillGauge() {
           const gx = 38,
             gy = 150,
@@ -460,13 +460,9 @@
         // Update the gauge to reflect packed/target. Animated unless reduced.
         updateFillGauge() {
           if (!this.gaugeFill || !this.level) return;
-          const frac = Phaser.Math.Clamp(
-            this.cubesInCrate / this.level.target,
-            0,
-            1,
-          );
+          const frac = Phaser.Math.Clamp(this.placed / this.level.target, 0, 1);
           const targetH = this.gauge.h * frac;
-          const exact = this.cubesInCrate === this.level.target;
+          const exact = this.placed === this.level.target;
           const color = exact ? 0x51cf66 : 0xffe066;
           this.gaugeFill.fillColor = color;
           if (RM) {
@@ -545,49 +541,56 @@
 
         startFloor() {
           this.level = makeLevel(this.floor);
-          this.cubesInCrate = 0;
+          // Honest model: the crate is the prism's BASE (l × w cells). Catching
+          // cubes fills the base one cell at a time; a full base = one LAYER, and
+          // the prism is h layers tall. Total packed = l × w × h = volume. The
+          // student literally builds "base area × height," the 6.G.2 definition.
+          this.baseCount = this.level.l * this.level.w; // cubes per layer
+          this.placed = 0; // total cubes packed so far
           this.fallingCubes.forEach((c) => c.destroy());
           this.fallingCubes = [];
           this.cells.forEach((c) => c.destroy());
           this.cells = [];
           this.crate.removeAll(true);
 
-          const { l, w } = this.level;
+          const { l, w, h } = this.level;
           this.cols = l;
           this.rows = w;
+          this.CELL = l >= 5 ? 40 : 46; // shrink cells a touch for wide bases
           this.crateW = this.cols * this.CELL;
+          this.crateD = this.rows * this.CELL;
           this.halfCrate = this.crateW / 2;
           this.targetX = W / 2;
           this.crate.x = W / 2;
+          // Lift the crate so a w-deep base grid still clears the bottom edge.
+          this.crateY = H - 70 - this.crateD / 2;
+          this.crate.y = this.crateY;
 
-          // draw crate base + outline
+          // Wooden base tray sized to the full l × w footprint.
           const base = this.add
-            .rectangle(0, 14, this.crateW + 14, 20, 0x5a3d1f)
+            .rectangle(0, 0, this.crateW + 16, this.crateD + 16, 0x5a3d1f)
             .setStrokeStyle(3, 0x3a2510);
           this.crate.add(base);
-          // grid guides for each column
-          for (let c = 0; c < this.cols; c++) {
-            const x = -this.halfCrate + this.CELL / 2 + c * this.CELL;
-            const guide = this.add
-              .rectangle(
-                x,
-                -6,
-                this.CELL - 6,
-                this.level.h * 24 + 8,
-                0x1b2a52,
-                0.5,
-              )
-              .setStrokeStyle(1, 0x3b5bdb, 0.6);
-            this.crate.add(guide);
+          // One guide square per base cell (l columns × w rows), top-down.
+          for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+              const gx = -this.halfCrate + this.CELL / 2 + c * this.CELL;
+              const gy = -this.crateD / 2 + this.CELL / 2 + r * this.CELL;
+              const guide = this.add
+                .rectangle(gx, gy, this.CELL - 6, this.CELL - 6, 0x1b2a52, 0.5)
+                .setStrokeStyle(1, 0x3b5bdb, 0.6);
+              this.crate.add(guide);
+            }
           }
-          this.colHeights = new Array(this.cols).fill(0); // cubes stacked per column
+
+          this.buildLayerTower(h); // h stacked slots showing completed layers
 
           // floor banner
           const banner = this.add
             .text(
               W / 2,
               H / 2 - 40,
-              `FLOOR ${this.floor}\nTarget volume: ${this.level.target} cubic units\n${this.level.l} × ${this.level.w} × ${this.level.h}`,
+              `FLOOR ${this.floor}\n${l} × ${w} × ${h} = ${this.level.target} cubic units\nbase ${l} × ${w} = ${l * w}  ·  height ${h} layers`,
               {
                 fontFamily: "Segoe UI",
                 fontSize: "30px",
@@ -607,6 +610,79 @@
             this.crateLocked = false;
           });
           this.updateHUD();
+        }
+
+        // ── Layer tower: h slots on the right edge that fill green as each full
+        //    base layer is packed. Makes the "× height" factor visible/countable.
+        buildLayerTower(h) {
+          if (this.layerTower) this.layerTower.forEach((o) => o.destroy());
+          if (this.layerTowerExtras)
+            this.layerTowerExtras.forEach((o) => o.destroy());
+          this.layerTower = [];
+          this.layerTowerExtras = [];
+          const slotH = Math.min(34, Math.floor(360 / h));
+          const gap = 6;
+          const towerH = h * slotH + (h - 1) * gap;
+          const tx = W - 70;
+          const top = H / 2 - towerH / 2;
+          this.layerTowerExtras.push(
+            this.add
+              .text(tx + 18, top - 26, "LAYERS", {
+                fontFamily: "Segoe UI",
+                fontSize: "14px",
+                fontStyle: "700",
+                color: "#74c0fc",
+              })
+              .setOrigin(0.5, 0)
+              .setDepth(21),
+          );
+          // Slots fill bottom→top, mirroring how the prism stacks upward.
+          for (let i = 0; i < h; i++) {
+            const y = top + (h - 1 - i) * (slotH + gap);
+            const slot = this.add
+              .rectangle(tx, y, 42, slotH, 0x1b2a52, 0.55)
+              .setOrigin(0, 0)
+              .setStrokeStyle(2, 0x3b5bdb, 0.7)
+              .setDepth(20);
+            this.layerTower.push(slot);
+          }
+        }
+
+        // Light the next tower slot when a base layer is completed.
+        updateLayerTower(completedLayers) {
+          if (!this.layerTower) return;
+          for (let i = 0; i < this.layerTower.length; i++) {
+            const filled = i < completedLayers;
+            this.layerTower[i].setFillStyle(
+              filled ? 0x51cf66 : 0x1b2a52,
+              filled ? 0.95 : 0.55,
+            );
+          }
+        }
+
+        // A base layer just filled — flash it green, sweep its cubes away, and
+        // light a tower slot, then reset the base for the next layer.
+        completeLayer(completedLayers) {
+          sfx.seal();
+          this.updateLayerTower(completedLayers);
+          const sweep = this.cells.slice();
+          this.cells = [];
+          sweep.forEach((cube) => {
+            if (RM) {
+              cube.destroy();
+              return;
+            }
+            this.tweens.add({
+              targets: cube,
+              y: cube.y - 26,
+              alpha: 0,
+              scale: 0.6,
+              duration: 260,
+              ease: "Quad.in",
+              onComplete: () => cube.destroy(),
+            });
+          });
+          this.flashEq("#51cf66");
         }
 
         spawnCube() {
@@ -632,26 +708,20 @@
             this.flashEq("#ff6b6b");
             return;
           }
-          // place into the shortest column to keep stacking even & visible
-          let col = 0,
-            min = Infinity;
-          for (let c = 0; c < this.cols; c++) {
-            if (this.colHeights[c] < min) {
-              min = this.colHeights[c];
-              col = c;
-            }
-          }
-          this.cubesInCrate++;
-          const layerCap = this.cols * this.rows * this.level.h; // == target
+          // Fill the current base layer cell-by-cell (column then row); when the
+          // base is full, that is one completed layer. placed → (col, row, layer).
+          const cellInLayer = this.placed % this.baseCount;
+          const col = cellInLayer % this.cols;
+          const row = Math.floor(cellInLayer / this.cols);
           const cx = -this.halfCrate + this.CELL / 2 + col * this.CELL;
-          const cy = -8 - this.colHeights[col] * 22;
+          const cy = -this.crateD / 2 + this.CELL / 2 + row * this.CELL;
           const cube = this.add
-            .image(cx, cy - 40, "cube")
+            .image(cx, cy - 44, "cube")
             .setDepth(9)
-            .setScale(0.9);
+            .setScale(0.92);
           this.crate.add(cube);
           this.cells.push(cube);
-          this.colHeights[col]++;
+          this.placed++;
           if (RM) {
             // Reduced motion: place instantly, no drop/tumble animation.
             cube.y = cy;
@@ -680,28 +750,18 @@
               yoyo: true,
               delay: 150,
               ease: "Quad.out",
-              onComplete: () => cube.setScale(0.9),
+              onComplete: () => cube.setScale(0.92),
             });
           }
           sfx.catch();
           this.score += 5;
-
           this.updateHUD();
 
-          if (this.cubesInCrate === this.level.target) {
+          if (this.placed === this.level.target) {
             this.sealVault();
-          } else if (this.cubesInCrate > this.level.target) {
-            // overfilled — crate jams
-            sfx.jam();
-            this.cameras.main.shake(200, 0.012);
-            this.jamSpray(this.crate.x, this.crateY - 60); // ADDITIVE: spray
-            this.flashEq("#ff6b6b");
-            this.loseLife();
-            // remove the overflow cube
-            const extra = this.cells.pop();
-            if (extra) extra.destroy();
-            this.cubesInCrate--;
-            this.colHeights[col]--;
+          } else if (this.placed % this.baseCount === 0) {
+            // A full base layer is done — bank it and reset for the next layer.
+            this.completeLayer(this.placed / this.baseCount);
           }
         }
 
@@ -793,16 +853,21 @@
           this.hudFloor.setText("FLOOR  " + this.floor + " / 10");
           this.hudLives.setText("♥".repeat(Math.max(0, this.lives)));
           if (this.level) {
-            const remaining = this.level.target - this.cubesInCrate;
+            const { l, w, h, target } = this.level;
+            const remaining = target - this.placed;
+            const layer = Math.min(
+              h,
+              Math.floor(this.placed / this.baseCount) + 1,
+            );
             this.eq.setText(
-              `PACKED ${this.cubesInCrate}  /  TARGET ${this.level.target}` +
-                `   (need ${remaining} more)`,
+              `BASE ${l}×${w}=${l * w}  ·  LAYER ${layer}/${h}  ·  ` +
+                `PACKED ${this.placed} / ${target}`,
             );
             this.updateFillGauge(); // ADDITIVE: animated fill gauge
             // ADDITIVE: aria-live announcement for assistive tech.
             announce(
-              `Packed ${this.cubesInCrate} of ${this.level.target} cubic units, ` +
-                `${remaining} more needed.`,
+              `Packed ${this.placed} of ${target} cubic units, ` +
+                `layer ${layer} of ${h}, ${remaining} more needed.`,
             );
           }
         }
