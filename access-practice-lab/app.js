@@ -49,6 +49,32 @@
     }
   })();
 
+  // ── v5 content module: large catalog expansion (activities, worksheets,
+  //    a second WIDA "mini" practice test per domain) ──
+  (function mergeV5() {
+    const v5 = window.ACCESS_LAB_V5;
+    if (!v5) return;
+    const append = v5.appendActivities || {};
+    for (const [domainName, levels] of Object.entries(append)) {
+      const domain = DATA.domains[domainName];
+      if (!domain) continue;
+      for (const [levelKey, list] of Object.entries(levels)) {
+        const level = domain.levels[levelKey];
+        if (!level || !Array.isArray(list)) continue;
+        const existing = new Set((level.activities || []).map((a) => a.id));
+        level.activities = (level.activities || []).concat(
+          list.filter((a) => a && a.id && !existing.has(a.id)),
+        );
+      }
+    }
+    if (Array.isArray(v5.tests)) {
+      const seen = new Set(DATA.tests.map((t) => t.id));
+      DATA.tests = DATA.tests.concat(
+        v5.tests.filter((t) => t && t.id && !seen.has(t.id)),
+      );
+    }
+  })();
+
   const state = {
     mode: "hub",
     hubScope: "root",
@@ -880,9 +906,14 @@
             return `<a class="level-chip" href="${href}">${escapeHtml(levelLabel(levelKey, level))}</a>`;
           })
           .join("");
-        const widaTest = (DATA.tests || []).find((t) => t.domain === name);
-        const testLink = widaTest
-          ? `<a class="primary-link wida-test-link" href="/access-practice-lab/test/${escapeHtml(widaTest.id)}">📝 Take the WIDA Practice Test</a>`
+        const domainTests = (DATA.tests || []).filter((t) => t.domain === name);
+        const testLink = domainTests.length
+          ? `<div class="wida-test-links">${domainTests
+              .map(
+                (t, i) =>
+                  `<a class="primary-link wida-test-link" href="/access-practice-lab/test/${escapeHtml(t.id)}">📝 ${i === 0 ? "WIDA Practice Test" : "WIDA Practice Test (Mini)"}</a>`,
+              )
+              .join("")}</div>`
           : "";
         return `
         <article class="domain-overview-card" style="--domain-color:${domain.color}">
