@@ -1,0 +1,3092 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#0c1023" />
+    <title>Learn Anything with AI — A 10th-Grader's Field Guide</title>
+    <meta
+      name="description"
+      content="A complete, interactive guide to using AI as a study partner: prompting, NotebookLM, research, essays, test prep, and more."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0c1023;
+        --bg2: #11162f;
+        --panel: #161c3a;
+        --panel2: #1b2247;
+        --ink: #eef1ff;
+        --muted: #9aa6d4;
+        --faint: #6b76a8;
+        --gold: #ffce6b;
+        --gold-d: #e8b25c;
+        --cyan: #6ad7e5;
+        --mint: #7fe0b0;
+        --rose: #ff9bb0;
+        --violet: #b69cff;
+        --line: rgba(150, 165, 230, 0.16);
+        --line2: rgba(150, 165, 230, 0.1);
+        --card: rgba(255, 255, 255, 0.035);
+        --shadow: 0 18px 50px -20px rgba(0, 0, 0, 0.7);
+        --serif: "Fraunces", Georgia, serif;
+        --sans: "Hanken Grotesk", system-ui, sans-serif;
+        --mono: "JetBrains Mono", ui-monospace, monospace;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: var(--sans);
+        color: var(--ink);
+        background: var(--bg);
+        background-image:
+          radial-gradient(
+            1100px 620px at 88% -8%,
+            rgba(255, 206, 107, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 560px at -6% 8%,
+            rgba(106, 215, 229, 0.1),
+            transparent 58%
+          ),
+          radial-gradient(
+            800px 700px at 50% 120%,
+            rgba(182, 156, 255, 0.08),
+            transparent 60%
+          );
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        min-height: 100vh;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.5;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+      }
+      a {
+        color: inherit;
+      }
+      ::selection {
+        background: rgba(255, 206, 107, 0.3);
+        color: #fff;
+      }
+
+      /* ---------- Layout ---------- */
+      .shell {
+        position: relative;
+        z-index: 1;
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 0 22px 90px;
+      }
+
+      /* ---------- Hero ---------- */
+      header.hero {
+        padding: 54px 0 30px;
+        position: relative;
+      }
+      .kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 0.74rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--gold);
+        font-weight: 600;
+        padding: 7px 14px;
+        border: 1px solid var(--line);
+        border-radius: 100px;
+        background: var(--card);
+      }
+      .kicker .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--gold);
+        box-shadow: 0 0 14px var(--gold);
+      }
+      h1.title {
+        font-family: var(--serif);
+        font-weight: 900;
+        font-size: clamp(2.3rem, 6vw, 4.4rem);
+        line-height: 1.02;
+        letter-spacing: -0.02em;
+        margin: 22px 0 0;
+        max-width: 16ch;
+      }
+      h1.title em {
+        font-style: italic;
+        color: var(--gold);
+        font-weight: 500;
+      }
+      .lede {
+        font-size: clamp(1.02rem, 2.1vw, 1.22rem);
+        color: var(--muted);
+        max-width: 60ch;
+        margin-top: 18px;
+      }
+      .hero-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 24px;
+      }
+      .pill {
+        font-size: 0.8rem;
+        color: var(--muted);
+        padding: 6px 13px;
+        border: 1px solid var(--line);
+        border-radius: 100px;
+        background: var(--card);
+      }
+      .pill b {
+        color: var(--ink);
+        font-weight: 600;
+      }
+
+      /* ---------- Main grid ---------- */
+      .work {
+        display: grid;
+        grid-template-columns: 248px 1fr;
+        gap: 30px;
+        margin-top: 34px;
+        align-items: start;
+      }
+      @media (max-width: 860px) {
+        .work {
+          grid-template-columns: 1fr;
+          gap: 18px;
+        }
+      }
+
+      /* ---------- Nav ---------- */
+      nav.toc {
+        position: sticky;
+        top: 18px;
+        background: linear-gradient(180deg, var(--panel), var(--bg2));
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 14px;
+        box-shadow: var(--shadow);
+      }
+      @media (max-width: 860px) {
+        nav.toc {
+          position: static;
+        }
+      }
+      .toc-title {
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--faint);
+        padding: 6px 12px 10px;
+        font-weight: 600;
+      }
+      .toc-list {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      @media (max-width: 860px) {
+        .toc-list {
+          flex-direction: row;
+          overflow-x: auto;
+          gap: 6px;
+          padding-bottom: 4px;
+          scrollbar-width: thin;
+          -webkit-overflow-scrolling: touch;
+        }
+      }
+      .tab {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 11px;
+        padding: 9px 12px;
+        color: var(--muted);
+        font-family: var(--sans);
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: 0.18s;
+        white-space: nowrap;
+      }
+      .tab .ix {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--faint);
+        width: 18px;
+        flex: none;
+      }
+      .tab .emoji {
+        font-size: 1rem;
+        filter: saturate(1.2);
+      }
+      .tab:hover {
+        color: var(--ink);
+        background: var(--card);
+        border-color: var(--line2);
+      }
+      .tab[aria-selected="true"] {
+        color: #11142b;
+        background: linear-gradient(100deg, var(--gold), var(--gold-d));
+        font-weight: 700;
+        box-shadow: 0 8px 22px -10px var(--gold);
+      }
+      .tab[aria-selected="true"] .ix,
+      .tab[aria-selected="true"] .emoji {
+        color: #11142b;
+        filter: none;
+      }
+
+      /* ---------- Panels ---------- */
+      .panel {
+        display: none;
+        animation: rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .panel.on {
+        display: block;
+      }
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .panel-head {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 8px;
+      }
+      .panel-num {
+        font-family: var(--serif);
+        font-weight: 900;
+        font-size: 2.6rem;
+        line-height: 1;
+        background: linear-gradient(160deg, var(--gold), var(--cyan));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        flex: none;
+        opacity: 0.95;
+      }
+      h2.ph {
+        font-family: var(--serif);
+        font-weight: 700;
+        font-size: clamp(1.6rem, 3.6vw, 2.3rem);
+        letter-spacing: -0.015em;
+        line-height: 1.08;
+      }
+      .sub {
+        color: var(--muted);
+        font-size: 1.02rem;
+        margin: 10px 0 26px;
+        max-width: 65ch;
+      }
+
+      h3 {
+        font-family: var(--serif);
+        font-weight: 600;
+        font-size: 1.32rem;
+        letter-spacing: -0.01em;
+        margin: 34px 0 12px;
+      }
+      h4 {
+        font-size: 1.02rem;
+        font-weight: 700;
+        margin: 20px 0 8px;
+        color: var(--ink);
+      }
+      p {
+        color: var(--muted);
+        margin: 10px 0;
+      }
+      p strong,
+      li strong {
+        color: var(--ink);
+        font-weight: 600;
+      }
+      ul,
+      ol {
+        color: var(--muted);
+        margin: 10px 0 10px 4px;
+        padding-left: 22px;
+      }
+      li {
+        margin: 7px 0;
+      }
+
+      /* ---------- Cards & boxes ---------- */
+      .card-grid {
+        display: grid;
+        gap: 16px;
+        margin: 18px 0;
+      }
+      .g2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .g3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      @media (max-width: 720px) {
+        .g2,
+        .g3 {
+          grid-template-columns: 1fr;
+        }
+      }
+      .box {
+        background: linear-gradient(170deg, var(--panel), var(--bg2));
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 20px 22px;
+        box-shadow: var(--shadow);
+      }
+      .box.glow {
+        border-color: rgba(255, 206, 107, 0.4);
+        background: linear-gradient(
+          170deg,
+          rgba(255, 206, 107, 0.07),
+          var(--bg2)
+        );
+      }
+      .box .ico {
+        font-size: 1.6rem;
+        display: block;
+        margin-bottom: 6px;
+      }
+      .box h4 {
+        margin-top: 0;
+      }
+      .box p {
+        font-size: 0.92rem;
+        margin: 6px 0 0;
+      }
+
+      .callout {
+        display: flex;
+        gap: 14px;
+        padding: 16px 18px;
+        border-radius: 14px;
+        margin: 18px 0;
+        border: 1px solid var(--line);
+        background: var(--card);
+      }
+      .callout .bar {
+        width: 4px;
+        border-radius: 4px;
+        flex: none;
+      }
+      .callout.tip {
+        background: linear-gradient(
+          100deg,
+          rgba(127, 224, 176, 0.09),
+          transparent
+        );
+      }
+      .callout.tip .bar {
+        background: var(--mint);
+      }
+      .callout.warn {
+        background: linear-gradient(
+          100deg,
+          rgba(255, 155, 176, 0.09),
+          transparent
+        );
+      }
+      .callout.warn .bar {
+        background: var(--rose);
+      }
+      .callout.key {
+        background: linear-gradient(
+          100deg,
+          rgba(255, 206, 107, 0.1),
+          transparent
+        );
+      }
+      .callout.key .bar {
+        background: var(--gold);
+      }
+      .callout h4 {
+        margin: 0 0 3px;
+      }
+      .callout p {
+        margin: 0;
+        font-size: 0.92rem;
+      }
+
+      /* ---------- Prompt cards (copy) ---------- */
+      .prompt {
+        position: relative;
+        background: #0a0e20;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px 18px 16px;
+        margin: 14px 0;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      }
+      .prompt .label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--cyan);
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+      .prompt pre {
+        font-family: var(--mono);
+        font-size: 0.86rem;
+        line-height: 1.6;
+        color: #dfe6ff;
+        white-space: pre-wrap;
+        word-break: break-word;
+        margin: 0;
+        padding-right: 80px;
+      }
+      .prompt pre .fill {
+        color: var(--gold);
+        font-weight: 500;
+      }
+      .copy {
+        position: absolute;
+        top: 13px;
+        right: 13px;
+        cursor: pointer;
+        font-family: var(--sans);
+        font-size: 0.74rem;
+        font-weight: 600;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 6px 11px;
+        transition: 0.16s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .copy:hover {
+        color: var(--ink);
+        border-color: var(--gold);
+        background: rgba(255, 206, 107, 0.12);
+      }
+      .copy.done {
+        color: var(--mint);
+        border-color: var(--mint);
+      }
+
+      /* ---------- Steps ---------- */
+      .steps {
+        counter-reset: s;
+        margin: 18px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .step {
+        position: relative;
+        padding: 16px 18px 16px 58px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+      }
+      .step::before {
+        counter-increment: s;
+        content: counter(s);
+        position: absolute;
+        left: 16px;
+        top: 15px;
+        width: 28px;
+        height: 28px;
+        border-radius: 9px;
+        display: grid;
+        place-items: center;
+        font-family: var(--mono);
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #11142b;
+        background: linear-gradient(150deg, var(--gold), var(--cyan));
+      }
+      .step h4 {
+        margin: 0 0 4px;
+      }
+      .step p {
+        margin: 0;
+        font-size: 0.92rem;
+      }
+
+      /* ---------- Tables ---------- */
+      .tbl {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 18px 0;
+        font-size: 0.9rem;
+        overflow: hidden;
+        border-radius: 14px;
+        border: 1px solid var(--line);
+      }
+      .tbl th,
+      .tbl td {
+        text-align: left;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--line2);
+      }
+      .tbl th {
+        background: var(--panel2);
+        color: var(--ink);
+        font-weight: 600;
+        font-size: 0.78rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .tbl tr:last-child td {
+        border-bottom: 0;
+      }
+      .tbl td {
+        color: var(--muted);
+      }
+      .tbl td b {
+        color: var(--ink);
+      }
+      .tbl tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      /* ---------- Builder ---------- */
+      .builder {
+        background: linear-gradient(165deg, var(--panel2), var(--bg2));
+        border: 1px solid rgba(255, 206, 107, 0.3);
+        border-radius: 18px;
+        padding: 22px;
+        margin: 20px 0;
+        box-shadow: var(--shadow);
+      }
+      .builder-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+      @media (max-width: 620px) {
+        .builder-row {
+          grid-template-columns: 1fr;
+        }
+      }
+      .field label {
+        display: block;
+        font-size: 0.74rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--cyan);
+        font-weight: 600;
+        margin: 0 0 6px;
+      }
+      .field select,
+      .field input,
+      .field textarea {
+        width: 100%;
+        font-family: var(--sans);
+        font-size: 0.92rem;
+        color: var(--ink);
+        background: #0a0e20;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 11px 12px;
+        transition: 0.16s;
+      }
+      .field select:focus,
+      .field input:focus,
+      .field textarea:focus {
+        outline: none;
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(255, 206, 107, 0.12);
+      }
+      .field {
+        margin-bottom: 14px;
+      }
+      .field option {
+        background: #0a0e20;
+      }
+      .builder-out {
+        margin-top: 6px;
+      }
+
+      /* ---------- Flashcard ---------- */
+      .deck {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin: 18px 0;
+      }
+      .flip {
+        perspective: 1000px;
+        width: 200px;
+        height: 128px;
+        cursor: pointer;
+      }
+      .flip-in {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+        transform-style: preserve-3d;
+      }
+      .flip.on .flip-in {
+        transform: rotateY(180deg);
+      }
+      .face {
+        position: absolute;
+        inset: 0;
+        backface-visibility: hidden;
+        border-radius: 14px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow);
+      }
+      .face.front {
+        background: linear-gradient(150deg, var(--panel2), var(--bg2));
+      }
+      .face.back {
+        background: linear-gradient(
+          150deg,
+          rgba(255, 206, 107, 0.14),
+          var(--bg2)
+        );
+        transform: rotateY(180deg);
+      }
+      .face .q {
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--faint);
+        margin-bottom: 6px;
+      }
+      .face .t {
+        font-size: 0.96rem;
+        color: var(--ink);
+        font-weight: 500;
+        line-height: 1.35;
+      }
+      .face.back .t {
+        color: var(--gold);
+      }
+
+      /* ---------- ELI5 ladder ---------- */
+      .ladder-tabs {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 16px 0 0;
+      }
+      .lt {
+        cursor: pointer;
+        font-family: var(--sans);
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--muted);
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 100px;
+        padding: 8px 16px;
+        transition: 0.16s;
+      }
+      .lt:hover {
+        color: var(--ink);
+        border-color: var(--line);
+      }
+      .lt.on {
+        color: #11142b;
+        background: linear-gradient(100deg, var(--cyan), var(--mint));
+        border-color: transparent;
+      }
+      .ladder-body {
+        margin-top: 14px;
+        padding: 18px 20px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        min-height: 96px;
+      }
+      .ladder-body .lvl {
+        display: none;
+      }
+      .ladder-body .lvl.on {
+        display: block;
+        animation: rise 0.35s ease;
+      }
+      .ladder-body p {
+        margin: 0;
+        color: var(--ink);
+        font-size: 1rem;
+      }
+
+      /* ---------- Accordion ---------- */
+      .acc {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        overflow: hidden;
+        margin: 14px 0;
+      }
+      .acc details {
+        border-bottom: 1px solid var(--line2);
+      }
+      .acc details:last-child {
+        border-bottom: 0;
+      }
+      .acc summary {
+        cursor: pointer;
+        padding: 15px 18px;
+        font-weight: 600;
+        color: var(--ink);
+        font-size: 0.98rem;
+        list-style: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: 0.16s;
+      }
+      .acc summary::-webkit-details-marker {
+        display: none;
+      }
+      .acc summary:hover {
+        background: var(--card);
+      }
+      .acc summary .plus {
+        color: var(--gold);
+        font-size: 1.3rem;
+        transition: 0.25s;
+        line-height: 1;
+      }
+      .acc details[open] summary .plus {
+        transform: rotate(45deg);
+      }
+      .acc .ac-body {
+        padding: 0 18px 16px;
+        color: var(--muted);
+        font-size: 0.93rem;
+      }
+      .acc .ac-body p:first-child {
+        margin-top: 0;
+      }
+
+      /* ---------- Checklist ---------- */
+      .check {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin: 14px 0;
+      }
+      .ck {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 13px 15px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.16s;
+        user-select: none;
+      }
+      .ck:hover {
+        border-color: var(--line);
+      }
+      .ck .bx {
+        width: 22px;
+        height: 22px;
+        border-radius: 7px;
+        border: 2px solid var(--faint);
+        flex: none;
+        display: grid;
+        place-items: center;
+        transition: 0.16s;
+        font-size: 0.8rem;
+        color: #11142b;
+      }
+      .ck .tx {
+        color: var(--muted);
+        font-size: 0.94rem;
+        transition: 0.16s;
+      }
+      .ck.done .bx {
+        background: var(--mint);
+        border-color: var(--mint);
+      }
+      .ck.done .tx {
+        color: var(--faint);
+        text-decoration: line-through;
+      }
+      .progress-wrap {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin: 6px 0 4px;
+      }
+      .ring {
+        --p: 0;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        flex: none;
+        background: conic-gradient(
+          var(--gold) calc(var(--p) * 1%),
+          rgba(255, 255, 255, 0.08) 0
+        );
+        display: grid;
+        place-items: center;
+        transition: 0.4s;
+      }
+      .ring span {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: var(--bg2);
+        display: grid;
+        place-items: center;
+        font-family: var(--mono);
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--gold);
+      }
+
+      /* ---------- Tool directory ---------- */
+      .tool {
+        display: flex;
+        gap: 14px;
+        padding: 16px 18px;
+        background: linear-gradient(170deg, var(--panel), var(--bg2));
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        transition: 0.18s;
+        text-decoration: none;
+        height: 100%;
+      }
+      .tool:hover {
+        transform: translateY(-3px);
+        border-color: rgba(255, 206, 107, 0.5);
+        box-shadow: var(--shadow);
+      }
+      .tool .tlogo {
+        width: 42px;
+        height: 42px;
+        border-radius: 11px;
+        flex: none;
+        display: grid;
+        place-items: center;
+        font-family: var(--serif);
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: #11142b;
+      }
+      .tool h4 {
+        margin: 0 0 3px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .tool h4 .ext {
+        font-size: 0.7rem;
+        color: var(--faint);
+      }
+      .tool p {
+        margin: 0;
+        font-size: 0.86rem;
+      }
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 9px;
+      }
+      .ttag {
+        font-size: 0.7rem;
+        color: var(--cyan);
+        padding: 3px 9px;
+        border: 1px solid var(--line);
+        border-radius: 100px;
+      }
+
+      /* ---------- Misc ---------- */
+      .divider {
+        height: 1px;
+        background: var(--line);
+        margin: 34px 0;
+        border: 0;
+      }
+      .link {
+        color: var(--gold);
+        text-decoration: none;
+        border-bottom: 1px solid rgba(255, 206, 107, 0.35);
+        padding-bottom: 1px;
+        transition: 0.16s;
+        font-weight: 500;
+      }
+      .link:hover {
+        border-color: var(--gold);
+      }
+      .next-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 40px;
+        flex-wrap: wrap;
+      }
+      .next-btn {
+        cursor: pointer;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 13px 20px;
+        color: var(--ink);
+        font-family: var(--sans);
+        font-weight: 600;
+        font-size: 0.92rem;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        transition: 0.16s;
+      }
+      .next-btn:hover {
+        border-color: var(--gold);
+        background: rgba(255, 206, 107, 0.08);
+      }
+      .next-btn.prim {
+        background: linear-gradient(100deg, var(--gold), var(--gold-d));
+        color: #11142b;
+        border-color: transparent;
+      }
+      footer {
+        margin-top: 60px;
+        padding-top: 24px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        color: var(--faint);
+        font-size: 0.84rem;
+      }
+      .home-link {
+        color: var(--muted);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .home-link:hover {
+        color: var(--gold);
+      }
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%) translateY(20px);
+        opacity: 0;
+        background: var(--ink);
+        color: #11142b;
+        font-weight: 600;
+        font-size: 0.86rem;
+        padding: 11px 20px;
+        border-radius: 100px;
+        box-shadow: var(--shadow);
+        pointer-events: none;
+        transition: 0.3s;
+        z-index: 50;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="hero">
+        <span class="kicker"
+          ><span class="dot"></span>EduWonderLab · Field Guide</span
+        >
+        <h1 class="title">
+          Learn anything with AI <em>without</em> letting it think for you.
+        </h1>
+        <p class="lede">
+          A practical, no-fluff playbook for a 10th-grader who wants to use AI
+          to actually understand things — study faster, write better, prep for
+          tests, and build your own research lab. Twelve chapters, real prompts
+          you can copy, and tools you can use tonight.
+        </p>
+        <div class="hero-meta">
+          <span class="pill">⏱️ <b>12 chapters</b></span>
+          <span class="pill">📋 <b>40+ copy-paste prompts</b></span>
+          <span class="pill">🧪 <b>Hands-on builders</b></span>
+          <span class="pill">🎓 Built for grades 9–12</span>
+        </div>
+      </header>
+
+      <div class="work">
+        <nav class="toc" aria-label="Chapters">
+          <div class="toc-title">Chapters</div>
+          <div class="toc-list" id="tocList">
+            <button class="tab" data-p="0" aria-selected="true">
+              <span class="ix">00</span><span class="emoji">🚀</span>Start Here
+            </button>
+            <button class="tab" data-p="1">
+              <span class="ix">01</span><span class="emoji">🧠</span>How AI
+              Thinks
+            </button>
+            <button class="tab" data-p="2">
+              <span class="ix">02</span><span class="emoji">💬</span>Prompting
+              101
+            </button>
+            <button class="tab" data-p="3">
+              <span class="ix">03</span><span class="emoji">🧸</span>Explain
+              Like I'm 5
+            </button>
+            <button class="tab" data-p="4">
+              <span class="ix">04</span><span class="emoji">📚</span>Study
+              Smarter
+            </button>
+            <button class="tab" data-p="5">
+              <span class="ix">05</span><span class="emoji">🎧</span>Build a
+              NotebookLM
+            </button>
+            <button class="tab" data-p="6">
+              <span class="ix">06</span><span class="emoji">🔍</span>Research
+              Right
+            </button>
+            <button class="tab" data-p="7">
+              <span class="ix">07</span><span class="emoji">🧮</span>Subject
+              Playbooks
+            </button>
+            <button class="tab" data-p="8">
+              <span class="ix">08</span><span class="emoji">✍️</span>Essay Coach
+            </button>
+            <button class="tab" data-p="9">
+              <span class="ix">09</span><span class="emoji">📝</span>Test Prep
+              Machine
+            </button>
+            <button class="tab" data-p="10">
+              <span class="ix">10</span><span class="emoji">🗂️</span>Prompt
+              Library
+            </button>
+            <button class="tab" data-p="11">
+              <span class="ix">11</span><span class="emoji">🛡️</span>Tools &amp;
+              Integrity
+            </button>
+          </div>
+        </nav>
+
+        <main id="panels">
+          <!-- ============ 0 START HERE ============ -->
+          <section class="panel on" data-panel="0">
+            <div class="panel-head">
+              <span class="panel-num">00</span>
+              <div><h2 class="ph">Start Here</h2></div>
+            </div>
+            <p class="sub">
+              AI is the most powerful study tool ever invented — and the easiest
+              one to misuse. The difference between a student who gets smarter
+              with AI and one who gets dependent on it comes down to
+              <strong>how</strong> they use it. This chapter sets the rules of
+              the game.
+            </p>
+
+            <div class="callout key">
+              <div class="bar"></div>
+              <div>
+                <h4>The one idea that matters most</h4>
+                <p>
+                  Use AI as a <strong>tutor that quizzes you</strong>, not a
+                  <strong>vending machine that hands you answers</strong>. A
+                  tutor makes you do the thinking; a vending machine makes your
+                  brain weaker. Almost every technique in this guide is just a
+                  clever way to keep <em>you</em> doing the thinking.
+                </p>
+              </div>
+            </div>
+
+            <h3>What AI is genuinely great at</h3>
+            <div class="card-grid g3">
+              <div class="box">
+                <span class="ico">🔁</span>
+                <h4>Endless patience</h4>
+                <p>
+                  Ask the same question 9 different ways at midnight. It never
+                  sighs or judges you.
+                </p>
+              </div>
+              <div class="box">
+                <span class="ico">🎚️</span>
+                <h4>Adjustable difficulty</h4>
+                <p>
+                  "Explain it simpler" or "go deeper" — it re-levels any topic
+                  to exactly where you are.
+                </p>
+              </div>
+              <div class="box">
+                <span class="ico">🧪</span>
+                <h4>Instant practice</h4>
+                <p>
+                  Generate quizzes, flashcards, and practice problems on any
+                  topic in seconds.
+                </p>
+              </div>
+              <div class="box">
+                <span class="ico">🪞</span>
+                <h4>A thinking mirror</h4>
+                <p>
+                  Explain something to it and it shows you the gaps in what you
+                  actually understand.
+                </p>
+              </div>
+              <div class="box">
+                <span class="ico">🗣️</span>
+                <h4>A debate partner</h4>
+                <p>
+                  Argue a point, get pushed back on, and sharpen your reasoning
+                  before a class discussion.
+                </p>
+              </div>
+              <div class="box">
+                <span class="ico">⚡</span>
+                <h4>Boring-work eraser</h4>
+                <p>
+                  Formatting, outlining, summarizing dense pages — it clears the
+                  busywork so you can think.
+                </p>
+              </div>
+            </div>
+
+            <h3>What AI is bad at (know this cold)</h3>
+            <table class="tbl">
+              <tr>
+                <th>It will…</th>
+                <th>So you should…</th>
+              </tr>
+              <tr>
+                <td>
+                  <b>Make things up confidently</b> ("hallucinate") — fake
+                  quotes, fake dates, fake citations.
+                </td>
+                <td>
+                  Verify anything you'll be graded on against a real source.
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <b>Sometimes do math wrong</b>, especially multi-step
+                  arithmetic.
+                </td>
+                <td>
+                  Ask it to show steps, then check the steps — or use a
+                  calculator tool.
+                </td>
+              </tr>
+              <tr>
+                <td><b>Sound certain when it's guessing.</b></td>
+                <td>Ask "how confident are you and what could be wrong?"</td>
+              </tr>
+              <tr>
+                <td><b>Not know recent events</b> past its training cutoff.</td>
+                <td>Use a tool with web search for anything current.</td>
+              </tr>
+              <tr>
+                <td><b>Flatter you</b> and agree too easily.</td>
+                <td>Ask it to critique your idea, not praise it.</td>
+              </tr>
+            </table>
+
+            <h3>The 80/20 of this whole guide</h3>
+            <div class="steps">
+              <div class="step">
+                <h4>Always ask it to teach, not tell</h4>
+                <p>
+                  Add "explain your reasoning" or "quiz me on this" to almost
+                  everything.
+                </p>
+              </div>
+              <div class="step">
+                <h4>Give it context</h4>
+                <p>
+                  Your grade level, the assignment, what you already know.
+                  Better input = better output.
+                </p>
+              </div>
+              <div class="step">
+                <h4>Verify before you trust</h4>
+                <p>Anything graded gets checked against a real source.</p>
+              </div>
+              <div class="step">
+                <h4>Keep your fingerprints on the work</h4>
+                <p>
+                  The final understanding — and the final words — should be
+                  yours.
+                </p>
+              </div>
+            </div>
+
+            <div class="callout tip">
+              <div class="bar"></div>
+              <div>
+                <h4>How to use this guide</h4>
+                <p>
+                  Jump around the chapters on the left. Every gray code box is a
+                  <strong>real prompt</strong> — hit <em>Copy</em> and paste it
+                  into any AI chat, swapping the
+                  <span style="color: var(--gold)">gold parts</span> for your
+                  own topic. Try the builders and flashcards as you go.
+                </p>
+              </div>
+            </div>
+            <div class="next-row">
+              <span></span
+              ><button class="next-btn prim" data-go="1">
+                Next: How AI Thinks →
+              </button>
+            </div>
+          </section>
+
+          <!-- ============ 1 HOW AI THINKS ============ -->
+          <section class="panel" data-panel="1">
+            <div class="panel-head">
+              <span class="panel-num">01</span>
+              <div><h2 class="ph">How AI Actually Thinks</h2></div>
+            </div>
+            <p class="sub">
+              You don't need a computer science degree, but a simple mental
+              model of what's happening under the hood instantly makes you
+              better at prompting — and explains why AI sometimes lies to your
+              face.
+            </p>
+
+            <h3>It's a super-powered autocomplete</h3>
+            <p>
+              An AI chatbot (an <strong>LLM</strong> — Large Language Model) was
+              trained by reading a massive chunk of the internet and books,
+              learning one skill incredibly well:
+              <strong>predicting the next word</strong>. When you type a
+              question, it generates a reply one piece at a time, always picking
+              what's most likely to come next based on patterns it learned.
+            </p>
+
+            <div class="callout key">
+              <div class="bar"></div>
+              <div>
+                <h4>Why this matters for you</h4>
+                <p>
+                  It isn't looking up facts in a database — it's
+                  <em>reconstructing</em> what an answer probably sounds like.
+                  That's why it's brilliant at language and reasoning patterns,
+                  but can confidently "remember" a quote that never existed.
+                  Treat it like a wildly well-read friend with a fuzzy memory,
+                  not like Google or a textbook.
+                </p>
+              </div>
+            </div>
+
+            <h3>Three things this explains</h3>
+            <div class="card-grid g3">
+              <div class="box">
+                <span class="ico">🌀</span>
+                <h4>Hallucinations</h4>
+                <p>
+                  When it doesn't know, it generates the <em>shape</em> of a
+                  right answer anyway — fake but fluent.
+                </p>
+              </div>
+              <div class="box">
+                <span class="ico">📅</span>
+                <h4>Knowledge cutoff</h4>
+                <p>
+                  It only "read up to" a certain date. Newer events need a tool
+                  that searches the web.
+                </p>
+              </div>
+              <div class="box">
+                <span class="ico">🎯</span>
+                <h4>Context is king</h4>
+                <p>
+                  The more relevant detail you give, the better its prediction.
+                  Vague in → vague out.
+                </p>
+              </div>
+            </div>
+
+            <h3>The "context window" — its short-term memory</h3>
+            <p>
+              Everything in your current conversation lives in its
+              <strong>context window</strong> — a kind of short-term memory.
+              Within one chat it remembers what you said earlier. Start a
+              brand-new chat and it forgets everything. This is why
+              <strong>NotebookLM</strong> (Chapter 5) is so powerful: you feed
+              it your actual notes and textbook, and it answers
+              <em>only</em> from those, dramatically cutting hallucinations.
+            </p>
+
+            <div class="callout tip">
+              <div class="bar"></div>
+              <div>
+                <h4>Pro move: tell it who it is</h4>
+                <p>
+                  Because it's predicting based on patterns, telling it to "act
+                  as a patient AP Biology tutor" actually pulls its responses
+                  toward how a good tutor writes. Roleplay isn't a gimmick —
+                  it's steering.
+                </p>
+              </div>
+            </div>
+
+            <h3>Reasoning vs. reflex</h3>
+            <p>
+              Newer models can "think" before answering — working through steps
+              internally. You unlock this just by asking. Compare:
+            </p>
+            <div class="prompt">
+              <div class="label">🐇 Reflex (often wrong on hard problems)</div>
+              <pre>What's the answer to this physics problem?</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">🧠 Reasoning (far more reliable)</div>
+              <pre>
+Solve this physics problem step by step. Show every formula you use and why,
+state your assumptions, and double-check the final answer. Then give the answer.</pre
+              >
+              <button class="copy">Copy</button>
+            </div>
+
+            <div class="next-row">
+              <button class="next-btn" data-go="0">← Start Here</button
+              ><button class="next-btn prim" data-go="2">
+                Next: Prompting 101 →
+              </button>
+            </div>
+          </section>
+
+          <!-- ============ 2 PROMPTING 101 ============ -->
+          <section class="panel" data-panel="2">
+            <div class="panel-head">
+              <span class="panel-num">02</span>
+              <div><h2 class="ph">Prompting 101</h2></div>
+            </div>
+            <p class="sub">
+              A "prompt" is just what you type. The single biggest upgrade to
+              your AI results isn't a better app — it's writing better prompts.
+              Here's the recipe the pros use.
+            </p>
+
+            <h3>The anatomy of a great prompt: R-C-T-F</h3>
+            <p>
+              Four ingredients. You won't always need all four, but the more you
+              include, the sharper the result.
+            </p>
+            <div class="card-grid g2">
+              <div class="box glow">
+                <span class="ico">🎭</span>
+                <h4>R — Role</h4>
+                <p>
+                  Who should it be?
+                  <em>"Act as a patient 10th-grade chemistry tutor."</em>
+                </p>
+              </div>
+              <div class="box glow">
+                <span class="ico">📌</span>
+                <h4>C — Context</h4>
+                <p>
+                  Your situation.
+                  <em>"I have a test Friday and I'm confused about moles."</em>
+                </p>
+              </div>
+              <div class="box glow">
+                <span class="ico">🎯</span>
+                <h4>T — Task</h4>
+                <p>
+                  Exactly what you want.
+                  <em>"Explain it, then give me 3 practice problems."</em>
+                </p>
+              </div>
+              <div class="box glow">
+                <span class="ico">📐</span>
+                <h4>F — Format</h4>
+                <p>
+                  How it should look.
+                  <em>"Use simple language and a real-world example."</em>
+                </p>
+              </div>
+            </div>
+
+            <h3>Watch a weak prompt become a great one</h3>
+            <div class="prompt">
+              <div class="label">👎 Weak</div>
+              <pre>explain moles</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">👍 Strong (R-C-T-F)</div>
+              <pre>Act as a patient 10th-grade chemistry tutor. <span class="fill">I keep getting confused
+about what a "mole" is in chemistry and how it's different from molar mass.</span>
+Explain it to me in plain language with one real-world analogy, then give me
+3 quick practice problems that get slightly harder. Don't show the answers yet —
+let me try first.</pre>
+              <button class="copy">Copy</button>
+            </div>
+
+            <h3>Build your own prompt</h3>
+            <p>
+              Fill these in and a complete prompt assembles below. Copy it
+              straight into any AI.
+            </p>
+            <div class="builder">
+              <div class="builder-row">
+                <div class="field">
+                  <label>Role</label>
+                  <select id="bRole">
+                    <option>a patient tutor</option>
+                    <option>a strict exam coach</option>
+                    <option>an enthusiastic teacher who uses analogies</option>
+                    <option>a Socratic tutor who only asks me questions</option>
+                    <option>a study partner my own age</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Subject / grade</label>
+                  <input id="bSubj" value="10th-grade biology" />
+                </div>
+              </div>
+              <div class="field">
+                <label>What you're trying to do</label>
+                <input
+                  id="bTask"
+                  value="understand how DNA gets copied (replication)"
+                />
+              </div>
+              <div class="field">
+                <label>How you want it delivered</label>
+                <select id="bFmt">
+                  <option>
+                    Explain simply, then quiz me one question at a time
+                  </option>
+                  <option>
+                    Give me a step-by-step walkthrough with an analogy
+                  </option>
+                  <option>
+                    Make me 5 flashcards (Q on one line, A on the next)
+                  </option>
+                  <option>
+                    Explain it 3 ways: like I'm 5, like I'm 15, like I'm a
+                    college student
+                  </option>
+                  <option>
+                    Summarize the key points as a bullet cheat-sheet
+                  </option>
+                </select>
+              </div>
+              <div class="prompt builder-out">
+                <div class="label">⚡ Your prompt</div>
+                <pre id="bOut"></pre>
+                <button class="copy">Copy</button>
+              </div>
+            </div>
+
+            <h3>10 phrases that instantly upgrade any prompt</h3>
+            <table class="tbl">
+              <tr>
+                <th>Add this phrase</th>
+                <th>What it does</th>
+              </tr>
+              <tr>
+                <td><b>"Explain your reasoning step by step."</b></td>
+                <td>Triggers careful thinking; fewer errors.</td>
+              </tr>
+              <tr>
+                <td>
+                  <b
+                    >"Quiz me one question at a time and wait for my answer."</b
+                  >
+                </td>
+                <td>Turns it into active practice, not passive reading.</td>
+              </tr>
+              <tr>
+                <td><b>"Use an analogy a 15-year-old would get."</b></td>
+                <td>Makes abstract ideas click.</td>
+              </tr>
+              <tr>
+                <td><b>"What am I likely to get wrong here?"</b></td>
+                <td>Surfaces common traps before the test does.</td>
+              </tr>
+              <tr>
+                <td><b>"Don't give me the answer — give me a hint."</b></td>
+                <td>Keeps you doing the thinking.</td>
+              </tr>
+              <tr>
+                <td><b>"Rate my answer and tell me what to fix."</b></td>
+                <td>Instant feedback loop.</td>
+              </tr>
+              <tr>
+                <td><b>"Ask me what I already know first."</b></td>
+                <td>Personalizes the explanation to your level.</td>
+              </tr>
+              <tr>
+                <td><b>"Be concise."</b> / <b>"Go deeper."</b></td>
+                <td>Controls length on demand.</td>
+              </tr>
+              <tr>
+                <td><b>"Cite where this comes from / how sure are you?"</b></td>
+                <td>Flags shaky or made-up info.</td>
+              </tr>
+              <tr>
+                <td><b>"Keep going / continue."</b></td>
+                <td>Gets the rest when it stops early.</td>
+              </tr>
+            </table>
+
+            <div class="callout tip">
+              <div class="bar"></div>
+              <div>
+                <h4>Follow-ups are free</h4>
+                <p>
+                  You don't have to get the perfect prompt on the first try.
+                  Just talk back: "simpler," "give me an example," "I still
+                  don't get the second step." A conversation beats one perfect
+                  message.
+                </p>
+              </div>
+            </div>
+
+            <div class="next-row">
+              <button class="next-btn" data-go="1">← How AI Thinks</button
+              ><button class="next-btn prim" data-go="3">
+                Next: Explain Like I'm 5 →
+              </button>
+            </div>
+          </section>
+
+          <!-- ============ 3 ELI5 ============ -->
+          <section class="panel" data-panel="3">
+            <div class="panel-head">
+              <span class="panel-num">03</span>
+              <div><h2 class="ph">Explain Like I'm 5</h2></div>
+            </div>
+            <p class="sub">
+              The fastest way to understand something hard is to first
+              understand a <em>simpler</em> version of it, then climb up. AI is
+              perfect for this because you can ask for the exact same idea at
+              five different difficulty levels.
+            </p>
+
+            <h3>The "difficulty ladder" — try it</h3>
+            <p>
+              Here's photosynthesis explained at four levels. Tap each rung:
+            </p>
+            <div class="ladder-tabs" id="ladTabs">
+              <button class="lt on" data-l="0">🧸 Like I'm 5</button>
+              <button class="lt" data-l="1">🎒 Like I'm 12</button>
+              <button class="lt" data-l="2">🎓 Like I'm in 10th grade</button>
+              <button class="lt" data-l="3">🔬 Like a college student</button>
+            </div>
+            <div class="ladder-body" id="ladBody">
+              <div class="lvl on">
+                <p>
+                  Plants eat sunlight! They drink water and breathe in the air
+                  we breathe out, and the sun helps them turn it into food so
+                  they can grow big. The leftover part they puff back out is the
+                  air <em>we</em> need to breathe. 🌱☀️
+                </p>
+              </div>
+              <div class="lvl">
+                <p>
+                  Plants make their own food using sunlight. Their leaves take
+                  in water from the roots and carbon dioxide from the air, and
+                  sunlight powers a reaction that turns those into sugar (their
+                  energy) and oxygen (which they release for us to breathe).
+                </p>
+              </div>
+              <div class="lvl">
+                <p>
+                  Photosynthesis converts light energy into chemical energy. In
+                  the chloroplasts, carbon dioxide and water react using
+                  sunlight to produce glucose and oxygen:
+                  <em>6CO₂ + 6H₂O + light → C₆H₁₂O₆ + 6O₂</em>. The glucose
+                  stores energy the plant uses to grow.
+                </p>
+              </div>
+              <div class="lvl">
+                <p>
+                  Photosynthesis has light-dependent reactions in the thylakoid
+                  membranes — where photosystems II and I drive electron
+                  transport, generating ATP and NADPH — and the
+                  light-independent Calvin cycle in the stroma, where RuBisCO
+                  fixes CO₂ into G3P, ultimately yielding glucose. Oxygen is a
+                  byproduct of water photolysis.
+                </p>
+              </div>
+            </div>
+
+            <div class="callout key">
+              <div class="bar"></div>
+              <div>
+                <h4>The technique</h4>
+                <p>
+                  When a topic feels impossible, start at the bottom rung. Once
+                  the simple version <em>clicks</em>, ask AI to climb one rung.
+                  You're never lost, because each level is just a small step up
+                  from one you already get.
+                </p>
+              </div>
+            </div>
+
+            <h3>Copy these</h3>
+            <div class="prompt">
+              <div class="label">🪜 The full ladder</div>
+              <pre>Explain <span class="fill">[your topic]</span> to me four times: first like I'm 5,
+then like I'm 12, then like I'm a 10th grader, then like I'm a college student.
+After each version, add one sentence on what got more precise.</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">🧸 Pure ELI5</div>
+              <pre>Explain <span class="fill">[your topic]</span> like I'm 5 years old. Use a simple
+everyday analogy and no jargon. Then ask me a fun question to check I got it.</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">🔎 "I'm stuck on one part"</div>
+              <pre>I understand <span class="fill">[the part you get]</span>, but I'm totally lost on
+<span class="fill">[the part you don't]</span>. Explain just that part as simply as
+possible, assuming I already know the rest. Use a picture-in-words analogy.</pre>
+              <button class="copy">Copy</button>
+            </div>
+
+            <h3>Why analogies are secret weapons</h3>
+            <p>
+              Your brain learns new things by hooking them onto things you
+              already know. A good analogy builds that hook. Ask AI:
+              <em
+                >"Give me 3 different analogies for this so one of them
+                sticks."</em
+              >
+              Then keep the one that makes you go "ohhh."
+            </p>
+
+            <div class="next-row">
+              <button class="next-btn" data-go="2">← Prompting 101</button
+              ><button class="next-btn prim" data-go="4">
+                Next: Study Smarter →
+              </button>
+            </div>
+          </section>
+
+          <!-- ============ 4 STUDY SMARTER ============ -->
+          <section class="panel" data-panel="4">
+            <div class="panel-head">
+              <span class="panel-num">04</span>
+              <div><h2 class="ph">Study Smarter, Not Longer</h2></div>
+            </div>
+            <p class="sub">
+              Re-reading your notes feels productive but barely works. Decades
+              of learning science point to three techniques that actually build
+              memory — and AI makes all three effortless.
+            </p>
+
+            <div class="card-grid g3">
+              <div class="box glow">
+                <span class="ico">🎯</span>
+                <h4>Active Recall</h4>
+                <p>
+                  Testing yourself <em>from memory</em> beats re-reading by a
+                  mile. AI = an infinite quiz machine.
+                </p>
+              </div>
+              <div class="box glow">
+                <span class="ico">📆</span>
+                <h4>Spaced Repetition</h4>
+                <p>
+                  Review just before you'd forget. AI builds a schedule and
+                  re-quizzes old material.
+                </p>
+              </div>
+              <div class="box glow">
+                <span class="ico">🗣️</span>
+                <h4>The Feynman Technique</h4>
+                <p>
+                  If you can teach it simply, you know it. Teach AI and let it
+                  find your gaps.
+                </p>
+              </div>
+            </div>
+
+            <h3>1 · Turn notes into a quiz (active recall)</h3>
+            <div class="prompt">
+              <div class="label">📋 Paste your notes after this</div>
+              <pre>Here are my notes on <span class="fill">[topic]</span>. Quiz me with 8 questions,
+one at a time. Wait for my answer before the next. Mix easy recall with 2 harder
+"why/how" questions. After each, tell me if I'm right and add one detail I missed:
+
+<span class="fill">[paste your notes]</span></pre>
+              <button class="copy">Copy</button>
+            </div>
+
+            <h3>2 · The Feynman test (find your gaps)</h3>
+            <p>
+              Explain the topic to the AI in your own words. Where your
+              explanation is fuzzy, your understanding is fuzzy.
+            </p>
+            <div class="prompt">
+              <div class="label">🪞 Reverse the roles</div>
+              <pre>I'm going to explain <span class="fill">[topic]</span> to you as if you're my student.
+Listen, then point out exactly where my explanation was vague, wrong, or
+missing something — and ask me one question about the weakest part.
+
+My explanation: <span class="fill">[explain it in your own words]</span></pre>
+              <button class="copy">Copy</button>
+            </div>
+
+            <h3>3 · Make flashcards (and a spaced plan)</h3>
+            <p>
+              Flip these sample cards — this is the format AI will generate for
+              you:
+            </p>
+            <div class="deck" id="deck">
+              <div class="flip">
+                <div class="flip-in">
+                  <div class="face front">
+                    <div class="q">Term</div>
+                    <div class="t">Mitochondria</div>
+                  </div>
+                  <div class="face back">
+                    <div class="q">Definition</div>
+                    <div class="t">
+                      The "powerhouse" — makes ATP energy for the cell.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="flip">
+                <div class="flip-in">
+                  <div class="face front">
+                    <div class="q">Question</div>
+                    <div class="t">
+                      What is the slope-intercept form of a line?
+                    </div>
+                  </div>
+                  <div class="face back">
+                    <div class="q">Answer</div>
+                    <div class="t">y = mx + b</div>
+                  </div>
+                </div>
+              </div>
+              <div class="flip">
+                <div class="flip-in">
+                  <div class="face front">
+                    <div class="q">Date</div>
+                    <div class="t">Start of the U.S. Civil War?</div>
+                  </div>
+                  <div class="face back">
+                    <div class="q">Answer</div>
+                    <div class="t">1861 (Fort Sumter)</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p style="font-size: 0.84rem; color: var(--faint)">
+              ↑ tap a card to flip it
+            </p>
+            <div class="prompt">
+              <div class="label">🗂️ Generate a deck</div>
+              <pre>Make 15 flashcards on <span class="fill">[topic]</span> for a 10th grader.
+Format each as "Q: ... / A: ..." on separate lines so I can paste them into
+Quizlet or Anki. Cover the most testable points, not trivia.</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">📆 Build a study schedule</div>
+              <pre>I have a test on <span class="fill">[topic]</span> in <span class="fill">[X]</span> days
+and about <span class="fill">[30]</span> minutes a day. Make me a spaced-repetition
+study plan that reviews older material while adding new, and tells me exactly
+what to do each day.</pre>
+              <button class="copy">Copy</button>
+            </div>
+
+            <div class="callout warn">
+              <div class="bar"></div>
+              <div>
+                <h4>The trap to avoid</h4>
+                <p>
+                  Reading an AI explanation and nodding "yeah, makes sense"
+                  feels like learning but isn't. You only find out if you
+                  <em>actually</em> know it when you're forced to produce it
+                  from memory. Always end a study session by getting quizzed
+                  with your notes closed.
+                </p>
+              </div>
+            </div>
+
+            <div class="next-row">
+              <button class="next-btn" data-go="3">← Explain Like I'm 5</button
+              ><button class="next-btn prim" data-go="5">
+                Next: Build a NotebookLM →
+              </button>
+            </div>
+          </section>
+
+          <!-- ============ 5 NOTEBOOKLM ============ -->
+          <section class="panel" data-panel="5">
+            <div class="panel-head">
+              <span class="panel-num">05</span>
+              <div><h2 class="ph">Build Your Own NotebookLM</h2></div>
+            </div>
+            <p class="sub">
+              <a
+                class="link"
+                href="https://notebooklm.google.com"
+                target="_blank"
+                rel="noopener"
+                >NotebookLM</a
+              >
+              is a free Google tool that turns <strong>your</strong> documents —
+              notes, textbook chapters, slides, PDFs — into a personal AI study
+              assistant that only answers from <em>your</em> sources. That
+              single rule makes it dramatically more trustworthy than a normal
+              chatbot for studying, because it can't make up facts that aren't
+              in your material — and it cites the exact page.
+            </p>
+
+            <div class="callout key">
+              <div class="bar"></div>
+              <div>
+                <h4>Why it's a game-changer</h4>
+                <p>
+                  It can also turn your study unit into a podcast-style
+                  <strong>Audio Overview</strong> — two AI hosts discussing your
+                  notes — so you can review on the bus. Plus instant study
+                  guides, timelines, and FAQs from your own material.
+                </p>
+              </div>
+            </div>
+
+            <h3>Build one in 6 steps</h3>
+            <div class="steps">
+              <div class="step">
+                <h4>Go to notebooklm.google.com</h4>
+                <p>
+                  Sign in with a Google account (free). Click
+                  <strong>+ Create new notebook</strong>.
+                </p>
+              </div>
+              <div class="step">
+                <h4>Add your sources</h4>
+                <p>
+                  Upload PDFs/slides, paste class notes, drop a Google Doc, a
+                  YouTube lecture link, or a website. Add everything for one
+                  unit — up to dozens of sources.
+                </p>
+              </div>
+              <div class="step">
+                <h4>Let it read</h4>
+                <p>
+                  It ingests everything in a few seconds and shows a summary of
+                  what you loaded.
+                </p>
+              </div>
+              <div class="step">
+                <h4>Ask questions</h4>
+                <p>
+                  "Explain the causes of WWI from my notes." Every answer links
+                  back to the exact source and page — click to verify.
+                </p>
+              </div>
+              <div class="step">
+                <h4>Generate study tools</h4>
+                <p>
+                  One click makes a Study Guide, FAQ, Timeline, or Briefing Doc
+                  from your material.
+                </p>
+              </div>
+              <div class="step">
+                <h4>Make the Audio Overview</h4>
+                <p>
+                  Click <strong>Generate</strong> under Audio. Two AI hosts talk
+                  through your notes like a podcast — review hands-free.
+                </p>
+              </div>
+            </div>
+
+            <h3>Killer ways students use it</h3>
+            <div class="card-grid g2">
+              <div class="box">
+                <span class="ico">📖</span>
+                <h4>"What does the textbook actually say?"</h4>
+                <p>
+                  Upload the chapter, then ask plain-English questions. No more
+                  re-reading 20 pages to find one fact.
+                </p>
+              </div>
+              <div class="box">
+                <span class="ico">🎧</span>
+                <h4>Turn a unit into a podcast</h4>
+                <p>
+                  Audio Overview of your study guide = passive review while you
+                  do chores or commute.
+                </p>
+              </div>
+              <div class="box">
+                <span class="ico">🧩</span>
+                <h4>Connect messy notes</h4>
+                <p>
+                  Dump three weeks of scattered notes and ask it to organize
+                  them into one clean outline.
+                </p>
+              </div>
+              <div class="box">
+                <span class="ico">❓</span>
+                <h4>Self-test from your own class</h4>
+                <p>
+                  "Quiz me only on what's in these sources" — practice on the
+                  exact material you'll be tested on.
+                </p>
+              </div>
+            </div>
+
+            <h3>Prompts to use inside NotebookLM</h3>
+            <div class="prompt">
+              <div class="label">📝 Study guide</div>
+              <pre>
+Create a study guide from these sources: key terms with definitions,
+the 5 most important concepts, and 10 likely test questions with answers.</pre
+              >
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">🔗 Find connections</div>
+              <pre>What are the main themes that connect all of my sources? Show me how
+<span class="fill">[concept A]</span> relates to <span class="fill">[concept B]</span>, citing the source.</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">🎯 Exam prep</div>
+              <pre>
+Based only on these notes, what are the 8 things I most need to memorize
+for a test, and what's a common mistake students make on each?</pre
+              >
+              <button class="copy">Copy</button>
+            </div>
+
+            <h3>Quick FAQ</h3>
+            <div class="acc">
+              <details>
+                <summary>Is it free?<span class="plus">+</span></summary>
+                <div class="ac-body">
+                  <p>
+                    Yes — the standard version is free with a Google account.
+                    There are generous limits that are plenty for school.
+                  </p>
+                </div>
+              </details>
+              <details>
+                <summary>
+                  Will it cheat for me?<span class="plus">+</span>
+                </summary>
+                <div class="ac-body">
+                  <p>
+                    It's a study tool, not an essay writer. Because it sticks to
+                    your sources and cites them, it's built for understanding
+                    your own material — which is exactly the honest use.
+                  </p>
+                </div>
+              </details>
+              <details>
+                <summary>What can I upload?<span class="plus">+</span></summary>
+                <div class="ac-body">
+                  <p>
+                    PDFs, Google Docs &amp; Slides, copied text, website URLs,
+                    and YouTube video links. Great for textbook PDFs, lecture
+                    slides, and your own notes.
+                  </p>
+                </div>
+              </details>
+              <details>
+                <summary>
+                  Can it still be wrong?<span class="plus">+</span>
+                </summary>
+                <div class="ac-body">
+                  <p>
+                    Much less often, since it quotes your sources — but always
+                    click the citation to confirm it read your material
+                    correctly.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <div class="next-row">
+              <button class="next-btn" data-go="4">← Study Smarter</button
+              ><button class="next-btn prim" data-go="6">
+                Next: Research Right →
+              </button>
+            </div>
+          </section>
+
+          <!-- ============ 6 RESEARCH ============ -->
+          <section class="panel" data-panel="6">
+            <div class="panel-head">
+              <span class="panel-num">06</span>
+              <div><h2 class="ph">Research the Right Way</h2></div>
+            </div>
+            <p class="sub">
+              AI can make research 10× faster — or get you a zero for citing a
+              source that doesn't exist. The skill is using it to
+              <strong>navigate and understand</strong> information, while
+              keeping a human's grip on what's actually true.
+            </p>
+
+            <div class="callout warn">
+              <div class="bar"></div>
+              <div>
+                <h4>The #1 research rule</h4>
+                <p>
+                  <strong
+                    >Never cite a source an AI gave you without finding the real
+                    thing yourself.</strong
+                  >
+                  Chatbots invent realistic-looking citations, fake URLs, and
+                  fake quotes. Use AI to <em>point</em> you toward real sources,
+                  then go read and cite the actual source.
+                </p>
+              </div>
+            </div>
+
+            <h3>A solid research workflow</h3>
+            <div class="steps">
+              <div class="step">
+                <h4>Map the topic</h4>
+                <p>
+                  Ask AI for the big subtopics, key terms, and main debates so
+                  you know the landscape before diving in.
+                </p>
+              </div>
+              <div class="step">
+                <h4>Find leads</h4>
+                <p>
+                  Ask for the types of sources and key people/studies to look
+                  for — then search for those on Google Scholar, your library,
+                  or trusted sites.
+                </p>
+              </div>
+              <div class="step">
+                <h4>Understand hard sources</h4>
+                <p>
+                  Paste a dense paragraph and ask AI to explain it in plain
+                  language. Comprehension tool, not citation tool.
+                </p>
+              </div>
+              <div class="step">
+                <h4>Verify everything</h4>
+                <p>
+                  Cross-check any fact, date, or quote against the real source.
+                  If you can't find it, don't use it.
+                </p>
+              </div>
+              <div class="step">
+                <h4>Cite the real source</h4>
+                <p>
+                  Cite what <em>you</em> actually read, not the AI. AI can help
+                  format the citation once you have the real details.
+                </p>
+              </div>
+            </div>
+
+            <h3>Spot a hallucination</h3>
+            <table class="tbl">
+              <tr>
+                <th>Red flag</th>
+                <th>What to do</th>
+              </tr>
+              <tr>
+                <td>A perfect-sounding quote with a specific page number</td>
+                <td>
+                  Search the exact quote in quotation marks. No hits = likely
+                  fake.
+                </td>
+              </tr>
+              <tr>
+                <td>A study or author you can't find anywhere</td>
+                <td>
+                  If Google Scholar has never heard of it, assume it doesn't
+                  exist.
+                </td>
+              </tr>
+              <tr>
+                <td>A URL that 404s or redirects weirdly</td>
+                <td>Never cite a link you haven't opened yourself.</td>
+              </tr>
+              <tr>
+                <td>Suspiciously specific stats with no source</td>
+                <td>
+                  Ask "where exactly does this number come from?" then verify.
+                </td>
+              </tr>
+            </table>
+
+            <h3>Research prompts</h3>
+            <div class="prompt">
+              <div class="label">🗺️ Map a topic</div>
+              <pre>I'm researching <span class="fill">[topic]</span> for a school paper. Give me:
+the 4–5 main subtopics, the key terms I should know, the major viewpoints
+or debates, and what kinds of credible sources I should look for. Don't
+invent specific citations — just point me in the right directions.</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">🔬 Decode a hard source</div>
+              <pre>Explain this paragraph in plain English for a 10th grader, then tell me the
+single main claim and what evidence it gives:
+
+<span class="fill">[paste the difficult text]</span></pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">⚖️ Stress-test your thesis</div>
+              <pre>My thesis is: "<span class="fill">[your argument]</span>." Give me the 3 strongest
+counterarguments and what evidence I'd need to defend against each.</pre>
+              <button class="copy">Copy</button>
+            </div>
+
+            <div class="callout tip">
+              <div class="bar"></div>
+              <div>
+                <h4>Use a tool with web search for current facts</h4>
+                <p>
+                  For anything recent or fact-heavy, use a chatbot mode that
+                  searches the web and shows links (Gemini, Claude, or ChatGPT
+                  with search on). You still open and verify the links — but at
+                  least they're real ones to check.
+                </p>
+              </div>
+            </div>
+
+            <div class="next-row">
+              <button class="next-btn" data-go="5">← Build a NotebookLM</button
+              ><button class="next-btn prim" data-go="7">
+                Next: Subject Playbooks →
+              </button>
+            </div>
+          </section>
+
+          <!-- ============ 7 SUBJECT PLAYBOOKS ============ -->
+          <section class="panel" data-panel="7">
+            <div class="panel-head">
+              <span class="panel-num">07</span>
+              <div><h2 class="ph">Subject Playbooks</h2></div>
+            </div>
+            <p class="sub">
+              Each subject has its own best moves. Here's how to point AI at the
+              work that actually shows up in 10th grade.
+            </p>
+
+            <h3>🧮 Math</h3>
+            <p>
+              The golden rule:
+              <strong>never just ask for the answer.</strong> Ask it to coach
+              you, and always double-check arithmetic (AI slips on
+              calculations).
+            </p>
+            <div class="prompt">
+              <div class="label">Hint, don't solve</div>
+              <pre>I'm stuck on this problem. DON'T give me the answer. Give me only the next
+hint to move forward, then let me try. If I'm wrong, give a smaller hint.
+
+Problem: <span class="fill">[paste problem]</span></pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">Check my work</div>
+              <pre>Here's my solution. Check each step, point to the first mistake (if any)
+without fixing it for me, and tell me which concept I should review.
+
+<span class="fill">[paste your steps]</span></pre>
+              <button class="copy">Copy</button>
+            </div>
+
+            <h3>🧪 Science</h3>
+            <div class="prompt">
+              <div class="label">Concept + misconception</div>
+              <pre>Explain <span class="fill">[concept]</span> with a real-world example, then tell me the
+most common misconception students have about it and why it's wrong.</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">Lab report helper (honest)</div>
+              <pre>I did a lab on <span class="fill">[topic]</span> and got <span class="fill">[results]</span>.
+Ask me questions to help ME write the analysis — what trends do I see, what
+might explain them, what error sources exist. Don't write it for me.</pre>
+              <button class="copy">Copy</button>
+            </div>
+
+            <h3>📕 English &amp; Literature</h3>
+            <div class="prompt">
+              <div class="label">Understand a text</div>
+              <pre>I'm reading <span class="fill">[book/poem]</span>. Without spoiling ahead of
+chapter <span class="fill">[X]</span>, explain the main themes so far and ask me 3
+questions that push me to find evidence in the text myself.</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">Decode Shakespeare / hard language</div>
+              <pre>Translate this passage into modern English side-by-side with the original,
+then explain what it reveals about the character:
+
+<span class="fill">[paste passage]</span></pre>
+              <button class="copy">Copy</button>
+            </div>
+
+            <h3>🌍 History &amp; Social Studies</h3>
+            <div class="prompt">
+              <div class="label">Cause &amp; effect map</div>
+              <pre>Explain the causes and effects of <span class="fill">[event]</span> as a clear
+cause→effect chain a 10th grader can follow, then quiz me on the order
+of events.</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">Two-sides debate</div>
+              <pre>Take the role of two historians who disagree about <span class="fill">[event]</span>.
+Have them debate so I can see both interpretations, then ask me which I
+find more convincing and why.</pre>
+              <button class="copy">Copy</button>
+            </div>
+
+            <h3>🗣️ World Languages</h3>
+            <div class="prompt">
+              <div class="label">Conversation partner</div>
+              <pre>Let's practice <span class="fill">[Spanish]</span> at a beginner-10th-grade level.
+Have a simple conversation about <span class="fill">[ordering food]</span>. After each
+of my replies, gently correct my grammar and give the natural way to say it.</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">Verb / grammar drill</div>
+              <pre>Quiz me on <span class="fill">[present-tense -ar verbs in Spanish]</span>, one at a
+time. Tell me if I'm right, explain mistakes simply, and slowly increase
+difficulty.</pre>
+              <button class="copy">Copy</button>
+            </div>
+
+            <div class="next-row">
+              <button class="next-btn" data-go="6">← Research Right</button
+              ><button class="next-btn prim" data-go="8">
+                Next: Essay Coach →
+              </button>
+            </div>
+          </section>
+
+          <!-- ============ 8 ESSAY COACH ============ -->
+          <section class="panel" data-panel="8">
+            <div class="panel-head">
+              <span class="panel-num">08</span>
+              <div><h2 class="ph">The Essay Coach</h2></div>
+            </div>
+            <p class="sub">
+              Here's the line that keeps you out of trouble and makes you a
+              better writer:
+              <strong>AI is your coach, not your ghostwriter.</strong> Use it at
+              every stage <em>except</em> writing the actual sentences you'll
+              hand in. Your voice, your words.
+            </p>
+
+            <div class="callout warn">
+              <div class="bar"></div>
+              <div>
+                <h4>Where the line is</h4>
+                <p>
+                  ✅ Brainstorming, outlining, getting feedback, checking your
+                  logic — totally fine and smart. ❌ Having it write paragraphs
+                  you submit as your own — that's plagiarism, schools detect it,
+                  and you learn nothing. The whole point of an essay is that
+                  <em>you</em> built the argument.
+                </p>
+              </div>
+            </div>
+
+            <h3>The 5-stage coached essay</h3>
+            <div class="steps">
+              <div class="step">
+                <h4>Brainstorm</h4>
+                <p>
+                  Use AI to generate angles and questions — then
+                  <em>you</em> pick the thesis.
+                </p>
+              </div>
+              <div class="step">
+                <h4>Outline</h4>
+                <p>
+                  Talk through your structure; ask if your argument flows
+                  logically.
+                </p>
+              </div>
+              <div class="step">
+                <h4>Draft — yourself</h4>
+                <p>
+                  Write the real sentences. This is the part that has to be
+                  yours.
+                </p>
+              </div>
+              <div class="step">
+                <h4>Get feedback</h4>
+                <p>
+                  Paste your draft and ask for critique on clarity, evidence,
+                  and flow — not a rewrite.
+                </p>
+              </div>
+              <div class="step">
+                <h4>Revise — yourself</h4>
+                <p>Fix the issues in your own words. Repeat until tight.</p>
+              </div>
+            </div>
+
+            <h3>Stage prompts</h3>
+            <div class="prompt">
+              <div class="label">💡 Brainstorm angles</div>
+              <pre>I have to write a <span class="fill">[persuasive essay]</span> about <span class="fill">[topic]</span>.
+Ask me 5 questions to help me find an angle I actually care about. Don't
+suggest a thesis — help me find mine.</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">🏗️ Test my outline</div>
+              <pre>Here's my thesis and outline. Does the argument flow logically? Where is
+it weak or missing evidence? Ask me questions instead of rewriting it.
+
+<span class="fill">[paste thesis + outline]</span></pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">🔍 Critique my draft (no rewrite)</div>
+              <pre>Give me feedback on this draft like a tough but kind teacher. Comment on
+thesis clarity, evidence, transitions, and word choice. Point out problems
+and ask guiding questions — do NOT rewrite my sentences for me.
+
+<span class="fill">[paste your draft]</span></pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">🎤 Strengthen one paragraph</div>
+              <pre>This paragraph feels weak to me. What specifically isn't working, and what
+3 questions should I ask myself to improve it? Don't rewrite it.
+
+<span class="fill">[paste paragraph]</span></pre>
+              <button class="copy">Copy</button>
+            </div>
+
+            <div class="callout tip">
+              <div class="bar"></div>
+              <div>
+                <h4>Bonus: grammar &amp; clarity check (the safe rewrite)</h4>
+                <p>
+                  Once your ideas and structure are fully yours, it's fine to
+                  ask:
+                  <em
+                    >"Point out grammar errors and awkward sentences, and
+                    explain the fix so I can correct them myself."</em
+                  >
+                  You learn the rule instead of just accepting a change.
+                </p>
+              </div>
+            </div>
+
+            <div class="next-row">
+              <button class="next-btn" data-go="7">← Subject Playbooks</button
+              ><button class="next-btn prim" data-go="9">
+                Next: Test Prep Machine →
+              </button>
+            </div>
+          </section>
+
+          <!-- ============ 9 TEST PREP ============ -->
+          <section class="panel" data-panel="9">
+            <div class="panel-head">
+              <span class="panel-num">09</span>
+              <div><h2 class="ph">The Test Prep Machine</h2></div>
+            </div>
+            <p class="sub">
+              AI's single best study superpower: it generates unlimited
+              realistic practice and gives instant feedback on exactly what you
+              got wrong. Here's how to build a personal test-prep engine.
+            </p>
+
+            <h3>The full prep loop</h3>
+            <div class="steps">
+              <div class="step">
+                <h4>Diagnose</h4>
+                <p>
+                  Take a short mixed quiz to find your weak spots before you
+                  waste time on what you already know.
+                </p>
+              </div>
+              <div class="step">
+                <h4>Drill the gaps</h4>
+                <p>Focus practice on just the topics you missed.</p>
+              </div>
+              <div class="step">
+                <h4>Mock test</h4>
+                <p>
+                  Do a timed practice test in the real format (multiple choice,
+                  short answer, essay).
+                </p>
+              </div>
+              <div class="step">
+                <h4>Error analysis</h4>
+                <p>
+                  For every miss, figure out <em>why</em> — careless, concept
+                  gap, or misread.
+                </p>
+              </div>
+              <div class="step">
+                <h4>Re-test</h4>
+                <p>Quiz again until the weak spots are solid. Closed notes.</p>
+              </div>
+            </div>
+
+            <h3>Engine prompts</h3>
+            <div class="prompt">
+              <div class="label">🩺 Diagnostic quiz</div>
+              <pre>Give me a 10-question diagnostic quiz across all of <span class="fill">[unit/topic]</span>
+to find my weak spots. One question at a time, wait for my answer, then at
+the end tell me which subtopics I should focus on.</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">📝 Full mock test</div>
+              <pre>Create a practice test on <span class="fill">[topic]</span> in this format:
+<span class="fill">[8 multiple choice + 2 short answer]</span>. Don't show answers yet.
+After I finish all of them, grade me, explain every wrong answer, and give
+my score.</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">🔬 Error analysis</div>
+              <pre>I got these questions wrong: <span class="fill">[list them]</span>. For each, explain
+the concept I'm missing, why the right answer is right, and give me one
+similar problem to try.</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">⏱️ Last-night cram (smart version)</div>
+              <pre>My test on <span class="fill">[topic]</span> is tomorrow. Give me the 10 highest-yield
+things to know, then quiz me on only those, one at a time, until I get them
+all right twice.</pre>
+              <button class="copy">Copy</button>
+            </div>
+
+            <div class="callout key">
+              <div class="bar"></div>
+              <div>
+                <h4>The metacognition move</h4>
+                <p>
+                  After a mock test, ask:
+                  <em
+                    >"Based on my wrong answers, what's the pattern in my
+                    mistakes?"</em
+                  >
+                  Often you'll learn you misread questions or rush — fixable
+                  habits worth more than any single fact.
+                </p>
+              </div>
+            </div>
+
+            <div class="next-row">
+              <button class="next-btn" data-go="8">← Essay Coach</button
+              ><button class="next-btn prim" data-go="10">
+                Next: Prompt Library →
+              </button>
+            </div>
+          </section>
+
+          <!-- ============ 10 PROMPT LIBRARY ============ -->
+          <section class="panel" data-panel="10">
+            <div class="panel-head">
+              <span class="panel-num">10</span>
+              <div><h2 class="ph">The Prompt Library</h2></div>
+            </div>
+            <p class="sub">
+              Your copy-paste toolbox. Bookmark this chapter. Swap the
+              <span style="color: var(--gold)">gold parts</span> for your topic
+              and go.
+            </p>
+
+            <h3>🎓 Understand something</h3>
+            <div class="prompt">
+              <div class="label">The 3-level explainer</div>
+              <pre>Explain <span class="fill">[topic]</span> like I'm 5, then 15, then a college student.</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">Socratic mode</div>
+              <pre>Teach me <span class="fill">[topic]</span> by asking me questions one at a time, building on my answers, until I understand it. Start now.</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">The "what's the point" check</div>
+              <pre>In 2 sentences, why does <span class="fill">[topic]</span> actually matter and where would I see it in real life?</pre>
+              <button class="copy">Copy</button>
+            </div>
+
+            <h3>🎯 Practice &amp; test yourself</h3>
+            <div class="prompt">
+              <div class="label">Quiz me</div>
+              <pre>Quiz me on <span class="fill">[topic]</span>, one question at a time, waiting for my answer. Get harder as I get them right.</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">Flashcards</div>
+              <pre>Make 15 Q/A flashcards on <span class="fill">[topic]</span> formatted for Quizlet import.</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">Find my gaps</div>
+              <pre>Ask me 5 questions on <span class="fill">[topic]</span> to find exactly what I don't understand yet, then tell me what to review.</pre>
+              <button class="copy">Copy</button>
+            </div>
+
+            <h3>✍️ Writing (coach mode)</h3>
+            <div class="prompt">
+              <div class="label">Brainstorm partner</div>
+              <pre>Ask me questions to help me find my own thesis about <span class="fill">[topic]</span>. Don't suggest one.</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">Feedback, not rewrite</div>
+              <pre>Critique my draft for clarity, evidence, and flow. Point out issues and ask questions — don't rewrite it. <span class="fill">[paste]</span></pre>
+              <button class="copy">Copy</button>
+            </div>
+
+            <h3>🧠 Get unstuck</h3>
+            <div class="prompt">
+              <div class="label">Hint ladder</div>
+              <pre>I'm stuck on <span class="fill">[problem]</span>. Give me only the next hint, not the answer. Let me try after each hint.</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">Explain my mistake</div>
+              <pre>Here's my wrong answer: <span class="fill">[answer]</span>. Don't fix it — explain what concept I'm misunderstanding.</pre>
+              <button class="copy">Copy</button>
+            </div>
+
+            <h3>⚙️ Productivity</h3>
+            <div class="prompt">
+              <div class="label">Plan my week</div>
+              <pre>I have these assignments and tests: <span class="fill">[list with due dates]</span>. Make me a realistic study schedule that spaces things out and protects my evenings.</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">Break down a big project</div>
+              <pre>Break this big assignment into small daily steps with mini-deadlines: <span class="fill">[describe project + due date]</span>.</pre>
+              <button class="copy">Copy</button>
+            </div>
+            <div class="prompt">
+              <div class="label">Beat procrastination</div>
+              <pre>I'm overwhelmed by <span class="fill">[task]</span> and keep avoiding it. Help me find the smallest possible first step I can do in 5 minutes.</pre>
+              <button class="copy">Copy</button>
+            </div>
+
+            <div class="next-row">
+              <button class="next-btn" data-go="9">← Test Prep Machine</button
+              ><button class="next-btn prim" data-go="11">
+                Next: Tools &amp; Integrity →
+              </button>
+            </div>
+          </section>
+
+          <!-- ============ 11 TOOLS & INTEGRITY ============ -->
+          <section class="panel" data-panel="11">
+            <div class="panel-head">
+              <span class="panel-num">11</span>
+              <div><h2 class="ph">Tools &amp; Integrity</h2></div>
+            </div>
+            <p class="sub">
+              The map of what's out there — and the rules that keep AI making
+              you smarter instead of getting you in trouble.
+            </p>
+
+            <h3>The main AI tools (all have free versions)</h3>
+            <div class="card-grid g2">
+              <a
+                class="tool"
+                href="https://claude.ai"
+                target="_blank"
+                rel="noopener"
+              >
+                <span
+                  class="tlogo"
+                  style="background: linear-gradient(150deg, #ffce6b, #e8b25c)"
+                  >C</span
+                >
+                <div>
+                  <h4>Claude <span class="ext">↗ claude.ai</span></h4>
+                  <p>
+                    Thoughtful, great at writing, explaining, and long
+                    documents. Strong study coach.
+                  </p>
+                  <div class="tag-row">
+                    <span class="ttag">Writing</span
+                    ><span class="ttag">Explaining</span
+                    ><span class="ttag">Long PDFs</span>
+                  </div>
+                </div></a
+              >
+              <a
+                class="tool"
+                href="https://gemini.google.com"
+                target="_blank"
+                rel="noopener"
+              >
+                <span
+                  class="tlogo"
+                  style="background: linear-gradient(150deg, #6ad7e5, #7f92ff)"
+                  >G</span
+                >
+                <div>
+                  <h4>Gemini <span class="ext">↗ gemini.google.com</span></h4>
+                  <p>
+                    Google's AI — built-in web search and tight Google
+                    Docs/Drive integration.
+                  </p>
+                  <div class="tag-row">
+                    <span class="ttag">Web search</span
+                    ><span class="ttag">Google apps</span>
+                  </div>
+                </div></a
+              >
+              <a
+                class="tool"
+                href="https://chatgpt.com"
+                target="_blank"
+                rel="noopener"
+              >
+                <span
+                  class="tlogo"
+                  style="background: linear-gradient(150deg, #7fe0b0, #5bc99a)"
+                  >O</span
+                >
+                <div>
+                  <h4>ChatGPT <span class="ext">↗ chatgpt.com</span></h4>
+                  <p>
+                    The popular all-rounder. Good for almost everything; has a
+                    search mode.
+                  </p>
+                  <div class="tag-row">
+                    <span class="ttag">All-purpose</span
+                    ><span class="ttag">Quizzing</span>
+                  </div>
+                </div></a
+              >
+              <a
+                class="tool"
+                href="https://notebooklm.google.com"
+                target="_blank"
+                rel="noopener"
+              >
+                <span
+                  class="tlogo"
+                  style="background: linear-gradient(150deg, #b69cff, #8f7cf0)"
+                  >N</span
+                >
+                <div>
+                  <h4>
+                    NotebookLM <span class="ext">↗ notebooklm.google.com</span>
+                  </h4>
+                  <p>
+                    Studies <em>your</em> notes &amp; PDFs, cites sources, makes
+                    audio overviews. (Chapter 5.)
+                  </p>
+                  <div class="tag-row">
+                    <span class="ttag">Your sources</span
+                    ><span class="ttag">Audio</span
+                    ><span class="ttag">Cited</span>
+                  </div>
+                </div></a
+              >
+              <a
+                class="tool"
+                href="https://www.khanmigo.ai"
+                target="_blank"
+                rel="noopener"
+              >
+                <span
+                  class="tlogo"
+                  style="background: linear-gradient(150deg, #ff9bb0, #f2789a)"
+                  >K</span
+                >
+                <div>
+                  <h4>Khanmigo <span class="ext">↗ khanmigo.ai</span></h4>
+                  <p>
+                    Khan Academy's AI tutor — designed to guide, not give
+                    answers. Built for school.
+                  </p>
+                  <div class="tag-row">
+                    <span class="ttag">Tutor</span
+                    ><span class="ttag">Math</span>
+                  </div>
+                </div></a
+              >
+              <a
+                class="tool"
+                href="https://www.wolframalpha.com"
+                target="_blank"
+                rel="noopener"
+              >
+                <span
+                  class="tlogo"
+                  style="background: linear-gradient(150deg, #ffce6b, #ff9bb0)"
+                  >W</span
+                >
+                <div>
+                  <h4>
+                    Wolfram Alpha <span class="ext">↗ wolframalpha.com</span>
+                  </h4>
+                  <p>
+                    Not a chatbot — a math/science engine that's actually
+                    reliable for calculations.
+                  </p>
+                  <div class="tag-row">
+                    <span class="ttag">Math</span
+                    ><span class="ttag">Reliable</span>
+                  </div>
+                </div></a
+              >
+            </div>
+
+            <div class="callout warn">
+              <div class="bar"></div>
+              <div>
+                <h4>One real safety note</h4>
+                <p>
+                  Don't paste private info (full name + address, passwords,
+                  anyone's personal data) into AI chats. And remember some tools
+                  may use conversations to improve their models — keep it school
+                  stuff.
+                </p>
+              </div>
+            </div>
+
+            <h3>The integrity line — green vs. red</h3>
+            <table class="tbl">
+              <tr>
+                <th>✅ Makes you smarter</th>
+                <th>🚫 Gets you in trouble</th>
+              </tr>
+              <tr>
+                <td>Asking it to explain a concept</td>
+                <td>Asking it to do the assignment for you</td>
+              </tr>
+              <tr>
+                <td>Getting quizzed and corrected</td>
+                <td>Copying its answers onto a test</td>
+              </tr>
+              <tr>
+                <td>Brainstorming and outlining your essay</td>
+                <td>Submitting AI-written paragraphs as yours</td>
+              </tr>
+              <tr>
+                <td>Feedback that you then apply yourself</td>
+                <td>Pasting its rewrite straight into your draft</td>
+              </tr>
+              <tr>
+                <td>Checking your work and finding your mistakes</td>
+                <td>Skipping the work entirely</td>
+              </tr>
+            </table>
+
+            <div class="callout key">
+              <div class="bar"></div>
+              <div>
+                <h4>The honest gut-check</h4>
+                <p>
+                  Ask yourself one question:
+                  <em
+                    >"After this, do I understand it better — or did I just get
+                    past it?"</em
+                  >
+                  If you understand it better, you used AI right. Also:
+                  <strong>always check your school's AI policy</strong> — rules
+                  differ by class and teacher, and when unsure, ask.
+                </p>
+              </div>
+            </div>
+
+            <h3>Your finishing checklist</h3>
+            <div class="progress-wrap">
+              <div class="ring" id="ring"><span id="ringTxt">0%</span></div>
+              <div>
+                <h4 style="margin: 0">Got the core habits?</h4>
+                <p style="margin: 2px 0 0; font-size: 0.88rem">
+                  Check each as it becomes second nature.
+                </p>
+              </div>
+            </div>
+            <div class="check" id="check">
+              <div class="ck">
+                <span class="bx">✓</span
+                ><span class="tx"
+                  >I ask AI to teach and quiz me, not just hand me answers</span
+                >
+              </div>
+              <div class="ck">
+                <span class="bx">✓</span
+                ><span class="tx"
+                  >I give it context (my level, the assignment, what I
+                  know)</span
+                >
+              </div>
+              <div class="ck">
+                <span class="bx">✓</span
+                ><span class="tx"
+                  >I verify any graded fact against a real source</span
+                >
+              </div>
+              <div class="ck">
+                <span class="bx">✓</span
+                ><span class="tx">I write my own essays — AI only coaches</span>
+              </div>
+              <div class="ck">
+                <span class="bx">✓</span
+                ><span class="tx"
+                  >I end study sessions by getting quizzed with notes
+                  closed</span
+                >
+              </div>
+              <div class="ck">
+                <span class="bx">✓</span
+                ><span class="tx">I know and follow my school's AI policy</span>
+              </div>
+            </div>
+
+            <div class="callout tip">
+              <div class="bar"></div>
+              <div>
+                <h4>That's the whole guide 🎉</h4>
+                <p>
+                  You now know more about studying with AI than most adults.
+                  Pick one chapter, try one prompt tonight, and build from
+                  there. Use it to think <em>more</em>, never less.
+                </p>
+              </div>
+            </div>
+
+            <div class="next-row">
+              <button class="next-btn" data-go="0">↺ Back to Start</button
+              ><a class="next-btn prim" href="/">Home →</a>
+            </div>
+          </section>
+        </main>
+      </div>
+
+      <footer>
+        <a class="home-link" href="/">← eduwonderlab.com</a>
+        <span>A Field Guide · Use AI to think more, not less.</span>
+      </footer>
+    </div>
+
+    <div class="toast" id="toast">Copied ✓</div>
+
+    <script>
+      (function () {
+        var tabs = [].slice.call(document.querySelectorAll(".tab"));
+        var panels = [].slice.call(document.querySelectorAll(".panel"));
+
+        function show(i) {
+          i = String(i);
+          tabs.forEach(function (t) {
+            t.setAttribute(
+              "aria-selected",
+              t.dataset.p === i ? "true" : "false",
+            );
+          });
+          panels.forEach(function (p) {
+            p.classList.toggle("on", p.dataset.panel === i);
+          });
+          var active = tabs.filter(function (t) {
+            return t.dataset.p === i;
+          })[0];
+          if (active && active.scrollIntoView) {
+            active.scrollIntoView({ block: "nearest", inline: "center" });
+          }
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          if (history.replaceState) {
+            history.replaceState(null, "", "#c" + i);
+          }
+        }
+        tabs.forEach(function (t) {
+          t.addEventListener("click", function () {
+            show(t.dataset.p);
+          });
+        });
+        document.addEventListener("click", function (e) {
+          var g = e.target.closest("[data-go]");
+          if (g) {
+            show(g.dataset.go);
+          }
+        });
+        var h = location.hash.match(/^#c(\d+)$/);
+        if (h) {
+          show(h[1]);
+        }
+
+        /* ---- Copy buttons ---- */
+        var toast = document.getElementById("toast"),
+          tT;
+        document.addEventListener("click", function (e) {
+          var b = e.target.closest(".copy");
+          if (!b) return;
+          var pre = b.parentNode.querySelector("pre");
+          if (!pre) return;
+          var txt = pre.innerText.replace(/ /g, " ");
+          var done = function () {
+            b.textContent = "Copied ✓";
+            b.classList.add("done");
+            clearTimeout(tT);
+            toast.classList.add("show");
+            tT = setTimeout(function () {
+              toast.classList.remove("show");
+              b.textContent = "Copy";
+              b.classList.remove("done");
+            }, 1600);
+          };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard
+              .writeText(txt)
+              .then(done)
+              .catch(function () {
+                fallback(txt, done);
+              });
+          } else {
+            fallback(txt, done);
+          }
+        });
+        function fallback(txt, cb) {
+          var ta = document.createElement("textarea");
+          ta.value = txt;
+          ta.style.position = "fixed";
+          ta.style.opacity = "0";
+          document.body.appendChild(ta);
+          ta.select();
+          try {
+            document.execCommand("copy");
+          } catch (e) {}
+          document.body.removeChild(ta);
+          cb();
+        }
+
+        /* ---- Prompt builder ---- */
+        var bRole = document.getElementById("bRole"),
+          bSubj = document.getElementById("bSubj"),
+          bTask = document.getElementById("bTask"),
+          bFmt = document.getElementById("bFmt"),
+          bOut = document.getElementById("bOut");
+        function build() {
+          if (!bOut) return;
+          bOut.textContent =
+            "Act as " +
+            bRole.value +
+            " for " +
+            (bSubj.value || "[subject]") +
+            ".\n" +
+            "I want to " +
+            (bTask.value || "[your goal]") +
+            ".\n" +
+            bFmt.value +
+            ".";
+        }
+        [bRole, bSubj, bTask, bFmt].forEach(function (el) {
+          if (el) {
+            el.addEventListener("input", build);
+            el.addEventListener("change", build);
+          }
+        });
+        build();
+
+        /* ---- Flashcards ---- */
+        document.querySelectorAll(".flip").forEach(function (f) {
+          f.addEventListener("click", function () {
+            f.classList.toggle("on");
+          });
+        });
+
+        /* ---- ELI5 ladder ---- */
+        var lts = [].slice.call(document.querySelectorAll(".lt")),
+          lvls = [].slice.call(document.querySelectorAll("#ladBody .lvl"));
+        lts.forEach(function (t) {
+          t.addEventListener("click", function () {
+            var i = t.dataset.l;
+            lts.forEach(function (x) {
+              x.classList.toggle("on", x === t);
+            });
+            lvls.forEach(function (v, vi) {
+              v.classList.toggle("on", String(vi) === i);
+            });
+          });
+        });
+
+        /* ---- Checklist + ring (localStorage) ---- */
+        var cks = [].slice.call(document.querySelectorAll("#check .ck")),
+          ring = document.getElementById("ring"),
+          ringTxt = document.getElementById("ringTxt");
+        var KEY = "ai-guide-check";
+        var saved = {};
+        try {
+          saved = JSON.parse(localStorage.getItem(KEY) || "{}");
+        } catch (e) {}
+        function paint() {
+          var done = 0;
+          cks.forEach(function (c, i) {
+            if (c.classList.contains("done")) done++;
+          });
+          var pct = Math.round((done / cks.length) * 100);
+          if (ring) {
+            ring.style.setProperty("--p", pct);
+            ringTxt.textContent = pct + "%";
+          }
+        }
+        cks.forEach(function (c, i) {
+          if (saved["k" + i]) c.classList.add("done");
+          c.addEventListener("click", function () {
+            c.classList.toggle("done");
+            saved["k" + i] = c.classList.contains("done");
+            try {
+              localStorage.setItem(KEY, JSON.stringify(saved));
+            } catch (e) {}
+            paint();
+          });
+        });
+        paint();
+      })();
+    </script>
+  </body>
+</html>
