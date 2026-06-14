@@ -2300,7 +2300,22 @@
         this.cameras.main.fadeIn(600);
       };
 
-      new Phaser.Game(config);
+      var rrGame = new Phaser.Game(config);
+      // Keyboard accessibility: make the game canvas focusable.
+      rrGame.events.once("ready", function () {
+        var c = rrGame.canvas;
+        if (c) {
+          c.setAttribute("role", "application");
+          c.setAttribute(
+            "aria-label",
+            "Ratio Rally: a ratios, rates, and unit-rate racing game. Use the on-screen controls or keyboard to play.",
+          );
+          c.setAttribute("tabindex", "0");
+          c.addEventListener("pointerdown", function () {
+            c.focus();
+          });
+        }
+      });
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>

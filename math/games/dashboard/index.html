@@ -1,0 +1,815 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Teacher analytics dashboard for the Grade 6 math games — reads EduPulse and Save/Resume data stored on this device to show attempts, best scores, stars, mastery signals, and a needs-review callout. Fully client-side; nothing leaves this browser."
+    />
+    <title>Math Games — Teacher Dashboard | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="./styles.css" />
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
+  <body>
+    <a class="skip-link" href="#dash-main">Skip to dashboard</a>
+    <main class="page-shell">
+      <header class="hero compact-hero" id="dash-head">
+        <p class="eyebrow">Math Curriculum · Teacher Analytics</p>
+        <h1>Math Games Dashboard</h1>
+        <p class="hero-copy">
+          Reads the EduPulse and Save/Resume data saved in this browser and
+          summarizes play across the Grade 6 math games: attempts, best score,
+          stars, mastery signal, and who needs review. Pure client-side —
+          nothing leaves this device.
+        </p>
+        <p class="dash-scope" id="scope-line" aria-live="polite"></p>
+      </header>
+
+      <section
+        class="dash-toolbar"
+        role="region"
+        aria-label="Dashboard controls"
+      >
+        <label class="visually-hidden" for="f-search">Search</label>
+        <input
+          type="search"
+          id="f-search"
+          placeholder="Search game, standard, or student…"
+        />
+        <label class="visually-hidden" for="f-view">View</label>
+        <select id="f-view" aria-label="Group results by">
+          <option value="game">By game</option>
+          <option value="standard">By standard</option>
+          <option value="student">By student</option>
+        </select>
+        <span class="dash-spacer"></span>
+        <button class="dash-btn" id="btn-refresh" type="button">
+          ↻ Refresh
+        </button>
+        <button class="dash-btn" id="btn-print" type="button">⎙ Print</button>
+        <button class="dash-btn primary" id="btn-export" type="button">
+          ⤓ Export CSV
+        </button>
+      </section>
+
+      <div id="dash-main">
+        <section
+          class="dash-cards"
+          id="kpi-row"
+          aria-label="Summary totals"
+        ></section>
+
+        <section
+          class="dash-panel review-panel"
+          id="review-panel"
+          aria-labelledby="review-h"
+          hidden
+        >
+          <div class="section-heading">
+            <h2 id="review-h">Needs review</h2>
+            <p>
+              Sessions with a low mastery signal (1 star, low score, or a
+              not-yet-finished game) — a quick list of who to check in with.
+            </p>
+          </div>
+          <ul class="review-list" id="review-list"></ul>
+        </section>
+
+        <section
+          class="dash-panel"
+          id="table-panel"
+          aria-labelledby="table-h"
+        >
+          <div class="section-heading">
+            <h2 id="table-h">Results</h2>
+            <p id="table-sub"></p>
+          </div>
+          <div class="table-wrap">
+            <table class="dash-table" id="dash-table">
+              <thead id="dash-thead"></thead>
+              <tbody id="dash-tbody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section
+          class="dash-panel empty-state"
+          id="empty-state"
+          aria-labelledby="empty-h"
+          hidden
+        >
+          <div class="section-heading">
+            <h2 id="empty-h">No game data on this device yet</h2>
+            <p>
+              This dashboard only reads what is saved in
+              <strong>this browser</strong>. There is nothing to show yet.
+            </p>
+          </div>
+          <ol class="empty-steps">
+            <li>
+              Open any Grade 6 math game (e.g.
+              <a href="/math/games/">the Math Games hub</a>) and play a round to
+              the results screen.
+            </li>
+            <li>
+              If you want results grouped by student, have students type their
+              name on a game or activity that asks for it — otherwise everything
+              is grouped as <strong>This device</strong>.
+            </li>
+            <li>
+              Come back here and press <strong>Refresh</strong>. Completions and
+              saved sessions will appear automatically.
+            </li>
+          </ol>
+          <p class="muted-note">
+            Note: game scores are also sent to the EduPulse gradebook online.
+            The full class gradebook is read with a teacher admin key on the
+            EduPulse service — it is intentionally not exposed in the browser, so
+            this page shows only the locally saved play.
+          </p>
+        </section>
+      </div>
+
+      <footer class="dash-foot">
+        <p class="muted-note">
+          Local-first &middot; no network calls &middot; safe to share the
+          screen. Data source:
+          <span id="source-note">localStorage</span>.
+        </p>
+      </footer>
+    </main>
+
+    <script>
+      "use strict";
+      /* ====================================================================
+       * Math Games — Teacher Dashboard
+       * Reads whatever play data exists in THIS browser's localStorage and
+       * renders a teacher view. It must never throw on empty or legacy data.
+       *
+       * Data sources (all optional, all defended):
+       *   1. EduPulse identity keys written by assets/edupulse-bridge.js
+       *      (edupulse_student_name, edupulse_class_period, edupulse_student_id,
+       *       and the NTKit "nt_student" {alias,section} blob).
+       *   2. Save/Resume records under the "nsr:rec:*" namespace
+       *      (shared/save-resume/save-resume-engine.js). Each record carries
+       *      studentName, section, activityId/Title, url, created/updatedAt and
+       *      a state object that may hold progressPercent / scores.
+       *   3. A generic scan for any localStorage value that looks like an
+       *      EduPulse score event (activityId/score/stars/timestamp). The
+       *      bridge currently POSTs events to a Worker rather than persisting
+       *      them, but if a local mirror is ever added this picks it up.
+       * ================================================================== */
+      (function () {
+        var LS_PREFIX = "nsr:";
+
+        /* ---------- tiny safe helpers ---------- */
+        function safe(fn, fallback) {
+          try {
+            return fn();
+          } catch (e) {
+            return fallback;
+          }
+        }
+        function lsKeys() {
+          return safe(function () {
+            var out = [];
+            for (var i = 0; i < localStorage.length; i++)
+              out.push(localStorage.key(i));
+            return out;
+          }, []);
+        }
+        function lsGet(k) {
+          return safe(function () {
+            return localStorage.getItem(k);
+          }, null);
+        }
+        function parseJSON(s) {
+          return safe(function () {
+            return JSON.parse(s);
+          }, null);
+        }
+        function num(v) {
+          if (v === null || v === undefined || v === "") return null;
+          var n = Number(v);
+          return isFinite(n) ? n : null;
+        }
+        function esc(s) {
+          return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+            return {
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            }[c];
+          });
+        }
+        function fmtDate(iso) {
+          if (!iso) return "—";
+          var d = safe(function () {
+            return new Date(iso);
+          }, null);
+          if (!d || isNaN(d.getTime())) return "—";
+          return safe(function () {
+            return d.toLocaleDateString(undefined, {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            });
+          }, iso);
+        }
+        function titleFromActivityId(id) {
+          if (!id) return "Activity";
+          return String(id)
+            .split("-")
+            .filter(Boolean)
+            .map(function (w) {
+              return w.charAt(0).toUpperCase() + w.slice(1);
+            })
+            .join(" ");
+        }
+
+        /* ---------- identity (this device) ---------- */
+        function deviceStudent() {
+          var name =
+            lsGet("edupulse_student_name") ||
+            lsGet("nt_student_name") ||
+            lsGet("ewl_student_name") ||
+            "";
+          if (!name) {
+            var nt = parseJSON(lsGet("nt_student")) || {};
+            name = nt.alias || "";
+          }
+          var period =
+            lsGet("edupulse_class_period") ||
+            lsGet("nt_class") ||
+            lsGet("nt_class_code") ||
+            "";
+          if (!period) {
+            var nt2 = parseJSON(lsGet("nt_student")) || {};
+            period = nt2.section || "";
+          }
+          return { name: (name || "").trim(), period: (period || "").trim() };
+        }
+
+        /* ---------- normalize one row from any source ---------- */
+        // Returns: {student, period, game, activityId, standard, score,
+        //           maxScore, percent, stars, lastPlayed, source}
+        function row(o) {
+          return {
+            student: o.student || "",
+            period: o.period || "",
+            game: o.game || titleFromActivityId(o.activityId) || "Activity",
+            activityId: o.activityId || "",
+            standard: o.standard || "",
+            score: num(o.score),
+            maxScore: num(o.maxScore),
+            percent: num(o.percent),
+            stars: num(o.stars),
+            lastPlayed: o.lastPlayed || "",
+            source: o.source || "local",
+          };
+        }
+
+        /* ---------- collect raw rows from localStorage ---------- */
+        function collectRows() {
+          var rows = [];
+          var dev = deviceStudent();
+          var keys = lsKeys();
+
+          // (A) Save/Resume records: nsr:rec:CODE -> {studentName, section,
+          //     activityId, activityTitle, state{progressPercent,scores}, ...}
+          keys.forEach(function (k) {
+            if (k.indexOf(LS_PREFIX + "rec:") !== 0) return;
+            var rec = parseJSON(lsGet(k));
+            if (!rec || typeof rec !== "object") return;
+            var state = rec.state && typeof rec.state === "object" ? rec.state : {};
+            var pct = num(rec.progressPercent);
+            if (pct === null) pct = num(state.progressPercent);
+            // state.scores: array of {score, progress} captured from the page
+            var bestScore = null;
+            if (Array.isArray(state.scores)) {
+              state.scores.forEach(function (s) {
+                var v = num(s && s.score);
+                if (v !== null && (bestScore === null || v > bestScore))
+                  bestScore = v;
+              });
+            }
+            rows.push(
+              row({
+                student: rec.studentName || dev.name || "",
+                period: rec.section || dev.period || "",
+                activityId: rec.activityId || "",
+                game: rec.activityTitle || titleFromActivityId(rec.activityId),
+                standard: rec.standard || state.standard || "",
+                score: bestScore,
+                percent: pct,
+                stars: num(state.stars),
+                lastPlayed: rec.updatedAt || rec.createdAt || "",
+                source: "save-resume",
+              }),
+            );
+          });
+
+          // (B) Generic EduPulse-shaped score events, wherever they may live.
+          //     Looks for objects (or arrays of objects) with score/stars and an
+          //     activity id/title + a timestamp.
+          function looksLikeEvent(v) {
+            return (
+              v &&
+              typeof v === "object" &&
+              (v.activityId || v.activityTitle) &&
+              ("score" in v || "stars" in v || "percent" in v)
+            );
+          }
+          function pushEvent(v) {
+            rows.push(
+              row({
+                student: v.studentName || dev.name || "",
+                period: v.classPeriod || dev.period || "",
+                activityId: v.activityId || "",
+                game:
+                  v.activityTitle || titleFromActivityId(v.activityId),
+                standard: v.standard || "",
+                score: v.score,
+                maxScore: v.maxScore,
+                percent: v.percent,
+                stars: v.stars,
+                lastPlayed: v.timestamp || v.updatedAt || "",
+                source: "edupulse",
+              }),
+            );
+          }
+          keys.forEach(function (k) {
+            if (k.indexOf(LS_PREFIX) === 0) return; // already handled (A)
+            if (!/edupulse|score|ewl|game|result/i.test(k)) return;
+            var raw = lsGet(k);
+            if (!raw || raw[0] !== "{" && raw[0] !== "[") return;
+            var v = parseJSON(raw);
+            if (!v) return;
+            if (Array.isArray(v)) {
+              v.forEach(function (it) {
+                if (looksLikeEvent(it)) pushEvent(it);
+              });
+            } else if (looksLikeEvent(v)) {
+              pushEvent(v);
+            } else if (v.events && Array.isArray(v.events)) {
+              v.events.forEach(function (it) {
+                if (looksLikeEvent(it)) pushEvent(it);
+              });
+            }
+          });
+
+          return rows;
+        }
+
+        /* ---------- mastery signal ---------- */
+        // Returns {level: 'mastery'|'developing'|'review', label}
+        function mastery(agg) {
+          var stars = agg.bestStars;
+          var pct = agg.bestPercent;
+          if (stars != null) {
+            if (stars >= 3) return { level: "mastery", label: "Mastery" };
+            if (stars >= 2) return { level: "developing", label: "On track" };
+            return { level: "review", label: "Needs review" };
+          }
+          if (pct != null) {
+            if (pct >= 85) return { level: "mastery", label: "Mastery" };
+            if (pct >= 60) return { level: "developing", label: "On track" };
+            return { level: "review", label: "Needs review" };
+          }
+          // No score signal: a save with low progress means still working.
+          if (agg.bestProgress != null && agg.bestProgress < 50)
+            return { level: "review", label: "In progress" };
+          return { level: "developing", label: "Played" };
+        }
+
+        /* ---------- aggregate rows by a key ---------- */
+        function aggregate(rows, mode) {
+          var map = {};
+          rows.forEach(function (r) {
+            var keyVal;
+            if (mode === "standard")
+              keyVal = r.standard || "(no standard)";
+            else if (mode === "student")
+              keyVal = r.student || "This device";
+            else keyVal = r.game || "Activity";
+            if (!map[keyVal]) {
+              map[keyVal] = {
+                key: keyVal,
+                attempts: 0,
+                bestScore: null,
+                bestPercent: null,
+                bestStars: null,
+                bestProgress: null,
+                lastPlayed: "",
+                games: {},
+                standards: {},
+                students: {},
+              };
+            }
+            var a = map[keyVal];
+            a.attempts++;
+            if (r.score != null && (a.bestScore == null || r.score > a.bestScore))
+              a.bestScore = r.score;
+            var pct =
+              r.percent != null
+                ? r.percent
+                : r.score != null && r.maxScore
+                  ? Math.round((r.score / r.maxScore) * 100)
+                  : null;
+            if (pct != null && (a.bestPercent == null || pct > a.bestPercent))
+              a.bestPercent = pct;
+            if (r.stars != null && (a.bestStars == null || r.stars > a.bestStars))
+              a.bestStars = r.stars;
+            if (mode !== "game" && r.game) a.games[r.game] = 1;
+            if (mode !== "standard" && r.standard)
+              a.standards[r.standard] = 1;
+            if (mode !== "student")
+              a.students[r.student || "This device"] = 1;
+            if (
+              r.lastPlayed &&
+              (!a.lastPlayed || r.lastPlayed > a.lastPlayed)
+            )
+              a.lastPlayed = r.lastPlayed;
+          });
+          return Object.keys(map).map(function (k) {
+            return map[k];
+          });
+        }
+
+        /* ---------- star glyphs ---------- */
+        function starGlyphs(n) {
+          if (n == null) return "—";
+          n = Math.max(0, Math.min(3, Math.round(n)));
+          return "★★★☆☆☆".slice(3 - n, 6 - n);
+        }
+
+        /* ---------- state ---------- */
+        var ALL_ROWS = [];
+        var EL = {};
+        function $(id) {
+          return document.getElementById(id);
+        }
+
+        function load() {
+          ALL_ROWS = collectRows();
+          render();
+        }
+
+        function currentFiltered() {
+          var q = (EL.search.value || "").trim().toLowerCase();
+          if (!q) return ALL_ROWS;
+          return ALL_ROWS.filter(function (r) {
+            return (
+              (r.game + " " + r.standard + " " + r.student + " " + r.activityId)
+                .toLowerCase()
+                .indexOf(q) !== -1
+            );
+          });
+        }
+
+        function render() {
+          var mode = EL.view.value;
+          var rows = currentFiltered();
+
+          // Empty state.
+          if (!ALL_ROWS.length) {
+            EL.empty.hidden = false;
+            EL.tablePanel.hidden = true;
+            EL.reviewPanel.hidden = true;
+            EL.kpi.innerHTML = "";
+            EL.scope.textContent = "";
+            return;
+          }
+          EL.empty.hidden = true;
+          EL.tablePanel.hidden = false;
+
+          var dev = deviceStudent();
+          var namedStudents = {};
+          ALL_ROWS.forEach(function (r) {
+            if (r.student) namedStudents[r.student] = 1;
+          });
+          var nNamed = Object.keys(namedStudents).length;
+          EL.scope.textContent =
+            nNamed > 0
+              ? "Showing " +
+                ALL_ROWS.length +
+                " saved session(s) across " +
+                nNamed +
+                " named student" +
+                (nNamed === 1 ? "" : "s") +
+                "."
+              : "No student names found in the data — showing aggregate play for " +
+                (dev.name ? esc(dev.name) : "this device") +
+                ".";
+
+          renderKPIs(rows);
+          renderTable(aggregate(rows, mode), mode);
+          renderReview(rows);
+        }
+
+        function renderKPIs(rows) {
+          var games = {},
+            standards = {},
+            students = {},
+            stars = null,
+            best = null;
+          rows.forEach(function (r) {
+            if (r.game) games[r.game] = 1;
+            if (r.standard) standards[r.standard] = 1;
+            students[r.student || "This device"] = 1;
+            if (r.stars != null && (stars == null || r.stars > stars))
+              stars = r.stars;
+            if (r.score != null && (best == null || r.score > best))
+              best = r.score;
+          });
+          var cards = [
+            { label: "Sessions", value: rows.length },
+            { label: "Games played", value: Object.keys(games).length },
+            { label: "Standards", value: Object.keys(standards).length },
+            { label: "Students", value: Object.keys(students).length },
+            { label: "Top score", value: best == null ? "—" : best },
+            { label: "Best stars", value: starGlyphs(stars) },
+          ];
+          EL.kpi.innerHTML = cards
+            .map(function (c) {
+              return (
+                '<div class="kpi-card"><span class="kpi-value">' +
+                esc(c.value) +
+                '</span><span class="kpi-label">' +
+                esc(c.label) +
+                "</span></div>"
+              );
+            })
+            .join("");
+        }
+
+        function renderTable(aggs, mode) {
+          var firstHead =
+            mode === "standard"
+              ? "Standard"
+              : mode === "student"
+                ? "Student"
+                : "Game";
+          var secondHead =
+            mode === "student"
+              ? "Games"
+              : mode === "standard"
+                ? "Games"
+                : "Standard";
+          EL.thead.innerHTML =
+            "<tr>" +
+            "<th scope=\"col\">" +
+            firstHead +
+            "</th>" +
+            '<th scope="col">' +
+            secondHead +
+            "</th>" +
+            '<th scope="col" class="num">Attempts</th>' +
+            '<th scope="col" class="num">Best score</th>' +
+            '<th scope="col" class="num">Best %</th>' +
+            '<th scope="col">Stars</th>' +
+            '<th scope="col">Mastery</th>' +
+            '<th scope="col">Last played</th>' +
+            "</tr>";
+
+          aggs.sort(function (a, b) {
+            return (b.lastPlayed || "").localeCompare(a.lastPlayed || "");
+          });
+
+          if (!aggs.length) {
+            EL.tbody.innerHTML =
+              '<tr><td colspan="8" class="empty-cell">No results match your search.</td></tr>';
+            EL.tableSub.textContent = "";
+            return;
+          }
+
+          EL.tbody.innerHTML = aggs
+            .map(function (a) {
+              var m = mastery(a);
+              var second =
+                mode === "student"
+                  ? Object.keys(a.games).length
+                  : mode === "standard"
+                    ? Object.keys(a.games).length
+                    : Object.keys(a.standards).join(", ") || "—";
+              return (
+                "<tr>" +
+                '<th scope="row">' +
+                esc(a.key) +
+                "</th>" +
+                "<td>" +
+                esc(second) +
+                "</td>" +
+                '<td class="num">' +
+                a.attempts +
+                "</td>" +
+                '<td class="num">' +
+                (a.bestScore == null ? "—" : esc(a.bestScore)) +
+                "</td>" +
+                '<td class="num">' +
+                (a.bestPercent == null ? "—" : esc(a.bestPercent) + "%") +
+                "</td>" +
+                "<td>" +
+                esc(starGlyphs(a.bestStars)) +
+                "</td>" +
+                '<td><span class="pill pill-' +
+                m.level +
+                '">' +
+                esc(m.label) +
+                "</span></td>" +
+                "<td>" +
+                esc(fmtDate(a.lastPlayed)) +
+                "</td>" +
+                "</tr>"
+              );
+            })
+            .join("");
+          EL.tableSub.textContent =
+            "Grouped by " +
+            (mode === "standard"
+              ? "standard"
+              : mode === "student"
+                ? "student"
+                : "game") +
+            " · best score and stars per group · " +
+            aggs.length +
+            " row(s).";
+        }
+
+        function renderReview(rows) {
+          // Per (student + game) needs-review entries.
+          var groups = aggregate(rows, "game");
+          // Rebuild needs-review at the finest grain: student × game.
+          var fine = {};
+          rows.forEach(function (r) {
+            var k = (r.student || "This device") + "||" + (r.game || "Activity");
+            if (!fine[k]) {
+              fine[k] = {
+                student: r.student || "This device",
+                game: r.game || "Activity",
+                standard: r.standard || "",
+                bestScore: null,
+                bestPercent: null,
+                bestStars: null,
+                bestProgress: null,
+                lastPlayed: "",
+              };
+            }
+            var a = fine[k];
+            if (r.score != null && (a.bestScore == null || r.score > a.bestScore))
+              a.bestScore = r.score;
+            var pct =
+              r.percent != null
+                ? r.percent
+                : r.score != null && r.maxScore
+                  ? Math.round((r.score / r.maxScore) * 100)
+                  : null;
+            if (pct != null && (a.bestPercent == null || pct > a.bestPercent))
+              a.bestPercent = pct;
+            if (r.stars != null && (a.bestStars == null || r.stars > a.bestStars))
+              a.bestStars = r.stars;
+            if (r.lastPlayed && (!a.lastPlayed || r.lastPlayed > a.lastPlayed))
+              a.lastPlayed = r.lastPlayed;
+          });
+          var needs = Object.keys(fine)
+            .map(function (k) {
+              return fine[k];
+            })
+            .filter(function (a) {
+              return mastery(a).level === "review";
+            })
+            .sort(function (x, y) {
+              return (y.lastPlayed || "").localeCompare(x.lastPlayed || "");
+            });
+
+          if (!needs.length) {
+            EL.reviewPanel.hidden = true;
+            return;
+          }
+          EL.reviewPanel.hidden = false;
+          EL.reviewList.innerHTML = needs
+            .map(function (a) {
+              var detail = [];
+              if (a.bestStars != null) detail.push(starGlyphs(a.bestStars));
+              if (a.bestPercent != null) detail.push(a.bestPercent + "%");
+              else if (a.bestScore != null)
+                detail.push("score " + a.bestScore);
+              if (a.standard) detail.push(esc(a.standard));
+              return (
+                '<li class="review-item"><span class="review-who">' +
+                esc(a.student) +
+                '</span><span class="review-what">' +
+                esc(a.game) +
+                "</span>" +
+                '<span class="review-meta">' +
+                (detail.join(" · ") || "needs review") +
+                "</span></li>"
+              );
+            })
+            .join("");
+        }
+
+        /* ---------- CSV export ---------- */
+        function exportCSV() {
+          var rows = currentFiltered();
+          var header = [
+            "Student",
+            "Period",
+            "Game",
+            "ActivityId",
+            "Standard",
+            "Score",
+            "MaxScore",
+            "Percent",
+            "Stars",
+            "LastPlayed",
+            "Source",
+          ];
+          function cell(v) {
+            if (v == null) v = "";
+            v = String(v);
+            if (/[",\n]/.test(v)) v = '"' + v.replace(/"/g, '""') + '"';
+            return v;
+          }
+          var lines = [header.join(",")];
+          rows.forEach(function (r) {
+            lines.push(
+              [
+                r.student || "This device",
+                r.period,
+                r.game,
+                r.activityId,
+                r.standard,
+                r.score,
+                r.maxScore,
+                r.percent,
+                r.stars,
+                r.lastPlayed,
+                r.source,
+              ]
+                .map(cell)
+                .join(","),
+            );
+          });
+          var blob = new Blob([lines.join("\r\n")], {
+            type: "text/csv;charset=utf-8;",
+          });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement("a");
+          a.href = url;
+          a.download =
+            "math-games-dashboard-" +
+            new Date().toISOString().slice(0, 10) +
+            ".csv";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(function () {
+            URL.revokeObjectURL(url);
+          }, 1000);
+        }
+
+        /* ---------- wire up ---------- */
+        function init() {
+          EL = {
+            search: $("f-search"),
+            view: $("f-view"),
+            kpi: $("kpi-row"),
+            thead: $("dash-thead"),
+            tbody: $("dash-tbody"),
+            tablePanel: $("table-panel"),
+            tableSub: $("table-sub"),
+            reviewPanel: $("review-panel"),
+            reviewList: $("review-list"),
+            empty: $("empty-state"),
+            scope: $("scope-line"),
+          };
+          $("btn-refresh").addEventListener("click", load);
+          $("btn-print").addEventListener("click", function () {
+            window.print();
+          });
+          $("btn-export").addEventListener("click", exportCSV);
+          EL.search.addEventListener("input", render);
+          EL.view.addEventListener("change", render);
+          load();
+        }
+
+        if (document.readyState === "loading")
+          document.addEventListener("DOMContentLoaded", init);
+        else init();
+      })();
+    </script>
+
+    <script src="/assets/app.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
+</html>

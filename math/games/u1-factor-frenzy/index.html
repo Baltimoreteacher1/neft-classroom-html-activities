@@ -6,416 +6,100 @@
     <title>Factor Frenzy — Lessons 1.1–1.3 Game | Neft Teacher</title>
     <meta
       name="description"
-      content="Arcade review game for Grade 6 lessons 1.1–1.3: prime vs composite, greatest common factor, and least common multiple (6.NS.4)."
+      content="Catch-and-sort 2D arcade game for Grade 6 lessons 1.1–1.3: prime vs composite, greatest common factor, and least common multiple (6.NS.4)."
     />
-    <link rel="stylesheet" href="/assets/shared.css" />
     <style>
-      :root {
-        --navy: #0f2b3c;
-        --blue: #1a6fb5;
-        --teal: #0e8a7d;
-        --gold: #d4952a;
-        --coral: #c45a3c;
-        --green: #2d874b;
-        --ink: #1a2633;
-        --muted: #5e6e7e;
-        --line: #e2e7ec;
-        --bg: #f7f9fb;
-        --font: "Segoe UI", system-ui, sans-serif;
-      }
       * {
+        margin: 0;
+        padding: 0;
         box-sizing: border-box;
       }
       body {
-        margin: 0;
-        font-family: var(--font);
-        color: var(--ink);
-        background: var(--bg);
-        line-height: 1.5;
-      }
-      .wrap {
-        max-width: 680px;
-        margin: 0 auto;
-        padding: 0 18px 60px;
-      }
-      .ghero {
-        background: linear-gradient(135deg, #0f2b3c, #1a6fb5);
-        color: #fff;
-        text-align: center;
-        padding: 30px 20px 26px;
-        position: relative;
+        background: #0f2b3c;
         overflow: hidden;
+        font-family: "Segoe UI", system-ui, sans-serif;
       }
-      /* Bespoke: drifting factor-grid backdrop behind the hero (parallax layer). */
-      .ghero .ff-grid {
-        position: absolute;
-        inset: -20% -20% -20% -20%;
-        z-index: 0;
-        pointer-events: none;
-        opacity: 0.16;
-        background-image:
-          repeating-linear-gradient(
-            0deg,
-            rgba(255, 255, 255, 0.5) 0,
-            rgba(255, 255, 255, 0.5) 1px,
-            transparent 1px,
-            transparent 38px
-          ),
-          repeating-linear-gradient(
-            90deg,
-            rgba(255, 255, 255, 0.5) 0,
-            rgba(255, 255, 255, 0.5) 1px,
-            transparent 1px,
-            transparent 38px
-          );
-        animation: ff-grid-drift 18s linear infinite;
-      }
-      @keyframes ff-grid-drift {
-        to {
-          transform: translate(38px, 38px);
-        }
-      }
-      .ghero > * {
+      canvas {
+        display: block;
+        margin: 0 auto;
         position: relative;
         z-index: 1;
       }
-      .ghero .deco {
-        font-size: 48px;
-        display: inline-block;
-        animation: ff-deco-bob 3.2s ease-in-out infinite;
+      canvas:focus-visible {
+        outline: 3px solid #d4952a;
+        outline-offset: 4px;
+        border-radius: 8px;
       }
-      @keyframes ff-deco-bob {
-        50% {
-          transform: translateY(-6px) rotate(-4deg);
-        }
+      canvas:focus:not(:focus-visible) {
+        outline: none;
       }
-      .ghero h1 {
-        margin: 8px 0 6px;
-        font-size: clamp(24px, 5vw, 34px);
-      }
-      .ghero p {
-        margin: 0 auto;
-        max-width: 520px;
-        color: rgba(255, 255, 255, 0.85);
-      }
-      .breadcrumb {
-        font-size: 13px;
-        padding: 14px 0;
-        color: var(--muted);
-      }
-      .breadcrumb a {
-        color: var(--blue);
-        text-decoration: none;
-        font-weight: 600;
-      }
-      .hud {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        background: #fff;
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 12px 16px;
-        margin: 18px 0;
-        font-weight: 800;
-        box-shadow: 0 2px 10px rgba(15, 43, 60, 0.06);
-      }
-      .hud .lbl {
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        color: var(--muted);
-        display: block;
-      }
-      .hud .val {
-        font-size: 22px;
-      }
-      .hearts {
-        color: var(--coral);
-        letter-spacing: 2px;
-      }
-      .card {
-        background: #fff;
-        border: 1px solid var(--line);
-        border-radius: 18px;
-        padding: 26px 22px;
-        box-shadow: 0 6px 22px rgba(15, 43, 60, 0.08);
-        text-align: center;
-      }
-      .mode-tag {
-        font-size: 12px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--teal);
-      }
-      .prompt {
-        font-size: clamp(22px, 5vw, 30px);
-        font-weight: 800;
-        margin: 8px 0 4px;
-      }
-      .sub {
-        color: var(--muted);
-        margin: 0 0 18px;
-      }
-      .opts {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
-      @media (max-width: 460px) {
-        .opts {
-          grid-template-columns: 1fr;
-        }
-      }
-      .opt {
-        padding: 16px;
-        border: 2px solid var(--line);
-        border-radius: 14px;
-        background: #fff;
-        font-size: 20px;
-        font-weight: 800;
-        cursor: pointer;
-        font-family: inherit;
-        color: var(--ink);
-        transition:
-          transform 0.06s,
-          border-color 0.15s;
-      }
-      .opt:hover {
-        border-color: var(--blue);
-      }
-      .opt:active {
-        transform: scale(0.97);
-      }
-      .opt.right {
-        border-color: var(--green);
-        background: #e6f4eb;
-        color: var(--green);
-        animation: pop 0.3s;
-      }
-      .opt.wrong {
-        border-color: var(--coral);
-        background: #fdeee9;
-        color: var(--coral);
-        animation: shake 0.4s;
-      }
-      /* Bespoke: dim the un-chosen wrong options once an answer is locked. */
-      .opts.answered .opt:not(.right):not(.wrong) {
-        opacity: 0.5;
-      }
-      /* Bespoke: the correct option keeps a gentle highlight glow. */
-      .opt.right {
-        box-shadow: 0 0 0 3px rgba(45, 135, 75, 0.25);
-      }
-      @keyframes pop {
-        50% {
-          transform: scale(1.06);
-        }
-      }
-      @keyframes shake {
-        10%,
-        90% {
-          transform: translateX(-5px);
-        }
-        30%,
-        70% {
-          transform: translateX(6px);
-        }
-        50% {
-          transform: translateX(-7px);
-        }
-      }
-      /* Bespoke: brief red flash on the question card for a wrong/timeout answer. */
-      .card.ff-miss {
-        animation: ff-miss-flash 0.45s ease-out;
-      }
-      @keyframes ff-miss-flash {
-        0% {
-          box-shadow:
-            0 6px 22px rgba(15, 43, 60, 0.08),
-            0 0 0 0 rgba(196, 90, 60, 0.55);
-        }
-        40% {
-          box-shadow:
-            0 6px 22px rgba(15, 43, 60, 0.08),
-            0 0 0 6px rgba(196, 90, 60, 0.35);
-        }
-        100% {
-          box-shadow:
-            0 6px 22px rgba(15, 43, 60, 0.08),
-            0 0 0 0 rgba(196, 90, 60, 0);
-        }
-      }
-      .feedback {
-        min-height: 26px;
-        margin-top: 16px;
-        font-weight: 800;
-      }
-      .feedback.ok {
-        color: var(--green);
-      }
-      .feedback.no {
-        color: var(--coral);
-      }
-      .btn {
-        background: var(--blue);
-        color: #fff;
-        border: none;
-        border-radius: 12px;
-        padding: 13px 26px;
-        font-size: 16px;
-        font-weight: 800;
-        cursor: pointer;
-        font-family: inherit;
-        margin-top: 8px;
-      }
-      .btn:hover {
-        filter: brightness(1.08);
-      }
-      .btn.start {
-        background: var(--teal);
-        font-size: 18px;
-        padding: 15px 34px;
-      }
-      .bar {
-        height: 10px;
-        background: var(--line);
-        border-radius: 50px;
+      #ff-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
         overflow: hidden;
-        margin: 14px 0 2px;
+        pointer-events: none;
+        background: radial-gradient(
+          130% 90% at 50% 0%,
+          #134a5a 0%,
+          #0f2b3c 55%,
+          #08202c 100%
+        );
       }
-      .bar > div {
-        height: 100%;
-        width: 100%;
-        background: linear-gradient(90deg, var(--gold), var(--coral));
-        transition:
-          width 0.15s linear,
-          background-color 0.4s linear;
-      }
-      /* Bespoke: dynamic timer color gradient — calm → warning → danger. */
-      #timebar.ff-calm {
-        background: linear-gradient(90deg, #2d874b, #0e8a7d);
-      }
-      #timebar.ff-warn {
-        background: linear-gradient(90deg, var(--gold), #e0a93f);
-      }
-      #timebar.ff-danger {
-        background: linear-gradient(90deg, var(--coral), #e0533a);
-        animation: ff-bar-pulse 0.6s ease-in-out infinite;
-      }
-      @keyframes ff-bar-pulse {
-        50% {
-          filter: brightness(1.25);
-        }
-      }
-      .hidden {
-        display: none;
-      }
-      .big-score {
-        font-size: 52px;
-        font-weight: 900;
-        color: var(--blue);
-        margin: 6px 0;
-      }
-      .legend {
-        font-size: 13px;
-        color: var(--muted);
-        margin-top: 18px;
-      }
-      .legend a {
-        color: var(--blue);
-        font-weight: 700;
-      }
-      ul.modes {
-        text-align: left;
-        max-width: 420px;
-        margin: 14px auto;
-        color: var(--muted);
-        font-size: 15px;
-      }
-
-      /* Bespoke: factor/multiple visual hint — animated dot rows under the prompt
-         so students SEE why a number is prime/composite or how multiples line up.
-         Purely illustrative; does not change the answer or scoring. */
-      .ff-hint {
-        margin: 4px auto 14px;
-        max-width: 460px;
-        min-height: 0;
-      }
-      .ff-hint .ff-row {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 6px;
-        margin: 4px 0;
-      }
-      .ff-hint .ff-row-label {
-        font-size: 12px;
-        font-weight: 800;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        margin-bottom: 2px;
-      }
-      .ff-dot {
-        width: 16px;
-        height: 16px;
+      .ff-mote {
+        position: absolute;
         border-radius: 50%;
-        background: var(--blue);
-        opacity: 0;
-        transform: scale(0.4);
-        animation: ff-dot-in 0.32s ease-out forwards;
+        background: #7fd6c8;
+        opacity: 0.4;
+        animation: ffTwinkle var(--tw, 3s) ease-in-out infinite;
       }
-      .ff-dot.teal {
-        background: var(--teal);
-      }
-      .ff-dot.gold {
-        background: var(--gold);
-      }
-      /* Shared multiple (where two multiple-rows meet) gets a ring. */
-      .ff-dot.shared {
-        box-shadow: 0 0 0 3px rgba(212, 149, 42, 0.45);
-      }
-      @keyframes ff-dot-in {
-        to {
-          opacity: 1;
-          transform: scale(1);
+      @keyframes ffTwinkle {
+        0%,
+        100% {
+          opacity: 0.12;
+          transform: scale(0.8);
+        }
+        50% {
+          opacity: 0.6;
+          transform: scale(1.2);
         }
       }
-
-      /* Bespoke: visible focus rings on every interactive control (complements
-         the FX kit's :focus-visible; this guarantees a ring even on older paths). */
-      .btn:focus-visible,
-      .opt:focus-visible {
-        outline: 3px solid var(--gold);
-        outline-offset: 2px;
-      }
-
       @media (prefers-reduced-motion: reduce) {
-        html {
-          scroll-behavior: auto;
-        }
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.001ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.001ms !important;
-        }
-        /* Kill ambient/looping bespoke motion entirely; keep final states. */
-        .ghero .ff-grid,
-        .ghero .deco,
-        #timebar.ff-danger {
+        .ff-mote {
           animation: none !important;
+          opacity: 0.35 !important;
         }
-        .ff-dot {
-          opacity: 1 !important;
-          transform: none !important;
-          animation: none !important;
-        }
+      }
+      #ff-sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
       }
     </style>
+    <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
+    <script>
+      // CDN fallback: if the local vendor copy failed, synchronously load Phaser
+      // from a mirror (document.write blocks parsing so the mirror is ready
+      // before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      // If both sources are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#7fd6c8">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
@@ -424,485 +108,989 @@
     <!-- gfx-injected:end -->
   </head>
   <body>
-    <header class="ghero" data-parallax>
-      <div class="ff-grid" data-parallax-layer aria-hidden="true"></div>
-      <div class="deco">🧮</div>
-      <h1>Factor Frenzy</h1>
-      <p>
-        Beat the clock on prime vs. composite, greatest common factor, and least
-        common multiple.
-      </p>
-    </header>
-    <div class="wrap">
-      <nav class="breadcrumb">
-        <a href="/">Home</a> / <a href="/math/">Math</a> /
-        <a href="/math/games/">Games</a> / Factor Frenzy
-      </nav>
-      <!-- START -->
-      <section class="card" id="startScreen">
-        <p class="mode-tag">Lessons 1.1–1.3 · 6.NS.4</p>
-        <h2 style="margin: 6px 0">Ready to play?</h2>
-        <ul class="modes">
-          <li>
-            <strong>Round 1 — Prime or Composite?</strong> Tap the right label.
-          </li>
-          <li>
-            <strong>Round 2 — Greatest Common Factor.</strong> Pick the GCF.
-          </li>
-          <li>
-            <strong>Round 3 — Least Common Multiple.</strong> Pick the LCM.
-          </li>
-        </ul>
-        <p class="sub">
-          You have <strong>3 ❤</strong> and a timer on each question. Build a
-          streak for bonus points!
-        </p>
-        <button class="btn start" id="startBtn" type="button">
-          Start Game ▶
-        </button>
-      </section>
-
-      <!-- PLAY -->
-      <section id="playScreen" class="hidden">
-        <div class="hud">
-          <div>
-            <span class="lbl">Score</span><span class="val" id="score">0</span>
-          </div>
-          <div>
-            <span class="lbl">Streak</span
-            ><span class="val" id="streak">0</span>
-          </div>
-          <div>
-            <span class="lbl">Lives</span
-            ><span class="val hearts" id="lives">❤❤❤</span>
-          </div>
-          <div>
-            <span class="lbl">Question</span
-            ><span class="val" id="qnum">1</span>
-          </div>
-        </div>
-        <div class="bar"><div id="timebar"></div></div>
-        <div class="card" style="margin-top: 14px">
-          <span class="mode-tag" id="modeTag"></span>
-          <div class="prompt" id="prompt"></div>
-          <p class="sub" id="sub"></p>
-          <div class="ff-hint" id="hint" aria-hidden="true"></div>
-          <div class="opts" id="opts"></div>
-          <div class="feedback" id="feedback"></div>
-          <button class="btn hidden" id="nextBtn" type="button">Next ▶</button>
-        </div>
-      </section>
-
-      <!-- RESULTS -->
-      <section class="card hidden" id="resultScreen">
-        <p class="mode-tag">Game Over</p>
-        <div class="big-score" id="finalScore">0</div>
-        <p id="resultMsg" style="font-weight: 700"></p>
-        <p class="sub" id="resultDetail"></p>
-        <button class="btn start" id="againBtn" type="button">
-          Play Again 🔁
-        </button>
-        <p class="legend">
-          More review:
-          <a href="/math/review-arcade/">Boss-Battle Review Arcade</a> ·
-          <a href="/math/games/">All Games</a>
-        </p>
-      </section>
-    </div>
-
+    <div id="ff-bg" aria-hidden="true"></div>
+    <div id="ff-sr" role="status" aria-live="polite"></div>
     <script>
+      // ── Decorative drifting motes behind the canvas (reduced-motion safe). ──
+      (function () {
+        var host = document.getElementById("ff-bg");
+        if (!host) return;
+        var reduce =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var n = reduce ? 10 : 26;
+        for (var i = 0; i < n; i++) {
+          var d = document.createElement("div");
+          d.className = "ff-mote";
+          var sz = 2 + Math.random() * 4;
+          d.style.width = d.style.height = sz.toFixed(1) + "px";
+          d.style.left = (Math.random() * 100).toFixed(2) + "%";
+          d.style.top = (Math.random() * 100).toFixed(2) + "%";
+          d.style.setProperty("--tw", (2 + Math.random() * 4).toFixed(2) + "s");
+          d.style.animationDelay = "-" + (Math.random() * 4).toFixed(2) + "s";
+          host.appendChild(d);
+        }
+      })();
+    </script>
+    <script>
+      // ════════════════════════════════════════════════════════════════════
+      // FACTOR FRENZY — Catch & Sort  ·  Grade 6  ·  6.NS.4
+      // Lessons 1.1–1.3: prime vs composite, GCF, LCM.
+      //
+      // MECHANIC: A "claw basket" you steer left/right along the bottom catches
+      //   a falling answer tile. Bins/lanes at the bottom are labeled; you must
+      //   position the basket under the CORRECT bin as the tile lands.
+      //   • Round 1 (Prime/Composite): a number falls; steer it into the PRIME
+      //     bin or the COMPOSITE bin.
+      //   • Round 2 (GCF): the GCF tile falls; bins are labeled with candidate
+      //     values — catch it in the bin equal to GCF(a,b).
+      //   • Round 3 (LCM): same, bins labeled with candidates — catch in LCM(a,b).
+      //   Rising difficulty: bigger numbers + faster fall as rounds advance.
+      // ════════════════════════════════════════════════════════════════════
+      const LS_KEY = "ff_factor_frenzy_highscore";
+      const W = 800,
+        H = 600;
+      const ACTIVITY_TITLE = "Factor Frenzy — Lessons 1.1–1.3";
+      const STANDARD = "6.NS.4";
+
+      // ── Tiny WebAudio SFX ──
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx)
+            try {
+              this.ctx = new (window.AudioContext ||
+                window.webkitAudioContext)();
+            } catch (e) {}
+        },
+        play(t, f, d, v = 0.2) {
+          if (!this.ctx) return;
+          try {
+            const c = this.ctx,
+              o = c.createOscillator(),
+              g = c.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, c.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
+            o.connect(g);
+            g.connect(c.destination);
+            o.start();
+            o.stop(c.currentTime + d);
+          } catch (e) {}
+        },
+        correct() {
+          this.play("sine", 660, 0.1, 0.3);
+          this.play("sine", 880, 0.15, 0.25);
+        },
+        wrong() {
+          this.play("sawtooth", 200, 0.25, 0.2);
+          this.play("sawtooth", 150, 0.3, 0.15);
+        },
+        tick() {
+          this.play("square", 600, 0.03, 0.07);
+        },
+        move() {
+          this.play("triangle", 320, 0.04, 0.05);
+        },
+        streak(n) {
+          const seq = [523, 659, 784, 988, 1175].slice(0, Math.min(n, 5));
+          seq.forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.12, 0.2), i * 55),
+          );
+        },
+        levelUp() {
+          [523, 659, 784, 1047].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.15, 0.22), i * 70),
+          );
+        },
+        win() {
+          [523, 659, 784, 1047, 1318].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.22, 0.28), i * 110),
+          );
+        },
+        lose() {
+          [400, 350, 300, 200].forEach((f, i) =>
+            setTimeout(() => this.play("sawtooth", f, 0.28, 0.15), i * 170),
+          );
+        },
+      };
+
+      // ── Math helpers ──
+      function randInt(a, b) {
+        return Math.floor(Math.random() * (b - a + 1)) + a;
+      }
+      function shuffle(a) {
+        const r = a.slice();
+        for (let i = r.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [r[i], r[j]] = [r[j], r[i]];
+        }
+        return r;
+      }
       function gcd(a, b) {
+        a = Math.abs(a);
+        b = Math.abs(b);
         while (b) {
-          var t = b;
+          const t = b;
           b = a % b;
           a = t;
         }
         return a;
       }
       function lcm(a, b) {
-        return (a * b) / gcd(a, b);
-      }
-      function rnd(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-      }
-      function shuffle(a) {
-        for (var i = a.length - 1; i > 0; i--) {
-          var j = Math.floor(Math.random() * (i + 1));
-          var t = a[i];
-          a[i] = a[j];
-          a[j] = t;
-        }
-        return a;
+        return (a / gcd(a, b)) * b;
       }
       function isPrime(n) {
         if (n < 2) return false;
-        for (var i = 2; i * i <= n; i++) {
-          if (n % i === 0) return false;
-        }
+        for (let i = 2; i * i <= n; i++) if (n % i === 0) return false;
         return true;
       }
 
-      var TOTAL = 12,
-        TIME = 9; // seconds per question
-      var state = {};
-
-      // --- Bespoke visual polish helpers (additive; no gameplay impact) ---
-      var reduceMotion = false;
-      try {
-        var _mm = window.matchMedia("(prefers-reduced-motion: reduce)");
-        reduceMotion = _mm.matches;
-        if (_mm.addEventListener) {
-          _mm.addEventListener("change", function (e) {
-            reduceMotion = e.matches;
-          });
-        }
-      } catch (e) {}
-
-      // Build a small dot for the factor/multiple hint.
-      function makeDot(cls, delay) {
-        var d = document.createElement("span");
-        d.className = "ff-dot" + (cls ? " " + cls : "");
-        if (!reduceMotion && delay) d.style.animationDelay = delay + "ms";
-        return d;
-      }
-      function labeledRow(label, cells) {
-        var wrap = document.createElement("div");
-        var lab = document.createElement("div");
-        lab.className = "ff-row-label";
-        lab.textContent = label;
-        wrap.appendChild(lab);
-        var row = document.createElement("div");
-        row.className = "ff-row";
-        cells.forEach(function (c) {
-          row.appendChild(c);
-        });
-        wrap.appendChild(row);
-        return wrap;
-      }
-
-      // Render a question-specific visual hint. Derived purely from the same
-      // numbers used to generate the question; never alters answer/scoring.
-      function renderHint(hint) {
-        var host = document.getElementById("hint");
-        host.innerHTML = "";
-        if (!hint) return;
-        var step = 28; // staggered reveal (ms); ignored under reduced motion
-        if (hint.kind === "factors") {
-          // Show n as a single row of dots so students can mentally try to
-          // arrange them into equal groups (composite) vs. only 1×n (prime).
-          var n = hint.n;
-          var cap = Math.min(n, 24); // cap rendered dots for performance/layout
-          var cells = [];
-          for (var k = 0; k < cap; k++) {
-            cells.push(makeDot("teal", k * step));
-          }
-          host.appendChild(labeledRow("Counting " + n, cells));
-        } else if (hint.kind === "gcf") {
-          // Two rows: dots for a and b; shared factors highlighted by ringing
-          // the first g dots in each (the common group size).
-          host.appendChild(factorRow("blue", hint.a, hint.g, step));
-          host.appendChild(factorRow("gold", hint.b, hint.g, step));
-        } else if (hint.kind === "lcm") {
-          // Skip-count rows for a and b up to the LCM; the meeting point rings.
-          host.appendChild(multipleRow("teal", hint.a, hint.l, step));
-          host.appendChild(multipleRow("gold", hint.b, hint.l, step));
-        }
-      }
-      function factorRow(color, num, shared, step) {
-        var cap = Math.min(num, 24);
-        var cells = [];
-        for (var k = 0; k < cap; k++) {
-          var isShared = k < shared;
-          cells.push(makeDot(color + (isShared ? " shared" : ""), k * step));
-        }
-        return labeledRow(num + " (shares " + shared + ")", cells);
-      }
-      function multipleRow(color, base, target, step) {
-        // Dots at each multiple of base up to target; the LCM dot rings.
-        var cells = [];
-        var count = Math.min(Math.floor(target / base), 12);
-        for (var k = 1; k <= count; k++) {
-          var v = base * k;
-          var isMeet = v === target;
-          cells.push(
-            makeDot(color + (isMeet ? " shared" : ""), (k - 1) * step),
-          );
-        }
-        return labeledRow("Multiples of " + base, cells);
-      }
-
-      function buildQuestion(i) {
-        var round = i < 4 ? 1 : i < 8 ? 2 : 3;
+      // ── Question generator ──
+      // round: 1 = prime/composite, 2 = GCF, 3 = LCM.
+      // Returns: { round, tag, prompt, why, bins:[label...], correctBin, fallText }
+      //   bins   = array of bin labels (2 for round 1, 3 for rounds 2-3)
+      //   correctBin = index into bins of the right bin
+      //   fallText = the tile that drops (number for R1, the answer for R2/R3)
+      function genQuestion(round) {
         if (round === 1) {
-          // prime or composite
-          var n;
-          do {
-            n = rnd(2, 40);
-          } while (false);
-          var prime = isPrime(n);
+          const n = randInt(2, 49);
+          const prime = isPrime(n);
           return {
             round: 1,
             tag: "Prime or Composite?",
-            prompt: "Is " + n + " prime or composite?",
-            sub: "A prime number has exactly two factors: 1 and itself.",
-            opts: ["Prime", "Composite"],
-            correct: prime ? "Prime" : "Composite",
+            prompt: "Sort " + n,
             why: prime
-              ? n + " is prime — its only factors are 1 and " + n + "."
-              : n + " is composite — it has more than two factors.",
-            hint: { kind: "factors", n: n },
+              ? n + " is PRIME — only factors are 1 and " + n + "."
+              : n + " is COMPOSITE — it has more than two factors.",
+            bins: ["PRIME", "COMPOSITE"],
+            correctBin: prime ? 0 : 1,
+            fallText: String(n),
           };
         }
         if (round === 2) {
-          var a = rnd(4, 12),
-            b = rnd(4, 12);
-          if (a === b) b = a + 2;
-          var g = gcd(a, b);
-          var opts = new Set([g]);
-          while (opts.size < 4) {
-            var d = rnd(1, Math.max(a, b));
-            opts.add(d);
+          let a = randInt(6, 24),
+            b = randInt(6, 24);
+          if (a === b) b = a + randInt(1, 4);
+          const g = gcd(a, b);
+          const labels = new Set([g]);
+          let guard = 0;
+          while (labels.size < 3 && guard++ < 60) {
+            const cand = randInt(1, Math.max(a, b));
+            if (cand !== g) labels.add(cand);
           }
+          const bins = shuffle(Array.from(labels)).map(String);
           return {
             round: 2,
             tag: "Greatest Common Factor",
-            prompt: "GCF of " + a + " and " + b + " = ?",
-            sub: "The largest factor both numbers share.",
-            opts: shuffle(Array.from(opts)).map(String),
-            correct: String(g),
+            prompt: "GCF of " + a + " and " + b,
             why: "GCF(" + a + ", " + b + ") = " + g + ".",
-            hint: { kind: "gcf", a: a, b: b, g: g },
+            bins: bins,
+            correctBin: bins.indexOf(String(g)),
+            fallText: "GCF",
           };
         }
-        // round 3 LCM
-        var a2 = rnd(2, 9),
-          b2 = rnd(2, 9);
-        if (a2 === b2) b2 = a2 + 1;
-        var l = lcm(a2, b2);
-        var opts2 = new Set([l]);
-        while (opts2.size < 4) {
-          var m = a2 * rnd(1, 6);
-          if (m !== l) opts2.add(m);
-          var m2 = b2 * rnd(1, 6);
-          if (m2 !== l) opts2.add(m2);
+        // round 3 — LCM
+        let a = randInt(2, 10),
+          b = randInt(2, 10);
+        if (a === b) b = a + 1;
+        const l = lcm(a, b);
+        const labels = new Set([l]);
+        let guard = 0;
+        while (labels.size < 3 && guard++ < 80) {
+          const cand =
+            Math.random() < 0.5 ? a * randInt(1, 7) : b * randInt(1, 7);
+          if (cand !== l && cand > 0) labels.add(cand);
         }
-        var arr = shuffle(Array.from(opts2)).slice(0, 4);
-        if (arr.indexOf(l) === -1) {
-          arr[0] = l;
-          shuffle(arr);
+        while (labels.size < 3 && guard++ < 120) {
+          const cand = l + randInt(1, 10);
+          if (cand !== l) labels.add(cand);
         }
+        const bins = shuffle(Array.from(labels)).map(String);
         return {
           round: 3,
           tag: "Least Common Multiple",
-          prompt: "LCM of " + a2 + " and " + b2 + " = ?",
-          sub: "The smallest multiple both numbers share.",
-          opts: arr.map(String),
-          correct: String(l),
-          why: "LCM(" + a2 + ", " + b2 + ") = " + l + ".",
-          hint: { kind: "lcm", a: a2, b: b2, l: l },
+          prompt: "LCM of " + a + " and " + b,
+          why: "LCM(" + a + ", " + b + ") = " + l + ".",
+          bins: bins,
+          correctBin: bins.indexOf(String(l)),
+          fallText: "LCM",
         };
       }
 
-      function startGame() {
-        state = { i: 0, score: 0, streak: 0, lives: 3, locked: false };
-        document.getElementById("startScreen").classList.add("hidden");
-        document.getElementById("resultScreen").classList.add("hidden");
-        document.getElementById("playScreen").classList.remove("hidden");
-        nextQuestion();
+      function srSay(msg) {
+        try {
+          const el = document.getElementById("ff-sr");
+          if (el) el.textContent = msg;
+        } catch (e) {}
       }
 
-      function nextQuestion() {
-        if (state.lives <= 0 || state.i >= TOTAL) {
-          return endGame();
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: document.body,
+        backgroundColor: "#0f2b3c",
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+        scene: [],
+      };
+
+      // ════════ BOOT ════════
+      class BootScene extends Phaser.Scene {
+        constructor() {
+          super("Boot");
         }
-        state.locked = false;
-        state.q = buildQuestion(state.i);
-        document.getElementById("qnum").textContent = state.i + 1 + "/" + TOTAL;
-        document.getElementById("modeTag").textContent = state.q.tag;
-        document.getElementById("prompt").textContent = state.q.prompt;
-        document.getElementById("sub").textContent = state.q.sub;
-        document.getElementById("feedback").textContent = "";
-        document.getElementById("feedback").className = "feedback";
-        document.getElementById("nextBtn").classList.add("hidden");
-        var playCard = document.querySelector("#playScreen .card");
-        if (playCard) playCard.classList.remove("ff-miss");
-        renderHint(state.q.hint);
-        var box = document.getElementById("opts");
-        box.classList.remove("answered");
-        box.innerHTML = "";
-        state.q.opts.forEach(function (o) {
-          var b = document.createElement("button");
-          b.type = "button";
-          b.className = "opt";
-          b.textContent = o;
-          b.onclick = function () {
-            answer(o, b);
+        create() {
+          const g = this.make.graphics({ add: false });
+          g.fillStyle(0xffffff);
+          g.fillCircle(4, 4, 4);
+          g.generateTexture("dot", 8, 8);
+          g.clear();
+          g.fillStyle(0xffffff);
+          g.fillRect(0, 0, 7, 4);
+          g.generateTexture("confetti", 7, 4);
+          g.destroy();
+          this.scene.start("Title");
+        }
+      }
+
+      // ════════ TITLE ════════
+      class TitleScene extends Phaser.Scene {
+        constructor() {
+          super("Title");
+        }
+        create() {
+          const cx = W / 2;
+          this.reduce =
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          this.add.rectangle(cx, H / 2, W, H, 0x0f2b3c);
+
+          this.add
+            .text(cx, 120, "FACTOR", {
+              fontSize: "70px",
+              fontFamily: "Impact, sans-serif",
+              color: "#d4952a",
+              stroke: "#08202c",
+              strokeThickness: 6,
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 188, "FRENZY", {
+              fontSize: "70px",
+              fontFamily: "Impact, sans-serif",
+              color: "#0e8a7d",
+              stroke: "#08202c",
+              strokeThickness: 6,
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 245, "Catch & Sort  ·  Lessons 1.1–1.3  ·  6.NS.4", {
+              fontSize: "16px",
+              color: "#9fc6cf",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              cx,
+              300,
+              "Steer the basket to catch each falling tile in the\nright bin: PRIME vs COMPOSITE, then GCF, then LCM.",
+              { fontSize: "15px", color: "#7fa8b3", align: "center" },
+            )
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 358, "← → or A/D to move   ·   tap/drag on touch", {
+              fontSize: "14px",
+              color: "#6b97a3",
+            })
+            .setOrigin(0.5);
+
+          const hs = localStorage.getItem(LS_KEY);
+          if (hs)
+            this.add
+              .text(cx, 392, "HIGH SCORE: " + hs, {
+                fontSize: "15px",
+                color: "#d4952a",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+
+          const btn = this.add
+            .rectangle(cx, 450, 260, 56, 0x0e8a7d)
+            .setInteractive({ useHandCursor: true });
+          const btnT = this.add
+            .text(cx, 450, "START GAME ▶", {
+              fontSize: "22px",
+              fontStyle: "bold",
+              color: "#06202c",
+            })
+            .setOrigin(0.5);
+          if (!this.reduce)
+            this.tweens.add({
+              targets: [btn, btnT],
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 800,
+              yoyo: true,
+              repeat: -1,
+            });
+          const go = () => {
+            SFX.init();
+            SFX.tick();
+            this.cameras.main.fadeOut(300);
+            this.time.delayedCall(300, () => this.scene.start("Game"));
           };
-          box.appendChild(b);
-        });
-        startTimer();
-      }
+          btn.on("pointerover", () => btn.setFillStyle(0x12a596));
+          btn.on("pointerout", () => btn.setFillStyle(0x0e8a7d));
+          btn.on("pointerdown", go);
+          this.input.keyboard.on("keydown-SPACE", go);
+          this.input.keyboard.on("keydown-ENTER", go);
 
-      function setBarState(bar, frac) {
-        // Dynamic timer color gradient: calm > warn > danger as time drains.
-        var cls =
-          frac > 0.5 ? "ff-calm" : frac > 0.25 ? "ff-warn" : "ff-danger";
-        if (bar.dataset.ffState !== cls) {
-          bar.classList.remove("ff-calm", "ff-warn", "ff-danger");
-          bar.classList.add(cls);
-          bar.dataset.ffState = cls;
+          const hub = this.add
+            .text(cx, 555, "← Back to Games hub", {
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#6b97a3",
+            })
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true });
+          hub.on("pointerover", () => hub.setColor("#0e8a7d"));
+          hub.on("pointerout", () => hub.setColor("#6b97a3"));
+          hub.on("pointerdown", () => (window.location.href = "/math/games/"));
+
+          this.cameras.main.fadeIn(400);
         }
       }
-      function startTimer() {
-        var t = TIME,
-          bar = document.getElementById("timebar");
-        bar.style.width = "100%";
-        setBarState(bar, 1);
-        clearInterval(state.timer);
-        state.timer = setInterval(function () {
-          t -= 0.1;
-          var frac = Math.max(0, t / TIME);
-          bar.style.width = frac * 100 + "%";
-          setBarState(bar, frac);
-          if (t <= 0) {
-            clearInterval(state.timer);
-            if (!state.locked) {
-              timeUp();
+
+      // ════════ GAME ════════
+      class GameScene extends Phaser.Scene {
+        constructor() {
+          super("Game");
+        }
+        init() {
+          this.reduce =
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          this.score = 0;
+          this.lives = 3;
+          this.streak = 0;
+          this.maxStreak = 0;
+          this.correct = 0;
+          this.attempted = 0;
+          this.qIndex = 0;
+          this.TOTAL = 12; // 4 per round × 3 rounds
+          this.level = 1;
+          this.busy = false;
+          this.tile = null;
+        }
+
+        roundFor(i) {
+          return i < 4 ? 1 : i < 8 ? 2 : 3;
+        }
+
+        create() {
+          const cx = W / 2;
+          this.add.rectangle(cx, H / 2, W, H, 0x0f2b3c);
+          // subtle top band
+          this.add.rectangle(cx, 26, W, 52, 0x0a2230);
+
+          // HUD
+          this.scoreText = this.add.text(16, 12, "Score: 0", {
+            fontSize: "20px",
+            color: "#0e8a7d",
+            fontStyle: "bold",
+          });
+          this.livesText = this.add
+            .text(W - 16, 12, "❤❤❤", {
+              fontSize: "20px",
+              color: "#c45a3c",
+            })
+            .setOrigin(1, 0);
+          this.streakText = this.add
+            .text(cx, 12, "Streak: 0", {
+              fontSize: "16px",
+              color: "#d4952a",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5, 0);
+          this.levelText = this.add
+            .text(cx, 34, "", { fontSize: "13px", color: "#7fa8b3" })
+            .setOrigin(0.5, 0);
+
+          // Prompt panel
+          this.tagText = this.add
+            .text(cx, 74, "", {
+              fontSize: "14px",
+              color: "#9fc6cf",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          this.promptText = this.add
+            .text(cx, 104, "", {
+              fontSize: "30px",
+              color: "#ffffff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+
+          // Bin geometry
+          this.binY = H - 70;
+          this.binH = 80;
+          this.binTopY = H - 110; // catch line
+          this.binGraphics = this.add.graphics();
+          this.binTexts = [];
+          this.bins = []; // {x, w, label, correct}
+
+          // Basket
+          this.basketW = 96;
+          this.basketX = cx;
+          this.basket = this.add.container(this.basketX, this.binTopY - 24);
+          const bBody = this.add.graphics();
+          bBody.fillStyle(0xd4952a, 1);
+          bBody.fillRoundedRect(
+            -this.basketW / 2,
+            -8,
+            this.basketW,
+            34,
+            { tl: 4, tr: 4, bl: 14, br: 14 },
+          );
+          bBody.lineStyle(3, 0xffffff, 0.9);
+          bBody.strokeRoundedRect(-this.basketW / 2, -8, this.basketW, 34, {
+            tl: 4,
+            tr: 4,
+            bl: 14,
+            br: 14,
+          });
+          this.basket.add(bBody);
+          this.basket.add(
+            this.add
+              .text(0, 9, "▲", { fontSize: "16px", color: "#ffffff" })
+              .setOrigin(0.5),
+          );
+
+          // Particles
+          this.confetti = this.add
+            .particles(0, 0, "confetti", {
+              speed: { min: 80, max: 280 },
+              angle: { min: 0, max: 360 },
+              scale: { start: 1.4, end: 0.2 },
+              rotate: { min: 0, max: 360 },
+              lifespan: 1100,
+              gravityY: 260,
+              emitting: false,
+              quantity: 24,
+              tint: [0x0e8a7d, 0x1a6fb5, 0xd4952a, 0x2d874b, 0xc45a3c],
+            })
+            .setDepth(30);
+          this.redFlash = this.add
+            .rectangle(cx, H / 2, W, H, 0xc45a3c, 0)
+            .setDepth(28);
+
+          this.feedback = this.add
+            .text(cx, 150, "", {
+              fontSize: "16px",
+              color: "#fff",
+              fontStyle: "bold",
+              align: "center",
+              wordWrap: { width: W - 80 },
+            })
+            .setOrigin(0.5)
+            .setAlpha(0)
+            .setDepth(20);
+
+          // Input — keyboard
+          this.cursors = this.input.keyboard.createCursorKeys();
+          this.keyA = this.input.keyboard.addKey("A");
+          this.keyD = this.input.keyboard.addKey("D");
+          // Input — pointer drag/tap to set target X
+          this.pointerTargetX = null;
+          this.input.on("pointermove", (p) => {
+            if (p.isDown) this.pointerTargetX = p.worldX;
+          });
+          this.input.on("pointerdown", (p) => {
+            this.pointerTargetX = p.worldX;
+          });
+          this.input.on("pointerup", () => {
+            this.pointerTargetX = null;
+          });
+
+          this.fallSpeedBase = 70; // px/sec, scales with level
+          this.nextQuestion();
+          this.cameras.main.fadeIn(350);
+        }
+
+        layoutBins(labels, correctBin) {
+          this.binGraphics.clear();
+          this.binTexts.forEach((t) => t.destroy());
+          this.binTexts = [];
+          this.bins = [];
+          const n = labels.length;
+          const margin = 24;
+          const gap = 14;
+          const totalW = W - margin * 2 - gap * (n - 1);
+          const binW = totalW / n;
+          const palette = [0x1a6fb5, 0x0e8a7d, 0x2d874b];
+          for (let i = 0; i < n; i++) {
+            const x = margin + i * (binW + gap) + binW / 2;
+            const col = palette[i % palette.length];
+            this.binGraphics.fillStyle(col, 0.32);
+            this.binGraphics.fillRoundedRect(
+              x - binW / 2,
+              this.binY - this.binH / 2,
+              binW,
+              this.binH,
+              10,
+            );
+            this.binGraphics.lineStyle(3, col, 0.95);
+            this.binGraphics.strokeRoundedRect(
+              x - binW / 2,
+              this.binY - this.binH / 2,
+              binW,
+              this.binH,
+              10,
+            );
+            const t = this.add
+              .text(x, this.binY, String(labels[i]), {
+                fontSize: n === 2 ? "26px" : "30px",
+                color: "#ffffff",
+                fontStyle: "bold",
+                align: "center",
+                wordWrap: { width: binW - 12 },
+              })
+              .setOrigin(0.5);
+            this.binTexts.push(t);
+            this.bins.push({
+              x: x,
+              w: binW,
+              label: labels[i],
+              correct: i === correctBin,
+            });
+          }
+        }
+
+        nextQuestion() {
+          if (this.qIndex >= this.TOTAL || this.lives <= 0) {
+            this.endGame();
+            return;
+          }
+          const round = this.roundFor(this.qIndex);
+          const newLevel = round;
+          if (newLevel !== this.level && this.qIndex > 0) {
+            SFX.levelUp();
+          }
+          this.level = newLevel;
+          this.q = genQuestion(round);
+          this.qIndex++;
+          this.attempted = this.qIndex; // will reconcile on miss/end
+          this.busy = false;
+
+          this.tagText.setText(this.q.tag);
+          this.promptText.setText(
+            this.q.prompt + "   (" + this.qIndex + "/" + this.TOTAL + ")",
+          );
+          this.levelText.setText("Round " + round + " of 3");
+          this.feedback.setAlpha(0);
+          this.layoutBins(this.q.bins, this.q.correctBin);
+
+          srSay(
+            this.q.tag +
+              ". " +
+              this.q.prompt +
+              ". Bins: " +
+              this.q.bins.join(", ") +
+              ". Steer the basket to the correct bin.",
+          );
+
+          // Falling tile
+          const startX = randInt(120, W - 120);
+          if (this.tile) this.tile.destroy();
+          this.tile = this.add.container(startX, 184);
+          const tg = this.add.graphics();
+          tg.fillStyle(0xfdf6e9, 1);
+          tg.fillRoundedRect(-34, -28, 68, 56, 10);
+          tg.lineStyle(3, 0xd4952a, 1);
+          tg.strokeRoundedRect(-34, -28, 68, 56, 10);
+          this.tile.add(tg);
+          this.tile.add(
+            this.add
+              .text(0, 0, this.q.fallText, {
+                fontSize: this.q.fallText.length > 2 ? "20px" : "28px",
+                color: "#0f2b3c",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5),
+          );
+          this.tileVY =
+            (this.fallSpeedBase + (this.level - 1) * 26) / 1000; // px/ms
+          this.tileLanded = false;
+        }
+
+        update(time, delta) {
+          if (this.busy || !this.tile || this.tileLanded) return;
+          // Move basket
+          const step = 0.42 * delta;
+          let moved = false;
+          if (this.cursors.left.isDown || this.keyA.isDown) {
+            this.basketX -= step;
+            moved = true;
+          }
+          if (this.cursors.right.isDown || this.keyD.isDown) {
+            this.basketX += step;
+            moved = true;
+          }
+          if (this.pointerTargetX != null) {
+            const dx = this.pointerTargetX - this.basketX;
+            this.basketX += Phaser.Math.Clamp(dx, -step, step);
+          }
+          this.basketX = Phaser.Math.Clamp(
+            this.basketX,
+            this.basketW / 2 + 6,
+            W - this.basketW / 2 - 6,
+          );
+          this.basket.x = this.basketX;
+
+          // Fall tile
+          this.tile.y += this.tileVY * delta;
+          // Land when tile bottom reaches the catch line
+          if (this.tile.y + 28 >= this.binTopY) {
+            this.tileLanded = true;
+            this.resolve();
+          }
+        }
+
+        binUnderBasket() {
+          // Which bin's horizontal span contains the basket center?
+          for (let i = 0; i < this.bins.length; i++) {
+            const b = this.bins[i];
+            if (
+              this.basketX >= b.x - b.w / 2 &&
+              this.basketX <= b.x + b.w / 2
+            )
+              return i;
+          }
+          // fallback: nearest
+          let best = 0,
+            bd = Infinity;
+          this.bins.forEach((b, i) => {
+            const d = Math.abs(b.x - this.basketX);
+            if (d < bd) {
+              bd = d;
+              best = i;
+            }
+          });
+          return best;
+        }
+
+        resolve() {
+          this.busy = true;
+          const chosen = this.binUnderBasket();
+          const right = chosen === this.q.correctBin;
+          SFX.init();
+
+          // drop tile into chosen bin visually
+          const targetBin = this.bins[chosen];
+          this.tweens.add({
+            targets: this.tile,
+            x: targetBin.x,
+            y: this.binY,
+            duration: this.reduce ? 1 : 180,
+            ease: "Quad.easeIn",
+          });
+
+          if (right) {
+            this.correct++;
+            this.streak++;
+            this.maxStreak = Math.max(this.maxStreak, this.streak);
+            const bonus = Math.min(this.streak, 5) * 2;
+            const gained = 10 + bonus;
+            this.score += gained;
+            SFX.correct();
+            if (this.streak >= 3) SFX.streak(this.streak);
+            this.confetti.emitParticleAt(targetBin.x, this.binY - 30);
+            this.flash(
+              "✓ +" +
+                gained +
+                (this.streak > 1 ? "   🔥 Streak ×" + this.streak : ""),
+              "#2d874b",
+            );
+            srSay("Correct! " + this.q.why);
+            try {
+              if (window.GameFX && GameFX.celebrate && this.streak >= 3) {
+                GameFX.celebrate(document.querySelector("canvas"));
+              }
+            } catch (e) {}
+          } else {
+            this.streak = 0;
+            this.lives--;
+            SFX.wrong();
+            this.doRedFlash();
+            this.flash(
+              "✗ " + this.q.why + "  (−1 ❤)",
+              "#c45a3c",
+            );
+            // highlight the correct bin
+            const cb = this.bins[this.q.correctBin];
+            const hl = this.add
+              .rectangle(cb.x, this.binY, cb.w, this.binH, 0x2d874b, 0.25)
+              .setDepth(5);
+            this.tweens.add({
+              targets: hl,
+              alpha: 0,
+              duration: 900,
+              onComplete: () => hl.destroy(),
+            });
+            srSay("Not quite. " + this.q.why);
+          }
+          this.updateHUD();
+
+          this.time.delayedCall(right ? 850 : 1500, () => {
+            this.nextQuestion();
+          });
+        }
+
+        flash(msg, color) {
+          this.feedback.setText(msg).setColor(color).setAlpha(1).setScale(0.8);
+          this.tweens.add({
+            targets: this.feedback,
+            scale: 1,
+            duration: this.reduce ? 1 : 220,
+            ease: "Back.easeOut",
+          });
+        }
+
+        doRedFlash() {
+          if (this.reduce) return;
+          this.redFlash.setAlpha(0.35);
+          this.tweens.add({
+            targets: this.redFlash,
+            alpha: 0,
+            duration: 350,
+          });
+        }
+
+        updateHUD() {
+          this.scoreText.setText("Score: " + this.score);
+          this.streakText.setText("Streak: " + this.streak);
+          this.livesText.setText(
+            this.lives > 0 ? "❤".repeat(this.lives) : "—",
+          );
+        }
+
+        endGame() {
+          const attempted = this.qIndex; // questions actually shown
+          this.scene.start("Result", {
+            score: this.score,
+            correct: this.correct,
+            attempted: attempted,
+            maxStreak: this.maxStreak,
+            outOfLives: this.lives <= 0,
+          });
+        }
+      }
+
+      // ════════ RESULT ════════
+      class ResultScene extends Phaser.Scene {
+        constructor() {
+          super("Result");
+        }
+        init(data) {
+          this.d = data;
+        }
+        create() {
+          const cx = W / 2;
+          const d = this.d;
+          this.reduce =
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          this.add.rectangle(cx, H / 2, W, H, 0x0f2b3c);
+
+          const pct = d.attempted ? (d.correct / d.attempted) * 100 : 0;
+          const stars = pct >= 90 ? 3 : pct >= 65 ? 2 : pct >= 40 ? 1 : 0;
+          const won = !d.outOfLives;
+
+          if (stars >= 2) SFX.win();
+          else SFX.lose();
+
+          this.add
+            .text(cx, 70, won ? "ROUND COMPLETE!" : "OUT OF LIVES", {
+              fontSize: "38px",
+              fontStyle: "bold",
+              color: won ? "#0e8a7d" : "#c45a3c",
+              stroke: "#08202c",
+              strokeThickness: 4,
+            })
+            .setOrigin(0.5);
+
+          // stars
+          for (let i = 0; i < 3; i++) {
+            const sx = cx - 70 + i * 70;
+            this.add
+              .text(sx, 150, "☆", { fontSize: "54px", color: "#33505a" })
+              .setOrigin(0.5);
+            if (i < stars) {
+              const s = this.add
+                .text(sx, 150, "★", { fontSize: "54px", color: "#d4952a" })
+                .setOrigin(0.5)
+                .setScale(0);
+              this.tweens.add({
+                targets: s,
+                scale: 1,
+                duration: this.reduce ? 1 : 380,
+                delay: 250 + i * 220,
+                ease: "Back.easeOut",
+              });
             }
           }
-        }, 100);
-      }
 
-      function answer(choice, btn) {
-        if (state.locked) return;
-        state.locked = true;
-        clearInterval(state.timer);
-        var fb = document.getElementById("feedback");
-        var correct = choice === state.q.correct;
-        document.getElementById("opts").classList.add("answered");
-        Array.prototype.forEach.call(
-          document.querySelectorAll(".opt"),
-          function (b) {
-            if (b.textContent === state.q.correct) b.classList.add("right");
-            else if (b === btn) b.classList.add("wrong");
-          },
-        );
-        if (correct) {
-          state.streak++;
-          var bonus = Math.min(state.streak, 5);
-          state.score += 10 + bonus * 2;
-          fb.textContent =
-            "✓ Correct! " +
-            state.q.why +
-            (state.streak > 1 ? "  🔥 Streak ×" + state.streak : "");
-          fb.className = "feedback ok";
-          // Streak milestone (3+): bigger celebration than the auto spark-burst.
-          if (state.streak >= 3) celebrateStreak();
-        } else {
-          state.streak = 0;
-          state.lives--;
-          fb.textContent = "✗ " + state.q.why + "  (−1 ❤)";
-          fb.className = "feedback no";
-          flagMiss();
-        }
-        updateHud();
-        document.getElementById("nextBtn").classList.remove("hidden");
-      }
+          const prevHigh = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
+          const isNewHigh = d.score > prevHigh;
+          if (isNewHigh && d.score > 0)
+            localStorage.setItem(LS_KEY, String(d.score));
 
-      // Secondary feedback for a wrong answer / timeout: red card flash + a
-      // brief HUD pop on Lives so the deduction reads clearly.
-      function flagMiss() {
-        var playCard = document.querySelector("#playScreen .card");
-        if (playCard && !reduceMotion) {
-          playCard.classList.remove("ff-miss");
-          // reflow to restart the animation reliably
-          void playCard.offsetWidth;
-          playCard.classList.add("ff-miss");
-        }
-        try {
-          if (window.GameFX && GameFX.pop) {
-            GameFX.pop(document.getElementById("lives"));
+          const stats = [
+            ["Final Score", String(d.score)],
+            ["Correct", d.correct + " / " + d.attempted],
+            ["Accuracy", Math.round(pct) + "%"],
+            ["Best Streak", "×" + d.maxStreak],
+          ];
+          stats.forEach((s, i) => {
+            const y = 230 + i * 42;
+            this.add.rectangle(cx, y, 380, 34, 0x0a2230, 0.85);
+            this.add
+              .text(cx - 165, y, s[0], { fontSize: "15px", color: "#7fa8b3" })
+              .setOrigin(0, 0.5);
+            this.add
+              .text(cx + 165, y, s[1], {
+                fontSize: "17px",
+                color: "#0e8a7d",
+                fontStyle: "bold",
+              })
+              .setOrigin(1, 0.5);
+          });
+
+          if (isNewHigh && d.score > 0)
+            this.add
+              .text(cx, 415, "★ NEW HIGH SCORE! ★", {
+                fontSize: "18px",
+                color: "#d4952a",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+
+          // EduPulse (guarded)
+          try {
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: ACTIVITY_TITLE,
+                score: d.score,
+                stars: stars,
+                problemsCorrect: d.correct,
+                problemsAttempted: d.attempted,
+                percent: Math.round(pct),
+                standard: STANDARD,
+              });
+          } catch (e) {}
+
+          srSay(
+            (won ? "Round complete. " : "Out of lives. ") +
+              "Score " +
+              d.score +
+              ", " +
+              d.correct +
+              " of " +
+              d.attempted +
+              " correct, " +
+              stars +
+              " stars.",
+          );
+
+          const retry = this.add
+            .rectangle(cx - 95, 470, 170, 46, 0x0e8a7d)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(cx - 95, 470, "PLAY AGAIN", {
+              fontSize: "17px",
+              fontStyle: "bold",
+              color: "#06202c",
+            })
+            .setOrigin(0.5);
+          retry.on("pointerover", () => retry.setFillStyle(0x12a596));
+          retry.on("pointerout", () => retry.setFillStyle(0x0e8a7d));
+          retry.on("pointerdown", () => {
+            SFX.tick();
+            this.scene.start("Game");
+          });
+
+          const hub = this.add
+            .rectangle(cx + 95, 470, 170, 46, 0x1a3a48)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(cx + 95, 470, "ALL GAMES", {
+              fontSize: "17px",
+              fontStyle: "bold",
+              color: "#9fc6cf",
+            })
+            .setOrigin(0.5);
+          hub.on("pointerover", () => hub.setFillStyle(0x244c5c));
+          hub.on("pointerout", () => hub.setFillStyle(0x1a3a48));
+          hub.on("pointerdown", () => (window.location.href = "/math/games/"));
+
+          this.input.keyboard.on("keydown-SPACE", () =>
+            this.scene.start("Game"),
+          );
+
+          if (won && stars >= 2 && !this.reduce) {
+            const p = this.add
+              .particles(0, 0, "confetti", {
+                speed: { min: 60, max: 240 },
+                angle: { min: 0, max: 360 },
+                scale: { start: 1.4, end: 0 },
+                rotate: { min: 0, max: 360 },
+                lifespan: 1500,
+                gravityY: 160,
+                quantity: 20,
+                tint: [0x0e8a7d, 0x1a6fb5, 0xd4952a, 0x2d874b],
+              })
+              .setDepth(40);
+            for (let i = 0; i < 5; i++)
+              this.time.delayedCall(i * 280, () =>
+                p.emitParticleAt(randInt(120, W - 120), randInt(40, 140)),
+              );
           }
-        } catch (e) {}
-      }
 
-      // Streak milestone celebration via the shared FX kit.
-      function celebrateStreak() {
-        try {
-          if (window.GameFX) {
-            var streakEl = document.getElementById("streak");
-            if (GameFX.celebrate) GameFX.celebrate(streakEl);
-            else if (GameFX.pop) GameFX.pop(streakEl);
-          }
-        } catch (e) {}
-      }
-
-      function timeUp() {
-        state.locked = true;
-        state.streak = 0;
-        state.lives--;
-        document.getElementById("opts").classList.add("answered");
-        Array.prototype.forEach.call(
-          document.querySelectorAll(".opt"),
-          function (b) {
-            if (b.textContent === state.q.correct) b.classList.add("right");
-          },
-        );
-        var fb = document.getElementById("feedback");
-        fb.textContent = "⏰ Time! " + state.q.why + "  (−1 ❤)";
-        fb.className = "feedback no";
-        flagMiss();
-        updateHud();
-        document.getElementById("nextBtn").classList.remove("hidden");
-      }
-
-      function updateHud() {
-        document.getElementById("score").textContent = state.score;
-        document.getElementById("streak").textContent = state.streak;
-        document.getElementById("lives").textContent =
-          state.lives > 0 ? "❤".repeat(state.lives) : "—";
-      }
-
-      function endGame() {
-        clearInterval(state.timer);
-        document.getElementById("playScreen").classList.add("hidden");
-        var r = document.getElementById("resultScreen");
-        r.classList.remove("hidden");
-        document.getElementById("finalScore").textContent = state.score;
-        // Questions actually attempted: when the game ends on running out of
-        // lives, the current question (state.i) was attempted, so count it.
-        var answered = state.lives <= 0 ? state.i + 1 : state.i;
-        var msg, tier;
-        if (state.lives <= 0) {
-          tier = "Out of lives!";
-        } else {
-          tier = "You finished all " + TOTAL + " questions!";
+          this.cameras.main.fadeIn(400);
         }
-        if (state.score >= 180) msg = "🏆 Factor Champion!";
-        else if (state.score >= 120) msg = "🌟 Great factoring!";
-        else if (state.score >= 60) msg = "👍 Nice work — keep practicing.";
-        else msg = "💪 Try again to beat your score!";
-        document.getElementById("resultMsg").textContent = msg;
-        document.getElementById("resultDetail").textContent =
-          tier + " Final score: " + state.score + ".";
-        try {
-          window.EduPulse &&
-            EduPulse.record({
-              activityTitle: document.title,
-              score: state.score,
-              problemsAttempted: answered,
-              standard: "6.NS.4",
-            });
-        } catch (e) {}
       }
 
-      document.getElementById("startBtn").onclick = startGame;
-      document.getElementById("againBtn").onclick = startGame;
-      document.getElementById("nextBtn").onclick = function () {
-        state.i++;
-        nextQuestion();
-      };
+      config.scene = [BootScene, TitleScene, GameScene, ResultScene];
+      const game = new Phaser.Game(config);
+
+      // ── Canvas accessibility wiring ──
+      game.events.once("ready", function () {
+        try {
+          const cv = game.canvas;
+          if (!cv) return;
+          cv.setAttribute("role", "application");
+          cv.setAttribute(
+            "aria-label",
+            "Factor Frenzy catch-and-sort math game. Steer the basket left and " +
+              "right with the arrow keys or A and D to catch each falling tile in " +
+              "the correct bin: prime versus composite, then greatest common " +
+              "factor, then least common multiple. Press Space to start.",
+          );
+          cv.setAttribute("aria-roledescription", "math game");
+          if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
+          // Focus the canvas on pointer down so keyboard controls work immediately.
+          cv.addEventListener("pointerdown", function () {
+            try {
+              cv.focus();
+            } catch (e) {}
+          });
+        } catch (e) {}
+      });
     </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

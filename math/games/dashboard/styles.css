@@ -1,0 +1,282 @@
+/* Math Games — Teacher Dashboard
+   Layers on top of /assets/shared.css (tokens: --ink, --muted, --line,
+   --surface, --teal, --gold, --coral, --radius, --shadow). */
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  background: var(--teal, #0f766e);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 0 0 8px 0;
+  z-index: 50;
+}
+.skip-link:focus {
+  left: 0;
+}
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.dash-scope {
+  margin: 6px 0 0;
+  color: var(--muted, #5b6773);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* Toolbar */
+.dash-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--surface, #fff);
+  border: 1px solid var(--line, #d8dfdc);
+  border-radius: var(--radius, 14px);
+  box-shadow: 0 10px 28px rgba(23, 32, 42, 0.08);
+}
+.dash-spacer {
+  flex: 1 1 auto;
+}
+.dash-toolbar input[type="search"],
+.dash-toolbar select {
+  font: inherit;
+  padding: 9px 12px;
+  border: 1px solid var(--line, #d8dfdc);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink, #17202a);
+  min-width: 0;
+}
+.dash-toolbar input[type="search"] {
+  flex: 1 1 220px;
+}
+.dash-btn {
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 9px 14px;
+  border: 1px solid var(--line, #d8dfdc);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink, #17202a);
+}
+.dash-btn:hover {
+  border-color: var(--teal, #0f766e);
+}
+.dash-btn.primary {
+  background: var(--teal, #0f766e);
+  border-color: var(--teal, #0f766e);
+  color: #fff;
+}
+.dash-btn:focus-visible,
+.dash-toolbar input:focus-visible,
+.dash-toolbar select:focus-visible {
+  outline: 3px solid var(--gold, #b7791f);
+  outline-offset: 2px;
+}
+
+/* KPI cards */
+.dash-cards {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 14px;
+}
+.kpi-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 18px;
+  background: var(--surface, #fff);
+  border: 1px solid var(--line, #d8dfdc);
+  border-top: 4px solid var(--teal, #0f766e);
+  border-radius: var(--radius, 14px);
+  box-shadow: 0 10px 28px rgba(23, 32, 42, 0.08);
+}
+.kpi-value {
+  font-size: 1.7rem;
+  font-weight: 800;
+  line-height: 1.05;
+  color: var(--ink, #17202a);
+}
+.kpi-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted, #5b6773);
+}
+
+/* Panels */
+.dash-panel {
+  padding: 22px 22px 24px;
+  background: var(--surface, #fff);
+  border: 1px solid var(--line, #d8dfdc);
+  border-radius: var(--radius, 14px);
+  box-shadow: 0 10px 28px rgba(23, 32, 42, 0.08);
+}
+.review-panel {
+  border-left: 5px solid var(--coral, #c2410c);
+}
+
+/* Review list */
+.review-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.review-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--line, #d8dfdc);
+  border-radius: 10px;
+  background: rgba(194, 65, 12, 0.05);
+}
+.review-who {
+  font-weight: 800;
+}
+.review-what {
+  color: var(--ink, #17202a);
+}
+.review-meta {
+  margin-left: auto;
+  color: var(--muted, #5b6773);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+/* Table */
+.table-wrap {
+  overflow-x: auto;
+}
+.dash-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.dash-table th,
+.dash-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line, #d8dfdc);
+  vertical-align: top;
+}
+.dash-table thead th {
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted, #5b6773);
+  border-bottom: 2px solid var(--line, #d8dfdc);
+}
+.dash-table tbody th[scope="row"] {
+  font-weight: 700;
+}
+.dash-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.dash-table tbody tr:hover {
+  background: rgba(15, 118, 110, 0.04);
+}
+.empty-cell {
+  color: var(--muted, #5b6773);
+  font-style: italic;
+}
+
+/* Mastery pills */
+.pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.pill-mastery {
+  background: rgba(15, 118, 110, 0.14);
+  color: var(--teal-dark, #115e59);
+}
+.pill-developing {
+  background: rgba(183, 121, 31, 0.16);
+  color: #8a5a12;
+}
+.pill-review {
+  background: rgba(194, 65, 12, 0.14);
+  color: var(--coral, #c2410c);
+}
+
+/* Empty state */
+.empty-steps {
+  margin: 0 0 14px;
+  padding-left: 22px;
+  display: grid;
+  gap: 8px;
+  color: var(--ink, #17202a);
+}
+.empty-steps a {
+  color: var(--teal-dark, #115e59);
+  font-weight: 700;
+}
+.muted-note {
+  margin: 0;
+  color: var(--muted, #5b6773);
+  font-size: 0.88rem;
+}
+
+.dash-foot {
+  padding-top: 4px;
+}
+
+@media (max-width: 880px) {
+  .dash-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 520px) {
+  .dash-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Print-friendly */
+@media print {
+  body {
+    background: #fff;
+  }
+  .dash-toolbar,
+  .skip-link,
+  .dash-foot {
+    display: none !important;
+  }
+  .dash-panel,
+  .kpi-card,
+  .hero {
+    box-shadow: none;
+    border-color: #bbb;
+  }
+  .page-shell {
+    width: 100%;
+    padding: 0;
+    gap: 18px;
+  }
+  .review-item,
+  .dash-table tbody tr {
+    page-break-inside: avoid;
+  }
+}

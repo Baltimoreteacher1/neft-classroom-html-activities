@@ -3,373 +3,114 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-      Integer &amp; Coordinate Quest — Integers &amp; Coordinate Plane Game |
-      Neft Teacher
-    </title>
+    <title>Coordinate Quest — Integers &amp; Coordinate Plane Game | Neft Teacher</title>
     <meta
       name="description"
-      content="Arcade review game for Grade 6 integers and coordinate plane: absolute value, ordering integers, and quadrants (6.NS.5–8)."
+      content="A 2D coordinate-plane game for Grade 6 integers (6.NS.5-8): pilot a probe across the grid to plot points, choose the correct quadrant, order integers on a number line, and read absolute value."
     />
-    <link rel="stylesheet" href="/assets/shared.css" />
     <style>
-      :root {
-        --navy: #0f2b3c;
-        --blue: #1a6fb5;
-        --teal: #0e8a7d;
-        --gold: #d4952a;
-        --coral: #c45a3c;
-        --green: #2d874b;
-        --ink: #1a2633;
-        --muted: #5e6e7e;
-        --line: #e2e7ec;
-        --bg: #f7f9fb;
-        --font: "Segoe UI", system-ui, sans-serif;
-      }
       * {
+        margin: 0;
+        padding: 0;
         box-sizing: border-box;
       }
       body {
-        margin: 0;
-        font-family: var(--font);
-        color: var(--ink);
-        background: var(--bg);
-        line-height: 1.5;
+        background: #060f1c;
+        overflow: hidden;
+        font-family: "Segoe UI", system-ui, sans-serif;
       }
-      .wrap {
-        max-width: 680px;
-        margin: 0 auto;
-        padding: 0 18px 60px;
-      }
-      .ghero {
-        background: linear-gradient(135deg, #1a3a8f, #0e8a7d);
-        color: #fff;
-        text-align: center;
-        padding: 30px 20px 26px;
-      }
-      .ghero .deco {
-        font-size: 48px;
-      }
-      .ghero h1 {
-        margin: 8px 0 6px;
-        font-size: clamp(24px, 5vw, 34px);
-      }
-      .ghero p {
-        margin: 0 auto;
-        max-width: 520px;
-        color: rgba(255, 255, 255, 0.9);
-      }
-      .breadcrumb {
-        font-size: 13px;
-        padding: 14px 0;
-        color: var(--muted);
-      }
-      .breadcrumb a {
-        color: var(--blue);
-        text-decoration: none;
-        font-weight: 600;
-      }
-      .hud {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        background: #fff;
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 12px 16px;
-        margin: 18px 0;
-        font-weight: 800;
-        box-shadow: 0 2px 10px rgba(15, 43, 60, 0.06);
-      }
-      .hud .lbl {
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        color: var(--muted);
+      canvas {
         display: block;
-      }
-      .hud .val {
-        font-size: 22px;
-      }
-      .hearts {
-        color: var(--coral);
-        letter-spacing: 2px;
-      }
-      .card {
-        background: #fff;
-        border: 1px solid var(--line);
-        border-radius: 18px;
-        padding: 26px 22px;
-        box-shadow: 0 6px 22px rgba(15, 43, 60, 0.08);
-        text-align: center;
-      }
-      .mode-tag {
-        font-size: 12px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--teal);
-      }
-      .prompt {
-        font-size: clamp(22px, 5vw, 30px);
-        font-weight: 800;
-        margin: 8px 0 4px;
-      }
-      .sub {
-        color: var(--muted);
-        margin: 0 0 18px;
-      }
-      .opts {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
-      @media (max-width: 460px) {
-        .opts {
-          grid-template-columns: 1fr;
-        }
-      }
-      .opt {
-        padding: 16px;
-        border: 2px solid var(--line);
-        border-radius: 14px;
-        background: #fff;
-        font-size: 20px;
-        font-weight: 800;
-        cursor: pointer;
-        font-family: inherit;
-        color: var(--ink);
-        transition:
-          transform 0.06s,
-          border-color 0.15s;
-      }
-      .opt:hover {
-        border-color: var(--blue);
-      }
-      .opt:focus-visible,
-      .btn:focus-visible {
-        outline: 3px solid var(--blue);
-        outline-offset: 2px;
-        border-color: var(--blue);
-      }
-      .opt:active {
-        transform: scale(0.97);
-      }
-      .opt.right {
-        border-color: var(--green);
-        background: #e6f4eb;
-        color: var(--green);
-        animation: pop 0.3s;
-      }
-      .opt.wrong {
-        border-color: var(--coral);
-        background: #fdeee9;
-        color: var(--coral);
-        animation: shake 0.3s;
-      }
-      @keyframes pop {
-        50% {
-          transform: scale(1.06);
-        }
-      }
-      @keyframes shake {
-        25% {
-          transform: translateX(-6px);
-        }
-        75% {
-          transform: translateX(6px);
-        }
-      }
-      .feedback {
-        min-height: 26px;
-        margin-top: 16px;
-        font-weight: 800;
-      }
-      .feedback.ok {
-        color: var(--green);
-      }
-      .feedback.no {
-        color: var(--coral);
-      }
-      .btn {
-        background: var(--blue);
-        color: #fff;
-        border: none;
-        border-radius: 12px;
-        padding: 13px 26px;
-        font-size: 16px;
-        font-weight: 800;
-        cursor: pointer;
-        font-family: inherit;
-        margin-top: 8px;
-      }
-      .btn:hover {
-        filter: brightness(1.08);
-      }
-      .btn.start {
-        background: var(--teal);
-        font-size: 18px;
-        padding: 15px 34px;
-      }
-      .bar {
-        height: 10px;
-        background: var(--line);
-        border-radius: 50px;
-        overflow: hidden;
-        margin: 14px 0 2px;
-      }
-      .bar > div {
-        height: 100%;
-        width: 100%;
-        background: linear-gradient(90deg, var(--gold), var(--coral));
-        transition: width 0.25s linear;
-      }
-      .hidden {
-        display: none;
-      }
-      .big-score {
-        font-size: 52px;
-        font-weight: 900;
-        color: var(--blue);
-        margin: 6px 0;
-      }
-      .legend {
-        font-size: 13px;
-        color: var(--muted);
-        margin-top: 18px;
-      }
-      .legend a {
-        color: var(--blue);
-        font-weight: 700;
-      }
-      ul.modes {
-        text-align: left;
-        max-width: 430px;
-        margin: 14px auto;
-        color: var(--muted);
-        font-size: 15px;
-      }
-
-      /* ---- Bespoke math visualizations ---- */
-      .ghero {
-        position: relative;
-        overflow: hidden;
-      }
-      .ghero-grid {
-        position: absolute;
-        inset: -20%;
-        background-image:
-          linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-        background-size: 32px 32px;
-        pointer-events: none;
-        z-index: 0;
-      }
-      .ghero .deco,
-      .ghero h1,
-      .ghero p {
+        margin: 0 auto;
         position: relative;
         z-index: 1;
       }
-      .viz {
-        margin: 4px auto 18px;
-        max-width: 460px;
+      canvas:focus-visible {
+        outline: 3px solid #5ad1ff;
+        outline-offset: 4px;
+        border-radius: 8px;
       }
-      .viz:empty {
-        display: none;
+      canvas:focus:not(:focus-visible) {
+        outline: none;
       }
-      .viz svg {
-        display: block;
-        width: 100%;
-        height: auto;
+      /* Decorative animated star-field behind the Phaser canvas. */
+      #cq-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+        background: radial-gradient(
+          130% 90% at 50% 0%,
+          #122c4a 0%,
+          #0a1a2e 55%,
+          #050b15 100%
+        );
       }
-      .viz .vz-line {
-        stroke: var(--line);
+      #cq-bg-layer {
+        position: absolute;
+        inset: -6% -6%;
+        will-change: transform;
+        transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
       }
-      .viz .vz-axis {
-        stroke: #9fb0bd;
+      .cq-star {
+        position: absolute;
+        border-radius: 50%;
+        background: #bfe0ff;
+        opacity: 0.5;
+        animation: cqTwinkle var(--tw, 3s) ease-in-out infinite;
       }
-      .viz .vz-tick {
-        stroke: #c4ced7;
-      }
-      .viz .vz-tlabel {
-        fill: var(--muted);
-        font: 600 11px var(--font);
-        text-anchor: middle;
-      }
-      .viz .vz-zero {
-        fill: var(--ink);
-        font: 800 12px var(--font);
-        text-anchor: middle;
-      }
-      .viz .vz-quad-fill {
-        opacity: 0.16;
-      }
-      .viz .vz-quad-label {
-        fill: var(--muted);
-        font: 800 12px var(--font);
-        text-anchor: middle;
-      }
-      .viz .vz-pt {
-        fill: var(--coral);
-        stroke: #fff;
-        stroke-width: 2;
-      }
-      .viz .vz-dot {
-        fill: var(--blue);
-      }
-      .viz .vz-dot.least {
-        fill: var(--green);
-      }
-      .viz .vz-num {
-        font: 800 12px var(--font);
-        text-anchor: middle;
-      }
-      .viz .vz-span {
-        stroke: var(--gold);
-        stroke-width: 3;
-        stroke-linecap: round;
-      }
-      .viz .vz-mag {
-        fill: var(--gold);
-        font: 800 12px var(--font);
-        text-anchor: middle;
-      }
-      @media (prefers-reduced-motion: no-preference) {
-        .viz .vz-draw {
-          stroke-dasharray: var(--len, 200);
-          stroke-dashoffset: var(--len, 200);
-          animation: vzDraw 0.5s ease-out forwards;
+      @keyframes cqTwinkle {
+        0%,
+        100% {
+          opacity: 0.15;
+          transform: scale(0.8);
         }
-        .viz .vz-grow {
-          transform-box: fill-box;
-          transform-origin: center;
-          animation: vzGrow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-        .viz .vz-fade {
-          opacity: 0;
-          animation: vzFade 0.45s ease-out forwards;
+        50% {
+          opacity: 0.75;
+          transform: scale(1.2);
         }
       }
-      @keyframes vzDraw {
-        to {
-          stroke-dashoffset: 0;
+      @media (prefers-reduced-motion: reduce) {
+        #cq-bg-layer {
+          transition: none !important;
+          transform: none !important;
+        }
+        .cq-star {
+          animation: none !important;
+          opacity: 0.4 !important;
         }
       }
-      @keyframes vzGrow {
-        from {
-          transform: scale(0);
-        }
-        to {
-          transform: scale(1);
-        }
-      }
-      @keyframes vzFade {
-        to {
-          opacity: 1;
-        }
+      #cq-sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
       }
     </style>
+    <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
+    <script>
+      // CDN fallback: if the local vendor copy failed, synchronously load Phaser
+      // from a mirror (document.write blocks parsing so the mirror is ready
+      // before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      // If both sources are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#bfe0ff">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
@@ -378,793 +119,1007 @@
     <!-- gfx-injected:end -->
   </head>
   <body>
-    <header class="ghero" data-parallax>
-      <div class="ghero-grid" data-parallax-layer aria-hidden="true"></div>
-      <div class="deco">&#x1F9ED;</div>
-      <h1>Integer &amp; Coordinate Quest</h1>
-      <p>
-        Navigate integers, absolute value, and the coordinate plane through
-        three rounds of arcade review.
-      </p>
-    </header>
-    <div class="wrap">
-      <nav class="breadcrumb">
-        <a href="/">Home</a> / <a href="/math/">Math</a> /
-        <a href="/math/games/">Games</a> / Coordinate Quest
-      </nav>
-
-      <section class="card" id="startScreen">
-        <p class="mode-tag">
-          Integers &amp; Coordinate Plane &middot; 6.NS.5&ndash;8
-        </p>
-        <h2 style="margin: 6px 0">Ready to quest?</h2>
-        <ul class="modes">
-          <li>
-            <strong>Round 1 &mdash; Absolute Value.</strong> Find the distance
-            from zero.
-          </li>
-          <li>
-            <strong>Round 2 &mdash; Order Integers.</strong> Identify the least
-            of three integers.
-          </li>
-          <li>
-            <strong>Round 3 &mdash; Coordinate Plane.</strong> Name the quadrant
-            of a plotted point.
-          </li>
-        </ul>
-        <p class="sub">
-          You have <strong>3 &#x2764;</strong> and a timer on each question.
-          Build a streak for bonus points!
-        </p>
-        <button class="btn start" id="startBtn" type="button">
-          Start Game &#x25B6;
-        </button>
-      </section>
-
-      <section id="playScreen" class="hidden">
-        <div class="hud">
-          <div>
-            <span class="lbl">Score</span><span class="val" id="score">0</span>
-          </div>
-          <div>
-            <span class="lbl">Streak</span
-            ><span class="val" id="streak">0</span>
-          </div>
-          <div>
-            <span class="lbl">Lives</span
-            ><span class="val hearts" id="lives">&#x2764;&#x2764;&#x2764;</span>
-          </div>
-          <div>
-            <span class="lbl">Question</span
-            ><span class="val" id="qnum">1</span>
-          </div>
-        </div>
-        <div class="bar"><div id="timebar"></div></div>
-        <div class="card" style="margin-top: 14px">
-          <span class="mode-tag" id="modeTag"></span>
-          <div class="prompt" id="prompt"></div>
-          <p class="sub" id="sub"></p>
-          <div class="viz" id="viz" aria-hidden="true"></div>
-          <div class="opts" id="opts"></div>
-          <div class="feedback" id="feedback"></div>
-          <button class="btn hidden" id="nextBtn" type="button">
-            Next &#x25B6;
-          </button>
-        </div>
-      </section>
-
-      <section class="card hidden" id="resultScreen">
-        <p class="mode-tag">Game Over</p>
-        <div class="big-score" id="finalScore">0</div>
-        <p id="resultMsg" style="font-weight: 700"></p>
-        <p class="sub" id="resultDetail"></p>
-        <button class="btn start" id="againBtn" type="button">
-          Play Again &#x1F501;
-        </button>
-        <p class="legend">
-          More review:
-          <a href="/math/review-arcade/">Boss-Battle Review Arcade</a> &middot;
-          <a href="/math/games/">All Games</a>
-        </p>
-      </section>
+    <!-- Decorative animated star-field (behind the Phaser canvas). -->
+    <div id="cq-bg" data-parallax aria-hidden="true">
+      <div id="cq-bg-layer" data-parallax-layer></div>
     </div>
+    <!-- Screen-reader live region mirrors the current question + result. -->
+    <div id="cq-sr" role="status" aria-live="polite"></div>
 
     <script>
-      function rnd(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-      }
+      // Decorative star-field builder + pointer parallax (gameplay-neutral).
+      (function () {
+        var layer = document.getElementById("cq-bg-layer");
+        if (!layer) return;
+        var reduce =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var frag = document.createDocumentFragment();
+        for (var i = 0; i < 90; i++) {
+          var s = document.createElement("div");
+          s.className = "cq-star";
+          var sz = 1 + Math.random() * 2.6;
+          s.style.width = sz + "px";
+          s.style.height = sz + "px";
+          s.style.left = Math.random() * 100 + "%";
+          s.style.top = Math.random() * 100 + "%";
+          s.style.setProperty("--tw", 2 + Math.random() * 4 + "s");
+          s.style.animationDelay = -Math.random() * 5 + "s";
+          frag.appendChild(s);
+        }
+        layer.appendChild(frag);
+        if (reduce) return;
+        window.addEventListener(
+          "pointermove",
+          function (e) {
+            var tx = (e.clientX / window.innerWidth - 0.5) * -26;
+            var ty = (e.clientY / window.innerHeight - 0.5) * -18;
+            layer.style.transform = "translate3d(" + tx + "px," + ty + "px,0)";
+          },
+          { passive: true },
+        );
+      })();
+    </script>
+
+    <script>
+      // ════════════════════════════════════════════════════════════════════
+      //  COORDINATE QUEST — PROBE PILOT   ·   6.NS.5-8
+      //  True 2D mechanic: you pilot a probe across a coordinate plane with the
+      //  arrow keys (or click a cell). Each mission gives an integer/coordinate
+      //  task; you NAVIGATE to the correct cell and LAND to confirm:
+      //   • Round 1 — Plot the point: fly to the named (x, y).
+      //   • Round 2 — Absolute value: fly to the integer on the number-line row
+      //               whose distance from 0 equals the asked value.
+      //   • Round 3 — Quadrant / ordering: fly into the correct quadrant region,
+      //               or land on the least of the listed integers.
+      //  Wrong landing = lose a life. Rising difficulty: wider grid, smaller
+      //  target tolerance, mixed tasks.
+      // ════════════════════════════════════════════════════════════════════
+      const W = 900,
+        H = 620;
+
+      const C = {
+        bg: 0x0a1a2e,
+        panel: 0x10263f,
+        panelEdge: 0x244966,
+        grid: 0x1d3a57,
+        gridAxis: 0x6fb7e8,
+        ink: "#eaf4ff",
+        sub: "#9fc1de",
+        accent: 0x5ad1ff,
+        good: 0x4fd18b,
+        bad: 0xff6b6b,
+        gold: 0xffcd4d,
+        q1: 0x0e8a7d,
+        q2: 0x1a6fb5,
+        q3: 0xd4952a,
+        q4: 0xc45a3c,
+        probe: 0xffcd4d,
+      };
+
+      const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+      const choice = (arr) => arr[Math.floor(Math.random() * arr.length)];
       function shuffle(a) {
-        for (var i = a.length - 1; i > 0; i--) {
-          var j = Math.floor(Math.random() * (i + 1));
-          var t = a[i];
-          a[i] = a[j];
-          a[j] = t;
+        a = a.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
         }
         return a;
       }
-
-      var TOTAL = 12,
-        TIME = 12;
-      var state = {};
-
-      // Build distinct options list given correct answer (string) and a wrong-maker function
-      function distinctOpts(correctStr, makeWrong) {
-        var set = {};
-        set[correctStr] = true;
-        var opts = [correctStr];
-        var guard = 0;
-        while (opts.length < 4 && guard < 80) {
-          guard++;
-          var w = makeWrong();
-          if (!set[w]) {
-            set[w] = true;
-            opts.push(w);
-          }
-        }
-        // Guarantee 4 distinct options even if makeWrong keeps colliding,
-        // so the grid never renders short. Pad with nearby positive integers.
-        var nCorrect = parseInt(correctStr, 10);
-        var pad = 1;
-        while (opts.length < 4 && pad < 50) {
-          var cand = String((isNaN(nCorrect) ? 0 : nCorrect) + pad);
-          if (!set[cand]) {
-            set[cand] = true;
-            opts.push(cand);
-          }
-          pad++;
-        }
-        return { opts: shuffle(opts), correct: correctStr };
-      }
-
-      function buildQuestion(i) {
-        var round = i < 4 ? 1 : i < 8 ? 2 : 3;
-
-        if (round === 1) {
-          // Absolute value: |−n| = ?
-          var n = rnd(1, 30); // positive magnitude
-          var neg = -n; // make it negative
-          var ans = n; // absolute value = positive
-          var ansStr = String(ans);
-          var negStr = String(neg); // e.g. "-17"
-          // Distractors: the negative itself, near values
-          var o = distinctOpts(ansStr, function () {
-            var choice = rnd(0, 3);
-            if (choice === 0) return negStr;
-            if (choice === 1) return String(n + rnd(1, 5));
-            if (choice === 2) return String(Math.max(1, n - rnd(1, 5)));
-            return String(n + rnd(6, 12));
-          });
-          return {
-            tag: "Absolute Value",
-            prompt: "|−" + n + "| = ?",
-            sub: "What is the distance from zero?",
-            opts: o.opts,
-            correct: o.correct,
-            viz: { type: "abs", value: neg, mag: n },
-            why:
-              "|−" + n + "| = " + n + " (distance from 0 is always positive).",
-          };
-        }
-
-        if (round === 2) {
-          // Order integers: which is least of 3 integers?
-          // Generate 3 distinct integers with a mix of negatives and positives
-          var nums = [],
-            seenN = {};
-          while (nums.length < 3) {
-            var val = rnd(-15, 15);
-            if (!seenN[val]) {
-              seenN[val] = true;
-              nums.push(val);
-            }
-          }
-          if (
-            !nums.some(function (v) {
-              return v < 0;
-            })
-          ) {
-            var idx = rnd(0, 2);
-            var nv = -rnd(1, 15);
-            while (seenN[nv]) {
-              nv = -rnd(1, 15);
-            }
-            seenN[nv] = true;
-            nums[idx] = nv;
-          }
-          var a = nums[0],
-            b = nums[1],
-            c = nums[2];
-          var minVal = Math.min(a, b, c);
-          var minStr = String(minVal);
-          // Options are the three integers themselves (as strings) + one more distractor
-          var setNums = {};
-          setNums[String(a)] = true;
-          setNums[String(b)] = true;
-          setNums[String(c)] = true;
-          var optsArr = [String(a), String(b), String(c)];
-          // Add a 4th distractor integer not in the set. It MUST be greater
-          // than the listed minimum, otherwise an option smaller than the
-          // "least of these three" would appear and make the answer ambiguous.
-          var guard2 = 0;
-          while (optsArr.length < 4 && guard2 < 80) {
-            guard2++;
-            var extra = rnd(minVal + 1, 15);
-            var extraStr = String(extra);
-            if (!setNums[extraStr]) {
-              setNums[extraStr] = true;
-              optsArr.push(extraStr);
-            }
-          }
-          // Deterministic fallback so a 4th choice always exists and is never
-          // smaller than the listed minimum (keeps the answer unambiguous).
-          var extraScan = minVal + 1;
-          while (optsArr.length < 4 && extraScan <= 50) {
-            var es = String(extraScan);
-            if (!setNums[es]) {
-              setNums[es] = true;
-              optsArr.push(es);
-            }
-            extraScan++;
-          }
-          optsArr = shuffle(optsArr);
-          // Format prompt display: show negative numbers with minus sign
-          var displayNums = nums
-            .map(function (v) {
-              return String(v);
-            })
-            .join(", ");
-          return {
-            tag: "Order Integers",
-            prompt: "Which is least: " + displayNums + "?",
-            sub: "Think about the number line.",
-            opts: optsArr,
-            correct: minStr,
-            viz: { type: "order", nums: [a, b, c], min: minVal },
-            why:
-              String(minVal) +
-              " is the least because it is farthest left on the number line.",
-          };
-        }
-
-        // Round 3: Quadrant identification
-        // Generate point (x, y) with nonzero coords
-        var x, y;
-        do {
-          x = rnd(-10, 10);
-        } while (x === 0);
-        do {
-          y = rnd(-10, 10);
-        } while (y === 0);
-        var quadrant;
-        if (x > 0 && y > 0) quadrant = "Quadrant I";
-        else if (x < 0 && y > 0) quadrant = "Quadrant II";
-        else if (x < 0 && y < 0) quadrant = "Quadrant III";
-        else quadrant = "Quadrant IV"; // x>0, y<0
-        var quadrantOpts = [
-          "Quadrant I",
-          "Quadrant II",
-          "Quadrant III",
-          "Quadrant IV",
-        ];
-        var displayX = x < 0 ? "−" + Math.abs(x) : String(x);
-        var displayY = y < 0 ? "−" + Math.abs(y) : String(y);
-        return {
-          tag: "Coordinate Plane",
-          prompt: "Which quadrant is (" + displayX + ", " + displayY + ") in?",
-          sub: "Think about the signs of x and y.",
-          opts: quadrantOpts,
-          correct: quadrant,
-          viz: { type: "quad", x: x, y: y, quadrant: quadrant },
-          why:
-            "(" +
-            displayX +
-            ", " +
-            displayY +
-            ") is in " +
-            quadrant +
-            " (x " +
-            (x > 0 ? "positive" : "negative") +
-            ", y " +
-            (y > 0 ? "positive" : "negative") +
-            ").",
-        };
-      }
-
-      // ---- Bespoke math visualizations (additive, decorative) ----
-      var REDUCE_MOTION =
+      const RM_QUERY =
         window.matchMedia &&
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      try {
-        var _mm = window.matchMedia("(prefers-reduced-motion: reduce)");
-        if (_mm.addEventListener) {
-          _mm.addEventListener("change", function (e) {
-            REDUCE_MOTION = e.matches;
+        window.matchMedia("(prefers-reduced-motion: reduce)");
+      const reducedMotion = () => !!(RM_QUERY && RM_QUERY.matches);
+      const fmtInt = (n) => (n < 0 ? "−" + Math.abs(n) : String(n));
+
+      const TOTAL_LEVELS = 3;
+      const TASKS_PER_LEVEL = 4;
+      const START_LIVES = 3;
+
+      function quadrantOf(x, y) {
+        if (x > 0 && y > 0) return 1;
+        if (x < 0 && y > 0) return 2;
+        if (x < 0 && y < 0) return 3;
+        return 4; // x>0, y<0
+      }
+
+      // ── Mission generators (also exposed on window for stress tests) ──
+
+      // PLOT: navigate to a specific (x, y). Both coords nonzero so the point
+      // sits squarely inside a quadrant.
+      function buildPlot(level) {
+        const lim = level === 0 ? 4 : level === 1 ? 6 : 8;
+        let x, y;
+        do { x = randInt(-lim, lim); } while (x === 0);
+        do { y = randInt(-lim, lim); } while (y === 0);
+        return {
+          kind: "plot",
+          gridLim: lim,
+          target: { x, y },
+          prompt: "Plot the point  (" + fmtInt(x) + ", " + fmtInt(y) + ")",
+          hint: "Move right/left for x, up/down for y, then LAND (Space).",
+          why:
+            "(" + fmtInt(x) + ", " + fmtInt(y) + "): go " + Math.abs(x) +
+            (x >= 0 ? " right" : " left") + " and " + Math.abs(y) +
+            (y >= 0 ? " up" : " down") + " from the origin.",
+        };
+      }
+
+      // ABSOLUTE VALUE: a number-line row (y fixed at 0). Fly to the integer n
+      // (negative) whose |n| equals the asked magnitude. One correct cell.
+      function buildAbs(level) {
+        const lim = level === 0 ? 5 : level === 1 ? 7 : 9;
+        const mag = randInt(2, lim); // distance from 0
+        const onNeg = Math.random() < 0.5;
+        const target = onNeg ? -mag : mag;
+        return {
+          kind: "abs",
+          gridLim: lim,
+          axisRow: true, // restrict to the x-axis (y = 0)
+          target: { x: target, y: 0 },
+          mag: mag,
+          prompt: "Fly to the integer whose distance from 0 is " + mag +
+            (onNeg ? "  (on the negative side)" : "  (on the positive side)"),
+          hint: "Absolute value is distance from 0. Move along the x-axis and LAND.",
+          why:
+            "|" + fmtInt(target) + "| = " + mag +
+            " because " + fmtInt(target) + " is " + mag + " units from 0.",
+        };
+      }
+
+      // QUADRANT: navigate the probe so it ends INSIDE the named quadrant.
+      // Any nonzero cell with the right sign pattern counts.
+      function buildQuadrant(level) {
+        const lim = level === 1 ? 6 : 8;
+        const q = randInt(1, 4);
+        const names = ["", "Quadrant I", "Quadrant II", "Quadrant III", "Quadrant IV"];
+        const signs = ["", "x +, y +", "x −, y +", "x −, y −", "x +, y −"];
+        return {
+          kind: "quad",
+          gridLim: lim,
+          quadrant: q,
+          prompt: "Land your probe anywhere in " + names[q],
+          hint: names[q] + " has " + signs[q] + ". Move there and LAND.",
+          why: names[q] + " is where " + signs[q] + ".",
+        };
+      }
+
+      // ORDER: three distinct integers shown as targets on the number-line row;
+      // navigate to the LEAST. Only the listed cells are valid landing spots.
+      function buildOrder(level) {
+        const lim = level === 1 ? 7 : 9;
+        const seen = {};
+        const nums = [];
+        while (nums.length < 3) {
+          const v = randInt(-lim, lim);
+          if (v !== 0 && !seen[v]) {
+            seen[v] = true;
+            nums.push(v);
+          }
+        }
+        // ensure at least one negative for a meaningful ordering task
+        if (!nums.some((v) => v < 0)) {
+          let nv;
+          do { nv = -randInt(1, lim); } while (seen[nv]);
+          nums[randInt(0, 2)] = nv;
+        }
+        const least = Math.min.apply(null, nums);
+        return {
+          kind: "order",
+          gridLim: lim,
+          axisRow: true,
+          listed: nums.slice(),
+          target: { x: least, y: 0 },
+          prompt: "Land on the LEAST integer:  " + nums.map(fmtInt).join(",  "),
+          hint: "Least is farthest LEFT on the number line. Fly there and LAND.",
+          why:
+            fmtInt(least) + " is least — it sits farthest left on the number line.",
+        };
+      }
+
+      // Choose a mission for a level. Difficulty rises: L0 = plot + abs,
+      // L1 adds quadrant/order, L2 mixes all with bigger grids.
+      function buildMission(level, index) {
+        if (level === 0) {
+          return index % 2 === 0 ? buildPlot(level) : buildAbs(level);
+        }
+        if (level === 1) {
+          const pick = index % 4;
+          if (pick === 0) return buildPlot(level);
+          if (pick === 1) return buildAbs(level);
+          if (pick === 2) return buildQuadrant(level);
+          return buildOrder(level);
+        }
+        // level 2 — full mix, largest grid
+        const all = [buildPlot, buildAbs, buildQuadrant, buildOrder];
+        return all[index % 4](level);
+      }
+      window.CoordQuest = {
+        buildPlot,
+        buildAbs,
+        buildQuadrant,
+        buildOrder,
+        buildMission,
+        quadrantOf,
+      };
+
+      // ════════════════════════════════════════════════════════════════════
+      //  BOOT
+      // ════════════════════════════════════════════════════════════════════
+      class BootScene extends Phaser.Scene {
+        constructor() {
+          super("Boot");
+        }
+        create() {
+          const g = this.make.graphics({ add: false });
+          g.fillStyle(0xffffff).fillCircle(4, 4, 4);
+          g.generateTexture("dot", 8, 8);
+          g.clear();
+          g.fillStyle(0xffffff).fillRect(0, 0, 7, 4);
+          g.generateTexture("chip", 7, 4);
+          g.clear();
+          g.destroy();
+          this.scene.start("Title");
+        }
+      }
+
+      // ════════════════════════════════════════════════════════════════════
+      //  TITLE
+      // ════════════════════════════════════════════════════════════════════
+      class TitleScene extends Phaser.Scene {
+        constructor() {
+          super("Title");
+        }
+        create() {
+          this.cameras.main.setBackgroundColor(C.bg);
+          const cx = W / 2;
+
+          const badge = this.add.container(cx, 150);
+          const ring = this.add.circle(0, 0, 40, 0x123a55).setStrokeStyle(3, C.accent);
+          const probe = this.add.triangle(0, 0, 0, -16, 13, 14, -13, 14, C.probe).setStrokeStyle(2, 0x6b4e00);
+          badge.add([ring, probe]);
+          if (!reducedMotion()) {
+            this.tweens.add({ targets: probe, angle: 360, duration: 4000, repeat: -1 });
+            this.tweens.add({ targets: badge, y: 138, duration: 1600, yoyo: true, repeat: -1, ease: "Sine.inOut" });
+          }
+
+          this.add
+            .text(cx, 250, "COORDINATE QUEST", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "50px",
+              fontStyle: "900",
+              color: "#eaf4ff",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 296, "Probe Pilot", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "26px",
+              fontStyle: "bold",
+              color: "#ffcd4d",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              cx,
+              350,
+              "Pilot your probe across the coordinate plane. Plot points,\nfind absolute value, order integers, and reach the right quadrant.",
+              {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "18px",
+                color: "#9fc1de",
+                align: "center",
+                lineSpacing: 6,
+              },
+            )
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 406, "Grade 6 · Integers & Coordinate Plane · 6.NS.5–8", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#5ad1ff",
+            })
+            .setOrigin(0.5);
+
+          this.makeButton(cx, 474, "▶  START QUEST", 0x2f8f5a, () =>
+            this.scene.start("Game", { level: 0, score: 0, lives: START_LIVES }),
+          );
+          this.add
+            .text(
+              cx,
+              548,
+              "Arrow keys move the probe · Space lands it · or tap a grid cell.",
+              {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "14px",
+                color: "#7fa3c2",
+              },
+            )
+            .setOrigin(0.5);
+          this.makeLink(cx, 586, "← Back to Math Games");
+          this.setSR(
+            "Coordinate Quest, Probe Pilot. A coordinate-plane game for integers and the coordinate plane, standard 6.NS.5 to 8. Press start to play.",
+          );
+        }
+        makeButton(x, y, label, color, cb) {
+          const b = this.add
+            .rectangle(x, y, 290, 56, color)
+            .setStrokeStyle(3, 0xffffff, 0.85)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(x, y, label, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "22px",
+              fontStyle: "bold",
+              color: "#ffffff",
+            })
+            .setOrigin(0.5);
+          b.on("pointerover", () => b.setScale(1.04));
+          b.on("pointerout", () => b.setScale(1));
+          b.on("pointerdown", cb);
+          this.input.keyboard.once("keydown-SPACE", cb);
+          this.input.keyboard.once("keydown-ENTER", cb);
+          return b;
+        }
+        makeLink(x, y, label) {
+          const t = this.add
+            .text(x, y, label, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#9fc1de",
+            })
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true });
+          t.on("pointerover", () => t.setColor("#5ad1ff"));
+          t.on("pointerout", () => t.setColor("#9fc1de"));
+          t.on("pointerdown", () => {
+            window.location.href = "/math/games/";
+          });
+          return t;
+        }
+        setSR(msg) {
+          const el = document.getElementById("cq-sr");
+          if (el) el.textContent = msg;
+        }
+      }
+
+      // ════════════════════════════════════════════════════════════════════
+      //  GAME
+      // ════════════════════════════════════════════════════════════════════
+      class GameScene extends Phaser.Scene {
+        constructor() {
+          super("Game");
+        }
+        init(data) {
+          this.levelIndex = data.level || 0;
+          this.score = data.score || 0;
+          this.lives = data.lives != null ? data.lives : START_LIVES;
+          this.streak = 0;
+          this.solved = 0;
+          this.locked = false;
+          this.taskIndex = 0;
+        }
+        create() {
+          this.cameras.main.setBackgroundColor(C.bg);
+          this.buildHUD();
+          this.buildPanel();
+
+          // keyboard
+          this.input.keyboard.on("keydown-LEFT", () => this.moveProbe(-1, 0));
+          this.input.keyboard.on("keydown-RIGHT", () => this.moveProbe(1, 0));
+          this.input.keyboard.on("keydown-UP", () => this.moveProbe(0, 1));
+          this.input.keyboard.on("keydown-DOWN", () => this.moveProbe(0, -1));
+          this.input.keyboard.on("keydown-A", () => this.moveProbe(-1, 0));
+          this.input.keyboard.on("keydown-D", () => this.moveProbe(1, 0));
+          this.input.keyboard.on("keydown-W", () => this.moveProbe(0, 1));
+          this.input.keyboard.on("keydown-S", () => this.moveProbe(0, -1));
+          this.input.keyboard.on("keydown-SPACE", () => this.land());
+          this.input.keyboard.on("keydown-ENTER", () => this.land());
+
+          this.nextMission();
+          this.cameras.main.fadeIn(400);
+        }
+
+        buildHUD() {
+          this.add.rectangle(W / 2, 30, W, 60, C.panel).setDepth(1);
+          this.add.rectangle(W / 2, 60, W, 2, C.panelEdge).setDepth(1);
+          const mk = (x, label) => {
+            this.add
+              .text(x, 16, label, {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "12px",
+                color: "#7fa3c2",
+              })
+              .setOrigin(1, 0)
+              .setDepth(2);
+            return this.add
+              .text(x, 30, "", {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "22px",
+                fontStyle: "900",
+                color: "#eaf4ff",
+              })
+              .setOrigin(1, 0)
+              .setDepth(2);
+          };
+          this.add
+            .text(20, 18, "🧭 Coordinate Quest", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "18px",
+              fontStyle: "bold",
+              color: "#ffcd4d",
+            })
+            .setDepth(2);
+          this.scoreT = mk(W - 20, "SCORE");
+          this.levelT = mk(W - 150, "ROUND");
+          this.streakT = mk(W - 290, "STREAK");
+          this.livesT = mk(W - 420, "LIVES");
+
+          const menu = this.add
+            .text(230, 30, "☰ Menu", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "14px",
+              fontStyle: "bold",
+              color: "#9fc1de",
+            })
+            .setOrigin(0, 0.5)
+            .setDepth(2)
+            .setInteractive({ useHandCursor: true });
+          menu.on("pointerdown", () => this.scene.start("Title"));
+          menu.on("pointerover", () => menu.setColor("#5ad1ff"));
+          menu.on("pointerout", () => menu.setColor("#9fc1de"));
+          this.refreshHUD();
+        }
+        refreshHUD() {
+          this.scoreT.setText(String(this.score));
+          this.levelT.setText(`${this.levelIndex + 1} / ${TOTAL_LEVELS}`);
+          this.streakT.setText(this.streak > 0 ? `×${this.streak}` : "—");
+          this.livesT.setText("❤".repeat(Math.max(0, this.lives)) || "—");
+        }
+
+        buildPanel() {
+          // left task panel
+          this.add
+            .rectangle(170, 340, 290, 470, C.panel)
+            .setStrokeStyle(2, C.panelEdge);
+          this.taskTag = this.add
+            .text(40, 110, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "13px",
+              fontStyle: "900",
+              color: "#5ad1ff",
+            })
+            .setOrigin(0, 0);
+          this.promptT = this.add
+            .text(40, 140, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "20px",
+              fontStyle: "bold",
+              color: "#eaf4ff",
+              wordWrap: { width: 260 },
+              lineSpacing: 4,
+            })
+            .setOrigin(0, 0);
+          this.hintT = this.add
+            .text(40, 250, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "14px",
+              color: "#9fc1de",
+              wordWrap: { width: 260 },
+              lineSpacing: 4,
+            })
+            .setOrigin(0, 0);
+          this.posT = this.add
+            .text(40, 360, "", {
+              fontFamily: "Consolas, monospace",
+              fontSize: "20px",
+              fontStyle: "bold",
+              color: "#ffcd4d",
+            })
+            .setOrigin(0, 0);
+          this.landBtn = this.add
+            .rectangle(170, 470, 200, 50, 0x2f8f5a)
+            .setStrokeStyle(3, 0xffffff, 0.85)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(170, 470, "🛬  LAND  (Space)", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "18px",
+              fontStyle: "bold",
+              color: "#fff",
+            })
+            .setOrigin(0.5);
+          this.landBtn.on("pointerover", () => this.landBtn.setScale(1.04));
+          this.landBtn.on("pointerout", () => this.landBtn.setScale(1));
+          this.landBtn.on("pointerdown", () => this.land());
+
+          this.fbText = this.add
+            .text(170, 540, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "14px",
+              fontStyle: "bold",
+              color: "#9fc1de",
+              align: "center",
+              wordWrap: { width: 270 },
+            })
+            .setOrigin(0.5, 0);
+        }
+
+        // ── Grid (right side) — rebuilt per mission since grid size changes ──
+        buildGrid() {
+          if (this.gridContainer) this.gridContainer.destroy();
+          this.gridContainer = this.add.container(0, 0);
+          const lim = this.m.gridLim;
+          this.lim = lim;
+          // plot region
+          const region = 440;
+          this.cellPx = Math.floor(region / (2 * lim));
+          this.gx0 = 640; // screen x of origin
+          this.gy0 = 340; // screen y of origin
+          const g = this.add.graphics();
+          this.gridContainer.add(g);
+
+          // panel
+          this.gridContainer.add(
+            this.add
+              .rectangle(this.gx0, this.gy0, this.cellPx * 2 * lim + 60, this.cellPx * 2 * lim + 60, C.panel)
+              .setStrokeStyle(2, C.panelEdge),
+          );
+
+          // quadrant tints (faint) for quadrant tasks
+          if (this.m.kind === "quad") {
+            const half = this.cellPx * lim;
+            const tint = [C.q1, C.q2, C.q3, C.q4];
+            const corners = [
+              [this.gx0, this.gy0 - half],
+              [this.gx0 - half, this.gy0 - half],
+              [this.gx0 - half, this.gy0],
+              [this.gx0, this.gy0],
+            ];
+            corners.forEach((cn, i) => {
+              const r = this.add
+                .rectangle(cn[0] + half / 2, cn[1] + half / 2, half, half, tint[i],
+                  i + 1 === this.m.quadrant ? 0.3 : 0.08)
+                .setDepth(0);
+              this.gridContainer.add(r);
+            });
+          }
+
+          // grid lines
+          g.lineStyle(1, C.grid, 1);
+          for (let i = -lim; i <= lim; i++) {
+            const px = this.sx(i);
+            const py = this.sy(i);
+            g.lineBetween(px, this.sy(-lim), px, this.sy(lim));
+            g.lineBetween(this.sx(-lim), py, this.sx(lim), py);
+          }
+          // axes
+          g.lineStyle(3, C.gridAxis, 1);
+          g.lineBetween(this.sx(-lim), this.gy0, this.sx(lim), this.gy0);
+          g.lineBetween(this.gx0, this.sy(-lim), this.gx0, this.sy(lim));
+
+          // axis number labels (every 1 if small, every 2 if large)
+          const step = lim <= 5 ? 1 : 2;
+          for (let i = -lim; i <= lim; i += step) {
+            if (i === 0) continue;
+            this.gridContainer.add(
+              this.add
+                .text(this.sx(i), this.gy0 + 10, fmtInt(i), {
+                  fontFamily: "Segoe UI, sans-serif",
+                  fontSize: "11px",
+                  color: "#7fa3c2",
+                })
+                .setOrigin(0.5, 0),
+            );
+            this.gridContainer.add(
+              this.add
+                .text(this.gx0 - 10, this.sy(i), fmtInt(i), {
+                  fontFamily: "Segoe UI, sans-serif",
+                  fontSize: "11px",
+                  color: "#7fa3c2",
+                })
+                .setOrigin(1, 0.5),
+            );
+          }
+
+          // dynamic markers layer (listed integers / target ghost)
+          this.markGfx = this.add.graphics();
+          this.gridContainer.add(this.markGfx);
+
+          // listed integers for the order task (gold rings on the x-axis)
+          if (this.m.kind === "order") {
+            this.m.listed.forEach((n) => {
+              this.markGfx.lineStyle(2, C.gold, 0.9);
+              this.markGfx.strokeCircle(this.sx(n), this.gy0, this.cellPx * 0.42);
+            });
+          }
+          // absolute-value highlight band on x-axis
+          if (this.m.kind === "abs") {
+            this.gridContainer.add(
+              this.add
+                .text(this.gx0, this.sy(lim) - 4, "stay on the x-axis (y = 0)", {
+                  fontFamily: "Segoe UI, sans-serif",
+                  fontSize: "11px",
+                  color: "#7fa3c2",
+                })
+                .setOrigin(0.5, 1),
+            );
+          }
+
+          // pointer: click a cell to jump the probe there
+          const hit = this.add
+            .rectangle(this.gx0, this.gy0, this.cellPx * 2 * lim, this.cellPx * 2 * lim, 0xffffff, 0.001)
+            .setInteractive({ useHandCursor: true });
+          this.gridContainer.add(hit);
+          hit.on("pointerdown", (p) => {
+            if (this.locked) return;
+            const gx = Math.round((p.x - this.gx0) / this.cellPx);
+            const gy = Math.round((this.gy0 - p.y) / this.cellPx);
+            this.setProbe(
+              Phaser.Math.Clamp(gx, -lim, lim),
+              Phaser.Math.Clamp(gy, -lim, lim),
+            );
+          });
+
+          // the probe
+          this.probe = this.add.container(0, 0).setDepth(8);
+          const ring = this.add.circle(0, 0, this.cellPx * 0.4, 0x1b3a59, 0.6).setStrokeStyle(2, C.probe);
+          this.probeTri = this.add
+            .triangle(0, 0, 0, -this.cellPx * 0.34, this.cellPx * 0.3, this.cellPx * 0.3, -this.cellPx * 0.3, this.cellPx * 0.3, C.probe)
+            .setStrokeStyle(1, 0x6b4e00);
+          this.probe.add([ring, this.probeTri]);
+          this.gridContainer.add(this.probe);
+        }
+        sx(x) {
+          return this.gx0 + x * this.cellPx;
+        }
+        sy(y) {
+          return this.gy0 - y * this.cellPx;
+        }
+
+        setProbe(x, y) {
+          this.px = x;
+          this.py = y;
+          const sx = this.sx(x),
+            sy = this.sy(y);
+          if (reducedMotion()) {
+            this.probe.x = sx;
+            this.probe.y = sy;
+          } else {
+            this.tweens.add({ targets: this.probe, x: sx, y: sy, duration: 130, ease: "Sine.out" });
+          }
+          this.posT.setText("Probe: (" + fmtInt(x) + ", " + fmtInt(y) + ")");
+        }
+
+        moveProbe(dx, dy) {
+          if (this.locked) return;
+          let nx = Phaser.Math.Clamp(this.px + dx, -this.lim, this.lim);
+          let ny = Phaser.Math.Clamp(this.py + dy, -this.lim, this.lim);
+          // abs / order tasks lock movement to the x-axis
+          if (this.m.axisRow) ny = 0;
+          this.setProbe(nx, ny);
+        }
+
+        nextMission() {
+          this.locked = false;
+          this.m = buildMission(this.levelIndex, this.taskIndex);
+          this.taskIndex++;
+          this.buildGrid();
+          // start the probe at origin (or just off it for axis tasks)
+          this.setProbe(0, 0);
+
+          this.taskTag.setText(this.taskLabel(this.m.kind));
+          this.promptT.setText(this.m.prompt);
+          this.hintT.setText(this.m.hint);
+          this.fbText.setText("");
+
+          this.setSR(this.m.prompt + ". " + this.m.hint);
+        }
+
+        taskLabel(kind) {
+          return (
+            {
+              plot: "MISSION · PLOT A POINT",
+              abs: "MISSION · ABSOLUTE VALUE",
+              quad: "MISSION · QUADRANTS",
+              order: "MISSION · ORDER INTEGERS",
+            }[kind] || "MISSION"
+          );
+        }
+
+        // ── check the current probe cell against the mission ──
+        land() {
+          if (this.locked) return;
+          this.locked = true;
+          let correct = false;
+          const m = this.m;
+          if (m.kind === "plot" || m.kind === "abs" || m.kind === "order") {
+            correct = this.px === m.target.x && this.py === m.target.y;
+          } else if (m.kind === "quad") {
+            correct =
+              this.px !== 0 &&
+              this.py !== 0 &&
+              quadrantOf(this.px, this.py) === m.quadrant;
+          }
+
+          if (correct) {
+            this.streak++;
+            this.solved++;
+            const gain = 100 + Math.min(this.streak, 5) * 20;
+            this.score += gain;
+            this.fbText.setColor("#4fd18b").setText("✓ +" + gain + "   " + m.why);
+            this.burst(this.probe.x, this.probe.y, C.good);
+            this.flashProbe(C.good);
+            this.setSR("Correct. " + m.why);
+          } else {
+            this.streak = 0;
+            this.lives--;
+            this.fbText.setColor("#ff8f8f").setText("✗ Not there. " + m.why);
+            this.flashProbe(C.bad);
+            if (!reducedMotion()) this.cameras.main.shake(180, 0.006);
+            this.setSR("Not quite. " + m.why);
+          }
+          this.refreshHUD();
+
+          this.time.delayedCall(correct ? 1000 : 1700, () => {
+            if (this.lives <= 0) return this.gameOver();
+            if (this.solved >= TASKS_PER_LEVEL) return this.completeLevel();
+            this.nextMission();
           });
         }
-      } catch (e) {}
-      var anim = function (cls) {
-        return REDUCE_MOTION ? "" : " " + cls;
-      };
 
-      function renderViz(v) {
-        var box = document.getElementById("viz");
-        if (!box) return;
-        if (!v) {
-          box.innerHTML = "";
-          return;
-        }
-        if (v.type === "abs") box.innerHTML = vizAbs(v);
-        else if (v.type === "order") box.innerHTML = vizOrder(v);
-        else if (v.type === "quad") box.innerHTML = vizQuad(v);
-        else box.innerHTML = "";
-      }
-
-      // Number line for absolute value: 0 and the negative value, arc span = distance.
-      function vizAbs(v) {
-        var W = 440,
-          H = 96,
-          pad = 26,
-          midY = 60;
-        var span = Math.max(10, Math.abs(v.value));
-        var lo = Math.min(0, v.value) - 2,
-          hi = Math.max(0, v.value) + 2;
-        var range = hi - lo;
-        var sx = function (n) {
-          return pad + ((n - lo) / range) * (W - 2 * pad);
-        };
-        var x0 = sx(0),
-          xv = sx(v.value);
-        var ticks = "";
-        for (var t = Math.ceil(lo); t <= Math.floor(hi); t++) {
-          var tx = sx(t);
-          ticks +=
-            '<line class="vz-tick" x1="' +
-            tx +
-            '" y1="' +
-            (midY - 5) +
-            '" x2="' +
-            tx +
-            '" y2="' +
-            (midY + 5) +
-            '"/>';
-          if (t % 5 === 0 || t === v.value || t === 0) {
-            ticks +=
-              '<text class="vz-tlabel" x="' +
-              tx +
-              '" y="' +
-              (midY + 20) +
-              '">' +
-              (t < 0 ? "−" + Math.abs(t) : t) +
-              "</text>";
+        flashProbe(color) {
+          if (reducedMotion()) {
+            this.probeTri.setFillStyle(color);
+            return;
           }
+          const ghost = this.add
+            .circle(this.probe.x, this.probe.y, this.cellPx * 0.5, color, 0.5)
+            .setDepth(7);
+          this.tweens.add({
+            targets: ghost,
+            scale: 2,
+            alpha: 0,
+            duration: 500,
+            onComplete: () => ghost.destroy(),
+          });
         }
-        var len = Math.abs(xv - x0) + 1;
-        var arcLeft = Math.min(x0, xv),
-          arcRight = Math.max(x0, xv);
-        var arc =
-          '<path class="vz-span' +
-          anim("vz-draw") +
-          '" style="--len:' +
-          len +
-          '" d="M ' +
-          arcLeft +
-          " " +
-          (midY - 14) +
-          " Q " +
-          (arcLeft + arcRight) / 2 +
-          " " +
-          (midY - 38) +
-          " " +
-          arcRight +
-          " " +
-          (midY - 14) +
-          '" fill="none"/>';
-        return (
-          '<svg viewBox="0 0 ' +
-          W +
-          " " +
-          H +
-          '" role="img">' +
-          '<line class="vz-axis" x1="' +
-          pad +
-          '" y1="' +
-          midY +
-          '" x2="' +
-          (W - pad) +
-          '" y2="' +
-          midY +
-          '"/>' +
-          ticks +
-          arc +
-          '<text class="vz-mag" x="' +
-          (arcLeft + arcRight) / 2 +
-          '" y="' +
-          (midY - 42) +
-          '">' +
-          Math.abs(v.value) +
-          " units</text>" +
-          '<circle class="vz-dot' +
-          anim("vz-grow") +
-          '" cx="' +
-          x0 +
-          '" cy="' +
-          midY +
-          '" r="6"/>' +
-          '<circle class="vz-dot' +
-          anim("vz-grow") +
-          '" cx="' +
-          xv +
-          '" cy="' +
-          midY +
-          '" r="6" fill="var(--coral)"/>' +
-          "</svg>"
-        );
-      }
 
-      // Number line showing the three integers; least highlighted green.
-      function vizOrder(v) {
-        var W = 440,
-          H = 84,
-          pad = 26,
-          midY = 50;
-        var lo = Math.min.apply(null, v.nums) - 2,
-          hi = Math.max.apply(null, v.nums) + 2;
-        var range = hi - lo;
-        var sx = function (n) {
-          return pad + ((n - lo) / range) * (W - 2 * pad);
-        };
-        var ticks = "";
-        for (var t = Math.ceil(lo); t <= Math.floor(hi); t++) {
-          var tx = sx(t);
-          ticks +=
-            '<line class="vz-tick" x1="' +
-            tx +
-            '" y1="' +
-            (midY - 4) +
-            '" x2="' +
-            tx +
-            '" y2="' +
-            (midY + 4) +
-            '"/>';
+        burst(x, y, color) {
+          const p = this.add.particles(x, y, "dot", {
+            speed: { min: 60, max: 180 },
+            angle: { min: 0, max: 360 },
+            scale: { start: 1, end: 0 },
+            lifespan: 500,
+            quantity: 14,
+            tint: color,
+          });
+          this.time.delayedCall(550, () => p.destroy());
         }
-        var zx = sx(0);
-        var zero =
-          lo <= 0 && hi >= 0
-            ? '<text class="vz-zero" x="' +
-              zx +
-              '" y="' +
-              (midY + 22) +
-              '">0</text>'
-            : "";
-        var pts = "";
-        v.nums.forEach(function (n) {
-          var px = sx(n),
-            isMin = n === v.min;
-          pts +=
-            '<circle class="vz-dot' +
-            (isMin ? " least" : "") +
-            anim("vz-grow") +
-            '" cx="' +
-            px +
-            '" cy="' +
-            midY +
-            '" r="' +
-            (isMin ? 8 : 6) +
-            '"/>' +
-            '<text class="vz-num" x="' +
-            px +
-            '" y="' +
-            (midY - 12) +
-            '" fill="' +
-            (isMin ? "var(--green)" : "var(--blue)") +
-            '">' +
-            (n < 0 ? "−" + Math.abs(n) : n) +
-            "</text>";
-        });
-        return (
-          '<svg viewBox="0 0 ' +
-          W +
-          " " +
-          H +
-          '" role="img">' +
-          '<line class="vz-axis" x1="' +
-          pad +
-          '" y1="' +
-          midY +
-          '" x2="' +
-          (W - pad) +
-          '" y2="' +
-          midY +
-          '"/>' +
-          ticks +
-          zero +
-          pts +
-          "</svg>"
-        );
-      }
 
-      // Mini coordinate plane with the point plotted and quadrants tinted.
-      function vizQuad(v) {
-        var S = 220,
-          c = S / 2,
-          pad = 18,
-          unit = (c - pad) / 11;
-        var px = c + v.x * unit,
-          py = c - v.y * unit;
-        var quadColors = [
-          ["var(--teal)", c, 0, c, c],
-          ["var(--blue)", 0, 0, c, c],
-          ["var(--gold)", 0, c, c, c],
-          ["var(--coral)", c, c, c, c],
-        ];
-        var active = {
-          "Quadrant I": 0,
-          "Quadrant II": 1,
-          "Quadrant III": 2,
-          "Quadrant IV": 3,
-        }[v.quadrant];
-        var fills = "";
-        quadColors.forEach(function (q, i) {
-          fills +=
-            '<rect class="vz-quad-fill" x="' +
-            q[1] +
-            '" y="' +
-            q[2] +
-            '" width="' +
-            q[3] +
-            '" height="' +
-            q[4] +
-            '" fill="' +
-            q[0] +
-            '" opacity="' +
-            (i === active ? 0.28 : 0.08) +
-            '"/>';
-        });
-        var labelPos = [
-          [c + (c - pad) / 2, pad + 12],
-          [pad + (c - pad) / 2, pad + 12],
-          [pad + (c - pad) / 2, S - pad],
-          [c + (c - pad) / 2, S - pad],
-        ];
-        var romans = ["I", "II", "III", "IV"];
-        var labels = "";
-        labelPos.forEach(function (lp, i) {
-          labels +=
-            '<text class="vz-quad-label" x="' +
-            lp[0] +
-            '" y="' +
-            lp[1] +
-            '"' +
-            (i === active ? ' fill="var(--ink)"' : "") +
-            ">" +
-            romans[i] +
-            "</text>";
-        });
-        return (
-          '<svg viewBox="0 0 ' +
-          S +
-          " " +
-          S +
-          '" role="img" style="max-width:240px;margin:0 auto;">' +
-          fills +
-          labels +
-          '<line class="vz-axis" x1="' +
-          pad +
-          '" y1="' +
-          c +
-          '" x2="' +
-          (S - pad) +
-          '" y2="' +
-          c +
-          '"/>' +
-          '<line class="vz-axis" x1="' +
-          c +
-          '" y1="' +
-          pad +
-          '" x2="' +
-          c +
-          '" y2="' +
-          (S - pad) +
-          '"/>' +
-          '<line class="vz-line" x1="' +
-          px +
-          '" y1="' +
-          c +
-          '" x2="' +
-          px +
-          '" y2="' +
-          py +
-          '" stroke-dasharray="3 3"/>' +
-          '<line class="vz-line" x1="' +
-          c +
-          '" y1="' +
-          py +
-          '" x2="' +
-          px +
-          '" y2="' +
-          py +
-          '" stroke-dasharray="3 3"/>' +
-          '<circle class="vz-pt' +
-          anim("vz-grow") +
-          '" cx="' +
-          px +
-          '" cy="' +
-          py +
-          '" r="6"/>' +
-          "</svg>"
-        );
-      }
-
-      function startGame() {
-        state = { i: 0, score: 0, streak: 0, lives: 3, locked: false };
-        document.getElementById("startScreen").classList.add("hidden");
-        document.getElementById("resultScreen").classList.add("hidden");
-        document.getElementById("playScreen").classList.remove("hidden");
-        nextQuestion();
-      }
-      function nextQuestion() {
-        if (state.lives <= 0 || state.i >= TOTAL) {
-          return endGame();
-        }
-        state.locked = false;
-        state.q = buildQuestion(state.i);
-        document.getElementById("qnum").textContent = state.i + 1 + "/" + TOTAL;
-        document.getElementById("modeTag").textContent = state.q.tag;
-        document.getElementById("prompt").textContent = state.q.prompt;
-        document.getElementById("sub").textContent = state.q.sub;
-        renderViz(state.q.viz);
-        document.getElementById("feedback").textContent = "";
-        document.getElementById("feedback").className = "feedback";
-        document.getElementById("nextBtn").classList.add("hidden");
-        var box = document.getElementById("opts");
-        box.innerHTML = "";
-        state.q.opts.forEach(function (o, idx) {
-          var b = document.createElement("button");
-          b.type = "button";
-          b.className = "opt";
-          b.textContent = o;
-          b.setAttribute("aria-label", "Choice " + (idx + 1) + ": " + o);
-          b.onclick = function () {
-            answer(o, b);
+        completeLevel() {
+          this.score += 250;
+          this.refreshHUD();
+          const ov = this.add.container(0, 0).setDepth(20);
+          ov.add(this.add.rectangle(W / 2, H / 2, W, H, 0x05101d, 0.78));
+          ov.add(
+            this.add
+              .text(W / 2, 230, "SECTOR CLEAR!", {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "42px",
+                fontStyle: "900",
+                color: "#4fd18b",
+              })
+              .setOrigin(0.5),
+          );
+          ov.add(
+            this.add
+              .text(W / 2, 292, "Round " + (this.levelIndex + 1) + " navigated!\n+250 bonus", {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "20px",
+                color: "#eaf4ff",
+                align: "center",
+                lineSpacing: 6,
+              })
+              .setOrigin(0.5),
+          );
+          this.confetti();
+          const last = this.levelIndex + 1 >= TOTAL_LEVELS;
+          const label = last ? "🏁  SEE RESULTS" : "▶  NEXT ROUND";
+          const btn = this.add
+            .rectangle(W / 2, 380, 300, 56, 0x2f8f5a)
+            .setStrokeStyle(3, 0xffffff, 0.85)
+            .setDepth(21)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2, 380, label, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "22px",
+              fontStyle: "bold",
+              color: "#fff",
+            })
+            .setOrigin(0.5)
+            .setDepth(22);
+          btn.on("pointerover", () => btn.setScale(1.04));
+          btn.on("pointerout", () => btn.setScale(1));
+          const go = () => {
+            if (last) {
+              this.scene.start("Result", { score: this.score, won: true });
+            } else {
+              this.scene.start("Game", {
+                level: this.levelIndex + 1,
+                score: this.score,
+                lives: this.lives,
+              });
+            }
           };
-          box.appendChild(b);
-        });
-        startTimer();
-      }
-      function startTimer() {
-        var t = TIME,
-          bar = document.getElementById("timebar");
-        bar.style.width = "100%";
-        clearInterval(state.timer);
-        state.timer = setInterval(function () {
-          t -= 0.1;
-          bar.style.width = Math.max(0, (t / TIME) * 100) + "%";
-          if (t <= 0) {
-            clearInterval(state.timer);
-            if (!state.locked) {
-              timeUp();
-            }
-          }
-        }, 100);
-      }
-      function answer(choice, btn) {
-        if (state.locked) return;
-        state.locked = true;
-        clearInterval(state.timer);
-        var fb = document.getElementById("feedback"),
-          correct = choice === state.q.correct;
-        Array.prototype.forEach.call(
-          document.querySelectorAll(".opt"),
-          function (b) {
-            if (b.textContent === state.q.correct) b.classList.add("right");
-            else if (b === btn) b.classList.add("wrong");
-          },
-        );
-        if (correct) {
-          state.streak++;
-          state.score += 10 + Math.min(state.streak, 5) * 2;
-          fb.textContent =
-            "✓ Correct! " +
-            state.q.why +
-            (state.streak > 1 ? "  🔥 Streak \xD7" + state.streak : "");
-          fb.className = "feedback ok";
-          try {
-            if (window.GameFX) {
-              if (state.streak >= 3 && GameFX.celebrate) GameFX.celebrate(btn);
-              else if (GameFX.pop) GameFX.pop(btn);
-            }
-          } catch (e) {}
-        } else {
-          state.streak = 0;
-          state.lives--;
-          fb.textContent = "✗ " + state.q.why + "  (−1 ❤)";
-          fb.className = "feedback no";
+          btn.on("pointerdown", go);
+          this.input.keyboard.once("keydown-SPACE", go);
+          this.setSR("Sector clear. Score " + this.score + ".");
         }
-        updateHud();
-        document.getElementById("nextBtn").classList.remove("hidden");
-      }
-      function timeUp() {
-        state.locked = true;
-        state.streak = 0;
-        state.lives--;
-        Array.prototype.forEach.call(
-          document.querySelectorAll(".opt"),
-          function (b) {
-            if (b.textContent === state.q.correct) b.classList.add("right");
-          },
-        );
-        var fb = document.getElementById("feedback");
-        fb.textContent = "⏰ Time! " + state.q.why + "  (−1 ❤)";
-        fb.className = "feedback no";
-        updateHud();
-        document.getElementById("nextBtn").classList.remove("hidden");
-      }
-      function updateHud() {
-        document.getElementById("score").textContent = state.score;
-        document.getElementById("streak").textContent = state.streak;
-        document.getElementById("lives").textContent =
-          state.lives > 0 ? "❤".repeat(state.lives) : "—";
-      }
-      function endGame() {
-        clearInterval(state.timer);
-        document.getElementById("playScreen").classList.add("hidden");
-        document.getElementById("resultScreen").classList.remove("hidden");
-        document.getElementById("finalScore").textContent = state.score;
-        var msg;
-        if (state.score >= 180) msg = "🏆 Integer Champion!";
-        else if (state.score >= 120) msg = "🌟 Navigating like a pro!";
-        else if (state.score >= 60) msg = "👍 Nice work — keep practicing.";
-        else msg = "💪 Try again to beat your score!";
-        document.getElementById("resultMsg").textContent = msg;
-        document.getElementById("resultDetail").textContent =
-          (state.lives <= 0
-            ? "Out of lives! "
-            : "You finished all " + TOTAL + " questions! ") +
-          "Final score: " +
-          state.score +
-          ".";
-        try {
-          window.EduPulse &&
-            EduPulse.record({
-              activityTitle: document.title,
-              score: state.score,
-              problemsAttempted: state.i,
-              standard: "6.NS.6",
-            });
-        } catch (e) {}
-      }
-      document.getElementById("startBtn").onclick = startGame;
-      document.getElementById("againBtn").onclick = startGame;
-      document.getElementById("nextBtn").onclick = function () {
-        state.i++;
-        nextQuestion();
-      };
 
-      // Keyboard support: 1–4 select an option, Enter/Space advances to next.
-      document.addEventListener("keydown", function (e) {
-        var playing = !document
-          .getElementById("playScreen")
-          .classList.contains("hidden");
-        if (!playing) return;
-        var nextBtn = document.getElementById("nextBtn");
-        var nextVisible = !nextBtn.classList.contains("hidden");
-        if ((e.key === "Enter" || e.key === " ") && nextVisible) {
-          var tag = (e.target && e.target.tagName) || "";
-          if (tag === "BUTTON") return; // let native button activation handle it
-          e.preventDefault();
-          nextBtn.click();
-          return;
+        gameOver() {
+          this.scene.start("Result", { score: this.score, won: false });
         }
-        if (!state.locked && /^[1-4]$/.test(e.key)) {
-          var opts = document.querySelectorAll("#opts .opt");
-          var idx = parseInt(e.key, 10) - 1;
-          if (opts[idx]) {
-            e.preventDefault();
-            opts[idx].click();
+
+        confetti() {
+          const p = this.add.particles(W / 2, -10, "chip", {
+            x: { min: 0, max: W },
+            y: -10,
+            speedY: { min: 120, max: 280 },
+            speedX: { min: -60, max: 60 },
+            angle: { min: 0, max: 360 },
+            rotate: { min: 0, max: 360 },
+            scale: { min: 0.7, max: 1.4 },
+            lifespan: 2600,
+            quantity: 3,
+            frequency: 40,
+            tint: [0xffcd4d, 0x5ad1ff, 0x4fd18b, 0xff6b6b],
+          });
+          this.time.delayedCall(1800, () => p.stop());
+        }
+
+        setSR(msg) {
+          const el = document.getElementById("cq-sr");
+          if (el) el.textContent = msg;
+        }
+      }
+
+      // ════════════════════════════════════════════════════════════════════
+      //  RESULT
+      // ════════════════════════════════════════════════════════════════════
+      class ResultScene extends Phaser.Scene {
+        constructor() {
+          super("Result");
+        }
+        init(data) {
+          this.score = data.score || 0;
+          this.won = !!data.won;
+        }
+        create() {
+          this.cameras.main.setBackgroundColor(C.bg);
+          const cx = W / 2;
+          const stars = this.score >= 1500 ? 3 : this.score >= 900 ? 2 : 1;
+          try {
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: document.title,
+                score: this.score,
+                stars: stars,
+              });
+          } catch (e) {}
+          this.add
+            .text(cx, 150, this.won ? "QUEST COMPLETE!" : "PROBE LOST", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "46px",
+              fontStyle: "900",
+              color: this.won ? "#4fd18b" : "#ff8f8f",
+            })
+            .setOrigin(0.5);
+          for (let i = 0; i < 3; i++) {
+            this.add
+              .text(cx - 80 + i * 80, 240, i < stars ? "★" : "☆", {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "64px",
+                color: i < stars ? "#ffcd4d" : "#3a5774",
+              })
+              .setOrigin(0.5);
           }
+          this.add
+            .text(cx, 326, "Final Score: " + this.score, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "30px",
+              fontStyle: "bold",
+              color: "#eaf4ff",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              cx,
+              372,
+              this.won
+                ? "You plotted points, ordered integers, and reached every quadrant."
+                : "Tip: x is right/left, y is up/down. Absolute value is distance from 0. Try again!",
+              {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "16px",
+                color: "#9fc1de",
+                align: "center",
+                wordWrap: { width: 560 },
+              },
+            )
+            .setOrigin(0.5);
+          this.btn(cx - 150, 460, "↻  PLAY AGAIN", 0x2f8f5a, () =>
+            this.scene.start("Game", { level: 0, score: 0, lives: START_LIVES }),
+          );
+          this.btn(cx + 150, 460, "🏠  ALL GAMES", 0x355a86, () => {
+            window.location.href = "/math/games/";
+          });
+          const el = document.getElementById("cq-sr");
+          if (el)
+            el.textContent =
+              (this.won ? "Quest complete" : "Probe lost") +
+              ". Final score " + this.score + ", " + stars + " stars.";
         }
+        btn(x, y, label, color, cb) {
+          const b = this.add
+            .rectangle(x, y, 270, 56, color)
+            .setStrokeStyle(3, 0xffffff, 0.85)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(x, y, label, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "20px",
+              fontStyle: "bold",
+              color: "#fff",
+            })
+            .setOrigin(0.5);
+          b.on("pointerover", () => b.setScale(1.04));
+          b.on("pointerout", () => b.setScale(1));
+          b.on("pointerdown", cb);
+        }
+      }
+
+      // ── launch ──
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: document.body,
+        backgroundColor: "#0a1a2e",
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+        scene: [BootScene, TitleScene, GameScene, ResultScene],
+      };
+      const cqGame = new Phaser.Game(config);
+
+      // ── Canvas accessibility (additive; no gameplay change) ──
+      cqGame.events.once("ready", function () {
+        try {
+          const cv = cqGame.canvas;
+          if (!cv) return;
+          cv.setAttribute("role", "application");
+          cv.setAttribute(
+            "aria-label",
+            "Coordinate Quest Probe Pilot math game. Use the arrow keys to move " +
+              "your probe across the coordinate plane and press Space to land on the " +
+              "target point, integer, or quadrant.",
+          );
+          cv.setAttribute("aria-roledescription", "math game");
+          if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
+          cv.addEventListener("pointerdown", function () {
+            try {
+              cv.focus({ preventScroll: true });
+            } catch (e) {
+              cv.focus();
+            }
+          });
+        } catch (e) {}
       });
     </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

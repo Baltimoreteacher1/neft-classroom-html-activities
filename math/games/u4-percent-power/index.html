@@ -2,432 +2,114 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Percent Power — Lessons 4.1–4.5 Game | Neft Teacher</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Percent Power — Coin Catcher | Math Games</title>
     <meta
       name="description"
-      content="Arcade review game for Grade 6 lessons 4.1–4.5: percents of a number, sale prices, and percent-fraction-decimal equivalence (6.RP.3c)."
+      content="A 2D catch-and-sort game for Grade 6 lessons 4.1-4.5 (6.RP.3c): catch the correct percent of a number, sale price, and percent-decimal equivalent as values rain down."
     />
-    <link rel="stylesheet" href="/assets/shared.css" />
     <style>
-      :root {
-        --navy: #0f2b3c;
-        --blue: #1a6fb5;
-        --teal: #0e8a7d;
-        --gold: #d4952a;
-        --coral: #c45a3c;
-        --green: #2d874b;
-        --ink: #1a2633;
-        --muted: #5e6e7e;
-        --line: #e2e7ec;
-        --bg: #f7f9fb;
-        --font: "Segoe UI", system-ui, sans-serif;
-      }
       * {
+        margin: 0;
+        padding: 0;
         box-sizing: border-box;
       }
       body {
-        margin: 0;
-        font-family: var(--font);
-        color: var(--ink);
-        background: var(--bg);
-        line-height: 1.5;
+        background: #0f1d10;
+        overflow: hidden;
+        font-family: "Segoe UI", system-ui, sans-serif;
       }
-      .wrap {
-        max-width: 680px;
-        margin: 0 auto;
-        padding: 0 18px 60px;
-      }
-      .ghero {
-        background: linear-gradient(135deg, #c45a3c, #d4952a);
-        color: #fff;
-        text-align: center;
-        padding: 30px 20px 26px;
-      }
-      .ghero .deco {
-        font-size: 48px;
-      }
-      .ghero h1 {
-        margin: 8px 0 6px;
-        font-size: clamp(24px, 5vw, 34px);
-      }
-      .ghero p {
-        margin: 0 auto;
-        max-width: 520px;
-        color: rgba(255, 255, 255, 0.9);
-      }
-      .breadcrumb {
-        font-size: 13px;
-        padding: 14px 0;
-        color: var(--muted);
-      }
-      .breadcrumb a {
-        color: var(--blue);
-        text-decoration: none;
-        font-weight: 600;
-      }
-      .hud {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        background: #fff;
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 12px 16px;
-        margin: 18px 0;
-        font-weight: 800;
-        box-shadow: 0 2px 10px rgba(15, 43, 60, 0.06);
-      }
-      .hud .lbl {
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        color: var(--muted);
+      canvas {
         display: block;
-      }
-      .hud .val {
-        font-size: 22px;
-      }
-      .hearts {
-        color: var(--coral);
-        letter-spacing: 2px;
-      }
-      .card {
-        background: #fff;
-        border: 1px solid var(--line);
-        border-radius: 18px;
-        padding: 26px 22px;
-        box-shadow: 0 6px 22px rgba(15, 43, 60, 0.08);
-        text-align: center;
-      }
-      .mode-tag {
-        font-size: 12px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--teal);
-      }
-      .prompt {
-        font-size: clamp(22px, 5vw, 30px);
-        font-weight: 800;
-        margin: 8px 0 4px;
-      }
-      .sub {
-        color: var(--muted);
-        margin: 0 0 18px;
-      }
-      .opts {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
-      @media (max-width: 460px) {
-        .opts {
-          grid-template-columns: 1fr;
-        }
-      }
-      .opt {
-        padding: 16px;
-        border: 2px solid var(--line);
-        border-radius: 14px;
-        background: #fff;
-        font-size: 20px;
-        font-weight: 800;
-        cursor: pointer;
-        font-family: inherit;
-        color: var(--ink);
-        transition:
-          transform 0.06s,
-          border-color 0.15s;
-      }
-      .opt:hover {
-        border-color: var(--blue);
-      }
-      .opt:active {
-        transform: scale(0.97);
-      }
-      .opt.right {
-        border-color: var(--green);
-        background: #e6f4eb;
-        color: var(--green);
-        animation: pop 0.3s;
-      }
-      .opt.wrong {
-        border-color: var(--coral);
-        background: #fdeee9;
-        color: var(--coral);
-        animation: shake 0.3s;
-      }
-      @keyframes pop {
-        50% {
-          transform: scale(1.06);
-        }
-      }
-      @keyframes shake {
-        25% {
-          transform: translateX(-6px);
-        }
-        75% {
-          transform: translateX(6px);
-        }
-      }
-      .feedback {
-        min-height: 26px;
-        margin-top: 16px;
-        font-weight: 800;
-      }
-      .feedback.ok {
-        color: var(--green);
-      }
-      .feedback.no {
-        color: var(--coral);
-      }
-      .btn {
-        background: var(--blue);
-        color: #fff;
-        border: none;
-        border-radius: 12px;
-        padding: 13px 26px;
-        font-size: 16px;
-        font-weight: 800;
-        cursor: pointer;
-        font-family: inherit;
-        margin-top: 8px;
-      }
-      .btn:hover {
-        filter: brightness(1.08);
-      }
-      .btn.start {
-        background: var(--teal);
-        font-size: 18px;
-        padding: 15px 34px;
-      }
-      .bar {
-        height: 10px;
-        background: var(--line);
-        border-radius: 50px;
-        overflow: hidden;
-        margin: 14px 0 2px;
-      }
-      .bar > div {
-        height: 100%;
-        width: 100%;
-        background: linear-gradient(90deg, var(--gold), var(--coral));
-        transition: width 0.25s linear;
-      }
-      .hidden {
-        display: none;
-      }
-      .big-score {
-        font-size: 52px;
-        font-weight: 900;
-        color: var(--blue);
-        margin: 6px 0;
-      }
-      .legend {
-        font-size: 13px;
-        color: var(--muted);
-        margin-top: 18px;
-      }
-      .legend a {
-        color: var(--blue);
-        font-weight: 700;
-      }
-      ul.modes {
-        text-align: left;
-        max-width: 430px;
-        margin: 14px auto;
-        color: var(--muted);
-        font-size: 15px;
-      }
-
-      /* ---- Bespoke Percent Power visual upgrades (additive polish only) ---- */
-
-      /* Hero: floating $ / % symbol parallax layer (driven by GameFX [data-parallax]). */
-      .ghero {
-        position: relative;
-        overflow: hidden;
-      }
-      .pp-symbols {
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        z-index: 0;
-      }
-      .pp-symbols span {
-        position: absolute;
-        font-weight: 900;
-        color: rgba(255, 255, 255, 0.16);
-        font-size: 40px;
-        line-height: 1;
-        user-select: none;
-        animation: ppFloat 6s ease-in-out infinite;
-      }
-      .pp-symbols span:nth-child(1) {
-        left: 6%;
-        top: 18%;
-        font-size: 54px;
-        animation-delay: 0s;
-      }
-      .pp-symbols span:nth-child(2) {
-        left: 22%;
-        top: 60%;
-        font-size: 32px;
-        animation-delay: -1.2s;
-      }
-      .pp-symbols span:nth-child(3) {
-        left: 74%;
-        top: 14%;
-        font-size: 46px;
-        animation-delay: -2.4s;
-      }
-      .pp-symbols span:nth-child(4) {
-        left: 88%;
-        top: 58%;
-        font-size: 36px;
-        animation-delay: -3.6s;
-      }
-      .pp-symbols span:nth-child(5) {
-        left: 50%;
-        top: 72%;
-        font-size: 28px;
-        animation-delay: -4.8s;
-      }
-      .pp-symbols span:nth-child(6) {
-        left: 40%;
-        top: 8%;
-        font-size: 30px;
-        animation-delay: -0.6s;
-      }
-      @keyframes ppFloat {
-        0%,
-        100% {
-          transform: translateY(0);
-        }
-        50% {
-          transform: translateY(-10px);
-        }
-      }
-      /* Keep hero text/decoration above the symbol field. */
-      .ghero .deco,
-      .ghero h1,
-      .ghero p {
+        margin: 0 auto;
         position: relative;
         z-index: 1;
       }
-
-      /* Percent visual scale bar: shows the question's percent in a 0–100% context. */
-      .pp-scale {
-        margin: 4px auto 16px;
-        max-width: 420px;
-        text-align: left;
+      canvas:focus-visible {
+        outline: 3px solid #d4952a;
+        outline-offset: 4px;
+        border-radius: 8px;
       }
-      .pp-scale-cap {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--muted);
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 4px;
+      canvas:focus:not(:focus-visible) {
+        outline: none;
       }
-      .pp-scale-cap .pp-scale-pct {
-        color: var(--teal);
-        font-weight: 900;
-      }
-      .pp-scale-track {
-        position: relative;
-        height: 18px;
-        border-radius: 9px;
-        background: #eef2f5;
-        border: 1px solid var(--line);
-        overflow: hidden;
-      }
-      .pp-scale-fill {
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 0%;
-        border-radius: 9px 0 0 9px;
-        background: linear-gradient(90deg, var(--teal), var(--gold));
-        transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-      }
-      .pp-scale-ticks {
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-      }
-      .pp-scale-ticks i {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 1px;
-        background: rgba(15, 43, 60, 0.12);
-      }
-      .pp-scale-ticks i:nth-child(1) {
-        left: 25%;
-      }
-      .pp-scale-ticks i:nth-child(2) {
-        left: 50%;
-      }
-      .pp-scale-ticks i:nth-child(3) {
-        left: 75%;
-      }
-
-      /* Coin-drop + confetti particles for a correct sale price (Round 2). */
-      .pp-particle {
+      #pp-bg {
         position: fixed;
-        z-index: 9998;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
         pointer-events: none;
-        will-change: transform, opacity;
-      }
-      .pp-coin {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
         background: radial-gradient(
-          circle at 35% 30%,
-          #ffe07a,
-          var(--gold) 70%
+          130% 90% at 50% 0%,
+          #1e3a22 0%,
+          #122413 55%,
+          #0a160b 100%
         );
-        border: 2px solid #b87b1d;
-        font-size: 11px;
-        font-weight: 900;
-        color: #8a5a12;
-        text-align: center;
-        line-height: 16px;
       }
-      .pp-confetti {
-        width: 9px;
-        height: 14px;
-        border-radius: 2px;
+      #pp-bg-layer {
+        position: absolute;
+        inset: -6% -6%;
+        will-change: transform;
+        transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
       }
-
-      /* Slight emphasis when a HUD number counts up. */
-      .hud .val.pp-counting {
-        color: var(--teal);
+      .pp-spark {
+        position: absolute;
+        border-radius: 50%;
+        background: #ffe07a;
+        opacity: 0.5;
+        animation: ppTwinkle var(--tw, 3s) ease-in-out infinite;
       }
-
-      /* Visible keyboard focus ring on every interactive control. */
-      .opt:focus-visible,
-      .btn:focus-visible {
-        outline: 3px solid var(--gold);
-        outline-offset: 2px;
+      @keyframes ppTwinkle {
+        0%,
+        100% {
+          opacity: 0.15;
+          transform: scale(0.8);
+        }
+        50% {
+          opacity: 0.75;
+          transform: scale(1.2);
+        }
       }
-
       @media (prefers-reduced-motion: reduce) {
-        .pp-symbols span {
-          animation: none !important;
+        #pp-bg-layer {
+          transition: none !important;
           transform: none !important;
         }
-        .pp-scale-fill {
-          transition: none !important;
-        }
-        .pp-particle {
-          display: none !important;
+        .pp-spark {
+          animation: none !important;
+          opacity: 0.4 !important;
         }
       }
+      #pp-sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
     </style>
+    <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
+    <script>
+      // CDN fallback: if the local vendor copy failed, synchronously load Phaser
+      // from a mirror (document.write blocks parsing so the mirror is ready
+      // before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      // If both sources are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#ffe07a">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
@@ -436,638 +118,952 @@
     <!-- gfx-injected:end -->
   </head>
   <body>
-    <header class="ghero" data-parallax>
-      <div class="pp-symbols" data-parallax-layer aria-hidden="true">
-        <span>%</span>
-        <span>$</span>
-        <span>%</span>
-        <span>$</span>
-        <span>%</span>
-        <span>$</span>
-      </div>
-      <div class="deco">💯</div>
-      <h1>Percent Power</h1>
-      <p>
-        Race the clock on percent of a number, sale prices, and
-        percent-fraction-decimal equivalence.
-      </p>
-    </header>
-    <div class="wrap">
-      <nav class="breadcrumb">
-        <a href="/">Home</a> / <a href="/math/">Math</a> /
-        <a href="/math/games/">Games</a> / Percent Power
-      </nav>
-
-      <section class="card" id="startScreen">
-        <p class="mode-tag">Lessons 4.1–4.5 · 6.RP.3c</p>
-        <h2 style="margin: 6px 0">Ready to power up?</h2>
-        <ul class="modes">
-          <li>
-            <strong>Round 1 — Percent of a Number.</strong> Find the part using
-            friendly percents.
-          </li>
-          <li>
-            <strong>Round 2 — Sale Price &amp; Discount.</strong> Subtract the
-            markdown from the original price.
-          </li>
-          <li>
-            <strong>Round 3 — Percent ↔ Decimal.</strong> Convert between
-            percent and decimal form.
-          </li>
-        </ul>
-        <p class="sub">
-          You have <strong>3 ❤</strong> and a timer on each question. Build a
-          streak for bonus points!
-        </p>
-        <button class="btn start" id="startBtn" type="button">
-          Start Game ▶
-        </button>
-      </section>
-
-      <section id="playScreen" class="hidden">
-        <div class="hud">
-          <div>
-            <span class="lbl">Score</span><span class="val" id="score">0</span>
-          </div>
-          <div>
-            <span class="lbl">Streak</span
-            ><span class="val" id="streak">0</span>
-          </div>
-          <div>
-            <span class="lbl">Lives</span
-            ><span class="val hearts" id="lives">❤❤❤</span>
-          </div>
-          <div>
-            <span class="lbl">Question</span
-            ><span class="val" id="qnum">1</span>
-          </div>
-        </div>
-        <div class="bar"><div id="timebar"></div></div>
-        <div class="card" style="margin-top: 14px">
-          <span class="mode-tag" id="modeTag"></span>
-          <div class="prompt" id="prompt"></div>
-          <p class="sub" id="sub"></p>
-          <div class="pp-scale" id="ppScale" aria-hidden="true">
-            <div class="pp-scale-cap">
-              <span id="ppScaleLabel">Percent</span>
-              <span class="pp-scale-pct" id="ppScalePct">0%</span>
-            </div>
-            <div class="pp-scale-track">
-              <div class="pp-scale-fill" id="ppScaleFill"></div>
-              <div class="pp-scale-ticks"><i></i><i></i><i></i></div>
-            </div>
-          </div>
-          <div class="opts" id="opts"></div>
-          <div class="feedback" id="feedback"></div>
-          <button class="btn hidden" id="nextBtn" type="button">Next ▶</button>
-        </div>
-      </section>
-
-      <section class="card hidden" id="resultScreen">
-        <p class="mode-tag">Game Over</p>
-        <div class="big-score" id="finalScore">0</div>
-        <p id="resultMsg" style="font-weight: 700"></p>
-        <p class="sub" id="resultDetail"></p>
-        <button class="btn start" id="againBtn" type="button">
-          Play Again 🔁
-        </button>
-        <p class="legend">
-          More review:
-          <a href="/math/review-arcade/">Boss-Battle Review Arcade</a> ·
-          <a href="/math/games/">All Games</a>
-        </p>
-      </section>
+    <!-- Decorative animated spark-field (behind the Phaser canvas). -->
+    <div id="pp-bg" data-parallax aria-hidden="true">
+      <div id="pp-bg-layer" data-parallax-layer></div>
     </div>
-
+    <!-- Screen-reader live region: mirrors the current problem + result. -->
+    <div id="pp-sr" role="status" aria-live="polite"></div>
     <script>
-      function rnd(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
+      // Decorative spark-field builder (reduced-motion safe; pointer-neutral).
+      (function () {
+        "use strict";
+        var reduceMQ =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)");
+        var layer = document.getElementById("pp-bg-layer");
+        if (!layer) return;
+        function rnd(a, b) {
+          return a + Math.random() * (b - a);
+        }
+        function build() {
+          layer.textContent = "";
+          var reduce = !!(reduceMQ && reduceMQ.matches);
+          var n = reduce ? 16 : 34;
+          for (var i = 0; i < n; i++) {
+            var s = document.createElement("div");
+            s.className = "pp-spark";
+            var sz = rnd(2, 5);
+            s.style.width = s.style.height = sz.toFixed(1) + "px";
+            s.style.left = rnd(0, 100).toFixed(2) + "%";
+            s.style.top = rnd(0, 100).toFixed(2) + "%";
+            s.style.setProperty("--tw", rnd(2.2, 5).toFixed(2) + "s");
+            s.style.animationDelay = "-" + rnd(0, 4).toFixed(2) + "s";
+            layer.appendChild(s);
+          }
+        }
+        build();
+        var driver = false;
+        function onMove(e) {
+          var dx = e.clientX / (window.innerWidth || 1) - 0.5;
+          var dy = e.clientY / (window.innerHeight || 1) - 0.5;
+          layer.style.transform =
+            "translate3d(" +
+            (dx * 20).toFixed(2) +
+            "px," +
+            (dy * 12).toFixed(2) +
+            "px,0)";
+        }
+        function attach() {
+          if (driver || (reduceMQ && reduceMQ.matches)) return;
+          driver = true;
+          window.addEventListener("pointermove", onMove, { passive: true });
+        }
+        function detach() {
+          if (!driver) return;
+          driver = false;
+          window.removeEventListener("pointermove", onMove);
+          layer.style.transform = "";
+        }
+        attach();
+        if (reduceMQ) {
+          var onChange = function () {
+            build();
+            if (reduceMQ.matches) detach();
+            else attach();
+          };
+          if (reduceMQ.addEventListener)
+            reduceMQ.addEventListener("change", onChange);
+          else if (reduceMQ.addListener) reduceMQ.addListener(onChange);
+        }
+        var rt;
+        window.addEventListener("resize", function () {
+          clearTimeout(rt);
+          rt = setTimeout(build, 200);
+        });
+      })();
+    </script>
+    <script>
+      // ── PERCENT POWER — COIN CATCHER ──
+      // Phaser 3 — Grade 6 Math — Percent of a number, sale price, %↔decimal
+      // Mechanic: a cart you steer left/right at the bottom of the screen.
+      // Coins rain down, each stamped with a candidate value. Catch the coin
+      // that correctly answers the current percent problem; let the wrong ones
+      // fall past (or catch a wrong one and lose a life). Difficulty rises by
+      // level: faster coins, tighter cart, harder problem types.
+
+      const W = 820,
+        H = 600;
+      const LS_KEY = "pp_coin_catcher_highscore";
+
+      // ── Audio (tiny WebAudio blips; gracefully no-op without a context) ──
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx)
+            try {
+              this.ctx = new (window.AudioContext ||
+                window.webkitAudioContext)();
+            } catch (e) {}
+        },
+        play(t, f, d, v = 0.18) {
+          if (!this.ctx) return;
+          try {
+            const c = this.ctx,
+              o = c.createOscillator(),
+              g = c.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, c.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
+            o.connect(g);
+            g.connect(c.destination);
+            o.start();
+            o.stop(c.currentTime + d);
+          } catch (e) {}
+        },
+        good() {
+          this.play("sine", 660, 0.1, 0.25);
+          this.play("sine", 880, 0.14, 0.2);
+        },
+        bad() {
+          this.play("sawtooth", 200, 0.25, 0.18);
+          this.play("sawtooth", 150, 0.3, 0.14);
+        },
+        miss() {
+          this.play("triangle", 240, 0.16, 0.12);
+        },
+        coin() {
+          this.play("square", 1040, 0.05, 0.08);
+        },
+        level() {
+          [523, 659, 784, 1047].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.15, 0.22), i * 70),
+          );
+        },
+        win() {
+          [523, 659, 784, 1047, 1318].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.25, 0.25), i * 110),
+          );
+        },
+        lose() {
+          [400, 330, 260, 200].forEach((f, i) =>
+            setTimeout(() => this.play("sawtooth", f, 0.3, 0.14), i * 170),
+          );
+        },
+      };
+
+      function randInt(a, b) {
+        return Math.floor(Math.random() * (b - a + 1)) + a;
       }
       function shuffle(a) {
-        for (var i = a.length - 1; i > 0; i--) {
-          var j = Math.floor(Math.random() * (i + 1));
-          var t = a[i];
-          a[i] = a[j];
-          a[j] = t;
+        const r = [...a];
+        for (let i = r.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [r[i], r[j]] = [r[j], r[i]];
         }
-        return a;
+        return r;
       }
-      function round2(n) {
-        return Math.round(n * 100) / 100;
-      }
-
-      var TOTAL = 12,
-        TIME = 12;
-      var state = {};
-
-      // Honor reduced-motion for all bespoke JS-driven motion. Re-read live so a
-      // mid-session OS change is respected; GameFX exposes the same flag too.
-      function motionReduced() {
-        try {
-          return !!(
-            window.matchMedia &&
-            window.matchMedia("(prefers-reduced-motion: reduce)").matches
-          );
-        } catch (e) {
-          return false;
-        }
+      function srSay(msg) {
+        const el = document.getElementById("pp-sr");
+        if (el) el.textContent = msg;
       }
 
-      // Render the percent visual scale bar for the current question (context
-      // only — never affects answers). Hidden when there is no percent to show.
-      function renderScale(q) {
-        var wrap = document.getElementById("ppScale");
-        if (!wrap) return;
-        var pct = q && typeof q.scalePct === "number" ? q.scalePct : null;
-        if (pct === null) {
-          wrap.style.display = "none";
-          return;
-        }
-        wrap.style.display = "";
-        var clamped = Math.max(0, Math.min(100, pct));
-        document.getElementById("ppScaleLabel").textContent =
-          q.scaleLabel || "Percent";
-        document.getElementById("ppScalePct").textContent = pct + "%";
-        var fill = document.getElementById("ppScaleFill");
-        if (motionReduced()) {
-          fill.style.width = clamped + "%";
-        } else {
-          // Animate from 0 so the bar visibly "fills up" to the percent.
-          fill.style.width = "0%";
-          requestAnimationFrame(function () {
-            requestAnimationFrame(function () {
-              fill.style.width = clamped + "%";
-            });
-          });
-        }
-      }
-
-      // Count a HUD number up to its new value with requestAnimationFrame.
-      function animateCount(el, from, to) {
-        if (!el) return;
-        if (motionReduced() || from === to) {
-          el.textContent = to;
-          return;
-        }
-        if (el._ppRaf) cancelAnimationFrame(el._ppRaf);
-        var start = null,
-          dur = 420;
-        el.classList.add("pp-counting");
-        function step(ts) {
-          if (start === null) start = ts;
-          var p = Math.min(1, (ts - start) / dur);
-          var eased = 1 - Math.pow(1 - p, 3);
-          el.textContent = Math.round(from + (to - from) * eased);
-          if (p < 1) {
-            el._ppRaf = requestAnimationFrame(step);
-          } else {
-            el.textContent = to;
-            el._ppRaf = null;
-            el.classList.remove("pp-counting");
+      // ── Problem generator ───────────────────────────────────────────────
+      // Returns { prompt, answer (string, canonical), why, label, options:[strings] }
+      // Three skill modes scale with level:
+      //   level 1-2: percent of a number    (6.RP.3c)
+      //   level 3-4: sale price after discount
+      //   level 5+ : percent ↔ decimal      (mixed back in lower modes too)
+      // All numeric answers are whole; equivalence answers compared as strings.
+      const FRIENDLY = [10, 20, 25, 50, 75];
+      function pctOfNumber() {
+        // Choose pct + base so the part is a whole number.
+        let pct, base, ans;
+        do {
+          pct = FRIENDLY[randInt(0, FRIENDLY.length - 1)];
+          base = randInt(2, 20) * 10; // multiples of 10 up to 200
+          ans = (pct / 100) * base;
+        } while (!Number.isInteger(ans));
+        const correct = String(ans);
+        const distract = new Set([correct]);
+        const pool = [
+          ans + 5,
+          ans - 5,
+          ans * 2,
+          Math.round(ans / 2),
+          ans + 10,
+          ans + base - ans, // = base
+        ];
+        const opts = [correct];
+        for (const v of shuffle(pool)) {
+          if (opts.length >= 4) break;
+          if (v > 0 && Number.isInteger(v) && !distract.has(String(v))) {
+            distract.add(String(v));
+            opts.push(String(v));
           }
         }
-        el._ppRaf = requestAnimationFrame(step);
-      }
-
-      // Coin-drop + confetti burst near an element, themed for a correct sale
-      // price (Round 2). Purely cosmetic; capped and reduced-motion gated.
-      function coinDrop(anchor) {
-        if (motionReduced() || !anchor || !anchor.getBoundingClientRect) return;
-        var r = anchor.getBoundingClientRect();
-        var cx = r.left + r.width / 2;
-        var topY = r.top;
-        var COIN_COLORS = ["#1aa179", "#f0a400", "#3b7dd8", "#e0542f"];
-        var TOTAL_P = 10; // capped particle count for Chromebook smoothness
-        for (var i = 0; i < TOTAL_P; i++) {
-          var coin = i < 5;
-          var p = document.createElement("div");
-          p.className = "pp-particle " + (coin ? "pp-coin" : "pp-confetti");
-          if (coin) {
-            p.textContent = "$";
-          } else {
-            p.style.background = COIN_COLORS[i % COIN_COLORS.length];
+        let g = 1;
+        while (opts.length < 4 && g < 40) {
+          const v = ans + g * 3;
+          if (v > 0 && !distract.has(String(v))) {
+            distract.add(String(v));
+            opts.push(String(v));
           }
-          var startX = cx + (Math.random() * 80 - 40);
-          p.style.left = startX + "px";
-          p.style.top = topY + "px";
-          document.body.appendChild(p);
-          var driftX = Math.random() * 70 - 35;
-          var fallY = 90 + Math.random() * 80;
-          var rot = Math.random() * 540 - 270 + "deg";
-          try {
-            var anim = p.animate(
-              [
-                { transform: "translate(-50%,-50%) rotate(0deg)", opacity: 1 },
-                {
-                  transform:
-                    "translate(calc(-50% + " +
-                    driftX +
-                    "px), calc(-50% + " +
-                    fallY +
-                    "px)) rotate(" +
-                    rot +
-                    ")",
-                  opacity: 0,
-                },
-              ],
-              {
-                duration: 700 + Math.random() * 300,
-                easing: "cubic-bezier(.3,.6,.4,1)",
-              },
-            );
-            anim.onfinish = (function (node) {
-              return function () {
-                if (node.parentNode) node.parentNode.removeChild(node);
-              };
-            })(p);
-          } catch (e) {
-            if (p.parentNode) p.parentNode.removeChild(p);
-          }
+          g++;
         }
-      }
-
-      // Round 1 question bank: percent of a number — all give whole answers
-      var R1_BANK = [
-        { pct: 25, base: 40, ans: 10 },
-        { pct: 50, base: 60, ans: 30 },
-        { pct: 10, base: 80, ans: 8 },
-        { pct: 20, base: 50, ans: 10 },
-        { pct: 25, base: 80, ans: 20 },
-        { pct: 50, base: 90, ans: 45 },
-        { pct: 10, base: 70, ans: 7 },
-        { pct: 20, base: 60, ans: 12 },
-        { pct: 25, base: 120, ans: 30 },
-        { pct: 50, base: 40, ans: 20 },
-        { pct: 20, base: 80, ans: 16 },
-        { pct: 10, base: 50, ans: 5 },
-      ];
-
-      // Round 2 question bank: sale price after discount — all give whole answers
-      var R2_BANK = [
-        { price: 50, disc: 20, ans: 40 },
-        { price: 80, disc: 25, ans: 60 },
-        { price: 60, disc: 10, ans: 54 },
-        { price: 100, disc: 50, ans: 50 },
-        { price: 40, disc: 25, ans: 30 },
-        { price: 90, disc: 10, ans: 81 },
-        { price: 80, disc: 50, ans: 40 },
-        { price: 60, disc: 20, ans: 48 },
-        { price: 120, disc: 25, ans: 90 },
-        { price: 70, disc: 10, ans: 63 },
-        { price: 40, disc: 50, ans: 20 },
-        { price: 100, disc: 20, ans: 80 },
-      ];
-
-      // Round 3 question bank: percent <-> decimal equivalence
-      var R3_BANK = [
-        {
-          prompt: "50% as a decimal = ?",
-          correct: "0.5",
-          wrong: ["0.05", "5", "1.5"],
-        },
-        {
-          prompt: "25% as a decimal = ?",
-          correct: "0.25",
-          wrong: ["0.025", "2.5", "0.5"],
-        },
-        {
-          prompt: "10% as a decimal = ?",
-          correct: "0.1",
-          wrong: ["0.01", "1", "0.9"],
-        },
-        {
-          prompt: "75% as a decimal = ?",
-          correct: "0.75",
-          wrong: ["0.075", "7.5", "0.25"],
-        },
-        {
-          prompt: "20% as a decimal = ?",
-          correct: "0.2",
-          wrong: ["0.02", "2", "0.8"],
-        },
-        {
-          prompt: "1% as a decimal = ?",
-          correct: "0.01",
-          wrong: ["0.1", "1", "0.001"],
-        },
-        {
-          prompt: "5% as a decimal = ?",
-          correct: "0.05",
-          wrong: ["0.5", "5", "0.005"],
-        },
-        {
-          prompt: "30% as a decimal = ?",
-          correct: "0.3",
-          wrong: ["0.03", "3", "0.7"],
-        },
-        {
-          prompt: "40% as a decimal = ?",
-          correct: "0.4",
-          wrong: ["0.04", "4", "0.6"],
-        },
-        {
-          prompt: "60% as a decimal = ?",
-          correct: "0.6",
-          wrong: ["0.06", "6", "0.4"],
-        },
-        {
-          prompt: "0.5 as a percent = ?",
-          correct: "50%",
-          wrong: ["5%", "500%", "0.5%"],
-        },
-        {
-          prompt: "0.25 as a percent = ?",
-          correct: "25%",
-          wrong: ["2.5%", "250%", "0.025%"],
-        },
-      ];
-
-      // Shuffled indices for each round so questions vary each play
-      var r1idx = [],
-        r2idx = [],
-        r3idx = [];
-
-      function prepBanks() {
-        r1idx = shuffle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
-        r2idx = shuffle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
-        r3idx = shuffle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
-      }
-
-      function buildQuestion(i) {
-        var round = i < 4 ? 1 : i < 8 ? 2 : 3;
-
-        if (round === 1) {
-          var entry = R1_BANK[r1idx[i]];
-          var correct = entry.ans;
-          // Distractors: offset by small distinct integers, always positive, distinct from correct
-          var wrongs = [correct + 5, correct - 5, correct * 2];
-          // Ensure all positives and distinct
-          var set = {};
-          set[String(correct)] = true;
-          var opts = [String(correct)];
-          for (var wi = 0; wi < wrongs.length && opts.length < 4; wi++) {
-            var wv = wrongs[wi];
-            if (wv > 0 && !set[String(wv)]) {
-              set[String(wv)] = true;
-              opts.push(String(wv));
-            }
-          }
-          // Fallback if not enough
-          var extra = 1;
-          while (opts.length < 4) {
-            var ev = correct + extra * 3;
-            if (ev > 0 && !set[String(ev)]) {
-              set[String(ev)] = true;
-              opts.push(String(ev));
-            }
-            extra++;
-          }
-          return {
-            tag: "Percent of a Number",
-            prompt: entry.pct + "% of " + entry.base + " = ?",
-            sub: "Find the part.",
-            opts: shuffle(opts),
-            correct: String(correct),
-            why: entry.pct + "% of " + entry.base + " = " + correct + ".",
-            scalePct: entry.pct,
-            scaleLabel: "How much of the whole?",
-          };
-        }
-
-        if (round === 2) {
-          var ri = i - 4;
-          var entry2 = R2_BANK[r2idx[ri]];
-          var correct2 = entry2.ans;
-          var savings = entry2.price - correct2;
-          var wrongs2 = [entry2.price, savings, correct2 + 10];
-          var set2 = {};
-          set2[String(correct2)] = true;
-          var opts2 = [String(correct2)];
-          for (var wi2 = 0; wi2 < wrongs2.length && opts2.length < 4; wi2++) {
-            var wv2 = wrongs2[wi2];
-            if (wv2 > 0 && !set2[String(wv2)]) {
-              set2[String(wv2)] = true;
-              opts2.push(String(wv2));
-            }
-          }
-          var extra2 = 1;
-          while (opts2.length < 4) {
-            var ev2 = correct2 + extra2 * 5;
-            if (ev2 > 0 && !set2[String(ev2)]) {
-              set2[String(ev2)] = true;
-              opts2.push(String(ev2));
-            }
-            extra2++;
-          }
-          return {
-            tag: "Sale Price",
-            prompt:
-              "$" + entry2.price + ", " + entry2.disc + "% off → sale price $?",
-            sub: "Subtract the discount from the original price.",
-            opts: shuffle(opts2),
-            correct: String(correct2),
-            why:
-              entry2.disc +
-              "% of $" +
-              entry2.price +
-              " = $" +
-              savings +
-              ". Sale price: $" +
-              entry2.price +
-              " − $" +
-              savings +
-              " = $" +
-              correct2 +
-              ".",
-            scalePct: entry2.disc,
-            scaleLabel: "Discount taken off",
-            isSale: true,
-          };
-        }
-
-        // Round 3
-        var ri3 = i - 8;
-        var entry3 = R3_BANK[r3idx[ri3]];
-        var opts3 = shuffle([entry3.correct].concat(entry3.wrong));
-        // Show the scale bar only when the prompt starts with a whole percent
-        // (e.g. "50% as a decimal = ?"); decimal→percent prompts hide it.
-        var pctMatch = /^(\d+(?:\.\d+)?)%/.exec(entry3.prompt);
         return {
-          tag: "Percent ↔ Decimal",
-          prompt: entry3.prompt,
-          sub: "Choose the equivalent value.",
-          opts: opts3,
-          correct: entry3.correct,
-          why: entry3.prompt.replace(" = ?", "") + " = " + entry3.correct + ".",
-          scalePct: pctMatch ? parseFloat(pctMatch[1]) : null,
-          scaleLabel: "Percent on the 0–100 scale",
+          prompt: pct + "% of " + base,
+          answer: correct,
+          label: "Find the part",
+          why: pct + "% of " + base + " = " + ans + ".",
+          options: shuffle(opts.slice(0, 4)),
         };
       }
-
-      function startGame() {
-        prepBanks();
-        state = { i: 0, score: 0, streak: 0, lives: 3, locked: false };
-        // Reset the HUD display so a replay's counters animate up from zero.
-        document.getElementById("score").textContent = "0";
-        document.getElementById("streak").textContent = "0";
-        document.getElementById("lives").textContent = "❤❤❤";
-        document.getElementById("startScreen").classList.add("hidden");
-        document.getElementById("resultScreen").classList.add("hidden");
-        document.getElementById("playScreen").classList.remove("hidden");
-        nextQuestion();
-      }
-      function nextQuestion() {
-        if (state.lives <= 0 || state.i >= TOTAL) {
-          return endGame();
+      function salePrice() {
+        let price, disc, sale;
+        do {
+          disc = FRIENDLY[randInt(0, FRIENDLY.length - 1)];
+          price = randInt(2, 20) * 10;
+          sale = price - (disc / 100) * price;
+        } while (!Number.isInteger(sale) || sale <= 0);
+        const correct = String(sale);
+        const savings = price - sale;
+        const distract = new Set([correct]);
+        const pool = [price, savings, sale + 10, sale - 10, sale + 5];
+        const opts = [correct];
+        for (const v of shuffle(pool)) {
+          if (opts.length >= 4) break;
+          if (v > 0 && Number.isInteger(v) && !distract.has(String(v))) {
+            distract.add(String(v));
+            opts.push(String(v));
+          }
         }
-        state.locked = false;
-        state.q = buildQuestion(state.i);
-        document.getElementById("qnum").textContent = state.i + 1 + "/" + TOTAL;
-        document.getElementById("modeTag").textContent = state.q.tag;
-        document.getElementById("prompt").textContent = state.q.prompt;
-        document.getElementById("sub").textContent = state.q.sub;
-        renderScale(state.q);
-        document.getElementById("feedback").textContent = "";
-        document.getElementById("feedback").className = "feedback";
-        document.getElementById("nextBtn").classList.add("hidden");
-        var box = document.getElementById("opts");
-        box.innerHTML = "";
-        state.q.opts.forEach(function (o) {
-          var b = document.createElement("button");
-          b.type = "button";
-          b.className = "opt";
-          b.textContent = o;
-          b.onclick = function () {
-            answer(o, b);
-          };
-          box.appendChild(b);
-        });
-        startTimer();
+        let g = 1;
+        while (opts.length < 4 && g < 40) {
+          const v = sale + g * 4;
+          if (v > 0 && !distract.has(String(v))) {
+            distract.add(String(v));
+            opts.push(String(v));
+          }
+          g++;
+        }
+        return {
+          prompt: "$" + price + ", " + disc + "% off",
+          answer: correct,
+          label: "Sale price ($)",
+          why:
+            disc +
+            "% of $" +
+            price +
+            " = $" +
+            savings +
+            "; sale = $" +
+            sale +
+            ".",
+          options: shuffle(opts.slice(0, 4)),
+        };
       }
-      function startTimer() {
-        var t = TIME,
-          bar = document.getElementById("timebar");
-        bar.style.width = "100%";
-        clearInterval(state.timer);
-        state.timer = setInterval(function () {
-          t -= 0.1;
-          bar.style.width = Math.max(0, (t / TIME) * 100) + "%";
-          if (t <= 0) {
-            clearInterval(state.timer);
-            if (!state.locked) {
-              timeUp();
+      function pctDecimal() {
+        // Compare as strings to avoid float pitfalls.
+        const bank = [
+          { p: "10%", d: "0.1" },
+          { p: "20%", d: "0.2" },
+          { p: "25%", d: "0.25" },
+          { p: "50%", d: "0.5" },
+          { p: "75%", d: "0.75" },
+          { p: "5%", d: "0.05" },
+          { p: "1%", d: "0.01" },
+          { p: "30%", d: "0.3" },
+          { p: "40%", d: "0.4" },
+          { p: "60%", d: "0.6" },
+        ];
+        const item = bank[randInt(0, bank.length - 1)];
+        const toDecimal = Math.random() < 0.5;
+        let prompt, answer, wrongs;
+        if (toDecimal) {
+          prompt = item.p + " as a decimal";
+          answer = item.d;
+          // Plausible wrong decimal forms (string-built, never NaN).
+          wrongs = shuffle(
+            bank.filter((b) => b.d !== item.d).map((b) => b.d),
+          ).slice(0, 3);
+        } else {
+          prompt = item.d + " as a percent";
+          answer = item.p;
+          wrongs = shuffle(
+            bank.filter((b) => b.p !== item.p).map((b) => b.p),
+          ).slice(0, 3);
+        }
+        return {
+          prompt: prompt,
+          answer: answer,
+          label: "Equivalent value",
+          why: item.p + " = " + item.d + ".",
+          options: shuffle([answer, ...wrongs]),
+        };
+      }
+      function makeProblem(level) {
+        // Weighted by level so coverage rises in difficulty.
+        let roll;
+        if (level <= 2) roll = Math.random() < 0.75 ? 0 : 2;
+        else if (level <= 4) roll = Math.random() < 0.6 ? 1 : Math.random() < 0.5 ? 0 : 2;
+        else roll = randInt(0, 2);
+        if (roll === 0) return pctOfNumber();
+        if (roll === 1) return salePrice();
+        return pctDecimal();
+      }
+
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: document.body,
+        backgroundColor: "#122413",
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+        scene: [BootScene, TitleScene, GameScene, ResultScene],
+      };
+
+      // ── BOOT ──
+      function BootScene() {
+        return new Phaser.Scene("Boot");
+      }
+      BootScene.prototype = Object.create(Phaser.Scene.prototype);
+      BootScene.prototype.constructor = BootScene;
+      BootScene.prototype.create = function () {
+        const g = this.make.graphics({ add: false });
+        g.fillStyle(0xffffff);
+        g.fillCircle(4, 4, 4);
+        g.generateTexture("dot", 8, 8);
+        g.clear();
+        g.fillStyle(0xffe07a);
+        g.fillCircle(5, 5, 5);
+        g.generateTexture("spark", 10, 10);
+        g.destroy();
+        this.scene.start("Title");
+      };
+
+      // ── TITLE ──
+      function TitleScene() {
+        return new Phaser.Scene("Title");
+      }
+      TitleScene.prototype = Object.create(Phaser.Scene.prototype);
+      TitleScene.prototype.constructor = TitleScene;
+      TitleScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x122413);
+        this.add
+          .text(cx, 120, "PERCENT POWER", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "64px",
+            color: "#ffd24a",
+            stroke: "#0a160b",
+            strokeThickness: 6,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 175, "Coin Catcher", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "26px",
+            color: "#8fd6a0",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(
+            cx,
+            230,
+            "A problem appears at the top. Steer your cart to CATCH the\ncoin showing the correct answer — let wrong coins fall!",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              color: "#bfe0c8",
+              align: "center",
+            },
+          )
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 295, "← → or A/D to move · 6.RP.3c · Lessons 4.1–4.5", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: "#7fae8c",
+          })
+          .setOrigin(0.5);
+
+        const hs = localStorage.getItem(LS_KEY);
+        if (hs)
+          this.add
+            .text(cx, 330, "High Score: " + hs, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              color: "#ffd24a",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+
+        const btn = this.add
+          .rectangle(cx, 400, 240, 58, 0x2d874b)
+          .setInteractive({ useHandCursor: true });
+        const btnT = this.add
+          .text(cx, 400, "START ▶", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "24px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.tweens.add({
+          targets: [btn, btnT],
+          scaleX: 1.05,
+          scaleY: 1.05,
+          duration: 800,
+          yoyo: true,
+          repeat: -1,
+        });
+        const start = () => {
+          SFX.init();
+          SFX.coin();
+          this.scene.start("Game");
+        };
+        btn.on("pointerover", () => btn.setFillStyle(0x36a35b));
+        btn.on("pointerout", () => btn.setFillStyle(0x2d874b));
+        btn.on("pointerdown", start);
+        this.input.keyboard.on("keydown-SPACE", start);
+        this.input.keyboard.on("keydown-ENTER", start);
+
+        const hub = this.add
+          .text(cx, 540, "← Back to Math Games", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            color: "#7fae8c",
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        hub.on("pointerover", () => hub.setColor("#ffd24a"));
+        hub.on("pointerout", () => hub.setColor("#7fae8c"));
+        hub.on("pointerdown", () => (window.location.href = "/math/games/"));
+        srSay("Percent Power Coin Catcher. Press Start to play.");
+      };
+
+      // ── GAME ──
+      function GameScene() {
+        return new Phaser.Scene("Game");
+      }
+      GameScene.prototype = Object.create(Phaser.Scene.prototype);
+      GameScene.prototype.constructor = GameScene;
+
+      GameScene.prototype.init = function () {
+        this.reduceMotion = !!(
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        );
+        this.score = 0;
+        this.lives = 3;
+        this.streak = 0;
+        this.level = 1;
+        this.solved = 0; // problems answered correctly
+        this.target = 10; // win condition: solve this many problems
+        this.coins = [];
+        this.problem = null;
+        this.locked = false;
+        this.fallSpeed = 90; // px/s baseline
+      };
+
+      GameScene.prototype.create = function () {
+        this.add.rectangle(W / 2, H / 2, W, H, 0x122413);
+        // Floor / catch line.
+        this.add.rectangle(W / 2, H - 18, W, 4, 0x2d874b, 0.6);
+
+        // HUD
+        const hudStyle = {
+          fontFamily: "Segoe UI, sans-serif",
+          fontSize: "18px",
+          fontStyle: "bold",
+        };
+        this.scoreText = this.add.text(16, 12, "Score: 0", {
+          ...hudStyle,
+          color: "#8fd6a0",
+        });
+        this.livesText = this.add.text(16, 36, "❤❤❤", {
+          ...hudStyle,
+          color: "#ff8f8f",
+        });
+        this.streakText = this.add
+          .text(W - 16, 12, "Streak: 0", { ...hudStyle, color: "#ffd24a" })
+          .setOrigin(1, 0);
+        this.levelText = this.add
+          .text(W - 16, 36, "Level 1", { ...hudStyle, color: "#bfe0c8" })
+          .setOrigin(1, 0);
+        this.progressText = this.add
+          .text(W / 2, 12, "0 / " + this.target, {
+            ...hudStyle,
+            color: "#bfe0c8",
+          })
+          .setOrigin(0.5, 0);
+
+        // Problem banner
+        this.bannerLabel = this.add
+          .text(W / 2, 78, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: "#7fae8c",
+          })
+          .setOrigin(0.5);
+        this.bannerText = this.add
+          .text(W / 2, 108, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "36px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+
+        this.feedback = this.add
+          .text(W / 2, 150, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#ffd24a",
+            stroke: "#0a160b",
+            strokeThickness: 3,
+          })
+          .setOrigin(0.5)
+          .setAlpha(0);
+
+        // Cart (player)
+        this.cartW = 120;
+        this.cart = this.add.rectangle(W / 2, H - 40, this.cartW, 26, 0xd4952a);
+        this.cart.setStrokeStyle(3, 0xffe07a);
+        this.cartGlow = this.add
+          .text(this.cart.x, this.cart.y, "🛒", { fontSize: "26px" })
+          .setOrigin(0.5);
+
+        // Particles
+        this.burst = this.add
+          .particles(0, 0, "spark", {
+            speed: { min: 80, max: 240 },
+            angle: { min: 0, max: 360 },
+            scale: { start: 1.2, end: 0 },
+            lifespan: 600,
+            emitting: false,
+            quantity: 16,
+            tint: [0xffd24a, 0x8fd6a0, 0xffffff],
+          })
+          .setDepth(20);
+
+        this.redFlash = this.add
+          .rectangle(W / 2, H / 2, W, H, 0xff3333, 0)
+          .setDepth(30);
+
+        // Input
+        this.cursors = this.input.keyboard.createCursorKeys();
+        this.keyA = this.input.keyboard.addKey(
+          Phaser.Input.Keyboard.KeyCodes.A,
+        );
+        this.keyD = this.input.keyboard.addKey(
+          Phaser.Input.Keyboard.KeyCodes.D,
+        );
+        // Pointer steering (drag / move): cart follows pointer X.
+        this.pointerX = null;
+        this.input.on("pointermove", (p) => {
+          this.pointerX = p.x;
+        });
+        this.input.on("pointerdown", (p) => {
+          this.pointerX = p.x;
+        });
+
+        this.cameras.main.fadeIn(400);
+        this.newProblem();
+      };
+
+      GameScene.prototype.newProblem = function () {
+        this.locked = false;
+        this.clearCoins();
+        this.problem = makeProblem(this.level);
+        this.bannerLabel.setText(this.problem.label);
+        this.bannerText.setText(this.problem.prompt + " = ?");
+        srSay(
+          this.problem.label +
+            ": " +
+            this.problem.prompt +
+            ". Catch the correct coin.",
+        );
+        // Spawn one coin per option, spaced across the width, staggered in Y.
+        const lanes = shuffle([0, 1, 2, 3]);
+        const margin = 90;
+        const span = (W - 2 * margin) / 3;
+        this.problem.options.forEach((opt, i) => {
+          const lane = lanes[i];
+          const x = margin + span * lane + randInt(-20, 20);
+          const y = -40 - i * 130; // staggered entry
+          this.spawnCoin(x, y, opt);
+        });
+      };
+
+      GameScene.prototype.spawnCoin = function (x, y, value) {
+        const c = this.add.circle(x, y, 30, 0xffd24a);
+        c.setStrokeStyle(3, 0xb87b1d);
+        const t = this.add
+          .text(x, y, value, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#5a3a08",
+          })
+          .setOrigin(0.5);
+        this.coins.push({ c, t, value, caught: false });
+      };
+
+      GameScene.prototype.clearCoins = function () {
+        this.coins.forEach((co) => {
+          co.c.destroy();
+          co.t.destroy();
+        });
+        this.coins = [];
+      };
+
+      GameScene.prototype.update = function (time, delta) {
+        const dt = delta / 1000;
+        // Cart movement.
+        const speed = 420;
+        let vx = 0;
+        if (this.cursors.left.isDown || this.keyA.isDown) vx = -speed;
+        else if (this.cursors.right.isDown || this.keyD.isDown) vx = speed;
+        if (vx !== 0) {
+          this.cart.x += vx * dt;
+          this.pointerX = null; // keyboard overrides pointer follow
+        } else if (this.pointerX !== null) {
+          this.cart.x += (this.pointerX - this.cart.x) * Math.min(1, dt * 12);
+        }
+        const half = this.cartW / 2;
+        this.cart.x = Phaser.Math.Clamp(this.cart.x, half, W - half);
+        this.cartGlow.x = this.cart.x;
+
+        if (this.locked) return;
+
+        // Coin falling + collision.
+        const fall = this.fallSpeed + (this.level - 1) * 16;
+        for (const co of this.coins) {
+          if (co.caught) continue;
+          co.c.y += fall * dt;
+          co.t.y = co.c.y;
+          // Catch: coin overlaps cart top band.
+          if (
+            co.c.y >= this.cart.y - 26 &&
+            co.c.y <= this.cart.y + 26 &&
+            Math.abs(co.c.x - this.cart.x) <= half + 26
+          ) {
+            this.catchCoin(co);
+            return;
+          }
+          // Fell past the floor.
+          if (co.c.y > H + 40) {
+            co.caught = true;
+            co.c.setVisible(false);
+            co.t.setVisible(false);
+            if (co.value === this.problem.answer) {
+              // Missed the correct coin → counts as a miss.
+              this.handleMiss();
+              return;
             }
           }
-        }, 100);
-      }
-      function answer(choice, btn) {
-        if (state.locked) return;
-        state.locked = true;
-        clearInterval(state.timer);
-        var fb = document.getElementById("feedback"),
-          correct = choice === state.q.correct;
-        Array.prototype.forEach.call(
-          document.querySelectorAll(".opt"),
-          function (b) {
-            if (b.textContent === state.q.correct) b.classList.add("right");
-            else if (b === btn) b.classList.add("wrong");
-          },
-        );
-        if (correct) {
-          state.streak++;
-          state.score += 10 + Math.min(state.streak, 5) * 2;
-          fb.textContent =
-            "✓ Correct! " +
-            state.q.why +
-            (state.streak > 1 ? "  🔥 Streak ×" + state.streak : "");
-          fb.className = "feedback ok";
-          // Sale-price wins get a coin-drop + confetti celebration (Round 2);
-          // the generic success spark-burst is already handled by GameFX via
-          // the `.right` class on the chosen option.
-          if (state.q.isSale && btn) coinDrop(btn);
-        } else {
-          state.streak = 0;
-          state.lives--;
-          fb.textContent = "✗ " + state.q.why + "  (−1 ❤)";
-          fb.className = "feedback no";
         }
-        updateHud();
-        document.getElementById("nextBtn").classList.remove("hidden");
+        // If all coins gone and correct never caught, advance with a miss-safety.
+        if (this.coins.every((co) => co.caught)) {
+          // already handled by miss/catch; nothing pending
+        }
+      };
+
+      GameScene.prototype.catchCoin = function (co) {
+        this.locked = true;
+        co.caught = true;
+        SFX.coin();
+        const correct = co.value === this.problem.answer;
+        if (correct) {
+          SFX.good();
+          this.solved++;
+          this.streak++;
+          const bonus = Math.min(this.streak, 5) * 5;
+          this.score += 20 + bonus;
+          this.burst.setPosition(co.c.x, co.c.y);
+          this.burst.explode(16);
+          this.flash(co.c.x, co.c.y, "+1 ✓", "#8fd6a0");
+          this.feedback.setText("Correct! " + this.problem.why).setAlpha(1);
+          srSay("Correct. " + this.problem.why);
+        } else {
+          SFX.bad();
+          this.streak = 0;
+          this.lives--;
+          this.flashRed();
+          this.flash(co.c.x, co.c.y, "✗", "#ff8f8f");
+          this.feedback
+            .setText("Not quite — answer was " + this.problem.answer)
+            .setAlpha(1);
+          srSay(
+            "Wrong coin. The correct answer was " +
+              this.problem.answer +
+              ". " +
+              this.problem.why,
+          );
+        }
+        co.c.destroy();
+        co.t.destroy();
+        this.afterAttempt(correct);
+      };
+
+      GameScene.prototype.handleMiss = function () {
+        this.locked = true;
+        SFX.miss();
+        this.streak = 0;
+        this.lives--;
+        this.flashRed();
+        this.feedback
+          .setText("Missed it! Answer was " + this.problem.answer)
+          .setAlpha(1);
+        srSay(
+          "You missed the correct coin. The answer was " +
+            this.problem.answer +
+            ".",
+        );
+        this.afterAttempt(false);
+      };
+
+      GameScene.prototype.afterAttempt = function (correct) {
+        // Level up every 3 correct.
+        const newLevel = Math.min(8, 1 + Math.floor(this.solved / 3));
+        if (newLevel > this.level) {
+          this.level = newLevel;
+          SFX.level();
+          this.flash(W / 2, 200, "LEVEL " + this.level + "!", "#ffd24a");
+        }
+        this.updateHUD();
+        if (this.lives <= 0) {
+          this.endGame(false);
+          return;
+        }
+        if (this.solved >= this.target) {
+          this.endGame(true);
+          return;
+        }
+        this.time.delayedCall(900, () => {
+          this.feedback.setAlpha(0);
+          this.newProblem();
+        });
+      };
+
+      GameScene.prototype.flash = function (x, y, text, color) {
+        const ft = this.add
+          .text(x, y, text, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "26px",
+            fontStyle: "bold",
+            color: color,
+            stroke: "#0a160b",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5)
+          .setDepth(40);
+        this.tweens.add({
+          targets: ft,
+          y: y - 50,
+          alpha: { from: 1, to: 0 },
+          duration: this.reduceMotion ? 500 : 900,
+          onComplete: () => ft.destroy(),
+        });
+      };
+
+      GameScene.prototype.flashRed = function () {
+        if (this.reduceMotion) return;
+        this.redFlash.setAlpha(0.35);
+        this.tweens.add({
+          targets: this.redFlash,
+          alpha: 0,
+          duration: 350,
+        });
+      };
+
+      GameScene.prototype.updateHUD = function () {
+        this.scoreText.setText("Score: " + this.score);
+        this.livesText.setText(
+          this.lives > 0 ? "❤".repeat(this.lives) : "—",
+        );
+        this.streakText.setText("Streak: " + this.streak);
+        this.levelText.setText("Level " + this.level);
+        this.progressText.setText(this.solved + " / " + this.target);
+      };
+
+      GameScene.prototype.endGame = function (won) {
+        this.locked = true;
+        this.clearCoins();
+        this.time.delayedCall(500, () => {
+          this.scene.start("Result", {
+            score: this.score,
+            solved: this.solved,
+            target: this.target,
+            won: won,
+          });
+        });
+      };
+
+      // ── RESULT ──
+      function ResultScene() {
+        return new Phaser.Scene("Result");
       }
-      function timeUp() {
-        state.locked = true;
-        state.streak = 0;
-        state.lives--;
-        Array.prototype.forEach.call(
-          document.querySelectorAll(".opt"),
-          function (b) {
-            if (b.textContent === state.q.correct) b.classList.add("right");
-          },
-        );
-        var fb = document.getElementById("feedback");
-        fb.textContent = "⏰ Time! " + state.q.why + "  (−1 ❤)";
-        fb.className = "feedback no";
-        updateHud();
-        document.getElementById("nextBtn").classList.remove("hidden");
-      }
-      function updateHud() {
-        // Count the score/streak HUD numbers up to their new values. The final
-        // textContent always equals the true state value (no scoring change).
-        var scoreEl = document.getElementById("score");
-        var streakEl = document.getElementById("streak");
-        animateCount(
-          scoreEl,
-          parseInt(scoreEl.textContent, 10) || 0,
-          state.score,
-        );
-        animateCount(
-          streakEl,
-          parseInt(streakEl.textContent, 10) || 0,
-          state.streak,
-        );
-        if (window.GameFX && GameFX.pop) {
+      ResultScene.prototype = Object.create(Phaser.Scene.prototype);
+      ResultScene.prototype.constructor = ResultScene;
+      ResultScene.prototype.init = function (data) {
+        this.data2 = data;
+      };
+      ResultScene.prototype.create = function () {
+        const d = this.data2;
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x122413);
+        // Stars from accuracy/score.
+        const stars =
+          d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
+        // High score
+        let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
+        if (d.score > hs) {
+          hs = d.score;
           try {
-            GameFX.pop(scoreEl);
+            localStorage.setItem(LS_KEY, String(hs));
           } catch (e) {}
         }
-        document.getElementById("lives").textContent =
-          state.lives > 0 ? "❤".repeat(state.lives) : "—";
-      }
-      function endGame() {
-        clearInterval(state.timer);
-        document.getElementById("playScreen").classList.add("hidden");
-        document.getElementById("resultScreen").classList.remove("hidden");
-        document.getElementById("finalScore").textContent = state.score;
-        var msg;
-        if (state.score >= 180) msg = "🏆 Percent Champion!";
-        else if (state.score >= 120) msg = "🌟 Powerful percent skills!";
-        else if (state.score >= 60) msg = "👍 Nice work — keep practicing.";
-        else msg = "💪 Try again to beat your score!";
-        document.getElementById("resultMsg").textContent = msg;
-        document.getElementById("resultDetail").textContent =
-          (state.lives <= 0
-            ? "Out of lives! "
-            : "You finished all " + TOTAL + " questions! ") +
-          "Final score: " +
-          state.score +
-          ".";
+
+        this.add
+          .text(cx, 110, d.won ? "CITY OF SAVINGS!" : "OUT OF LIVES", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "48px",
+            color: d.won ? "#8fd6a0" : "#ff8f8f",
+            stroke: "#0a160b",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+
+        const starStr =
+          "★".repeat(stars) + "☆".repeat(3 - stars);
+        this.add
+          .text(cx, 185, starStr, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "48px",
+            color: "#ffd24a",
+          })
+          .setOrigin(0.5);
+
+        this.add
+          .text(cx, 255, "Score: " + d.score, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "30px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 295, "Solved " + d.solved + " of " + d.target + " problems", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            color: "#bfe0c8",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 325, "High Score: " + hs, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            color: "#ffd24a",
+          })
+          .setOrigin(0.5);
+
+        if (d.won) SFX.win();
+        else SFX.lose();
+
+        // EduPulse reporting (guarded; safe no-op without bridge).
         try {
           window.EduPulse &&
             EduPulse.record({
               activityTitle: document.title,
-              score: state.score,
-              problemsAttempted: state.i,
+              score: d.score,
+              stars: stars,
               standard: "6.RP.3c",
+              problemsAttempted: d.solved,
             });
         } catch (e) {}
-      }
-      document.getElementById("startBtn").onclick = startGame;
-      document.getElementById("againBtn").onclick = startGame;
-      document.getElementById("nextBtn").onclick = function () {
-        state.i++;
-        nextQuestion();
+        srSay(
+          (d.won ? "You won! " : "Game over. ") +
+            "Final score " +
+            d.score +
+            ", " +
+            stars +
+            " stars.",
+        );
+
+        const btn = this.add
+          .rectangle(cx, 400, 220, 54, 0x2d874b)
+          .setInteractive({ useHandCursor: true });
+        const btnT = this.add
+          .text(cx, 400, "PLAY AGAIN 🔁", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        const again = () => this.scene.start("Game");
+        btn.on("pointerover", () => btn.setFillStyle(0x36a35b));
+        btn.on("pointerout", () => btn.setFillStyle(0x2d874b));
+        btn.on("pointerdown", again);
+        this.input.keyboard.on("keydown-SPACE", again);
+        this.input.keyboard.on("keydown-ENTER", again);
+
+        const hub = this.add
+          .text(cx, 480, "← Back to Math Games", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            color: "#7fae8c",
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        hub.on("pointerover", () => hub.setColor("#ffd24a"));
+        hub.on("pointerout", () => hub.setColor("#7fae8c"));
+        hub.on("pointerdown", () => (window.location.href = "/math/games/"));
       };
+
+      // ── Launch ──
+      const ppGame = new Phaser.Game(config);
+
+      // Canvas accessibility (additive; no gameplay change).
+      ppGame.events.once("ready", function () {
+        try {
+          const cv = ppGame.canvas;
+          if (!cv) return;
+          cv.setAttribute("role", "application");
+          cv.setAttribute(
+            "aria-label",
+            "Percent Power Coin Catcher math game. A percent problem appears " +
+              "at the top; steer the cart with the left and right arrow keys " +
+              "or A and D to catch the coin showing the correct answer.",
+          );
+          cv.setAttribute("aria-roledescription", "math game");
+          if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
+          cv.addEventListener("pointerdown", function () {
+            try {
+              cv.focus({ preventScroll: true });
+            } catch (e) {
+              cv.focus();
+            }
+          });
+        } catch (e) {}
+      });
     </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

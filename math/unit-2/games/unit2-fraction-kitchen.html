@@ -896,7 +896,22 @@
         },
         scene: [BootScene, TitleScene, GameScene, ResultsScene],
       };
-      new Phaser.Game(config);
+      var fkGame = new Phaser.Game(config);
+      // Keyboard accessibility: make the game canvas focusable.
+      fkGame.events.once("ready", function () {
+        var c = fkGame.canvas;
+        if (c) {
+          c.setAttribute("role", "application");
+          c.setAttribute(
+            "aria-label",
+            "Fraction Kitchen: a fraction equivalence pouring game. Use the on-screen controls or keyboard to play.",
+          );
+          c.setAttribute("tabindex", "0");
+          c.addEventListener("pointerdown", function () {
+            c.focus();
+          });
+        }
+      });
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>

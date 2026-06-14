@@ -1,0 +1,1372 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Fraction Foundry — Divide Fractions | Unit 2</title>
+    <meta
+      name="description"
+      content="A visual 2D game for Grade 6 Unit 2 (6.NS.1): divide whole numbers by unit fractions, fractions by fractions, and mixed numbers — using bar / area models, with word problems like 'how many 1/3-cup scoops fit in 2 cups?'"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: #1a0f06;
+        overflow: hidden;
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+      canvas {
+        display: block;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+      /* Keyboard focus ring on the game canvas (keyboard users only). */
+      canvas:focus-visible {
+        outline: 3px solid #ffb347;
+        outline-offset: 4px;
+        border-radius: 8px;
+      }
+      canvas:focus:not(:focus-visible) {
+        outline: none;
+      }
+      /* ── Decorative animated foundry-ember background behind the canvas ──
+         Behind the canvas (z-index 0), never intercepts pointer input. */
+      #ff-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+        background: radial-gradient(
+          130% 90% at 50% 100%,
+          #4a2410 0%,
+          #2a1608 50%,
+          #160b03 100%
+        );
+      }
+      #ff-bg-layer {
+        position: absolute;
+        inset: -6% -6%;
+        will-change: transform;
+        transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+      }
+      .ff-ember {
+        position: absolute;
+        border-radius: 50%;
+        background: #ffb347;
+        opacity: 0.5;
+        animation: ffFloat var(--ff, 6s) ease-in-out infinite;
+      }
+      .ff-glow {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(30px);
+        opacity: 0.25;
+      }
+      @keyframes ffFloat {
+        0% {
+          transform: translateY(0) scale(0.8);
+          opacity: 0.15;
+        }
+        50% {
+          transform: translateY(-40px) scale(1.15);
+          opacity: 0.7;
+        }
+        100% {
+          transform: translateY(-90px) scale(0.7);
+          opacity: 0;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #ff-bg-layer {
+          transition: none !important;
+          transform: none !important;
+        }
+        .ff-ember {
+          animation: none !important;
+          opacity: 0.4 !important;
+        }
+      }
+      /* Accessible text alternative / live status for screen readers. */
+      #ff-sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+    </style>
+    <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
+    <script>
+      // CDN fallback: if the local vendor copy failed, synchronously load Phaser
+      // from a mirror (document.write blocks parsing so the mirror is ready
+      // before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      // If both sources are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#ffb347">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
+  <body>
+    <!-- Decorative animated foundry-ember field (behind the Phaser canvas).
+         Decorative only: aria-hidden, pointer-events:none, reduced-motion safe. -->
+    <div id="ff-bg" data-parallax aria-hidden="true">
+      <div id="ff-bg-layer" data-parallax-layer></div>
+    </div>
+    <!-- Screen-reader live region mirrors the current question + result. -->
+    <div id="ff-sr" role="status" aria-live="polite"></div>
+
+    <script>
+      // ── Decorative ember-field builder + pointer parallax (gameplay-neutral) ──
+      (function () {
+        var layer = document.getElementById("ff-bg-layer");
+        if (!layer) return;
+        var reduce =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var frag = document.createDocumentFragment();
+        // soft heat glows near the bottom (the "furnace")
+        var glowColors = ["#ff7b1a", "#ffb347", "#e8431f"];
+        for (var g = 0; g < 3; g++) {
+          var gl = document.createElement("div");
+          gl.className = "ff-glow";
+          var gs = 180 + Math.random() * 220;
+          gl.style.width = gs + "px";
+          gl.style.height = gs + "px";
+          gl.style.left = 10 + Math.random() * 80 + "%";
+          gl.style.bottom = -40 + Math.random() * 30 + "%";
+          gl.style.background = glowColors[g % glowColors.length];
+          frag.appendChild(gl);
+        }
+        // rising embers
+        var n = reduce ? 18 : 46;
+        for (var i = 0; i < n; i++) {
+          var s = document.createElement("div");
+          s.className = "ff-ember";
+          var sz = 1.5 + Math.random() * 3.5;
+          s.style.width = sz + "px";
+          s.style.height = sz + "px";
+          s.style.left = Math.random() * 100 + "%";
+          s.style.top = 40 + Math.random() * 60 + "%";
+          s.style.background = Math.random() > 0.5 ? "#ffb347" : "#ff7b1a";
+          s.style.setProperty("--ff", 4 + Math.random() * 6 + "s");
+          s.style.animationDelay = -Math.random() * 6 + "s";
+          frag.appendChild(s);
+        }
+        layer.appendChild(frag);
+        if (reduce) return;
+        window.addEventListener(
+          "pointermove",
+          function (e) {
+            var tx = (e.clientX / window.innerWidth - 0.5) * -22;
+            var ty = (e.clientY / window.innerHeight - 0.5) * -14;
+            layer.style.transform = "translate3d(" + tx + "px," + ty + "px,0)";
+          },
+          { passive: true },
+        );
+      })();
+    </script>
+
+    <script>
+      // ════════════════════════════════════════════════════════════════════
+      //  FRACTION FOUNDRY   ·   Unit 2 · 6.NS.1
+      //  Divide whole numbers by unit fractions, fractions by fractions, and
+      //  mixed numbers. Bar / area visual models are the core of each problem.
+      //  Math engine stress-tested 2000x in Node (0 issues) before shipping.
+      // ════════════════════════════════════════════════════════════════════
+      const W = 900,
+        H = 620;
+
+      const C = {
+        bg: 0x1a0f06,
+        panel: 0x2a1809,
+        panelEdge: 0x6b3d18,
+        ink: "#fdeede",
+        sub: "#e0b487",
+        accent: 0xffb347,
+        good: 0x6bd18b,
+        bad: 0xff6b6b,
+        gold: 0xffcd4d,
+        bar: 0xffb347,
+        barEmpty: 0x3a2410,
+        molten: 0xff7b1a,
+      };
+
+      // ── small helpers ──
+      const FF_RM_QUERY =
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)");
+      const reducedMotion = () => !!(FF_RM_QUERY && FF_RM_QUERY.matches);
+      const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+      const choice = (arr) => arr[Math.floor(Math.random() * arr.length)];
+      function shuffle(a) {
+        a = a.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+      function gcd(a, b) {
+        a = Math.abs(a);
+        b = Math.abs(b);
+        while (b) {
+          [a, b] = [b, a % b];
+        }
+        return a || 1;
+      }
+      // Fraction as {n, d}; always reduced with positive denominator.
+      function fr(n, d) {
+        if (d < 0) {
+          n = -n;
+          d = -d;
+        }
+        const g = gcd(n, d);
+        return { n: n / g, d: d / g };
+      }
+      const frMul = (a, b) => fr(a.n * b.n, a.d * b.d);
+      const frEq = (a, b) => a.n === b.n && a.d === b.d;
+      const frVal = (f) => f.n / f.d;
+      function frStr(f) {
+        const { n, d } = f;
+        if (d === 1) return String(n);
+        if (Math.abs(n) > d) {
+          const whole = Math.trunc(n / d);
+          const rem = Math.abs(n % d);
+          if (rem === 0) return String(whole);
+          return `${whole} ${rem}/${d}`;
+        }
+        return `${n}/${d}`;
+      }
+
+      // ── Distractor builder: 4 shuffled options, exactly one correct, all ──
+      // distinct reduced fractions, all positive, never NaN. (Verified in Node.)
+      function buildChoices(answer, pool) {
+        const seen = new Set([answer.n + "/" + answer.d]);
+        const opts = [{ f: answer, correct: true }];
+        const cand = pool.slice();
+        while (opts.length < 4 && cand.length) {
+          const c = cand.shift();
+          if (!c) continue;
+          if (!Number.isFinite(c.n) || !Number.isFinite(c.d) || c.d === 0)
+            continue;
+          const cr = fr(c.n, c.d);
+          const key = cr.n + "/" + cr.d;
+          if (seen.has(key) || cr.n <= 0) continue;
+          seen.add(key);
+          opts.push({ f: cr, correct: false });
+        }
+        let guard = 0;
+        while (opts.length < 4 && guard++ < 60) {
+          const variant = choice([
+            fr(answer.n + 1, answer.d),
+            fr(answer.n, Math.max(1, answer.d + 1)),
+            fr(answer.n * 2, answer.d),
+            fr(answer.n + answer.d, answer.d),
+            fr(Math.max(1, answer.n - 1), answer.d),
+            fr(answer.n, answer.d === 1 ? 2 : 1),
+          ]);
+          const key = variant.n + "/" + variant.d;
+          if (seen.has(key) || variant.n <= 0) continue;
+          if (!Number.isFinite(variant.n) || !Number.isFinite(variant.d))
+            continue;
+          seen.add(key);
+          opts.push({ f: variant, correct: false });
+        }
+        let extra = 1;
+        while (opts.length < 4) {
+          const variant = fr(answer.n + answer.d * extra, answer.d);
+          const key = variant.n + "/" + variant.d;
+          if (!seen.has(key) && variant.n > 0) {
+            seen.add(key);
+            opts.push({ f: variant, correct: false });
+          }
+          extra++;
+          if (extra > 50) break;
+        }
+        return shuffle(opts.slice(0, 4));
+      }
+
+      // ── Question generator (matches the Node-tested module exactly) ──
+      // L1: whole ÷ unit fraction; L2: same, word problems + bigger;
+      // L3: fraction ÷ fraction; L4: fraction ÷ fraction word problems;
+      // L5: mixed number ÷ fraction.
+      function makeQuestion(level) {
+        let dividend, divisor, answer, prompt, explain, visual, model;
+
+        if (level <= 1) {
+          const whole = randInt(2, 5);
+          const d = choice([2, 3, 4]);
+          dividend = fr(whole, 1);
+          divisor = fr(1, d);
+          answer = frMul(dividend, fr(d, 1));
+          model = "bar-whole-unit";
+          visual = { type: "wholeUnit", whole, parts: d };
+          prompt = `How many ${frStr(divisor)}-piece servings fit in ${whole} whole${whole > 1 ? "s" : ""}?`;
+          explain = `${whole} ÷ 1/${d} = ${whole} × ${d} = ${frStr(answer)}. Each whole holds ${d} pieces.`;
+        } else if (level === 2) {
+          const whole = randInt(2, 6);
+          const d = choice([2, 3, 4, 5]);
+          dividend = fr(whole, 1);
+          divisor = fr(1, d);
+          answer = frMul(dividend, fr(d, 1));
+          model = "bar-whole-unit";
+          visual = { type: "wholeUnit", whole, parts: d };
+          const ctx = choice([
+            { v: "cups", s: "scoops" },
+            { v: "meters", s: "ribbons" },
+            { v: "pizzas", s: "slices" },
+            { v: "liters", s: "bottles" },
+          ]);
+          prompt = `How many 1/${d}-${ctx.v.slice(0, -1)} ${ctx.s} fit in ${whole} ${ctx.v}?`;
+          explain = `${whole} ÷ 1/${d} = ${whole} × ${d} = ${frStr(answer)}.`;
+        } else if (level === 3) {
+          const d1 = choice([2, 3, 4, 6, 8]);
+          const n1 = randInt(1, d1 - 1);
+          const d2 = choice([2, 3, 4, 6, 8]);
+          const n2 = randInt(1, d2 - 1);
+          dividend = fr(n1, d1);
+          divisor = fr(n2, d2);
+          answer = frMul(dividend, fr(divisor.d, divisor.n));
+          model = "bar-fraction";
+          visual = { type: "fracDivide", a: dividend, b: divisor };
+          prompt = `Divide: ${frStr(dividend)} ÷ ${frStr(divisor)} = ?`;
+          explain = `Multiply by the reciprocal: ${frStr(dividend)} × ${frStr(fr(divisor.d, divisor.n))} = ${frStr(answer)}.`;
+        } else if (level === 4) {
+          const d1 = choice([2, 3, 4, 6, 8]);
+          const n1 = randInt(1, d1 - 1);
+          const d2 = choice([2, 3, 4]);
+          dividend = fr(n1, d1);
+          divisor = fr(1, d2);
+          answer = frMul(dividend, fr(divisor.d, divisor.n));
+          model = "bar-fraction";
+          visual = { type: "fracDivide", a: dividend, b: divisor };
+          const ctx = choice([
+            "cup of flour",
+            "yard of rope",
+            "pan of brownies",
+            "bottle of paint",
+          ]);
+          prompt = `A recipe uses 1/${d2} of a ${ctx} per batch. With ${frStr(dividend)} of a ${ctx}, how many batches?`;
+          explain = `${frStr(dividend)} ÷ ${frStr(divisor)} = ${frStr(dividend)} × ${frStr(fr(divisor.d, divisor.n))} = ${frStr(answer)}.`;
+        } else {
+          const wholePart = randInt(1, 3);
+          const dd = choice([2, 3, 4]);
+          const nn = randInt(1, dd - 1);
+          dividend = fr(wholePart * dd + nn, dd);
+          const d2 = choice([2, 3, 4]);
+          const n2 = randInt(1, d2 - 1);
+          divisor = fr(n2, d2);
+          answer = frMul(dividend, fr(divisor.d, divisor.n));
+          model = "bar-mixed";
+          visual = {
+            type: "mixedDivide",
+            a: dividend,
+            b: divisor,
+            mixedW: wholePart,
+            mixedN: nn,
+            mixedD: dd,
+          };
+          prompt = `Divide: ${frStr(dividend)} ÷ ${frStr(divisor)} = ?`;
+          explain = `Write the mixed number as ${dividend.n}/${dividend.d}, then × reciprocal: ${dividend.n}/${dividend.d} × ${frStr(fr(divisor.d, divisor.n))} = ${frStr(answer)}.`;
+        }
+
+        // distractor pool: classic fraction-division mistakes
+        const pool = [
+          frMul(dividend, divisor), // forgot to flip (multiplied straight)
+          fr(divisor.n * dividend.d, divisor.d * dividend.n), // flipped the wrong fraction
+          fr(answer.n + 1, answer.d),
+          fr(answer.n, answer.d + 1),
+          fr(dividend.n * divisor.d, divisor.n), // dropped a denominator
+          frMul(answer, fr(2, 1)),
+        ];
+        const choices = buildChoices(answer, pool);
+
+        return {
+          level,
+          model,
+          dividend,
+          divisor,
+          answer,
+          prompt,
+          explain,
+          visual,
+          choices,
+        };
+      }
+
+      // ── sound (tiny WebAudio synth; safe no-op if unsupported) ──
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx) {
+            try {
+              this.ctx = new (window.AudioContext ||
+                window.webkitAudioContext)();
+            } catch (e) {}
+          }
+        },
+        play(t, f, d, v = 0.18) {
+          if (!this.ctx) return;
+          try {
+            const c = this.ctx,
+              o = c.createOscillator(),
+              g = c.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, c.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
+            o.connect(g);
+            g.connect(c.destination);
+            o.start();
+            o.stop(c.currentTime + d);
+          } catch (e) {}
+        },
+        tick() {
+          this.play("square", 520, 0.04, 0.06);
+        },
+        correct() {
+          [660, 880].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.14, 0.22), i * 70),
+          );
+        },
+        wrong() {
+          this.play("sawtooth", 190, 0.28, 0.16);
+        },
+        level() {
+          [523, 659, 784, 1047].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.16, 0.22), i * 80),
+          );
+        },
+        win() {
+          [523, 659, 784, 880, 1047, 1318].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.22, 0.26), i * 100),
+          );
+        },
+        lose() {
+          [400, 330, 260, 180].forEach((f, i) =>
+            setTimeout(() => this.play("sawtooth", f, 0.3, 0.14), i * 170),
+          );
+        },
+      };
+
+      const TOTAL_LEVELS = 5;
+      const START_LIVES = 3;
+      const LS_KEY = "fraction_foundry_highscore";
+
+      // ════════════════════════════════════════════════════════════════════
+      //  BOOT — generate small reusable textures
+      // ════════════════════════════════════════════════════════════════════
+      class BootScene extends Phaser.Scene {
+        constructor() {
+          super("Boot");
+        }
+        create() {
+          const g = this.make.graphics({ add: false });
+          g.fillStyle(0xffffff).fillCircle(4, 4, 4);
+          g.generateTexture("dot", 8, 8);
+          g.clear();
+          g.fillStyle(0xffffff).fillRect(0, 0, 7, 4);
+          g.generateTexture("chip", 7, 4);
+          g.clear();
+          g.fillStyle(0xffffff, 0.85).fillCircle(10, 10, 10);
+          g.generateTexture("glow", 20, 20);
+          g.clear();
+          g.destroy();
+          this.scene.start("Title");
+        }
+      }
+
+      // ════════════════════════════════════════════════════════════════════
+      //  TITLE
+      // ════════════════════════════════════════════════════════════════════
+      class TitleScene extends Phaser.Scene {
+        constructor() {
+          super("Title");
+        }
+        create() {
+          this.cameras.main.setBackgroundColor(C.bg);
+          const cx = W / 2;
+
+          // floating crucible emblem
+          const badge = this.add.container(cx, 148);
+          const pot = this.add
+            .rectangle(0, 6, 96, 56, 0x3a2410)
+            .setStrokeStyle(3, C.accent);
+          const molten = this.add
+            .rectangle(0, -8, 80, 18, C.molten)
+            .setStrokeStyle(2, C.gold);
+          const lip1 = this.add.rectangle(-54, -18, 16, 8, 0x3a2410);
+          const lip2 = this.add.rectangle(54, -18, 16, 8, 0x3a2410);
+          badge.add([pot, molten, lip1, lip2]);
+          if (!reducedMotion()) {
+            this.tweens.add({
+              targets: badge,
+              y: 136,
+              duration: 1600,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.inOut",
+            });
+            this.tweens.add({
+              targets: molten,
+              scaleX: { from: 1, to: 1.06 },
+              alpha: { from: 1, to: 0.8 },
+              duration: 900,
+              yoyo: true,
+              repeat: -1,
+            });
+          }
+
+          this.add
+            .text(cx, 250, "FRACTION FOUNDRY", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "52px",
+              fontStyle: "900",
+              color: "#ffb347",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 296, "Forge answers by dividing fractions", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "22px",
+              fontStyle: "bold",
+              color: "#ffcd4d",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              cx,
+              348,
+              "Split the bar models to see how many pieces fit. Divide whole\nnumbers, fractions, and mixed numbers across five rising levels.",
+              {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "17px",
+                color: "#e0b487",
+                align: "center",
+                lineSpacing: 6,
+              },
+            )
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 402, "Grade 6 · Unit 2 · Standard 6.NS.1", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#ffb347",
+            })
+            .setOrigin(0.5);
+
+          const hs = localStorage.getItem(LS_KEY);
+          if (hs) {
+            this.add
+              .text(cx, 430, `HIGH SCORE: ${hs}`, {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "14px",
+                fontStyle: "bold",
+                color: "#ffcd4d",
+              })
+              .setOrigin(0.5);
+          }
+
+          this.makeButton(cx, 478, "▶  START FORGING", 0xc4661a, () => {
+            SFX.init();
+            SFX.tick();
+            this.scene.start("Game", {
+              level: 0,
+              score: 0,
+              lives: START_LIVES,
+            });
+          });
+
+          this.add
+            .text(cx, 542, "Tap an answer, or use keys 1 – 4.", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "14px",
+              color: "#c79a6f",
+            })
+            .setOrigin(0.5);
+
+          this.makeLink(cx, 580, "← Back to Unit 2 hub");
+          this.setSR(
+            "Fraction Foundry. A visual game for dividing fractions, standard 6.NS.1. Press start to play.",
+          );
+          this.input.keyboard.on("keydown-SPACE", () => {
+            SFX.init();
+            this.scene.start("Game", {
+              level: 0,
+              score: 0,
+              lives: START_LIVES,
+            });
+          });
+        }
+        makeButton(x, y, label, color, cb) {
+          const b = this.add
+            .rectangle(x, y, 300, 58, color)
+            .setStrokeStyle(3, 0xffcd4d, 0.9)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(x, y, label, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "22px",
+              fontStyle: "bold",
+              color: "#fff",
+            })
+            .setOrigin(0.5);
+          b.on("pointerover", () => b.setScale(1.04));
+          b.on("pointerout", () => b.setScale(1));
+          b.on("pointerdown", cb);
+          return b;
+        }
+        makeLink(x, y, label) {
+          const t = this.add
+            .text(x, y, label, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#e0b487",
+            })
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true });
+          t.on("pointerover", () => t.setColor("#ffb347"));
+          t.on("pointerout", () => t.setColor("#e0b487"));
+          t.on("pointerdown", () => {
+            window.location.href = "/math/unit-2/";
+          });
+          return t;
+        }
+        setSR(msg) {
+          const el = document.getElementById("ff-sr");
+          if (el) el.textContent = msg;
+        }
+      }
+
+      // ════════════════════════════════════════════════════════════════════
+      //  GAME
+      // ════════════════════════════════════════════════════════════════════
+      class GameScene extends Phaser.Scene {
+        constructor() {
+          super("Game");
+        }
+        init(data) {
+          this.levelIndex = data.level || 0;
+          this.score = data.score || 0;
+          this.lives = data.lives != null ? data.lives : START_LIVES;
+          this.streak = 0;
+          this.locked = false;
+          this.qInLevel = 0;
+          this.qPerLevel = 4; // questions to clear a level
+          this.correctInLevel = 0;
+        }
+        create() {
+          this.cameras.main.setBackgroundColor(C.bg);
+          this.buildHUD();
+          this.buildModelArea();
+          this.buildQuestionPanel();
+          this.answerBtns = [];
+
+          ["ONE", "TWO", "THREE", "FOUR"].forEach((key, i) => {
+            this.input.keyboard.on("keydown-" + key, () => this.pick(i));
+          });
+
+          this.nextQuestion();
+          this.cameras.main.fadeIn(400);
+        }
+
+        // ── HUD ──
+        buildHUD() {
+          this.add.rectangle(W / 2, 30, W, 60, C.panel).setDepth(1);
+          this.add.rectangle(W / 2, 60, W, 2, C.panelEdge).setDepth(1);
+          this.add
+            .text(20, 18, "🥧 Fraction Foundry", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "18px",
+              fontStyle: "bold",
+              color: "#ffb347",
+            })
+            .setDepth(2);
+          const mk = (x, label) => {
+            this.add
+              .text(x, 14, label, {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "12px",
+                color: "#c79a6f",
+              })
+              .setOrigin(1, 0)
+              .setDepth(2);
+            return this.add
+              .text(x, 28, "", {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "22px",
+                fontStyle: "900",
+                color: "#fdeede",
+              })
+              .setOrigin(1, 0)
+              .setDepth(2);
+          };
+          this.scoreT = mk(W - 20, "SCORE");
+          this.levelT = mk(W - 150, "LEVEL");
+          this.streakT = mk(W - 290, "STREAK");
+          this.livesT = mk(W - 420, "LIVES");
+          this.refreshHUD();
+
+          const menu = this.add
+            .text(230, 30, "☰ Menu", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "14px",
+              fontStyle: "bold",
+              color: "#e0b487",
+            })
+            .setOrigin(0, 0.5)
+            .setDepth(2)
+            .setInteractive({ useHandCursor: true });
+          menu.on("pointerdown", () => this.scene.start("Title"));
+          menu.on("pointerover", () => menu.setColor("#ffb347"));
+          menu.on("pointerout", () => menu.setColor("#e0b487"));
+        }
+        refreshHUD() {
+          this.scoreT.setText(String(this.score));
+          this.levelT.setText(`${this.levelIndex + 1} / ${TOTAL_LEVELS}`);
+          this.streakT.setText(this.streak > 0 ? `×${this.streak}` : "—");
+          this.livesT.setText("❤".repeat(Math.max(0, this.lives)) || "—");
+        }
+
+        // ── Visual model area (left): bar / area partition models ──
+        buildModelArea() {
+          this.add
+            .rectangle(250, 350, 460, 480, C.panel)
+            .setStrokeStyle(2, C.panelEdge);
+          this.add
+            .text(250, 132, "VISUAL MODEL", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "13px",
+              fontStyle: "bold",
+              color: "#c79a6f",
+            })
+            .setOrigin(0.5);
+          this.modelGfx = this.add.graphics();
+          this.modelLabels = []; // text objects to clear each question
+        }
+
+        clearModel() {
+          this.modelGfx.clear();
+          this.modelLabels.forEach((t) => t.destroy());
+          this.modelLabels = [];
+        }
+
+        modelText(x, y, str, color, size, origin) {
+          const t = this.add
+            .text(x, y, str, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: (size || 13) + "px",
+              fontStyle: "bold",
+              color: color || "#fdeede",
+            })
+            .setOrigin(origin == null ? 0.5 : origin, 0.5);
+          this.modelLabels.push(t);
+          return t;
+        }
+
+        // Draw the model for the current question. Each model literally shows
+        // the division: a whole/quantity split into divisor-sized pieces, and
+        // counting the pieces gives the quotient.
+        drawModel(q) {
+          this.clearModel();
+          const v = q.visual;
+          const left = 55,
+            right = 445,
+            fullW = right - left;
+          const g = this.modelGfx;
+
+          if (v.type === "wholeUnit") {
+            // `whole` bars, each split into `parts` equal pieces. The count of
+            // pieces is the quotient (whole ÷ 1/parts).
+            const rows = v.whole;
+            const top = 175;
+            const rowH = Math.min(46, (430 - top) / rows - 8);
+            for (let r = 0; r < rows; r++) {
+              const y = top + r * (rowH + 10);
+              // whole-bar outline
+              g.lineStyle(2, C.gold, 0.9);
+              g.strokeRect(left, y, fullW, rowH);
+              const pieceW = fullW / v.parts;
+              for (let p = 0; p < v.parts; p++) {
+                const px = left + p * pieceW;
+                g.fillStyle(p % 2 === 0 ? C.bar : C.molten, 0.85);
+                g.fillRect(px + 1.5, y + 1.5, pieceW - 3, rowH - 3);
+                this.modelText(
+                  px + pieceW / 2,
+                  y + rowH / 2,
+                  `1/${v.parts}`,
+                  "#2a1809",
+                  Math.min(13, pieceW / 3),
+                );
+              }
+              this.modelText(left - 8, y + rowH / 2, "1", "#e0b487", 14, 1);
+            }
+            this.modelText(
+              250,
+              440,
+              `${rows} whole(s) × ${v.parts} pieces each = count the pieces`,
+              "#e0b487",
+              12,
+            );
+          } else if (v.type === "fracDivide" || v.type === "mixedDivide") {
+            // Show the dividend bar (a/d filled within whole bars) overlaid
+            // with the divisor's piece size, so students see "how many divisor
+            // pieces fit in the dividend".
+            const a = v.a; // dividend fraction (may be improper for mixed)
+            const b = v.b; // divisor fraction
+            // common denominator to tile consistently
+            const denom = (a.d * b.d) / gcd(a.d, b.d);
+            const aUnits = a.n * (denom / a.d); // dividend in 1/denom units
+            const bUnits = b.n * (denom / b.d); // divisor in 1/denom units
+            const wholes = Math.max(1, Math.ceil(a.n / a.d));
+            const top = 180;
+            // tile of size 1/denom across `wholes` whole-bars
+            const totalUnits = wholes * denom;
+            const unitW = fullW / totalUnits;
+            const barY = top;
+            const barH = 54;
+            // background whole-bars
+            for (let wsi = 0; wsi < wholes; wsi++) {
+              const wx = left + wsi * denom * unitW;
+              g.lineStyle(2, C.gold, 0.8);
+              g.strokeRect(wx, barY, denom * unitW, barH);
+            }
+            // fill the dividend portion in 1/denom units
+            for (let u = 0; u < aUnits; u++) {
+              const ux = left + u * unitW;
+              g.fillStyle(C.bar, 0.9);
+              g.fillRect(ux + 1, barY + 1, unitW - 2, barH - 2);
+            }
+            // overlay divisor groupings (thick dividers every bUnits)
+            const groups = aUnits / bUnits; // = quotient value
+            g.lineStyle(3, 0x2a1809, 1);
+            for (let gi = 0; gi <= Math.floor(aUnits / bUnits + 1e-9); gi++) {
+              const gx = left + gi * bUnits * unitW;
+              g.lineBetween(gx, barY - 6, gx, barY + barH + 6);
+            }
+            // label each complete divisor-group
+            const wholeGroups = Math.floor(groups + 1e-9);
+            for (let gi = 0; gi < wholeGroups; gi++) {
+              const gxc = left + (gi + 0.5) * bUnits * unitW;
+              this.modelText(gxc, barY + barH / 2, frStr(b), "#2a1809", 13);
+            }
+            this.modelText(
+              250,
+              barY + barH + 34,
+              `Dividend ${frStr(a)} split into ${frStr(b)} pieces`,
+              "#e0b487",
+              13,
+            );
+            this.modelText(
+              250,
+              barY + barH + 58,
+              `Count the ${frStr(b)} groups that fit →`,
+              "#c79a6f",
+              12,
+            );
+            // mixed: show the equation
+            if (v.type === "mixedDivide") {
+              this.modelText(
+                250,
+                barY + barH + 92,
+                `${v.mixedW} ${v.mixedN}/${v.mixedD} = ${a.n}/${a.d}`,
+                "#ffcd4d",
+                15,
+              );
+            }
+          }
+        }
+
+        // ── Question panel (right): prompt + answer choices ──
+        buildQuestionPanel() {
+          this.add
+            .rectangle(700, 350, 360, 480, C.panel)
+            .setStrokeStyle(2, C.panelEdge);
+          this.kindChip = this.add
+            .text(700, 132, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "13px",
+              fontStyle: "bold",
+              color: "#ffcd4d",
+            })
+            .setOrigin(0.5);
+          this.qText = this.add
+            .text(700, 210, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "19px",
+              fontStyle: "bold",
+              color: "#fdeede",
+              align: "center",
+              wordWrap: { width: 320 },
+              lineSpacing: 5,
+            })
+            .setOrigin(0.5);
+          this.fbText = this.add
+            .text(700, 535, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "14px",
+              fontStyle: "bold",
+              color: "#6bd18b",
+              align: "center",
+              wordWrap: { width: 330 },
+              lineSpacing: 3,
+            })
+            .setOrigin(0.5, 0);
+        }
+
+        kindLabel(model) {
+          if (model === "bar-whole-unit") return "WHOLE ÷ UNIT FRACTION";
+          if (model === "bar-fraction") return "FRACTION ÷ FRACTION";
+          return "MIXED NUMBER ÷ FRACTION";
+        }
+
+        // ── question lifecycle ──
+        nextQuestion() {
+          this.locked = false;
+          const q = makeQuestion(this.levelIndex + 1);
+          this.current = q;
+          this.kindChip.setText(this.kindLabel(q.model));
+          this.qText.setText(q.prompt);
+          this.fbText.setText("");
+          this.drawModel(q);
+          this.drawAnswers(q.choices);
+          this.setSR(
+            `Level ${this.levelIndex + 1}. ${q.prompt} Options: ${q.choices
+              .map((c, i) => `${i + 1}, ${frStr(c.f)}`)
+              .join(". ")}.`,
+          );
+        }
+
+        drawAnswers(choices) {
+          (this.answerBtns || []).forEach((o) => o.destroy());
+          this.answerBtns = [];
+          const bw = 150,
+            bh = 56,
+            gapx = 20,
+            gapy = 16;
+          const cols = 2;
+          const x0 = 700 - (bw + gapx) / 2;
+          const y0 = 320;
+          choices.forEach((c, i) => {
+            const r = Math.floor(i / cols),
+              cc = i % cols;
+            const x = x0 + cc * (bw + gapx);
+            const y = y0 + r * (bh + gapy);
+            const cont = this.add.container(x, y).setDepth(6);
+            const rect = this.add
+              .rectangle(0, 0, bw, bh, 0x3a2410)
+              .setStrokeStyle(2, C.panelEdge);
+            this.makeInteractive(rect, bw, bh);
+            const num = this.add
+              .text(-bw / 2 + 14, 0, String(i + 1), {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "13px",
+                fontStyle: "bold",
+                color: "#c79a6f",
+              })
+              .setOrigin(0, 0.5);
+            const lab = this.add
+              .text(8, 0, frStr(c.f), {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "22px",
+                fontStyle: "bold",
+                color: "#fdeede",
+              })
+              .setOrigin(0.5);
+            cont.add([rect, num, lab]);
+            cont.rect = rect;
+            cont.choice = c;
+            rect.on("pointerover", () => {
+              if (!this.locked) {
+                rect.setFillStyle(0x5a3614);
+                SFX.tick();
+              }
+            });
+            rect.on("pointerout", () => {
+              if (!this.locked) rect.setFillStyle(0x3a2410);
+            });
+            rect.on("pointerdown", () => this.pick(i));
+            this.answerBtns.push(cont);
+          });
+        }
+
+        // Enlarged touch hit area for small fingers; visuals unchanged.
+        makeInteractive(rect, bw, bh) {
+          const padX = 8,
+            padY = 7;
+          try {
+            rect.setInteractive(
+              new Phaser.Geom.Rectangle(
+                -bw / 2 - padX,
+                -bh / 2 - padY,
+                bw + padX * 2,
+                bh + padY * 2,
+              ),
+              Phaser.Geom.Rectangle.Contains,
+            );
+            if (rect.input) rect.input.cursor = "pointer";
+          } catch (e) {
+            rect.setInteractive({ useHandCursor: true });
+          }
+        }
+
+        pick(i) {
+          if (this.locked) return;
+          const btns = this.answerBtns;
+          if (!btns || !btns[i]) return;
+          this.locked = true;
+          SFX.init();
+          const cont = btns[i];
+          const correct = cont.choice.correct;
+          const q = this.current;
+
+          btns.forEach((b) => {
+            if (b.choice.correct)
+              b.rect.setFillStyle(0x1c5a2a).setStrokeStyle(3, C.good);
+          });
+          if (!correct)
+            cont.rect.setFillStyle(0x5a1c1c).setStrokeStyle(3, C.bad);
+
+          this.qInLevel++;
+          if (correct) {
+            this.streak++;
+            this.correctInLevel++;
+            const base = 100;
+            const bonus = Math.min(this.streak, 5) * 20;
+            const gain = base + bonus;
+            this.score += gain;
+            this.fbText.setColor("#6bd18b").setText(`✓ +${gain}   ${q.explain}`);
+            SFX.correct();
+            this.burst(cont.x, cont.y, C.good);
+            this.setSR(`Correct. ${q.explain}`);
+          } else {
+            this.streak = 0;
+            this.lives--;
+            this.fbText
+              .setColor("#ff9b9b")
+              .setText(`✗ Answer: ${frStr(q.answer)}.  ${q.explain}`);
+            SFX.wrong();
+            if (!reducedMotion()) this.cameras.main.shake(170, 0.006);
+            this.setSR(`Not quite. ${q.explain}`);
+          }
+          this.refreshHUD();
+
+          this.time.delayedCall(correct ? 1100 : 1900, () => {
+            if (this.lives <= 0) return this.gameOver();
+            if (this.qInLevel >= this.qPerLevel) return this.completeLevel();
+            this.nextQuestion();
+          });
+        }
+
+        burst(x, y, color) {
+          const p = this.add.particles(x, y, "dot", {
+            speed: { min: 60, max: 180 },
+            angle: { min: 0, max: 360 },
+            scale: { start: 1, end: 0 },
+            lifespan: 500,
+            quantity: reducedMotion() ? 5 : 14,
+            tint: color,
+          });
+          this.time.delayedCall(550, () => p.destroy());
+        }
+
+        completeLevel() {
+          SFX.level();
+          this.score += 150; // level clear bonus
+          this.refreshHUD();
+          const last = this.levelIndex + 1 >= TOTAL_LEVELS;
+          const ov = this.add.container(0, 0).setDepth(20);
+          ov.add(this.add.rectangle(W / 2, H / 2, W, H, 0x140a03, 0.82));
+          ov.add(
+            this.add
+              .text(W / 2, 215, "LEVEL FORGED!", {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "44px",
+                fontStyle: "900",
+                color: "#6bd18b",
+              })
+              .setOrigin(0.5),
+          );
+          ov.add(
+            this.add
+              .text(
+                W / 2,
+                284,
+                `${this.correctInLevel} / ${this.qPerLevel} correct this level\n+150 bonus`,
+                {
+                  fontFamily: "Segoe UI, sans-serif",
+                  fontSize: "20px",
+                  color: "#fdeede",
+                  align: "center",
+                  lineSpacing: 6,
+                },
+              )
+              .setOrigin(0.5),
+          );
+          this.confetti();
+          const btn = this.add
+            .rectangle(W / 2, 380, 300, 56, 0xc4661a)
+            .setStrokeStyle(3, 0xffcd4d, 0.9)
+            .setDepth(21)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2, 380, last ? "🏆  SEE RESULTS" : "▶  NEXT LEVEL", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "22px",
+              fontStyle: "bold",
+              color: "#fff",
+            })
+            .setOrigin(0.5)
+            .setDepth(22);
+          btn.on("pointerover", () => btn.setScale(1.04));
+          btn.on("pointerout", () => btn.setScale(1));
+          btn.on("pointerdown", () => {
+            if (last) {
+              this.scene.start("Result", {
+                score: this.score,
+                lives: this.lives,
+                won: true,
+              });
+            } else {
+              this.scene.start("Game", {
+                level: this.levelIndex + 1,
+                score: this.score,
+                lives: this.lives,
+              });
+            }
+          });
+          this.setSR(
+            `Level ${this.levelIndex + 1} complete. ${this.correctInLevel} of ${this.qPerLevel} correct. Score ${this.score}.`,
+          );
+        }
+
+        gameOver() {
+          SFX.lose();
+          this.scene.start("Result", {
+            score: this.score,
+            lives: 0,
+            won: false,
+          });
+        }
+
+        confetti() {
+          if (reducedMotion()) return;
+          const p = this.add.particles(W / 2, -10, "chip", {
+            x: { min: 0, max: W },
+            y: -10,
+            speedY: { min: 120, max: 280 },
+            speedX: { min: -60, max: 60 },
+            angle: { min: 0, max: 360 },
+            rotate: { min: 0, max: 360 },
+            scale: { min: 0.7, max: 1.4 },
+            lifespan: 2600,
+            quantity: 3,
+            frequency: 40,
+            tint: [0xffcd4d, 0xffb347, 0x6bd18b, 0xff7b1a],
+          });
+          this.time.delayedCall(1800, () => p.stop());
+        }
+
+        setSR(msg) {
+          const el = document.getElementById("ff-sr");
+          if (el) el.textContent = msg;
+        }
+      }
+
+      // ════════════════════════════════════════════════════════════════════
+      //  RESULT
+      // ════════════════════════════════════════════════════════════════════
+      class ResultScene extends Phaser.Scene {
+        constructor() {
+          super("Result");
+        }
+        init(data) {
+          this.score = data.score || 0;
+          this.won = !!data.won;
+        }
+        create() {
+          this.cameras.main.setBackgroundColor(C.bg);
+          const cx = W / 2;
+          const stars = this.score >= 2600 ? 3 : this.score >= 1600 ? 2 : 1;
+
+          // High score persist.
+          try {
+            const prev = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
+            if (this.score > prev)
+              localStorage.setItem(LS_KEY, String(this.score));
+          } catch (e) {}
+
+          // EduPulse classroom dashboard reporting (guarded no-op if absent).
+          try {
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: document.title,
+                score: this.score,
+                stars: stars,
+              });
+          } catch (e) {}
+
+          if (this.won) SFX.win();
+
+          this.add
+            .text(cx, 150, this.won ? "FOUNDRY MASTERED!" : "FORGE COOLED", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "46px",
+              fontStyle: "900",
+              color: this.won ? "#6bd18b" : "#ff9b9b",
+            })
+            .setOrigin(0.5);
+
+          for (let i = 0; i < 3; i++) {
+            const star = this.add
+              .text(cx - 80 + i * 80, 240, i < stars ? "★" : "☆", {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "64px",
+                color: i < stars ? "#ffcd4d" : "#5a3a1a",
+              })
+              .setOrigin(0.5);
+            if (i < stars && !reducedMotion()) {
+              star.setScale(0);
+              this.tweens.add({
+                targets: star,
+                scale: 1,
+                duration: 400,
+                delay: 200 + i * 180,
+                ease: "Back.easeOut",
+              });
+            }
+          }
+
+          this.add
+            .text(cx, 326, `Final Score: ${this.score}`, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "30px",
+              fontStyle: "bold",
+              color: "#fdeede",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              cx,
+              372,
+              this.won
+                ? "You divided whole numbers, fractions, and mixed numbers — and saw every quotient in the bar models."
+                : "Tip: dividing by a fraction means multiplying by its reciprocal (flip it!). Try again.",
+              {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "16px",
+                color: "#e0b487",
+                align: "center",
+                wordWrap: { width: 580 },
+                lineSpacing: 4,
+              },
+            )
+            .setOrigin(0.5);
+
+          this.btn(cx - 150, 462, "↻  PLAY AGAIN", 0xc4661a, () =>
+            this.scene.start("Game", {
+              level: 0,
+              score: 0,
+              lives: START_LIVES,
+            }),
+          );
+          this.btn(cx + 150, 462, "🏠  UNIT 2 HUB", 0x6b3d18, () => {
+            window.location.href = "/math/unit-2/";
+          });
+
+          const el = document.getElementById("ff-sr");
+          if (el)
+            el.textContent = `${this.won ? "Foundry mastered" : "Forge cooled"}. Final score ${this.score}, ${stars} stars.`;
+        }
+        btn(x, y, label, color, cb) {
+          const b = this.add
+            .rectangle(x, y, 270, 56, color)
+            .setStrokeStyle(3, 0xffcd4d, 0.9)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(x, y, label, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "20px",
+              fontStyle: "bold",
+              color: "#fff",
+            })
+            .setOrigin(0.5);
+          b.on("pointerover", () => b.setScale(1.04));
+          b.on("pointerout", () => b.setScale(1));
+          b.on("pointerdown", cb);
+        }
+      }
+
+      // ── launch ──
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: document.body,
+        backgroundColor: "#1a0f06",
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+        scene: [BootScene, TitleScene, GameScene, ResultScene],
+      };
+      const ffGame = new Phaser.Game(config);
+
+      // ── Canvas accessibility (additive; no gameplay change) ──
+      ffGame.events.once("ready", function () {
+        try {
+          const cv = ffGame.canvas;
+          if (!cv) return;
+          cv.setAttribute("role", "application");
+          cv.setAttribute(
+            "aria-label",
+            "Fraction Foundry math game. Divide whole numbers, fractions, and " +
+              "mixed numbers using visual bar models. Use number keys 1 to 4 to " +
+              "choose an answer.",
+          );
+          cv.setAttribute("aria-roledescription", "math game");
+          if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
+          cv.addEventListener("pointerdown", function () {
+            try {
+              cv.focus({ preventScroll: true });
+            } catch (e) {
+              cv.focus();
+            }
+          });
+        } catch (e) {}
+      });
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
+</html>

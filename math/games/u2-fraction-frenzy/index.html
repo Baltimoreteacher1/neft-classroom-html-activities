@@ -6,436 +6,100 @@
     <title>Fraction Frenzy — Lessons 2.1–2.5 Game | Neft Teacher</title>
     <meta
       name="description"
-      content="Arcade review game for Grade 6 lessons 2.1–2.5: dividing fractions (6.NS.1)."
+      content="A 2D aim-and-pop bubble shooter for Grade 6 lessons 2.1–2.5: dividing fractions (6.NS.1). Aim the cannon and pop the bubble with the correct quotient."
     />
-    <link rel="stylesheet" href="/assets/shared.css" />
     <style>
-      :root {
-        --navy: #0f2b3c;
-        --blue: #1a6fb5;
-        --teal: #0e8a7d;
-        --gold: #d4952a;
-        --coral: #c45a3c;
-        --green: #2d874b;
-        --ink: #1a2633;
-        --muted: #5e6e7e;
-        --line: #e2e7ec;
-        --bg: #f7f9fb;
-        --font: "Segoe UI", system-ui, sans-serif;
-      }
       * {
+        margin: 0;
+        padding: 0;
         box-sizing: border-box;
       }
       body {
-        margin: 0;
-        font-family: var(--font);
-        color: var(--ink);
-        background: var(--bg);
-        line-height: 1.5;
-      }
-      .wrap {
-        max-width: 680px;
-        margin: 0 auto;
-        padding: 0 18px 60px;
-      }
-      .ghero {
-        position: relative;
+        background: #2a1326;
         overflow: hidden;
-        background: linear-gradient(135deg, #c45a3c, #d4952a);
-        color: #fff;
-        text-align: center;
-        padding: 30px 20px 26px;
+        font-family: "Segoe UI", system-ui, sans-serif;
       }
-      .ghero > *:not(.ghero-bg) {
+      canvas {
+        display: block;
+        margin: 0 auto;
         position: relative;
         z-index: 1;
       }
-      .ghero .deco {
-        font-size: 48px;
+      canvas:focus-visible {
+        outline: 3px solid #ffb648;
+        outline-offset: 4px;
+        border-radius: 8px;
       }
-      /* Bespoke parallax layer: floating fraction glyphs behind the title */
-      .ghero-bg {
-        position: absolute;
-        inset: -12px;
-        z-index: 0;
-        pointer-events: none;
-        will-change: transform;
+      canvas:focus:not(:focus-visible) {
+        outline: none;
       }
-      .ghero-bg .float-frac {
-        position: absolute;
-        font-size: clamp(22px, 5vw, 40px);
-        font-weight: 800;
-        color: rgba(255, 255, 255, 0.16);
-        animation: fracdrift 7s ease-in-out infinite;
-      }
-      .ghero-bg .float-frac:nth-child(2n) {
-        animation-duration: 9s;
-      }
-      .ghero-bg .float-frac:nth-child(3n) {
-        animation-duration: 11s;
-      }
-      @keyframes fracdrift {
-        50% {
-          transform: translateY(-10px) rotate(6deg);
-        }
-      }
-      .ghero h1 {
-        margin: 8px 0 6px;
-        font-size: clamp(24px, 5vw, 34px);
-      }
-      .ghero p {
-        margin: 0 auto;
-        max-width: 520px;
-        color: rgba(255, 255, 255, 0.9);
-      }
-      .breadcrumb {
-        font-size: 13px;
-        padding: 14px 0;
-        color: var(--muted);
-      }
-      .breadcrumb a {
-        color: var(--blue);
-        text-decoration: none;
-        font-weight: 600;
-      }
-      .hud {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        background: #fff;
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 12px 16px;
-        margin: 18px 0;
-        font-weight: 800;
-        box-shadow: 0 2px 10px rgba(15, 43, 60, 0.06);
-      }
-      .hud .lbl {
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        color: var(--muted);
-        display: block;
-      }
-      .hud .val {
-        font-size: 22px;
-      }
-      .hearts {
-        color: var(--coral);
-        letter-spacing: 2px;
-      }
-      .card {
-        background: #fff;
-        border: 1px solid var(--line);
-        border-radius: 18px;
-        padding: 26px 22px;
-        box-shadow: 0 6px 22px rgba(15, 43, 60, 0.08);
-        text-align: center;
-      }
-      .mode-tag {
-        font-size: 12px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--teal);
-      }
-      .prompt {
-        font-size: clamp(22px, 5vw, 30px);
-        font-weight: 800;
-        margin: 8px 0 4px;
-      }
-      .sub {
-        color: var(--muted);
-        margin: 0 0 18px;
-      }
-      .opts {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
-      @media (max-width: 460px) {
-        .opts {
-          grid-template-columns: 1fr;
-        }
-      }
-      .opt {
-        position: relative;
-        padding: 16px;
-        border: 2px solid var(--line);
-        border-radius: 14px;
-        background: #fff;
-        font-size: 20px;
-        font-weight: 800;
-        cursor: pointer;
-        font-family: inherit;
-        color: var(--ink);
-        /* per-option parallax tilt vars (set from JS pointermove) */
-        --tx: 0px;
-        --ty: 0px;
-        --tilt: 0deg;
-        transform: perspective(600px) translate(var(--tx), var(--ty))
-          rotateX(calc(var(--tilt) * -1)) rotateY(var(--tilt)) scale(1);
-        transition:
-          transform 0.16s cubic-bezier(0.22, 1, 0.36, 1),
-          border-color 0.15s,
-          box-shadow 0.16s ease;
-        will-change: transform;
-      }
-      .opt:hover {
-        border-color: var(--blue);
-        box-shadow: 0 6px 18px rgba(26, 111, 181, 0.18);
-        transform: perspective(600px) translate(var(--tx), var(--ty))
-          rotateX(calc(var(--tilt) * -1)) rotateY(var(--tilt)) scale(1.04);
-      }
-      .opt:active {
-        transform: perspective(600px) scale(0.97);
-      }
-      /* Bespoke fraction-bar accent that fills on hover (the divide-line motif) */
-      .opt::after {
-        content: "";
-        position: absolute;
-        left: 14px;
-        right: 14px;
-        bottom: 7px;
-        height: 3px;
-        border-radius: 3px;
-        background: var(--round-accent, var(--blue));
-        transform: scaleX(0);
-        transform-origin: left center;
-        opacity: 0.55;
-        transition:
-          transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-          opacity 0.2s;
-      }
-      .opt:hover::after {
-        transform: scaleX(1);
-      }
-      .opt.right {
-        border-color: var(--green);
-        background: #e6f4eb;
-        color: var(--green);
-        animation: pop 0.3s;
-      }
-      .opt.wrong {
-        border-color: var(--coral);
-        background: #fdeee9;
-        color: var(--coral);
-        animation: shake 0.3s;
-      }
-      @keyframes pop {
-        50% {
-          transform: scale(1.06);
-        }
-      }
-      @keyframes shake {
-        25% {
-          transform: translateX(-6px);
-        }
-        75% {
-          transform: translateX(6px);
-        }
-      }
-
-      /* ===== Bespoke: color-coded rounds + background tints ===== */
-      /* Each of the 3 fraction-division rounds gets its own color identity.
-         Applied to #playScreen via data-round; tints the card + accents. */
-      #playScreen {
-        --round-accent: var(--blue);
-        --round-tint: #f7f9fb;
-        transition:
-          background 0.4s ease,
-          box-shadow 0.4s ease;
-        border-radius: 18px;
-        padding: 4px;
-        background: var(--round-tint);
-      }
-      #playScreen[data-round="1"] {
-        --round-accent: #1a6fb5; /* blue — Whole ÷ Unit Fraction */
-        --round-tint: #eef5fb;
-      }
-      #playScreen[data-round="2"] {
-        --round-accent: #0e8a7d; /* teal — Fraction ÷ Unit Fraction */
-        --round-tint: #e9f6f3;
-      }
-      #playScreen[data-round="3"] {
-        --round-accent: #c45a3c; /* coral — Unit Fraction ÷ Whole */
-        --round-tint: #fdefe9;
-      }
-      #playScreen .mode-tag {
-        color: var(--round-accent);
-      }
-      /* Round pip indicator row */
-      .round-dots {
-        display: flex;
-        justify-content: center;
-        gap: 8px;
-        margin: 0 0 4px;
-      }
-      .round-dots .pip {
-        width: 11px;
-        height: 11px;
-        border-radius: 50%;
-        background: var(--line);
-        border: 2px solid var(--line);
-        transition:
-          background 0.25s ease,
-          transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-      }
-      .round-dots .pip[data-r="1"].on {
-        background: #1a6fb5;
-        border-color: #1a6fb5;
-      }
-      .round-dots .pip[data-r="2"].on {
-        background: #0e8a7d;
-        border-color: #0e8a7d;
-      }
-      .round-dots .pip[data-r="3"].on {
-        background: #c45a3c;
-        border-color: #c45a3c;
-      }
-      .round-dots .pip.active {
-        transform: scale(1.5);
-      }
-      /* time bar recolors per round */
-      #playScreen .bar > div {
-        background: linear-gradient(90deg, var(--round-accent), var(--gold));
-      }
-
-      /* ===== Bespoke particle: "pizza-slice" confetti for correct fractions =====
-         A canvas overlay draws triangular slices (the fraction-of-a-whole motif)
-         bursting from the chosen tile. Caps at a small count for Chromebooks. */
-      #fxCanvas {
+      #fr-bg {
         position: fixed;
         inset: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 60;
-      }
-
-      /* ===== Accessibility: focus-visible rings + high contrast ===== */
-      .opt:focus-visible,
-      .btn:focus-visible {
-        outline: 3px solid #11324a;
-        outline-offset: 3px;
-        box-shadow: 0 0 0 5px rgba(212, 149, 42, 0.45);
-      }
-      @media (forced-colors: active) {
-        .opt,
-        .btn {
-          border: 2px solid ButtonText;
-        }
-        .opt.right {
-          outline: 3px solid Highlight;
-        }
-        .round-dots .pip.on {
-          forced-color-adjust: none;
-        }
-      }
-
-      /* ===== prefers-reduced-motion: disable/flatten all added motion ===== */
-      @media (prefers-reduced-motion: reduce) {
-        .opt,
-        .opt:hover,
-        .opt:active,
-        .opt.right,
-        .opt.wrong,
-        .opt::after,
-        .round-dots .pip,
-        #playScreen,
-        #playScreen .bar > div {
-          transition: none !important;
-          animation: none !important;
-        }
-        .opt,
-        .opt:hover {
-          transform: none !important;
-        }
-        .opt:hover::after,
-        .opt::after {
-          transform: scaleX(1);
-        }
-        .round-dots .pip.active {
-          transform: none;
-        }
-        .ghero-bg .float-frac {
-          animation: none !important;
-        }
-        #fxCanvas {
-          display: none;
-        }
-      }
-
-      .feedback {
-        min-height: 26px;
-        margin-top: 16px;
-        font-weight: 800;
-      }
-      .feedback.ok {
-        color: var(--green);
-      }
-      .feedback.no {
-        color: var(--coral);
-      }
-      .btn {
-        background: var(--blue);
-        color: #fff;
-        border: none;
-        border-radius: 12px;
-        padding: 13px 26px;
-        font-size: 16px;
-        font-weight: 800;
-        cursor: pointer;
-        font-family: inherit;
-        margin-top: 8px;
-      }
-      .btn:hover {
-        filter: brightness(1.08);
-      }
-      .btn.start {
-        background: var(--teal);
-        font-size: 18px;
-        padding: 15px 34px;
-      }
-      .bar {
-        height: 10px;
-        background: var(--line);
-        border-radius: 50px;
+        z-index: 0;
         overflow: hidden;
-        margin: 14px 0 2px;
+        pointer-events: none;
+        background: radial-gradient(
+          130% 90% at 50% 0%,
+          #4a2244 0%,
+          #2a1326 55%,
+          #1c0c19 100%
+        );
       }
-      .bar > div {
-        height: 100%;
-        width: 100%;
-        background: linear-gradient(90deg, var(--gold), var(--coral));
-        transition: width 0.25s linear;
+      .fr-mote {
+        position: absolute;
+        border-radius: 50%;
+        background: #ffd0e0;
+        opacity: 0.4;
+        animation: frTwinkle var(--tw, 3s) ease-in-out infinite;
       }
-      .hidden {
-        display: none;
+      @keyframes frTwinkle {
+        0%,
+        100% {
+          opacity: 0.12;
+          transform: scale(0.8);
+        }
+        50% {
+          opacity: 0.6;
+          transform: scale(1.2);
+        }
       }
-      .big-score {
-        font-size: 52px;
-        font-weight: 900;
-        color: var(--blue);
-        margin: 6px 0;
+      @media (prefers-reduced-motion: reduce) {
+        .fr-mote {
+          animation: none !important;
+          opacity: 0.35 !important;
+        }
       }
-      .legend {
-        font-size: 13px;
-        color: var(--muted);
-        margin-top: 18px;
-      }
-      .legend a {
-        color: var(--blue);
-        font-weight: 700;
-      }
-      ul.modes {
-        text-align: left;
-        max-width: 430px;
-        margin: 14px auto;
-        color: var(--muted);
-        font-size: 15px;
+      #fr-sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
       }
     </style>
+    <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
+    <script>
+      // CDN fallback: if the local vendor copy failed, synchronously load Phaser
+      // from a mirror (document.write blocks parsing so the mirror is ready
+      // before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      // If both sources are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#ffd0e0">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
@@ -444,568 +108,965 @@
     <!-- gfx-injected:end -->
   </head>
   <body>
-    <header class="ghero" data-parallax>
-      <div class="ghero-bg" data-parallax-layer aria-hidden="true">
-        <span class="float-frac" style="left: 8%; top: 22%">½</span>
-        <span class="float-frac" style="left: 78%; top: 16%">⅓</span>
-        <span class="float-frac" style="left: 22%; top: 64%">¼</span>
-        <span class="float-frac" style="left: 88%; top: 68%">⅛</span>
-        <span class="float-frac" style="left: 52%; top: 80%">÷</span>
-      </div>
-      <div class="deco">🍕</div>
-      <h1>Fraction Frenzy</h1>
-      <p>
-        Race the clock dividing fractions and whole numbers — slicing your way
-        through every kind of fraction division!
-      </p>
-    </header>
-    <div class="wrap">
-      <nav class="breadcrumb">
-        <a href="/">Home</a> / <a href="/math/">Math</a> /
-        <a href="/math/games/">Games</a> / Fraction Frenzy
-      </nav>
-
-      <section class="card" id="startScreen">
-        <p class="mode-tag">Lessons 2.1–2.5 · 6.NS.1</p>
-        <h2 style="margin: 6px 0">Ready for the frenzy?</h2>
-        <ul class="modes">
-          <li>
-            <strong>Round 1 — Whole ÷ Unit Fraction.</strong> e.g., 4 ÷ 1/3 =
-            12.
-          </li>
-          <li>
-            <strong>Round 2 — Fraction ÷ Unit Fraction.</strong> e.g., 3/4 ÷ 1/8
-            = 6.
-          </li>
-          <li>
-            <strong>Round 3 — Unit Fraction ÷ Whole.</strong> e.g., 1/2 ÷ 3 =
-            1/6.
-          </li>
-        </ul>
-        <p class="sub">
-          You have <strong>3 ❤</strong> and a timer on each question. Build a
-          streak for bonus points!
-        </p>
-        <button class="btn start" id="startBtn" type="button">
-          Start Game ▶
-        </button>
-      </section>
-
-      <section id="playScreen" class="hidden">
-        <div class="hud">
-          <div>
-            <span class="lbl">Score</span><span class="val" id="score">0</span>
-          </div>
-          <div>
-            <span class="lbl">Streak</span
-            ><span class="val" id="streak">0</span>
-          </div>
-          <div>
-            <span class="lbl">Lives</span
-            ><span class="val hearts" id="lives">❤❤❤</span>
-          </div>
-          <div>
-            <span class="lbl">Question</span
-            ><span class="val" id="qnum">1</span>
-          </div>
-        </div>
-        <div
-          class="round-dots"
-          id="roundDots"
-          role="img"
-          aria-label="Current round indicator"
-        >
-          <span class="pip" data-r="1"></span>
-          <span class="pip" data-r="2"></span>
-          <span class="pip" data-r="3"></span>
-        </div>
-        <div class="bar"><div id="timebar"></div></div>
-        <div class="card" style="margin-top: 14px">
-          <span class="mode-tag" id="modeTag"></span>
-          <div class="prompt" id="prompt"></div>
-          <p class="sub" id="sub"></p>
-          <div class="opts" id="opts"></div>
-          <div class="feedback" id="feedback"></div>
-          <button class="btn hidden" id="nextBtn" type="button">Next ▶</button>
-        </div>
-      </section>
-
-      <section class="card hidden" id="resultScreen">
-        <p class="mode-tag">Game Over</p>
-        <div class="big-score" id="finalScore">0</div>
-        <p id="resultMsg" style="font-weight: 700"></p>
-        <p class="sub" id="resultDetail"></p>
-        <button class="btn start" id="againBtn" type="button">
-          Play Again 🔁
-        </button>
-        <p class="legend">
-          More review:
-          <a href="/math/review-arcade/">Boss-Battle Review Arcade</a> ·
-          <a href="/math/games/">All Games</a>
-        </p>
-      </section>
-    </div>
-
-    <canvas id="fxCanvas" aria-hidden="true"></canvas>
-
+    <div id="fr-bg" aria-hidden="true"></div>
+    <div id="fr-sr" role="status" aria-live="polite"></div>
     <script>
-      function rnd(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-      }
-      function shuffle(a) {
-        for (var i = a.length - 1; i > 0; i--) {
-          var j = Math.floor(Math.random() * (i + 1));
-          var t = a[i];
-          a[i] = a[j];
-          a[j] = t;
+      (function () {
+        var host = document.getElementById("fr-bg");
+        if (!host) return;
+        var reduce =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var n = reduce ? 10 : 26;
+        for (var i = 0; i < n; i++) {
+          var d = document.createElement("div");
+          d.className = "fr-mote";
+          var sz = 2 + Math.random() * 4;
+          d.style.width = d.style.height = sz.toFixed(1) + "px";
+          d.style.left = (Math.random() * 100).toFixed(2) + "%";
+          d.style.top = (Math.random() * 100).toFixed(2) + "%";
+          d.style.setProperty("--tw", (2 + Math.random() * 4).toFixed(2) + "s");
+          d.style.animationDelay = "-" + (Math.random() * 4).toFixed(2) + "s";
+          host.appendChild(d);
         }
-        return a;
-      }
-      function round2(n) {
-        return Math.round(n * 100) / 100;
-      }
+      })();
+    </script>
+    <script>
+      // ════════════════════════════════════════════════════════════════════
+      // FRACTION FRENZY — Bubble Popper  ·  Grade 6  ·  6.NS.1
+      // Lessons 2.1–2.5: dividing fractions (keep-change-flip).
+      //
+      // MECHANIC: A cannon sits at the bottom center. Three answer "bubbles"
+      //   drift across the upper screen. Read the division problem, ROTATE the
+      //   cannon (← → / A D) so its aim line points at the bubble with the
+      //   correct quotient, then FIRE (Space / Up / tap a bubble). The shell
+      //   flies along the aim; popping the right bubble = correct, popping a
+      //   wrong one = miss (lose a life). Bubbles drift faster each round.
+      //
+      // FLOAT SAFETY: answers are integers or "1/d" reciprocal strings produced
+      //   directly from integer arithmetic; correctness is a STRING comparison,
+      //   so no float equality is ever used.
+      // ════════════════════════════════════════════════════════════════════
+      const LS_KEY = "fr_fraction_frenzy_highscore";
+      const W = 800,
+        H = 600;
+      const ACTIVITY_TITLE = "Fraction Frenzy — Lessons 2.1–2.5";
+      const STANDARD = "6.NS.1";
 
-      /* ===== Bespoke visual FX (additive only — no gameplay impact) ===== */
-      var RM_QUERY =
-        window.matchMedia &&
-        window.matchMedia("(prefers-reduced-motion: reduce)");
-      function reducedMotion() {
-        return !!(RM_QUERY && RM_QUERY.matches);
-      }
-
-      // Per-round accent colors used by the pizza-slice particle burst.
-      var ROUND_COLORS = {
-        1: ["#1a6fb5", "#3b7dd8", "#7fb0e0"],
-        2: ["#0e8a7d", "#1aa179", "#5fc4b3"],
-        3: ["#c45a3c", "#e0542f", "#d4952a"],
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx)
+            try {
+              this.ctx = new (window.AudioContext ||
+                window.webkitAudioContext)();
+            } catch (e) {}
+        },
+        play(t, f, d, v = 0.2) {
+          if (!this.ctx) return;
+          try {
+            const c = this.ctx,
+              o = c.createOscillator(),
+              g = c.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, c.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
+            o.connect(g);
+            g.connect(c.destination);
+            o.start();
+            o.stop(c.currentTime + d);
+          } catch (e) {}
+        },
+        noise(d, v = 0.1) {
+          if (!this.ctx) return;
+          try {
+            const c = this.ctx,
+              n = c.sampleRate * d,
+              buf = c.createBuffer(1, n, c.sampleRate),
+              dt = buf.getChannelData(0);
+            for (let i = 0; i < n; i++) dt[i] = Math.random() * 2 - 1;
+            const s = c.createBufferSource();
+            s.buffer = buf;
+            const g = c.createGain();
+            g.gain.setValueAtTime(v, c.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
+            s.connect(g);
+            g.connect(c.destination);
+            s.start();
+            s.stop(c.currentTime + d);
+          } catch (e) {}
+        },
+        fire() {
+          this.play("square", 300, 0.08, 0.12);
+        },
+        pop() {
+          this.play("sine", 720, 0.1, 0.3);
+          this.play("sine", 1080, 0.13, 0.22);
+        },
+        miss() {
+          this.noise(0.18, 0.12);
+          this.play("sawtooth", 170, 0.28, 0.16);
+        },
+        rotate() {
+          this.play("triangle", 360, 0.03, 0.04);
+        },
+        tick() {
+          this.play("square", 600, 0.03, 0.07);
+        },
+        streak(n) {
+          [523, 659, 784, 988, 1175]
+            .slice(0, Math.min(n, 5))
+            .forEach((f, i) =>
+              setTimeout(() => this.play("sine", f, 0.12, 0.2), i * 55),
+            );
+        },
+        levelUp() {
+          [523, 659, 784, 1047].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.15, 0.22), i * 70),
+          );
+        },
+        win() {
+          [523, 659, 784, 1047, 1318].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.22, 0.28), i * 110),
+          );
+        },
+        lose() {
+          [400, 350, 300, 200].forEach((f, i) =>
+            setTimeout(() => this.play("sawtooth", f, 0.28, 0.15), i * 170),
+          );
+        },
       };
 
-      // Lightweight canvas particle system: triangular "pizza slices" that burst
-      // from the chosen tile when a fraction is answered correctly. Capped count,
-      // single shared rAF loop, auto-stops when idle (Chromebook-friendly).
-      var FX = (function () {
-        var canvas, ctx, dpr, slices, raf, last;
-        function ensure() {
-          if (canvas) return;
-          canvas = document.getElementById("fxCanvas");
-          if (!canvas) return;
-          ctx = canvas.getContext("2d");
-          resize();
-          window.addEventListener("resize", resize);
+      function randInt(a, b) {
+        return Math.floor(Math.random() * (b - a + 1)) + a;
+      }
+      function shuffle(a) {
+        const r = a.slice();
+        for (let i = r.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [r[i], r[j]] = [r[j], r[i]];
         }
-        function resize() {
-          if (!canvas) return;
-          dpr = Math.min(window.devicePixelRatio || 1, 2);
-          canvas.width = Math.floor(window.innerWidth * dpr);
-          canvas.height = Math.floor(window.innerHeight * dpr);
-        }
-        function drawSlice(s) {
-          ctx.save();
-          ctx.translate(s.x * dpr, s.y * dpr);
-          ctx.rotate(s.rot);
-          ctx.globalAlpha = Math.max(0, s.life);
-          ctx.fillStyle = s.color;
-          var r = s.size * dpr;
-          // a thin wedge = a fraction of a circle (the "slice" motif)
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.arc(0, 0, r, -0.45, 0.45);
-          ctx.closePath();
-          ctx.fill();
-          ctx.restore();
-        }
-        function loop(t) {
-          if (!last) last = t;
-          var dt = Math.min((t - last) / 1000, 0.05);
-          last = t;
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          var alive = false;
-          for (var i = 0; i < slices.length; i++) {
-            var s = slices[i];
-            if (s.life <= 0) continue;
-            alive = true;
-            s.vy += 900 * dt; // gravity
-            s.x += s.vx * dt;
-            s.y += s.vy * dt;
-            s.rot += s.vr * dt;
-            s.life -= dt * 1.25;
-            drawSlice(s);
-          }
-          if (alive) {
-            raf = requestAnimationFrame(loop);
-          } else {
-            cancelAnimationFrame(raf);
-            raf = null;
-            last = 0;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-          }
-        }
-        function burst(x, y, round) {
-          if (reducedMotion()) return;
-          ensure();
-          if (!ctx) return;
-          if (!slices) slices = [];
-          var colors = ROUND_COLORS[round] || ROUND_COLORS[1];
-          var N = 16; // capped particle count
-          for (var i = 0; i < N; i++) {
-            var ang = -Math.PI / 2 + (Math.random() - 0.5) * 2.4;
-            var spd = 220 + Math.random() * 260;
-            slices.push({
-              x: x,
-              y: y,
-              vx: Math.cos(ang) * spd,
-              vy: Math.sin(ang) * spd,
-              rot: Math.random() * Math.PI * 2,
-              vr: (Math.random() - 0.5) * 10,
-              size: 10 + Math.random() * 12,
-              color: colors[i % colors.length],
-              life: 1,
-            });
-          }
-          // keep the working set small
-          if (slices.length > 80) slices = slices.slice(-80);
-          if (!raf) {
-            last = 0;
-            raf = requestAnimationFrame(loop);
-          }
-        }
-        return { burst: burst };
-      })();
-
-      // Pointer-tracking parallax tilt on the option tiles (delegated, light).
-      function attachOptTilt(box) {
-        if (reducedMotion()) return;
-        box.addEventListener("pointermove", function (e) {
-          var t = e.target.closest && e.target.closest(".opt");
-          if (!t || !box.contains(t)) return;
-          var r = t.getBoundingClientRect();
-          var px = (e.clientX - r.left) / r.width - 0.5;
-          var py = (e.clientY - r.top) / r.height - 0.5;
-          t.style.setProperty("--tx", (px * 6).toFixed(1) + "px");
-          t.style.setProperty("--ty", (py * 6).toFixed(1) + "px");
-          t.style.setProperty("--tilt", (px * 5).toFixed(2) + "deg");
-        });
-        box.addEventListener("pointerout", function (e) {
-          var t = e.target.closest && e.target.closest(".opt");
-          if (!t) return;
-          t.style.setProperty("--tx", "0px");
-          t.style.setProperty("--ty", "0px");
-          t.style.setProperty("--tilt", "0deg");
-        });
+        return r;
       }
 
-      function updateRoundUI(round) {
-        var play = document.getElementById("playScreen");
-        if (play) play.setAttribute("data-round", String(round));
-        var pips = document.querySelectorAll("#roundDots .pip");
-        Array.prototype.forEach.call(pips, function (p) {
-          var r = +p.getAttribute("data-r");
-          p.classList.toggle("on", r <= round);
-          p.classList.toggle("active", r === round);
-        });
+      // Build 3 distinct bubble labels with exactly one correct.
+      // makeWrong returns a label STRING already.
+      function buildBubbles(correctLabel, makeWrong) {
+        const set = new Set([correctLabel]);
+        let guard = 0;
+        while (set.size < 3 && guard++ < 200) {
+          const w = makeWrong();
+          if (w && w !== correctLabel) set.add(w);
+        }
+        const labels = shuffle(Array.from(set));
+        return { labels: labels, correctIndex: labels.indexOf(correctLabel) };
       }
 
-      var TOTAL = 12,
-        TIME = 12;
-      var state = {};
-
-      function distinctOpts(correct, makeWrong, fmt) {
-        var set = {};
-        set[fmt(correct)] = true;
-        var opts = [fmt(correct)];
-        var guard = 0;
-        while (opts.length < 4 && guard < 50) {
-          guard++;
-          var w = makeWrong();
-          var k = fmt(w);
-          if (!set[k]) {
-            set[k] = true;
-            opts.push(k);
-          }
-        }
-        var pad = 1;
-        while (opts.length < 4) {
-          var ek = fmt(correct + pad);
-          if (!set[ek]) {
-            set[ek] = true;
-            opts.push(ek);
-          }
-          pad++;
-        }
-        return { opts: shuffle(opts), correct: fmt(correct) };
-      }
-
-      function buildQuestion(i) {
-        var round = i < 4 ? 1 : i < 8 ? 2 : 3;
-
+      // round 1: whole ÷ unit fraction = integer  (n ÷ 1/d = n·d)
+      // round 2: fraction ÷ unit fraction = integer  ((a/b) ÷ 1/d = a·d/b, d multiple of b)
+      // round 3: unit fraction ÷ whole = unit fraction  (1/b ÷ n = 1/(b·n))
+      function genQuestion(round) {
         if (round === 1) {
-          // whole ÷ unit fraction = integer: n ÷ (1/d) = n*d
-          var n = rnd(2, 6),
-            d = rnd(2, 5);
-          var ans = n * d;
-          var o = distinctOpts(
-            ans,
-            function () {
-              // Nearby whole-number distractors, always positive and distinct
-              // from the answer (no "−5"-style options). Offset by ±1..3 groups
-              // of d, then a fallback small offset if that lands on/below zero.
-              var step = rnd(1, 3) * (Math.random() < 0.5 ? 1 : -1);
-              var w = ans + step * d;
-              return w > 0 && w !== ans ? w : ans + rnd(1, 3);
-            },
-            String,
-          );
+          const n = randInt(2, 6),
+            d = randInt(2, 5);
+          const ans = n * d;
+          const g = buildBubbles(String(ans), () => {
+            const step = randInt(1, 3) * (Math.random() < 0.5 ? 1 : -1);
+            let w = ans + step * d;
+            if (w <= 0 || w === ans) w = ans + randInt(1, 3);
+            return String(w);
+          });
           return {
             tag: "Whole ÷ Unit Fraction",
-            prompt: n + " ÷ 1/" + d + " = ?",
-            sub: "Dividing by a fraction: multiply by its reciprocal.",
-            opts: o.opts,
-            correct: o.correct,
+            prompt: n + " ÷ 1/" + d,
             why: n + " ÷ 1/" + d + " = " + n + " × " + d + " = " + ans + ".",
+            bubbles: g.labels,
+            correctIndex: g.correctIndex,
           };
         }
-
         if (round === 2) {
-          // fraction ÷ unit fraction = integer: (a/b) ÷ (1/d) = a*d/b
-          // pick b in {2,3,4}, a in {1..b-1}, d a multiple of b so a*d/b is a whole number
-          var b = rnd(2, 4),
-            a = rnd(1, b - 1 < 1 ? 1 : b - 1);
-          if (a >= b) a = b - 1; // ensure proper fraction
-          var mult = rnd(1, 4),
-            d2 = b * mult; // d2 is multiple of b
-          var ans2 = (a * d2) / b; // guaranteed integer
-          // distractors: nearby integers, non-zero, non-ans
-          var o2 = distinctOpts(
-            ans2,
-            function () {
-              var delta = rnd(1, 4);
-              return Math.random() < 0.5
-                ? ans2 + delta
-                : Math.max(1, ans2 - delta);
-            },
-            String,
-          );
+          const b = randInt(2, 4);
+          const a = randInt(1, b - 1); // proper fraction (b>=2 so b-1>=1)
+          const mult = randInt(1, 4),
+            d = b * mult; // d is a multiple of b -> integer answer
+          const ans = (a * d) / b; // guaranteed integer
+          const g = buildBubbles(String(ans), () => {
+            const delta = randInt(1, 4);
+            let w = Math.random() < 0.5 ? ans + delta : ans - delta;
+            if (w <= 0 || w === ans) w = ans + randInt(1, 4);
+            return String(w);
+          });
           return {
             tag: "Fraction ÷ Unit Fraction",
-            prompt: a + "/" + b + " ÷ 1/" + d2 + " = ?",
-            sub: "Flip the divisor and multiply.",
-            opts: o2.opts,
-            correct: o2.correct,
+            prompt: a + "/" + b + " ÷ 1/" + d,
             why:
-              a +
-              "/" +
-              b +
-              " ÷ 1/" +
-              d2 +
-              " = " +
-              a +
-              "/" +
-              b +
-              " × " +
-              d2 +
-              " = " +
-              ans2 +
-              ".",
+              a + "/" + b + " ÷ 1/" + d + " = " + a + "/" + b + " × " + d + " = " + ans + ".",
+            bubbles: g.labels,
+            correctIndex: g.correctIndex,
           };
         }
-
-        // round 3: unit fraction ÷ whole = unit fraction
-        // (1/b) ÷ n = 1/(b*n)
-        var b3 = rnd(2, 6),
-          n3 = rnd(2, 5);
-        var denom = b3 * n3;
-        var ansStr = "1/" + denom;
-        var o3 = distinctOpts(
-          denom,
-          function () {
-            // generate a different denominator
-            var delta = rnd(1, 4);
-            return Math.random() < 0.5
-              ? denom + delta
-              : Math.max(2, denom - delta);
-          },
-          function (d) {
-            return "1/" + d;
-          },
-        );
+        // round 3
+        const b = randInt(2, 6),
+          n = randInt(2, 5);
+        const denom = b * n;
+        const correct = "1/" + denom;
+        const g = buildBubbles(correct, () => {
+          const delta = randInt(1, 5);
+          let dd = Math.random() < 0.5 ? denom + delta : denom - delta;
+          if (dd <= 1 || dd === denom) dd = denom + randInt(1, 5);
+          return "1/" + dd;
+        });
         return {
           tag: "Unit Fraction ÷ Whole",
-          prompt: "1/" + b3 + " ÷ " + n3 + " = ?",
-          sub: "Divide a unit fraction by a whole number.",
-          opts: o3.opts,
-          correct: o3.correct,
-          why:
-            "1/" +
-            b3 +
-            " ÷ " +
-            n3 +
-            " = 1/(" +
-            b3 +
-            "×" +
-            n3 +
-            ") = 1/" +
-            denom +
-            ".",
+          prompt: "1/" + b + " ÷ " + n,
+          why: "1/" + b + " ÷ " + n + " = 1/(" + b + "×" + n + ") = 1/" + denom + ".",
+          bubbles: g.labels,
+          correctIndex: g.correctIndex,
         };
       }
 
-      function startGame() {
-        state = { i: 0, score: 0, streak: 0, lives: 3, locked: false };
-        document.getElementById("startScreen").classList.add("hidden");
-        document.getElementById("resultScreen").classList.add("hidden");
-        document.getElementById("playScreen").classList.remove("hidden");
-        nextQuestion();
-      }
-      function nextQuestion() {
-        if (state.lives <= 0 || state.i >= TOTAL) {
-          return endGame();
-        }
-        state.locked = false;
-        state.q = buildQuestion(state.i);
-        state.round = state.i < 4 ? 1 : state.i < 8 ? 2 : 3;
-        updateRoundUI(state.round);
-        document.getElementById("qnum").textContent = state.i + 1 + "/" + TOTAL;
-        document.getElementById("modeTag").textContent = state.q.tag;
-        document.getElementById("prompt").textContent = state.q.prompt;
-        document.getElementById("sub").textContent = state.q.sub;
-        document.getElementById("feedback").textContent = "";
-        document.getElementById("feedback").className = "feedback";
-        document.getElementById("nextBtn").classList.add("hidden");
-        var box = document.getElementById("opts");
-        box.innerHTML = "";
-        state.q.opts.forEach(function (o) {
-          var b = document.createElement("button");
-          b.type = "button";
-          b.className = "opt";
-          b.textContent = o;
-          b.onclick = function () {
-            answer(o, b);
-          };
-          box.appendChild(b);
-        });
-        attachOptTilt(box);
-        startTimer();
-      }
-      function startTimer() {
-        var t = TIME,
-          bar = document.getElementById("timebar");
-        bar.style.width = "100%";
-        clearInterval(state.timer);
-        state.timer = setInterval(function () {
-          t -= 0.1;
-          bar.style.width = Math.max(0, (t / TIME) * 100) + "%";
-          if (t <= 0) {
-            clearInterval(state.timer);
-            if (!state.locked) {
-              timeUp();
-            }
-          }
-        }, 100);
-      }
-      function answer(choice, btn) {
-        if (state.locked) return;
-        state.locked = true;
-        clearInterval(state.timer);
-        var fb = document.getElementById("feedback"),
-          correct = choice === state.q.correct;
-        Array.prototype.forEach.call(
-          document.querySelectorAll(".opt"),
-          function (b) {
-            if (b.textContent === state.q.correct) b.classList.add("right");
-            else if (b === btn) b.classList.add("wrong");
-          },
-        );
-        if (correct) {
-          state.streak++;
-          state.score += 10 + Math.min(state.streak, 5) * 2;
-          fb.textContent =
-            "✓ Correct! " +
-            state.q.why +
-            (state.streak > 1 ? "  🔥 Streak ×" + state.streak : "");
-          fb.className = "feedback ok";
-          // Bespoke pizza-slice particle burst from the chosen tile.
-          try {
-            var br = btn.getBoundingClientRect();
-            FX.burst(
-              br.left + br.width / 2,
-              br.top + br.height / 2,
-              state.round,
-            );
-          } catch (e) {}
-          // HUD emphasis via shared kit when available.
-          try {
-            if (window.GameFX && GameFX.pop) {
-              GameFX.pop(document.getElementById("score"));
-              if (state.streak > 1)
-                GameFX.pop(document.getElementById("streak"));
-            }
-          } catch (e2) {}
-        } else {
-          state.streak = 0;
-          state.lives--;
-          fb.textContent = "✗ " + state.q.why + "  (−1 ❤)";
-          fb.className = "feedback no";
-        }
-        updateHud();
-        document.getElementById("nextBtn").classList.remove("hidden");
-      }
-      function timeUp() {
-        state.locked = true;
-        state.streak = 0;
-        state.lives--;
-        Array.prototype.forEach.call(
-          document.querySelectorAll(".opt"),
-          function (b) {
-            if (b.textContent === state.q.correct) b.classList.add("right");
-          },
-        );
-        var fb = document.getElementById("feedback");
-        fb.textContent = "⏰ Time! " + state.q.why + "  (−1 ❤)";
-        fb.className = "feedback no";
-        updateHud();
-        document.getElementById("nextBtn").classList.remove("hidden");
-      }
-      function updateHud() {
-        document.getElementById("score").textContent = state.score;
-        document.getElementById("streak").textContent = state.streak;
-        document.getElementById("lives").textContent =
-          state.lives > 0 ? "❤".repeat(state.lives) : "—";
-      }
-      function endGame() {
-        clearInterval(state.timer);
-        document.getElementById("playScreen").classList.add("hidden");
-        document.getElementById("resultScreen").classList.remove("hidden");
-        document.getElementById("finalScore").textContent = state.score;
-        var msg;
-        if (state.score >= 180) msg = "🏆 Fraction Champion!";
-        else if (state.score >= 120) msg = "🌟 Slicing through it!";
-        else if (state.score >= 60) msg = "👍 Nice work — keep practicing.";
-        else msg = "💪 Try again to beat your score!";
-        document.getElementById("resultMsg").textContent = msg;
-        document.getElementById("resultDetail").textContent =
-          (state.lives <= 0
-            ? "Out of lives! "
-            : "You finished all " + TOTAL + " questions! ") +
-          "Final score: " +
-          state.score +
-          ".";
+      function srSay(msg) {
         try {
-          window.EduPulse &&
-            EduPulse.record({
-              activityTitle: document.title,
-              score: state.score,
-              problemsAttempted: state.i,
-              standard: "6.NS.1",
-            });
+          const el = document.getElementById("fr-sr");
+          if (el) el.textContent = msg;
         } catch (e) {}
       }
-      document.getElementById("startBtn").onclick = startGame;
-      document.getElementById("againBtn").onclick = startGame;
-      document.getElementById("nextBtn").onclick = function () {
-        state.i++;
-        nextQuestion();
+
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: document.body,
+        backgroundColor: "#2a1326",
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+        scene: [],
       };
+
+      class BootScene extends Phaser.Scene {
+        constructor() {
+          super("Boot");
+        }
+        create() {
+          const g = this.make.graphics({ add: false });
+          g.fillStyle(0xffffff);
+          g.fillRect(0, 0, 7, 4);
+          g.generateTexture("confetti", 7, 4);
+          g.clear();
+          g.fillStyle(0xffffff);
+          g.fillCircle(4, 4, 4);
+          g.generateTexture("spark", 8, 8);
+          g.clear();
+          g.fillStyle(0xffe08a);
+          g.fillCircle(7, 7, 7);
+          g.generateTexture("shell", 14, 14);
+          g.destroy();
+          this.scene.start("Title");
+        }
+      }
+
+      class TitleScene extends Phaser.Scene {
+        constructor() {
+          super("Title");
+        }
+        create() {
+          const cx = W / 2;
+          this.reduce =
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          this.add.rectangle(cx, H / 2, W, H, 0x2a1326);
+          this.add
+            .text(cx, 120, "FRACTION", {
+              fontSize: "62px",
+              fontFamily: "Impact, sans-serif",
+              color: "#ff7ba8",
+              stroke: "#1c0c19",
+              strokeThickness: 6,
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 186, "FRENZY", {
+              fontSize: "62px",
+              fontFamily: "Impact, sans-serif",
+              color: "#ffb648",
+              stroke: "#1c0c19",
+              strokeThickness: 6,
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 244, "Bubble Popper  ·  Lessons 2.1–2.5  ·  6.NS.1", {
+              fontSize: "15px",
+              color: "#e0a8c0",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              cx,
+              300,
+              "Divide the fractions, AIM the cannon at the bubble with\nthe correct quotient, and fire to pop it!",
+              { fontSize: "15px", color: "#c890a8", align: "center" },
+            )
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 356, "← → or A/D to aim   ·   Space/↑ to fire   ·   tap a bubble", {
+              fontSize: "14px",
+              color: "#b380a0",
+            })
+            .setOrigin(0.5);
+
+          const hs = localStorage.getItem(LS_KEY);
+          if (hs)
+            this.add
+              .text(cx, 392, "HIGH SCORE: " + hs, {
+                fontSize: "15px",
+                color: "#ffb648",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+
+          const btn = this.add
+            .rectangle(cx, 450, 260, 56, 0xc45a3c)
+            .setInteractive({ useHandCursor: true });
+          const btnT = this.add
+            .text(cx, 450, "LOAD CANNON ▶", {
+              fontSize: "22px",
+              fontStyle: "bold",
+              color: "#fff3ec",
+            })
+            .setOrigin(0.5);
+          if (!this.reduce)
+            this.tweens.add({
+              targets: [btn, btnT],
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 800,
+              yoyo: true,
+              repeat: -1,
+            });
+          const go = () => {
+            SFX.init();
+            SFX.tick();
+            this.cameras.main.fadeOut(300);
+            this.time.delayedCall(300, () => this.scene.start("Game"));
+          };
+          btn.on("pointerover", () => btn.setFillStyle(0xd86c4c));
+          btn.on("pointerout", () => btn.setFillStyle(0xc45a3c));
+          btn.on("pointerdown", go);
+          this.input.keyboard.on("keydown-SPACE", go);
+          this.input.keyboard.on("keydown-ENTER", go);
+
+          const hub = this.add
+            .text(cx, 555, "← Back to Games hub", {
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#b380a0",
+            })
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true });
+          hub.on("pointerover", () => hub.setColor("#ffb648"));
+          hub.on("pointerout", () => hub.setColor("#b380a0"));
+          hub.on("pointerdown", () => (window.location.href = "/math/games/"));
+
+          this.cameras.main.fadeIn(400);
+        }
+      }
+
+      class GameScene extends Phaser.Scene {
+        constructor() {
+          super("Game");
+        }
+        init() {
+          this.reduce =
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          this.score = 0;
+          this.lives = 3;
+          this.streak = 0;
+          this.maxStreak = 0;
+          this.correct = 0;
+          this.qIndex = 0;
+          this.TOTAL = 12;
+          this.level = 1;
+          this.busy = false;
+          this.aim = -Math.PI / 2; // straight up
+          this.bubbles = [];
+          this.shell = null;
+        }
+        roundFor(i) {
+          return i < 4 ? 1 : i < 8 ? 2 : 3;
+        }
+        create() {
+          const cx = W / 2;
+          this.cannonX = cx;
+          this.cannonY = H - 40;
+          this.add.rectangle(cx, H / 2, W, H, 0x2a1326);
+
+          // HUD
+          this.add.rectangle(cx, 24, W, 48, 0x1c0c19, 0.92).setDepth(8);
+          this.scoreText = this.add
+            .text(16, 12, "Score: 0", {
+              fontSize: "20px",
+              color: "#ff7ba8",
+              fontStyle: "bold",
+            })
+            .setDepth(9);
+          this.livesText = this.add
+            .text(W - 16, 12, "❤❤❤", { fontSize: "20px", color: "#ff6b8a" })
+            .setOrigin(1, 0)
+            .setDepth(9);
+          this.streakText = this.add
+            .text(cx, 12, "Streak: 0", {
+              fontSize: "16px",
+              color: "#ffb648",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5, 0)
+            .setDepth(9);
+
+          // prompt
+          this.add.rectangle(cx, 78, 360, 56, 0x1c0c19, 0.92).setDepth(8);
+          this.tagText = this.add
+            .text(cx, 62, "", { fontSize: "13px", color: "#e0a8c0" })
+            .setOrigin(0.5)
+            .setDepth(9);
+          this.promptText = this.add
+            .text(cx, 86, "", {
+              fontSize: "28px",
+              color: "#ffffff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(9);
+          this.qnumText = this.add
+            .text(cx, 112, "", { fontSize: "12px", color: "#c890a8" })
+            .setOrigin(0.5)
+            .setDepth(9);
+
+          // Cannon base + barrel
+          this.add.circle(this.cannonX, this.cannonY, 34, 0x6b3050).setDepth(10);
+          this.barrel = this.add
+            .rectangle(this.cannonX, this.cannonY, 18, 56, 0xffb648)
+            .setOrigin(0.5, 1)
+            .setDepth(11);
+          this.barrel.rotation = this.aim + Math.PI / 2;
+          // aim guide line
+          this.aimLine = this.add.graphics().setDepth(9);
+
+          // particles
+          this.confetti = this.add
+            .particles(0, 0, "confetti", {
+              speed: { min: 80, max: 280 },
+              angle: { min: 0, max: 360 },
+              scale: { start: 1.4, end: 0.2 },
+              rotate: { min: 0, max: 360 },
+              lifespan: 1100,
+              gravityY: 240,
+              emitting: false,
+              quantity: 22,
+              tint: [0xff7ba8, 0xffb648, 0xc45a3c, 0x9fd6ff],
+            })
+            .setDepth(40);
+          this.popParticles = this.add
+            .particles(0, 0, "spark", {
+              speed: { min: 60, max: 220 },
+              scale: { start: 1.4, end: 0 },
+              lifespan: 500,
+              emitting: false,
+              quantity: 16,
+              tint: [0xff7ba8, 0xffb648, 0xffffff],
+            })
+            .setDepth(40);
+          this.redFlash = this.add
+            .rectangle(cx, H / 2, W, H, 0xff3355, 0)
+            .setDepth(35);
+          this.feedback = this.add
+            .text(cx, 150, "", {
+              fontSize: "16px",
+              color: "#fff",
+              fontStyle: "bold",
+              align: "center",
+              wordWrap: { width: W - 80 },
+            })
+            .setOrigin(0.5)
+            .setAlpha(0)
+            .setDepth(20);
+
+          // input
+          this.cursors = this.input.keyboard.createCursorKeys();
+          this.keyA = this.input.keyboard.addKey("A");
+          this.keyD = this.input.keyboard.addKey("D");
+          this.input.keyboard.on("keydown-SPACE", () => this.fire());
+          this.input.keyboard.on("keydown-UP", () => this.fire());
+          this.input.on("pointerdown", (p) => {
+            // tapping a bubble fires directly at it
+            let hit = -1;
+            this.bubbles.forEach((b, i) => {
+              if (!b.alive) return;
+              const dx = b.sprite.x - p.worldX,
+                dy = b.sprite.y - p.worldY;
+              if (dx * dx + dy * dy <= 48 * 48) hit = i;
+            });
+            if (hit >= 0) {
+              this.aim = Math.atan2(
+                this.bubbles[hit].sprite.y - this.cannonY,
+                this.bubbles[hit].sprite.x - this.cannonX,
+              );
+              this.fire();
+            } else {
+              // aim toward pointer, then fire
+              this.aim = Math.atan2(
+                p.worldY - this.cannonY,
+                p.worldX - this.cannonX,
+              );
+              this.fire();
+            }
+          });
+
+          this.nextQuestion();
+          this.cameras.main.fadeIn(350);
+        }
+
+        nextQuestion() {
+          if (this.qIndex >= this.TOTAL || this.lives <= 0) {
+            this.endGame();
+            return;
+          }
+          const round = this.roundFor(this.qIndex);
+          if (round !== this.level && this.qIndex > 0) SFX.levelUp();
+          this.level = round;
+          this.q = genQuestion(round);
+          this.qIndex++;
+          this.busy = false;
+
+          this.tagText.setText(this.q.tag);
+          this.promptText.setText(this.q.prompt + " = ?");
+          this.qnumText.setText(this.qIndex + " / " + this.TOTAL);
+          this.feedback.setAlpha(0);
+
+          srSay(
+            this.q.tag +
+              ". " +
+              this.q.prompt +
+              " equals what? Bubbles: " +
+              this.q.bubbles.join(", ") +
+              ". Aim the cannon and fire at the correct one.",
+          );
+
+          // spawn bubbles in 3 horizontal slots, drifting
+          this.bubbles.forEach((b) => b.sprite.destroy());
+          this.bubbles = [];
+          const slotX = [W * 0.25, W * 0.5, W * 0.75];
+          const drift = (28 + (this.level - 1) * 22) / 1000; // px/ms
+          for (let i = 0; i < 3; i++) {
+            const c = this.add.container(slotX[i], 200 + (i % 2) * 40).setDepth(14);
+            const circle = this.add.graphics();
+            circle.fillStyle(0x6b3050, 0.92);
+            circle.fillCircle(0, 0, 42);
+            circle.lineStyle(3, 0xff7ba8, 0.9);
+            circle.strokeCircle(0, 0, 42);
+            c.add(circle);
+            c.add(
+              this.add
+                .text(0, 0, this.q.bubbles[i], {
+                  fontSize: "26px",
+                  color: "#ffffff",
+                  fontStyle: "bold",
+                })
+                .setOrigin(0.5),
+            );
+            this.bubbles.push({
+              sprite: c,
+              alive: true,
+              label: this.q.bubbles[i],
+              correct: i === this.q.correctIndex,
+              vx: (i % 2 === 0 ? 1 : -1) * drift,
+            });
+          }
+          if (this.shell) {
+            this.shell.destroy();
+            this.shell = null;
+          }
+        }
+
+        update(time, delta) {
+          // aim rotation (held keys)
+          let rotated = false;
+          const rs = 0.0028 * delta;
+          if (this.cursors.left.isDown || this.keyA.isDown) {
+            this.aim -= rs;
+            rotated = true;
+          }
+          if (this.cursors.right.isDown || this.keyD.isDown) {
+            this.aim += rs;
+            rotated = true;
+          }
+          // clamp aim to upper hemisphere so you can always reach bubbles
+          this.aim = Phaser.Math.Clamp(this.aim, -Math.PI + 0.25, -0.25);
+          this.barrel.rotation = this.aim + Math.PI / 2;
+
+          // draw aim guide
+          this.aimLine.clear();
+          this.aimLine.lineStyle(2, 0xffb648, 0.45);
+          this.aimLine.lineBetween(
+            this.cannonX,
+            this.cannonY - 30,
+            this.cannonX + Math.cos(this.aim) * 520,
+            this.cannonY - 30 + Math.sin(this.aim) * 520,
+          );
+
+          // drift bubbles (only while not resolving)
+          if (!this.busy) {
+            this.bubbles.forEach((b) => {
+              if (!b.alive) return;
+              b.sprite.x += b.vx * delta;
+              if (b.sprite.x < 70) {
+                b.sprite.x = 70;
+                b.vx = Math.abs(b.vx);
+              }
+              if (b.sprite.x > W - 70) {
+                b.sprite.x = W - 70;
+                b.vx = -Math.abs(b.vx);
+              }
+            });
+          }
+
+          // shell flight
+          if (this.shell) {
+            this.shell.x += this.shellVX * delta;
+            this.shell.y += this.shellVY * delta;
+            // off screen miss
+            if (
+              this.shell.y < -20 ||
+              this.shell.x < -20 ||
+              this.shell.x > W + 20
+            ) {
+              this.shell.destroy();
+              this.shell = null;
+              if (!this.busy) this.resolveMiss(null);
+            } else {
+              // check collision with bubbles
+              for (let i = 0; i < this.bubbles.length; i++) {
+                const b = this.bubbles[i];
+                if (!b.alive) continue;
+                const dx = b.sprite.x - this.shell.x,
+                  dy = b.sprite.y - this.shell.y;
+                if (dx * dx + dy * dy <= 46 * 46) {
+                  this.shell.destroy();
+                  this.shell = null;
+                  this.resolveHit(i);
+                  break;
+                }
+              }
+            }
+          }
+        }
+
+        fire() {
+          if (this.busy || this.shell) return;
+          SFX.init();
+          SFX.fire();
+          const sp = 0.6; // px/ms
+          this.shell = this.add
+            .image(
+              this.cannonX + Math.cos(this.aim) * 32,
+              this.cannonY - 30 + Math.sin(this.aim) * 32,
+              "shell",
+            )
+            .setDepth(16);
+          this.shellVX = Math.cos(this.aim) * sp;
+          this.shellVY = Math.sin(this.aim) * sp;
+        }
+
+        resolveHit(i) {
+          this.busy = true;
+          const b = this.bubbles[i];
+          b.alive = false;
+          SFX.init();
+          this.popParticles.emitParticleAt(b.sprite.x, b.sprite.y);
+          if (!this.reduce)
+            this.tweens.add({
+              targets: b.sprite,
+              scale: { from: 1, to: 1.6 },
+              alpha: 0,
+              duration: 200,
+              onComplete: () => b.sprite.setVisible(false),
+            });
+          else b.sprite.setVisible(false);
+
+          if (b.correct) {
+            this.correct++;
+            this.streak++;
+            this.maxStreak = Math.max(this.maxStreak, this.streak);
+            const gained = 10 + Math.min(this.streak, 5) * 2;
+            this.score += gained;
+            SFX.pop();
+            if (this.streak >= 3) SFX.streak(this.streak);
+            this.confetti.emitParticleAt(b.sprite.x, b.sprite.y);
+            this.flash(
+              "✓ +" +
+                gained +
+                (this.streak > 1 ? "   🔥 ×" + this.streak : "") +
+                "   " +
+                this.q.why,
+              "#9fffc0",
+            );
+            srSay("Correct! " + this.q.why);
+            try {
+              if (window.GameFX && GameFX.celebrate && this.streak >= 3)
+                GameFX.celebrate(document.querySelector("canvas"));
+            } catch (e) {}
+            this.updateHUD();
+            this.time.delayedCall(950, () => this.nextQuestion());
+          } else {
+            this.resolveMiss(i);
+          }
+        }
+
+        resolveMiss(i) {
+          this.busy = true;
+          this.streak = 0;
+          this.lives--;
+          SFX.init();
+          SFX.miss();
+          this.doRedFlash();
+          this.flash("✗ " + this.q.why + "  (−1 ❤)", "#ff9ab0");
+          srSay("Missed. " + this.q.why);
+          // highlight correct bubble
+          const cb = this.bubbles[this.q.correctIndex];
+          if (cb && cb.alive)
+            this.tweens.add({
+              targets: cb.sprite,
+              scale: { from: 1, to: 1.3 },
+              duration: 300,
+              yoyo: true,
+              repeat: 1,
+            });
+          this.updateHUD();
+          this.time.delayedCall(1600, () => this.nextQuestion());
+        }
+
+        flash(msg, color) {
+          this.feedback.setText(msg).setColor(color).setAlpha(1).setScale(0.85);
+          this.tweens.add({
+            targets: this.feedback,
+            scale: 1,
+            duration: this.reduce ? 1 : 220,
+            ease: "Back.easeOut",
+          });
+        }
+        doRedFlash() {
+          if (this.reduce) return;
+          this.redFlash.setAlpha(0.35);
+          this.tweens.add({ targets: this.redFlash, alpha: 0, duration: 350 });
+        }
+        updateHUD() {
+          this.scoreText.setText("Score: " + this.score);
+          this.streakText.setText("Streak: " + this.streak);
+          this.livesText.setText(this.lives > 0 ? "❤".repeat(this.lives) : "—");
+        }
+        endGame() {
+          this.scene.start("Result", {
+            score: this.score,
+            correct: this.correct,
+            attempted: this.qIndex,
+            maxStreak: this.maxStreak,
+            outOfLives: this.lives <= 0,
+          });
+        }
+      }
+
+      class ResultScene extends Phaser.Scene {
+        constructor() {
+          super("Result");
+        }
+        init(data) {
+          this.d = data;
+        }
+        create() {
+          const cx = W / 2;
+          const d = this.d;
+          this.reduce =
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          this.add.rectangle(cx, H / 2, W, H, 0x2a1326);
+          const pct = d.attempted ? (d.correct / d.attempted) * 100 : 0;
+          const stars = pct >= 90 ? 3 : pct >= 65 ? 2 : pct >= 40 ? 1 : 0;
+          const won = !d.outOfLives;
+          if (stars >= 2) SFX.win();
+          else SFX.lose();
+
+          this.add
+            .text(cx, 70, won ? "ALL POPPED!" : "OUT OF LIVES", {
+              fontSize: "38px",
+              fontStyle: "bold",
+              color: won ? "#ff7ba8" : "#ff6b8a",
+              stroke: "#1c0c19",
+              strokeThickness: 4,
+            })
+            .setOrigin(0.5);
+
+          for (let i = 0; i < 3; i++) {
+            const sx = cx - 70 + i * 70;
+            this.add
+              .text(sx, 150, "☆", { fontSize: "54px", color: "#503040" })
+              .setOrigin(0.5);
+            if (i < stars) {
+              const s = this.add
+                .text(sx, 150, "★", { fontSize: "54px", color: "#ffb648" })
+                .setOrigin(0.5)
+                .setScale(0);
+              this.tweens.add({
+                targets: s,
+                scale: 1,
+                duration: this.reduce ? 1 : 380,
+                delay: 250 + i * 220,
+                ease: "Back.easeOut",
+              });
+            }
+          }
+
+          const prevHigh = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
+          const isNewHigh = d.score > prevHigh;
+          if (isNewHigh && d.score > 0)
+            localStorage.setItem(LS_KEY, String(d.score));
+
+          const stats = [
+            ["Final Score", String(d.score)],
+            ["Bubbles Popped", d.correct + " / " + d.attempted],
+            ["Accuracy", Math.round(pct) + "%"],
+            ["Best Streak", "×" + d.maxStreak],
+          ];
+          stats.forEach((s, i) => {
+            const y = 230 + i * 42;
+            this.add.rectangle(cx, y, 380, 34, 0x1c0c19, 0.85);
+            this.add
+              .text(cx - 165, y, s[0], { fontSize: "15px", color: "#c890a8" })
+              .setOrigin(0, 0.5);
+            this.add
+              .text(cx + 165, y, s[1], {
+                fontSize: "17px",
+                color: "#ff7ba8",
+                fontStyle: "bold",
+              })
+              .setOrigin(1, 0.5);
+          });
+
+          if (isNewHigh && d.score > 0)
+            this.add
+              .text(cx, 415, "★ NEW HIGH SCORE! ★", {
+                fontSize: "18px",
+                color: "#ffb648",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+
+          try {
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: ACTIVITY_TITLE,
+                score: d.score,
+                stars: stars,
+                problemsCorrect: d.correct,
+                problemsAttempted: d.attempted,
+                percent: Math.round(pct),
+                standard: STANDARD,
+              });
+          } catch (e) {}
+
+          srSay(
+            (won ? "All popped. " : "Out of lives. ") +
+              "Score " +
+              d.score +
+              ", " +
+              d.correct +
+              " of " +
+              d.attempted +
+              " correct, " +
+              stars +
+              " stars.",
+          );
+
+          const retry = this.add
+            .rectangle(cx - 95, 470, 170, 46, 0xc45a3c)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(cx - 95, 470, "PLAY AGAIN", {
+              fontSize: "17px",
+              fontStyle: "bold",
+              color: "#fff3ec",
+            })
+            .setOrigin(0.5);
+          retry.on("pointerover", () => retry.setFillStyle(0xd86c4c));
+          retry.on("pointerout", () => retry.setFillStyle(0xc45a3c));
+          retry.on("pointerdown", () => {
+            SFX.tick();
+            this.scene.start("Game");
+          });
+
+          const hub = this.add
+            .rectangle(cx + 95, 470, 170, 46, 0x4a2240)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(cx + 95, 470, "ALL GAMES", {
+              fontSize: "17px",
+              fontStyle: "bold",
+              color: "#e0a8c0",
+            })
+            .setOrigin(0.5);
+          hub.on("pointerover", () => hub.setFillStyle(0x5c2c50));
+          hub.on("pointerout", () => hub.setFillStyle(0x4a2240));
+          hub.on("pointerdown", () => (window.location.href = "/math/games/"));
+
+          this.input.keyboard.on("keydown-SPACE", () => this.scene.start("Game"));
+
+          if (won && stars >= 2 && !this.reduce) {
+            const p = this.add
+              .particles(0, 0, "confetti", {
+                speed: { min: 60, max: 240 },
+                angle: { min: 0, max: 360 },
+                scale: { start: 1.4, end: 0 },
+                rotate: { min: 0, max: 360 },
+                lifespan: 1500,
+                gravityY: 160,
+                quantity: 20,
+                tint: [0xff7ba8, 0xffb648, 0xc45a3c, 0x9fd6ff],
+              })
+              .setDepth(40);
+            for (let i = 0; i < 5; i++)
+              this.time.delayedCall(i * 280, () =>
+                p.emitParticleAt(randInt(120, W - 120), randInt(40, 140)),
+              );
+          }
+          this.cameras.main.fadeIn(400);
+        }
+      }
+
+      config.scene = [BootScene, TitleScene, GameScene, ResultScene];
+      const game = new Phaser.Game(config);
+
+      game.events.once("ready", function () {
+        try {
+          const cv = game.canvas;
+          if (!cv) return;
+          cv.setAttribute("role", "application");
+          cv.setAttribute(
+            "aria-label",
+            "Fraction Frenzy bubble-popper math game. Divide the fractions, then " +
+              "aim the cannon with the arrow keys or A and D and press Space or Up " +
+              "to fire at the bubble showing the correct quotient. Press Space to " +
+              "start.",
+          );
+          cv.setAttribute("aria-roledescription", "math game");
+          if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
+          cv.addEventListener("pointerdown", function () {
+            try {
+              cv.focus();
+            } catch (e) {}
+          });
+        } catch (e) {}
+      });
     </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

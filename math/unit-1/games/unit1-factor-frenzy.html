@@ -1831,7 +1831,7 @@
         }
 
         // ─── BOOT ───
-        new Phaser.Game({
+        var ffGame = new Phaser.Game({
           type: Phaser.AUTO,
           parent: "game-container",
           width: W,
@@ -1842,6 +1842,21 @@
             autoCenter: Phaser.Scale.CENTER_BOTH,
           },
           scene: [TitleScene, GameScene, ResultScene],
+        });
+        // Keyboard accessibility: make the game canvas focusable.
+        ffGame.events.once("ready", function () {
+          var c = ffGame.canvas;
+          if (c) {
+            c.setAttribute("role", "application");
+            c.setAttribute(
+              "aria-label",
+              "Factor Frenzy: a prime, composite, GCF, and LCM arcade game. Use the on-screen controls or keyboard to play.",
+            );
+            c.setAttribute("tabindex", "0");
+            c.addEventListener("pointerdown", function () {
+              c.focus();
+            });
+          }
         });
       })();
     </script>

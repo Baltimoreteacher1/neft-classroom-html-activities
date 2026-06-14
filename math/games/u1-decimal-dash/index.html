@@ -6,367 +6,100 @@
     <title>Decimal Dash — Lessons 1.4–1.7 Game | Neft Teacher</title>
     <meta
       name="description"
-      content="Arcade review game for Grade 6 lessons 1.4–1.7: multi-digit division and decimal operations (6.NS.2, 6.NS.3)."
+      content="A 2D lane-runner driving game for Grade 6 lessons 1.4–1.7: multi-digit division and decimal operations (6.NS.2, 6.NS.3). Steer into the correct answer gate."
     />
-    <link rel="stylesheet" href="/assets/shared.css" />
     <style>
-      :root {
-        --navy: #0f2b3c;
-        --blue: #1a6fb5;
-        --teal: #0e8a7d;
-        --gold: #d4952a;
-        --coral: #c45a3c;
-        --green: #2d874b;
-        --ink: #1a2633;
-        --muted: #5e6e7e;
-        --line: #e2e7ec;
-        --bg: #f7f9fb;
-        --font: "Segoe UI", system-ui, sans-serif;
-      }
       * {
+        margin: 0;
+        padding: 0;
         box-sizing: border-box;
       }
       body {
-        margin: 0;
-        font-family: var(--font);
-        color: var(--ink);
-        background: var(--bg);
-        line-height: 1.5;
-      }
-      .wrap {
-        max-width: 680px;
-        margin: 0 auto;
-        padding: 0 18px 60px;
-      }
-      .ghero {
-        background: linear-gradient(135deg, #1a6fb5, #0e8a7d);
-        color: #fff;
-        text-align: center;
-        padding: 30px 20px 26px;
-        position: relative;
+        background: #102338;
         overflow: hidden;
+        font-family: "Segoe UI", system-ui, sans-serif;
       }
-      /* Bespoke "dash" speed-lines behind the hero. Sits under the content,
-         drifts with pointer parallax (the GameFX kit moves [data-parallax-layer]),
-         and streaks continuously to sell the "race the clock" theme. */
-      .ghero .speedlines {
-        position: absolute;
-        inset: -20% -10%;
-        z-index: 0;
-        pointer-events: none;
-        background-image: repeating-linear-gradient(
-          115deg,
-          rgba(255, 255, 255, 0.14) 0 3px,
-          rgba(255, 255, 255, 0) 3px 26px
-        );
-        opacity: 0.55;
-        will-change: transform, background-position;
-        animation: dashStreak 0.9s linear infinite;
-      }
-      @keyframes dashStreak {
-        to {
-          background-position: 120px 0;
-        }
-      }
-      .ghero > .deco,
-      .ghero > h1,
-      .ghero > p {
+      canvas {
+        display: block;
+        margin: 0 auto;
         position: relative;
         z-index: 1;
       }
-      .ghero .deco {
-        font-size: 48px;
-        display: inline-block;
-        animation: heroBob 2.4s ease-in-out infinite;
+      canvas:focus-visible {
+        outline: 3px solid #5ad1ff;
+        outline-offset: 4px;
+        border-radius: 8px;
       }
-      @keyframes heroBob {
-        50% {
-          transform: translateY(-6px);
-        }
+      canvas:focus:not(:focus-visible) {
+        outline: none;
       }
-      .ghero h1 {
-        margin: 8px 0 6px;
-        font-size: clamp(24px, 5vw, 34px);
-      }
-      .ghero p {
-        margin: 0 auto;
-        max-width: 520px;
-        color: rgba(255, 255, 255, 0.9);
-      }
-      .breadcrumb {
-        font-size: 13px;
-        padding: 14px 0;
-        color: var(--muted);
-      }
-      .breadcrumb a {
-        color: var(--blue);
-        text-decoration: none;
-        font-weight: 600;
-      }
-      .hud {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        background: #fff;
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 12px 16px;
-        margin: 18px 0;
-        font-weight: 800;
-        box-shadow: 0 2px 10px rgba(15, 43, 60, 0.06);
-      }
-      .hud .lbl {
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        color: var(--muted);
-        display: block;
-      }
-      .hud .val {
-        font-size: 22px;
-      }
-      .hearts {
-        color: var(--coral);
-        letter-spacing: 2px;
-      }
-      .card {
-        background: #fff;
-        border: 1px solid var(--line);
-        border-radius: 18px;
-        padding: 26px 22px;
-        box-shadow: 0 6px 22px rgba(15, 43, 60, 0.08);
-        text-align: center;
-      }
-      .mode-tag {
-        font-size: 12px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--teal);
-      }
-      .prompt {
-        font-size: clamp(22px, 5vw, 30px);
-        font-weight: 800;
-        margin: 8px 0 4px;
-      }
-      .sub {
-        color: var(--muted);
-        margin: 0 0 18px;
-      }
-      .opts {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
-      @media (max-width: 460px) {
-        .opts {
-          grid-template-columns: 1fr;
-        }
-      }
-      .opt {
-        padding: 16px;
-        border: 2px solid var(--line);
-        border-radius: 14px;
-        background: #fff;
-        font-size: 20px;
-        font-weight: 800;
-        cursor: pointer;
-        font-family: inherit;
-        color: var(--ink);
-        transition:
-          transform 0.06s,
-          border-color 0.15s;
-      }
-      .opt:hover {
-        border-color: var(--blue);
-      }
-      .opt:active {
-        transform: scale(0.97);
-      }
-      .opt.right {
-        border-color: var(--green);
-        background: #e6f4eb;
-        color: var(--green);
-        animation: pop 0.3s;
-      }
-      .opt.wrong {
-        border-color: var(--coral);
-        background: #fdeee9;
-        color: var(--coral);
-        animation: shake 0.3s;
-      }
-      @keyframes pop {
-        50% {
-          transform: scale(1.06);
-        }
-      }
-      @keyframes shake {
-        25% {
-          transform: translateX(-6px);
-        }
-        75% {
-          transform: translateX(6px);
-        }
-      }
-      .feedback {
-        min-height: 26px;
-        margin-top: 16px;
-        font-weight: 800;
-      }
-      .feedback.ok {
-        color: var(--green);
-      }
-      .feedback.no {
-        color: var(--coral);
-      }
-      .btn {
-        background: var(--blue);
-        color: #fff;
-        border: none;
-        border-radius: 12px;
-        padding: 13px 26px;
-        font-size: 16px;
-        font-weight: 800;
-        cursor: pointer;
-        font-family: inherit;
-        margin-top: 8px;
-      }
-      .btn:hover {
-        filter: brightness(1.08);
-      }
-      .btn.start {
-        background: var(--teal);
-        font-size: 18px;
-        padding: 15px 34px;
-      }
-      .bar {
-        height: 10px;
-        background: var(--line);
-        border-radius: 50px;
-        overflow: hidden;
-        margin: 14px 0 2px;
-      }
-      .bar > div {
-        height: 100%;
-        width: 100%;
-        /* Color is driven by JS (green→yellow→red) as time runs out; this is a
-           safe fallback if scripting is disabled. */
-        background: linear-gradient(90deg, var(--green), var(--gold));
-        transition:
-          width 0.12s linear,
-          background-color 0.3s linear;
-      }
-      /* Urgent pulse when the timer bar runs low (toggled from JS). */
-      .bar.low > div {
-        animation: timerPulse 0.55s ease-in-out infinite;
-      }
-      @keyframes timerPulse {
-        50% {
-          filter: brightness(1.25);
-        }
-      }
-      .hidden {
-        display: none;
-      }
-      .big-score {
-        font-size: 52px;
-        font-weight: 900;
-        color: var(--blue);
-        margin: 6px 0;
-      }
-      .legend {
-        font-size: 13px;
-        color: var(--muted);
-        margin-top: 18px;
-      }
-      .legend a {
-        color: var(--blue);
-        font-weight: 700;
-      }
-      ul.modes {
-        text-align: left;
-        max-width: 430px;
-        margin: 14px auto;
-        color: var(--muted);
-        font-size: 15px;
-      }
-
-      /* Bespoke correct-answer celebration: the whole question card gives a
-         confident scale-bounce + green glow when the student answers correctly.
-         Toggled from JS (answer()), removed on the next question. */
-      .card.correct-flash {
-        animation: cardBounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
-        box-shadow:
-          0 6px 22px rgba(15, 43, 60, 0.08),
-          0 0 0 3px rgba(45, 135, 75, 0.45);
-      }
-      @keyframes cardBounce {
-        0% {
-          transform: scale(1);
-        }
-        45% {
-          transform: scale(1.04);
-        }
-        100% {
-          transform: scale(1);
-        }
-      }
-      /* HUD value emphasis pop (staggered from JS for score/streak/lives). */
-      /* Visible keyboard focus ring on every interactive control. */
-      .opt:focus-visible,
-      .btn:focus-visible {
-        outline: 3px solid var(--gold);
-        outline-offset: 2px;
-      }
-      .hud .val.bump {
-        animation: hudBump 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-      @keyframes hudBump {
-        50% {
-          transform: scale(1.28);
-        }
-      }
-      .hud .val {
-        display: inline-block;
-        transition: color 0.2s;
-      }
-      /* Confetti canvas for high-score wins on the result screen. */
-      #confetti {
+      #dd-bg {
         position: fixed;
         inset: 0;
-        width: 100%;
-        height: 100%;
+        z-index: 0;
+        overflow: hidden;
         pointer-events: none;
-        z-index: 60;
+        background: radial-gradient(
+          130% 90% at 50% 0%,
+          #1a3a5a 0%,
+          #102338 55%,
+          #0a1626 100%
+        );
       }
-
+      .dd-star {
+        position: absolute;
+        border-radius: 50%;
+        background: #bfe0ff;
+        opacity: 0.4;
+        animation: ddTwinkle var(--tw, 3s) ease-in-out infinite;
+      }
+      @keyframes ddTwinkle {
+        0%,
+        100% {
+          opacity: 0.12;
+          transform: scale(0.8);
+        }
+        50% {
+          opacity: 0.65;
+          transform: scale(1.2);
+        }
+      }
       @media (prefers-reduced-motion: reduce) {
-        html {
-          scroll-behavior: auto;
-        }
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.001ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.001ms !important;
-        }
-        /* Fully neutralize the bespoke continuous/decorative motion. */
-        .ghero .speedlines,
-        .ghero .deco,
-        .bar.low > div,
-        .hud .val.bump,
-        .card.correct-flash {
+        .dd-star {
           animation: none !important;
+          opacity: 0.35 !important;
         }
-        .ghero .speedlines {
-          opacity: 0.3;
-        }
-        #confetti {
-          display: none !important;
-        }
+      }
+      #dd-sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
       }
     </style>
+    <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
+    <script>
+      // CDN fallback: if the local vendor copy failed, synchronously load Phaser
+      // from a mirror (document.write blocks parsing so the mirror is ready
+      // before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      // If both sources are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#bfe0ff">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
@@ -375,501 +108,944 @@
     <!-- gfx-injected:end -->
   </head>
   <body>
-    <header class="ghero" data-parallax>
-      <div class="speedlines" data-parallax-layer aria-hidden="true"></div>
-      <div class="deco">💨</div>
-      <h1>Decimal Dash</h1>
-      <p>
-        Race the clock on multi-digit division and decimal addition,
-        subtraction, multiplication, and division.
-      </p>
-    </header>
-    <div class="wrap">
-      <nav class="breadcrumb">
-        <a href="/">Home</a> / <a href="/math/">Math</a> /
-        <a href="/math/games/">Games</a> / Decimal Dash
-      </nav>
-      <section class="card" id="startScreen">
-        <p class="mode-tag">Lessons 1.4–1.7 · 6.NS.2 · 6.NS.3</p>
-        <h2 style="margin: 6px 0">Ready to dash?</h2>
-        <ul class="modes">
-          <li>
-            <strong>Round 1 — Multi-Digit Division.</strong> Whole-number
-            quotients.
-          </li>
-          <li>
-            <strong>Round 2 — Add &amp; Subtract Decimals.</strong> Line up the
-            points.
-          </li>
-          <li>
-            <strong>Round 3 — Multiply &amp; Divide Decimals.</strong> Count the
-            places.
-          </li>
-        </ul>
-        <p class="sub">
-          You have <strong>3 ❤</strong> and a timer on each question. Build a
-          streak for bonus points!
-        </p>
-        <button class="btn start" id="startBtn" type="button">
-          Start Game ▶
-        </button>
-      </section>
-
-      <section id="playScreen" class="hidden">
-        <div class="hud">
-          <div>
-            <span class="lbl">Score</span><span class="val" id="score">0</span>
-          </div>
-          <div>
-            <span class="lbl">Streak</span
-            ><span class="val" id="streak">0</span>
-          </div>
-          <div>
-            <span class="lbl">Lives</span
-            ><span class="val hearts" id="lives">❤❤❤</span>
-          </div>
-          <div>
-            <span class="lbl">Question</span
-            ><span class="val" id="qnum">1</span>
-          </div>
-        </div>
-        <div class="bar" id="timebarWrap"><div id="timebar"></div></div>
-        <div class="card" id="qcard" style="margin-top: 14px">
-          <span class="mode-tag" id="modeTag"></span>
-          <div class="prompt" id="prompt"></div>
-          <p class="sub" id="sub"></p>
-          <div class="opts" id="opts"></div>
-          <div class="feedback" id="feedback"></div>
-          <button class="btn hidden" id="nextBtn" type="button">Next ▶</button>
-        </div>
-      </section>
-
-      <section class="card hidden" id="resultScreen">
-        <canvas id="confetti" class="hidden" aria-hidden="true"></canvas>
-        <p class="mode-tag">Game Over</p>
-        <div class="big-score" id="finalScore">0</div>
-        <p id="resultMsg" style="font-weight: 700"></p>
-        <p class="sub" id="resultDetail"></p>
-        <button class="btn start" id="againBtn" type="button">
-          Play Again 🔁
-        </button>
-        <p class="legend">
-          More review:
-          <a href="/math/review-arcade/">Boss-Battle Review Arcade</a> ·
-          <a href="/math/games/">All Games</a>
-        </p>
-      </section>
-    </div>
-
+    <div id="dd-bg" aria-hidden="true"></div>
+    <div id="dd-sr" role="status" aria-live="polite"></div>
     <script>
-      function rnd(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
+      (function () {
+        var host = document.getElementById("dd-bg");
+        if (!host) return;
+        var reduce =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var n = reduce ? 10 : 28;
+        for (var i = 0; i < n; i++) {
+          var d = document.createElement("div");
+          d.className = "dd-star";
+          var sz = 1.5 + Math.random() * 3.5;
+          d.style.width = d.style.height = sz.toFixed(1) + "px";
+          d.style.left = (Math.random() * 100).toFixed(2) + "%";
+          d.style.top = (Math.random() * 100).toFixed(2) + "%";
+          d.style.setProperty("--tw", (2 + Math.random() * 4).toFixed(2) + "s");
+          d.style.animationDelay = "-" + (Math.random() * 4).toFixed(2) + "s";
+          host.appendChild(d);
+        }
+      })();
+    </script>
+    <script>
+      // ════════════════════════════════════════════════════════════════════
+      // DECIMAL DASH — Lane Runner  ·  Grade 6  ·  6.NS.2 / 6.NS.3
+      // Lessons 1.4–1.7: multi-digit division, decimal + − × ÷.
+      //
+      // MECHANIC: You drive a car down a 3-lane highway. A row of "answer gates"
+      //   (one per lane) rushes toward you, each gate labeled with a value. The
+      //   prompt at top is a computation; steer the car (← → / A D / tap a lane)
+      //   into the lane whose gate holds the CORRECT answer to pass through.
+      //   Driving into a wrong gate = crash (lose a life). Speed (and number
+      //   size) rises each round.
+      //
+      // FLOAT SAFETY: every value is normalized through r2()/fmt() to a fixed
+      //   2-decimal string; correctness is checked by string equality, never by
+      //   raw float ==, so 0.1+0.2 style drift can never mislabel a gate.
+      // ════════════════════════════════════════════════════════════════════
+      const LS_KEY = "dd_decimal_dash_highscore";
+      const W = 800,
+        H = 600;
+      const ACTIVITY_TITLE = "Decimal Dash — Lessons 1.4–1.7";
+      const STANDARD = "6.NS.3";
+
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx)
+            try {
+              this.ctx = new (window.AudioContext ||
+                window.webkitAudioContext)();
+            } catch (e) {}
+        },
+        play(t, f, d, v = 0.2) {
+          if (!this.ctx) return;
+          try {
+            const c = this.ctx,
+              o = c.createOscillator(),
+              g = c.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, c.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
+            o.connect(g);
+            g.connect(c.destination);
+            o.start();
+            o.stop(c.currentTime + d);
+          } catch (e) {}
+        },
+        noise(d, v = 0.1) {
+          if (!this.ctx) return;
+          try {
+            const c = this.ctx,
+              n = c.sampleRate * d,
+              buf = c.createBuffer(1, n, c.sampleRate),
+              dt = buf.getChannelData(0);
+            for (let i = 0; i < n; i++) dt[i] = Math.random() * 2 - 1;
+            const s = c.createBufferSource();
+            s.buffer = buf;
+            const g = c.createGain();
+            g.gain.setValueAtTime(v, c.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
+            s.connect(g);
+            g.connect(c.destination);
+            s.start();
+            s.stop(c.currentTime + d);
+          } catch (e) {}
+        },
+        pass() {
+          this.play("sine", 660, 0.1, 0.3);
+          this.play("sine", 990, 0.14, 0.22);
+        },
+        crash() {
+          this.noise(0.25, 0.15);
+          this.play("sawtooth", 160, 0.3, 0.18);
+        },
+        engine() {
+          this.play("triangle", 220, 0.05, 0.05);
+        },
+        tick() {
+          this.play("square", 600, 0.03, 0.07);
+        },
+        streak(n) {
+          [523, 659, 784, 988, 1175]
+            .slice(0, Math.min(n, 5))
+            .forEach((f, i) =>
+              setTimeout(() => this.play("sine", f, 0.12, 0.2), i * 55),
+            );
+        },
+        levelUp() {
+          [523, 659, 784, 1047].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.15, 0.22), i * 70),
+          );
+        },
+        win() {
+          [523, 659, 784, 1047, 1318].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.22, 0.28), i * 110),
+          );
+        },
+        lose() {
+          [400, 350, 300, 200].forEach((f, i) =>
+            setTimeout(() => this.play("sawtooth", f, 0.28, 0.15), i * 170),
+          );
+        },
+      };
+
+      function randInt(a, b) {
+        return Math.floor(Math.random() * (b - a + 1)) + a;
       }
       function shuffle(a) {
-        for (var i = a.length - 1; i > 0; i--) {
-          var j = Math.floor(Math.random() * (i + 1));
-          var t = a[i];
-          a[i] = a[j];
-          a[j] = t;
+        const r = a.slice();
+        for (let i = r.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [r[i], r[j]] = [r[j], r[i]];
         }
-        return a;
+        return r;
       }
-      function round2(n) {
-        return Math.round(n * 100) / 100;
+      // Round to 2 decimals (integer-cents math to avoid float drift).
+      function r2(x) {
+        return Math.round((x + Number.EPSILON) * 100) / 100;
       }
-      function money(n) {
-        return n.toFixed(2);
-      }
-
-      var TOTAL = 12,
-        TIME = 12;
-      var state = {};
-
-      // ---- Visual-polish helpers (additive only; never touch gameplay) ----
-      function prefersReducedMotion() {
-        return !!(
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        );
-      }
-      // Restart a CSS animation class reliably (remove → reflow → add).
-      function flashClass(el, cls) {
-        if (!el || prefersReducedMotion()) return;
-        el.classList.remove(cls);
-        void el.offsetWidth;
-        el.classList.add(cls);
-      }
-      // Staggered HUD value pop — emphasizes which stat just changed.
-      function bumpHud(id, delay) {
-        if (prefersReducedMotion()) return;
-        var el = document.getElementById(id);
-        if (!el) return;
-        setTimeout(function () {
-          flashClass(el, "bump");
-          if (window.GameFX && GameFX.pop) GameFX.pop(el);
-        }, delay || 0);
-      }
-      // Timer bar color: green (lots of time) → yellow → red (almost out).
-      function colorTimer(frac) {
-        var bar = document.getElementById("timebar"),
-          wrap = document.getElementById("timebarWrap");
-        if (!bar) return;
-        var hue = Math.max(0, Math.min(120, frac * 120)); // 120=green, 0=red
-        bar.style.background = "hsl(" + hue + ",72%,46%)";
-        if (wrap) wrap.classList.toggle("low", frac <= 0.25);
+      // Canonical display/compare string. Whole numbers stay plain; decimals
+      // trim trailing zeros but keep at least one place.
+      function fmt(x) {
+        const v = r2(x);
+        if (Number.isInteger(v)) return String(v);
+        let s = v.toFixed(2);
+        s = s.replace(/0$/, ""); // 3.50 -> 3.5 ; 3.05 stays
+        return s;
       }
 
-      function distinctOpts(correct, makeWrong, fmt) {
-        var set = {};
-        set[fmt(correct)] = true;
-        var opts = [fmt(correct)];
-        var guard = 0;
-        while (opts.length < 4 && guard < 50) {
-          guard++;
-          var w = makeWrong();
-          var k = fmt(w);
-          if (!set[k]) {
-            set[k] = true;
-            opts.push(k);
-          }
+      // Build 3 distinct gate labels containing exactly one correct answer.
+      function buildGates(answer, makeWrong) {
+        const correct = fmt(answer);
+        const set = new Set([correct]);
+        let guard = 0;
+        while (set.size < 3 && guard++ < 200) {
+          const w = fmt(makeWrong());
+          if (w !== correct && w !== "NaN" && Number(w) > 0) set.add(w);
         }
-        while (opts.length < 4) {
-          opts.push(fmt(correct + opts.length));
+        // Safety fallback: pad with offsets if collisions left us short.
+        let pad = 1;
+        while (set.size < 3 && pad < 50) {
+          const w = fmt(r2(answer) + pad * (pad % 2 ? 1 : -1));
+          if (w !== correct && Number(w) > 0) set.add(w);
+          pad++;
         }
-        return { opts: shuffle(opts), correct: fmt(correct) };
+        const labels = shuffle(Array.from(set));
+        return { labels: labels, correctIndex: labels.indexOf(correct) };
       }
 
-      function buildQuestion(i) {
-        var round = i < 4 ? 1 : i < 8 ? 2 : 3;
+      // round 1: multi-digit division (whole quotient)
+      // round 2: add/subtract decimals
+      // round 3: multiply OR divide decimals
+      function genQuestion(round) {
         if (round === 1) {
-          // multi-digit division with whole quotient
-          var q = rnd(12, 40),
-            d = rnd(3, 9),
+          const q = randInt(12, 48),
+            d = randInt(3, 9),
             dividend = q * d;
-          var o = distinctOpts(
-            q,
-            function () {
-              return q + rnd(-6, 6);
-            },
-            String,
-          );
+          const g = buildGates(q, () => q + randInt(-7, 7));
           return {
             tag: "Multi-Digit Division",
-            prompt: dividend + " ÷ " + d + " = ?",
-            sub: "Divide to a whole-number quotient.",
-            opts: o.opts,
-            correct: o.correct,
+            prompt: dividend + " ÷ " + d,
             why: dividend + " ÷ " + d + " = " + q + ".",
+            gates: g.labels,
+            correctIndex: g.correctIndex,
           };
         }
         if (round === 2) {
-          // add or subtract decimals (tenths/hundredths)
-          var a = round2(rnd(15, 90) / 10 + rnd(0, 9) / 100),
-            b = round2(rnd(10, 60) / 10 + rnd(0, 9) / 100);
-          var add = Math.random() < 0.5;
+          let a = r2(randInt(15, 95) / 10 + randInt(0, 9) / 100);
+          let b = r2(randInt(10, 70) / 10 + randInt(0, 9) / 100);
+          const add = Math.random() < 0.5;
           if (!add && b > a) {
-            var t = a;
+            const t = a;
             a = b;
             b = t;
           }
-          var ans = round2(add ? a + b : a - b);
-          var o = distinctOpts(
-            ans,
-            function () {
-              // Keep distractors positive so no "−0.40"-style option appears.
-              var w = round2(
-                ans + (rnd(1, 9) / 10) * (Math.random() < 0.5 ? 1 : -1),
-              );
-              return w > 0 ? w : round2(ans + rnd(1, 9) / 10);
-            },
-            money,
-          );
+          const ans = r2(add ? a + b : a - b);
+          const g = buildGates(ans, () => {
+            const w = r2(ans + (randInt(1, 9) / 10) * (Math.random() < 0.5 ? 1 : -1));
+            return w > 0 ? w : r2(ans + randInt(1, 9) / 10);
+          });
           return {
             tag: "Add & Subtract Decimals",
-            prompt: money(a) + (add ? " + " : " − ") + money(b),
-            sub: "Line up the decimal points.",
-            opts: o.opts,
-            correct: o.correct,
-            why:
-              money(a) +
-              (add ? " + " : " − ") +
-              money(b) +
-              " = " +
-              money(ans) +
-              ".",
+            prompt: fmt(a) + (add ? " + " : " − ") + fmt(b),
+            why: fmt(a) + (add ? " + " : " − ") + fmt(b) + " = " + fmt(ans) + ".",
+            gates: g.labels,
+            correctIndex: g.correctIndex,
           };
         }
-        // round 3: multiply or divide decimals
-        var mul = Math.random() < 0.5;
+        // round 3
+        const mul = Math.random() < 0.5;
         if (mul) {
-          var x = round2(
-            rnd(2, 9) / 10 + (Math.random() < 0.5 ? rnd(1, 4) : 0),
-          ); // e.g., 0.5 or 2.5
-          var y = rnd(2, 9);
-          var ans3 = round2(x * y);
-          var o3 = distinctOpts(
-            ans3,
-            function () {
-              var w = round2(
-                ans3 + (rnd(1, 9) / 10) * (Math.random() < 0.5 ? 1 : -1),
-              );
-              return w > 0 ? w : round2(ans3 + rnd(1, 9) / 10);
-            },
-            money,
-          );
+          const x = r2(randInt(2, 9) / 10 + (Math.random() < 0.5 ? randInt(1, 4) : 0));
+          const y = randInt(2, 9);
+          const ans = r2(x * y);
+          const g = buildGates(ans, () => {
+            const w = r2(ans + (randInt(1, 9) / 10) * (Math.random() < 0.5 ? 1 : -1));
+            return w > 0 ? w : r2(ans + randInt(1, 9) / 10);
+          });
           return {
             tag: "Multiply Decimals",
-            prompt: money(x) + " × " + y,
-            sub: "Count the decimal places.",
-            opts: o3.opts,
-            correct: o3.correct,
-            why: money(x) + " × " + y + " = " + money(ans3) + ".",
+            prompt: fmt(x) + " × " + y,
+            why: fmt(x) + " × " + y + " = " + fmt(ans) + ".",
+            gates: g.labels,
+            correctIndex: g.correctIndex,
           };
         } else {
-          var quo = round2(rnd(11, 49) / 10); // 1.1 .. 4.9
-          var dv = rnd(2, 6);
-          var dividend3 = round2(quo * dv);
-          var o4 = distinctOpts(
-            quo,
-            function () {
-              var w = round2(
-                quo + (rnd(1, 9) / 10) * (Math.random() < 0.5 ? 1 : -1),
-              );
-              return w > 0 ? w : round2(quo + rnd(1, 9) / 10);
-            },
-            money,
-          );
+          const quo = r2(randInt(11, 49) / 10); // 1.1 .. 4.9
+          const dv = randInt(2, 6);
+          const dividend = r2(quo * dv);
+          const g = buildGates(quo, () => {
+            const w = r2(quo + (randInt(1, 9) / 10) * (Math.random() < 0.5 ? 1 : -1));
+            return w > 0 ? w : r2(quo + randInt(1, 9) / 10);
+          });
           return {
             tag: "Divide Decimals",
-            prompt: money(dividend3) + " ÷ " + dv,
-            sub: "Divide; place the decimal carefully.",
-            opts: o4.opts,
-            correct: o4.correct,
-            why: money(dividend3) + " ÷ " + dv + " = " + money(quo) + ".",
+            prompt: fmt(dividend) + " ÷ " + dv,
+            why: fmt(dividend) + " ÷ " + dv + " = " + fmt(quo) + ".",
+            gates: g.labels,
+            correctIndex: g.correctIndex,
           };
         }
       }
 
-      function startGame() {
-        if (state.confettiRaf) cancelAnimationFrame(state.confettiRaf);
-        var cf = document.getElementById("confetti");
-        if (cf) cf.classList.add("hidden");
-        state = { i: 0, score: 0, streak: 0, lives: 3, locked: false };
-        document.getElementById("startScreen").classList.add("hidden");
-        document.getElementById("resultScreen").classList.add("hidden");
-        document.getElementById("playScreen").classList.remove("hidden");
-        nextQuestion();
-      }
-      function nextQuestion() {
-        if (state.lives <= 0 || state.i >= TOTAL) {
-          return endGame();
-        }
-        state.locked = false;
-        state.q = buildQuestion(state.i);
-        document.getElementById("qnum").textContent = state.i + 1 + "/" + TOTAL;
-        document.getElementById("modeTag").textContent = state.q.tag;
-        document.getElementById("prompt").textContent = state.q.prompt;
-        document.getElementById("sub").textContent = state.q.sub;
-        document.getElementById("feedback").textContent = "";
-        document.getElementById("feedback").className = "feedback";
-        document.getElementById("qcard").classList.remove("correct-flash");
-        document.getElementById("nextBtn").classList.add("hidden");
-        var box = document.getElementById("opts");
-        box.innerHTML = "";
-        state.q.opts.forEach(function (o) {
-          var b = document.createElement("button");
-          b.type = "button";
-          b.className = "opt";
-          b.textContent = o;
-          b.onclick = function () {
-            answer(o, b);
-          };
-          box.appendChild(b);
-        });
-        startTimer();
-      }
-      function startTimer() {
-        var t = TIME,
-          bar = document.getElementById("timebar");
-        bar.style.width = "100%";
-        colorTimer(1); // start green
-        clearInterval(state.timer);
-        state.timer = setInterval(function () {
-          t -= 0.1;
-          var frac = Math.max(0, t / TIME);
-          bar.style.width = frac * 100 + "%";
-          colorTimer(frac); // green → yellow → red as time drains
-          if (t <= 0) {
-            clearInterval(state.timer);
-            if (!state.locked) {
-              timeUp();
-            }
-          }
-        }, 100);
-      }
-      function answer(choice, btn) {
-        if (state.locked) return;
-        state.locked = true;
-        clearInterval(state.timer);
-        var fb = document.getElementById("feedback"),
-          correct = choice === state.q.correct;
-        Array.prototype.forEach.call(
-          document.querySelectorAll(".opt"),
-          function (b) {
-            if (b.textContent === state.q.correct) b.classList.add("right");
-            else if (b === btn) b.classList.add("wrong");
-          },
-        );
-        if (correct) {
-          state.streak++;
-          state.score += 10 + Math.min(state.streak, 5) * 2;
-          fb.textContent =
-            "✓ Correct! " +
-            state.q.why +
-            (state.streak > 1 ? "  🔥 Streak ×" + state.streak : "");
-          fb.className = "feedback ok";
-          // Bespoke correct-answer celebration: bounce the question card.
-          // (The chosen option's spark-burst is handled automatically by the
-          //  GameFX kit when it gains the `right` class.)
-          flashClass(document.getElementById("qcard"), "correct-flash");
-          updateHud();
-          // Staggered HUD pop: score first, then streak.
-          bumpHud("score", 0);
-          if (state.streak > 1) bumpHud("streak", 110);
-        } else {
-          state.streak = 0;
-          state.lives--;
-          fb.textContent = "✗ " + state.q.why + "  (−1 ❤)";
-          fb.className = "feedback no";
-          updateHud();
-          bumpHud("lives", 0); // emphasize the life lost
-        }
-        document.getElementById("nextBtn").classList.remove("hidden");
-      }
-      function timeUp() {
-        state.locked = true;
-        state.streak = 0;
-        state.lives--;
-        Array.prototype.forEach.call(
-          document.querySelectorAll(".opt"),
-          function (b) {
-            if (b.textContent === state.q.correct) b.classList.add("right");
-          },
-        );
-        var fb = document.getElementById("feedback");
-        fb.textContent = "⏰ Time! " + state.q.why + "  (−1 ❤)";
-        fb.className = "feedback no";
-        updateHud();
-        bumpHud("lives", 0);
-        document.getElementById("nextBtn").classList.remove("hidden");
-      }
-      function updateHud() {
-        document.getElementById("score").textContent = state.score;
-        document.getElementById("streak").textContent = state.streak;
-        document.getElementById("lives").textContent =
-          state.lives > 0 ? "❤".repeat(state.lives) : "—";
-      }
-      function endGame() {
-        clearInterval(state.timer);
-        document.getElementById("playScreen").classList.add("hidden");
-        document.getElementById("resultScreen").classList.remove("hidden");
-        document.getElementById("finalScore").textContent = state.score;
-        var msg;
-        if (state.score >= 180) msg = "🏆 Decimal Champion!";
-        else if (state.score >= 120) msg = "🌟 Fast and accurate!";
-        else if (state.score >= 60) msg = "👍 Nice work — keep practicing.";
-        else msg = "💪 Try again to beat your score!";
-        document.getElementById("resultMsg").textContent = msg;
-        document.getElementById("resultDetail").textContent =
-          (state.lives <= 0
-            ? "Out of lives! "
-            : "You finished all " + TOTAL + " questions! ") +
-          "Final score: " +
-          state.score +
-          ".";
-        // Bespoke high-score celebration: confetti shower for strong finishes.
-        if (state.score >= 120) {
-          launchConfetti(state.score >= 180 ? 1 : 0.7);
-        }
+      function srSay(msg) {
         try {
-          window.EduPulse &&
-            EduPulse.record({
-              activityTitle: document.title,
-              score: state.score,
-              problemsAttempted: state.lives <= 0 ? state.i + 1 : state.i,
-              standard: "6.NS.2",
-            });
+          const el = document.getElementById("dd-sr");
+          if (el) el.textContent = msg;
         } catch (e) {}
       }
-      // Self-contained canvas confetti for high-score wins. Capped particle
-      // count + rAF; disabled entirely under prefers-reduced-motion.
-      function launchConfetti(intensity) {
-        var canvas = document.getElementById("confetti");
-        if (!canvas || !canvas.getContext) return;
-        if (prefersReducedMotion()) return;
-        if (state.confettiRaf) cancelAnimationFrame(state.confettiRaf);
-        canvas.classList.remove("hidden");
-        var ctx = canvas.getContext("2d");
-        var dpr = Math.min(window.devicePixelRatio || 1, 2);
-        function size() {
-          canvas.width = window.innerWidth * dpr;
-          canvas.height = window.innerHeight * dpr;
+
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: document.body,
+        backgroundColor: "#102338",
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+        scene: [],
+      };
+
+      // 3 lanes
+      const LANE_X = [W * 0.22, W * 0.5, W * 0.78];
+
+      class BootScene extends Phaser.Scene {
+        constructor() {
+          super("Boot");
         }
-        size();
-        var colors = ["#1aa179", "#f0a400", "#3b7dd8", "#e0542f", "#9b5de5"];
-        var COUNT = Math.round(120 * (intensity || 1)); // capped for Chromebooks
-        var W = canvas.width,
-          H = canvas.height,
-          parts = [];
-        for (var i = 0; i < COUNT; i++) {
-          parts.push({
-            x: Math.random() * W,
-            y: -Math.random() * H * 0.5,
-            r: (4 + Math.random() * 5) * dpr,
-            vx: (Math.random() - 0.5) * 2.4 * dpr,
-            vy: (2 + Math.random() * 3) * dpr,
-            rot: Math.random() * Math.PI,
-            vr: (Math.random() - 0.5) * 0.25,
-            c: colors[i % colors.length],
-          });
+        create() {
+          const g = this.make.graphics({ add: false });
+          g.fillStyle(0xffffff);
+          g.fillRect(0, 0, 7, 4);
+          g.generateTexture("confetti", 7, 4);
+          g.clear();
+          g.fillStyle(0xffffff);
+          g.fillCircle(3, 3, 3);
+          g.generateTexture("spark", 6, 6);
+          g.destroy();
+          this.scene.start("Title");
         }
-        var start = performance.now(),
-          DURATION = 2600;
-        function frame(now) {
-          var elapsed = now - start;
-          ctx.clearRect(0, 0, W, H);
-          for (var j = 0; j < parts.length; j++) {
-            var p = parts[j];
-            p.x += p.vx;
-            p.y += p.vy;
-            p.vy += 0.03 * dpr; // gentle gravity
-            p.rot += p.vr;
-            ctx.save();
-            ctx.translate(p.x, p.y);
-            ctx.rotate(p.rot);
-            ctx.globalAlpha = Math.max(0, 1 - elapsed / DURATION);
-            ctx.fillStyle = p.c;
-            ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r * 0.6);
-            ctx.restore();
-          }
-          if (elapsed < DURATION) {
-            state.confettiRaf = requestAnimationFrame(frame);
-          } else {
-            ctx.clearRect(0, 0, W, H);
-            canvas.classList.add("hidden");
-            state.confettiRaf = null;
-          }
-        }
-        state.confettiRaf = requestAnimationFrame(frame);
       }
 
-      document.getElementById("startBtn").onclick = startGame;
-      document.getElementById("againBtn").onclick = startGame;
-      document.getElementById("nextBtn").onclick = function () {
-        state.i++;
-        nextQuestion();
-      };
+      class TitleScene extends Phaser.Scene {
+        constructor() {
+          super("Title");
+        }
+        create() {
+          const cx = W / 2;
+          this.reduce =
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          this.add.rectangle(cx, H / 2, W, H, 0x102338);
+          this.add
+            .text(cx, 120, "DECIMAL", {
+              fontSize: "66px",
+              fontFamily: "Impact, sans-serif",
+              color: "#5ad1ff",
+              stroke: "#0a1626",
+              strokeThickness: 6,
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 186, "DASH", {
+              fontSize: "66px",
+              fontFamily: "Impact, sans-serif",
+              color: "#d4952a",
+              stroke: "#0a1626",
+              strokeThickness: 6,
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 244, "Lane Runner  ·  Lessons 1.4–1.7  ·  6.NS.2 / 6.NS.3", {
+              fontSize: "15px",
+              color: "#9fc6e0",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              cx,
+              300,
+              "Solve the problem at the top, then STEER your car into\nthe lane whose gate shows the correct answer.",
+              { fontSize: "15px", color: "#7fa8c3", align: "center" },
+            )
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 356, "← → or A/D to change lanes   ·   tap a lane on touch", {
+              fontSize: "14px",
+              color: "#6b97b3",
+            })
+            .setOrigin(0.5);
+
+          const hs = localStorage.getItem(LS_KEY);
+          if (hs)
+            this.add
+              .text(cx, 392, "HIGH SCORE: " + hs, {
+                fontSize: "15px",
+                color: "#d4952a",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+
+          const btn = this.add
+            .rectangle(cx, 450, 260, 56, 0x1a6fb5)
+            .setInteractive({ useHandCursor: true });
+          const btnT = this.add
+            .text(cx, 450, "START ENGINE ▶", {
+              fontSize: "22px",
+              fontStyle: "bold",
+              color: "#eaf6ff",
+            })
+            .setOrigin(0.5);
+          if (!this.reduce)
+            this.tweens.add({
+              targets: [btn, btnT],
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 800,
+              yoyo: true,
+              repeat: -1,
+            });
+          const go = () => {
+            SFX.init();
+            SFX.tick();
+            this.cameras.main.fadeOut(300);
+            this.time.delayedCall(300, () => this.scene.start("Game"));
+          };
+          btn.on("pointerover", () => btn.setFillStyle(0x2080cc));
+          btn.on("pointerout", () => btn.setFillStyle(0x1a6fb5));
+          btn.on("pointerdown", go);
+          this.input.keyboard.on("keydown-SPACE", go);
+          this.input.keyboard.on("keydown-ENTER", go);
+
+          const hub = this.add
+            .text(cx, 555, "← Back to Games hub", {
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#6b97b3",
+            })
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true });
+          hub.on("pointerover", () => hub.setColor("#5ad1ff"));
+          hub.on("pointerout", () => hub.setColor("#6b97b3"));
+          hub.on("pointerdown", () => (window.location.href = "/math/games/"));
+
+          this.cameras.main.fadeIn(400);
+        }
+      }
+
+      class GameScene extends Phaser.Scene {
+        constructor() {
+          super("Game");
+        }
+        init() {
+          this.reduce =
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          this.score = 0;
+          this.lives = 3;
+          this.streak = 0;
+          this.maxStreak = 0;
+          this.correct = 0;
+          this.qIndex = 0;
+          this.TOTAL = 12;
+          this.level = 1;
+          this.lane = 1;
+          this.busy = false;
+          this.gateRow = null;
+        }
+        roundFor(i) {
+          return i < 4 ? 1 : i < 8 ? 2 : 3;
+        }
+        create() {
+          const cx = W / 2;
+          this.add.rectangle(cx, H / 2, W, H, 0x223a2a); // grass
+          // road
+          this.roadX0 = LANE_X[0] - 90;
+          this.roadX1 = LANE_X[2] + 90;
+          this.roadW = this.roadX1 - this.roadX0;
+          this.add.rectangle(
+            (this.roadX0 + this.roadX1) / 2,
+            H / 2,
+            this.roadW,
+            H,
+            0x2b3340,
+          );
+          // lane divider dashes (animated by scrolling)
+          this.dashes = [];
+          for (let li = 0; li < 2; li++) {
+            const dx = (LANE_X[li] + LANE_X[li + 1]) / 2;
+            for (let y = -40; y < H + 40; y += 60) {
+              const dsh = this.add.rectangle(dx, y, 6, 30, 0xf0d060, 0.7);
+              this.dashes.push(dsh);
+            }
+          }
+
+          // top HUD band
+          this.add.rectangle(cx, 24, W, 48, 0x0a1626, 0.92).setDepth(8);
+          this.scoreText = this.add
+            .text(16, 12, "Score: 0", {
+              fontSize: "20px",
+              color: "#5ad1ff",
+              fontStyle: "bold",
+            })
+            .setDepth(9);
+          this.livesText = this.add
+            .text(W - 16, 12, "❤❤❤", { fontSize: "20px", color: "#ff6b5a" })
+            .setOrigin(1, 0)
+            .setDepth(9);
+          this.streakText = this.add
+            .text(cx, 12, "Streak: 0", {
+              fontSize: "16px",
+              color: "#d4952a",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5, 0)
+            .setDepth(9);
+
+          // prompt panel
+          this.add.rectangle(cx, 78, 360, 56, 0x0a1626, 0.92).setDepth(8);
+          this.tagText = this.add
+            .text(cx, 62, "", { fontSize: "13px", color: "#9fc6e0" })
+            .setOrigin(0.5)
+            .setDepth(9);
+          this.promptText = this.add
+            .text(cx, 86, "", {
+              fontSize: "26px",
+              color: "#ffffff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(9);
+          this.qnumText = this.add
+            .text(cx, 112, "", { fontSize: "12px", color: "#7fa8c3" })
+            .setOrigin(0.5)
+            .setDepth(9);
+
+          // Car
+          this.carY = H - 80;
+          this.car = this.add.container(LANE_X[this.lane], this.carY).setDepth(15);
+          const body = this.add.graphics();
+          body.fillStyle(0xd43c3c, 1);
+          body.fillRoundedRect(-22, -34, 44, 68, 10);
+          body.fillStyle(0xa42c2c, 1);
+          body.fillRoundedRect(-22, -6, 44, 28, 6);
+          body.fillStyle(0x9fd6ff, 1);
+          body.fillRoundedRect(-15, -26, 30, 16, 4); // windshield
+          body.lineStyle(2, 0xffffff, 0.6);
+          body.strokeRoundedRect(-22, -34, 44, 68, 10);
+          this.car.add(body);
+
+          this.confetti = this.add
+            .particles(0, 0, "confetti", {
+              speed: { min: 80, max: 280 },
+              angle: { min: 0, max: 360 },
+              scale: { start: 1.4, end: 0.2 },
+              rotate: { min: 0, max: 360 },
+              lifespan: 1100,
+              gravityY: 240,
+              emitting: false,
+              quantity: 22,
+              tint: [0x5ad1ff, 0x1a6fb5, 0xd4952a, 0x2d874b],
+            })
+            .setDepth(40);
+          this.crashParticles = this.add
+            .particles(0, 0, "spark", {
+              speed: { min: 60, max: 220 },
+              scale: { start: 1.4, end: 0 },
+              lifespan: 500,
+              emitting: false,
+              quantity: 16,
+              tint: [0xff6b5a, 0xffaa33, 0xaa3333],
+            })
+            .setDepth(40);
+          this.redFlash = this.add
+            .rectangle(cx, H / 2, W, H, 0xff3322, 0)
+            .setDepth(35);
+          this.feedback = this.add
+            .text(cx, 150, "", {
+              fontSize: "16px",
+              color: "#fff",
+              fontStyle: "bold",
+              align: "center",
+              wordWrap: { width: W - 80 },
+            })
+            .setOrigin(0.5)
+            .setAlpha(0)
+            .setDepth(20);
+
+          // Input
+          this.cursors = this.input.keyboard.createCursorKeys();
+          this.keyA = this.input.keyboard.addKey("A");
+          this.keyD = this.input.keyboard.addKey("D");
+          this.input.keyboard.on("keydown-LEFT", () => this.moveLane(-1));
+          this.input.keyboard.on("keydown-RIGHT", () => this.moveLane(1));
+          this.input.keyboard.on("keydown-A", () => this.moveLane(-1));
+          this.input.keyboard.on("keydown-D", () => this.moveLane(1));
+          this.input.on("pointerdown", (p) => {
+            // pick nearest lane by pointer x
+            let best = 0,
+              bd = Infinity;
+            LANE_X.forEach((lx, i) => {
+              const dd = Math.abs(lx - p.worldX);
+              if (dd < bd) {
+                bd = dd;
+                best = i;
+              }
+            });
+            this.setLane(best);
+          });
+
+          this.nextQuestion();
+          this.cameras.main.fadeIn(350);
+        }
+
+        moveLane(dir) {
+          this.setLane(Phaser.Math.Clamp(this.lane + dir, 0, 2));
+        }
+        setLane(i) {
+          if (i === this.lane || this.busy) {
+            this.lane = i;
+            return;
+          }
+          this.lane = i;
+          SFX.init();
+          SFX.engine();
+          this.tweens.add({
+            targets: this.car,
+            x: LANE_X[i],
+            duration: this.reduce ? 1 : 120,
+            ease: "Quad.easeOut",
+          });
+        }
+
+        nextQuestion() {
+          if (this.qIndex >= this.TOTAL || this.lives <= 0) {
+            this.endGame();
+            return;
+          }
+          const round = this.roundFor(this.qIndex);
+          if (round !== this.level && this.qIndex > 0) SFX.levelUp();
+          this.level = round;
+          this.q = genQuestion(round);
+          this.qIndex++;
+          this.busy = false;
+
+          this.tagText.setText(this.q.tag);
+          this.promptText.setText(this.q.prompt + " = ?");
+          this.qnumText.setText(this.qIndex + " / " + this.TOTAL);
+          this.feedback.setAlpha(0);
+
+          srSay(
+            this.q.tag +
+              ". " +
+              this.q.prompt +
+              " equals what? Lane gates: left " +
+              this.q.gates[0] +
+              ", middle " +
+              this.q.gates[1] +
+              ", right " +
+              this.q.gates[2] +
+              ". Steer into the correct gate.",
+          );
+
+          // Build gate row container (starts above the visible road)
+          if (this.gateRow) this.gateRow.destroy();
+          this.gateRow = this.add.container(0, -60).setDepth(12);
+          this.gateSprites = [];
+          for (let i = 0; i < 3; i++) {
+            const lx = LANE_X[i];
+            const g = this.add.graphics();
+            const col = i === this.q.correctIndex ? 0x2d874b : 0x1a6fb5;
+            g.fillStyle(col, 0.85);
+            g.fillRoundedRect(lx - 70, -28, 140, 56, 12);
+            g.lineStyle(3, 0xffffff, 0.85);
+            g.strokeRoundedRect(lx - 70, -28, 140, 56, 12);
+            this.gateRow.add(g);
+            const t = this.add
+              .text(lx, 0, this.q.gates[i], {
+                fontSize: "26px",
+                color: "#ffffff",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+            this.gateRow.add(t);
+            this.gateSprites.push({ g: g, t: t });
+          }
+          // Gate descends toward the car; speed rises with level.
+          this.gateVY = (110 + (this.level - 1) * 45) / 1000; // px/ms
+          this.gateResolved = false;
+        }
+
+        update(time, delta) {
+          // scroll lane dashes for a sense of motion
+          if (!this.reduce) {
+            const ds = 0.25 * delta * (1 + (this.level - 1) * 0.3);
+            this.dashes.forEach((d) => {
+              d.y += ds;
+              if (d.y > H + 30) d.y -= H + 70;
+            });
+          }
+          // also allow held arrow keys (key events handle taps; this covers holds)
+          if (this.busy || !this.gateRow || this.gateResolved) return;
+          this.gateRow.y += this.gateVY * delta;
+          // resolve when gate row center reaches car
+          if (this.gateRow.y >= this.carY) {
+            this.gateResolved = true;
+            this.resolve();
+          }
+        }
+
+        resolve() {
+          this.busy = true;
+          SFX.init();
+          const right = this.lane === this.q.correctIndex;
+          if (right) {
+            this.correct++;
+            this.streak++;
+            this.maxStreak = Math.max(this.maxStreak, this.streak);
+            const gained = 10 + Math.min(this.streak, 5) * 2;
+            this.score += gained;
+            SFX.pass();
+            if (this.streak >= 3) SFX.streak(this.streak);
+            this.confetti.emitParticleAt(LANE_X[this.lane], this.carY - 40);
+            this.flash(
+              "✓ +" +
+                gained +
+                (this.streak > 1 ? "   🔥 ×" + this.streak : "") +
+                "   " +
+                this.q.why,
+              "#7fffb0",
+            );
+            srSay("Correct! " + this.q.why);
+            // let the gate pass by
+            this.tweens.add({
+              targets: this.gateRow,
+              y: H + 80,
+              duration: this.reduce ? 1 : 220,
+            });
+            try {
+              if (window.GameFX && GameFX.celebrate && this.streak >= 3)
+                GameFX.celebrate(document.querySelector("canvas"));
+            } catch (e) {}
+          } else {
+            this.streak = 0;
+            this.lives--;
+            SFX.crash();
+            this.crashParticles.emitParticleAt(LANE_X[this.lane], this.carY);
+            this.doRedFlash();
+            if (!this.reduce)
+              this.tweens.add({
+                targets: this.car,
+                angle: { from: -8, to: 8 },
+                duration: 70,
+                yoyo: true,
+                repeat: 3,
+                onComplete: () => this.car.setAngle(0),
+              });
+            this.flash("💥 Crash! " + this.q.why + "  (−1 ❤)", "#ff8a7a");
+            srSay("Crash. " + this.q.why);
+            // highlight correct gate
+            const cs = this.gateSprites[this.q.correctIndex];
+            if (cs)
+              this.tweens.add({
+                targets: cs.t,
+                scale: { from: 1, to: 1.4 },
+                duration: 300,
+                yoyo: true,
+                repeat: 1,
+              });
+          }
+          this.updateHUD();
+          this.time.delayedCall(right ? 950 : 1600, () => this.nextQuestion());
+        }
+
+        flash(msg, color) {
+          this.feedback.setText(msg).setColor(color).setAlpha(1).setScale(0.85);
+          this.tweens.add({
+            targets: this.feedback,
+            scale: 1,
+            duration: this.reduce ? 1 : 220,
+            ease: "Back.easeOut",
+          });
+        }
+        doRedFlash() {
+          if (this.reduce) return;
+          this.redFlash.setAlpha(0.35);
+          this.tweens.add({ targets: this.redFlash, alpha: 0, duration: 350 });
+        }
+        updateHUD() {
+          this.scoreText.setText("Score: " + this.score);
+          this.streakText.setText("Streak: " + this.streak);
+          this.livesText.setText(this.lives > 0 ? "❤".repeat(this.lives) : "—");
+        }
+        endGame() {
+          this.scene.start("Result", {
+            score: this.score,
+            correct: this.correct,
+            attempted: this.qIndex,
+            maxStreak: this.maxStreak,
+            outOfLives: this.lives <= 0,
+          });
+        }
+      }
+
+      class ResultScene extends Phaser.Scene {
+        constructor() {
+          super("Result");
+        }
+        init(data) {
+          this.d = data;
+        }
+        create() {
+          const cx = W / 2;
+          const d = this.d;
+          this.reduce =
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          this.add.rectangle(cx, H / 2, W, H, 0x102338);
+          const pct = d.attempted ? (d.correct / d.attempted) * 100 : 0;
+          const stars = pct >= 90 ? 3 : pct >= 65 ? 2 : pct >= 40 ? 1 : 0;
+          const won = !d.outOfLives;
+          if (stars >= 2) SFX.win();
+          else SFX.lose();
+
+          this.add
+            .text(cx, 70, won ? "FINISH LINE!" : "OUT OF LIVES", {
+              fontSize: "38px",
+              fontStyle: "bold",
+              color: won ? "#5ad1ff" : "#ff6b5a",
+              stroke: "#0a1626",
+              strokeThickness: 4,
+            })
+            .setOrigin(0.5);
+
+          for (let i = 0; i < 3; i++) {
+            const sx = cx - 70 + i * 70;
+            this.add
+              .text(sx, 150, "☆", { fontSize: "54px", color: "#33505a" })
+              .setOrigin(0.5);
+            if (i < stars) {
+              const s = this.add
+                .text(sx, 150, "★", { fontSize: "54px", color: "#d4952a" })
+                .setOrigin(0.5)
+                .setScale(0);
+              this.tweens.add({
+                targets: s,
+                scale: 1,
+                duration: this.reduce ? 1 : 380,
+                delay: 250 + i * 220,
+                ease: "Back.easeOut",
+              });
+            }
+          }
+
+          const prevHigh = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
+          const isNewHigh = d.score > prevHigh;
+          if (isNewHigh && d.score > 0)
+            localStorage.setItem(LS_KEY, String(d.score));
+
+          const stats = [
+            ["Final Score", String(d.score)],
+            ["Gates Cleared", d.correct + " / " + d.attempted],
+            ["Accuracy", Math.round(pct) + "%"],
+            ["Best Streak", "×" + d.maxStreak],
+          ];
+          stats.forEach((s, i) => {
+            const y = 230 + i * 42;
+            this.add.rectangle(cx, y, 380, 34, 0x0a1626, 0.85);
+            this.add
+              .text(cx - 165, y, s[0], { fontSize: "15px", color: "#7fa8c3" })
+              .setOrigin(0, 0.5);
+            this.add
+              .text(cx + 165, y, s[1], {
+                fontSize: "17px",
+                color: "#5ad1ff",
+                fontStyle: "bold",
+              })
+              .setOrigin(1, 0.5);
+          });
+
+          if (isNewHigh && d.score > 0)
+            this.add
+              .text(cx, 415, "★ NEW HIGH SCORE! ★", {
+                fontSize: "18px",
+                color: "#d4952a",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+
+          try {
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: ACTIVITY_TITLE,
+                score: d.score,
+                stars: stars,
+                problemsCorrect: d.correct,
+                problemsAttempted: d.attempted,
+                percent: Math.round(pct),
+                standard: STANDARD,
+              });
+          } catch (e) {}
+
+          srSay(
+            (won ? "Finish line. " : "Out of lives. ") +
+              "Score " +
+              d.score +
+              ", " +
+              d.correct +
+              " of " +
+              d.attempted +
+              " correct, " +
+              stars +
+              " stars.",
+          );
+
+          const retry = this.add
+            .rectangle(cx - 95, 470, 170, 46, 0x1a6fb5)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(cx - 95, 470, "DRIVE AGAIN", {
+              fontSize: "17px",
+              fontStyle: "bold",
+              color: "#eaf6ff",
+            })
+            .setOrigin(0.5);
+          retry.on("pointerover", () => retry.setFillStyle(0x2080cc));
+          retry.on("pointerout", () => retry.setFillStyle(0x1a6fb5));
+          retry.on("pointerdown", () => {
+            SFX.tick();
+            this.scene.start("Game");
+          });
+
+          const hub = this.add
+            .rectangle(cx + 95, 470, 170, 46, 0x223a48)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(cx + 95, 470, "ALL GAMES", {
+              fontSize: "17px",
+              fontStyle: "bold",
+              color: "#9fc6e0",
+            })
+            .setOrigin(0.5);
+          hub.on("pointerover", () => hub.setFillStyle(0x2c4c5c));
+          hub.on("pointerout", () => hub.setFillStyle(0x223a48));
+          hub.on("pointerdown", () => (window.location.href = "/math/games/"));
+
+          this.input.keyboard.on("keydown-SPACE", () => this.scene.start("Game"));
+
+          if (won && stars >= 2 && !this.reduce) {
+            const p = this.add
+              .particles(0, 0, "confetti", {
+                speed: { min: 60, max: 240 },
+                angle: { min: 0, max: 360 },
+                scale: { start: 1.4, end: 0 },
+                rotate: { min: 0, max: 360 },
+                lifespan: 1500,
+                gravityY: 160,
+                quantity: 20,
+                tint: [0x5ad1ff, 0x1a6fb5, 0xd4952a, 0x2d874b],
+              })
+              .setDepth(40);
+            for (let i = 0; i < 5; i++)
+              this.time.delayedCall(i * 280, () =>
+                p.emitParticleAt(randInt(120, W - 120), randInt(40, 140)),
+              );
+          }
+          this.cameras.main.fadeIn(400);
+        }
+      }
+
+      config.scene = [BootScene, TitleScene, GameScene, ResultScene];
+      const game = new Phaser.Game(config);
+
+      game.events.once("ready", function () {
+        try {
+          const cv = game.canvas;
+          if (!cv) return;
+          cv.setAttribute("role", "application");
+          cv.setAttribute(
+            "aria-label",
+            "Decimal Dash lane-runner math game. Solve the division or decimal " +
+              "problem at the top, then steer your car with the arrow keys or A " +
+              "and D into the lane whose gate shows the correct answer. Press " +
+              "Space to start.",
+          );
+          cv.setAttribute("aria-roledescription", "math game");
+          if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
+          cv.addEventListener("pointerdown", function () {
+            try {
+              cv.focus();
+            } catch (e) {}
+          });
+        } catch (e) {}
+      });
     </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
