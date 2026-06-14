@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Teacher setup page for the Student Digital Mailbox — share link, Google Form checklist, link config, suggested questions, and a weekly review routine."
+    />
+    <title>Teacher Setup: Student Digital Mailbox</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Nunito:wght@600;700;800;900&display=swap"
+    />
+    <link rel="stylesheet" href="../mailbox.css" />
+    <style>
+      .tt-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 22px 24px;
+        margin: 18px 0;
+      }
+      .tt-card h2 {
+        font-family: "Nunito", system-ui, sans-serif;
+        font-size: 1.4rem;
+        margin: 0 0 6px;
+        color: var(--ink);
+      }
+      .tt-card h3 {
+        font-family: "Nunito", system-ui, sans-serif;
+        font-size: 1.08rem;
+        margin: 18px 0 6px;
+        color: var(--navy);
+      }
+      .share-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        margin: 12px 0;
+      }
+      .share-row input {
+        flex: 1;
+        min-width: 240px;
+        min-height: 48px;
+        padding: 0 14px;
+        font-size: 1rem;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--surface-2);
+        color: var(--ink);
+        font-family: inherit;
+      }
+      .copy-ok {
+        color: var(--green);
+        font-weight: 800;
+        font-size: 0.95rem;
+      }
+      .checklist {
+        list-style: none;
+        padding: 0;
+        margin: 8px 0 0;
+        display: grid;
+        gap: 10px;
+      }
+      .checklist li {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        font-size: 1.02rem;
+      }
+      .checklist input[type="checkbox"] {
+        width: 22px;
+        height: 22px;
+        margin-top: 2px;
+        flex: 0 0 auto;
+        accent-color: var(--green);
+      }
+      .config-block {
+        margin: 10px 0 0;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .config-block table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.98rem;
+      }
+      .config-block th,
+      .config-block td {
+        text-align: left;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      .config-block th {
+        background: var(--surface-2);
+        font-family: "Nunito", system-ui, sans-serif;
+        color: var(--navy);
+      }
+      .config-block td code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.88rem;
+        word-break: break-all;
+      }
+      .pill {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+      .pill.set {
+        background: var(--green-light);
+        color: var(--green);
+      }
+      .pill.todo {
+        background: #fff4e9;
+        color: #9a5a12;
+      }
+      .qbank {
+        margin: 0 0 14px;
+        padding-left: 22px;
+      }
+      .qbank li {
+        margin: 4px 0;
+      }
+      .routine {
+        list-style: none;
+        padding: 0;
+        margin: 8px 0 0;
+        display: grid;
+        gap: 10px;
+      }
+      .routine li {
+        display: flex;
+        gap: 12px;
+        align-items: baseline;
+        padding: 12px 14px;
+        background: var(--surface-2);
+        border-radius: 12px;
+      }
+      .routine .day {
+        font-family: "Nunito", system-ui, sans-serif;
+        font-weight: 800;
+        color: var(--navy);
+        flex: 0 0 96px;
+      }
+      pre.suggested-text {
+        margin: 10px 0 0;
+        padding: 14px 16px;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        white-space: pre-wrap;
+        font-family: inherit;
+        font-size: 1rem;
+        color: var(--ink);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="mb-head">
+        <p class="mb-eyebrow">Teacher Setup · Internal</p>
+        <h1>
+          <span class="mb-emoji" aria-hidden="true">🧰</span>Teacher Setup:
+          Student Digital Mailbox
+        </h1>
+      </header>
+
+      <div class="mb-note info" role="note">
+        <span class="mb-note-icon" aria-hidden="true">ℹ️</span>
+        <span>
+          This page is a setup and shortcut page. Do not place private student
+          information here. Google Forms/Docs permissions should control access
+          to responses.
+        </span>
+      </div>
+
+      <!-- A. Share With Students -->
+      <section class="tt-card" aria-labelledby="share">
+        <h2 id="share">A. Share With Students</h2>
+        <p>Give students this link (or post it in Classroom / Canvas):</p>
+        <div class="share-row">
+          <input
+            id="student-url"
+            type="text"
+            readonly
+            value="/curriculum/student-digital-mailbox/"
+            aria-label="Student Digital Mailbox URL"
+          />
+          <button class="mb-btn primary" id="copy-url" type="button">
+            Copy link
+          </button>
+          <span class="copy-ok" id="copy-status" role="status" hidden>
+            Copied!
+          </span>
+        </div>
+        <h3>Suggested text for students</h3>
+        <pre class="suggested-text">
+Use the Student Digital Mailbox when you want to send me a class idea, question, concern, or suggestion. You do not have to put your name unless you choose to.</pre
+        >
+      </section>
+
+      <!-- B. Google Form Setup Checklist -->
+      <section class="tt-card" aria-labelledby="checklist">
+        <h2 id="checklist">B. Google Form Setup Checklist</h2>
+        <p>For each form you create, confirm these settings:</p>
+        <ul class="checklist">
+          <li>
+            <input type="checkbox" id="c1" />
+            <label for="c1"
+              >Turn <strong>OFF</strong> "Collect email addresses" for anonymous
+              forms</label
+            >
+          </li>
+          <li>
+            <input type="checkbox" id="c2" />
+            <label for="c2"
+              >Turn <strong>OFF</strong> "Limit to 1 response" unless
+              needed</label
+            >
+          </li>
+          <li>
+            <input type="checkbox" id="c3" />
+            <label for="c3"
+              >Turn <strong>ON</strong> response spreadsheet</label
+            >
+          </li>
+          <li>
+            <input type="checkbox" id="c4" />
+            <label for="c4">Keep language student-friendly</label>
+          </li>
+          <li>
+            <input type="checkbox" id="c5" />
+            <label for="c5">Add a safety reminder</label>
+          </li>
+          <li>
+            <input type="checkbox" id="c6" />
+            <label for="c6">Review responses on a regular schedule</label>
+          </li>
+          <li>
+            <input type="checkbox" id="c7" />
+            <label for="c7"
+              >Do not ask for unnecessary personal information</label
+            >
+          </li>
+        </ul>
+      </section>
+
+      <!-- C. Form Link Configuration -->
+      <section class="tt-card" aria-labelledby="config">
+        <h2 id="config">C. Form Link Configuration</h2>
+        <p>
+          All mailbox links live in one file:
+          <code>curriculum/student-digital-mailbox/mailbox-links.js</code>. Edit
+          that file to replace each placeholder with your real Google Form / Doc
+          link. The status column below reads live from that file.
+        </p>
+        <div class="config-block">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Mailbox</th>
+                <th scope="col">Config key</th>
+                <th scope="col">Current value</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody id="config-rows">
+              <!-- Populated from mailbox-links.js -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- D. Suggested Form Questions -->
+      <section class="tt-card" aria-labelledby="questions">
+        <h2 id="questions">D. Suggested Form Questions</h2>
+
+        <h3>Class Check-In</h3>
+        <ul class="qbank">
+          <li>How is math class going for you right now?</li>
+          <li>What is helping you learn?</li>
+          <li>What is making class hard?</li>
+          <li>What should Mr. Neft know?</li>
+          <li>Do you want Mr. Neft to follow up with you?</li>
+        </ul>
+
+        <h3>I'm Confused</h3>
+        <ul class="qbank">
+          <li>What lesson, topic, direction, or assignment is confusing?</li>
+          <li>What part did you understand?</li>
+          <li>Where did you get stuck?</li>
+          <li>What would help you next?</li>
+          <li>Do you want an example, small group, video, or partner help?</li>
+        </ul>
+
+        <h3>Suggestion Box</h3>
+        <ul class="qbank">
+          <li>What is your idea?</li>
+          <li>What problem would this solve?</li>
+          <li>How would it help students?</li>
+          <li>
+            Is this idea for lessons, games, groups, homework, classroom
+            routines, or something else?
+          </li>
+        </ul>
+
+        <h3>Shout-Out</h3>
+        <ul class="qbank">
+          <li>Who or what do you want to shout out?</li>
+          <li>What happened?</li>
+          <li>Why was it positive?</li>
+          <li>Should this be shared with the class?</li>
+        </ul>
+
+        <h3>Private Note</h3>
+        <ul class="qbank">
+          <li>What do you want Mr. Neft to know?</li>
+          <li>
+            Is this about class, work, a classmate, group work, homework, or
+            something else?
+          </li>
+          <li>Do you need Mr. Neft to follow up?</li>
+          <li>Is this urgent?</li>
+        </ul>
+
+        <h3>Anonymous Question</h3>
+        <ul class="qbank">
+          <li>What question do you want to ask?</li>
+          <li>
+            Is this about math, directions, grades, homework, class routines, or
+            something else?
+          </li>
+          <li>Would it help if Mr. Neft answered this for the whole class?</li>
+        </ul>
+      </section>
+
+      <!-- E. Weekly Review Routine -->
+      <section class="tt-card" aria-labelledby="routine">
+        <h2 id="routine">E. Weekly Review Routine</h2>
+        <ul class="routine">
+          <li><span class="day">Monday</span><span>Scan check-ins.</span></li>
+          <li>
+            <span class="day">Wednesday</span
+            ><span>Review confusion trends.</span>
+          </li>
+          <li>
+            <span class="day">Friday</span
+            ><span>Choose one suggestion or shout-out to respond to.</span>
+          </li>
+          <li>
+            <span class="day">Any day</span
+            ><span>Immediately act on safety concerns.</span>
+          </li>
+        </ul>
+      </section>
+
+      <footer class="mb-foot">
+        <a class="mb-btn ghost" href="/curriculum/student-digital-mailbox/"
+          >View Student Mailbox →</a
+        >
+        <a class="mb-btn ghost" href="/curriculum/">← Back to Curriculum Hub</a>
+      </footer>
+    </div>
+
+    <script src="../mailbox-links.js"></script>
+    <script>
+      (function () {
+        var links = window.studentDigitalMailboxLinks || {};
+        var ready =
+          window.mailboxLinkReady ||
+          function () {
+            return false;
+          };
+
+        // Copy student URL to clipboard (absolute, so it works when pasted anywhere).
+        var copyBtn = document.getElementById("copy-url");
+        var status = document.getElementById("copy-status");
+        copyBtn.addEventListener("click", function () {
+          var path = document.getElementById("student-url").value;
+          var absolute = new URL(path, window.location.origin).href;
+          var done = function () {
+            status.hidden = false;
+            setTimeout(function () {
+              status.hidden = true;
+            }, 2000);
+          };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(absolute).then(done, fallback);
+          } else {
+            fallback();
+          }
+          function fallback() {
+            var input = document.getElementById("student-url");
+            input.focus();
+            input.select();
+            try {
+              document.execCommand("copy");
+              done();
+            } catch (e) {}
+          }
+        });
+
+        // Build the live config status table from mailbox-links.js.
+        var rows = [
+          ["Class Check-In", "classCheckIn"],
+          ["I'm Confused", "confused"],
+          ["Suggestion Box", "suggestion"],
+          ["Shout-Out", "shoutOut"],
+          ["Private Note", "privateNote"],
+          ["Class Idea Doc", "classIdeaDoc"],
+          ["Anonymous Question", "anonymousQuestion"],
+        ];
+        var tbody = document.getElementById("config-rows");
+        rows.forEach(function (r) {
+          var value = links[r[1]] || "(missing)";
+          var isReady = ready(value);
+          var tr = document.createElement("tr");
+
+          var tdName = document.createElement("td");
+          tdName.textContent = r[0];
+          var tdKey = document.createElement("td");
+          var keyCode = document.createElement("code");
+          keyCode.textContent = r[1];
+          tdKey.appendChild(keyCode);
+          var tdVal = document.createElement("td");
+          var valCode = document.createElement("code");
+          valCode.textContent = value;
+          tdVal.appendChild(valCode);
+          var tdStatus = document.createElement("td");
+          var pill = document.createElement("span");
+          pill.className = "pill " + (isReady ? "set" : "todo");
+          pill.textContent = isReady ? "Live" : "Add link";
+          tdStatus.appendChild(pill);
+
+          tr.append(tdName, tdKey, tdVal, tdStatus);
+          tbody.appendChild(tr);
+        });
+      })();
+    </script>
+  </body>
+</html>

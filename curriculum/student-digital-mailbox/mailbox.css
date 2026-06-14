@@ -1,0 +1,290 @@
+/*
+ * Student Digital Mailbox — shared styles for the student + teacher pages.
+ * Reuses the Curriculum Hub palette/fonts so it feels native to the site.
+ */
+:root {
+  --navy: #15487f;
+  --teal: #205fa6;
+  --teal-light: rgba(32, 95, 166, 0.08);
+  --green: #2c7d6b;
+  --green-light: rgba(44, 125, 107, 0.08);
+  --cream: #eaf0f7;
+  --ink: #14223a;
+  --muted: #56627a;
+  --line: rgba(20, 34, 58, 0.12);
+  --card: #ffffff;
+  --surface-2: #f3f7fc;
+}
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: "Atkinson Hyperlegible", system-ui, sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(
+      1100px 520px at 88% -8%,
+      rgba(44, 125, 107, 0.14),
+      transparent 60%
+    ),
+    radial-gradient(
+      1000px 520px at -5% 2%,
+      rgba(32, 95, 166, 0.16),
+      transparent 58%
+    ),
+    var(--cream);
+}
+a {
+  color: var(--teal);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--green);
+}
+.wrap {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: clamp(28px, 6vw, 64px) clamp(18px, 5vw, 40px) 64px;
+}
+
+/* ---- Header ---- */
+.mb-head {
+  margin: 0 0 26px;
+}
+.mb-eyebrow {
+  color: var(--teal);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 12px;
+  margin: 0;
+}
+.mb-head h1 {
+  font-family: "Nunito", system-ui, sans-serif;
+  color: var(--ink);
+  margin: 8px 0 12px;
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.mb-head h1 .mb-emoji {
+  margin-right: 0.3em;
+}
+.mb-intro {
+  color: var(--ink);
+  margin: 0;
+  font-size: clamp(1rem, 2.4vw, 1.18rem);
+  max-width: 62ch;
+}
+
+/* ---- Safety / info notes ---- */
+.mb-note {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin: 22px 0;
+  font-size: 1rem;
+  border: 1px solid var(--line);
+}
+.mb-note .mb-note-icon {
+  font-size: 1.4rem;
+  line-height: 1.2;
+  flex: 0 0 auto;
+}
+.mb-note.safety {
+  background: #fff4e9;
+  border-color: #f3c79a;
+  color: #6b4310;
+}
+.mb-note.info {
+  background: var(--teal-light);
+  border-color: rgba(32, 95, 166, 0.25);
+  color: var(--navy);
+}
+.mb-note strong {
+  font-weight: 800;
+}
+
+/* ---- Submission cards grid ---- */
+.mb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin: 8px 0 36px;
+}
+.mb-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  transition:
+    transform 0.18s,
+    box-shadow 0.18s,
+    border-color 0.18s;
+}
+.mb-card:hover,
+.mb-card:focus-within {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(21, 72, 127, 0.13);
+  border-color: rgba(32, 95, 166, 0.4);
+}
+.mb-card .mb-card-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+.mb-card h2 {
+  font-family: "Nunito", system-ui, sans-serif;
+  font-size: 1.28rem;
+  font-weight: 800;
+  color: var(--ink);
+  margin: 12px 0 6px;
+}
+.mb-card p {
+  color: var(--muted);
+  margin: 0 0 18px;
+  font-size: 1rem;
+  flex: 1;
+}
+
+/* ---- Buttons ---- */
+.mb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 50px;
+  padding: 0 22px;
+  border-radius: 12px;
+  font-family: "Nunito", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 1.02rem;
+  text-align: center;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    box-shadow 0.15s;
+}
+.mb-btn:focus-visible {
+  outline: 3px solid var(--green);
+  outline-offset: 2px;
+}
+.mb-btn.primary {
+  background: var(--navy);
+  color: #fff;
+}
+.mb-btn.primary:hover {
+  background: var(--teal);
+  color: #fff;
+}
+.mb-btn.ghost {
+  background: #fff;
+  color: var(--navy);
+  border-color: var(--line);
+}
+.mb-btn.ghost:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+.mb-card .mb-btn {
+  width: 100%;
+}
+/* Disabled placeholder state — button never links anywhere broken. */
+.mb-btn.coming-soon,
+.mb-btn[aria-disabled="true"] {
+  background: var(--surface-2);
+  color: var(--muted);
+  border-color: var(--line);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ---- "How to use" steps ---- */
+.mb-section {
+  margin: 34px 0;
+}
+.mb-section h2 {
+  font-family: "Nunito", system-ui, sans-serif;
+  font-size: 1.5rem;
+  color: var(--ink);
+  margin: 0 0 16px;
+}
+.mb-steps {
+  list-style: none;
+  counter-reset: step;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+.mb-steps li {
+  counter-increment: step;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px 18px;
+  font-size: 1.05rem;
+}
+.mb-steps li::before {
+  content: counter(step);
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--green);
+  color: #fff;
+  font-family: "Nunito", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---- Footer / back nav ---- */
+.mb-foot {
+  margin-top: 40px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+@media (max-width: 480px) {
+  .mb-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    scroll-behavior: auto;
+  }
+}

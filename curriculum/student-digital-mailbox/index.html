@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Student Digital Mailbox — a safe, simple place to share ideas, questions, suggestions, and feedback with Mr. Neft."
+    />
+    <title>Student Digital Mailbox — Mr. Neft's Math Class</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Nunito:wght@600;700;800;900&display=swap"
+    />
+    <link rel="stylesheet" href="./mailbox.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="mb-head">
+        <p class="mb-eyebrow">Mr. Neft · Grade 6 Math</p>
+        <h1>
+          <span class="mb-emoji" aria-hidden="true">✉️</span>Student Digital
+          Mailbox
+        </h1>
+        <p class="mb-intro">
+          Use this page when you want to share something with Mr. Neft. You do
+          not have to write your name unless a form asks for it or you choose
+          to.
+        </p>
+      </header>
+
+      <div class="mb-note safety" role="note">
+        <span class="mb-note-icon" aria-hidden="true">🛟</span>
+        <span>
+          <strong>A quick safety note:</strong> This page is for class ideas,
+          questions, suggestions, and feedback. If someone is in danger or needs
+          help right now, tell an adult immediately.
+        </span>
+      </div>
+
+      <!-- Submission cards. Each card's button is wired from mailbox-links.js. -->
+      <section aria-label="Ways to share with Mr. Neft">
+        <div class="mb-grid">
+          <article class="mb-card">
+            <span class="mb-card-icon" aria-hidden="true">🌤️</span>
+            <h2>Class Check-In</h2>
+            <p>Tell me how class is going for you.</p>
+            <a class="mb-btn primary" data-link-key="classCheckIn">Open</a>
+          </article>
+
+          <article class="mb-card">
+            <span class="mb-card-icon" aria-hidden="true">🤔</span>
+            <h2>I'm Confused</h2>
+            <p>
+              Tell me what part of math, directions, homework, or class feels
+              confusing.
+            </p>
+            <a class="mb-btn primary" data-link-key="confused">Open</a>
+          </article>
+
+          <article class="mb-card">
+            <span class="mb-card-icon" aria-hidden="true">💡</span>
+            <h2>Suggestion Box</h2>
+            <p>Share an idea that could make class better.</p>
+            <a class="mb-btn primary" data-link-key="suggestion">Open</a>
+          </article>
+
+          <article class="mb-card">
+            <span class="mb-card-icon" aria-hidden="true">🎉</span>
+            <h2>Shout-Out</h2>
+            <p>
+              Say something positive about a classmate, group, activity, or
+              moment.
+            </p>
+            <a class="mb-btn primary" data-link-key="shoutOut">Open</a>
+          </article>
+
+          <article class="mb-card">
+            <span class="mb-card-icon" aria-hidden="true">🔒</span>
+            <h2>Private Note to Mr. Neft</h2>
+            <p>
+              Send a note if something is bothering you or you want me to know
+              something.
+            </p>
+            <a class="mb-btn primary" data-link-key="privateNote">Open</a>
+          </article>
+
+          <article class="mb-card">
+            <span class="mb-card-icon" aria-hidden="true">📝</span>
+            <h2>Class Idea Doc</h2>
+            <p>
+              Add ideas for games, examples, projects, rewards, or review
+              activities.
+            </p>
+            <a class="mb-btn primary" data-link-key="classIdeaDoc">Open</a>
+          </article>
+
+          <article class="mb-card">
+            <span class="mb-card-icon" aria-hidden="true">❓</span>
+            <h2>Anonymous Question Form</h2>
+            <p>Ask a question you were nervous to ask out loud.</p>
+            <a class="mb-btn primary" data-link-key="anonymousQuestion">Open</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="mb-section" aria-labelledby="how-to">
+        <h2 id="how-to">How to use this page</h2>
+        <ol class="mb-steps">
+          <li>Pick the box that matches what you want to share.</li>
+          <li>Answer honestly and respectfully.</li>
+          <li>Submit it so Mr. Neft can read it later.</li>
+        </ol>
+      </section>
+
+      <footer class="mb-foot">
+        <a class="mb-btn ghost" href="/curriculum/">← Back to Curriculum Hub</a>
+      </footer>
+    </div>
+
+    <script src="./mailbox-links.js"></script>
+    <script>
+      // Wire each card button to its configured link. Placeholder (unset) links
+      // fall back to a disabled "Link coming soon" state so nothing breaks.
+      (function () {
+        var links = window.studentDigitalMailboxLinks || {};
+        var ready =
+          window.mailboxLinkReady ||
+          function () {
+            return false;
+          };
+        document
+          .querySelectorAll(".mb-btn[data-link-key]")
+          .forEach(function (btn) {
+            var url = links[btn.dataset.linkKey];
+            var title = btn
+              .closest(".mb-card")
+              .querySelector("h2")
+              .textContent.trim();
+            if (ready(url)) {
+              btn.setAttribute("href", url);
+              btn.setAttribute("target", "_blank");
+              btn.setAttribute("rel", "noopener noreferrer");
+              btn.setAttribute(
+                "aria-label",
+                "Open " + title + " (opens in a new tab)",
+              );
+            } else {
+              btn.classList.add("coming-soon");
+              btn.setAttribute("aria-disabled", "true");
+              btn.setAttribute("role", "button");
+              btn.setAttribute("tabindex", "-1");
+              btn.textContent = "Link coming soon";
+              btn.setAttribute("aria-label", title + ": link coming soon");
+            }
+          });
+      })();
+    </script>
+  </body>
+</html>
