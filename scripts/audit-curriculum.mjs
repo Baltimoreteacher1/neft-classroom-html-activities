@@ -333,13 +333,21 @@ for (const name of lessonDirs) {
   }
 }
 
-// 5. Duplicate flagship routes: base + flagship twin both referenced
+// 5. Duplicate flagship routes: base + flagship twin both referenced.
+// The lesson-1 (+ 5-3) flagship twins below are an INTENTIONAL dual track —
+// standard lesson kept alongside its enhanced "flagship" build — so surfacing
+// both is expected. They are allowlisted to keep this audit quiet & trustworthy;
+// any NEW/unexpected flagship dupe still warns. Do NOT consolidate these routes:
+// the base paths back existing bookmarks + save/resume keys.
+const INTENTIONAL_FLAGSHIP_TWINS = new Set([
+  '1-1', '2-1', '3-1', '4-1', '5-3', '6-1', '7-1', '8-1', '9-1', '10-1',
+]);
 for (const name of lessonDirs) {
   if (!name.endsWith('-flagship')) continue;
   const base = name.replace(/-flagship$/, '');
   const baseRef = referencedPaths.has(`/lessons/${base}/`);
   const flagRef = referencedPaths.has(`/lessons/${name}/`);
-  if (baseRef && flagRef) {
+  if (baseRef && flagRef && !INTENTIONAL_FLAGSHIP_TWINS.has(base)) {
     add('warn', 'flagship', `both /lessons/${base}/ and /lessons/${name}/ are surfaced — possible duplicate flagship route`, 'data/*.json');
   }
 }
