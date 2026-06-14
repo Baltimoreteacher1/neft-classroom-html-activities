@@ -1,0 +1,1299 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Variable Velocity — Rover Relay | Unit 9</title>
+    <meta
+      name="description"
+      content="A 2D coordinate-plane game for Grade 6 Unit 9 (6.EE.9): identify independent and dependent variables, read tables, write equations y = kx (+ b), and plot the line as your rover delivers cargo across the grid."
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: #06101d;
+        overflow: hidden;
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+      canvas {
+        display: block;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+      /* Keyboard focus ring on the game canvas (keyboard users only). */
+      canvas:focus-visible {
+        outline: 3px solid #5ad1ff;
+        outline-offset: 4px;
+        border-radius: 8px;
+      }
+      canvas:focus:not(:focus-visible) {
+        outline: none;
+      }
+      /* ── Decorative animated star-field behind the Phaser canvas ──
+         Behind the canvas (z-index 0), never intercepts pointer input. */
+      #vv-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+        background: radial-gradient(
+          130% 90% at 50% 0%,
+          #122c4a 0%,
+          #0a1a2e 55%,
+          #050b15 100%
+        );
+      }
+      #vv-bg-layer {
+        position: absolute;
+        inset: -6% -6%;
+        will-change: transform;
+        transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+      }
+      .vv-star {
+        position: absolute;
+        border-radius: 50%;
+        background: #bfe0ff;
+        opacity: 0.5;
+        animation: vvTwinkle var(--tw, 3s) ease-in-out infinite;
+      }
+      .vv-streak {
+        position: absolute;
+        height: 2px;
+        border-radius: 2px;
+        background: linear-gradient(90deg, transparent, #7fd6ff, transparent);
+        opacity: 0.35;
+      }
+      @keyframes vvTwinkle {
+        0%,
+        100% {
+          opacity: 0.15;
+          transform: scale(0.8);
+        }
+        50% {
+          opacity: 0.75;
+          transform: scale(1.2);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #vv-bg-layer {
+          transition: none !important;
+          transform: none !important;
+        }
+        .vv-star {
+          animation: none !important;
+          opacity: 0.4 !important;
+        }
+      }
+      /* Accessible text alternative / live status for screen readers. */
+      #vv-sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+    </style>
+    <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
+    <script>
+      // CDN fallback: if the local vendor copy failed, synchronously load Phaser
+      // from a mirror (document.write blocks parsing so the mirror is ready
+      // before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      // If both sources are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#bfe0ff">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
+  <body>
+    <!-- Decorative animated star-field (behind the Phaser canvas).
+         Decorative only: aria-hidden, pointer-events:none, reduced-motion safe. -->
+    <div id="vv-bg" data-parallax aria-hidden="true">
+      <div id="vv-bg-layer" data-parallax-layer></div>
+    </div>
+    <!-- Screen-reader live region mirrors the current question + result. -->
+    <div id="vv-sr" role="status" aria-live="polite"></div>
+
+    <script>
+      // ── Decorative star-field builder + pointer parallax (gameplay-neutral) ──
+      (function () {
+        var layer = document.getElementById("vv-bg-layer");
+        if (!layer) return;
+        var reduce =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var frag = document.createDocumentFragment();
+        var i,
+          s,
+          n = 90;
+        for (i = 0; i < n; i++) {
+          s = document.createElement("div");
+          s.className = "vv-star";
+          var sz = 1 + Math.random() * 2.6;
+          s.style.width = sz + "px";
+          s.style.height = sz + "px";
+          s.style.left = Math.random() * 100 + "%";
+          s.style.top = Math.random() * 100 + "%";
+          s.style.setProperty("--tw", 2 + Math.random() * 4 + "s");
+          s.style.animationDelay = -Math.random() * 5 + "s";
+          frag.appendChild(s);
+        }
+        for (i = 0; i < 7; i++) {
+          var st = document.createElement("div");
+          st.className = "vv-streak";
+          st.style.width = 60 + Math.random() * 160 + "px";
+          st.style.left = Math.random() * 100 + "%";
+          st.style.top = Math.random() * 100 + "%";
+          st.style.transform = "rotate(" + (-20 + Math.random() * 40) + "deg)";
+          frag.appendChild(st);
+        }
+        layer.appendChild(frag);
+        if (reduce) return;
+        var tx = 0,
+          ty = 0;
+        window.addEventListener(
+          "pointermove",
+          function (e) {
+            tx = (e.clientX / window.innerWidth - 0.5) * -26;
+            ty = (e.clientY / window.innerHeight - 0.5) * -18;
+            layer.style.transform =
+              "translate3d(" + tx + "px," + ty + "px,0)";
+          },
+          { passive: true },
+        );
+      })();
+    </script>
+
+    <script>
+      // ════════════════════════════════════════════════════════════════════
+      //  VARIABLE VELOCITY — ROVER RELAY   ·   Unit 9 · 6.EE.9
+      //  Two-variable relationships: independent vs. dependent variables,
+      //  tables, equations y = kx (+ b), and plotting the line on a grid.
+      // ════════════════════════════════════════════════════════════════════
+      const W = 900,
+        H = 620;
+
+      // Palette (hex ints for Phaser graphics).
+      const C = {
+        bg: 0x0a1a2e,
+        panel: 0x10263f,
+        panelEdge: 0x244966,
+        grid: 0x1d3a57,
+        gridAxis: 0x6fb7e8,
+        ink: "#eaf4ff",
+        sub: "#9fc1de",
+        accent: 0x5ad1ff,
+        good: 0x4fd18b,
+        bad: 0xff6b6b,
+        gold: 0xffcd4d,
+        line: 0x5ad1ff,
+        rover: 0xffcd4d,
+      };
+
+      // ── small helpers ──
+      const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+      const choice = (arr) => arr[Math.floor(Math.random() * arr.length)];
+      function shuffle(a) {
+        a = a.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+      const ruleText = (k, b) =>
+        b > 0 ? `y = ${k}x + ${b}` : `y = ${k}x`;
+
+      // ── Scenario bank. iv = independent variable, dv = dependent variable. ──
+      // Levels 1-3 use y = kx; levels 4-5 introduce a start value b (y = kx + b).
+      const SCENARIOS = [
+        {
+          name: "Rover Relay",
+          story: "Your rover rolls at a steady speed across the dunes.",
+          iv: "time (hours)",
+          dv: "distance (km)",
+          ivShort: "hours",
+          dvShort: "km",
+          k: 5,
+          b: 0,
+        },
+        {
+          name: "Crystal Harvest",
+          story: "A drill collects power crystals at a steady rate.",
+          iv: "hours mining",
+          dv: "crystals",
+          ivShort: "hours",
+          dvShort: "crystals",
+          k: 4,
+          b: 0,
+        },
+        {
+          name: "Solar Charge",
+          story: "Solar panels add energy to the battery each minute.",
+          iv: "minutes",
+          dv: "energy (kW)",
+          ivShort: "min",
+          dvShort: "kW",
+          k: 6,
+          b: 0,
+        },
+        {
+          name: "Cargo Run",
+          story: "Each delivery trip loads the same number of boxes.",
+          iv: "trips",
+          dv: "boxes",
+          ivShort: "trips",
+          dvShort: "boxes",
+          k: 7,
+          b: 0,
+        },
+        {
+          name: "Base Camp",
+          story: "Camp starts stocked, then gains supplies each day.",
+          iv: "days",
+          dv: "supplies",
+          ivShort: "days",
+          dvShort: "supplies",
+          k: 3,
+          b: 6,
+        },
+        {
+          name: "Greenhouse Bloom",
+          story: "Seedlings start sprouted, then more bloom each week.",
+          iv: "weeks",
+          dv: "plants",
+          ivShort: "weeks",
+          dvShort: "plants",
+          k: 4,
+          b: 5,
+        },
+      ];
+
+      const TOTAL_LEVELS = 5; // missions per full run
+      const START_LIVES = 3;
+
+      // Build a fresh, level-appropriate scenario (k grows; b appears later).
+      function buildLevel(levelIndex) {
+        const useB = levelIndex >= 3; // levels 4 & 5 (0-indexed) add a start value
+        const pool = SCENARIOS.filter((s) => (useB ? s.b > 0 : s.b === 0));
+        const sc = choice(pool);
+        // x targets the player will plot (3 then 4 points as levels rise).
+        const count = levelIndex < 2 ? 3 : 4;
+        const xs = [];
+        for (let i = 1; i <= count; i++) xs.push(i + 1); // x = 2,3,4(,5)
+        return {
+          ...sc,
+          xs,
+          plotted: 0,
+        };
+      }
+
+      // ════════════════════════════════════════════════════════════════════
+      //  BOOT — generate small reusable textures
+      // ════════════════════════════════════════════════════════════════════
+      class BootScene extends Phaser.Scene {
+        constructor() {
+          super("Boot");
+        }
+        create() {
+          const g = this.make.graphics({ add: false });
+          // particle dot
+          g.fillStyle(0xffffff).fillCircle(4, 4, 4);
+          g.generateTexture("dot", 8, 8);
+          g.clear();
+          // soft glow
+          g.fillStyle(0xffffff, 0.85).fillCircle(10, 10, 10);
+          g.generateTexture("glow", 20, 20);
+          g.clear();
+          // confetti chip
+          g.fillStyle(0xffffff).fillRect(0, 0, 7, 4);
+          g.generateTexture("chip", 7, 4);
+          g.clear();
+          g.destroy();
+          this.scene.start("Title");
+        }
+      }
+
+      // ════════════════════════════════════════════════════════════════════
+      //  TITLE
+      // ════════════════════════════════════════════════════════════════════
+      class TitleScene extends Phaser.Scene {
+        constructor() {
+          super("Title");
+        }
+        create() {
+          this.cameras.main.setBackgroundColor(C.bg);
+          const cx = W / 2;
+
+          // floating rover emblem
+          const badge = this.add.container(cx, 150);
+          const body = this.add
+            .rectangle(0, 0, 120, 64, 0x1b3a59)
+            .setStrokeStyle(3, C.accent);
+          const cab = this.add
+            .rectangle(18, -10, 44, 30, 0x0e2840)
+            .setStrokeStyle(2, C.gold);
+          const w1 = this.add.circle(-34, 36, 16, 0x223b55).setStrokeStyle(3, C.gold);
+          const w2 = this.add.circle(34, 36, 16, 0x223b55).setStrokeStyle(3, C.gold);
+          const dish = this.add.circle(-34, -28, 11, 0x0e2840).setStrokeStyle(2, C.accent);
+          badge.add([w1, w2, body, cab, dish]);
+          this.tweens.add({
+            targets: badge,
+            y: 138,
+            duration: 1600,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.inOut",
+          });
+
+          this.add
+            .text(cx, 250, "VARIABLE VELOCITY", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "52px",
+              fontStyle: "900",
+              color: "#eaf4ff",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 296, "Rover Relay", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "26px",
+              fontStyle: "bold",
+              color: "#ffcd4d",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              cx,
+              348,
+              "Find the rule that links two variables, then plot the line\nas your rover delivers cargo across the grid.",
+              {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "18px",
+                color: "#9fc1de",
+                align: "center",
+                lineSpacing: 6,
+              },
+            )
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 404, "Grade 6 · Unit 9 · Standard 6.EE.9", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#5ad1ff",
+            })
+            .setOrigin(0.5);
+
+          this.makeButton(cx, 472, "▶  START MISSION", 0x2f8f5a, () =>
+            this.scene.start("Game", { level: 0, score: 0, lives: START_LIVES }),
+          );
+
+          this.add
+            .text(
+              cx,
+              548,
+              "Tap an answer, or use keys 1 – 4.   Back to Unit 9 hub from the menu.",
+              {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "14px",
+                color: "#7fa3c2",
+              },
+            )
+            .setOrigin(0.5);
+
+          // back-to-hub link (HTML anchor overlay via DOM is avoided; use text + redirect)
+          this.makeLink(cx, 586, "← Back to Unit 9 hub");
+          this.setSR(
+            "Variable Velocity, Rover Relay. A coordinate-plane game for two-variable relationships, standard 6.EE.9. Press start to play.",
+          );
+        }
+        makeButton(x, y, label, color, cb) {
+          const b = this.add
+            .rectangle(x, y, 280, 56, color)
+            .setStrokeStyle(3, 0xffffff, 0.85)
+            .setInteractive({ useHandCursor: true });
+          const t = this.add
+            .text(x, y, label, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "22px",
+              fontStyle: "bold",
+              color: "#ffffff",
+            })
+            .setOrigin(0.5);
+          b.on("pointerover", () => b.setScale(1.04));
+          b.on("pointerout", () => b.setScale(1));
+          b.on("pointerdown", cb);
+          return { b, t };
+        }
+        makeLink(x, y, label) {
+          const t = this.add
+            .text(x, y, label, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#9fc1de",
+            })
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true });
+          t.on("pointerover", () => t.setColor("#5ad1ff"));
+          t.on("pointerout", () => t.setColor("#9fc1de"));
+          t.on("pointerdown", () => {
+            window.location.href = "/math/unit-9/";
+          });
+          return t;
+        }
+        setSR(msg) {
+          const el = document.getElementById("vv-sr");
+          if (el) el.textContent = msg;
+        }
+      }
+
+      // ════════════════════════════════════════════════════════════════════
+      //  GAME
+      // ════════════════════════════════════════════════════════════════════
+      class GameScene extends Phaser.Scene {
+        constructor() {
+          super("Game");
+        }
+        init(data) {
+          this.levelIndex = data.level || 0;
+          this.score = data.score || 0;
+          this.lives = data.lives != null ? data.lives : START_LIVES;
+          this.streak = 0;
+          this.locked = false;
+        }
+        create() {
+          this.cameras.main.setBackgroundColor(C.bg);
+          this.level = buildLevel(this.levelIndex);
+
+          this.buildHUD();
+          this.buildGrid();
+          this.buildQuestionPanel();
+          this.buildAnswerArea();
+
+          // keyboard 1-4
+          ["ONE", "TWO", "THREE", "FOUR"].forEach((key, i) => {
+            this.input.keyboard.on("keydown-" + key, () => this.pick(i));
+          });
+
+          this.queue = this.makeQuestionQueue(this.level);
+          this.qIndex = 0;
+          this.nextQuestion();
+        }
+
+        // ── HUD ──
+        buildHUD() {
+          this.add.rectangle(W / 2, 30, W, 60, C.panel).setDepth(1);
+          this.add
+            .rectangle(W / 2, 60, W, 2, C.panelEdge)
+            .setDepth(1);
+          const mk = (x, label, anchor) => {
+            const l = this.add
+              .text(x, 16, label, {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "12px",
+                color: "#7fa3c2",
+              })
+              .setOrigin(anchor, 0)
+              .setDepth(2);
+            const v = this.add
+              .text(x, 30, "", {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "22px",
+                fontStyle: "900",
+                color: "#eaf4ff",
+              })
+              .setOrigin(anchor, 0)
+              .setDepth(2);
+            return v;
+          };
+          this.add
+            .text(20, 18, "🚀 Rover Relay", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "18px",
+              fontStyle: "bold",
+              color: "#ffcd4d",
+            })
+            .setDepth(2);
+          this.scoreT = mk(W - 20, "SCORE", 1);
+          this.levelT = mk(W - 150, "MISSION", 1);
+          this.streakT = mk(W - 300, "STREAK", 1);
+          this.livesT = mk(W - 440, "FUEL", 1);
+          this.refreshHUD();
+
+          // menu / back
+          const menu = this.add
+            .text(200, 30, "☰ Menu", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "14px",
+              fontStyle: "bold",
+              color: "#9fc1de",
+            })
+            .setOrigin(0, 0.5)
+            .setDepth(2)
+            .setInteractive({ useHandCursor: true });
+          menu.on("pointerdown", () => this.scene.start("Title"));
+          menu.on("pointerover", () => menu.setColor("#5ad1ff"));
+          menu.on("pointerout", () => menu.setColor("#9fc1de"));
+        }
+        refreshHUD() {
+          this.scoreT.setText(String(this.score));
+          this.levelT.setText(`${this.levelIndex + 1} / ${TOTAL_LEVELS}`);
+          this.streakT.setText(this.streak > 0 ? `×${this.streak}` : "—");
+          this.livesT.setText("⛽".repeat(Math.max(0, this.lives)) || "—");
+        }
+
+        // ── Coordinate grid (right side) ──
+        buildGrid() {
+          // Plot region
+          this.gx0 = 470;
+          this.gy0 = 540; // origin (bottom-left) in screen coords
+          this.gw = 400;
+          this.gh = 420;
+          this.xMax = (this.level.xs[this.level.xs.length - 1]) + 1; // a little headroom
+          const maxY =
+            this.level.k * this.level.xs[this.level.xs.length - 1] +
+            this.level.b;
+          this.yMax = Math.ceil((maxY + 1) / 5) * 5;
+
+          // panel
+          this.add
+            .rectangle(this.gx0 + this.gw / 2 - 10, 330, this.gw + 70, 470, C.panel)
+            .setStrokeStyle(2, C.panelEdge);
+
+          const gfx = this.add.graphics();
+          this.gridGfx = gfx;
+          // grid lines
+          gfx.lineStyle(1, C.grid, 1);
+          for (let xi = 0; xi <= this.xMax; xi++) {
+            const px = this.sx(xi);
+            gfx.lineBetween(px, this.sy(0), px, this.sy(this.yMax));
+          }
+          const yStep = this.yMax <= 20 ? 2 : this.yMax <= 40 ? 5 : 10;
+          for (let yi = 0; yi <= this.yMax; yi += yStep) {
+            const py = this.sy(yi);
+            gfx.lineBetween(this.sx(0), py, this.sx(this.xMax), py);
+          }
+          // axes
+          gfx.lineStyle(3, C.gridAxis, 1);
+          gfx.lineBetween(this.sx(0), this.sy(0), this.sx(this.xMax), this.sy(0));
+          gfx.lineBetween(this.sx(0), this.sy(0), this.sx(0), this.sy(this.yMax));
+
+          // axis labels
+          for (let xi = 0; xi <= this.xMax; xi++) {
+            this.add
+              .text(this.sx(xi), this.sy(0) + 8, String(xi), {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "12px",
+                color: "#7fa3c2",
+              })
+              .setOrigin(0.5, 0);
+          }
+          for (let yi = 0; yi <= this.yMax; yi += yStep) {
+            this.add
+              .text(this.sx(0) - 8, this.sy(yi), String(yi), {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "12px",
+                color: "#7fa3c2",
+              })
+              .setOrigin(1, 0.5);
+          }
+          this.add
+            .text(this.sx(this.xMax / 2), this.sy(0) + 28, `x: ${this.level.iv}`, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "13px",
+              fontStyle: "bold",
+              color: "#9fc1de",
+            })
+            .setOrigin(0.5, 0);
+          this.add
+            .text(this.sx(0) - 40, this.sy(this.yMax / 2), `y: ${this.level.dv}`, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "13px",
+              fontStyle: "bold",
+              color: "#9fc1de",
+            })
+            .setOrigin(0.5)
+            .setAngle(-90);
+
+          // dynamic layer for the plotted line + points + rover
+          this.plotGfx = this.add.graphics();
+          this.plottedPts = [];
+
+          // rover starts on the line at (0, b)
+          this.rover = this.makeRover(this.sx(0), this.sy(this.level.b));
+        }
+        sx(x) {
+          return this.gx0 + (x / this.xMax) * this.gw;
+        }
+        sy(y) {
+          return this.gy0 - (y / this.yMax) * this.gh;
+        }
+        makeRover(x, y) {
+          const c = this.add.container(x, y).setDepth(5);
+          const body = this.add
+            .rectangle(0, -10, 30, 16, 0xffcd4d)
+            .setStrokeStyle(2, 0x6b4e00);
+          const cab = this.add
+            .rectangle(5, -20, 14, 10, 0x0e2840)
+            .setStrokeStyle(1, 0x6fb7e8);
+          const w1 = this.add.circle(-9, 0, 5, 0x223b55).setStrokeStyle(2, 0xffcd4d);
+          const w2 = this.add.circle(9, 0, 5, 0x223b55).setStrokeStyle(2, 0xffcd4d);
+          c.add([body, cab, w1, w2]);
+          return c;
+        }
+
+        // ── Question panel (left) ──
+        buildQuestionPanel() {
+          this.add
+            .rectangle(230, 330, 420, 470, C.panel)
+            .setStrokeStyle(2, C.panelEdge);
+          this.scTitle = this.add
+            .text(40, 110, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "18px",
+              fontStyle: "900",
+              color: "#ffcd4d",
+            })
+            .setOrigin(0, 0);
+          this.scStory = this.add
+            .text(40, 138, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "14px",
+              color: "#9fc1de",
+              wordWrap: { width: 380 },
+              lineSpacing: 4,
+            })
+            .setOrigin(0, 0);
+          // rule chip
+          this.ruleChip = this.add
+            .rectangle(230, 196, 360, 36, 0x0e2840)
+            .setStrokeStyle(2, C.accent)
+            .setVisible(false);
+          this.ruleText = this.add
+            .text(230, 196, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "20px",
+              fontStyle: "bold",
+              color: "#5ad1ff",
+            })
+            .setOrigin(0.5)
+            .setVisible(false);
+          // table area (optional)
+          this.tableT = this.add
+            .text(40, 212, "", {
+              fontFamily: "Consolas, monospace",
+              fontSize: "16px",
+              color: "#eaf4ff",
+              lineSpacing: 4,
+            })
+            .setOrigin(0, 0);
+          // the question
+          this.qText = this.add
+            .text(230, 326, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "19px",
+              fontStyle: "bold",
+              color: "#eaf4ff",
+              align: "center",
+              wordWrap: { width: 380 },
+              lineSpacing: 5,
+            })
+            .setOrigin(0.5, 0);
+          // feedback
+          this.fbText = this.add
+            .text(230, 545, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              fontStyle: "bold",
+              color: "#4fd18b",
+              align: "center",
+              wordWrap: { width: 390 },
+            })
+            .setOrigin(0.5, 0);
+        }
+
+        buildAnswerArea() {
+          // Answer buttons are rebuilt for each question (see drawAnswers).
+          this.answerBtns = [];
+        }
+
+        // ── Build the ordered question queue for a mission ──
+        makeQuestionQueue(level) {
+          const q = [];
+          // STEP 1 — establish the rule: variable-ID then rule-from-table.
+          q.push(this.qVariableId(level));
+          q.push(this.qRuleFromTable(level));
+          // STEP 2..n — plot each x target with a compute / reverse question.
+          level.xs.forEach((x, i) => {
+            // mix in one "reverse" (given y, find x) on the last point of later levels
+            if (i === level.xs.length - 1 && this.levelIndex >= 1) {
+              q.push(this.qReverse(level, x));
+            } else {
+              q.push(this.qCompute(level, x));
+            }
+          });
+          // FINAL — predict far value (no plot, bonus understanding)
+          q.push(this.qPredict(level));
+          return q;
+        }
+
+        // independent vs dependent
+        qVariableId(level) {
+          const askIndependent = Math.random() < 0.5;
+          const correct = askIndependent ? level.iv : level.dv;
+          const other = askIndependent ? level.dv : level.iv;
+          return {
+            kind: "id",
+            story: true,
+            rule: false,
+            prompt: askIndependent
+              ? "Which is the INDEPENDENT variable (the one you choose / control)?"
+              : "Which is the DEPENDENT variable (the one that responds)?",
+            choices: shuffle([
+              { label: correct, correct: true },
+              { label: other, correct: false },
+            ]),
+            explain: askIndependent
+              ? `You control ${level.iv}. ${capit(level.dv)} depends on it.`
+              : `${capit(level.dv)} responds to ${level.iv}, so it is dependent.`,
+          };
+        }
+
+        // rule from a small table
+        qRuleFromTable(level) {
+          const k = level.k,
+            b = level.b;
+          const xsTab = [1, 2, 3];
+          const rows = xsTab.map((x) => [x, k * x + b]);
+          const table =
+            `x  |  y\n` +
+            `-------\n` +
+            rows.map((r) => `${r[0]}  |  ${r[1]}`).join("\n");
+          const correct = ruleText(k, b);
+          const distractors = new Set();
+          distractors.add(ruleText(k + 1, b));
+          distractors.add(ruleText(Math.max(2, k - 1), b));
+          distractors.add(b > 0 ? ruleText(k, 0) : `y = x + ${k}`);
+          const opts = [{ label: correct, correct: true }];
+          for (const d of distractors) {
+            if (d !== correct && opts.length < 4)
+              opts.push({ label: d, correct: false });
+          }
+          return {
+            kind: "rule",
+            story: false,
+            rule: false,
+            table,
+            prompt: "Which equation matches the table?",
+            choices: shuffle(opts),
+            explain: `Each y is ${k} times x${b ? ` plus ${b}` : ""}: ${correct}.`,
+          };
+        }
+
+        // compute y for an x (then plot)
+        qCompute(level, x) {
+          const k = level.k,
+            b = level.b;
+          const ans = k * x + b;
+          const opts = this.numChoices(ans, k);
+          return {
+            kind: "compute",
+            story: false,
+            rule: true,
+            plotX: x,
+            plotY: ans,
+            prompt: `Plot the next stop: when x = ${x} ${level.ivShort}, what is y (${level.dvShort})?`,
+            choices: opts,
+            explain: `${ruleText(k, b)} → ${k}·${x}${b ? ` + ${b}` : ""} = ${ans}.`,
+          };
+        }
+
+        // reverse: given y, find x
+        qReverse(level, x) {
+          const k = level.k,
+            b = level.b;
+          const y = k * x + b;
+          const opts = this.numChoices(x, 1, 1);
+          return {
+            kind: "reverse",
+            story: false,
+            rule: true,
+            plotX: x,
+            plotY: y,
+            prompt: `The rover reached y = ${y} ${level.dvShort}. What was x (${level.ivShort})?`,
+            choices: opts,
+            explain: `${y}${b ? ` − ${b}` : ""} ÷ ${k} = ${x}.`,
+          };
+        }
+
+        // predict a far value (no plot)
+        qPredict(level) {
+          const k = level.k,
+            b = level.b;
+          const x = randInt(7, 10);
+          const ans = k * x + b;
+          return {
+            kind: "predict",
+            story: false,
+            rule: true,
+            prompt: `Mission check: predict y when x = ${x} ${level.ivShort}.`,
+            choices: this.numChoices(ans, k),
+            explain: `${ruleText(k, b)} → ${k}·${x}${b ? ` + ${b}` : ""} = ${ans}.`,
+          };
+        }
+
+        numChoices(ans, step, minGap) {
+          step = Math.max(1, step || 1);
+          minGap = minGap || 1;
+          const set = new Set([ans]);
+          const candidates = [
+            ans + step,
+            ans - step,
+            ans + 2 * step,
+            ans - 2 * step,
+            ans + 1,
+            ans + step + 1,
+          ];
+          for (const c of candidates) {
+            if (c > 0 && Math.abs(c - ans) >= minGap) set.add(c);
+            if (set.size >= 4) break;
+          }
+          let arr = [...set].slice(0, 4);
+          while (arr.length < 4) {
+            const c = ans + randInt(1, 5) * step;
+            if (!arr.includes(c)) arr.push(c);
+          }
+          return shuffle(
+            arr.map((v) => ({ label: String(v), correct: v === ans })),
+          );
+        }
+
+        // ── question lifecycle ──
+        nextQuestion() {
+          if (this.qIndex >= this.queue.length) {
+            return this.completeLevel();
+          }
+          this.locked = false;
+          const q = this.queue[this.qIndex];
+          this.current = q;
+
+          // panel content
+          this.scTitle.setText(this.level.name);
+          this.scStory.setText(q.story ? this.level.story : "");
+          this.tableT.setText(q.table || "");
+
+          if (q.rule) {
+            this.ruleChip.setVisible(true);
+            this.ruleText
+              .setVisible(true)
+              .setText(`Rule:  ${ruleText(this.level.k, this.level.b)}`);
+          } else {
+            this.ruleChip.setVisible(false);
+            this.ruleText.setVisible(false);
+          }
+
+          this.qText.setText(q.prompt);
+          this.fbText.setText("");
+          this.drawAnswers(q.choices);
+
+          this.setSR(
+            `${q.prompt} Options: ${q.choices
+              .map((c, i) => `${i + 1}, ${c.label}`)
+              .join(". ")}.`,
+          );
+        }
+
+        drawAnswers(choices) {
+          (this.answerBtns || []).forEach((o) => o.destroy());
+          this.answerBtns = [];
+          const n = choices.length;
+          // two columns for 3-4, one row for 2
+          const cols = n <= 2 ? n : 2;
+          const rows = Math.ceil(n / cols);
+          const bw = cols === 1 ? 380 : 196;
+          const bh = 46;
+          const gapx = 16,
+            gapy = 10;
+          const ANS_CY = 468; // vertical center of the answer block (inside the panel)
+          const totalW = cols * bw + (cols - 1) * gapx;
+          const x0 = 230 - totalW / 2 + bw / 2;
+          const y0 = ANS_CY - ((rows - 1) * (bh + gapy)) / 2;
+          choices.forEach((c, i) => {
+            const r = Math.floor(i / cols),
+              cc = i % cols;
+            const x = x0 + cc * (bw + gapx);
+            const y = y0 + r * (bh + gapy);
+            const cont = this.add.container(x, y).setDepth(6);
+            const rect = this.add
+              .rectangle(0, 0, bw, bh, 0x163450)
+              .setStrokeStyle(2, C.panelEdge)
+              .setInteractive({ useHandCursor: true });
+            const num = this.add
+              .text(-bw / 2 + 16, 0, String(i + 1), {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "14px",
+                fontStyle: "bold",
+                color: "#7fa3c2",
+              })
+              .setOrigin(0, 0.5);
+            const lab = this.add
+              .text(6, 0, c.label, {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "18px",
+                fontStyle: "bold",
+                color: "#eaf4ff",
+                align: "center",
+                wordWrap: { width: bw - 50 },
+              })
+              .setOrigin(0.5);
+            cont.add([rect, num, lab]);
+            cont.rect = rect;
+            cont.choice = c;
+            rect.on("pointerover", () => {
+              if (!this.locked) rect.setFillStyle(0x1d4666);
+            });
+            rect.on("pointerout", () => {
+              if (!this.locked) rect.setFillStyle(0x163450);
+            });
+            rect.on("pointerdown", () => this.pick(i));
+            this.answerBtns.push(cont);
+          });
+        }
+
+        pick(i) {
+          if (this.locked) return;
+          const btns = this.answerBtns;
+          if (!btns || !btns[i]) return;
+          this.locked = true;
+          const cont = btns[i];
+          const correct = cont.choice.correct;
+          const q = this.current;
+
+          // highlight
+          btns.forEach((b) => {
+            if (b.choice.correct) b.rect.setFillStyle(0x1c5a3a).setStrokeStyle(3, C.good);
+          });
+          if (!correct) cont.rect.setFillStyle(0x5a1c1c).setStrokeStyle(3, C.bad);
+
+          if (correct) {
+            this.streak++;
+            const base = 100;
+            const bonus = Math.min(this.streak, 5) * 20;
+            const gain = base + bonus;
+            this.score += gain;
+            this.fbText
+              .setColor("#4fd18b")
+              .setText(`✓ +${gain}   ${q.explain}`);
+            this.burst(cont.x, cont.y, C.good);
+            // plot if this question places a point
+            if (q.plotX != null) this.plotPoint(q.plotX, q.plotY);
+            this.setSR(`Correct. ${q.explain}`);
+          } else {
+            this.streak = 0;
+            this.lives--;
+            const right = q.choices.find((c) => c.correct);
+            this.fbText
+              .setColor("#ff8f8f")
+              .setText(`✗ Answer: ${right.label}.  ${q.explain}`);
+            this.cameras.main.shake(180, 0.006);
+            this.setSR(`Not quite. ${q.explain}`);
+          }
+          this.refreshHUD();
+
+          this.time.delayedCall(correct ? 950 : 1700, () => {
+            if (this.lives <= 0) return this.gameOver();
+            this.qIndex++;
+            this.nextQuestion();
+          });
+        }
+
+        plotPoint(x, y) {
+          const px = this.sx(x),
+            py = this.sy(y);
+          // draw connecting segment from last point
+          const prev =
+            this.plottedPts.length > 0
+              ? this.plottedPts[this.plottedPts.length - 1]
+              : { px: this.sx(0), py: this.sy(this.level.b) };
+          this.plotGfx.lineStyle(3, C.line, 0.9);
+          this.plotGfx.lineBetween(prev.px, prev.py, px, py);
+          this.plotGfx.fillStyle(C.gold, 1);
+          this.plotGfx.fillCircle(px, py, 6);
+          this.plotGfx.lineStyle(2, 0x6b4e00, 1);
+          this.plotGfx.strokeCircle(px, py, 6);
+          this.plottedPts.push({ px, py, x, y });
+          // drive rover
+          this.tweens.add({
+            targets: this.rover,
+            x: px,
+            y: py,
+            duration: 600,
+            ease: "Sine.inOut",
+          });
+          // point label
+          this.add
+            .text(px + 8, py - 8, `(${x}, ${y})`, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "12px",
+              fontStyle: "bold",
+              color: "#ffcd4d",
+            })
+            .setDepth(6);
+        }
+
+        burst(x, y, color) {
+          const p = this.add.particles(x, y, "dot", {
+            speed: { min: 60, max: 180 },
+            angle: { min: 0, max: 360 },
+            scale: { start: 1, end: 0 },
+            lifespan: 500,
+            quantity: 14,
+            tint: color,
+          });
+          this.time.delayedCall(550, () => p.destroy());
+        }
+
+        completeLevel() {
+          this.score += 250; // mission bonus
+          this.refreshHUD();
+          const ov = this.add.container(0, 0).setDepth(20);
+          ov.add(this.add.rectangle(W / 2, H / 2, W, H, 0x05101d, 0.78));
+          ov.add(
+            this.add
+              .text(W / 2, 230, "MISSION COMPLETE", {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "42px",
+                fontStyle: "900",
+                color: "#4fd18b",
+              })
+              .setOrigin(0.5),
+          );
+          ov.add(
+            this.add
+              .text(
+                W / 2,
+                292,
+                `Rule mastered:  ${ruleText(this.level.k, this.level.b)}\n+250 mission bonus`,
+                {
+                  fontFamily: "Segoe UI, sans-serif",
+                  fontSize: "20px",
+                  color: "#eaf4ff",
+                  align: "center",
+                  lineSpacing: 6,
+                },
+              )
+              .setOrigin(0.5),
+          );
+          this.confetti();
+          const last = this.levelIndex + 1 >= TOTAL_LEVELS;
+          const label = last ? "🏁  SEE RESULTS" : "▶  NEXT MISSION";
+          const btn = this.add
+            .rectangle(W / 2, 380, 300, 56, 0x2f8f5a)
+            .setStrokeStyle(3, 0xffffff, 0.85)
+            .setDepth(21)
+            .setInteractive({ useHandCursor: true });
+          const bt = this.add
+            .text(W / 2, 380, label, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "22px",
+              fontStyle: "bold",
+              color: "#fff",
+            })
+            .setOrigin(0.5)
+            .setDepth(22);
+          btn.on("pointerover", () => btn.setScale(1.04));
+          btn.on("pointerout", () => btn.setScale(1));
+          btn.on("pointerdown", () => {
+            if (last) {
+              this.scene.start("Result", {
+                score: this.score,
+                lives: this.lives,
+                won: true,
+              });
+            } else {
+              this.scene.start("Game", {
+                level: this.levelIndex + 1,
+                score: this.score,
+                lives: this.lives,
+              });
+            }
+          });
+          this.setSR(
+            `Mission complete. You mastered ${ruleText(this.level.k, this.level.b)}. Score ${this.score}.`,
+          );
+        }
+
+        gameOver() {
+          this.scene.start("Result", {
+            score: this.score,
+            lives: 0,
+            won: false,
+          });
+        }
+
+        confetti() {
+          const p = this.add.particles(W / 2, -10, "chip", {
+            x: { min: 0, max: W },
+            y: -10,
+            speedY: { min: 120, max: 280 },
+            speedX: { min: -60, max: 60 },
+            angle: { min: 0, max: 360 },
+            rotate: { min: 0, max: 360 },
+            scale: { min: 0.7, max: 1.4 },
+            lifespan: 2600,
+            quantity: 3,
+            frequency: 40,
+            tint: [0xffcd4d, 0x5ad1ff, 0x4fd18b, 0xff6b6b],
+          });
+          this.time.delayedCall(1800, () => p.stop());
+        }
+
+        setSR(msg) {
+          const el = document.getElementById("vv-sr");
+          if (el) el.textContent = msg;
+        }
+      }
+
+      // ════════════════════════════════════════════════════════════════════
+      //  RESULT
+      // ════════════════════════════════════════════════════════════════════
+      class ResultScene extends Phaser.Scene {
+        constructor() {
+          super("Result");
+        }
+        init(data) {
+          this.score = data.score || 0;
+          this.won = !!data.won;
+        }
+        create() {
+          this.cameras.main.setBackgroundColor(C.bg);
+          const cx = W / 2;
+          // stars based on score
+          const stars = this.score >= 2200 ? 3 : this.score >= 1400 ? 2 : 1;
+          this.add
+            .text(cx, 150, this.won ? "RELAY COMPLETE!" : "OUT OF FUEL", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "46px",
+              fontStyle: "900",
+              color: this.won ? "#4fd18b" : "#ff8f8f",
+            })
+            .setOrigin(0.5);
+
+          for (let i = 0; i < 3; i++) {
+            this.add
+              .text(cx - 80 + i * 80, 240, i < stars ? "★" : "☆", {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "64px",
+                color: i < stars ? "#ffcd4d" : "#3a5774",
+              })
+              .setOrigin(0.5);
+          }
+
+          this.add
+            .text(cx, 326, `Final Score: ${this.score}`, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "30px",
+              fontStyle: "bold",
+              color: "#eaf4ff",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              cx,
+              372,
+              this.won
+                ? "You linked tables, equations, and graphs across every mission."
+                : "Tip: y always equals k times x (plus the start value). Try again!",
+              {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "16px",
+                color: "#9fc1de",
+                align: "center",
+                wordWrap: { width: 560 },
+              },
+            )
+            .setOrigin(0.5);
+
+          this.btn(cx - 150, 460, "↻  PLAY AGAIN", 0x2f8f5a, () =>
+            this.scene.start("Game", {
+              level: 0,
+              score: 0,
+              lives: START_LIVES,
+            }),
+          );
+          this.btn(cx + 150, 460, "🏠  UNIT 9 HUB", 0x355a86, () => {
+            window.location.href = "/math/unit-9/";
+          });
+
+          const el = document.getElementById("vv-sr");
+          if (el)
+            el.textContent = `${this.won ? "Relay complete" : "Out of fuel"}. Final score ${this.score}, ${stars} stars.`;
+        }
+        btn(x, y, label, color, cb) {
+          const b = this.add
+            .rectangle(x, y, 270, 56, color)
+            .setStrokeStyle(3, 0xffffff, 0.85)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(x, y, label, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "20px",
+              fontStyle: "bold",
+              color: "#fff",
+            })
+            .setOrigin(0.5);
+          b.on("pointerover", () => b.setScale(1.04));
+          b.on("pointerout", () => b.setScale(1));
+          b.on("pointerdown", cb);
+        }
+      }
+
+      function capit(s) {
+        return s.charAt(0).toUpperCase() + s.slice(1);
+      }
+
+      // ── launch ──
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: document.body,
+        backgroundColor: "#0a1a2e",
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+        scene: [BootScene, TitleScene, GameScene, ResultScene],
+      };
+      new Phaser.Game(config);
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
+</html>
