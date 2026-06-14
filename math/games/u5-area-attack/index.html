@@ -2,369 +2,114 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Area Attack — Lessons 5.1–5.5 Game | Neft Teacher</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Area Attack — Brick Cannon | Math Games</title>
     <meta
       name="description"
-      content="Arcade review game for Grade 6 lessons 5.1–5.5: area of rectangles, parallelograms, triangles, and trapezoids (6.G.1)."
+      content="A 2D aim-and-launch game for Grade 6 lessons 5.1-5.5 (6.G.1): compute the area of rectangles, parallelograms, triangles, and trapezoids, then fire a brick at the floating target with the correct area."
     />
-    <link rel="stylesheet" href="/assets/shared.css" />
     <style>
-      :root {
-        --navy: #0f2b3c;
-        --blue: #1a6fb5;
-        --teal: #0e8a7d;
-        --gold: #d4952a;
-        --coral: #c45a3c;
-        --green: #2d874b;
-        --ink: #1a2633;
-        --muted: #5e6e7e;
-        --line: #e2e7ec;
-        --bg: #f7f9fb;
-        --font: "Segoe UI", system-ui, sans-serif;
-      }
       * {
+        margin: 0;
+        padding: 0;
         box-sizing: border-box;
       }
       body {
-        margin: 0;
-        font-family: var(--font);
-        color: var(--ink);
-        background: var(--bg);
-        line-height: 1.5;
+        background: #0a1626;
+        overflow: hidden;
+        font-family: "Segoe UI", system-ui, sans-serif;
       }
-      .wrap {
-        max-width: 680px;
-        margin: 0 auto;
-        padding: 0 18px 60px;
-      }
-      .ghero {
-        background: linear-gradient(135deg, #2d874b, #d4952a);
-        color: #fff;
-        text-align: center;
-        padding: 30px 20px 26px;
-      }
-      .ghero .deco {
-        font-size: 48px;
-      }
-      .ghero h1 {
-        margin: 8px 0 6px;
-        font-size: clamp(24px, 5vw, 34px);
-      }
-      .ghero p {
-        margin: 0 auto;
-        max-width: 520px;
-        color: rgba(255, 255, 255, 0.9);
-      }
-      .breadcrumb {
-        font-size: 13px;
-        padding: 14px 0;
-        color: var(--muted);
-      }
-      .breadcrumb a {
-        color: var(--blue);
-        text-decoration: none;
-        font-weight: 600;
-      }
-      .hud {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        background: #fff;
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 12px 16px;
-        margin: 18px 0;
-        font-weight: 800;
-        box-shadow: 0 2px 10px rgba(15, 43, 60, 0.06);
-      }
-      .hud .lbl {
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        color: var(--muted);
+      canvas {
         display: block;
-      }
-      .hud .val {
-        font-size: 22px;
-      }
-      .hearts {
-        color: var(--coral);
-        letter-spacing: 2px;
-      }
-      .card {
-        background: #fff;
-        border: 1px solid var(--line);
-        border-radius: 18px;
-        padding: 26px 22px;
-        box-shadow: 0 6px 22px rgba(15, 43, 60, 0.08);
-        text-align: center;
-      }
-      .mode-tag {
-        font-size: 12px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--teal);
-      }
-      .prompt {
-        font-size: clamp(22px, 5vw, 30px);
-        font-weight: 800;
-        margin: 8px 0 4px;
-      }
-      .sub {
-        color: var(--muted);
-        margin: 0 0 18px;
-      }
-      .opts {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
-      @media (max-width: 460px) {
-        .opts {
-          grid-template-columns: 1fr;
-        }
-      }
-      .opt {
-        padding: 16px;
-        border: 2px solid var(--line);
-        border-radius: 14px;
-        background: #fff;
-        font-size: 20px;
-        font-weight: 800;
-        cursor: pointer;
-        font-family: inherit;
-        color: var(--ink);
-        transition:
-          transform 0.06s,
-          border-color 0.15s;
-      }
-      .opt:hover {
-        border-color: var(--blue);
-      }
-      .opt:active {
-        transform: scale(0.97);
-      }
-      .opt.right {
-        border-color: var(--green);
-        background: #e6f4eb;
-        color: var(--green);
-        animation: pop 0.3s;
-      }
-      .opt.wrong {
-        border-color: var(--coral);
-        background: #fdeee9;
-        color: var(--coral);
-        animation: shake 0.3s;
-      }
-      @keyframes pop {
-        50% {
-          transform: scale(1.06);
-        }
-      }
-      @keyframes shake {
-        25% {
-          transform: translateX(-6px);
-        }
-        75% {
-          transform: translateX(6px);
-        }
-      }
-      .feedback {
-        min-height: 26px;
-        margin-top: 16px;
-        font-weight: 800;
-      }
-      .feedback.ok {
-        color: var(--green);
-      }
-      .feedback.no {
-        color: var(--coral);
-      }
-      .btn {
-        background: var(--blue);
-        color: #fff;
-        border: none;
-        border-radius: 12px;
-        padding: 13px 26px;
-        font-size: 16px;
-        font-weight: 800;
-        cursor: pointer;
-        font-family: inherit;
-        margin-top: 8px;
-      }
-      .btn:hover {
-        filter: brightness(1.08);
-      }
-      .btn.start {
-        background: var(--teal);
-        font-size: 18px;
-        padding: 15px 34px;
-      }
-      .bar {
-        height: 10px;
-        background: var(--line);
-        border-radius: 50px;
-        overflow: hidden;
-        margin: 14px 0 2px;
-      }
-      .bar > div {
-        height: 100%;
-        width: 100%;
-        background: linear-gradient(90deg, var(--gold), var(--coral));
-        transition: width 0.25s linear;
-      }
-      .hidden {
-        display: none;
-      }
-      .big-score {
-        font-size: 52px;
-        font-weight: 900;
-        color: var(--blue);
-        margin: 6px 0;
-      }
-      .legend {
-        font-size: 13px;
-        color: var(--muted);
-        margin-top: 18px;
-      }
-      .legend a {
-        color: var(--blue);
-        font-weight: 700;
-      }
-      ul.modes {
-        text-align: left;
-        max-width: 430px;
-        margin: 14px auto;
-        color: var(--muted);
-        font-size: 15px;
-      }
-
-      /* --- Bespoke Area Attack polish (additive, motion-safe) --- */
-      /* Hero parallax grid layer */
-      .ghero {
+        margin: 0 auto;
         position: relative;
-        overflow: hidden;
+        z-index: 1;
       }
-      .ghero-grid {
-        position: absolute;
-        inset: -12% -12% -12% -12%;
-        background-image:
-          linear-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255, 255, 255, 0.16) 1px, transparent 1px);
-        background-size: 34px 34px;
+      canvas:focus-visible {
+        outline: 3px solid #4488ff;
+        outline-offset: 4px;
+        border-radius: 8px;
+      }
+      canvas:focus:not(:focus-visible) {
+        outline: none;
+      }
+      #aa-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
         pointer-events: none;
+        background: radial-gradient(
+          130% 90% at 50% 0%,
+          #14304f 0%,
+          #0c1c30 55%,
+          #060f1a 100%
+        );
+      }
+      #aa-bg-layer {
+        position: absolute;
+        inset: -6% -6%;
         will-change: transform;
+        transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
       }
-      .ghero .deco,
-      .ghero h1,
-      .ghero p {
-        position: relative;
+      .aa-star {
+        position: absolute;
+        border-radius: 50%;
+        background: #bcd8ff;
+        opacity: 0.5;
+        animation: aaTwinkle var(--tw, 3s) ease-in-out infinite;
       }
-
-      /* Geometry diagram hint */
-      .geo-card {
-        position: relative;
-        overflow: hidden;
-      }
-      .geo-stage {
-        display: flex;
-        justify-content: center;
-        margin: 4px 0 2px;
-        will-change: transform;
-      }
-      .geo-diagram svg {
-        width: 100%;
-        max-width: 240px;
-        height: auto;
-      }
-      .geo-shape {
-        fill: rgba(26, 111, 181, 0.12);
-        stroke: var(--blue);
-        stroke-width: 2.5;
-        stroke-linejoin: round;
-      }
-      .geo-tri {
-        fill: rgba(14, 138, 125, 0.12);
-        stroke: var(--teal);
-      }
-      .geo-trap {
-        fill: rgba(212, 149, 42, 0.14);
-        stroke: var(--gold);
-      }
-      .geo-dim {
-        stroke: var(--muted);
-        stroke-width: 1.5;
-        stroke-dasharray: 4 3;
-      }
-      .geo-label {
-        font: 700 13px var(--font);
-        fill: var(--ink);
-      }
-      /* Animated draw-on of the shape outline */
-      .geo-shape.geo-anim {
-        stroke-dasharray: 600;
-        stroke-dashoffset: 600;
-        animation: geoDraw 0.6s ease-out forwards;
-      }
-      @keyframes geoDraw {
-        to {
-          stroke-dashoffset: 0;
+      @keyframes aaTwinkle {
+        0%,
+        100% {
+          opacity: 0.15;
+          transform: scale(0.8);
+        }
+        50% {
+          opacity: 0.75;
+          transform: scale(1.2);
         }
       }
-
-      /* Animated area calculation sequence */
-      .calc-seq {
-        min-height: 22px;
-        margin: 2px 0 12px;
-        font-weight: 800;
-        font-size: 17px;
-        color: var(--muted);
-        letter-spacing: 0.01em;
-      }
-      .calc-seq .calc-tok {
-        display: inline-block;
-        opacity: 0;
-        transform: translateY(4px);
-        animation: calcIn 0.28s ease-out forwards;
-      }
-      .calc-seq .calc-ans {
-        color: var(--green);
-        font-size: 20px;
-      }
-
-      /* Visible keyboard focus ring on every interactive control. */
-      .opt:focus-visible,
-      .btn:focus-visible {
-        outline: 3px solid var(--gold);
-        outline-offset: 2px;
-      }
-      @keyframes calcIn {
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
       @media (prefers-reduced-motion: reduce) {
-        .ghero-grid {
+        #aa-bg-layer {
+          transition: none !important;
           transform: none !important;
         }
-        .geo-stage {
-          transform: none !important;
+        .aa-star {
+          animation: none !important;
+          opacity: 0.4 !important;
         }
-        .geo-shape.geo-anim {
-          animation: none;
-          stroke-dashoffset: 0;
-        }
-        .calc-seq .calc-tok {
-          animation: none;
-          opacity: 1;
-          transform: none;
-        }
+      }
+      #aa-sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
       }
     </style>
+    <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
+    <script>
+      // CDN fallback: if the local vendor copy failed, synchronously load Phaser
+      // from a mirror (document.write blocks parsing so the mirror is ready
+      // before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      // If both sources are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#bcd8ff">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
@@ -373,484 +118,950 @@
     <!-- gfx-injected:end -->
   </head>
   <body>
-    <header class="ghero" data-parallax>
-      <div class="ghero-grid" data-parallax-layer aria-hidden="true"></div>
-      <div class="deco">📐</div>
-      <h1>Area Attack</h1>
-      <p>
-        Crush area problems for rectangles, parallelograms, triangles, and
-        trapezoids before the timer runs out!
-      </p>
-    </header>
-    <div class="wrap">
-      <nav class="breadcrumb">
-        <a href="/">Home</a> / <a href="/math/">Math</a> /
-        <a href="/math/games/">Games</a> / Area Attack
-      </nav>
-
-      <section class="card" id="startScreen">
-        <p class="mode-tag">Lessons 5.1–5.5 · 6.G.1</p>
-        <h2 style="margin: 6px 0">Ready to attack?</h2>
-        <ul class="modes">
-          <li>
-            <strong>Round 1 — Rectangles &amp; Parallelograms.</strong> Area =
-            base × height.
-          </li>
-          <li>
-            <strong>Round 2 — Triangles.</strong> Area = ½ × base × height.
-          </li>
-          <li>
-            <strong>Round 3 — Trapezoids.</strong> Area = ½ × (b₁ + b₂) ×
-            height.
-          </li>
-        </ul>
-        <p class="sub">
-          You have <strong>3 ❤</strong> and a timer on each question. Build a
-          streak for bonus points!
-        </p>
-        <button class="btn start" id="startBtn" type="button">
-          Start Game ▶
-        </button>
-      </section>
-
-      <section id="playScreen" class="hidden">
-        <div class="hud">
-          <div>
-            <span class="lbl">Score</span><span class="val" id="score">0</span>
-          </div>
-          <div>
-            <span class="lbl">Streak</span
-            ><span class="val" id="streak">0</span>
-          </div>
-          <div>
-            <span class="lbl">Lives</span
-            ><span class="val hearts" id="lives">❤❤❤</span>
-          </div>
-          <div>
-            <span class="lbl">Question</span
-            ><span class="val" id="qnum">1</span>
-          </div>
-        </div>
-        <div class="bar"><div id="timebar"></div></div>
-        <div class="card geo-card" style="margin-top: 14px" data-parallax>
-          <span class="mode-tag" id="modeTag"></span>
-          <div class="geo-stage" data-parallax-layer aria-hidden="true">
-            <div class="geo-diagram" id="geoDiagram"></div>
-          </div>
-          <div class="prompt" id="prompt"></div>
-          <p class="sub" id="sub"></p>
-          <div class="calc-seq" id="calcSeq" aria-live="polite"></div>
-          <div class="opts" id="opts"></div>
-          <div class="feedback" id="feedback"></div>
-          <button class="btn hidden" id="nextBtn" type="button">Next ▶</button>
-        </div>
-      </section>
-
-      <section class="card hidden" id="resultScreen">
-        <p class="mode-tag">Game Over</p>
-        <div class="big-score" id="finalScore">0</div>
-        <p id="resultMsg" style="font-weight: 700"></p>
-        <p class="sub" id="resultDetail"></p>
-        <button class="btn start" id="againBtn" type="button">
-          Play Again 🔁
-        </button>
-        <p class="legend">
-          More review:
-          <a href="/math/review-arcade/">Boss-Battle Review Arcade</a> ·
-          <a href="/math/games/">All Games</a>
-        </p>
-      </section>
+    <!-- Decorative animated star-field (behind the Phaser canvas). -->
+    <div id="aa-bg" data-parallax aria-hidden="true">
+      <div id="aa-bg-layer" data-parallax-layer></div>
     </div>
-
+    <!-- Screen-reader live region: mirrors the current shape + result. -->
+    <div id="aa-sr" role="status" aria-live="polite"></div>
     <script>
-      function rnd(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
+      // Decorative star-field builder (reduced-motion safe; pointer-neutral).
+      (function () {
+        "use strict";
+        var reduceMQ =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)");
+        var layer = document.getElementById("aa-bg-layer");
+        if (!layer) return;
+        function rnd(a, b) {
+          return a + Math.random() * (b - a);
+        }
+        function build() {
+          layer.textContent = "";
+          var reduce = !!(reduceMQ && reduceMQ.matches);
+          var n = reduce ? 16 : 34;
+          for (var i = 0; i < n; i++) {
+            var s = document.createElement("div");
+            s.className = "aa-star";
+            var sz = rnd(1.5, 4);
+            s.style.width = s.style.height = sz.toFixed(1) + "px";
+            s.style.left = rnd(0, 100).toFixed(2) + "%";
+            s.style.top = rnd(0, 100).toFixed(2) + "%";
+            s.style.setProperty("--tw", rnd(2.2, 5).toFixed(2) + "s");
+            s.style.animationDelay = "-" + rnd(0, 4).toFixed(2) + "s";
+            layer.appendChild(s);
+          }
+        }
+        build();
+        var driver = false;
+        function onMove(e) {
+          var dx = e.clientX / (window.innerWidth || 1) - 0.5;
+          var dy = e.clientY / (window.innerHeight || 1) - 0.5;
+          layer.style.transform =
+            "translate3d(" +
+            (dx * 20).toFixed(2) +
+            "px," +
+            (dy * 12).toFixed(2) +
+            "px,0)";
+        }
+        function attach() {
+          if (driver || (reduceMQ && reduceMQ.matches)) return;
+          driver = true;
+          window.addEventListener("pointermove", onMove, { passive: true });
+        }
+        function detach() {
+          if (!driver) return;
+          driver = false;
+          window.removeEventListener("pointermove", onMove);
+          layer.style.transform = "";
+        }
+        attach();
+        if (reduceMQ) {
+          var onChange = function () {
+            build();
+            if (reduceMQ.matches) detach();
+            else attach();
+          };
+          if (reduceMQ.addEventListener)
+            reduceMQ.addEventListener("change", onChange);
+          else if (reduceMQ.addListener) reduceMQ.addListener(onChange);
+        }
+        var rt;
+        window.addEventListener("resize", function () {
+          clearTimeout(rt);
+          rt = setTimeout(build, 200);
+        });
+      })();
+    </script>
+    <script>
+      // ── AREA ATTACK — BRICK CANNON ──
+      // Phaser 3 — Grade 6 Math — Area of rectangles, parallelograms,
+      // triangles, trapezoids (6.G.1).
+      // Mechanic: a shape (with labeled dimensions) is drawn at the bottom.
+      // Three or four answer-targets drift across the sky. Aim the cannon
+      // (rotate left/right) and fire a brick at the target that shows the
+      // shape's correct area. Hit the right one = build a tower; hit a wrong
+      // one or miss everything = lose a life. Targets move faster each level.
+
+      const W = 820,
+        H = 600;
+      const LS_KEY = "aa_brick_cannon_highscore";
+
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx)
+            try {
+              this.ctx = new (window.AudioContext ||
+                window.webkitAudioContext)();
+            } catch (e) {}
+        },
+        play(t, f, d, v = 0.18) {
+          if (!this.ctx) return;
+          try {
+            const c = this.ctx,
+              o = c.createOscillator(),
+              g = c.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, c.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
+            o.connect(g);
+            g.connect(c.destination);
+            o.start();
+            o.stop(c.currentTime + d);
+          } catch (e) {}
+        },
+        fire() {
+          this.play("square", 180, 0.08, 0.12);
+        },
+        good() {
+          this.play("sine", 660, 0.1, 0.25);
+          this.play("sine", 880, 0.14, 0.2);
+        },
+        bad() {
+          this.play("sawtooth", 200, 0.25, 0.18);
+          this.play("sawtooth", 150, 0.3, 0.14);
+        },
+        level() {
+          [523, 659, 784, 1047].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.15, 0.22), i * 70),
+          );
+        },
+        win() {
+          [523, 659, 784, 1047, 1318].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.25, 0.25), i * 110),
+          );
+        },
+        lose() {
+          [400, 330, 260, 200].forEach((f, i) =>
+            setTimeout(() => this.play("sawtooth", f, 0.3, 0.14), i * 170),
+          );
+        },
+      };
+
+      function randInt(a, b) {
+        return Math.floor(Math.random() * (b - a + 1)) + a;
       }
       function shuffle(a) {
-        for (var i = a.length - 1; i > 0; i--) {
-          var j = Math.floor(Math.random() * (i + 1));
-          var t = a[i];
-          a[i] = a[j];
-          a[j] = t;
+        const r = [...a];
+        for (let i = r.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [r[i], r[j]] = [r[j], r[i]];
         }
-        return a;
+        return r;
+      }
+      function srSay(msg) {
+        const el = document.getElementById("aa-sr");
+        if (el) el.textContent = msg;
       }
 
-      var TOTAL = 12,
-        TIME = 12;
-      var state = {};
+      // ── Shape generator ────────────────────────────────────────────────
+      // Returns { type, prompt, formula, area(int), shapeData, options:[ints] }
+      // Dimensions chosen so every area is a whole number (triangle/trapezoid
+      // use even products → integer area). Level controls which types appear.
+      function generateShape(level) {
+        const types =
+          level <= 2
+            ? ["rectangle", "parallelogram"]
+            : level <= 4
+              ? ["rectangle", "parallelogram", "triangle"]
+              : ["rectangle", "parallelogram", "triangle", "trapezoid"];
+        const type = types[randInt(0, types.length - 1)];
+        const maxDim = level <= 2 ? 12 : level <= 4 ? 16 : 22;
+        const minDim = 3;
 
-      function distinctOpts(correct, makeWrong) {
-        var set = {};
-        set[String(correct)] = true;
-        var opts = [correct];
-        var guard = 0;
-        while (opts.length < 4 && guard < 50) {
-          guard++;
-          var w = makeWrong();
-          var k = String(w);
-          if (!set[k] && w > 0) {
-            set[k] = true;
-            opts.push(w);
+        let prompt, formula, area, shapeData;
+        if (type === "rectangle") {
+          const b = randInt(minDim, maxDim),
+            h = randInt(minDim, maxDim);
+          area = b * h;
+          prompt = "Rectangle  base " + b + ",  height " + h;
+          formula = "A = b × h";
+          shapeData = { type, b, h };
+        } else if (type === "parallelogram") {
+          const b = randInt(minDim, maxDim),
+            h = randInt(minDim, maxDim);
+          area = b * h;
+          prompt = "Parallelogram  base " + b + ",  height " + h;
+          formula = "A = b × h";
+          shapeData = { type, b, h };
+        } else if (type === "triangle") {
+          // Force integer area: ensure b*h is even.
+          let b = randInt(minDim, maxDim),
+            h = randInt(minDim, maxDim);
+          if ((b * h) % 2 !== 0) h = h + 1; // bump height so product even
+          area = (b * h) / 2;
+          prompt = "Triangle  base " + b + ",  height " + h;
+          formula = "A = ½ × b × h";
+          shapeData = { type, b, h };
+        } else {
+          // Trapezoid: (b1+b2)*h/2; force (b1+b2)*h even for integer area.
+          let b1 = randInt(minDim, maxDim),
+            b2 = randInt(minDim, maxDim),
+            h = randInt(minDim, maxDim);
+          if (((b1 + b2) * h) % 2 !== 0) h = h + 1;
+          area = ((b1 + b2) * h) / 2;
+          prompt =
+            "Trapezoid  bases " + b1 + " & " + b2 + ",  height " + h;
+          formula = "A = ½ (b₁ + b₂) × h";
+          shapeData = { type, b1, b2, h };
+        }
+
+        // Build 4 distinct positive integer options including the area.
+        const seen = new Set([area]);
+        const opts = [area];
+        // Common misconception distractors (forgot ½, used perimeter, etc.).
+        const pool = [
+          area * 2,
+          Math.round(area / 2),
+          area + randInt(2, 9),
+          area - randInt(2, 9),
+          area + randInt(10, 20),
+        ];
+        for (const v of shuffle(pool)) {
+          if (opts.length >= 4) break;
+          if (v > 0 && Number.isInteger(v) && !seen.has(v)) {
+            seen.add(v);
+            opts.push(v);
           }
         }
-        var pad = 1;
-        while (opts.length < 4) {
-          var extra = correct + pad;
-          var k2 = String(extra);
-          if (!set[k2]) {
-            set[k2] = true;
-            opts.push(extra);
+        let g = 1;
+        while (opts.length < 4 && g < 60) {
+          const v = area + g;
+          if (v > 0 && !seen.has(v)) {
+            seen.add(v);
+            opts.push(v);
           }
-          pad++;
+          g++;
         }
-        return { opts: shuffle(opts.map(String)), correct: String(correct) };
-      }
-
-      function buildQuestion(i) {
-        var round = i < 4 ? 1 : i < 8 ? 2 : 3;
-        if (round === 1) {
-          // Rectangle / parallelogram: area = base × height
-          var b = rnd(3, 12),
-            h = rnd(3, 12);
-          var ans = b * h;
-          var o = distinctOpts(ans, function () {
-            var off = rnd(1, 8);
-            return ans + (Math.random() < 0.5 ? off : -off);
-          });
-          var shape = Math.random() < 0.5 ? "Rectangle" : "Parallelogram";
-          return {
-            tag: "Rectangles & Parallelograms",
-            prompt: shape + ": base " + b + ", height " + h + ". Area = ?",
-            sub: "Use A = base × height.",
-            opts: o.opts,
-            correct: o.correct,
-            why:
-              shape + " area = " + b + " × " + h + " = " + ans + " sq units.",
-            shape: shape === "Parallelogram" ? "parallelogram" : "rectangle",
-            dims: { b: b, h: h },
-            calc: [String(b), "×", String(h), "=", String(ans)],
-          };
-        }
-        if (round === 2) {
-          // Triangle: area = ½ × base × height (ensure whole number: make b even)
-          var b2 = rnd(2, 12) * 2; // b2 is even so b2/2 is whole
-          var h2 = rnd(3, 12);
-          var ans2 = (b2 * h2) / 2;
-          var o2 = distinctOpts(ans2, function () {
-            var off = rnd(1, 6);
-            return ans2 + (Math.random() < 0.5 ? off : -off);
-          });
-          return {
-            tag: "Triangles",
-            prompt: "Triangle: base " + b2 + ", height " + h2 + ". Area = ?",
-            sub: "Use A = ½ × base × height.",
-            opts: o2.opts,
-            correct: o2.correct,
-            why:
-              "Triangle area = ½ × " +
-              b2 +
-              " × " +
-              h2 +
-              " = " +
-              ans2 +
-              " sq units.",
-            shape: "triangle",
-            dims: { b: b2, h: h2 },
-            calc: ["½", "×", String(b2), "×", String(h2), "=", String(ans2)],
-          };
-        }
-        // Round 3: trapezoid: area = ½ × (b1+b2) × h (ensure whole: make (b1+b2) even)
-        var b1 = rnd(3, 10),
-          b2t = rnd(3, 10);
-        // If (b1+b2t) is odd, increment b2t by 1 to make sum even
-        if ((b1 + b2t) % 2 !== 0) {
-          b2t += 1;
-        }
-        var h3 = rnd(3, 12);
-        var ans3 = ((b1 + b2t) * h3) / 2;
-        var o3 = distinctOpts(ans3, function () {
-          var off = rnd(1, 8);
-          return ans3 + (Math.random() < 0.5 ? off : -off);
-        });
         return {
-          tag: "Trapezoids",
-          prompt:
-            "Trapezoid: bases " +
-            b1 +
-            " and " +
-            b2t +
-            ", height " +
-            h3 +
-            ". Area = ?",
-          sub: "Use A = ½ × (b₁ + b₂) × height.",
-          opts: o3.opts,
-          correct: o3.correct,
-          why:
-            "Trapezoid area = ½ × (" +
-            b1 +
-            " + " +
-            b2t +
-            ") × " +
-            h3 +
-            " = " +
-            ans3 +
-            " sq units.",
-          shape: "trapezoid",
-          dims: { b1: b1, b2: b2t, h: h3 },
-          calc: [
-            "½",
-            "×",
-            "(" + b1 + "+" + b2t + ")",
-            "×",
-            String(h3),
-            "=",
-            String(ans3),
-          ],
+          type,
+          prompt,
+          formula,
+          area,
+          shapeData,
+          options: shuffle(opts.slice(0, 4)),
         };
       }
 
-      var REDUCE =
-        window.matchMedia &&
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: document.body,
+        backgroundColor: "#0c1c30",
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+        scene: [BootScene, TitleScene, GameScene, ResultScene],
+      };
 
-      // --- Bespoke: inline SVG geometry diagram hint (purely visual) ---
-      function svgWrap(inner) {
-        return (
-          '<svg viewBox="0 0 200 140" role="img" aria-hidden="true">' +
-          inner +
-          "</svg>"
-        );
+      function BootScene() {
+        return new Phaser.Scene("Boot");
       }
-      function dimLabel(x, y, txt, anchor) {
-        return (
-          '<text class="geo-label" x="' +
-          x +
-          '" y="' +
-          y +
-          '" text-anchor="' +
-          (anchor || "middle") +
-          '">' +
-          txt +
-          "</text>"
-        );
-      }
-      function renderDiagram(q) {
-        var el = document.getElementById("geoDiagram");
-        if (!el) return;
-        var d = q.dims || {},
-          svg = "";
-        var anim = REDUCE ? "" : " geo-anim";
-        if (q.shape === "rectangle") {
-          svg = svgWrap(
-            '<rect class="geo-shape' +
-              anim +
-              '" x="40" y="35" width="120" height="70" rx="2"/>' +
-              dimLabel(100, 124, "base = " + d.b) +
-              dimLabel(28, 74, "h " + d.h, "end"),
-          );
-        } else if (q.shape === "parallelogram") {
-          svg = svgWrap(
-            '<polygon class="geo-shape' +
-              anim +
-              '" points="60,35 170,35 140,105 30,105"/>' +
-              dimLabel(100, 124, "base = " + d.b) +
-              dimLabel(178, 74, "h " + d.h, "start"),
-          );
-        } else if (q.shape === "triangle") {
-          svg = svgWrap(
-            '<polygon class="geo-shape geo-tri' +
-              anim +
-              '" points="30,105 170,105 95,30"/>' +
-              '<line class="geo-dim" x1="95" y1="30" x2="95" y2="105"/>' +
-              dimLabel(100, 124, "base = " + d.b) +
-              dimLabel(108, 70, "h " + d.h, "start"),
-          );
-        } else if (q.shape === "trapezoid") {
-          svg = svgWrap(
-            '<polygon class="geo-shape geo-trap' +
-              anim +
-              '" points="55,35 145,35 175,105 25,105"/>' +
-              dimLabel(100, 28, "b₁ = " + d.b1) +
-              dimLabel(100, 124, "b₂ = " + d.b2) +
-              dimLabel(186, 74, "h " + d.h, "start"),
-          );
-        }
-        el.innerHTML = svg;
-      }
+      BootScene.prototype = Object.create(Phaser.Scene.prototype);
+      BootScene.prototype.constructor = BootScene;
+      BootScene.prototype.create = function () {
+        const g = this.make.graphics({ add: false });
+        g.fillStyle(0xffffff);
+        g.fillCircle(4, 4, 4);
+        g.generateTexture("dot", 8, 8);
+        g.clear();
+        g.fillStyle(0xff8844);
+        g.fillRect(0, 0, 14, 14);
+        g.generateTexture("chunk", 14, 14);
+        g.destroy();
+        this.scene.start("Title");
+      };
 
-      // --- Bespoke: animated area calculation sequence (reveal on answer) ---
-      function showCalc(q) {
-        var el = document.getElementById("calcSeq");
-        if (!el || !q.calc) return;
-        el.innerHTML = "";
-        q.calc.forEach(function (tok, idx) {
-          var span = document.createElement("span");
-          var isAns = idx === q.calc.length - 1;
-          span.className = "calc-tok" + (isAns ? " calc-ans" : "");
-          span.textContent = tok;
-          if (!REDUCE) {
-            span.style.animationDelay = idx * 0.12 + "s";
-          }
-          el.appendChild(span);
-          if (idx < q.calc.length - 1) {
-            el.appendChild(document.createTextNode(" "));
-          }
+      function TitleScene() {
+        return new Phaser.Scene("Title");
+      }
+      TitleScene.prototype = Object.create(Phaser.Scene.prototype);
+      TitleScene.prototype.constructor = TitleScene;
+      TitleScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x0c1c30);
+        this.add
+          .text(cx, 120, "AREA ATTACK", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "64px",
+            color: "#4488ff",
+            stroke: "#060f1a",
+            strokeThickness: 6,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 175, "Brick Cannon", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "26px",
+            color: "#88ccaa",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(
+            cx,
+            235,
+            "Find the area of the shape, then AIM the cannon and FIRE\na brick at the target with the matching area!",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              color: "#cfe0f0",
+              align: "center",
+            },
+          )
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 295, "← → aim · SPACE fire · 6.G.1 · Lessons 5.1–5.5", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: "#7fa0c0",
+          })
+          .setOrigin(0.5);
+
+        const hs = localStorage.getItem(LS_KEY);
+        if (hs)
+          this.add
+            .text(cx, 330, "High Score: " + hs, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              color: "#ffd24a",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+
+        const btn = this.add
+          .rectangle(cx, 400, 240, 58, 0x1a6fb5)
+          .setInteractive({ useHandCursor: true });
+        const btnT = this.add
+          .text(cx, 400, "START ▶", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "24px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.tweens.add({
+          targets: [btn, btnT],
+          scaleX: 1.05,
+          scaleY: 1.05,
+          duration: 800,
+          yoyo: true,
+          repeat: -1,
         });
-      }
-      function clearCalc() {
-        var el = document.getElementById("calcSeq");
-        if (el) el.innerHTML = "";
-      }
+        const start = () => {
+          SFX.init();
+          SFX.fire();
+          this.scene.start("Game");
+        };
+        btn.on("pointerover", () => btn.setFillStyle(0x2484d0));
+        btn.on("pointerout", () => btn.setFillStyle(0x1a6fb5));
+        btn.on("pointerdown", start);
+        this.input.keyboard.on("keydown-SPACE", start);
+        this.input.keyboard.on("keydown-ENTER", start);
 
-      function startGame() {
-        state = { i: 0, score: 0, streak: 0, lives: 3, locked: false };
-        document.getElementById("startScreen").classList.add("hidden");
-        document.getElementById("resultScreen").classList.add("hidden");
-        document.getElementById("playScreen").classList.remove("hidden");
-        nextQuestion();
+        const hub = this.add
+          .text(cx, 540, "← Back to Math Games", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            color: "#7fa0c0",
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        hub.on("pointerover", () => hub.setColor("#4488ff"));
+        hub.on("pointerout", () => hub.setColor("#7fa0c0"));
+        hub.on("pointerdown", () => (window.location.href = "/math/games/"));
+        srSay("Area Attack Brick Cannon. Press Start to play.");
+      };
+
+      function GameScene() {
+        return new Phaser.Scene("Game");
       }
-      function nextQuestion() {
-        if (state.lives <= 0 || state.i >= TOTAL) {
-          return endGame();
-        }
-        state.locked = false;
-        state.q = buildQuestion(state.i);
-        document.getElementById("qnum").textContent = state.i + 1 + "/" + TOTAL;
-        document.getElementById("modeTag").textContent = state.q.tag;
-        document.getElementById("prompt").textContent = state.q.prompt;
-        document.getElementById("sub").textContent = state.q.sub;
-        renderDiagram(state.q);
-        clearCalc();
-        document.getElementById("feedback").textContent = "";
-        document.getElementById("feedback").className = "feedback";
-        document.getElementById("nextBtn").classList.add("hidden");
-        var box = document.getElementById("opts");
-        box.innerHTML = "";
-        state.q.opts.forEach(function (o) {
-          var b = document.createElement("button");
-          b.type = "button";
-          b.className = "opt";
-          b.textContent = o;
-          b.onclick = function () {
-            answer(o, b);
-          };
-          box.appendChild(b);
+      GameScene.prototype = Object.create(Phaser.Scene.prototype);
+      GameScene.prototype.constructor = GameScene;
+
+      GameScene.prototype.init = function () {
+        this.reduceMotion = !!(
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        );
+        this.score = 0;
+        this.lives = 3;
+        this.streak = 0;
+        this.level = 1;
+        this.solved = 0;
+        this.target = 10;
+        this.angle = -90; // degrees, straight up
+        this.targets = [];
+        this.brick = null; // active projectile
+        this.locked = false;
+        this.problem = null;
+      };
+
+      GameScene.prototype.create = function () {
+        this.add.rectangle(W / 2, H / 2, W, H, 0x0c1c30);
+        // Ground
+        this.add.rectangle(W / 2, H - 12, W, 24, 0x16345a);
+
+        const hudStyle = {
+          fontFamily: "Segoe UI, sans-serif",
+          fontSize: "18px",
+          fontStyle: "bold",
+        };
+        this.scoreText = this.add.text(16, 12, "Score: 0", {
+          ...hudStyle,
+          color: "#88ccaa",
         });
-        startTimer();
-      }
-      function startTimer() {
-        var t = TIME,
-          bar = document.getElementById("timebar");
-        bar.style.width = "100%";
-        clearInterval(state.timer);
-        state.timer = setInterval(function () {
-          t -= 0.1;
-          bar.style.width = Math.max(0, (t / TIME) * 100) + "%";
-          if (t <= 0) {
-            clearInterval(state.timer);
-            if (!state.locked) {
-              timeUp();
+        this.livesText = this.add.text(16, 36, "❤❤❤", {
+          ...hudStyle,
+          color: "#ff8f8f",
+        });
+        this.streakText = this.add
+          .text(W - 16, 12, "Streak: 0", { ...hudStyle, color: "#ffd24a" })
+          .setOrigin(1, 0);
+        this.levelText = this.add
+          .text(W - 16, 36, "Level 1", { ...hudStyle, color: "#cfe0f0" })
+          .setOrigin(1, 0);
+        this.progressText = this.add
+          .text(W / 2, 12, "0 / " + this.target, {
+            ...hudStyle,
+            color: "#cfe0f0",
+          })
+          .setOrigin(0.5, 0);
+
+        // Shape panel (bottom-left)
+        this.shapeG = this.add.graphics();
+        this.promptText = this.add
+          .text(150, 470, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            fontStyle: "bold",
+            color: "#ffffff",
+            align: "center",
+            wordWrap: { width: 260 },
+          })
+          .setOrigin(0.5);
+        this.formulaText = this.add
+          .text(150, 510, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: "#88ccaa",
+          })
+          .setOrigin(0.5);
+
+        this.feedback = this.add
+          .text(W / 2, 90, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#ffd24a",
+            stroke: "#060f1a",
+            strokeThickness: 3,
+            align: "center",
+            wordWrap: { width: 600 },
+          })
+          .setOrigin(0.5)
+          .setAlpha(0);
+
+        // Cannon at bottom-center
+        this.cannonX = W / 2 + 230;
+        this.cannonY = H - 24;
+        this.add.circle(this.cannonX, this.cannonY, 26, 0x2d5a8c);
+        this.barrel = this.add.rectangle(
+          this.cannonX,
+          this.cannonY,
+          60,
+          16,
+          0x4488ff,
+        );
+        this.barrel.setOrigin(0, 0.5);
+        this.barrel.setStrokeStyle(2, 0xbcd8ff);
+
+        // Particles
+        this.burst = this.add
+          .particles(0, 0, "chunk", {
+            speed: { min: 80, max: 260 },
+            angle: { min: 0, max: 360 },
+            scale: { start: 1, end: 0 },
+            rotate: { min: 0, max: 360 },
+            lifespan: 700,
+            emitting: false,
+            quantity: 18,
+            gravityY: 240,
+            tint: [0xff8844, 0x4488ff, 0xffd24a, 0x88ccaa],
+          })
+          .setDepth(20);
+
+        this.redFlash = this.add
+          .rectangle(W / 2, H / 2, W, H, 0xff3333, 0)
+          .setDepth(30);
+
+        // Input
+        this.cursors = this.input.keyboard.createCursorKeys();
+        this.keyA = this.input.keyboard.addKey(
+          Phaser.Input.Keyboard.KeyCodes.A,
+        );
+        this.keyD = this.input.keyboard.addKey(
+          Phaser.Input.Keyboard.KeyCodes.D,
+        );
+        this.input.keyboard.on("keydown-SPACE", () => this.fire());
+        // Pointer: aim toward pointer, click to fire.
+        this.input.on("pointermove", (p) => {
+          this.aimAt(p.x, p.y);
+        });
+        this.input.on("pointerdown", (p) => {
+          this.aimAt(p.x, p.y);
+          this.fire();
+        });
+
+        this.cameras.main.fadeIn(400);
+        this.newProblem();
+      };
+
+      GameScene.prototype.aimAt = function (x, y) {
+        const a =
+          (Math.atan2(y - this.cannonY, x - this.cannonX) * 180) / Math.PI;
+        // Clamp to upper hemisphere (between -170 and -10 degrees).
+        this.angle = Phaser.Math.Clamp(a, -170, -10);
+      };
+
+      GameScene.prototype.newProblem = function () {
+        this.locked = false;
+        this.brick = null;
+        this.clearTargets();
+        this.problem = generateShape(this.level);
+        this.drawShape();
+        this.promptText.setText(this.problem.prompt);
+        this.formulaText.setText(this.problem.formula + " = ? sq units");
+        srSay(
+          this.problem.prompt +
+            ". " +
+            this.problem.formula +
+            ". Aim and fire at the correct area.",
+        );
+
+        // Spawn drifting targets across the sky.
+        const ys = shuffle([130, 180, 230, 280]);
+        const dir = [];
+        this.problem.options.forEach((opt, i) => {
+          const fromLeft = Math.random() < 0.5;
+          const x = fromLeft ? -40 : W + 40;
+          const y = ys[i];
+          const speed =
+            (40 + (this.level - 1) * 10 + randInt(0, 20)) *
+            (fromLeft ? 1 : -1);
+          const circ = this.add.circle(x, y, 34, 0x16345a);
+          circ.setStrokeStyle(3, 0x4488ff);
+          const txt = this.add
+            .text(x, y, String(opt), {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "20px",
+              fontStyle: "bold",
+              color: "#ffffff",
+            })
+            .setOrigin(0.5);
+          this.targets.push({ circ, txt, value: opt, vx: speed });
+        });
+      };
+
+      GameScene.prototype.drawShape = function () {
+        const g = this.shapeG;
+        g.clear();
+        const sd = this.problem.shapeData;
+        const cx = 150,
+          cy = 380;
+        g.fillStyle(0x2d6a9c, 0.9);
+        g.lineStyle(3, 0xbcd8ff, 1);
+        const s = 7; // px per unit (visual only)
+        if (sd.type === "rectangle") {
+          const w = Math.min(sd.b * s, 180),
+            h = Math.min(sd.h * s, 120);
+          g.fillRect(cx - w / 2, cy - h / 2, w, h);
+          g.strokeRect(cx - w / 2, cy - h / 2, w, h);
+        } else if (sd.type === "parallelogram") {
+          const w = Math.min(sd.b * s, 160),
+            h = Math.min(sd.h * s, 110),
+            sk = 22;
+          g.beginPath();
+          g.moveTo(cx - w / 2 + sk, cy - h / 2);
+          g.lineTo(cx + w / 2 + sk, cy - h / 2);
+          g.lineTo(cx + w / 2 - sk, cy + h / 2);
+          g.lineTo(cx - w / 2 - sk, cy + h / 2);
+          g.closePath();
+          g.fillPath();
+          g.strokePath();
+        } else if (sd.type === "triangle") {
+          const w = Math.min(sd.b * s, 170),
+            h = Math.min(sd.h * s, 120);
+          g.beginPath();
+          g.moveTo(cx, cy - h / 2);
+          g.lineTo(cx + w / 2, cy + h / 2);
+          g.lineTo(cx - w / 2, cy + h / 2);
+          g.closePath();
+          g.fillPath();
+          g.strokePath();
+        } else {
+          const w1 = Math.min(sd.b1 * s, 100),
+            w2 = Math.min(sd.b2 * s, 170),
+            h = Math.min(sd.h * s, 110);
+          g.beginPath();
+          g.moveTo(cx - w1 / 2, cy - h / 2);
+          g.lineTo(cx + w1 / 2, cy - h / 2);
+          g.lineTo(cx + w2 / 2, cy + h / 2);
+          g.lineTo(cx - w2 / 2, cy + h / 2);
+          g.closePath();
+          g.fillPath();
+          g.strokePath();
+        }
+      };
+
+      GameScene.prototype.clearTargets = function () {
+        this.targets.forEach((t) => {
+          t.circ.destroy();
+          t.txt.destroy();
+        });
+        this.targets = [];
+      };
+
+      GameScene.prototype.fire = function () {
+        if (this.locked || this.brick) return;
+        SFX.fire();
+        const rad = (this.angle * Math.PI) / 180;
+        const tipX = this.cannonX + Math.cos(rad) * 60;
+        const tipY = this.cannonY + Math.sin(rad) * 60;
+        const speed = 720;
+        const b = this.add.circle(tipX, tipY, 12, 0xff8844);
+        b.setStrokeStyle(2, 0xffd24a);
+        this.brick = {
+          obj: b,
+          vx: Math.cos(rad) * speed,
+          vy: Math.sin(rad) * speed,
+        };
+      };
+
+      GameScene.prototype.update = function (time, delta) {
+        const dt = delta / 1000;
+
+        // Cannon aim with keys.
+        if (this.cursors.left.isDown || this.keyA.isDown) this.angle -= 90 * dt;
+        else if (this.cursors.right.isDown || this.keyD.isDown)
+          this.angle += 90 * dt;
+        this.angle = Phaser.Math.Clamp(this.angle, -170, -10);
+        this.barrel.rotation = (this.angle * Math.PI) / 180;
+
+        if (this.locked) return;
+
+        // Move targets, wrap around edges.
+        for (const t of this.targets) {
+          t.circ.x += t.vx * dt;
+          t.txt.x = t.circ.x;
+          if (t.vx > 0 && t.circ.x > W + 50) t.circ.x = -50;
+          if (t.vx < 0 && t.circ.x < -50) t.circ.x = W + 50;
+        }
+
+        // Move brick, test collisions.
+        if (this.brick) {
+          const b = this.brick.obj;
+          b.x += this.brick.vx * dt;
+          b.y += this.brick.vy * dt;
+          // Hit test against targets.
+          for (const t of this.targets) {
+            const d = Phaser.Math.Distance.Between(b.x, b.y, t.circ.x, t.circ.y);
+            if (d <= 34 + 12) {
+              this.resolveHit(t);
+              return;
             }
           }
-        }, 100);
-      }
-      function answer(choice, btn) {
-        if (state.locked) return;
-        state.locked = true;
-        clearInterval(state.timer);
-        var fb = document.getElementById("feedback"),
-          correct = choice === state.q.correct;
-        Array.prototype.forEach.call(
-          document.querySelectorAll(".opt"),
-          function (b) {
-            if (b.textContent === state.q.correct) b.classList.add("right");
-            else if (b === btn) b.classList.add("wrong");
-          },
-        );
-        if (correct) {
-          state.streak++;
-          state.score += 10 + Math.min(state.streak, 5) * 2;
-          fb.textContent =
-            "✓ Correct! " +
-            state.q.why +
-            (state.streak > 1 ? "  🔥 Streak ×" + state.streak : "");
-          fb.className = "feedback ok";
-        } else {
-          state.streak = 0;
-          state.lives--;
-          fb.textContent = "✗ " + state.q.why + "  (−1 ❤)";
-          fb.className = "feedback no";
+          // Off-screen miss.
+          if (b.x < -30 || b.x > W + 30 || b.y < -30) {
+            b.destroy();
+            this.brick = null;
+            // A whiff isn't a life loss; the player can re-aim and fire again.
+            srSay("Missed all targets. Aim again and fire.");
+          }
         }
-        showCalc(state.q);
-        updateHud();
+      };
+
+      GameScene.prototype.resolveHit = function (t) {
+        this.locked = true;
+        if (this.brick) {
+          this.burst.setPosition(this.brick.obj.x, this.brick.obj.y);
+          this.burst.explode(18);
+          this.brick.obj.destroy();
+          this.brick = null;
+        }
+        const correct = t.value === this.problem.area;
         if (correct) {
+          SFX.good();
+          this.solved++;
+          this.streak++;
+          const bonus = Math.min(this.streak, 5) * 5;
+          this.score += 25 + bonus;
+          this.flash(t.circ.x, t.circ.y, "+1 ✓", "#88ccaa");
+          this.feedback
+            .setText(
+              "Correct! Area = " +
+                this.problem.area +
+                " sq units  (" +
+                this.problem.formula +
+                ")",
+            )
+            .setAlpha(1);
+          srSay("Correct. The area is " + this.problem.area + " square units.");
+        } else {
+          SFX.bad();
+          this.streak = 0;
+          this.lives--;
+          this.flashRed();
+          this.flash(t.circ.x, t.circ.y, "✗", "#ff8f8f");
+          this.feedback
+            .setText(
+              "Not that one. Correct area = " + this.problem.area + " sq units.",
+            )
+            .setAlpha(1);
+          srSay(
+            "Wrong target. The correct area was " +
+              this.problem.area +
+              " square units.",
+          );
+        }
+        this.afterAttempt();
+      };
+
+      GameScene.prototype.afterAttempt = function () {
+        const newLevel = Math.min(8, 1 + Math.floor(this.solved / 3));
+        if (newLevel > this.level) {
+          this.level = newLevel;
+          SFX.level();
+          this.flash(W / 2, 220, "LEVEL " + this.level + "!", "#ffd24a");
+        }
+        this.updateHUD();
+        if (this.lives <= 0) {
+          this.endGame(false);
+          return;
+        }
+        if (this.solved >= this.target) {
+          this.endGame(true);
+          return;
+        }
+        this.time.delayedCall(1000, () => {
+          this.feedback.setAlpha(0);
+          this.newProblem();
+        });
+      };
+
+      GameScene.prototype.flash = function (x, y, text, color) {
+        const ft = this.add
+          .text(x, y, text, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "26px",
+            fontStyle: "bold",
+            color: color,
+            stroke: "#060f1a",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5)
+          .setDepth(40);
+        this.tweens.add({
+          targets: ft,
+          y: y - 50,
+          alpha: { from: 1, to: 0 },
+          duration: this.reduceMotion ? 500 : 900,
+          onComplete: () => ft.destroy(),
+        });
+      };
+
+      GameScene.prototype.flashRed = function () {
+        if (this.reduceMotion) return;
+        this.redFlash.setAlpha(0.35);
+        this.tweens.add({ targets: this.redFlash, alpha: 0, duration: 350 });
+      };
+
+      GameScene.prototype.updateHUD = function () {
+        this.scoreText.setText("Score: " + this.score);
+        this.livesText.setText(this.lives > 0 ? "❤".repeat(this.lives) : "—");
+        this.streakText.setText("Streak: " + this.streak);
+        this.levelText.setText("Level " + this.level);
+        this.progressText.setText(this.solved + " / " + this.target);
+      };
+
+      GameScene.prototype.endGame = function (won) {
+        this.locked = true;
+        this.clearTargets();
+        this.time.delayedCall(500, () => {
+          this.scene.start("Result", {
+            score: this.score,
+            solved: this.solved,
+            target: this.target,
+            won: won,
+          });
+        });
+      };
+
+      function ResultScene() {
+        return new Phaser.Scene("Result");
+      }
+      ResultScene.prototype = Object.create(Phaser.Scene.prototype);
+      ResultScene.prototype.constructor = ResultScene;
+      ResultScene.prototype.init = function (data) {
+        this.data2 = data;
+      };
+      ResultScene.prototype.create = function () {
+        const d = this.data2;
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x0c1c30);
+        const stars =
+          d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
+        let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
+        if (d.score > hs) {
+          hs = d.score;
           try {
-            window.GameFX &&
-              GameFX.pop &&
-              GameFX.pop(document.getElementById("score"));
+            localStorage.setItem(LS_KEY, String(hs));
           } catch (e) {}
         }
-        document.getElementById("nextBtn").classList.remove("hidden");
-      }
-      function timeUp() {
-        state.locked = true;
-        state.streak = 0;
-        state.lives--;
-        Array.prototype.forEach.call(
-          document.querySelectorAll(".opt"),
-          function (b) {
-            if (b.textContent === state.q.correct) b.classList.add("right");
-          },
-        );
-        var fb = document.getElementById("feedback");
-        fb.textContent = "⏰ Time! " + state.q.why + "  (−1 ❤)";
-        fb.className = "feedback no";
-        showCalc(state.q);
-        updateHud();
-        document.getElementById("nextBtn").classList.remove("hidden");
-      }
-      function updateHud() {
-        document.getElementById("score").textContent = state.score;
-        document.getElementById("streak").textContent = state.streak;
-        document.getElementById("lives").textContent =
-          state.lives > 0 ? "❤".repeat(state.lives) : "—";
-      }
-      function endGame() {
-        clearInterval(state.timer);
-        document.getElementById("playScreen").classList.add("hidden");
-        document.getElementById("resultScreen").classList.remove("hidden");
-        document.getElementById("finalScore").textContent = state.score;
-        var msg;
-        if (state.score >= 180) msg = "🏆 Area Champion!";
-        else if (state.score >= 120) msg = "🌟 Sharp and accurate!";
-        else if (state.score >= 60) msg = "👍 Nice work — keep practicing.";
-        else msg = "💪 Try again to beat your score!";
-        document.getElementById("resultMsg").textContent = msg;
-        document.getElementById("resultDetail").textContent =
-          (state.lives <= 0
-            ? "Out of lives! "
-            : "You finished all " + TOTAL + " questions! ") +
-          "Final score: " +
-          state.score +
-          ".";
+
+        this.add
+          .text(cx, 110, d.won ? "CITY BUILT!" : "OUT OF LIVES", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "48px",
+            color: d.won ? "#88ccaa" : "#ff8f8f",
+            stroke: "#060f1a",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 185, "★".repeat(stars) + "☆".repeat(3 - stars), {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "48px",
+            color: "#ffd24a",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 255, "Score: " + d.score, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "30px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(
+            cx,
+            295,
+            "Solved " + d.solved + " of " + d.target + " shapes",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "18px",
+              color: "#cfe0f0",
+            },
+          )
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 325, "High Score: " + hs, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            color: "#ffd24a",
+          })
+          .setOrigin(0.5);
+
+        if (d.won) SFX.win();
+        else SFX.lose();
+
         try {
           window.EduPulse &&
             EduPulse.record({
               activityTitle: document.title,
-              score: state.score,
-              problemsAttempted: state.i,
+              score: d.score,
+              stars: stars,
               standard: "6.G.1",
+              problemsAttempted: d.solved,
             });
         } catch (e) {}
-      }
-      document.getElementById("startBtn").onclick = startGame;
-      document.getElementById("againBtn").onclick = startGame;
-      document.getElementById("nextBtn").onclick = function () {
-        state.i++;
-        nextQuestion();
+        srSay(
+          (d.won ? "You won! " : "Game over. ") +
+            "Final score " +
+            d.score +
+            ", " +
+            stars +
+            " stars.",
+        );
+
+        const btn = this.add
+          .rectangle(cx, 400, 220, 54, 0x1a6fb5)
+          .setInteractive({ useHandCursor: true });
+        const btnT = this.add
+          .text(cx, 400, "PLAY AGAIN 🔁", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        const again = () => this.scene.start("Game");
+        btn.on("pointerover", () => btn.setFillStyle(0x2484d0));
+        btn.on("pointerout", () => btn.setFillStyle(0x1a6fb5));
+        btn.on("pointerdown", again);
+        this.input.keyboard.on("keydown-SPACE", again);
+        this.input.keyboard.on("keydown-ENTER", again);
+
+        const hub = this.add
+          .text(cx, 480, "← Back to Math Games", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            color: "#7fa0c0",
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        hub.on("pointerover", () => hub.setColor("#4488ff"));
+        hub.on("pointerout", () => hub.setColor("#7fa0c0"));
+        hub.on("pointerdown", () => (window.location.href = "/math/games/"));
       };
+
+      const aaGame = new Phaser.Game(config);
+
+      aaGame.events.once("ready", function () {
+        try {
+          const cv = aaGame.canvas;
+          if (!cv) return;
+          cv.setAttribute("role", "application");
+          cv.setAttribute(
+            "aria-label",
+            "Area Attack Brick Cannon math game. Find the area of the shape, " +
+              "aim the cannon with the left and right arrow keys, and press " +
+              "space to fire a brick at the target showing the correct area.",
+          );
+          cv.setAttribute("aria-roledescription", "math game");
+          if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
+          cv.addEventListener("pointerdown", function () {
+            try {
+              cv.focus({ preventScroll: true });
+            } catch (e) {
+              cv.focus();
+            }
+          });
+        } catch (e) {}
+      });
     </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
