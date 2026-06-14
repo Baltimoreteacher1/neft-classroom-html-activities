@@ -937,6 +937,208 @@
         border-radius: 100px;
       }
 
+      /* ---------- Practice activities ---------- */
+      .activity {
+        position: relative;
+        margin: 22px 0;
+        padding: 20px 22px 22px;
+        border: 1px solid rgba(106, 215, 229, 0.35);
+        border-radius: 16px;
+        background: linear-gradient(
+          170deg,
+          rgba(106, 215, 229, 0.07),
+          var(--bg2)
+        );
+        box-shadow: var(--shadow);
+      }
+      .activity::before {
+        content: "✏️ Practice";
+        position: absolute;
+        top: -11px;
+        left: 18px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #11142b;
+        background: linear-gradient(100deg, var(--cyan), var(--mint));
+        padding: 4px 12px;
+        border-radius: 100px;
+      }
+      .activity h4 {
+        margin-top: 0;
+      }
+      .activity .task {
+        color: var(--muted);
+        font-size: 0.95rem;
+        margin: 4px 0 14px;
+      }
+      .activity .task b {
+        color: var(--ink);
+      }
+      .q {
+        margin: 14px 0;
+      }
+      .q .qz {
+        font-weight: 600;
+        color: var(--ink);
+        font-size: 0.98rem;
+        margin-bottom: 10px;
+      }
+      .q .qz .n {
+        color: var(--cyan);
+        font-family: var(--mono);
+        font-size: 0.85rem;
+        margin-right: 6px;
+      }
+      .opts {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .opt {
+        text-align: left;
+        cursor: pointer;
+        font-family: var(--sans);
+        font-size: 0.92rem;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--line);
+        border-radius: 11px;
+        padding: 11px 14px;
+        transition: 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .opt::before {
+        content: "";
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 2px solid var(--faint);
+        flex: none;
+        transition: 0.15s;
+      }
+      .opt:hover {
+        color: var(--ink);
+        border-color: var(--cyan);
+      }
+      .opt.ok {
+        color: var(--ink);
+        border-color: var(--mint);
+        background: rgba(127, 224, 176, 0.12);
+      }
+      .opt.ok::before {
+        background: var(--mint);
+        border-color: var(--mint);
+        content: "✓";
+        color: #11142b;
+        font-size: 0.7rem;
+        display: grid;
+        place-items: center;
+      }
+      .opt.no {
+        color: var(--ink);
+        border-color: var(--rose);
+        background: rgba(255, 155, 176, 0.1);
+      }
+      .opt.no::before {
+        background: var(--rose);
+        border-color: var(--rose);
+        content: "✕";
+        color: #11142b;
+        font-size: 0.7rem;
+        display: grid;
+        place-items: center;
+      }
+      .opt.reveal-correct {
+        border-color: var(--mint);
+      }
+      .qfb {
+        display: none;
+        margin-top: 10px;
+        padding: 11px 14px;
+        border-radius: 11px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+      .qfb.show {
+        display: block;
+        animation: rise 0.3s ease;
+      }
+      .qfb.good {
+        background: rgba(127, 224, 176, 0.1);
+        color: var(--ink);
+        border: 1px solid rgba(127, 224, 176, 0.4);
+      }
+      .qfb.bad {
+        background: rgba(255, 155, 176, 0.08);
+        color: var(--ink);
+        border: 1px solid rgba(255, 155, 176, 0.35);
+      }
+      .try-box textarea {
+        width: 100%;
+        min-height: 84px;
+        font-family: var(--sans);
+        font-size: 0.92rem;
+        color: var(--ink);
+        background: #0a0e20;
+        border: 1px solid var(--line);
+        border-radius: 11px;
+        padding: 12px;
+        resize: vertical;
+        transition: 0.15s;
+      }
+      .try-box textarea:focus {
+        outline: none;
+        border-color: var(--cyan);
+        box-shadow: 0 0 0 3px rgba(106, 215, 229, 0.12);
+      }
+      .reveal-btn {
+        margin-top: 10px;
+        cursor: pointer;
+        font-family: var(--sans);
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #11142b;
+        background: linear-gradient(100deg, var(--cyan), var(--mint));
+        border: 0;
+        border-radius: 10px;
+        padding: 9px 16px;
+        transition: 0.15s;
+      }
+      .reveal-btn:hover {
+        filter: brightness(1.06);
+      }
+      .model {
+        display: none;
+        margin-top: 12px;
+        padding: 14px 16px;
+        border: 1px dashed var(--line);
+        border-radius: 12px;
+        background: var(--card);
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+      .model.show {
+        display: block;
+        animation: rise 0.3s ease;
+      }
+      .model b {
+        color: var(--ink);
+      }
+      .score {
+        margin-top: 14px;
+        font-weight: 700;
+        color: var(--gold);
+        font-size: 0.95rem;
+        display: none;
+      }
+      .score.show {
+        display: block;
+      }
+
       /* ---------- Misc ---------- */
       .divider {
         height: 1px;
@@ -1046,7 +1248,8 @@
         <div class="hero-meta">
           <span class="pill">⏱️ <b>12 chapters</b></span>
           <span class="pill">📋 <b>40+ copy-paste prompts</b></span>
-          <span class="pill">🧪 <b>Hands-on builders</b></span>
+          <span class="pill">✏️ <b>9 practice activities</b></span>
+          <span class="pill">🧪 <b>Builders &amp; quizzes</b></span>
           <span class="pill">🎓 Built for grades 9–12</span>
         </div>
       </header>
@@ -1262,7 +1465,9 @@
                   <strong>real prompt</strong> — hit <em>Copy</em> and paste it
                   into any AI chat, swapping the
                   <span style="color: var(--gold)">gold parts</span> for your
-                  own topic. Try the builders and flashcards as you go.
+                  own topic. Each chapter also has a teal
+                  <strong>✏️ Practice</strong> box — quizzes and write-your-own
+                  challenges that check your understanding. Do them as you go.
                 </p>
               </div>
             </div>
@@ -1383,6 +1588,43 @@ state your assumptions, and double-check the final answer. Then give the answer.
               <button class="copy">Copy</button>
             </div>
 
+            <div class="activity">
+              <h4>🎯 Spot the hallucination</h4>
+              <p class="task">
+                You asked an AI about a history topic.
+                <b>Which reply should you trust the least</b> without checking
+                it yourself?
+              </p>
+              <div class="q">
+                <div class="opts">
+                  <button
+                    class="opt"
+                    data-correct="1"
+                    data-fb="A real-sounding quote with an exact page number is the classic hallucination — search the exact words before you ever cite it."
+                  >
+                    “According to historian J. Avery (1998, p.142): ‘the treaty
+                    doomed the empire.’”
+                  </button>
+                  <button
+                    class="opt"
+                    data-correct="0"
+                    data-fb="General, well-known summaries are usually safe — but still verify specifics before a test."
+                  >
+                    “The empire weakened over many decades for several economic
+                    reasons.”
+                  </button>
+                  <button
+                    class="opt"
+                    data-correct="0"
+                    data-fb="Honest uncertainty is a GOOD sign — it's the confident fake quote you should distrust most."
+                  >
+                    “I'm not certain of the exact date — you should double-check
+                    this one.”
+                  </button>
+                </div>
+                <div class="qfb"></div>
+              </div>
+            </div>
             <div class="next-row">
               <button class="next-btn" data-go="0">← Start Here</button
               ><button class="next-btn prim" data-go="2">
@@ -1581,6 +1823,59 @@ let me try first.</pre>
               </div>
             </div>
 
+            <div class="activity">
+              <h4>🛠️ Upgrade this prompt</h4>
+              <p class="task">
+                A classmate typed <b>“tell me about world war 1”</b>. Rewrite it
+                using <b>R-C-T-F</b> for how YOU would actually study it — then
+                reveal an example.
+              </p>
+              <div class="try-box">
+                <textarea
+                  placeholder="Act as ...  I'm ...  I want ...  Give it to me as ..."
+                ></textarea>
+                <button class="reveal-btn" data-label="Show an example answer">
+                  Show an example answer
+                </button>
+                <div class="model">
+                  <b>Example:</b> “Act as a patient 10th-grade history tutor. I
+                  have a quiz Friday and I keep mixing up the causes of WWI.
+                  Explain the main causes with a memory trick, then quiz me on
+                  them one at a time.”
+                </div>
+              </div>
+              <div class="q" style="margin-top: 18px">
+                <div class="qz">
+                  <span class="n">Q</span>Which R-C-T-F ingredient is missing
+                  here: “Act as a chemistry tutor. Explain moles, then give me
+                  practice problems.”?
+                </div>
+                <div class="opts">
+                  <button
+                    class="opt"
+                    data-correct="1"
+                    data-fb="There's no Context — your level, what confuses you, the deadline. Adding it makes the answer fit YOU."
+                  >
+                    Context
+                  </button>
+                  <button
+                    class="opt"
+                    data-correct="0"
+                    data-fb="The Role is right there: “Act as a chemistry tutor.”"
+                  >
+                    Role
+                  </button>
+                  <button
+                    class="opt"
+                    data-correct="0"
+                    data-fb="The Task is clear: explain, then give practice."
+                  >
+                    Task
+                  </button>
+                </div>
+                <div class="qfb"></div>
+              </div>
+            </div>
             <div class="next-row">
               <button class="next-btn" data-go="1">← How AI Thinks</button
               ><button class="next-btn prim" data-go="3">
@@ -1696,6 +1991,28 @@ possible, assuming I already know the rest. Use a picture-in-words analogy.</pre
               Then keep the one that makes you go "ohhh."
             </p>
 
+            <div class="activity">
+              <h4>🧸 Write your own ELI5</h4>
+              <p class="task">
+                Pick something that confuses you right now — a math idea, a
+                science term, anything. Write a prompt that asks AI to explain
+                it <b>like you're 5</b> AND check your understanding after. Then
+                compare with an example.
+              </p>
+              <div class="try-box">
+                <textarea
+                  placeholder="Explain ______ like I'm 5, using a simple everyday analogy, then ask me one question to check I got it."
+                ></textarea>
+                <button class="reveal-btn" data-label="Show an example answer">
+                  Show an example answer
+                </button>
+                <div class="model">
+                  <b>Example:</b> “Explain the Pythagorean theorem like I'm 5
+                  using a real-world picture, then ask me one simple question to
+                  check I understood. If I'm wrong, explain it a different way.”
+                </div>
+              </div>
+            </div>
             <div class="next-row">
               <button class="next-btn" data-go="2">← Prompting 101</button
               ><button class="next-btn prim" data-go="4">
@@ -1849,6 +2166,39 @@ what to do each day.</pre>
               </div>
             </div>
 
+            <div class="activity">
+              <h4>🧪 Which actually works best?</h4>
+              <div class="q">
+                <div class="qz">
+                  <span class="n">Q</span>You have 30 minutes before bed to lock
+                  in a topic. What's the most effective move?
+                </div>
+                <div class="opts">
+                  <button
+                    class="opt"
+                    data-correct="0"
+                    data-fb="Re-reading feels productive but barely builds memory — it's the most common time-waster."
+                  >
+                    Re-read your notes three times
+                  </button>
+                  <button
+                    class="opt"
+                    data-correct="1"
+                    data-fb="Testing yourself from memory (active recall) is the single most powerful technique. Have AI quiz you with notes closed."
+                  >
+                    Have AI quiz you with your notes closed
+                  </button>
+                  <button
+                    class="opt"
+                    data-correct="0"
+                    data-fb="Highlighting is passive — it feels good but does little for recall."
+                  >
+                    Highlight everything in your notes
+                  </button>
+                </div>
+                <div class="qfb"></div>
+              </div>
+            </div>
             <div class="next-row">
               <button class="next-btn" data-go="3">← Explain Like I'm 5</button
               ><button class="next-btn prim" data-go="5">
@@ -2192,6 +2542,57 @@ counterarguments and what evidence I'd need to defend against each.</pre>
               </div>
             </div>
 
+            <div class="activity">
+              <h4>🔍 Real or fake? — citation check</h4>
+              <p class="task">For each, decide what a smart researcher does.</p>
+              <div class="q">
+                <div class="qz">
+                  <span class="n">1</span>The AI hands you a link:
+                  <i>nature.com/articles/s41586-019-1787-x</i>
+                </div>
+                <div class="opts">
+                  <button
+                    class="opt"
+                    data-correct="1"
+                    data-fb="Even a real-looking link must be OPENED and read before you cite it — AI invents URLs that 404."
+                  >
+                    Open it myself before trusting it
+                  </button>
+                  <button
+                    class="opt"
+                    data-correct="0"
+                    data-fb="Never drop a link into your bibliography without opening it first."
+                  >
+                    Paste it into my bibliography as-is
+                  </button>
+                </div>
+                <div class="qfb"></div>
+              </div>
+              <div class="q">
+                <div class="qz">
+                  <span class="n">2</span>It gives a perfect quote “from page
+                  87” of a book you can't find anywhere.
+                </div>
+                <div class="opts">
+                  <button
+                    class="opt"
+                    data-correct="0"
+                    data-fb="A quote you can't locate in the real source is exactly what you should NOT cite."
+                  >
+                    Use it — it sounds perfect
+                  </button>
+                  <button
+                    class="opt"
+                    data-correct="1"
+                    data-fb="If you can't find it in the real source, assume it's invented and leave it out."
+                  >
+                    Treat it as fake until I find the real source
+                  </button>
+                </div>
+                <div class="qfb"></div>
+              </div>
+              <div class="score"></div>
+            </div>
             <div class="next-row">
               <button class="next-btn" data-go="5">← Build a NotebookLM</button
               ><button class="next-btn prim" data-go="7">
@@ -2299,6 +2700,40 @@ difficulty.</pre>
               <button class="copy">Copy</button>
             </div>
 
+            <div class="activity">
+              <h4>🧮 Use it the smart way</h4>
+              <div class="q">
+                <div class="qz">
+                  <span class="n">Q</span>You're stuck on a math problem the
+                  night before a test. Best prompt?
+                </div>
+                <div class="opts">
+                  <button
+                    class="opt"
+                    data-correct="0"
+                    data-fb="Getting the answer handed to you teaches you nothing for tomorrow's test."
+                  >
+                    “Just give me the answer to this problem.”
+                  </button>
+                  <button
+                    class="opt"
+                    data-correct="1"
+                    data-fb="A hint keeps YOU doing the thinking — that's what builds the skill you'll need on the test."
+                  >
+                    “Give me only the next hint, not the answer, and let me
+                    try.”
+                  </button>
+                  <button
+                    class="opt"
+                    data-correct="0"
+                    data-fb="Copying steps without understanding them won't help when the numbers change tomorrow."
+                  >
+                    “Show me the full worked solution to copy.”
+                  </button>
+                </div>
+                <div class="qfb"></div>
+              </div>
+            </div>
             <div class="next-row">
               <button class="next-btn" data-go="6">← Research Right</button
               ><button class="next-btn prim" data-go="8">
@@ -2421,6 +2856,83 @@ and ask guiding questions — do NOT rewrite my sentences for me.
               </div>
             </div>
 
+            <div class="activity">
+              <h4>🚦 Green light or red light?</h4>
+              <p class="task">
+                For each use of AI on an essay, decide: builds your skills, or
+                crosses the line?
+              </p>
+              <div class="q">
+                <div class="qz">
+                  <span class="n">1</span>Asking AI to brainstorm 5 angles, then
+                  picking your own thesis.
+                </div>
+                <div class="opts">
+                  <button
+                    class="opt"
+                    data-correct="1"
+                    data-fb="Brainstorming is fair game as long as the thesis and the writing stay yours."
+                  >
+                    🟢 Green — go for it
+                  </button>
+                  <button
+                    class="opt"
+                    data-correct="0"
+                    data-fb="This one's fine — you still choose and write everything yourself."
+                  >
+                    🔴 Red — don't
+                  </button>
+                </div>
+                <div class="qfb"></div>
+              </div>
+              <div class="q">
+                <div class="qz">
+                  <span class="n">2</span>Pasting an AI-written paragraph
+                  straight into your essay.
+                </div>
+                <div class="opts">
+                  <button
+                    class="opt"
+                    data-correct="0"
+                    data-fb="That's submitting someone else's words as your own — plagiarism, and you learn nothing."
+                  >
+                    🟢 Green — go for it
+                  </button>
+                  <button
+                    class="opt"
+                    data-correct="1"
+                    data-fb="Feedback is fine; handing in AI's sentences is not."
+                  >
+                    🔴 Red — don't
+                  </button>
+                </div>
+                <div class="qfb"></div>
+              </div>
+              <div class="q">
+                <div class="qz">
+                  <span class="n">3</span>Asking AI to critique your finished
+                  draft, then fixing the issues yourself.
+                </div>
+                <div class="opts">
+                  <button
+                    class="opt"
+                    data-correct="1"
+                    data-fb="Feedback you apply in your own words makes you a better writer."
+                  >
+                    🟢 Green — go for it
+                  </button>
+                  <button
+                    class="opt"
+                    data-correct="0"
+                    data-fb="This is one of the best honest uses — feedback you act on yourself."
+                  >
+                    🔴 Red — don't
+                  </button>
+                </div>
+                <div class="qfb"></div>
+              </div>
+              <div class="score"></div>
+            </div>
             <div class="next-row">
               <button class="next-btn" data-go="7">← Subject Playbooks</button
               ><button class="next-btn prim" data-go="9">
@@ -2521,6 +3033,83 @@ all right twice.</pre>
               </div>
             </div>
 
+            <div class="activity">
+              <h4>📝 Mini mock test — run the loop</h4>
+              <p class="task">
+                Answer all three like a real diagnostic. You'll get a score and
+                feedback at the end — exactly what AI does for you.
+              </p>
+              <div class="q">
+                <div class="qz">
+                  <span class="n">1</span>The best first step before a big test
+                  is to…
+                </div>
+                <div class="opts">
+                  <button
+                    class="opt"
+                    data-correct="1"
+                    data-fb="A short diagnostic finds your weak spots so you don't waste time on what you already know."
+                  >
+                    Take a short diagnostic quiz to find weak spots
+                  </button>
+                  <button
+                    class="opt"
+                    data-correct="0"
+                    data-fb="Studying everything equally wastes time on stuff you've already got."
+                  >
+                    Study every topic the same amount
+                  </button>
+                </div>
+                <div class="qfb"></div>
+              </div>
+              <div class="q">
+                <div class="qz">
+                  <span class="n">2</span>After a practice test, the most useful
+                  question to ask AI is…
+                </div>
+                <div class="opts">
+                  <button
+                    class="opt"
+                    data-correct="0"
+                    data-fb="Just seeing the score doesn't tell you HOW to improve."
+                  >
+                    “What was my score?”
+                  </button>
+                  <button
+                    class="opt"
+                    data-correct="1"
+                    data-fb="Error analysis — finding the PATTERN in your mistakes — is where the real gains are."
+                  >
+                    “What's the pattern in my wrong answers?”
+                  </button>
+                </div>
+                <div class="qfb"></div>
+              </div>
+              <div class="q">
+                <div class="qz">
+                  <span class="n">3</span>You've truly finished studying a topic
+                  when…
+                </div>
+                <div class="opts">
+                  <button
+                    class="opt"
+                    data-correct="0"
+                    data-fb="Recognizing the answer when you see it isn't the same as producing it on a test."
+                  >
+                    It looks familiar when you re-read it
+                  </button>
+                  <button
+                    class="opt"
+                    data-correct="1"
+                    data-fb="Being able to produce it from memory, notes closed, is the real finish line."
+                  >
+                    You can answer it from memory, notes closed
+                  </button>
+                </div>
+                <div class="qfb"></div>
+              </div>
+              <div class="score"></div>
+            </div>
             <div class="next-row">
               <button class="next-btn" data-go="8">← Essay Coach</button
               ><button class="next-btn prim" data-go="10">
@@ -2616,6 +3205,29 @@ all right twice.</pre>
               <button class="copy">Copy</button>
             </div>
 
+            <div class="activity">
+              <h4>⚡ Build your own study session</h4>
+              <p class="task">
+                Combine everything: write ONE prompt that turns AI into a full
+                study session for a real topic you have this week — it should
+                teach you, quiz you, and find your gaps. Then compare.
+              </p>
+              <div class="try-box">
+                <textarea
+                  placeholder="Act as ...  For [topic], first explain ..., then quiz me one question at a time, then tell me what to review."
+                ></textarea>
+                <button class="reveal-btn" data-label="Show an example answer">
+                  Show an example answer
+                </button>
+                <div class="model">
+                  <b>Example:</b> “Act as a patient tutor for 10th-grade
+                  geometry. First explain how to find the area of a triangle
+                  with one clear example. Then quiz me with 5 questions, one at
+                  a time, getting harder. At the end, tell me exactly which step
+                  I should review.”
+                </div>
+              </div>
+            </div>
             <div class="next-row">
               <button class="next-btn" data-go="9">← Test Prep Machine</button
               ><button class="next-btn prim" data-go="11">
@@ -3086,6 +3698,72 @@ all right twice.</pre>
           });
         });
         paint();
+
+        /* ---- Practice quizzes (single-question feedback) ---- */
+        document.addEventListener("click", function (e) {
+          var o = e.target.closest(".opt");
+          if (!o || o.dataset.locked) return;
+          var q = o.closest(".q");
+          if (!q) return;
+          var correct = o.dataset.correct === "1";
+          var opts = [].slice.call(q.querySelectorAll(".opt"));
+          opts.forEach(function (x) {
+            x.classList.remove("ok", "no", "reveal-correct");
+            x.dataset.locked = "1";
+          });
+          o.classList.add(correct ? "ok" : "no");
+          if (!correct) {
+            opts.forEach(function (x) {
+              if (x.dataset.correct === "1") x.classList.add("reveal-correct");
+            });
+          }
+          var fb = q.querySelector(".qfb");
+          if (fb) {
+            fb.className = "qfb show " + (correct ? "good" : "bad");
+            fb.innerHTML =
+              (correct ? "✓ <b>Nice.</b> " : "✗ <b>Not quite.</b> ") +
+              (o.dataset.fb || fb.dataset.fb || "");
+          }
+          // running score, if this quiz has a scoreboard
+          var act = q.closest(".activity");
+          if (act && act.querySelector(".score")) {
+            var qs = [].slice.call(act.querySelectorAll(".q"));
+            var answered = qs.filter(function (x) {
+              return x.querySelector(".opt[data-locked]");
+            }).length;
+            var right = qs.filter(function (x) {
+              return x.querySelector(".opt.ok");
+            }).length;
+            if (answered === qs.length) {
+              var s = act.querySelector(".score");
+              s.classList.add("show");
+              s.textContent =
+                "Score: " +
+                right +
+                " / " +
+                qs.length +
+                (right === qs.length
+                  ? " — perfect! 🎉"
+                  : right >= qs.length - 1
+                    ? " — almost there."
+                    : " — review and try the prompts above.");
+            }
+          }
+        });
+
+        /* ---- Reveal model answers ---- */
+        document.addEventListener("click", function (e) {
+          var b = e.target.closest(".reveal-btn");
+          if (!b) return;
+          var box = b.closest(".try-box") || b.parentNode;
+          var m = box.querySelector(".model");
+          if (m) {
+            m.classList.toggle("show");
+            b.textContent = m.classList.contains("show")
+              ? "Hide example answer"
+              : b.dataset.label || "Show an example answer";
+          }
+        });
       })();
     </script>
   </body>
