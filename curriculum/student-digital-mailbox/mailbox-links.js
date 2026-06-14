@@ -14,12 +14,16 @@
  * here — this file ships to the browser.
  */
 window.studentDigitalMailboxLinks = {
-  // --- Private boxes: keep these as Google Forms so each student only sees
-  //     their own submission. Replace with the Form's "anyone with link" URL. ---
-  classCheckIn: "GOOGLE_FORM_CLASS_CHECKIN_URL",
-  confused: "GOOGLE_FORM_CONFUSED_URL",
-  privateNote: "GOOGLE_FORM_PRIVATE_NOTE_URL",
-  anonymousQuestion: "GOOGLE_FORM_ANONYMOUS_QUESTION_URL",
+  // --- Private boxes: anonymous Google Forms (each student sees only their own
+  //     submission). Created by the Apps Script in ~/student-mailbox-forms. ---
+  classCheckIn:
+    "https://docs.google.com/forms/d/189oOsb3L0uULWt7o8AVJ4WlT96EJpNAj2cT4AsgQNIE/viewform",
+  confused:
+    "https://docs.google.com/forms/d/1ECLjQDljLnPd4M38NnPxwH9uexGb4xQdejG23YRVbj4/viewform",
+  privateNote:
+    "https://docs.google.com/forms/d/1gnsGUlK52eqARMRDgBh_pfbqSjvEpIE2xKyYMKbQyRI/viewform",
+  anonymousQuestion:
+    "https://docs.google.com/forms/d/1zaaE1tqqGrvs-0ghyxQ3aTNXyVKMJ87UcY2ujXvl4Jo/viewform",
 
   // --- Public / collaborative boxes: live now. These are shared Google files
   //     where contributions are visible to the class (that is intended here). ---
