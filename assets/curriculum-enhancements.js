@@ -1080,6 +1080,22 @@
         var lessonId = lessonIdFromTitle(lesson.title);
         if (!lessonId) return;
 
+        // Get Ready readiness pre-lesson — show FIRST in the activity dropdown
+        // and outline so students can warm up before the lesson. Idempotent.
+        var readyHref = "/lessons/" + lessonId + "/readiness/";
+        var hasReady = (lesson.activities || []).some(function (a) {
+          return a.href === readyHref;
+        });
+        if (!hasReady) {
+          var readyActs = lesson.activities || (lesson.activities = []);
+          readyActs.unshift({
+            text: "🚀 Get Ready (Pre-Lesson)",
+            href: readyHref,
+          });
+          lesson.dataSearch =
+            (lesson.dataSearch || "") + " get ready pre-lesson readiness";
+        }
+
         var slidesHref = "/lessons/" + lessonId + "/slides.html";
         var hasSlidesLink = (lesson.activities || []).some(function (a) {
           return a.href === slidesHref;
