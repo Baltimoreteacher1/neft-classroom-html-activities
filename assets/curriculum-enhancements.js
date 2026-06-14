@@ -27,7 +27,8 @@
   ];
 
   var FILTER_RULES = {
-    lessons: /interactive lesson|slides\.html|handout\.html|\/lessons\/[^/]+\/?$/i,
+    lessons:
+      /interactive lesson|slides\.html|handout\.html|\/lessons\/[^/]+\/?$/i,
     homework: /homework|family homework/i,
     games: /game|graphic novel|3d|project|bonus|arcade|lab|odyssey|netfold/i,
     notes: /guided notes|notes\.html|notes pdf|notes docx/i,
@@ -84,17 +85,26 @@
   }
 
   function syncProgressToggle(lessonId, href, completed) {
-    if (window.CurriculumProgressBridge && window.CurriculumProgressBridge.syncToggle) {
+    if (
+      window.CurriculumProgressBridge &&
+      window.CurriculumProgressBridge.syncToggle
+    ) {
       window.CurriculumProgressBridge.syncToggle(lessonId, href, completed);
     }
   }
 
   function hydrateProgressFromServer(callback) {
-    if (!window.CurriculumProgressBridge || !window.CurriculumProgressBridge.hydrateFromServer) {
+    if (
+      !window.CurriculumProgressBridge ||
+      !window.CurriculumProgressBridge.hydrateFromServer
+    ) {
       if (callback) callback(false);
       return;
     }
-    window.CurriculumProgressBridge.hydrateFromServer(progress, progressKey).then(function (changed) {
+    window.CurriculumProgressBridge.hydrateFromServer(
+      progress,
+      progressKey,
+    ).then(function (changed) {
       if (changed) saveProgress();
       if (callback) callback(changed);
     });
@@ -123,10 +133,16 @@
     if (!act) return false;
     var text = (act.text || "").replace(/\s+/g, " ").trim();
     var href = act.href || "";
-    if (TEACHER_TEXT_PATTERNS.some(function (re) { return re.test(text); })) {
+    if (
+      TEACHER_TEXT_PATTERNS.some(function (re) {
+        return re.test(text);
+      })
+    ) {
       return true;
     }
-    return TEACHER_HREF_PATTERNS.some(function (re) { return re.test(href); });
+    return TEACHER_HREF_PATTERNS.some(function (re) {
+      return re.test(href);
+    });
   }
 
   function lessonIdFromTitle(title) {
@@ -280,11 +296,26 @@
       if (!data || !data.index) return;
       if (typeof MiniSearch === "undefined") return;
       searchIndex = MiniSearch.loadJSON(data.index, {
-        fields: data.index.fields || ["title", "standard", "objective", "searchText"],
-        storeFields: data.index.storeFields || ["id", "title", "standard", "unit", "lessonPath"],
-        searchOptions: { boost: { title: 3, standard: 2 }, fuzzy: 0.2, prefix: true },
+        fields: data.index.fields || [
+          "title",
+          "standard",
+          "objective",
+          "searchText",
+        ],
+        storeFields: data.index.storeFields || [
+          "id",
+          "title",
+          "standard",
+          "unit",
+          "lessonPath",
+        ],
+        searchOptions: {
+          boost: { title: 3, standard: 2 },
+          fuzzy: 0.2,
+          prefix: true,
+        },
       });
-      (data.index.documentCount || 0); // touch for lint silence
+      data.index.documentCount || 0; // touch for lint silence
     });
   }
 
@@ -367,15 +398,17 @@
     hint.className = "hub-student-hint";
     hint.hidden = true;
     hint.innerHTML =
-      'Student view hides teacher-only links (Google Slides, Forms, printable packets). ' +
+      "Student view hides teacher-only links (Google Slides, Forms, printable packets). " +
       '<button type="button" class="hub-hint-link" id="hub-hint-teacher">Switch to Teacher Mode</button> ' +
-      'to restore them.';
-    hint.querySelector("#hub-hint-teacher").addEventListener("click", function () {
-      teacherMode = true;
-      saveTeacherMode(true);
-      applyTeacherMode();
-      updateProgressSummary();
-    });
+      "to restore them.";
+    hint
+      .querySelector("#hub-hint-teacher")
+      .addEventListener("click", function () {
+        teacherMode = true;
+        saveTeacherMode(true);
+        applyTeacherMode();
+        updateProgressSummary();
+      });
     controls.parentNode.insertBefore(hint, controls);
 
     controls.parentNode.insertBefore(bar, controls.nextSibling);
@@ -397,11 +430,17 @@
       btn.className = "hub-filter-chip";
       btn.dataset.filter = chip.id;
       btn.textContent = chip.label;
-      btn.setAttribute("aria-pressed", chip.id === FILTER_ALL ? "true" : "false");
+      btn.setAttribute(
+        "aria-pressed",
+        chip.id === FILTER_ALL ? "true" : "false",
+      );
       btn.addEventListener("click", function () {
         activeFilter = chip.id;
         chips.querySelectorAll(".hub-filter-chip").forEach(function (c) {
-          c.setAttribute("aria-pressed", c.dataset.filter === activeFilter ? "true" : "false");
+          c.setAttribute(
+            "aria-pressed",
+            c.dataset.filter === activeFilter ? "true" : "false",
+          );
         });
         runSearch();
       });
@@ -507,14 +546,16 @@
   }
 
   function enhancePrintFallbackAria() {
-    document.querySelectorAll("details.unit, details.lesson").forEach(function (el) {
-      if (!el.hasAttribute("aria-expanded")) {
-        el.setAttribute("aria-expanded", el.open ? "true" : "false");
-      }
-      el.addEventListener("toggle", function () {
-        el.setAttribute("aria-expanded", el.open ? "true" : "false");
+    document
+      .querySelectorAll("details.unit, details.lesson")
+      .forEach(function (el) {
+        if (!el.hasAttribute("aria-expanded")) {
+          el.setAttribute("aria-expanded", el.open ? "true" : "false");
+        }
+        el.addEventListener("toggle", function () {
+          el.setAttribute("aria-expanded", el.open ? "true" : "false");
+        });
       });
-    });
   }
 
   function markTeacherLinksInSource() {
@@ -522,8 +563,12 @@
       var text = a.textContent.replace(/\s+/g, " ").trim();
       var href = a.getAttribute("href") || "";
       if (
-        TEACHER_TEXT_PATTERNS.some(function (re) { return re.test(text); }) ||
-        TEACHER_HREF_PATTERNS.some(function (re) { return re.test(href); })
+        TEACHER_TEXT_PATTERNS.some(function (re) {
+          return re.test(text);
+        }) ||
+        TEACHER_HREF_PATTERNS.some(function (re) {
+          return re.test(href);
+        })
       ) {
         a.classList.add("teacher-only");
       }
@@ -547,19 +592,23 @@
           '<p class="search-empty-enhanced">No lessons match <strong>' +
           escapeHtml(q) +
           "</strong>" +
-          (activeFilter !== FILTER_ALL ? " in <strong>" + escapeHtml(activeFilter) + "</strong>" : "") +
+          (activeFilter !== FILTER_ALL
+            ? " in <strong>" + escapeHtml(activeFilter) + "</strong>"
+            : "") +
           '.</p><button type="button" class="hub-clear-filters">Clear search &amp; filters</button>';
-        panel.querySelector(".hub-clear-filters").addEventListener("click", function () {
-          if (hubApi.searchBox) hubApi.searchBox.value = "";
-          activeFilter = FILTER_ALL;
-          document.querySelectorAll(".hub-filter-chip").forEach(function (c) {
-            c.setAttribute(
-              "aria-pressed",
-              c.dataset.filter === FILTER_ALL ? "true" : "false",
-            );
+        panel
+          .querySelector(".hub-clear-filters")
+          .addEventListener("click", function () {
+            if (hubApi.searchBox) hubApi.searchBox.value = "";
+            activeFilter = FILTER_ALL;
+            document.querySelectorAll(".hub-filter-chip").forEach(function (c) {
+              c.setAttribute(
+                "aria-pressed",
+                c.dataset.filter === FILTER_ALL ? "true" : "false",
+              );
+            });
+            runSearch();
           });
-          runSearch();
-        });
         hubApi.hubEl.appendChild(panel);
         return;
       }
@@ -605,7 +654,9 @@
               "</a>";
             item.appendChild(stdEl);
           }
-          var rw = realWorldMap[lessonId] || realWorldMap[lessonId.replace("-flagship", "")];
+          var rw =
+            realWorldMap[lessonId] ||
+            realWorldMap[lessonId.replace("-flagship", "")];
           if (rw) {
             var rwEl = document.createElement("p");
             rwEl.className = "lesson-real-world";
@@ -647,7 +698,10 @@
               if (!progress[key]) delete progress[key];
               saveProgress();
               syncProgressToggle(lessonId, act.href, !!progress[key]);
-              check.setAttribute("aria-pressed", progress[key] ? "true" : "false");
+              check.setAttribute(
+                "aria-pressed",
+                progress[key] ? "true" : "false",
+              );
               check.textContent = progress[key] ? "✓" : "○";
               updateProgressSummary();
               enhanceUnitCards();
@@ -719,7 +773,9 @@
 
       var lessonId = lessonIdFromTitle(lesson.title);
       injectStandardBadge(infoBlock, lesson.lessonId || lessonId);
-      var rw = realWorldMap[lessonId] || realWorldMap[lessonId.replace("-flagship", "")];
+      var rw =
+        realWorldMap[lessonId] ||
+        realWorldMap[lessonId.replace("-flagship", "")];
       var existingRw = infoBlock.querySelector(".lesson-real-world");
       if (rw && !existingRw) {
         var rwEl = document.createElement("p");
@@ -737,47 +793,52 @@
       var outlineList = card.querySelector(".lesson-outline-list");
       if (!outlineList) return;
 
-      outlineList.querySelectorAll(".lesson-outline-item").forEach(function (li) {
-        if (li.querySelector(".progress-check")) return;
-        var link = li.querySelector("a");
-        if (!link) return;
-        var href = link.getAttribute("href");
-        var text = link.textContent.trim();
+      outlineList
+        .querySelectorAll(".lesson-outline-item")
+        .forEach(function (li) {
+          if (li.querySelector(".progress-check")) return;
+          var link = li.querySelector("a");
+          if (!link) return;
+          var href = link.getAttribute("href");
+          var text = link.textContent.trim();
 
-        if (!teacherMode && isTeacherResource({ text: text, href: href })) {
-          li.style.display = "none";
-          return;
-        }
-        if (
-          activeFilter !== FILTER_ALL &&
-          !activityMatchesFilter({ text: text, href: href }, activeFilter)
-        ) {
-          li.style.display = "none";
-          return;
-        }
-        li.style.display = "";
+          if (!teacherMode && isTeacherResource({ text: text, href: href })) {
+            li.style.display = "none";
+            return;
+          }
+          if (
+            activeFilter !== FILTER_ALL &&
+            !activityMatchesFilter({ text: text, href: href }, activeFilter)
+          ) {
+            li.style.display = "none";
+            return;
+          }
+          li.style.display = "";
 
-        var check = document.createElement("button");
-        check.type = "button";
-        check.className = "progress-check";
-        check.setAttribute("aria-label", "Mark complete: " + text);
-        var key = progressKey(lessonId, href);
-        var isDone = !!progress[key];
-        check.setAttribute("aria-pressed", isDone ? "true" : "false");
-        check.textContent = isDone ? "✓" : "○";
-        check.addEventListener("click", function (e) {
-          e.preventDefault();
-          progress[key] = !progress[key];
-          if (!progress[key]) delete progress[key];
-          saveProgress();
-          syncProgressToggle(lessonId, href, !!progress[key]);
-          check.setAttribute("aria-pressed", progress[key] ? "true" : "false");
-          check.textContent = progress[key] ? "✓" : "○";
-          updateProgressSummary();
-          enhanceUnitCards();
+          var check = document.createElement("button");
+          check.type = "button";
+          check.className = "progress-check";
+          check.setAttribute("aria-label", "Mark complete: " + text);
+          var key = progressKey(lessonId, href);
+          var isDone = !!progress[key];
+          check.setAttribute("aria-pressed", isDone ? "true" : "false");
+          check.textContent = isDone ? "✓" : "○";
+          check.addEventListener("click", function (e) {
+            e.preventDefault();
+            progress[key] = !progress[key];
+            if (!progress[key]) delete progress[key];
+            saveProgress();
+            syncProgressToggle(lessonId, href, !!progress[key]);
+            check.setAttribute(
+              "aria-pressed",
+              progress[key] ? "true" : "false",
+            );
+            check.textContent = progress[key] ? "✓" : "○";
+            updateProgressSummary();
+            enhanceUnitCards();
+          });
+          li.insertBefore(check, link);
         });
-        li.insertBefore(check, link);
-      });
 
       var actSelect = card.querySelector(".activity-select");
       if (actSelect) {
@@ -785,7 +846,8 @@
           if (!opt.value) return;
           var text = opt.textContent.trim();
           var href = opt.value;
-          opt.hidden = !teacherMode && isTeacherResource({ text: text, href: href });
+          opt.hidden =
+            !teacherMode && isTeacherResource({ text: text, href: href });
         });
       }
     });
@@ -877,7 +939,9 @@
   }
 
   function isGoogleSlidesActivity(act) {
-    return /^google slides$/i.test((act.text || "").replace(/\s+/g, " ").trim());
+    return /^google slides$/i.test(
+      (act.text || "").replace(/\s+/g, " ").trim(),
+    );
   }
 
   function legacyDriveUrlForLesson(lessonId) {
@@ -919,7 +983,9 @@
 
         legacyInserts.reverse().forEach(function (entry) {
           var dup = activities.some(function (a) {
-            return a.href === entry.href && /legacy|drive copy/i.test(a.text || "");
+            return (
+              a.href === entry.href && /legacy|drive copy/i.test(a.text || "")
+            );
           });
           if (dup) return;
           activities.splice(entry.index, 0, {
@@ -952,12 +1018,16 @@
         }
         a.setAttribute("href", slidesHref);
 
-        if (!/docs\.google\.com/i.test(legacyUrl) || legacyUrl === slidesHref) return;
+        if (!/docs\.google\.com/i.test(legacyUrl) || legacyUrl === slidesHref)
+          return;
         var row = a.parentNode;
         if (!row) return;
-        var already = Array.prototype.some.call(row.querySelectorAll(".res"), function (link) {
-          return link !== a && link.getAttribute("href") === legacyUrl;
-        });
+        var already = Array.prototype.some.call(
+          row.querySelectorAll(".res"),
+          function (link) {
+            return link !== a && link.getAttribute("href") === legacyUrl;
+          },
+        );
         if (already) return;
 
         var legacy = document.createElement("a");
@@ -968,6 +1038,38 @@
         legacy.textContent = "↗ Google Drive copy (legacy)";
         a.insertAdjacentElement("afterend", legacy);
       });
+    });
+  }
+
+  // Prepend a "Get Ready" readiness pre-lesson link to each lesson card so the
+  // tabbed pre-lesson (Vocabulary / Skills Check / Learn It / Practice) is the
+  // first thing students can choose before starting the lesson. Idempotent.
+  function injectReadinessLinks() {
+    document.querySelectorAll("details.lesson").forEach(function (lessonEl) {
+      var headEl = lessonEl.querySelector(".lesson-head");
+      var match = headEl
+        ? headEl.textContent.match(/Lesson\s+([0-9]+-[0-9]+(?:-flagship)?)/i)
+        : null;
+      if (!match) return;
+
+      var lessonId = match[1];
+      var href = "/lessons/" + lessonId + "/readiness/";
+      var row = lessonEl.querySelector(".lesson-body .res-row");
+      if (!row) return;
+
+      var already = Array.prototype.some.call(
+        row.querySelectorAll(".res"),
+        function (a) {
+          return a.getAttribute("href") === href;
+        },
+      );
+      if (already) return;
+
+      var link = document.createElement("a");
+      link.className = "res res-getready";
+      link.href = href;
+      link.textContent = "🚀 Get Ready (Pre-Lesson)";
+      row.insertBefore(link, row.firstChild);
     });
   }
 
@@ -1042,6 +1144,7 @@
     upgradeGoogleSlidesLinks();
     injectSupplementalActivities();
     patchStaticGoogleSlidesLinks();
+    injectReadinessLinks();
     markTeacherLinksInSource();
     enhancePrintFallbackAria();
     wrapRenderSearchResults();
@@ -1071,6 +1174,7 @@
 
     var observer = new MutationObserver(function () {
       patchStaticGoogleSlidesLinks();
+      injectReadinessLinks();
       scheduleEnhance();
     });
     if (hubApi.hubEl) {
