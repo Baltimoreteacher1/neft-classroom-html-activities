@@ -12,7 +12,12 @@ export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
 
-  if (/\.[a-z0-9]+$/i.test(url.pathname)) {
+  // Static assets (have a file extension) and the generated printable packets
+  // (under /printables/, served as real .html/.docx files) bypass the SPA shell.
+  if (
+    /\.[a-z0-9]+$/i.test(url.pathname) ||
+    url.pathname.startsWith("/access-practice-lab/printables/")
+  ) {
     return env.ASSETS.fetch(request);
   }
 

@@ -982,6 +982,7 @@
     renderQuickLinks();
     renderLinkBoard();
     renderTeacherFormsBoard();
+    renderPrintablesBoard();
     renderLearnerTools();
   }
 
@@ -1342,6 +1343,26 @@
     `,
       )
       .join("");
+  }
+
+  function renderPrintablesBoard() {
+    const grid = $("printablesBoard");
+    if (!grid) return;
+    const cards = [];
+    for (const [domainName, domain] of Object.entries(DATA.domains)) {
+      for (const [levelKey, level] of Object.entries(domain.levels || {})) {
+        if (!(level.activities || []).length) continue;
+        const base = `${domainName}-${levelKey}`.replace(/\s+/g, "");
+        const label = `${domainLabel(domainName)} · ${levelLabel(levelKey, level)}`;
+        cards.push(
+          `<div class="teacher-form-card"><h4>${escapeHtml(label)}</h4>` +
+            `<a href="/access-practice-lab/printables/${encodeURIComponent(base)}" target="_blank" rel="noopener">🖨️ Printable / PDF</a>` +
+            `<a href="/access-practice-lab/printables/${encodeURIComponent(base)}.docx">📝 Editable Word (.docx)</a>` +
+            `</div>`,
+        );
+      }
+    }
+    grid.innerHTML = cards.join("");
   }
 
   function renderTeacherFormsBoard() {
