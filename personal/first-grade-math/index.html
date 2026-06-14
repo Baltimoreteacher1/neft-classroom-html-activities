@@ -1,0 +1,1910 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>First Grade Math — EduWonderLab</title>
+    <style>
+      :root {
+        --accent: #2a9d8f;
+        --accent-dark: #1f7a6f;
+        --accent-soft: #d7f1ec;
+        --secondary: #ffd166;
+        --secondary-dark: #e6b53f;
+        --bg: #f0fbf8;
+        --card: #ffffff;
+        --ink: #1f2d2b;
+        --ink-soft: #4f6360;
+        --good: #2e9e4f;
+        --good-soft: #e3f7e9;
+        --soft-shadow: 0 8px 22px rgba(42, 157, 143, 0.16);
+        --radius: 18px;
+        --font: system-ui, "Segoe UI", Roboto, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: var(--font);
+        background: var(--bg);
+        color: var(--ink);
+        font-size: 1.15rem;
+        line-height: 1.5;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ---------- HEADER ---------- */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: #ffffff;
+        border-bottom: 4px solid var(--accent);
+        box-shadow: 0 4px 14px rgba(42, 157, 143, 0.12);
+      }
+      .head-row {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0.7rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-weight: 800;
+        font-size: 1.5rem;
+        color: var(--accent-dark);
+      }
+      .brand .emoji {
+        font-size: 1.9rem;
+      }
+      .pill {
+        background: var(--secondary);
+        color: #6a4e00;
+        font-weight: 800;
+        font-size: 0.95rem;
+        padding: 0.3rem 0.8rem;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+      .stars {
+        margin-left: auto;
+        background: var(--accent-soft);
+        color: var(--accent-dark);
+        font-weight: 900;
+        font-size: 1.2rem;
+        padding: 0.4rem 0.9rem;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        white-space: nowrap;
+      }
+      .stars.pop {
+        animation: pop 0.4s ease;
+      }
+      @keyframes pop {
+        0% {
+          transform: scale(1);
+        }
+        45% {
+          transform: scale(1.35);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      /* ---------- TABS ---------- */
+      .tabbar {
+        background: #ffffff;
+        border-bottom: 2px solid var(--accent-soft);
+      }
+      .tablist {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: flex;
+        gap: 0.5rem;
+        padding: 0.6rem 1rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .tab {
+        flex: 0 0 auto;
+        min-height: 56px;
+        border: 3px solid var(--accent-soft);
+        background: #fff;
+        color: var(--accent-dark);
+        font-family: var(--font);
+        font-size: 1.05rem;
+        font-weight: 800;
+        padding: 0.5rem 1rem;
+        border-radius: 14px;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .tab[aria-selected="true"] {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+        box-shadow: var(--soft-shadow);
+      }
+      .tab:hover {
+        border-color: var(--accent);
+      }
+
+      /* ---------- MAIN / PANELS ---------- */
+      main {
+        flex: 1;
+        max-width: 1100px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 1.2rem 1rem 2rem;
+      }
+      .panel[hidden] {
+        display: none;
+      }
+      .card {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: var(--soft-shadow);
+        padding: 1.3rem 1.2rem;
+        margin-bottom: 1.2rem;
+      }
+      .station-title {
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: var(--accent-dark);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .instr {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin: 0.6rem 0 1rem;
+        font-size: 1.2rem;
+        color: var(--ink-soft);
+        font-weight: 600;
+      }
+
+      /* ---------- BUTTONS ---------- */
+      .speak-btn {
+        min-width: 56px;
+        min-height: 56px;
+        font-size: 1.5rem;
+        border: 3px solid var(--accent-soft);
+        background: #fff;
+        border-radius: 14px;
+        cursor: pointer;
+        line-height: 1;
+      }
+      .speak-btn:hover {
+        background: var(--accent-soft);
+      }
+      .btn {
+        min-height: 56px;
+        font-family: var(--font);
+        font-size: 1.15rem;
+        font-weight: 800;
+        border: none;
+        border-radius: 14px;
+        padding: 0.6rem 1.3rem;
+        cursor: pointer;
+        background: var(--secondary);
+        color: #6a4e00;
+        box-shadow: 0 4px 0 var(--secondary-dark);
+      }
+      .btn:active {
+        transform: translateY(2px);
+        box-shadow: 0 2px 0 var(--secondary-dark);
+      }
+      .btn.accent {
+        background: var(--accent);
+        color: #fff;
+        box-shadow: 0 4px 0 var(--accent-dark);
+      }
+      .btn.accent:active {
+        box-shadow: 0 2px 0 var(--accent-dark);
+      }
+
+      /* answer choices */
+      .choices {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        margin-top: 1rem;
+      }
+      .choice {
+        min-width: 84px;
+        min-height: 72px;
+        font-family: var(--font);
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--accent-dark);
+        background: #fff;
+        border: 4px solid var(--accent-soft);
+        border-radius: 16px;
+        cursor: pointer;
+        padding: 0.4rem 1rem;
+        transition: transform 0.08s;
+      }
+      .choice:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .choice.correct {
+        background: var(--good-soft);
+        border-color: var(--good);
+        color: var(--good);
+      }
+      .choice.wrong {
+        background: #fdecec;
+        border-color: #e06464;
+        color: #c0392b;
+        animation: shake 0.35s;
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-6px);
+        }
+        75% {
+          transform: translateX(6px);
+        }
+      }
+
+      /* object groups */
+      .objects {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        justify-content: center;
+        background: var(--bg);
+        border-radius: 14px;
+        padding: 1rem;
+        min-height: 90px;
+        max-width: 520px;
+        margin: 0.4rem auto;
+      }
+      .obj {
+        font-size: 2.3rem;
+        line-height: 1;
+        cursor: pointer;
+        user-select: none;
+        transition: transform 0.12s;
+      }
+      .obj.counted {
+        transform: scale(1.3);
+        filter: drop-shadow(0 0 4px var(--secondary));
+      }
+      .obj.gone {
+        opacity: 0.22;
+        text-decoration: line-through;
+        text-decoration-color: #c0392b;
+        text-decoration-thickness: 4px;
+      }
+
+      .equation {
+        text-align: center;
+        font-size: 2.6rem;
+        font-weight: 900;
+        color: var(--accent-dark);
+        margin: 0.8rem 0;
+        letter-spacing: 1px;
+      }
+      .vs {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .group-box {
+        flex: 1 1 200px;
+        max-width: 320px;
+      }
+      .group-side {
+        border: 4px solid var(--accent-soft);
+        border-radius: 16px;
+        padding: 0.6rem;
+        cursor: pointer;
+        background: #fff;
+      }
+      .group-side:hover {
+        border-color: var(--accent);
+      }
+      .group-side.correct {
+        border-color: var(--good);
+        background: var(--good-soft);
+      }
+      .group-side.wrong {
+        border-color: #e06464;
+        animation: shake 0.35s;
+      }
+      .group-side .count-label {
+        text-align: center;
+        font-weight: 900;
+        font-size: 1.4rem;
+        color: var(--accent-dark);
+      }
+
+      .feedback {
+        margin-top: 1rem;
+        min-height: 2rem;
+        font-size: 1.35rem;
+        font-weight: 900;
+        text-align: center;
+      }
+      .feedback.good {
+        color: var(--good);
+      }
+      .feedback.try {
+        color: #c0392b;
+      }
+
+      .scoreline {
+        font-weight: 800;
+        color: var(--ink-soft);
+        margin-top: 0.6rem;
+      }
+
+      /* number line */
+      .numline {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        justify-content: center;
+        margin-top: 1rem;
+      }
+      .numline button {
+        min-width: 56px;
+        min-height: 56px;
+        font-size: 1.4rem;
+        font-weight: 900;
+        border: 3px solid var(--accent-soft);
+        background: #fff;
+        color: var(--accent-dark);
+        border-radius: 12px;
+        cursor: pointer;
+      }
+      .numline button:hover {
+        border-color: var(--accent);
+      }
+      .numline button.correct {
+        background: var(--good-soft);
+        border-color: var(--good);
+        color: var(--good);
+      }
+      .numline button.wrong {
+        background: #fdecec;
+        border-color: #e06464;
+      }
+
+      /* shapes gallery */
+      .shape-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 0.9rem;
+        margin-top: 1rem;
+      }
+      .shape-card {
+        background: #fff;
+        border: 4px solid var(--accent-soft);
+        border-radius: 16px;
+        padding: 0.8rem;
+        cursor: pointer;
+        text-align: center;
+        min-height: 140px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+      }
+      .shape-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .shape-card.correct {
+        border-color: var(--good);
+        background: var(--good-soft);
+      }
+      .shape-card.wrong {
+        border-color: #e06464;
+        animation: shake 0.35s;
+      }
+      .shape-card svg {
+        width: 70px;
+        height: 70px;
+      }
+      .shape-card .shape-name {
+        font-weight: 800;
+        color: var(--accent-dark);
+        font-size: 1rem;
+      }
+
+      .big-num {
+        text-align: center;
+        font-size: 5rem;
+        font-weight: 900;
+        color: var(--accent);
+        margin: 0.4rem 0;
+      }
+
+      .dots {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        justify-content: center;
+        max-width: 380px;
+        margin: 0.6rem auto;
+      }
+      .dot {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+
+      /* confetti / star burst */
+      #burst {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 80;
+        overflow: hidden;
+      }
+      .spark {
+        position: absolute;
+        font-size: 1.6rem;
+        animation: fly 1s ease-out forwards;
+      }
+      @keyframes fly {
+        0% {
+          transform: translate(0, 0) scale(0.6);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(var(--dx), var(--dy)) scale(1.3) rotate(220deg);
+          opacity: 0;
+        }
+      }
+
+      footer {
+        text-align: center;
+        padding: 1.4rem 1rem 2rem;
+        color: var(--ink-soft);
+        font-weight: 600;
+      }
+
+      :focus-visible {
+        outline: 4px solid var(--secondary-dark);
+        outline-offset: 2px;
+      }
+
+      @media (max-width: 540px) {
+        .equation {
+          font-size: 2rem;
+        }
+        .big-num {
+          font-size: 3.6rem;
+        }
+        .brand {
+          font-size: 1.25rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="head-row">
+        <div class="brand">
+          <span class="emoji" aria-hidden="true">🔢</span>
+          <span>Math Explorers</span>
+        </div>
+        <span class="pill">Grade 1 Readiness</span>
+        <span class="stars" id="starBox" aria-live="polite">
+          <span aria-hidden="true">⭐</span> Stars:
+          <span id="starCount">0</span>
+        </span>
+      </div>
+    </header>
+
+    <nav class="tabbar" aria-label="Activity stations">
+      <div class="tablist" role="tablist" id="tablist">
+        <button
+          class="tab"
+          role="tab"
+          id="tab-count"
+          aria-controls="panel-count"
+          aria-selected="true"
+        >
+          🍎 Count It
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-recognize"
+          aria-controls="panel-recognize"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          🔟 Numbers
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-add"
+          aria-controls="panel-add"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          ➕ Add It Up
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-sub"
+          aria-controls="panel-sub"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          ➖ Take Away
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-shapes"
+          aria-controls="panel-shapes"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          🔺 Shapes
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-more"
+          aria-controls="panel-more"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          ⚖️ More or Less
+        </button>
+      </div>
+    </nav>
+
+    <main>
+      <!-- ============ COUNT IT ============ -->
+      <section
+        class="panel"
+        id="panel-count"
+        role="tabpanel"
+        aria-labelledby="tab-count"
+      >
+        <div class="card">
+          <h2 class="station-title">🍎 Count It</h2>
+          <p class="instr">
+            <button
+              class="speak-btn"
+              data-say="Count the objects. Then tap the number that says how many."
+              aria-label="Hear the directions"
+            >
+              🔊
+            </button>
+            Count the objects. Tap each one, then pick the number!
+          </p>
+          <div
+            class="objects"
+            id="countObjects"
+            aria-label="Objects to count"
+          ></div>
+          <div class="choices" id="countChoices"></div>
+          <div class="feedback" id="countFeedback" aria-live="polite"></div>
+          <button class="btn accent" id="countNew" style="margin-top: 1rem">
+            🔄 New Group
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ RECOGNIZE ============ -->
+      <section
+        class="panel"
+        id="panel-recognize"
+        role="tabpanel"
+        aria-labelledby="tab-recognize"
+        hidden
+      >
+        <div class="card">
+          <h2 class="station-title">
+            🔟 Numbers
+            <span
+              id="recogRound"
+              style="font-size: 1.1rem; color: var(--ink-soft)"
+            ></span>
+          </h2>
+          <p class="instr">
+            <button
+              class="speak-btn"
+              id="recogSay"
+              aria-label="Hear the number again"
+            >
+              🔊
+            </button>
+            <span id="recogPrompt">Listen, then tap the matching answer!</span>
+          </p>
+          <div id="recogStage" style="text-align: center"></div>
+          <div class="numline" id="recogChoices"></div>
+          <div class="feedback" id="recogFeedback" aria-live="polite"></div>
+          <div class="scoreline" id="recogScore"></div>
+          <button class="btn accent" id="recogNew" style="margin-top: 1rem">
+            ➡️ Next
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ ADD IT UP ============ -->
+      <section
+        class="panel"
+        id="panel-add"
+        role="tabpanel"
+        aria-labelledby="tab-add"
+        hidden
+      >
+        <div class="card">
+          <h2 class="station-title">
+            ➕ Add It Up
+            <span
+              id="addRound"
+              style="font-size: 1.1rem; color: var(--ink-soft)"
+            ></span>
+          </h2>
+          <p class="instr">
+            <button class="speak-btn" id="addSay" aria-label="Hear the problem">
+              🔊
+            </button>
+            Count all the objects, then tap the sum!
+          </p>
+          <div class="vs">
+            <div class="objects" id="addLeft" style="max-width: 240px"></div>
+            <div
+              style="
+                font-size: 2.6rem;
+                font-weight: 900;
+                color: var(--secondary-dark);
+              "
+            >
+              ➕
+            </div>
+            <div class="objects" id="addRight" style="max-width: 240px"></div>
+          </div>
+          <div class="equation" id="addEq"></div>
+          <div class="choices" id="addChoices"></div>
+          <div class="feedback" id="addFeedback" aria-live="polite"></div>
+          <div class="scoreline" id="addScore"></div>
+          <button class="btn accent" id="addNew" style="margin-top: 1rem">
+            ➡️ Next Problem
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ TAKE AWAY ============ -->
+      <section
+        class="panel"
+        id="panel-sub"
+        role="tabpanel"
+        aria-labelledby="tab-sub"
+        hidden
+      >
+        <div class="card">
+          <h2 class="station-title">
+            ➖ Take Away
+            <span
+              id="subRound"
+              style="font-size: 1.1rem; color: var(--ink-soft)"
+            ></span>
+          </h2>
+          <p class="instr">
+            <button class="speak-btn" id="subSay" aria-label="Hear the problem">
+              🔊
+            </button>
+            Some leave! How many are left? Tap the answer.
+          </p>
+          <div class="objects" id="subObjects" style="max-width: 420px"></div>
+          <div class="equation" id="subEq"></div>
+          <div class="choices" id="subChoices"></div>
+          <div class="feedback" id="subFeedback" aria-live="polite"></div>
+          <div class="scoreline" id="subScore"></div>
+          <button class="btn accent" id="subNew" style="margin-top: 1rem">
+            ➡️ Next Problem
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ SHAPES ============ -->
+      <section
+        class="panel"
+        id="panel-shapes"
+        role="tabpanel"
+        aria-labelledby="tab-shapes"
+        hidden
+      >
+        <div class="card">
+          <h2 class="station-title">🔺 Shape Gallery</h2>
+          <p class="instr">
+            <button
+              class="speak-btn"
+              data-say="Tap a shape to hear its name and how many sides it has."
+              aria-label="Hear the directions"
+            >
+              🔊
+            </button>
+            Tap a shape to hear its name and sides!
+          </p>
+          <div class="shape-grid" id="shapeGallery"></div>
+        </div>
+        <div class="card">
+          <h2 class="station-title">
+            🔍 Find the Shape!
+            <span
+              id="findRound"
+              style="font-size: 1.1rem; color: var(--ink-soft)"
+            ></span>
+          </h2>
+          <p class="instr">
+            <button
+              class="speak-btn"
+              id="findSay"
+              aria-label="Hear the shape to find"
+            >
+              🔊
+            </button>
+            <span id="findPrompt">Tap the shape I say!</span>
+          </p>
+          <div class="shape-grid" id="findGrid"></div>
+          <div class="feedback" id="findFeedback" aria-live="polite"></div>
+          <div class="scoreline" id="findScore"></div>
+          <button class="btn accent" id="findNew" style="margin-top: 1rem">
+            ➡️ Next
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ MORE OR LESS ============ -->
+      <section
+        class="panel"
+        id="panel-more"
+        role="tabpanel"
+        aria-labelledby="tab-more"
+        hidden
+      >
+        <div class="card">
+          <h2 class="station-title">
+            ⚖️ More or Less
+            <span
+              id="moreRound"
+              style="font-size: 1.1rem; color: var(--ink-soft)"
+            ></span>
+          </h2>
+          <p class="instr">
+            <button
+              class="speak-btn"
+              id="moreSay"
+              aria-label="Hear the question"
+            >
+              🔊
+            </button>
+            <span id="morePrompt">Tap the side with MORE.</span>
+          </p>
+          <div
+            style="
+              display: flex;
+              gap: 0.6rem;
+              justify-content: center;
+              margin-bottom: 0.6rem;
+              flex-wrap: wrap;
+            "
+          >
+            <button class="btn" id="modeMore" data-mode="more">
+              Find MORE
+            </button>
+            <button class="btn" id="modeLess" data-mode="less">
+              Find LESS
+            </button>
+            <button class="btn" id="modeEqual" data-mode="equal">
+              Find EQUAL
+            </button>
+          </div>
+          <div class="vs">
+            <div class="group-box">
+              <div
+                class="group-side"
+                id="moreLeft"
+                tabindex="0"
+                role="button"
+                aria-label="Left group"
+              >
+                <div
+                  class="objects"
+                  id="moreLeftObj"
+                  style="max-width: none"
+                ></div>
+                <div class="count-label" id="moreLeftCount"></div>
+              </div>
+            </div>
+            <div
+              style="
+                font-size: 2.4rem;
+                font-weight: 900;
+                color: var(--secondary-dark);
+              "
+              id="moreSign"
+            >
+              ?
+            </div>
+            <div class="group-box">
+              <div
+                class="group-side"
+                id="moreRight"
+                tabindex="0"
+                role="button"
+                aria-label="Right group"
+              >
+                <div
+                  class="objects"
+                  id="moreRightObj"
+                  style="max-width: none"
+                ></div>
+                <div class="count-label" id="moreRightCount"></div>
+              </div>
+            </div>
+          </div>
+          <div class="feedback" id="moreFeedback" aria-live="polite"></div>
+          <div class="scoreline" id="moreScore"></div>
+          <button class="btn accent" id="moreNew" style="margin-top: 1rem">
+            ➡️ Next
+          </button>
+        </div>
+
+        <div class="card">
+          <h2 class="station-title">🔢 What Comes Next?</h2>
+          <p class="instr">
+            <button class="speak-btn" id="patSay" aria-label="Hear the pattern">
+              🔊
+            </button>
+            Look at the pattern. Tap the next number!
+          </p>
+          <div class="big-num" id="patSeq" style="font-size: 2.4rem"></div>
+          <div class="choices" id="patChoices"></div>
+          <div class="feedback" id="patFeedback" aria-live="polite"></div>
+          <button class="btn accent" id="patNew" style="margin-top: 1rem">
+            ➡️ New Pattern
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <div id="burst" aria-hidden="true"></div>
+
+    <footer>EduWonderLab · Made with ❤️ for Noam</footer>
+
+    <script>
+      "use strict";
+
+      /* ---------------- helpers ---------------- */
+      // Wide emoji bank (20+ themes) so endless play stays fresh.
+      var EMOJIS = [
+        "🍎",
+        "🐢",
+        "⭐",
+        "🐸",
+        "🍓",
+        "🐝",
+        "🌸",
+        "🐠",
+        "🍌",
+        "🦋",
+        "🚗",
+        "🎈",
+        "🐶",
+        "🐱",
+        "🦄",
+        "🐧",
+        "🐙",
+        "🦖",
+        "🌟",
+        "🍪",
+        "🍕",
+        "🎁",
+        "🌈",
+        "🚀",
+        "⚽",
+        "🏀",
+        "🐬",
+        "🦉",
+        "🐞",
+        "🌻",
+        "🍉",
+        "🍇",
+        "🧁",
+        "🍩",
+        "🐰",
+        "🐼",
+        "🐨",
+        "🦊",
+        "🐥",
+        "🍒",
+        "🚲",
+        "🎸",
+        "🪁",
+        "🧸",
+        "🌳",
+        "🐳",
+        "🦒",
+        "🐠",
+        "🍊",
+        "🦕",
+      ];
+      var lastEmoji = "";
+      // Pick an emoji that differs from the previous group's emoji.
+      function pickEmoji() {
+        var e = pick(EMOJIS);
+        var guard = 0;
+        while (e === lastEmoji && EMOJIS.length > 1 && guard < 20) {
+          e = pick(EMOJIS);
+          guard++;
+        }
+        lastEmoji = e;
+        return e;
+      }
+      var PRAISE = [
+        "Nice counting!",
+        "You got it!",
+        "Math star!",
+        "Way to go!",
+        "Super smart!",
+        "Great job!",
+      ];
+
+      function rand(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+      function pick(arr) {
+        return arr[rand(0, arr.length - 1)];
+      }
+      function shuffle(arr) {
+        var a = arr.slice();
+        for (var i = a.length - 1; i > 0; i--) {
+          var j = rand(0, i);
+          var t = a[i];
+          a[i] = a[j];
+          a[j] = t;
+        }
+        return a;
+      }
+
+      /* ---------------- speech ---------------- */
+      function speak(text, rate) {
+        try {
+          if (
+            !("speechSynthesis" in window) ||
+            !window.SpeechSynthesisUtterance
+          )
+            return;
+          window.speechSynthesis.cancel();
+          var u = new SpeechSynthesisUtterance(String(text));
+          u.lang = "en-US";
+          u.rate = rate || 0.85;
+          window.speechSynthesis.speak(u);
+        } catch (e) {
+          /* speech unavailable — silent */
+        }
+      }
+
+      /* ---------------- stars ---------------- */
+      var STAR_KEY = "fg-math-stars";
+      var stars = 0;
+      var starCountEl = document.getElementById("starCount");
+      var starBox = document.getElementById("starBox");
+
+      function loadStars() {
+        try {
+          var v = parseInt(localStorage.getItem(STAR_KEY), 10);
+          if (!isNaN(v) && v >= 0) stars = v;
+        } catch (e) {}
+        starCountEl.textContent = stars;
+      }
+      function addStar() {
+        stars += 1;
+        starCountEl.textContent = stars;
+        try {
+          localStorage.setItem(STAR_KEY, String(stars));
+        } catch (e) {}
+        starBox.classList.remove("pop");
+        void starBox.offsetWidth;
+        starBox.classList.add("pop");
+        burst();
+      }
+
+      /* ---------------- burst ---------------- */
+      var burstLayer = document.getElementById("burst");
+      function burst() {
+        if (
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        )
+          return;
+        var icons = ["⭐", "🌟", "✨", "🎉", "💛"];
+        for (var i = 0; i < 14; i++) {
+          var s = document.createElement("span");
+          s.className = "spark";
+          s.textContent = pick(icons);
+          s.style.left = rand(20, 80) + "%";
+          s.style.top = rand(20, 60) + "%";
+          s.style.setProperty("--dx", rand(-180, 180) + "px");
+          s.style.setProperty("--dy", rand(-220, -60) + "px");
+          burstLayer.appendChild(s);
+          (function (node) {
+            setTimeout(function () {
+              if (node.parentNode) node.parentNode.removeChild(node);
+            }, 1050);
+          })(s);
+        }
+      }
+
+      function praise(el) {
+        el.textContent = "✅ " + pick(PRAISE);
+        el.className = "feedback good";
+      }
+      function tryAgain(el) {
+        el.textContent = "💪 Try again!";
+        el.className = "feedback try";
+      }
+
+      /* ---------------- anti-repeat guard ---------------- */
+      // Returns true if `key` matches the previous round for that station, so
+      // generators can re-roll and avoid an immediate exact repeat.
+      var lastKeys = {};
+      function isRepeat(station, key) {
+        return lastKeys[station] === key;
+      }
+      function rememberKey(station, key) {
+        lastKeys[station] = key;
+      }
+
+      /* ---------------- generic choice builder ---------------- */
+      // Build 3-4 unique numeric choices that always include the answer.
+      function buildChoices(answer, lo, hi, count) {
+        var set = {};
+        set[answer] = true;
+        var list = [answer];
+        var guard = 0;
+        while (list.length < count && guard < 200) {
+          guard++;
+          var c = rand(lo, hi);
+          if (!set[c]) {
+            set[c] = true;
+            list.push(c);
+          }
+        }
+        return shuffle(list);
+      }
+
+      /* ============================================================
+         TABS
+         ============================================================ */
+      var tabs = Array.prototype.slice.call(document.querySelectorAll(".tab"));
+      function selectTab(tab) {
+        tabs.forEach(function (t) {
+          var sel = t === tab;
+          t.setAttribute("aria-selected", sel ? "true" : "false");
+          t.tabIndex = sel ? 0 : -1;
+          var panel = document.getElementById(t.getAttribute("aria-controls"));
+          if (panel) panel.hidden = !sel;
+        });
+      }
+      tabs.forEach(function (tab, idx) {
+        tab.addEventListener("click", function () {
+          selectTab(tab);
+        });
+        tab.addEventListener("keydown", function (e) {
+          var next = null;
+          if (e.key === "ArrowRight") next = tabs[(idx + 1) % tabs.length];
+          else if (e.key === "ArrowLeft")
+            next = tabs[(idx - 1 + tabs.length) % tabs.length];
+          else if (e.key === "Home") next = tabs[0];
+          else if (e.key === "End") next = tabs[tabs.length - 1];
+          if (next) {
+            e.preventDefault();
+            selectTab(next);
+            next.focus();
+          }
+        });
+      });
+
+      // generic speak buttons (data-say)
+      document.querySelectorAll("[data-say]").forEach(function (b) {
+        b.addEventListener("click", function () {
+          speak(b.getAttribute("data-say"));
+        });
+      });
+
+      /* ============================================================
+         STATION 1: COUNT IT
+         ============================================================ */
+      var countObjects = document.getElementById("countObjects");
+      var countChoices = document.getElementById("countChoices");
+      var countFeedback = document.getElementById("countFeedback");
+      var countAnswer = 0;
+      var countTapped = 0;
+
+      function newCount() {
+        countFeedback.textContent = "";
+        countFeedback.className = "feedback";
+        countAnswer = rand(1, 20);
+        var emoji = pickEmoji();
+        // avoid the exact same count+emoji as the previous round
+        var guard = 0;
+        while (isRepeat("count", countAnswer + ":" + emoji) && guard < 20) {
+          countAnswer = rand(1, 20);
+          emoji = pickEmoji();
+          guard++;
+        }
+        rememberKey("count", countAnswer + ":" + emoji);
+        countTapped = 0;
+        countObjects.innerHTML = "";
+        for (var i = 0; i < countAnswer; i++) {
+          var o = document.createElement("span");
+          o.className = "obj";
+          o.textContent = emoji;
+          o.setAttribute("role", "button");
+          o.setAttribute("aria-label", "object");
+          (function (node) {
+            node.addEventListener("click", function () {
+              if (node.classList.contains("counted")) return;
+              node.classList.add("counted");
+              countTapped++;
+              speak(String(countTapped));
+            });
+          })(o);
+          countObjects.appendChild(o);
+        }
+        var choices = buildChoices(countAnswer, 1, 20, 4);
+        countChoices.innerHTML = "";
+        choices.forEach(function (c) {
+          var b = document.createElement("button");
+          b.className = "choice";
+          b.textContent = c;
+          b.setAttribute("aria-label", "Answer " + c);
+          b.addEventListener("click", function () {
+            checkCount(b, c);
+          });
+          countChoices.appendChild(b);
+        });
+      }
+      function checkCount(btn, val) {
+        if (val === countAnswer) {
+          btn.classList.add("correct");
+          praise(countFeedback);
+          speak(pick(PRAISE));
+          addStar();
+          Array.prototype.forEach.call(countChoices.children, function (c) {
+            c.disabled = true;
+          });
+        } else {
+          btn.classList.add("wrong");
+          tryAgain(countFeedback);
+          speak("Try again!");
+          setTimeout(function () {
+            btn.classList.remove("wrong");
+          }, 400);
+        }
+      }
+      document.getElementById("countNew").addEventListener("click", newCount);
+
+      /* ============================================================
+         STATION 2: NUMBERS (recognize)
+         ============================================================ */
+      var recogStage = document.getElementById("recogStage");
+      var recogChoices = document.getElementById("recogChoices");
+      var recogFeedback = document.getElementById("recogFeedback");
+      var recogPrompt = document.getElementById("recogPrompt");
+      var recogRoundEl = document.getElementById("recogRound");
+      var recogScoreEl = document.getElementById("recogScore");
+      var recogAnswer = 0;
+      var recogMode = "numeral"; // "numeral" -> show dots, pick numeral; "dots" -> show numeral, pick dots
+      var recogRound = 0;
+      var recogScore = 0;
+
+      function dotsHTML(n) {
+        var html = '<div class="dots" aria-label="' + n + ' dots">';
+        for (var i = 0; i < n; i++) html += '<span class="dot"></span>';
+        return html + "</div>";
+      }
+
+      function newRecog() {
+        recogFeedback.textContent = "";
+        recogFeedback.className = "feedback";
+        recogRound++;
+        recogRoundEl.textContent = "Round " + recogRound;
+        recogAnswer = rand(0, 20);
+        recogMode = rand(0, 1) === 0 ? "numeral" : "dots";
+        var rGuard = 0;
+        while (
+          isRepeat("recog", recogAnswer + ":" + recogMode) &&
+          rGuard < 20
+        ) {
+          recogAnswer = rand(0, 20);
+          recogMode = rand(0, 1) === 0 ? "numeral" : "dots";
+          rGuard++;
+        }
+        rememberKey("recog", recogAnswer + ":" + recogMode);
+        recogChoices.innerHTML = "";
+        var choices = buildChoices(recogAnswer, 0, 20, 4);
+
+        if (recogMode === "numeral") {
+          // show dots, ask for matching numeral
+          recogPrompt.textContent = "How many dots? Tap the number.";
+          recogStage.innerHTML = dotsHTML(recogAnswer);
+          speak("How many dots?");
+          choices.forEach(function (c) {
+            recogChoices.appendChild(makeRecogBtn(c, String(c)));
+          });
+        } else {
+          // show numeral, speak it, ask for matching dot group
+          recogPrompt.textContent =
+            "This number is " + recogAnswer + ". Tap the matching dots.";
+          recogStage.innerHTML =
+            '<div class="big-num">' + recogAnswer + "</div>";
+          speak("This number is " + recogAnswer + ". Tap the matching dots.");
+          choices.forEach(function (c) {
+            recogChoices.appendChild(makeRecogBtn(c, dotsHTML(c), true));
+          });
+        }
+      }
+      function makeRecogBtn(val, label, isHtml) {
+        var b = document.createElement("button");
+        if (isHtml) {
+          b.innerHTML = label;
+          b.style.minWidth = "110px";
+          b.style.padding = "8px";
+        } else {
+          b.textContent = label;
+        }
+        b.setAttribute("aria-label", "Answer " + val);
+        b.addEventListener("click", function () {
+          if (val === recogAnswer) {
+            b.classList.add("correct");
+            praise(recogFeedback);
+            speak(pick(PRAISE));
+            recogScore++;
+            recogScoreEl.textContent = "Correct: " + recogScore;
+            addStar();
+            Array.prototype.forEach.call(recogChoices.children, function (c) {
+              c.disabled = true;
+            });
+          } else {
+            b.classList.add("wrong");
+            tryAgain(recogFeedback);
+            speak("Try again!");
+            setTimeout(function () {
+              b.classList.remove("wrong");
+            }, 400);
+          }
+        });
+        return b;
+      }
+      document.getElementById("recogNew").addEventListener("click", newRecog);
+      document
+        .getElementById("recogSay")
+        .addEventListener("click", function () {
+          if (recogMode === "numeral") speak("How many dots?");
+          else speak("This number is " + recogAnswer);
+        });
+
+      /* ============================================================
+         STATION 3: ADD IT UP (within 10)
+         ============================================================ */
+      var addLeft = document.getElementById("addLeft");
+      var addRight = document.getElementById("addRight");
+      var addEq = document.getElementById("addEq");
+      var addChoices = document.getElementById("addChoices");
+      var addFeedback = document.getElementById("addFeedback");
+      var addRoundEl = document.getElementById("addRound");
+      var addScoreEl = document.getElementById("addScore");
+      var addA = 0,
+        addB = 0,
+        addSum = 0,
+        addRound = 0,
+        addScore = 0;
+
+      function fillObjects(container, n, emoji) {
+        container.innerHTML = "";
+        for (var i = 0; i < n; i++) {
+          var o = document.createElement("span");
+          o.className = "obj";
+          o.textContent = emoji;
+          o.setAttribute("role", "button");
+          o.setAttribute("aria-label", "object");
+          (function (node, idx) {
+            node.addEventListener("click", function () {
+              node.classList.toggle("counted");
+            });
+          })(o, i);
+          container.appendChild(o);
+        }
+      }
+
+      function newAdd() {
+        addFeedback.textContent = "";
+        addFeedback.className = "feedback";
+        addRound++;
+        addRoundEl.textContent = "Problem " + addRound;
+        // Mostly within 10; occasionally stretch to within 20 to stay fresh.
+        var bound = rand(1, 4) === 1 ? 20 : 10;
+        var aGuard = 0;
+        do {
+          // Each addend can be 0..bound-1 so the full within-bound space is used.
+          addA = rand(0, bound - 1);
+          addB = rand(0, bound - 1);
+          aGuard++;
+          // re-roll if over the bound, both zero, or an exact repeat
+        } while (
+          (addA + addB > bound ||
+            addA + addB < 1 ||
+            isRepeat("add", addA + "+" + addB)) &&
+          aGuard < 100
+        );
+        addSum = addA + addB;
+        rememberKey("add", addA + "+" + addB);
+        var leftEmoji = pickEmoji();
+        var rightEmoji = pickEmoji();
+        fillObjects(addLeft, addA, leftEmoji);
+        fillObjects(addRight, addB, rightEmoji);
+        addEq.textContent = addA + " + " + addB + " = ?";
+        speak(addA + " plus " + addB + " equals?");
+        var choices = buildChoices(addSum, 0, bound, 4);
+        addChoices.innerHTML = "";
+        choices.forEach(function (c) {
+          var b = document.createElement("button");
+          b.className = "choice";
+          b.textContent = c;
+          b.setAttribute("aria-label", "Answer " + c);
+          b.addEventListener("click", function () {
+            if (c === addSum) {
+              b.classList.add("correct");
+              addEq.textContent = addA + " + " + addB + " = " + addSum;
+              praise(addFeedback);
+              speak(pick(PRAISE));
+              addScore++;
+              addScoreEl.textContent = "Correct: " + addScore;
+              addStar();
+              Array.prototype.forEach.call(addChoices.children, function (x) {
+                x.disabled = true;
+              });
+            } else {
+              b.classList.add("wrong");
+              tryAgain(addFeedback);
+              speak("Try again!");
+              setTimeout(function () {
+                b.classList.remove("wrong");
+              }, 400);
+            }
+          });
+          addChoices.appendChild(b);
+        });
+      }
+      document.getElementById("addNew").addEventListener("click", newAdd);
+      document.getElementById("addSay").addEventListener("click", function () {
+        speak(addA + " plus " + addB + " equals?");
+      });
+
+      /* ============================================================
+         STATION 4: TAKE AWAY (subtraction within 10)
+         ============================================================ */
+      var subObjects = document.getElementById("subObjects");
+      var subEq = document.getElementById("subEq");
+      var subChoices = document.getElementById("subChoices");
+      var subFeedback = document.getElementById("subFeedback");
+      var subRoundEl = document.getElementById("subRound");
+      var subScoreEl = document.getElementById("subScore");
+      var subTotal = 0,
+        subTake = 0,
+        subAns = 0,
+        subRound = 0,
+        subScore = 0;
+
+      function newSub() {
+        subFeedback.textContent = "";
+        subFeedback.className = "feedback";
+        subRound++;
+        subRoundEl.textContent = "Problem " + subRound;
+        // Mostly within 10; occasionally stretch to within 20.
+        var subBound = rand(1, 4) === 1 ? 20 : 10;
+        var sGuard = 0;
+        do {
+          subTotal = rand(2, subBound);
+          subTake = rand(1, subTotal - 1); // take 1..total-1: never negative, always leaves >=1
+          sGuard++;
+        } while (isRepeat("sub", subTotal + "-" + subTake) && sGuard < 100);
+        subAns = subTotal - subTake;
+        rememberKey("sub", subTotal + "-" + subTake);
+        var emoji = pickEmoji();
+        subObjects.innerHTML = "";
+        for (var i = 0; i < subTotal; i++) {
+          var o = document.createElement("span");
+          o.className = "obj";
+          o.textContent = emoji;
+          o.setAttribute("aria-label", "object");
+          if (i >= subTotal - subTake) o.dataset.leaving = "1";
+          subObjects.appendChild(o);
+        }
+        subEq.textContent = subTotal + " − " + subTake + " = ?";
+        speak(subTotal + " take away " + subTake + " equals?");
+        // animate the leaving objects
+        setTimeout(function () {
+          Array.prototype.forEach.call(subObjects.children, function (node) {
+            if (node.dataset.leaving === "1") node.classList.add("gone");
+          });
+        }, 700);
+        var choices = buildChoices(subAns, 0, subBound - 1, 4);
+        subChoices.innerHTML = "";
+        choices.forEach(function (c) {
+          var b = document.createElement("button");
+          b.className = "choice";
+          b.textContent = c;
+          b.setAttribute("aria-label", "Answer " + c);
+          b.addEventListener("click", function () {
+            if (c === subAns) {
+              b.classList.add("correct");
+              subEq.textContent = subTotal + " − " + subTake + " = " + subAns;
+              praise(subFeedback);
+              speak(pick(PRAISE));
+              subScore++;
+              subScoreEl.textContent = "Correct: " + subScore;
+              addStar();
+              Array.prototype.forEach.call(subChoices.children, function (x) {
+                x.disabled = true;
+              });
+            } else {
+              b.classList.add("wrong");
+              tryAgain(subFeedback);
+              speak("Try again!");
+              setTimeout(function () {
+                b.classList.remove("wrong");
+              }, 400);
+            }
+          });
+          subChoices.appendChild(b);
+        });
+      }
+      document.getElementById("subNew").addEventListener("click", newSub);
+      document.getElementById("subSay").addEventListener("click", function () {
+        speak(subTotal + " take away " + subTake + " equals?");
+      });
+
+      /* ============================================================
+         STATION 5: SHAPES
+         ============================================================ */
+      var SHAPES = [
+        {
+          name: "circle",
+          sides: 0,
+          svg: '<circle cx="35" cy="35" r="30" fill="#2a9d8f"/>',
+        },
+        {
+          name: "square",
+          sides: 4,
+          svg: '<rect x="6" y="6" width="58" height="58" rx="4" fill="#ffd166"/>',
+        },
+        {
+          name: "triangle",
+          sides: 3,
+          svg: '<polygon points="35,5 65,62 5,62" fill="#e76f51"/>',
+        },
+        {
+          name: "rectangle",
+          sides: 4,
+          svg: '<rect x="4" y="18" width="62" height="34" rx="4" fill="#4d96ff"/>',
+        },
+        {
+          name: "oval",
+          sides: 0,
+          svg: '<ellipse cx="35" cy="35" rx="32" ry="20" fill="#b388eb"/>',
+        },
+        {
+          name: "star",
+          sides: 5,
+          svg: '<polygon points="35,4 43,27 67,27 47,42 55,65 35,50 15,65 23,42 3,27 27,27" fill="#ffd166"/>',
+        },
+        {
+          name: "heart",
+          sides: 0,
+          svg: '<path d="M35 62 C5 40 8 14 24 14 C32 14 35 22 35 22 C35 22 38 14 46 14 C62 14 65 40 35 62 Z" fill="#ef476f"/>',
+        },
+        {
+          name: "hexagon",
+          sides: 6,
+          svg: '<polygon points="20,6 50,6 66,35 50,64 20,64 4,35" fill="#06d6a0"/>',
+        },
+      ];
+
+      function sidesText(s) {
+        if (s.sides === 0) return s.name + " has no straight sides.";
+        return s.name + " has " + s.sides + " sides.";
+      }
+
+      var shapeGallery = document.getElementById("shapeGallery");
+      function buildGallery() {
+        shapeGallery.innerHTML = "";
+        SHAPES.forEach(function (s) {
+          var card = document.createElement("div");
+          card.className = "shape-card";
+          card.setAttribute("role", "button");
+          card.setAttribute("tabindex", "0");
+          card.setAttribute(
+            "aria-label",
+            s.name +
+              ", " +
+              (s.sides === 0 ? "no straight sides" : s.sides + " sides"),
+          );
+          card.innerHTML =
+            '<svg viewBox="0 0 70 70" aria-hidden="true">' +
+            s.svg +
+            "</svg>" +
+            '<div class="shape-name">' +
+            s.name +
+            "</div>" +
+            '<div style="font-size:0.9rem;color:var(--ink-soft);font-weight:700;">' +
+            (s.sides === 0 ? "round" : s.sides + " sides") +
+            "</div>";
+          function announce() {
+            speak(sidesText(s));
+          }
+          card.addEventListener("click", announce);
+          card.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              announce();
+            }
+          });
+          shapeGallery.appendChild(card);
+        });
+      }
+
+      // Find the shape game
+      var findGrid = document.getElementById("findGrid");
+      var findFeedback = document.getElementById("findFeedback");
+      var findPrompt = document.getElementById("findPrompt");
+      var findRoundEl = document.getElementById("findRound");
+      var findScoreEl = document.getElementById("findScore");
+      var findTarget = null;
+      var findRound = 0;
+      var findScore = 0;
+
+      function newFind() {
+        findFeedback.textContent = "";
+        findFeedback.className = "feedback";
+        findRound++;
+        findRoundEl.textContent = "Round " + findRound;
+        // choose 4 distinct shapes, one is target; avoid same target twice
+        var chosen,
+          fGuard = 0;
+        do {
+          chosen = shuffle(SHAPES).slice(0, 4);
+          findTarget = pick(chosen);
+          fGuard++;
+        } while (isRepeat("find", findTarget.name) && fGuard < 20);
+        rememberKey("find", findTarget.name);
+        findPrompt.textContent = "Find the " + findTarget.name + "!";
+        speak("Find the " + findTarget.name + "!");
+        findGrid.innerHTML = "";
+        chosen.forEach(function (s) {
+          var card = document.createElement("div");
+          card.className = "shape-card";
+          card.setAttribute("role", "button");
+          card.setAttribute("tabindex", "0");
+          card.setAttribute("aria-label", s.name);
+          card.innerHTML =
+            '<svg viewBox="0 0 70 70" aria-hidden="true">' + s.svg + "</svg>";
+          function choose() {
+            if (s.name === findTarget.name) {
+              card.classList.add("correct");
+              praise(findFeedback);
+              speak("Yes! That is a " + s.name + "!");
+              findScore++;
+              findScoreEl.textContent = "Correct: " + findScore;
+              addStar();
+            } else {
+              card.classList.add("wrong");
+              tryAgain(findFeedback);
+              speak("Try again!");
+              setTimeout(function () {
+                card.classList.remove("wrong");
+              }, 400);
+            }
+          }
+          card.addEventListener("click", choose);
+          card.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              choose();
+            }
+          });
+          findGrid.appendChild(card);
+        });
+      }
+      document.getElementById("findNew").addEventListener("click", newFind);
+      document.getElementById("findSay").addEventListener("click", function () {
+        if (findTarget) speak("Find the " + findTarget.name + "!");
+      });
+
+      /* ============================================================
+         STATION 6: MORE OR LESS  +  PATTERNS
+         ============================================================ */
+      var moreLeftObj = document.getElementById("moreLeftObj");
+      var moreRightObj = document.getElementById("moreRightObj");
+      var moreLeftCount = document.getElementById("moreLeftCount");
+      var moreRightCount = document.getElementById("moreRightCount");
+      var moreLeft = document.getElementById("moreLeft");
+      var moreRight = document.getElementById("moreRight");
+      var moreSign = document.getElementById("moreSign");
+      var moreFeedback = document.getElementById("moreFeedback");
+      var morePrompt = document.getElementById("morePrompt");
+      var moreRoundEl = document.getElementById("moreRound");
+      var moreScoreEl = document.getElementById("moreScore");
+      var moreL = 0,
+        moreR = 0,
+        moreMode = "more",
+        moreRound = 0,
+        moreScore = 0;
+
+      function fillCount(container, n, emoji) {
+        container.innerHTML = "";
+        for (var i = 0; i < n; i++) {
+          var o = document.createElement("span");
+          o.className = "obj";
+          o.style.fontSize = "1.7rem";
+          o.style.cursor = "default";
+          o.textContent = emoji;
+          container.appendChild(o);
+        }
+      }
+
+      function signFor(l, r) {
+        if (l > r) return ">";
+        if (l < r) return "<";
+        return "=";
+      }
+
+      function setModePrompt() {
+        if (moreMode === "more")
+          morePrompt.textContent = "Tap the side with MORE.";
+        else if (moreMode === "less")
+          morePrompt.textContent = "Tap the side with LESS.";
+        else
+          morePrompt.textContent = "Both sides are EQUAL? Tap a side to check!";
+      }
+
+      function newMore() {
+        moreFeedback.textContent = "";
+        moreFeedback.className = "feedback";
+        moreRound++;
+        moreRoundEl.textContent = "Round " + moreRound;
+        moreLeft.classList.remove("correct", "wrong");
+        moreRight.classList.remove("correct", "wrong");
+        var emojiL = pickEmoji();
+        var emojiR = pickEmoji();
+        var mGuard = 0;
+        do {
+          if (moreMode === "equal") {
+            // equal mode: always make both sides match
+            moreL = rand(1, 12);
+            moreR = moreL;
+          } else {
+            moreL = rand(1, 12);
+            moreR = rand(1, 12);
+            while (moreR === moreL) moreR = rand(1, 12); // ensure a clear winner
+          }
+          mGuard++;
+        } while (isRepeat("more", moreL + ":" + moreR) && mGuard < 50);
+        rememberKey("more", moreL + ":" + moreR);
+        fillCount(moreLeftObj, moreL, emojiL);
+        fillCount(moreRightObj, moreR, emojiR);
+        moreLeftCount.textContent = moreL;
+        moreRightCount.textContent = moreR;
+        moreSign.textContent = "?";
+        setModePrompt();
+        speak(morePrompt.textContent);
+      }
+
+      function judgeMore(side) {
+        // reveal sign
+        moreSign.textContent = signFor(moreL, moreR);
+        var correctSide;
+        if (moreMode === "more") correctSide = moreL > moreR ? "left" : "right";
+        else if (moreMode === "less")
+          correctSide = moreL < moreR ? "left" : "right";
+        else correctSide = moreL === moreR ? side : "none"; // equal: any tap correct only when equal
+
+        if (moreMode === "equal") {
+          if (moreL === moreR) {
+            (side === "left" ? moreLeft : moreRight).classList.add("correct");
+            praise(moreFeedback);
+            speak("Yes! They are equal!");
+            moreScore++;
+            moreScoreEl.textContent = "Correct: " + moreScore;
+            addStar();
+          } else {
+            (side === "left" ? moreLeft : moreRight).classList.add("wrong");
+            tryAgain(moreFeedback);
+            speak("Not equal. Try again!");
+          }
+          return;
+        }
+
+        if (side === correctSide) {
+          (side === "left" ? moreLeft : moreRight).classList.add("correct");
+          praise(moreFeedback);
+          speak(pick(PRAISE));
+          moreScore++;
+          moreScoreEl.textContent = "Correct: " + moreScore;
+          addStar();
+        } else {
+          (side === "left" ? moreLeft : moreRight).classList.add("wrong");
+          tryAgain(moreFeedback);
+          speak("Try again!");
+          setTimeout(function () {
+            (side === "left" ? moreLeft : moreRight).classList.remove("wrong");
+            moreSign.textContent = "?";
+          }, 500);
+        }
+      }
+
+      function bindSide(el, side) {
+        el.addEventListener("click", function () {
+          judgeMore(side);
+        });
+        el.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            judgeMore(side);
+          }
+        });
+      }
+      bindSide(moreLeft, "left");
+      bindSide(moreRight, "right");
+
+      document.querySelectorAll("[data-mode]").forEach(function (b) {
+        b.addEventListener("click", function () {
+          moreMode = b.getAttribute("data-mode");
+          newMore();
+        });
+      });
+      document.getElementById("moreNew").addEventListener("click", newMore);
+      document.getElementById("moreSay").addEventListener("click", function () {
+        speak(morePrompt.textContent);
+      });
+
+      /* ----- patterns mini-round ----- */
+      var patSeq = document.getElementById("patSeq");
+      var patChoices = document.getElementById("patChoices");
+      var patFeedback = document.getElementById("patFeedback");
+      var patAnswer = 0;
+
+      function newPattern() {
+        patFeedback.textContent = "";
+        patFeedback.className = "feedback";
+        // Expanded bank: count up by 1s/2s/5s/10s, +1/+2 sequences,
+        // and occasional count-down by 1s/2s (kept non-negative).
+        var seq, patKey;
+        var pGuard = 0;
+        do {
+          var step = pick([1, 1, 2, 2, 5, 10, -1, -2]);
+          var terms = rand(3, 4); // show 3 or 4 numbers, then ask for the next
+          var start;
+          if (step > 0) {
+            // start low enough that values stay friendly
+            if (step === 1) start = rand(0, 8);
+            else if (step === 2) start = pick([0, 1, 2, 3, 4]);
+            else if (step === 5) start = pick([0, 5, 10]);
+            else start = pick([0, 10, 20]); // by 10s
+          } else {
+            // counting down: start high enough that the answer stays >= 0
+            // answer = start + terms*step  =>  start >= -terms*step
+            var minStart = -terms * step; // step negative => positive minStart
+            start = rand(minStart, minStart + 5);
+          }
+          seq = [];
+          for (var t = 0; t < terms; t++) seq.push(start + t * step);
+          patAnswer = start + terms * step;
+          patKey = seq.join(",") + ">" + patAnswer;
+          pGuard++;
+        } while ((patAnswer < 0 || isRepeat("pat", patKey)) && pGuard < 100);
+        rememberKey("pat", patKey);
+        patSeq.textContent = seq.join(", ") + ", ?";
+        speak(seq.join(", ") + ", what comes next?");
+        var choices = buildChoices(
+          patAnswer,
+          Math.max(0, patAnswer - 6),
+          patAnswer + 6,
+          4,
+        );
+        patChoices.innerHTML = "";
+        choices.forEach(function (c) {
+          var b = document.createElement("button");
+          b.className = "choice";
+          b.textContent = c;
+          b.setAttribute("aria-label", "Answer " + c);
+          b.addEventListener("click", function () {
+            if (c === patAnswer) {
+              b.classList.add("correct");
+              patSeq.textContent = seq.join(", ") + ", " + patAnswer;
+              praise(patFeedback);
+              speak(pick(PRAISE));
+              addStar();
+              Array.prototype.forEach.call(patChoices.children, function (x) {
+                x.disabled = true;
+              });
+            } else {
+              b.classList.add("wrong");
+              tryAgain(patFeedback);
+              speak("Try again!");
+              setTimeout(function () {
+                b.classList.remove("wrong");
+              }, 400);
+            }
+          });
+          patChoices.appendChild(b);
+        });
+      }
+      document.getElementById("patNew").addEventListener("click", newPattern);
+      document.getElementById("patSay").addEventListener("click", function () {
+        speak(patSeq.textContent.replace("?", "what comes next?"));
+      });
+
+      /* ============================================================
+         INIT
+         ============================================================ */
+      loadStars();
+      newCount();
+      newRecog();
+      newAdd();
+      newSub();
+      buildGallery();
+      newFind();
+      newMore();
+      newPattern();
+    </script>
+  </body>
+</html>

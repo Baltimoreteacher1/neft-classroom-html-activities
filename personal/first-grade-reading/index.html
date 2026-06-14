@@ -1,0 +1,2267 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>First Grade Reading — EduWonderLab</title>
+    <style>
+      :root {
+        --accent: #ff6b6b;
+        --accent-dark: #e84a4a;
+        --secondary: #ffd166;
+        --bg: #fff7ed;
+        --card: #ffffff;
+        --text: #2b2b3a;
+        --muted: #6b6b7a;
+        --success: #2e9e5b;
+        --success-soft: #e7f7ec;
+        --border: #ffe2d1;
+        --radius: 18px;
+        --shadow: 0 8px 22px rgba(255, 107, 107, 0.16);
+        --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.07);
+        --font: system-ui, "Segoe UI", Roboto, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: var(--font);
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+        font-size: 1.15rem;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ===================== HEADER ===================== */
+      header.site {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: var(--card);
+        border-bottom: 4px solid var(--accent);
+        box-shadow: var(--shadow-soft);
+      }
+
+      .header-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      .header-emoji {
+        font-size: 2.4rem;
+        line-height: 1;
+      }
+
+      .header-titles {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .header-titles h1 {
+        font-size: 1.6rem;
+        color: var(--accent-dark);
+        letter-spacing: 0.5px;
+      }
+
+      .pill {
+        display: inline-block;
+        background: var(--secondary);
+        color: #7a5800;
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 0.2rem 0.7rem;
+        border-radius: 999px;
+        margin-top: 0.15rem;
+      }
+
+      .stars {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: var(--accent);
+        color: #fff;
+        font-weight: 800;
+        font-size: 1.2rem;
+        padding: 0.55rem 0.95rem;
+        border-radius: 999px;
+        white-space: nowrap;
+        box-shadow: var(--shadow);
+      }
+
+      .stars.pop {
+        animation: starpop 0.5s ease;
+      }
+
+      @keyframes starpop {
+        0% {
+          transform: scale(1);
+        }
+        40% {
+          transform: scale(1.3) rotate(-6deg);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      /* ===================== TABS ===================== */
+      .tabbar {
+        display: flex;
+        gap: 0.5rem;
+        overflow-x: auto;
+        padding: 0.6rem 1rem;
+        max-width: 1000px;
+        margin: 0 auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .tab {
+        flex: 0 0 auto;
+        min-height: 56px;
+        border: 3px solid var(--border);
+        background: var(--card);
+        color: var(--muted);
+        font-family: var(--font);
+        font-size: 1.05rem;
+        font-weight: 700;
+        padding: 0.5rem 1rem;
+        border-radius: 999px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition:
+          transform 0.12s ease,
+          background 0.12s ease,
+          color 0.12s ease;
+      }
+
+      .tab:hover {
+        transform: translateY(-2px);
+      }
+
+      .tab[aria-selected="true"] {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+
+      /* ===================== MAIN ===================== */
+      main {
+        flex: 1;
+        max-width: 1000px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 1rem;
+      }
+
+      .panel {
+        display: none;
+        animation: fade 0.25s ease;
+      }
+
+      .panel.active {
+        display: block;
+      }
+
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-soft);
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+      }
+
+      .station-head {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 0.4rem;
+        flex-wrap: wrap;
+      }
+
+      .station-head h2 {
+        font-size: 1.5rem;
+        color: var(--accent-dark);
+      }
+
+      .instructions {
+        color: var(--muted);
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+      }
+
+      /* ===================== BUTTONS ===================== */
+      button {
+        font-family: var(--font);
+        cursor: pointer;
+      }
+
+      .btn {
+        min-height: 56px;
+        border: none;
+        background: var(--accent);
+        color: #fff;
+        font-size: 1.3rem;
+        font-weight: 800;
+        padding: 0.6rem 1.4rem;
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+        transition:
+          transform 0.12s ease,
+          filter 0.12s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.05);
+      }
+
+      .btn:active {
+        transform: translateY(1px);
+      }
+
+      .btn.secondary {
+        background: var(--secondary);
+        color: #7a5800;
+      }
+
+      .btn.ghost {
+        background: #fff;
+        color: var(--accent-dark);
+        border: 3px solid var(--accent);
+        box-shadow: none;
+      }
+
+      .speak-btn {
+        min-width: 56px;
+        min-height: 56px;
+        border-radius: 50%;
+        border: 3px solid var(--secondary);
+        background: #fff;
+        font-size: 1.5rem;
+        line-height: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.12s ease;
+      }
+
+      .speak-btn:hover {
+        transform: scale(1.08);
+      }
+
+      .speak-btn.small {
+        min-width: 44px;
+        min-height: 44px;
+        font-size: 1.2rem;
+      }
+
+      /* focus visibility */
+      a:focus-visible,
+      button:focus-visible,
+      [tabindex]:focus-visible {
+        outline: 4px solid #1d6fff;
+        outline-offset: 3px;
+      }
+
+      /* ===================== LETTERS GRID ===================== */
+      .letter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+        gap: 0.6rem;
+      }
+
+      .letter-cell {
+        min-height: 78px;
+        border: 3px solid var(--border);
+        border-radius: 14px;
+        background: #fff;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--accent-dark);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        transition:
+          transform 0.12s ease,
+          background 0.12s ease;
+      }
+
+      .letter-cell:hover {
+        transform: translateY(-3px);
+        background: #fff1e8;
+      }
+
+      .letter-cell .lc-emoji {
+        font-size: 1.3rem;
+      }
+
+      .letter-display {
+        text-align: center;
+        padding: 1.25rem;
+        background: #fff1e8;
+        border-radius: 14px;
+        margin-bottom: 1rem;
+        min-height: 150px;
+      }
+
+      .letter-display .big-letter {
+        font-size: 4rem;
+        font-weight: 800;
+        color: var(--accent);
+      }
+
+      .letter-display .word-emoji {
+        font-size: 3.5rem;
+      }
+
+      .letter-display .word-text {
+        font-size: 1.6rem;
+        font-weight: 700;
+      }
+
+      .letter-display .hint {
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+
+      /* ===================== FLASHCARD ===================== */
+      .flashcard {
+        text-align: center;
+        background: linear-gradient(160deg, #fff, #fff4ec);
+        border: 4px solid var(--secondary);
+        border-radius: var(--radius);
+        padding: 2.5rem 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .flashcard .word {
+        font-size: 3.4rem;
+        font-weight: 800;
+        color: var(--accent-dark);
+        letter-spacing: 1px;
+      }
+
+      .flashcard .sub {
+        color: var(--muted);
+        font-size: 1.1rem;
+        margin-top: 0.5rem;
+      }
+
+      .progress {
+        font-weight: 800;
+        color: var(--accent-dark);
+        font-size: 1.2rem;
+      }
+
+      .btn-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        justify-content: center;
+      }
+
+      /* ===================== BUILD A WORD ===================== */
+      .tiles {
+        display: flex;
+        justify-content: center;
+        gap: 0.7rem;
+        margin: 1rem 0;
+        flex-wrap: wrap;
+      }
+
+      .tile {
+        min-width: 78px;
+        min-height: 88px;
+        font-size: 2.6rem;
+        font-weight: 800;
+        color: #fff;
+        background: var(--accent);
+        border: none;
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+        transition: transform 0.12s ease;
+      }
+
+      .tile:hover {
+        transform: translateY(-3px);
+      }
+
+      .tile.lit {
+        background: var(--secondary);
+        color: #7a5800;
+        transform: translateY(-4px) scale(1.05);
+      }
+
+      .blend-result {
+        text-align: center;
+        min-height: 100px;
+        margin-top: 0.5rem;
+      }
+
+      .blend-result .be {
+        font-size: 4rem;
+      }
+
+      .blend-result .bw {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--success);
+      }
+
+      /* ===================== CHOICE GRIDS (rhyme/match) ===================== */
+      .target-box {
+        text-align: center;
+        background: #fff1e8;
+        border-radius: 14px;
+        padding: 1.2rem;
+        margin-bottom: 1rem;
+      }
+
+      .target-box .te {
+        font-size: 3.5rem;
+      }
+
+      .target-box .tw {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--accent-dark);
+      }
+
+      .choice-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 0.7rem;
+      }
+
+      .choice {
+        min-height: 110px;
+        border: 4px solid var(--border);
+        border-radius: 16px;
+        background: #fff;
+        font-size: 3rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        transition:
+          transform 0.12s ease,
+          border-color 0.12s ease;
+      }
+
+      .choice .cw {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .choice:hover {
+        transform: translateY(-3px);
+        border-color: var(--secondary);
+      }
+
+      .choice.correct {
+        border-color: var(--success);
+        background: var(--success-soft);
+        animation: starpop 0.5s ease;
+      }
+
+      .choice.wrong {
+        border-color: var(--accent);
+        animation: shake 0.4s ease;
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-7px);
+        }
+        75% {
+          transform: translateX(7px);
+        }
+      }
+
+      /* ===================== FEEDBACK ===================== */
+      .feedback {
+        min-height: 2.4rem;
+        text-align: center;
+        font-size: 1.4rem;
+        font-weight: 800;
+        margin-top: 0.8rem;
+      }
+
+      .feedback.good {
+        color: var(--success);
+      }
+
+      .feedback.try {
+        color: var(--accent-dark);
+      }
+
+      /* ===================== STORY ===================== */
+      .story-scene {
+        text-align: center;
+        font-size: 4rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .sentence {
+        font-size: 1.7rem;
+        font-weight: 600;
+        padding: 0.8rem 1rem;
+        border-radius: 12px;
+        margin-bottom: 0.6rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        background: #fff;
+        border: 3px solid var(--border);
+      }
+
+      .sentence .stext {
+        flex: 1;
+      }
+
+      .sentence.reading {
+        background: #fff1e8;
+        border-color: var(--secondary);
+      }
+
+      .sentence .word {
+        transition: background 0.1s ease;
+        border-radius: 4px;
+        padding: 0 1px;
+      }
+
+      .sentence .word.hl {
+        background: var(--secondary);
+      }
+
+      .story-end {
+        text-align: center;
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--accent-dark);
+        padding: 1rem;
+      }
+
+      /* ===================== CONFETTI ===================== */
+      .confetti {
+        position: fixed;
+        top: -10px;
+        font-size: 1.6rem;
+        pointer-events: none;
+        z-index: 100;
+        animation: fall 1.4s ease-in forwards;
+      }
+
+      @keyframes fall {
+        to {
+          transform: translateY(105vh) rotate(540deg);
+          opacity: 0;
+        }
+      }
+
+      /* ===================== FOOTER ===================== */
+      footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.95rem;
+        padding: 1.5rem 1rem;
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+
+      @media (max-width: 520px) {
+        .header-titles h1 {
+          font-size: 1.3rem;
+        }
+        .stars {
+          font-size: 1rem;
+          padding: 0.45rem 0.7rem;
+        }
+        .flashcard .word {
+          font-size: 2.6rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site">
+      <div class="header-row">
+        <span class="header-emoji" aria-hidden="true">📚</span>
+        <div class="header-titles">
+          <h1>Reading Adventures</h1>
+          <span class="pill">Grade 1 Readiness</span>
+        </div>
+        <div class="stars" id="starBox" aria-live="polite">
+          <span aria-hidden="true">⭐</span>
+          <span>Stars: <span id="starCount">0</span></span>
+        </div>
+      </div>
+      <div class="tabbar" role="tablist" aria-label="Reading activities">
+        <button
+          class="tab"
+          role="tab"
+          id="tab-letters"
+          aria-controls="panel-letters"
+          aria-selected="true"
+        >
+          🔤 Letters &amp; Sounds
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-sight"
+          aria-controls="panel-sight"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          👀 Sight Words
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-build"
+          aria-controls="panel-build"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          🧩 Build a Word
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-rhyme"
+          aria-controls="panel-rhyme"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          🎵 Rhyme Time
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-match"
+          aria-controls="panel-match"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          🖼️ Picture Match
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-story"
+          aria-controls="panel-story"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          📖 Read a Story
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <!-- ============ LETTERS & SOUNDS ============ -->
+      <section
+        class="panel active"
+        id="panel-letters"
+        role="tabpanel"
+        aria-labelledby="tab-letters"
+        tabindex="0"
+      >
+        <div class="card">
+          <div class="station-head">
+            <h2>Letters &amp; Sounds</h2>
+            <button
+              class="speak-btn small"
+              data-say="Tap a letter to hear its name and sound."
+              aria-label="Read the instructions out loud"
+            >
+              🔊
+            </button>
+          </div>
+          <p class="instructions">
+            Tap a letter to hear its name, its sound, and a word that starts
+            with it!
+          </p>
+          <div class="letter-display" id="letterDisplay" aria-live="polite">
+            <div class="big-letter">A a</div>
+            <div class="word-emoji" aria-hidden="true">🍎</div>
+            <div class="word-text">apple</div>
+            <div class="hint">Tap any letter below to begin.</div>
+          </div>
+          <div class="letter-grid" id="letterGrid"></div>
+        </div>
+      </section>
+
+      <!-- ============ SIGHT WORDS ============ -->
+      <section
+        class="panel"
+        id="panel-sight"
+        role="tabpanel"
+        aria-labelledby="tab-sight"
+        tabindex="0"
+      >
+        <div class="card">
+          <div class="station-head">
+            <h2>Sight Words</h2>
+            <button
+              class="speak-btn small"
+              data-say="Read the word out loud. Tap I know it when you can read it!"
+              aria-label="Read the instructions out loud"
+            >
+              🔊
+            </button>
+          </div>
+          <p class="instructions">
+            Read each word. Tap 🔊 to hear it. Tap “I know it!” to earn a star!
+          </p>
+          <div class="flashcard">
+            <div class="word" id="sightWord">the</div>
+            <div class="sub">Sight word</div>
+          </div>
+          <div
+            class="progress"
+            style="text-align: center; margin-bottom: 0.8rem"
+          >
+            <span id="sightProgress">Card 1</span>
+          </div>
+          <div class="btn-row">
+            <button class="speak-btn" id="sightSay" aria-label="Hear the word">
+              🔊
+            </button>
+            <button class="btn ghost" id="sightPrev">⬅ Back</button>
+            <button class="btn secondary" id="sightNext">Next ➡</button>
+            <button class="btn" id="sightKnow">⭐ I know it!</button>
+          </div>
+          <div class="feedback" id="sightFeedback" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <!-- ============ BUILD A WORD ============ -->
+      <section
+        class="panel"
+        id="panel-build"
+        role="tabpanel"
+        aria-labelledby="tab-build"
+        tabindex="0"
+      >
+        <div class="card">
+          <div class="station-head">
+            <h2>Build a Word</h2>
+            <button
+              class="speak-btn small"
+              data-say="Tap each letter to hear its sound. Then press Blend it to read the word."
+              aria-label="Read the instructions out loud"
+            >
+              🔊
+            </button>
+          </div>
+          <p class="instructions">
+            Tap each letter to hear its sound. Then press “Blend it!” to read
+            the whole word.
+          </p>
+          <div class="tiles" id="buildTiles"></div>
+          <div class="btn-row">
+            <button class="btn" id="blendBtn">🔉 Blend it!</button>
+            <button class="btn secondary" id="buildNext">Next word ➡</button>
+          </div>
+          <div class="blend-result" id="blendResult" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <!-- ============ RHYME TIME ============ -->
+      <section
+        class="panel"
+        id="panel-rhyme"
+        role="tabpanel"
+        aria-labelledby="tab-rhyme"
+        tabindex="0"
+      >
+        <div class="card">
+          <div class="station-head">
+            <h2>Rhyme Time</h2>
+            <button
+              class="speak-btn small"
+              data-say="Which picture rhymes with the top word? Tap it!"
+              aria-label="Read the instructions out loud"
+            >
+              🔊
+            </button>
+          </div>
+          <p class="instructions">
+            Which picture <strong>rhymes</strong> with the top word? Tap the
+            matching one!
+          </p>
+          <div class="target-box">
+            <div class="te" id="rhymeEmoji" aria-hidden="true">🐱</div>
+            <div class="tw" id="rhymeWord">
+              cat
+              <button
+                class="speak-btn small"
+                id="rhymeSay"
+                aria-label="Hear the rhyme word"
+              >
+                🔊
+              </button>
+            </div>
+          </div>
+          <div class="choice-grid" id="rhymeChoices"></div>
+          <div class="feedback" id="rhymeFeedback" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <!-- ============ PICTURE MATCH ============ -->
+      <section
+        class="panel"
+        id="panel-match"
+        role="tabpanel"
+        aria-labelledby="tab-match"
+        tabindex="0"
+      >
+        <div class="card">
+          <div class="station-head">
+            <h2>Picture Match</h2>
+            <button
+              class="speak-btn small"
+              data-say="Read the word. Tap the picture that matches!"
+              aria-label="Read the instructions out loud"
+            >
+              🔊
+            </button>
+          </div>
+          <p class="instructions">
+            Read the word. Tap the <strong>picture</strong> that matches it!
+          </p>
+          <div class="target-box">
+            <div class="tw" id="matchWord">
+              sun
+              <button
+                class="speak-btn small"
+                id="matchSay"
+                aria-label="Hear the word"
+              >
+                🔊
+              </button>
+            </div>
+          </div>
+          <div class="choice-grid" id="matchChoices"></div>
+          <div class="feedback" id="matchFeedback" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <!-- ============ READ A STORY ============ -->
+      <section
+        class="panel"
+        id="panel-story"
+        role="tabpanel"
+        aria-labelledby="tab-story"
+        tabindex="0"
+      >
+        <div class="card">
+          <div class="station-head">
+            <h2>Read a Story</h2>
+            <button
+              class="speak-btn small"
+              data-say="This is a story about Sam and his cat. Press Read to me to hear each line."
+              aria-label="Read the instructions out loud"
+            >
+              🔊
+            </button>
+          </div>
+          <p class="instructions">
+            Tap “Read to me” on each line. Watch the words light up as you read
+            along!
+          </p>
+          <div class="story-scene" id="storyScene" aria-hidden="true">
+            👦 🐱
+          </div>
+          <h3
+            id="storyTitle"
+            style="
+              text-align: center;
+              color: var(--accent-dark);
+              margin-bottom: 0.8rem;
+            "
+          >
+            Sam and His Cat
+          </h3>
+          <div id="storyLines"></div>
+          <div class="btn-row" style="margin-top: 0.8rem">
+            <button class="btn" id="storyReadAll">
+              ▶ Read the whole story
+            </button>
+            <button class="btn ghost" id="storyReset">↺ Start over</button>
+            <button class="btn secondary" id="storyNext">
+              📖 Next story ➡
+            </button>
+          </div>
+          <div class="story-end" id="storyEnd" style="display: none">
+            The End ⭐
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>EduWonderLab · Made with ❤️ for Noam</footer>
+
+    <script>
+      "use strict";
+
+      /* ===================== STARS ===================== */
+      var stars = 0;
+      try {
+        var saved = localStorage.getItem("fg-reading-stars");
+        if (saved !== null) stars = parseInt(saved, 10) || 0;
+      } catch (e) {}
+
+      var starCountEl = document.getElementById("starCount");
+      var starBox = document.getElementById("starBox");
+      starCountEl.textContent = stars;
+
+      function addStar(n) {
+        stars += n || 1;
+        starCountEl.textContent = stars;
+        try {
+          localStorage.setItem("fg-reading-stars", String(stars));
+        } catch (e) {}
+        starBox.classList.remove("pop");
+        void starBox.offsetWidth;
+        starBox.classList.add("pop");
+        burst();
+      }
+
+      /* ===================== SPEECH ===================== */
+      function speak(text, lang) {
+        try {
+          if (typeof window.speechSynthesis === "undefined") return;
+          window.speechSynthesis.cancel();
+          var u = new SpeechSynthesisUtterance(text);
+          u.lang = lang || "en-US";
+          u.rate = 0.85;
+          u.pitch = 1.05;
+          window.speechSynthesis.speak(u);
+        } catch (e) {}
+      }
+
+      // wire any element with data-say
+      document.addEventListener("click", function (ev) {
+        var t = ev.target.closest("[data-say]");
+        if (t) speak(t.getAttribute("data-say"));
+      });
+
+      /* ===================== PRAISE + CONFETTI ===================== */
+      var praises = [
+        "You did it!",
+        "Super reading!",
+        "Great job!",
+        "Way to go!",
+        "Awesome!",
+        "You're a reading star!",
+      ];
+      function praise() {
+        return praises[Math.floor(Math.random() * praises.length)];
+      }
+
+      function burst() {
+        if (
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        )
+          return;
+        var emojis = ["⭐", "🌟", "✨", "🎉", "❤️"];
+        for (var i = 0; i < 14; i++) {
+          (function () {
+            var c = document.createElement("div");
+            c.className = "confetti";
+            c.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            c.style.left = Math.random() * 100 + "vw";
+            c.style.animationDelay = Math.random() * 0.3 + "s";
+            document.body.appendChild(c);
+            setTimeout(function () {
+              c.remove();
+            }, 1800);
+          })();
+        }
+      }
+
+      function shuffle(arr) {
+        var a = arr.slice();
+        for (var i = a.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var tmp = a[i];
+          a[i] = a[j];
+          a[j] = tmp;
+        }
+        return a;
+      }
+
+      /* ===================== TABS ===================== */
+      var tabs = Array.prototype.slice.call(
+        document.querySelectorAll('[role="tab"]'),
+      );
+      function selectTab(tab) {
+        tabs.forEach(function (t) {
+          var selected = t === tab;
+          t.setAttribute("aria-selected", selected ? "true" : "false");
+          t.tabIndex = selected ? 0 : -1;
+          var panel = document.getElementById(t.getAttribute("aria-controls"));
+          if (panel) panel.classList.toggle("active", selected);
+        });
+      }
+      tabs.forEach(function (tab, idx) {
+        tab.addEventListener("click", function () {
+          selectTab(tab);
+        });
+        tab.addEventListener("keydown", function (e) {
+          var next = null;
+          if (e.key === "ArrowRight") next = tabs[(idx + 1) % tabs.length];
+          else if (e.key === "ArrowLeft")
+            next = tabs[(idx - 1 + tabs.length) % tabs.length];
+          else if (e.key === "Home") next = tabs[0];
+          else if (e.key === "End") next = tabs[tabs.length - 1];
+          if (next) {
+            e.preventDefault();
+            selectTab(next);
+            next.focus();
+          }
+        });
+      });
+
+      /* ===================== STATION 1: LETTERS ===================== */
+      var ALPHABET = [
+        { l: "A", w: "apple", e: "🍎", s: "ah" },
+        { l: "B", w: "ball", e: "⚽", s: "buh" },
+        { l: "C", w: "cat", e: "🐱", s: "kuh" },
+        { l: "D", w: "dog", e: "🐶", s: "duh" },
+        { l: "E", w: "egg", e: "🥚", s: "eh" },
+        { l: "F", w: "fish", e: "🐟", s: "fuh" },
+        { l: "G", w: "goat", e: "🐐", s: "guh" },
+        { l: "H", w: "hat", e: "🎩", s: "huh" },
+        { l: "I", w: "igloo", e: "🛖", s: "ih" },
+        { l: "J", w: "jam", e: "🍓", s: "juh" },
+        { l: "K", w: "kite", e: "🪁", s: "kuh" },
+        { l: "L", w: "lion", e: "🦁", s: "luh" },
+        { l: "M", w: "moon", e: "🌙", s: "mmm" },
+        { l: "N", w: "nest", e: "🪺", s: "nnn" },
+        { l: "O", w: "octopus", e: "🐙", s: "ah" },
+        { l: "P", w: "pig", e: "🐷", s: "puh" },
+        { l: "Q", w: "queen", e: "👑", s: "kwuh" },
+        { l: "R", w: "rabbit", e: "🐰", s: "rrr" },
+        { l: "S", w: "sun", e: "☀️", s: "sss" },
+        { l: "T", w: "tiger", e: "🐯", s: "tuh" },
+        { l: "U", w: "umbrella", e: "☂️", s: "uh" },
+        { l: "V", w: "van", e: "🚐", s: "vuh" },
+        { l: "W", w: "whale", e: "🐳", s: "wuh" },
+        { l: "X", w: "fox", e: "🦊", s: "ks" },
+        { l: "Y", w: "yo-yo", e: "🪀", s: "yuh" },
+        { l: "Z", w: "zebra", e: "🦓", s: "zzz" },
+      ];
+
+      var letterGrid = document.getElementById("letterGrid");
+      var letterDisplay = document.getElementById("letterDisplay");
+
+      ALPHABET.forEach(function (item) {
+        var btn = document.createElement("button");
+        btn.className = "letter-cell";
+        btn.setAttribute("aria-label", "Letter " + item.l + ", " + item.w);
+        btn.innerHTML =
+          "<span>" +
+          item.l +
+          " " +
+          item.l.toLowerCase() +
+          "</span>" +
+          '<span class="lc-emoji" aria-hidden="true">' +
+          item.e +
+          "</span>";
+        btn.addEventListener("click", function () {
+          showLetter(item);
+        });
+        letterGrid.appendChild(btn);
+      });
+
+      function showLetter(item) {
+        letterDisplay.innerHTML =
+          '<div class="big-letter">' +
+          item.l +
+          " " +
+          item.l.toLowerCase() +
+          "</div>" +
+          '<div class="word-emoji" aria-hidden="true">' +
+          item.e +
+          "</div>" +
+          '<div class="word-text">' +
+          item.w +
+          "</div>" +
+          '<div class="hint">Letter ' +
+          item.l +
+          ' says "' +
+          item.s +
+          '"</div>';
+        speak(
+          "The letter " + item.l + ". It says, " + item.s + ". " + item.w + ".",
+        );
+      }
+
+      /* ===================== STATION 2: SIGHT WORDS ===================== */
+      /* Full Dolch lists: pre-primer + primer + first grade (deduped).
+         The deck reshuffles and continues forever. */
+      var SIGHT_POOL = [
+        // Dolch pre-primer
+        "a",
+        "and",
+        "away",
+        "big",
+        "blue",
+        "can",
+        "come",
+        "down",
+        "find",
+        "for",
+        "funny",
+        "go",
+        "help",
+        "here",
+        "I",
+        "in",
+        "is",
+        "it",
+        "jump",
+        "little",
+        "look",
+        "make",
+        "me",
+        "my",
+        "not",
+        "one",
+        "play",
+        "red",
+        "run",
+        "said",
+        "see",
+        "the",
+        "three",
+        "to",
+        "two",
+        "up",
+        "we",
+        "where",
+        "yellow",
+        "you",
+        // Dolch primer
+        "all",
+        "am",
+        "are",
+        "at",
+        "ate",
+        "be",
+        "black",
+        "brown",
+        "but",
+        "came",
+        "did",
+        "do",
+        "eat",
+        "four",
+        "get",
+        "good",
+        "have",
+        "he",
+        "into",
+        "like",
+        "must",
+        "new",
+        "no",
+        "now",
+        "on",
+        "our",
+        "out",
+        "please",
+        "pretty",
+        "ran",
+        "ride",
+        "saw",
+        "say",
+        "she",
+        "so",
+        "soon",
+        "that",
+        "there",
+        "they",
+        "this",
+        "too",
+        "under",
+        "want",
+        "was",
+        "well",
+        "went",
+        "what",
+        "white",
+        "who",
+        "will",
+        "with",
+        "yes",
+        // Dolch first grade
+        "after",
+        "again",
+        "an",
+        "any",
+        "as",
+        "ask",
+        "by",
+        "could",
+        "every",
+        "fly",
+        "from",
+        "give",
+        "going",
+        "had",
+        "has",
+        "her",
+        "him",
+        "his",
+        "how",
+        "just",
+        "know",
+        "let",
+        "live",
+        "may",
+        "of",
+        "old",
+        "once",
+        "open",
+        "over",
+        "put",
+        "round",
+        "some",
+        "stop",
+        "take",
+        "thank",
+        "them",
+        "then",
+        "think",
+        "walk",
+        "were",
+        "when",
+      ];
+      // de-dup while keeping order
+      var SIGHT = (function () {
+        var seen = {},
+          out = [];
+        for (var i = 0; i < SIGHT_POOL.length; i++) {
+          var key = SIGHT_POOL[i].toLowerCase();
+          if (!seen[key]) {
+            seen[key] = true;
+            out.push(SIGHT_POOL[i]);
+          }
+        }
+        return out;
+      })();
+      var sightDeck = shuffle(SIGHT);
+      var sightIdx = 0;
+      var sightSeen = 0; // running count of cards completed (never resets)
+      var sightKnown = {};
+      var sightWordEl = document.getElementById("sightWord");
+      var sightProgressEl = document.getElementById("sightProgress");
+      var sightFeedback = document.getElementById("sightFeedback");
+
+      function renderSight() {
+        sightWordEl.textContent = sightDeck[sightIdx];
+        sightProgressEl.textContent = "Card " + (sightSeen + 1);
+        sightFeedback.textContent = "";
+        sightFeedback.className = "feedback";
+      }
+      function sightAdvance() {
+        sightSeen++;
+        sightIdx++;
+        if (sightIdx >= sightDeck.length) {
+          // reshuffle and keep going forever (avoid same word back-to-back)
+          var last = sightDeck[sightDeck.length - 1];
+          sightDeck = shuffle(SIGHT);
+          if (sightDeck.length > 1 && sightDeck[0] === last) {
+            sightDeck.push(sightDeck.shift());
+          }
+          sightIdx = 0;
+          sightFeedback.textContent = "Great — let's keep going! 🎉";
+          sightFeedback.className = "feedback good";
+          renderSight();
+          // keep the "keep going" note visible briefly over the reset
+          sightWordEl.textContent = sightDeck[sightIdx];
+          sightProgressEl.textContent = "Card " + (sightSeen + 1);
+          return;
+        }
+        renderSight();
+      }
+      document
+        .getElementById("sightSay")
+        .addEventListener("click", function () {
+          speak(sightDeck[sightIdx]);
+        });
+      document
+        .getElementById("sightNext")
+        .addEventListener("click", sightAdvance);
+      document
+        .getElementById("sightPrev")
+        .addEventListener("click", function () {
+          if (sightSeen > 0) sightSeen--;
+          sightIdx = (sightIdx - 1 + sightDeck.length) % sightDeck.length;
+          renderSight();
+        });
+      document
+        .getElementById("sightKnow")
+        .addEventListener("click", function () {
+          var w = sightDeck[sightIdx];
+          if (!sightKnown[w]) {
+            sightKnown[w] = true;
+            addStar(1);
+          }
+          sightFeedback.textContent = "⭐ " + praise();
+          sightFeedback.className = "feedback good";
+          speak(w + ". " + praise());
+          setTimeout(sightAdvance, 900);
+        });
+      renderSight();
+
+      /* ===================== STATION 3: BUILD A WORD ===================== */
+      var CVC = [
+        // -at
+        { w: "cat", e: "🐱" },
+        { w: "hat", e: "🎩" },
+        { w: "bat", e: "🦇" },
+        // -an
+        { w: "van", e: "🚐" },
+        { w: "pan", e: "🍳" },
+        { w: "fan", e: "🪭" },
+        // -ad
+        { w: "pad", e: "📝" },
+        // -ap
+        { w: "map", e: "🗺️" },
+        { w: "cap", e: "🧢" },
+        { w: "nap", e: "😴" },
+        // -ag
+        { w: "bag", e: "👜" },
+        { w: "tag", e: "🏷️" },
+        // -ig
+        { w: "pig", e: "🐷" },
+        { w: "wig", e: "👱" },
+        // -it
+        { w: "sit", e: "🪑" },
+        // -in
+        { w: "pin", e: "📌" },
+        { w: "fin", e: "🐟" },
+        // -ip
+        { w: "lip", e: "👄" },
+        { w: "zip", e: "🤐" },
+        // -og
+        { w: "dog", e: "🐶" },
+        { w: "log", e: "🪵" },
+        { w: "frog", e: "🐸" },
+        // -ot
+        { w: "pot", e: "🍲" },
+        { w: "dot", e: "🔴" },
+        // -op
+        { w: "top", e: "🔝" },
+        { w: "mop", e: "🧹" },
+        { w: "hop", e: "🐰" },
+        // -ug
+        { w: "bug", e: "🐛" },
+        { w: "rug", e: "🧶" },
+        { w: "mug", e: "☕" },
+        // -un
+        { w: "sun", e: "☀️" },
+        { w: "bun", e: "🍞" },
+        { w: "run", e: "🏃" },
+        // -ut
+        { w: "nut", e: "🥜" },
+        { w: "cut", e: "✂️" },
+        // -ed
+        { w: "bed", e: "🛏️" },
+        { w: "red", e: "🔴" },
+        // -en
+        { w: "pen", e: "🖊️" },
+        { w: "hen", e: "🐔" },
+        { w: "ten", e: "🔟" },
+        // -et
+        { w: "net", e: "🥅" },
+        { w: "jet", e: "✈️" },
+        { w: "vet", e: "🩺" },
+        // misc CVC
+        { w: "fox", e: "🦊" },
+        { w: "cup", e: "🥤" },
+        { w: "box", e: "📦" },
+        { w: "web", e: "🕸️" },
+        { w: "jam", e: "🍓" },
+        { w: "ham", e: "🍖" },
+      ];
+      var SOUNDS = {
+        a: "ah",
+        e: "eh",
+        i: "ih",
+        o: "ah",
+        u: "uh",
+        b: "buh",
+        c: "kuh",
+        d: "duh",
+        f: "fuh",
+        g: "guh",
+        h: "huh",
+        j: "juh",
+        k: "kuh",
+        l: "luh",
+        m: "mmm",
+        n: "nnn",
+        p: "puh",
+        r: "rrr",
+        s: "sss",
+        t: "tuh",
+        v: "vuh",
+        w: "wuh",
+        x: "ks",
+        y: "yuh",
+        z: "zzz",
+      };
+      var buildDeck = shuffle(CVC);
+      var buildIdx = 0;
+      var buildTiles = document.getElementById("buildTiles");
+      var blendResult = document.getElementById("blendResult");
+
+      function buildAdvance() {
+        buildIdx++;
+        if (buildIdx >= buildDeck.length) {
+          // reshuffle for an endless, no-immediate-repeat cycle
+          var last = buildDeck[buildDeck.length - 1].w;
+          buildDeck = shuffle(CVC);
+          if (buildDeck.length > 1 && buildDeck[0].w === last) {
+            buildDeck.push(buildDeck.shift());
+          }
+          buildIdx = 0;
+        }
+        renderBuild();
+      }
+
+      function renderBuild() {
+        var word = buildDeck[buildIdx].w;
+        buildTiles.innerHTML = "";
+        blendResult.innerHTML = "";
+        word.split("").forEach(function (ch) {
+          var t = document.createElement("button");
+          t.className = "tile";
+          t.textContent = ch;
+          t.setAttribute(
+            "aria-label",
+            "Letter " + ch + ", says " + (SOUNDS[ch] || ch),
+          );
+          t.addEventListener("click", function () {
+            t.classList.add("lit");
+            setTimeout(function () {
+              t.classList.remove("lit");
+            }, 450);
+            speak(SOUNDS[ch] || ch);
+          });
+          buildTiles.appendChild(t);
+        });
+      }
+      document
+        .getElementById("blendBtn")
+        .addEventListener("click", function () {
+          var item = buildDeck[buildIdx];
+          var letters = item.w.split("");
+          // light up tiles in sequence, sound out, then say whole word
+          var tileEls = buildTiles.querySelectorAll(".tile");
+          var i = 0;
+          function step() {
+            if (i < letters.length) {
+              var el = tileEls[i];
+              if (el) {
+                el.classList.add("lit");
+                speak(SOUNDS[letters[i]] || letters[i]);
+                (function (el) {
+                  setTimeout(function () {
+                    el.classList.remove("lit");
+                  }, 380);
+                })(el);
+              }
+              i++;
+              setTimeout(step, 600);
+            } else {
+              speak(item.w);
+              blendResult.innerHTML =
+                '<div class="be" aria-hidden="true">' +
+                item.e +
+                "</div>" +
+                '<div class="bw">' +
+                item.w +
+                "</div>";
+              addStar(1);
+            }
+          }
+          step();
+        });
+      document
+        .getElementById("buildNext")
+        .addEventListener("click", function () {
+          buildAdvance();
+        });
+      renderBuild();
+
+      /* ===================== STATION 4: RHYME TIME ===================== */
+      var RHYME_ROUNDS = [
+        {
+          word: "cat",
+          emoji: "🐱",
+          rhyme: { w: "hat", e: "🎩" },
+          distractors: [
+            { w: "dog", e: "🐶" },
+            { w: "sun", e: "☀️" },
+          ],
+        },
+        {
+          word: "dog",
+          emoji: "🐶",
+          rhyme: { w: "log", e: "🪵" },
+          distractors: [
+            { w: "cat", e: "🐱" },
+            { w: "bee", e: "🐝" },
+          ],
+        },
+        {
+          word: "bee",
+          emoji: "🐝",
+          rhyme: { w: "tree", e: "🌳" },
+          distractors: [
+            { w: "car", e: "🚗" },
+            { w: "pig", e: "🐷" },
+          ],
+        },
+        {
+          word: "star",
+          emoji: "⭐",
+          rhyme: { w: "car", e: "🚗" },
+          distractors: [
+            { w: "fish", e: "🐟" },
+            { w: "bed", e: "🛏️" },
+          ],
+        },
+        {
+          word: "frog",
+          emoji: "🐸",
+          rhyme: { w: "log", e: "🪵" },
+          distractors: [
+            { w: "moon", e: "🌙" },
+            { w: "hat", e: "🎩" },
+          ],
+        },
+        {
+          word: "sun",
+          emoji: "☀️",
+          rhyme: { w: "bun", e: "🍞" },
+          distractors: [
+            { w: "fox", e: "🦊" },
+            { w: "key", e: "🔑" },
+          ],
+        },
+        {
+          word: "snake",
+          emoji: "🐍",
+          rhyme: { w: "cake", e: "🎂" },
+          distractors: [
+            { w: "duck", e: "🦆" },
+            { w: "ring", e: "💍" },
+          ],
+        },
+        {
+          word: "bear",
+          emoji: "🐻",
+          rhyme: { w: "chair", e: "🪑" },
+          distractors: [
+            { w: "ball", e: "⚽" },
+            { w: "fish", e: "🐟" },
+          ],
+        },
+        {
+          word: "whale",
+          emoji: "🐳",
+          rhyme: { w: "snail", e: "🐌" },
+          distractors: [
+            { w: "lion", e: "🦁" },
+            { w: "cup", e: "🥤" },
+          ],
+        },
+        {
+          word: "pig",
+          emoji: "🐷",
+          rhyme: { w: "wig", e: "👱" },
+          distractors: [
+            { w: "duck", e: "🦆" },
+            { w: "cake", e: "🎂" },
+          ],
+        },
+        {
+          word: "bug",
+          emoji: "🐛",
+          rhyme: { w: "rug", e: "🧶" },
+          distractors: [
+            { w: "fish", e: "🐟" },
+            { w: "star", e: "⭐" },
+          ],
+        },
+        {
+          word: "hat",
+          emoji: "🎩",
+          rhyme: { w: "bat", e: "🦇" },
+          distractors: [
+            { w: "sun", e: "☀️" },
+            { w: "bee", e: "🐝" },
+          ],
+        },
+        {
+          word: "fan",
+          emoji: "🪭",
+          rhyme: { w: "pan", e: "🍳" },
+          distractors: [
+            { w: "dog", e: "🐶" },
+            { w: "tree", e: "🌳" },
+          ],
+        },
+        {
+          word: "bed",
+          emoji: "🛏️",
+          rhyme: { w: "sled", e: "🛷" },
+          distractors: [
+            { w: "car", e: "🚗" },
+            { w: "frog", e: "🐸" },
+          ],
+        },
+        {
+          word: "hen",
+          emoji: "🐔",
+          rhyme: { w: "pen", e: "🖊️" },
+          distractors: [
+            { w: "moon", e: "🌙" },
+            { w: "cat", e: "🐱" },
+          ],
+        },
+        {
+          word: "jet",
+          emoji: "✈️",
+          rhyme: { w: "net", e: "🥅" },
+          distractors: [
+            { w: "pig", e: "🐷" },
+            { w: "ball", e: "⚽" },
+          ],
+        },
+        {
+          word: "cake",
+          emoji: "🎂",
+          rhyme: { w: "rake", e: "🍂" },
+          distractors: [
+            { w: "fish", e: "🐟" },
+            { w: "bug", e: "🐛" },
+          ],
+        },
+        {
+          word: "duck",
+          emoji: "🦆",
+          rhyme: { w: "truck", e: "🚚" },
+          distractors: [
+            { w: "snake", e: "🐍" },
+            { w: "key", e: "🔑" },
+          ],
+        },
+        {
+          word: "ring",
+          emoji: "💍",
+          rhyme: { w: "king", e: "🤴" },
+          distractors: [
+            { w: "bear", e: "🐻" },
+            { w: "sun", e: "☀️" },
+          ],
+        },
+        {
+          word: "moon",
+          emoji: "🌙",
+          rhyme: { w: "spoon", e: "🥄" },
+          distractors: [
+            { w: "car", e: "🚗" },
+            { w: "hat", e: "🎩" },
+          ],
+        },
+        {
+          word: "tree",
+          emoji: "🌳",
+          rhyme: { w: "key", e: "🔑" },
+          distractors: [
+            { w: "dog", e: "🐶" },
+            { w: "frog", e: "🐸" },
+          ],
+        },
+        {
+          word: "car",
+          emoji: "🚗",
+          rhyme: { w: "jar", e: "🫙" },
+          distractors: [
+            { w: "bee", e: "🐝" },
+            { w: "cake", e: "🎂" },
+          ],
+        },
+        {
+          word: "mouse",
+          emoji: "🐭",
+          rhyme: { w: "house", e: "🏠" },
+          distractors: [
+            { w: "lion", e: "🦁" },
+            { w: "fish", e: "🐟" },
+          ],
+        },
+        {
+          word: "fox",
+          emoji: "🦊",
+          rhyme: { w: "box", e: "📦" },
+          distractors: [
+            { w: "moon", e: "🌙" },
+            { w: "tree", e: "🌳" },
+          ],
+        },
+        {
+          word: "goat",
+          emoji: "🐐",
+          rhyme: { w: "boat", e: "⛵" },
+          distractors: [
+            { w: "cat", e: "🐱" },
+            { w: "star", e: "⭐" },
+          ],
+        },
+        {
+          word: "cap",
+          emoji: "🧢",
+          rhyme: { w: "map", e: "🗺️" },
+          distractors: [
+            { w: "duck", e: "🦆" },
+            { w: "ring", e: "💍" },
+          ],
+        },
+        {
+          word: "top",
+          emoji: "🔝",
+          rhyme: { w: "mop", e: "🧹" },
+          distractors: [
+            { w: "bear", e: "🐻" },
+            { w: "bee", e: "🐝" },
+          ],
+        },
+        {
+          word: "nut",
+          emoji: "🥜",
+          rhyme: { w: "hut", e: "🛖" },
+          distractors: [
+            { w: "fish", e: "🐟" },
+            { w: "cake", e: "🎂" },
+          ],
+        },
+        {
+          word: "bell",
+          emoji: "🔔",
+          rhyme: { w: "shell", e: "🐚" },
+          distractors: [
+            { w: "dog", e: "🐶" },
+            { w: "car", e: "🚗" },
+          ],
+        },
+        {
+          word: "clock",
+          emoji: "🕐",
+          rhyme: { w: "sock", e: "🧦" },
+          distractors: [
+            { w: "moon", e: "🌙" },
+            { w: "pig", e: "🐷" },
+          ],
+        },
+        {
+          word: "rain",
+          emoji: "🌧️",
+          rhyme: { w: "train", e: "🚂" },
+          distractors: [
+            { w: "fox", e: "🦊" },
+            { w: "tree", e: "🌳" },
+          ],
+        },
+        {
+          word: "bread",
+          emoji: "🍞",
+          rhyme: { w: "thread", e: "🧵" },
+          distractors: [
+            { w: "star", e: "⭐" },
+            { w: "duck", e: "🦆" },
+          ],
+        },
+        {
+          word: "wig",
+          emoji: "👱",
+          rhyme: { w: "dig", e: "⛏️" },
+          distractors: [
+            { w: "cat", e: "🐱" },
+            { w: "moon", e: "🌙" },
+          ],
+        },
+      ];
+      var rhymeIdx = 0;
+      var rhymeOrder = shuffle(
+        RHYME_ROUNDS.map(function (_, i) {
+          return i;
+        }),
+      );
+      var rhymeEmoji = document.getElementById("rhymeEmoji");
+      var rhymeWord = document.getElementById("rhymeWord");
+      var rhymeChoices = document.getElementById("rhymeChoices");
+      var rhymeFeedback = document.getElementById("rhymeFeedback");
+      var rhymeSayBtn = document.getElementById("rhymeSay");
+
+      function renderRhyme() {
+        var round = RHYME_ROUNDS[rhymeOrder[rhymeIdx]];
+        rhymeEmoji.textContent = round.emoji;
+        rhymeWord.childNodes[0].nodeValue = round.word + " ";
+        rhymeFeedback.textContent = "";
+        rhymeFeedback.className = "feedback";
+        var choices = shuffle([round.rhyme].concat(round.distractors));
+        rhymeChoices.innerHTML = "";
+        choices.forEach(function (ch) {
+          var b = document.createElement("button");
+          b.className = "choice";
+          b.setAttribute("aria-label", ch.w);
+          b.innerHTML =
+            '<span aria-hidden="true">' +
+            ch.e +
+            '</span><span class="cw">' +
+            ch.w +
+            "</span>";
+          b.addEventListener("click", function () {
+            if (ch.w === round.rhyme.w) {
+              b.classList.add("correct");
+              rhymeFeedback.textContent = "✅ " + praise();
+              rhymeFeedback.className = "feedback good";
+              speak(
+                round.word + " rhymes with " + round.rhyme.w + ". " + praise(),
+              );
+              addStar(1);
+              setTimeout(function () {
+                var lastIndex = rhymeOrder[rhymeIdx];
+                rhymeIdx = (rhymeIdx + 1) % RHYME_ROUNDS.length;
+                if (rhymeIdx === 0) {
+                  // endless: reshuffle, avoid same round back-to-back
+                  rhymeOrder = shuffle(rhymeOrder);
+                  if (rhymeOrder.length > 1 && rhymeOrder[0] === lastIndex) {
+                    rhymeOrder.push(rhymeOrder.shift());
+                  }
+                }
+                renderRhyme();
+              }, 1200);
+            } else {
+              b.classList.add("wrong");
+              rhymeFeedback.textContent = "Try again! 💪";
+              rhymeFeedback.className = "feedback try";
+              speak("Try again!");
+              setTimeout(function () {
+                b.classList.remove("wrong");
+              }, 500);
+            }
+          });
+          rhymeChoices.appendChild(b);
+        });
+      }
+      rhymeSayBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        speak(RHYME_ROUNDS[rhymeOrder[rhymeIdx]].word);
+      });
+      renderRhyme();
+
+      /* ===================== STATION 5: PICTURE MATCH ===================== */
+      var MATCH_ITEMS = [
+        { w: "sun", e: "☀️" },
+        { w: "cat", e: "🐱" },
+        { w: "dog", e: "🐶" },
+        { w: "fish", e: "🐟" },
+        { w: "star", e: "⭐" },
+        { w: "tree", e: "🌳" },
+        { w: "car", e: "🚗" },
+        { w: "moon", e: "🌙" },
+        { w: "frog", e: "🐸" },
+        { w: "cake", e: "🎂" },
+        { w: "pig", e: "🐷" },
+        { w: "duck", e: "🦆" },
+        { w: "bear", e: "🐻" },
+        { w: "lion", e: "🦁" },
+        { w: "bee", e: "🐝" },
+        { w: "fox", e: "🦊" },
+        { w: "cow", e: "🐮" },
+        { w: "owl", e: "🦉" },
+        { w: "snake", e: "🐍" },
+        { w: "whale", e: "🐳" },
+        { w: "hat", e: "🎩" },
+        { w: "ball", e: "⚽" },
+        { w: "cup", e: "🥤" },
+        { w: "key", e: "🔑" },
+        { w: "bed", e: "🛏️" },
+        { w: "boat", e: "⛵" },
+        { w: "bus", e: "🚌" },
+        { w: "drum", e: "🥁" },
+        { w: "ring", e: "💍" },
+        { w: "sock", e: "🧦" },
+        { w: "bell", e: "🔔" },
+        { w: "leaf", e: "🍃" },
+        { w: "rain", e: "🌧️" },
+        { w: "kite", e: "🪁" },
+        { w: "milk", e: "🥛" },
+        { w: "egg", e: "🥚" },
+        { w: "apple", e: "🍎" },
+        { w: "book", e: "📖" },
+        { w: "clock", e: "🕐" },
+        { w: "train", e: "🚂" },
+        { w: "house", e: "🏠" },
+        { w: "spoon", e: "🥄" },
+        { w: "bug", e: "🐛" },
+        { w: "rug", e: "🧶" },
+      ];
+      var matchIdx = 0;
+      var matchOrder = shuffle(
+        MATCH_ITEMS.map(function (_, i) {
+          return i;
+        }),
+      );
+      var matchWord = document.getElementById("matchWord");
+      var matchChoices = document.getElementById("matchChoices");
+      var matchFeedback = document.getElementById("matchFeedback");
+
+      function renderMatch() {
+        var target = MATCH_ITEMS[matchOrder[matchIdx]];
+        matchWord.childNodes[0].nodeValue = target.w + " ";
+        matchFeedback.textContent = "";
+        matchFeedback.className = "feedback";
+        // build 4 choices: target + 3 distractors
+        var others = shuffle(
+          MATCH_ITEMS.filter(function (x) {
+            return x.w !== target.w;
+          }),
+        ).slice(0, 3);
+        var choices = shuffle([target].concat(others));
+        matchChoices.innerHTML = "";
+        choices.forEach(function (ch) {
+          var b = document.createElement("button");
+          b.className = "choice";
+          b.setAttribute("aria-label", "Picture choice");
+          b.innerHTML = '<span aria-hidden="true">' + ch.e + "</span>";
+          b.addEventListener("click", function () {
+            if (ch.w === target.w) {
+              b.classList.add("correct");
+              matchFeedback.textContent = "✅ " + praise();
+              matchFeedback.className = "feedback good";
+              speak(target.w + ". " + praise());
+              addStar(1);
+              setTimeout(function () {
+                var lastIndex = matchOrder[matchIdx];
+                matchIdx = (matchIdx + 1) % MATCH_ITEMS.length;
+                if (matchIdx === 0) {
+                  // endless: reshuffle, avoid same target back-to-back
+                  matchOrder = shuffle(matchOrder);
+                  if (matchOrder.length > 1 && matchOrder[0] === lastIndex) {
+                    matchOrder.push(matchOrder.shift());
+                  }
+                }
+                renderMatch();
+              }, 1100);
+            } else {
+              b.classList.add("wrong");
+              matchFeedback.textContent = "Try again! 💪";
+              matchFeedback.className = "feedback try";
+              speak("Try again!");
+              setTimeout(function () {
+                b.classList.remove("wrong");
+              }, 500);
+            }
+          });
+          matchChoices.appendChild(b);
+        });
+      }
+      document
+        .getElementById("matchSay")
+        .addEventListener("click", function (e) {
+          e.stopPropagation();
+          speak(MATCH_ITEMS[matchOrder[matchIdx]].w);
+        });
+      renderMatch();
+
+      /* ===================== STATION 6: READ A STORY ===================== */
+      /* Several short decodable stories. "Next story" cycles through a
+         shuffled deck endlessly (reshuffles, no immediate repeat). */
+      var STORIES = [
+        {
+          title: "Sam and His Cat",
+          scene: "👦 🐱",
+          lines: [
+            "Sam has a cat.",
+            "The cat is tan.",
+            "Sam and the cat sit.",
+            "The cat is on a mat.",
+            "Sam pats the cat.",
+            "The cat naps.",
+            "Sam and the cat are happy.",
+          ],
+        },
+        {
+          title: "The Big Red Dog",
+          scene: "🐶 🦴",
+          lines: [
+            "Meg has a big red dog.",
+            "The dog can run and dig.",
+            "The dog digs in the mud.",
+            "Meg digs up a bone.",
+            "The dog runs to get it.",
+            "Meg pats the dog.",
+            "The dog is so glad!",
+          ],
+        },
+        {
+          title: "A Fun Day in the Sun",
+          scene: "☀️ 🏖️",
+          lines: [
+            "Pam and Dan go in the sun.",
+            "They run on the hot sand.",
+            "Dan digs a big pit.",
+            "Pam fills it with water.",
+            "A crab hops in the pit.",
+            "They jump and laugh.",
+            "It is a fun, sunny day!",
+          ],
+        },
+        {
+          title: "The Pig and the Pup",
+          scene: "🐷 🐶",
+          lines: [
+            "A pig and a pup are pals.",
+            "The pig can hop in the mud.",
+            "The pup can nap in the sun.",
+            "The pig naps with the pup.",
+            "They tug at a big sock.",
+            "The sock rips. Rip, rip!",
+            "The pig and the pup grin.",
+          ],
+        },
+        {
+          title: "The Lost Hen",
+          scene: "🐔 🌽",
+          lines: [
+            "A hen ran from the pen.",
+            "The hen hid in the tall grass.",
+            "Ten chicks did not see her.",
+            "Peck, peck went the hen.",
+            "The chicks ran to the hen.",
+            "The hen led them back home.",
+            "All the chicks were glad.",
+          ],
+        },
+        {
+          title: "Max Gets Wet",
+          scene: "🐸 🌧️",
+          lines: [
+            "Max is a little green frog.",
+            "Max sat on a wet log.",
+            "Then the big rain came down.",
+            "Drip, drop on the frog!",
+            "Max did a big, fun hop.",
+            "He hid under a leaf.",
+            "Max was snug and dry.",
+          ],
+        },
+      ];
+      var storyDeck = shuffle(STORIES);
+      var storyDeckIdx = 0;
+      var STORY = storyDeck[storyDeckIdx].lines;
+      var storyLines = document.getElementById("storyLines");
+      var storyEnd = document.getElementById("storyEnd");
+      var storyScene = document.getElementById("storyScene");
+      var storyTitle = document.getElementById("storyTitle");
+
+      function buildStory() {
+        var cur = storyDeck[storyDeckIdx];
+        STORY = cur.lines;
+        if (storyTitle) storyTitle.textContent = cur.title;
+        if (storyScene) storyScene.textContent = cur.scene;
+        storyLines.innerHTML = "";
+        storyEnd.style.display = "none";
+        STORY.forEach(function (line, idx) {
+          var row = document.createElement("div");
+          row.className = "sentence";
+          row.dataset.index = idx;
+
+          var btn = document.createElement("button");
+          btn.className = "speak-btn small";
+          btn.setAttribute(
+            "aria-label",
+            "Read line " + (idx + 1) + " out loud",
+          );
+          btn.textContent = "🔊";
+
+          var text = document.createElement("span");
+          text.className = "stext";
+          // wrap each word in a span for highlighting
+          line.split(" ").forEach(function (word, wi) {
+            var ws = document.createElement("span");
+            ws.className = "word";
+            ws.textContent = word;
+            text.appendChild(ws);
+            if (wi < line.split(" ").length - 1)
+              text.appendChild(document.createTextNode(" "));
+          });
+
+          btn.addEventListener("click", function () {
+            readLine(idx);
+          });
+          row.appendChild(btn);
+          row.appendChild(text);
+          storyLines.appendChild(row);
+        });
+      }
+
+      function clearHighlights() {
+        var rows = storyLines.querySelectorAll(".sentence");
+        rows.forEach(function (r) {
+          r.classList.remove("reading");
+        });
+        var words = storyLines.querySelectorAll(".word");
+        words.forEach(function (w) {
+          w.classList.remove("hl");
+        });
+      }
+
+      function readLine(idx, onDone) {
+        clearHighlights();
+        var rows = storyLines.querySelectorAll(".sentence");
+        var row = rows[idx];
+        if (!row) {
+          if (onDone) onDone();
+          return;
+        }
+        row.classList.add("reading");
+        var wordEls = row.querySelectorAll(".word");
+        var words = STORY[idx].split(" ");
+        // karaoke highlight, timed by word count
+        var per = 360;
+        words.forEach(function (_, wi) {
+          (function (wi) {
+            setTimeout(function () {
+              wordEls.forEach(function (w) {
+                w.classList.remove("hl");
+              });
+              if (wordEls[wi]) wordEls[wi].classList.add("hl");
+            }, wi * per);
+          })(wi);
+        });
+        speak(STORY[idx]);
+        var total = words.length * per + 400;
+        setTimeout(function () {
+          row.classList.remove("reading");
+          if (wordEls.length)
+            wordEls[wordEls.length - 1].classList.remove("hl");
+          if (onDone) onDone();
+        }, total);
+      }
+
+      document
+        .getElementById("storyReadAll")
+        .addEventListener("click", function () {
+          storyEnd.style.display = "none";
+          var i = 0;
+          function next() {
+            if (i < STORY.length) {
+              var cur = i;
+              i++;
+              readLine(cur, next);
+            } else {
+              clearHighlights();
+              storyEnd.style.display = "block";
+              speak("The End! Great reading!");
+              addStar(1);
+            }
+          }
+          next();
+        });
+      document
+        .getElementById("storyReset")
+        .addEventListener("click", function () {
+          try {
+            window.speechSynthesis && window.speechSynthesis.cancel();
+          } catch (e) {}
+          buildStory();
+        });
+      document
+        .getElementById("storyNext")
+        .addEventListener("click", function () {
+          try {
+            window.speechSynthesis && window.speechSynthesis.cancel();
+          } catch (e) {}
+          storyDeckIdx++;
+          if (storyDeckIdx >= storyDeck.length) {
+            // reshuffle deck, avoid the same story twice in a row
+            var last = storyDeck[storyDeck.length - 1].title;
+            storyDeck = shuffle(STORIES);
+            if (storyDeck.length > 1 && storyDeck[0].title === last) {
+              storyDeck.push(storyDeck.shift());
+            }
+            storyDeckIdx = 0;
+          }
+          buildStory();
+        });
+      buildStory();
+    </script>
+  </body>
+</html>

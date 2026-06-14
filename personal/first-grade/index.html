@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>First Grade Readiness — EduWonderLab</title>
+    <style>
+      :root {
+        --bg: #fff7ed;
+        --ink: #2b2440;
+        --muted: #6b6480;
+        --sun: #ffd166;
+        --line: #efe6d8;
+        --reading: #ff6b6b;
+        --math: #2a9d8f;
+        --hebrew: #3a86ff;
+        --writing: #7b5cff;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+        background:
+          radial-gradient(
+            1200px 500px at 10% -10%,
+            #fff3d6 0%,
+            transparent 60%
+          ),
+          radial-gradient(1000px 500px at 100% 0%, #ffe3e3 0%, transparent 55%),
+          var(--bg);
+        color: var(--ink);
+        line-height: 1.5;
+        min-height: 100vh;
+        padding: 32px 18px 60px;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+      .hero {
+        text-align: center;
+        margin-bottom: 36px;
+      }
+      .hero .badge {
+        display: inline-block;
+        background: var(--sun);
+        color: #5a4a00;
+        font-weight: 800;
+        font-size: 0.95rem;
+        letter-spacing: 0.04em;
+        padding: 7px 16px;
+        border-radius: 999px;
+        margin-bottom: 16px;
+      }
+      .hero h1 {
+        font-size: clamp(2rem, 6vw, 3.2rem);
+        line-height: 1.1;
+        margin-bottom: 10px;
+      }
+      .hero p {
+        color: var(--muted);
+        font-size: 1.15rem;
+        max-width: 620px;
+        margin: 0 auto;
+      }
+      .hero .wave {
+        font-size: 3.2rem;
+        display: block;
+        margin-bottom: 6px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 20px;
+        margin-top: 8px;
+      }
+      a.subject {
+        position: relative;
+        display: block;
+        background: #fff;
+        border: 3px solid var(--line);
+        border-radius: 24px;
+        padding: 28px 24px 26px;
+        text-decoration: none;
+        color: var(--ink);
+        overflow: hidden;
+        transition:
+          transform 0.18s ease,
+          box-shadow 0.18s ease,
+          border-color 0.18s ease;
+        box-shadow: 0 10px 24px rgba(43, 36, 64, 0.06);
+      }
+      a.subject:hover,
+      a.subject:focus-visible {
+        transform: translateY(-6px) rotate(-0.4deg);
+        box-shadow: 0 18px 36px rgba(43, 36, 64, 0.14);
+        outline: none;
+      }
+      a.subject .emoji {
+        font-size: 3.2rem;
+        display: block;
+        margin-bottom: 12px;
+      }
+      a.subject h2 {
+        font-size: 1.5rem;
+        margin-bottom: 6px;
+      }
+      a.subject p {
+        color: var(--muted);
+        font-size: 1rem;
+      }
+      a.subject .go {
+        display: inline-block;
+        margin-top: 14px;
+        font-weight: 800;
+        font-size: 1.02rem;
+      }
+      a.subject::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 10px;
+      }
+      .reading {
+        border-color: #ffd0d0;
+      }
+      .reading::before {
+        background: var(--reading);
+      }
+      .reading h2,
+      .reading .go {
+        color: var(--reading);
+      }
+      .math {
+        border-color: #b8e6df;
+      }
+      .math::before {
+        background: var(--math);
+      }
+      .math h2,
+      .math .go {
+        color: var(--math);
+      }
+      .hebrew {
+        border-color: #cfe0ff;
+      }
+      .hebrew::before {
+        background: var(--hebrew);
+      }
+      .hebrew h2,
+      .hebrew .go {
+        color: var(--hebrew);
+      }
+      .writing {
+        border-color: #ddd3ff;
+      }
+      .writing::before {
+        background: var(--writing);
+      }
+      .writing h2,
+      .writing .go {
+        color: var(--writing);
+      }
+      .tip {
+        margin-top: 34px;
+        background: #fff;
+        border: 2px dashed var(--line);
+        border-radius: 18px;
+        padding: 18px 22px;
+        color: var(--muted);
+        font-size: 1rem;
+        text-align: center;
+      }
+      .tip b {
+        color: var(--ink);
+      }
+      footer {
+        margin-top: 40px;
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        a.subject {
+          transition: none;
+        }
+        a.subject:hover,
+        a.subject:focus-visible {
+          transform: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="hero">
+        <span class="wave" aria-hidden="true">🎒</span>
+        <span class="badge">Getting Ready for 1st Grade</span>
+        <h1>First Grade Readiness</h1>
+        <p>
+          Four playful learning worlds — pick one to start! Every game reads to
+          you out loud, gives gold stars, and never runs out of new rounds.
+        </p>
+      </header>
+
+      <nav class="grid" aria-label="Choose a subject">
+        <a class="subject reading" href="/personal/first-grade-reading/">
+          <span class="emoji" aria-hidden="true">📚</span>
+          <h2>Reading</h2>
+          <p>
+            Letters &amp; sounds, sight words, blending, rhymes, and stories.
+          </p>
+          <span class="go">Let's read →</span>
+        </a>
+        <a class="subject math" href="/personal/first-grade-math/">
+          <span class="emoji" aria-hidden="true">🔢</span>
+          <h2>Math</h2>
+          <p>
+            Counting, numbers, adding, taking away, shapes, and more or less.
+          </p>
+          <span class="go">Let's count →</span>
+        </a>
+        <a class="subject hebrew" href="/personal/first-grade-hebrew/">
+          <span class="emoji" aria-hidden="true">✡️</span>
+          <h2>Hebrew</h2>
+          <p>Aleph-Bet, vowels, first words, sound match, and picture words.</p>
+          <span class="go">Let's learn →</span>
+        </a>
+        <a class="subject writing" href="/personal/first-grade-writing/">
+          <span class="emoji" aria-hidden="true">✏️</span>
+          <h2>Writing</h2>
+          <p>
+            Trace letters &amp; numbers, build words and sentences, draw &amp;
+            label.
+          </p>
+          <span class="go">Let's write →</span>
+        </a>
+      </nav>
+
+      <p class="tip">
+        <b>For grown-ups:</b> works on a tablet, phone, or computer — no login,
+        no ads, fully offline-friendly. Tap the 🔊 buttons to hear everything
+        read aloud. Stars are saved on this device.
+      </p>
+
+      <footer>EduWonderLab · Made with ❤️ for Noam</footer>
+    </div>
+  </body>
+</html>
