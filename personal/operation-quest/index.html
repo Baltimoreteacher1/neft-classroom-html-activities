@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Operation Quest: Ultimate Game Edition</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-soft: #eef2ff;
+      --success: #10b981;
+      --success-soft: #ecfdf5;
+      --warning: #f59e0b;
+      --warning-soft: #fffbeb;
+      --danger: #ef4444;
+      --danger-soft: #fef2f2;
+      --accent: #8b5cf6;
+      --accent-soft: #f5f3ff;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --font-main: 'Outfit', sans-serif;
+      --font-accent: 'Fredoka', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    header {
+      background: var(--card-bg);
+      border-bottom: 3px solid var(--primary);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      padding: 1rem 1.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    .nav-container { max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem; }
+    .brand-row { display: flex; justify-content: space-between; align-items: center; }
+    .brand { display: flex; align-items: center; gap: 12px; font-family: var(--font-accent); font-size: 1.75rem; font-weight: 700; color: var(--primary); }
+    .brand span { background: var(--primary); color: white; padding: 6px 14px; border-radius: 12px; font-size: 1.4rem; box-shadow: 0 4px 0 #3730a3; }
+
+    .tabs { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; padding: 5px 0; }
+    .tabs::-webkit-scrollbar { display: none; }
+
+    .tab {
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      border: 3px solid transparent;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-weight: 800;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      align-items: center; gap: 10px;
+    }
+
+    .tab:hover { transform: translateY(-3px); background: #e0e7ff; }
+    .tab.active { background: var(--primary); color: white; box-shadow: 0 6px 0 #3730a3; transform: translateY(-3px); }
+    .tab.done::after { content: '⭐'; }
+
+    main { flex: 1; max-width: 1100px; margin: 2rem auto; width: calc(100% - 2rem); }
+    .panel { display: none; animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .panel.active { display: block; }
+
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+    .card { background: var(--card-bg); border-radius: var(--radius-lg); padding: 3rem; border: 3px solid var(--border); box-shadow: var(--shadow); margin-bottom: 2rem; position: relative; }
+    .card-title { font-family: var(--font-accent); font-size: 2.5rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 15px; }
+
+    .problem-box { background: #f1f5f9; padding: 2.5rem; border-radius: var(--radius-lg); text-align: center; margin-bottom: 2rem; border: 4px dashed var(--primary); }
+    .problem-text { font-family: var(--font-accent); font-size: 4.5rem; font-weight: 700; color: var(--primary); text-shadow: 2px 2px 0 white; }
+
+    .board-container { background: #1e293b; padding: 2.5rem; border-radius: 30px; overflow-x: auto; margin-bottom: 2rem; box-shadow: inset 0 4px 20px rgba(0,0,0,0.4), 0 10px 0 #0f172a; }
+    .board-grid { display: grid; grid-template-columns: 80px repeat(6, 80px); gap: 15px; justify-content: center; align-items: center; min-width: 650px; }
+    .cell { width: 80px; height: 80px; display: grid; place-items: center; border-radius: 18px; font-size: 2.2rem; font-weight: 800; background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.15); position: relative; color: white; }
+    .cell.label { border: none; font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; font-weight: 900; }
+    .cell.strikeable { cursor: pointer; transition: transform 0.2s; }
+    .cell.strikeable:hover { transform: scale(1.05); background: rgba(255,255,255,0.2); }
+    .cell.struck::after { content: ""; position: absolute; width: 90%; height: 6px; background: var(--danger); transform: rotate(-25deg); border-radius: 10px; box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
+    .cell-input { width: 100%; height: 100%; background: white; border: 4px solid var(--primary); border-radius: 18px; text-align: center; font-size: 2.2rem; font-weight: 800; color: var(--text-main); font-family: inherit; }
+    .carry-input { width: 55px; height: 55px; background: var(--warning-soft); border: 3px dashed var(--warning); border-radius: 12px; text-align: center; font-size: 1.4rem; font-weight: 800; color: #92400e; }
+
+    .line-container { background: white; padding: 2.5rem; border-radius: var(--radius-lg); border: 3px solid var(--border); overflow-x: auto; margin-bottom: 2rem; }
+    .line-svg { min-width: 950px; height: 140px; }
+
+    .btn { padding: 16px 32px; border-radius: 18px; font-weight: 800; cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: none; font-size: 1.2rem; display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-main); }
+    .btn:hover { transform: translateY(-4px); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary { background: var(--primary); color: white; box-shadow: 0 6px 0 #3730a3; }
+    .btn-success { background: var(--success); color: white; box-shadow: 0 6px 0 #065f46; }
+    .btn-danger { background: var(--danger); color: white; box-shadow: 0 6px 0 #991b1b; }
+    .btn-outline { background: white; border: 3px solid var(--border); color: var(--text-main); box-shadow: 0 6px 0 var(--border); }
+
+    .feedback { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); padding: 1.5rem 3rem; border-radius: 20px; font-weight: 800; font-size: 1.5rem; z-index: 2000; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .feedback.show { display: block; animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    @keyframes popUp { from { bottom: -5rem; opacity: 0; } to { bottom: 2rem; opacity: 1; } }
+    .feedback.good { background: var(--success); color: white; border: 4px solid #065f46; }
+    .feedback.bad { background: var(--danger); color: white; border: 4px solid #991b1b; }
+
+    .stats-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .stat-card { background: white; padding: 1.5rem; border-radius: var(--radius-md); border: 3px solid var(--border); text-align: center; box-shadow: 0 6px 0 var(--border); }
+    .stat-val { font-size: 2.2rem; font-weight: 800; color: var(--primary); }
+    .stat-label { font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; font-weight: 900; }
+
+    .advance-overlay { position: absolute; inset: 0; background: rgba(16, 185, 129, 0.95); display: none; align-items: center; justify-content: center; z-index: 100; border-radius: inherit; color: white; font-size: 3.5rem; font-weight: 900; animation: fadeIn 0.3s; text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .custom-jump-box { background: var(--primary-soft); padding: 1.5rem; border-radius: 20px; display: flex; gap: 1rem; align-items: center; margin-top: 1.5rem; border: 3px solid var(--primary); }
+    .jump-input { width: 120px; padding: 10px; border-radius: 12px; border: 3px solid var(--primary); font-size: 1.5rem; font-weight: 800; text-align: center; }
+
+    .report-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+    .report-table th { padding: 1rem; text-align: left; color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; font-weight: 900; }
+    .report-table td { padding: 1.5rem; background: #f8fafc; border: 2px solid var(--border); }
+    .report-table tr td:first-child { border-radius: 15px 0 0 15px; font-weight: 800; }
+    .report-table tr td:last-child { border-radius: 0 15px 15px 0; text-align: right; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="nav-container">
+    <div class="brand-row">
+      <div class="brand"><span>Quest</span> Operation: Ultimate Edition</div>
+      <div id="topStars" style="font-weight: 900; font-size: 1.5rem; color: var(--warning);">⭐ 0</div>
+    </div>
+    <nav class="tabs" id="navTabs">
+      <button class="tab active" data-panel="home">🏠 Start</button>
+      <button class="tab" data-panel="stack" data-zone="stack">🏗️ Stack-It</button>
+      <button class="tab" data-panel="line" data-zone="line">🧭 Trail</button>
+      <button class="tab" data-panel="lab" data-zone="lab">🧪 Lab</button>
+      <button class="tab" data-panel="story" data-zone="story">📖 Story</button>
+      <button class="tab" data-panel="repair" data-zone="repair">🛠️ Repair</button>
+      <button class="tab" data-panel="boss" data-zone="boss">🐉 BOSS</button>
+      <button class="tab" data-panel="report">📋 Report</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="panel active" id="home">
+    <div class="card">
+      <h1 class="card-title">Welcome, Hero! 🚀</h1>
+      <p class="card-subtitle">Set up your profile and start your training.</p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+        <div class="form-group">
+          <label style="display: block; font-weight: 900; margin-bottom: 0.5rem;">HERO NAME</label>
+          <input type="text" id="heroName" style="width: 100%; padding: 1.25rem; border-radius: 15px; border: 4px solid var(--border); font-size: 1.25rem; font-weight: 700;" placeholder="Enter your name...">
+        </div>
+        <div class="form-group">
+          <label style="display: block; font-weight: 900; margin-bottom: 0.5rem;">LEVEL</label>
+          <select id="heroLevel" style="width: 100%; padding: 1.25rem; border-radius: 15px; border: 4px solid var(--border); font-size: 1.25rem; font-weight: 700; background: white;">
+            <option value="1">Level 1: Within 100</option>
+            <option value="2">Level 2: Multi-Digit</option>
+            <option value="3">Level 3: Decimals</option>
+            <option value="4">Level 4: Integers</option>
+          </select>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="app.setPanel('stack')">LAUNCH! 🚀</button>
+        <button class="btn btn-outline" id="soundToggle">🔊 Sound: Off</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="stack">
+    <div class="card">
+      <div class="advance-overlay" id="stackOverlay">EXCELLENT! 🎉</div>
+      <h2 class="card-title">🏗️ Stack-It Board</h2>
+      <div class="problem-box"><div class="problem-text" id="stackProblem">? + ?</div></div>
+      <div class="board-container"><div class="board-grid" id="stackGrid"></div></div>
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="games.stack.newProblem()">New Problem</button>
+        <button class="btn btn-success" onclick="games.stack.check()">Check Solution</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="line">
+    <div class="card">
+      <div class="advance-overlay" id="lineOverlay">BULLSEYE! 🎯</div>
+      <h2 class="card-title">🧭 Trail Compass</h2>
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-val" id="lineTarget">?</div><div class="stat-label">Target</div></div>
+        <div class="stat-card"><div class="stat-val" id="lineCurrent">0</div><div class="stat-label">You Are Here</div></div>
+      </div>
+      <div class="line-container"><svg class="line-svg" id="lineSvg" viewBox="0 0 1000 140"></svg></div>
+      <div class="custom-jump-box">
+        <label style="font-weight: 900;">CUSTOM JUMP:</label>
+        <input type="number" id="customJumpInput" class="jump-input">
+        <button class="btn btn-primary" style="padding: 10px 20px;" onclick="games.line.customJump()">JUMP!</button>
+      </div>
+      <div class="btn-row" style="margin-top: 1.5rem;">
+        <button class="btn btn-outline" onclick="games.line.jump(10)">+10</button>
+        <button class="btn btn-outline" onclick="games.line.jump(1)">+1</button>
+        <button class="btn btn-outline" onclick="games.line.jump(-1)">-1</button>
+        <button class="btn btn-outline" onclick="games.line.jump(-10)">-10</button>
+        <button class="btn btn-success" style="margin-left: auto;" onclick="games.line.check()">Verify Landing</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="lab">
+    <div class="card">
+      <div class="advance-overlay" id="labOverlay">CORRECT! 🧪</div>
+      <h2 class="card-title">🧪 Operation Lab</h2>
+      <div class="problem-box"><div class="problem-text" id="labEquation">? + ? = ?</div></div>
+      <div style="max-width: 400px; margin: 0 auto 2rem;"><input type="number" id="labInput" style="width: 100%; padding: 1.5rem; border-radius: 20px; border: 4px solid var(--primary); font-size: 3rem; text-align: center;"></div>
+      <button class="btn btn-success" style="width: 100%;" onclick="games.lab.check()">TEST RESULT 🔬</button>
+    </div>
+  </section>
+
+  <section class="panel" id="story">
+    <div class="card">
+      <div class="advance-overlay" id="storyOverlay">MISSION SUCCESS! 📖</div>
+      <h2 class="card-title">📖 Mission Story</h2>
+      <div class="problem-box" style="text-align: left; padding: 2.5rem;"><p id="storyText" style="font-size: 1.75rem; line-height: 1.6; font-weight: 700;">Loading...</p></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+        <div class="form-group">
+          <label style="display: block; font-weight: 900;">SOLUTION</label>
+          <input type="number" id="storyInput" style="width: 100%; padding: 1.25rem; border-radius: 15px; border: 4px solid var(--primary); font-size: 2rem; font-weight: 800;">
+        </div>
+        <div style="background: var(--warning-soft); padding: 1rem; border-radius: 15px; border: 2px solid var(--warning);">
+          <h4 style="color: #92400e;">STRATEGY</h4>
+          <p id="storyStarter" style="color: #b45309; font-weight: 600;">I need to...</p>
+        </div>
+      </div>
+      <div class="btn-row"><button class="btn btn-success" style="flex: 1;" onclick="games.story.check()">SUBMIT</button><button class="btn btn-outline" onclick="games.story.speak()">🔊 READ</button></div>
+    </div>
+  </section>
+
+  <section class="panel" id="repair">
+    <div class="card">
+      <div class="advance-overlay" id="repairOverlay">REPAIRED! 🛠️</div>
+      <h2 class="card-title">🛠️ Repair Shop</h2>
+      <div class="problem-box"><div class="problem-text" id="repairProblem" style="color: var(--danger);">ERROR</div></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+        <div class="form-group">
+          <label style="display: block; font-weight: 900;">MISTAKE TYPE</label>
+          <select id="repairType" style="width: 100%; padding: 1.25rem; border-radius: 15px; border: 4px solid var(--border); font-size: 1.1rem; font-weight: 700; background: white;">
+            <option value="">Choose...</option>
+            <option value="op">Wrong operation</option>
+            <option value="regroup">Regrouping mistake</option>
+            <option value="calc">Calculation error</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label style="display: block; font-weight: 900;">FIXED ANSWER</label>
+          <input type="number" id="repairInput" style="width: 100%; padding: 1.25rem; border-radius: 15px; border: 4px solid var(--primary); font-size: 1.5rem; font-weight: 800;">
+        </div>
+      </div>
+      <button class="btn btn-success" style="width: 100%;" onclick="games.repair.check()">COMPLETE REPAIR</button>
+    </div>
+  </section>
+
+  <section class="panel" id="boss">
+    <div class="card" style="border: 6px solid var(--danger);">
+      <h2 class="card-title" style="color: var(--danger); font-size: 3rem;">🐉 BOSS BATTLE</h2>
+      <div class="stats-bar">
+        <div class="stat-card" style="border-color: var(--danger);"><div class="stat-val" id="bossHealth">❤️❤️❤️</div><div class="stat-label">Your Life</div></div>
+        <div class="stat-card" style="border-color: var(--primary);"><div class="stat-val" id="bossRound">0/5</div><div class="stat-label">Dragon Damage</div></div>
+      </div>
+      <div class="problem-box" style="background: #fee2e2; border-color: var(--danger);"><div class="problem-text" id="bossProblem" style="color: var(--danger);">???</div></div>
+      <div style="max-width: 400px; margin: 0 auto 2rem;"><input type="number" id="bossInput" placeholder="ATTACK!" style="width: 100%; padding: 1.5rem; border-radius: 20px; border: 6px solid var(--danger); font-size: 3.5rem; text-align: center; color: var(--danger);"></div>
+      <button class="btn btn-danger" style="width: 100%; font-size: 2rem;" onclick="games.boss.check()">FIRE ATTACK! 🔥</button>
+    </div>
+  </section>
+
+  <section class="panel" id="report">
+    <div class="card">
+      <h2 class="card-title">📋 Mission Log</h2>
+      <table class="report-table"><thead><tr><th>ZONE</th><th>STATUS</th><th>MASTERY</th></tr></thead><tbody id="reportTableBody"></tbody></table>
+      <div class="btn-row"><button class="btn btn-primary" onclick="window.print()">PRINT LOG 🖨️</button><button class="btn btn-outline" style="color: var(--danger); border-color: var(--danger);" onclick="app.reset()">RESET ALL</button></div>
+    </div>
+  </section>
+</main>
+
+<div class="feedback" id="feedback">GOOD JOB!</div>
+
+<script>
+const app = {
+  state: { name: "Hero", level: 1, stars: 0, sound: false, zones: { stack: { done: false, score: 0, total: 5 }, line: { done: false, score: 0, total: 5 }, lab: { done: false, score: 0, total: 5 }, story: { done: false, score: 0, total: 5 }, repair: { done: false, score: 0, total: 5 }, boss: { done: false, score: 0, total: 5 } } },
+  init() { this.load(); this.setupTabs(); this.updateUI(); },
+  load() { const saved = localStorage.getItem('opQuestUltimate_v1'); if (saved) { this.state = JSON.parse(saved); document.getElementById('heroName').value = this.state.name; document.getElementById('heroLevel').value = this.state.level; } document.getElementById('soundToggle').onclick = () => { this.state.sound = !this.state.sound; this.save(); }; },
+  save() { this.state.name = document.getElementById('heroName').value || "Hero"; this.state.level = parseInt(document.getElementById('heroLevel').value); localStorage.setItem('opQuestUltimate_v1', JSON.stringify(this.state)); this.updateUI(); },
+  setupTabs() { document.querySelectorAll('.tab').forEach(btn => { btn.addEventListener('click', () => this.setPanel(btn.dataset.panel)); }); },
+  setPanel(id) { document.querySelectorAll('.panel').forEach(p => p.classList.remove('active')); document.querySelectorAll('.tab').forEach(b => b.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelector(`[data-panel="${id}"]`).classList.add('active'); if (games[id] && games[id].init) games[id].init(); if (id === 'report') this.renderReport(); window.scrollTo(0,0); },
+  updateUI() { document.getElementById('topStars').textContent = `⭐ ${this.state.stars}`; document.getElementById('soundToggle').textContent = `🔊 Sound: ${this.state.sound ? 'On' : 'Off'}`; Object.keys(this.state.zones).forEach(key => { const btn = document.querySelector(`[data-panel="${key}"]`); if (btn && this.state.zones[key].done) btn.classList.add('done'); }); },
+  addStar(n = 10) { this.state.stars += n; this.save(); if(this.state.sound) this.beep(true); confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } }); },
+  beep(good) { try { const ctx = new (window.AudioContext || window.webkitAudioContext)(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.frequency.value = good ? 523.25 : 220; gain.gain.value = 0.1; osc.connect(gain); gain.connect(ctx.destination); osc.start(); setTimeout(() => osc.stop(), 200); } catch(e){} },
+  showFeedback(txt, kind) { const f = document.getElementById('feedback'); f.textContent = txt; f.className = `feedback show ${kind}`; setTimeout(() => f.classList.remove('show'), 2000); },
+  autoAdvance(overlayId, gameKey) { const overlay = document.getElementById(overlayId); overlay.style.display = 'flex'; setTimeout(() => { overlay.style.display = 'none'; games[gameKey].newProblem(); }, 1500); },
+  renderReport() { const body = document.getElementById('reportTableBody'); body.innerHTML = ''; Object.keys(this.state.zones).forEach(key => { const z = this.state.zones[key]; const acc = Math.round((z.score / z.total) * 100); body.innerHTML += `<tr><td>${key.toUpperCase()} ZONE</td><td>${z.done ? '🏆 CHAMPION' : '⚔️ TRAINING'}</td><td><div style="width: 150px; height: 12px; background: #e2e8f0; border-radius: 6px; overflow: hidden; display: inline-block;"><div style="width: ${acc}%; height: 100%; background: var(--primary);"></div></div><span style="margin-left: 10px; font-weight: 900;">${acc}%</span></td></tr>`; }); },
+  reset() { if (confirm("Reset everything?")) { localStorage.removeItem('opQuestUltimate_v1'); location.reload(); } }
+};
+
+const games = {
+  stack: {
+    curr: { a: 0, b: 0, op: '+', ans: 0 },
+    init() { if (!this.curr.ans) this.newProblem(); },
+    newProblem() {
+      const level = app.state.level; let a, b, op = Math.random() > 0.5 ? '+' : '-';
+      if (level == 1) { a = rand(20, 99); b = rand(5, 15); } else if (level == 2) { a = rand(100, 999); b = rand(20, 150); } else if (level == 3) { a = (rand(10, 99)/10).toFixed(1); b = (rand(1, 9)/10).toFixed(1); } else { a = rand(-10, 10); b = rand(-10, 10); }
+      if (op === '-' && parseFloat(b) > parseFloat(a)) [a, b] = [b, a];
+      this.curr = { a, b, op, ans: op === '+' ? parseFloat(a) + parseFloat(b) : parseFloat(a) - parseFloat(b) };
+      document.getElementById('stackProblem').textContent = `${a} ${op} ${b}`;
+      this.renderGrid();
+    },
+    renderGrid() {
+      const grid = document.getElementById('stackGrid'); grid.innerHTML = '';
+      const aStr = String(this.curr.a).padStart(6, ' '); const bStr = String(this.curr.b).padStart(6, ' ');
+      grid.innerHTML += '<div class="cell label"></div>'; ['100k','10k','1k','100s','10s','1s'].forEach(l => grid.innerHTML += `<div class="cell label">${l}</div>`);
+      grid.innerHTML += '<div class="cell label">Carry</div>'; for(let i=0; i<6; i++) grid.innerHTML += `<div class="cell"><input type="text" class="carry-input" id="s_c_${i}"></div>`;
+      grid.innerHTML += '<div class="cell label">V1</div>'; [...aStr].forEach((c, i) => grid.innerHTML += `<div class="cell strikeable" onclick="this.classList.toggle('struck')">${c}</div>`);
+      grid.innerHTML += `<div class="cell label" style="color:var(--warning); font-size:2rem;">${this.curr.op}</div>`; [...bStr].forEach(c => grid.innerHTML += `<div class="cell">${c}</div>`);
+      grid.innerHTML += '<div class="cell label" style="font-size:2rem;">=</div>'; for(let i=0; i<6; i++) grid.innerHTML += `<div class="cell"><input type="text" class="cell-input" id="s_a_${i}" maxlength="1"></div>`;
+    },
+    check() {
+      let user = ""; for(let i=0; i<6; i++) user += document.getElementById(`s_a_${i}`).value.trim();
+      if (parseFloat(user) == parseFloat(this.curr.ans.toFixed(2))) { app.addStar(); app.state.zones.stack.score = Math.min(5, app.state.zones.stack.score + 1); if(app.state.zones.stack.score >= 5) app.state.zones.stack.done = true; app.autoAdvance('stackOverlay', 'stack'); } else { app.showFeedback("CHECK AGAIN! ❌", "bad"); }
+    }
+  },
+  line: {
+    target: 0, current: 0,
+    init() { if (!this.target) this.newProblem(); },
+    newProblem() { this.current = 0; this.target = rand(5, 25); this.updateUI(); },
+    jump(v) { this.current += v; if (this.current < -10) this.current = -10; if (this.current > 40) this.current = 40; this.updateUI(); },
+    customJump() { const v = parseInt(document.getElementById('customJumpInput').value); if(!isNaN(v)) { this.jump(v); document.getElementById('customJumpInput').value = ''; } },
+    updateUI() {
+      document.getElementById('lineTarget').textContent = this.target; document.getElementById('lineCurrent').textContent = this.current;
+      const svg = document.getElementById('lineSvg'); svg.innerHTML = '<line x1="50" y1="70" x2="950" y2="70" stroke="#cbd5e1" stroke-width="6" stroke-linecap="round" />';
+      for(let i=-10; i<=40; i++) { const x = 50 + (i + 10) * 18; svg.innerHTML += `<line x1="${x}" y1="65" x2="${x}" y2="75" stroke="#94a3b8" stroke-width="3" />`; if (i % 5 === 0) svg.innerHTML += `<text x="${x}" y="105" font-size="14" text-anchor="middle" font-weight="900" fill="#64748b">${i}</text>`; }
+      const tx = 50 + (this.target + 10) * 18; const cx = 50 + (this.current + 10) * 18;
+      svg.innerHTML += `<circle cx="${tx}" cy="70" r="15" fill="var(--success)" opacity="0.4" />`; svg.innerHTML += `<circle cx="${cx}" cy="70" r="12" fill="var(--primary)" />`; svg.innerHTML += `<text x="${cx}" y="45" font-size="16" font-weight="900" text-anchor="middle" fill="var(--primary)">YOU</text>`;
+    },
+    check() { if (this.current === this.target) { app.addStar(); app.state.zones.line.score = Math.min(5, app.state.zones.line.score + 1); if(app.state.zones.line.score >= 5) app.state.zones.line.done = true; app.autoAdvance('lineOverlay', 'line'); } else { app.showFeedback("NOT QUITE! 🧭", "bad"); } }
+  },
+  lab: {
+    ans: 0,
+    init() { if(!this.ans) this.newProblem(); },
+    newProblem() { const a = rand(5, 20); const b = rand(1, 15); this.ans = a; document.getElementById('labEquation').textContent = `? + ${b} = ${a + b}`; document.getElementById('labInput').value = ''; },
+    check() { const v = parseInt(document.getElementById('labInput').value); if (v === this.ans) { app.addStar(); app.state.zones.lab.score = Math.min(5, app.state.zones.lab.score + 1); if(app.state.zones.lab.score >= 5) app.state.zones.lab.done = true; app.autoAdvance('labOverlay', 'lab'); } else { app.showFeedback("TRY AGAIN! 🧪", "bad"); } }
+  },
+  story: {
+    ans: 0,
+    init() { if(!this.ans) this.newProblem(); },
+    newProblem() { const s = [ { t: "Ava has 22 marbles. She loses 9. How many are left?", a: 13, s: "I need to subtract." }, { t: "A garden has 15 roses and 12 lilies. How many total flowers?", a: 27, s: "I need to add." }, { t: "Max had 40 coins. He spent 15 on a toy. How many coins left?", a: 25, s: "I need to subtract." } ]; const q = s[rand(0, s.length - 1)]; this.ans = q.a; document.getElementById('storyText').textContent = q.t; document.getElementById('storyStarter').textContent = q.s; document.getElementById('storyInput').value = ''; },
+    check() { const v = parseInt(document.getElementById('storyInput').value); if (v === this.ans) { app.addStar(); app.state.zones.story.score = Math.min(5, app.state.zones.story.score + 1); if(app.state.zones.story.score >= 5) app.state.zones.story.done = true; app.autoAdvance('storyOverlay', 'story'); } else { app.showFeedback("CHECK STORY! 📖", "bad"); } },
+    speak() { const u = new SpeechSynthesisUtterance(document.getElementById('storyText').textContent); u.rate = 0.85; window.speechSynthesis.speak(u); }
+  },
+  repair: {
+    ans: 0, type: "",
+    init() { if(!this.ans) this.newProblem(); },
+    newProblem() { const e = [ { p: "20 + 20 = 50", a: 40, t: "calc" }, { p: "100 - 10 = 110", a: 90, t: "op" }, { p: "35 + 5 = 30", a: 40, t: "op" }, { p: "12 + 12 = 25", a: 24, t: "calc" }, { p: "50 - 20 = 70", a: 30, t: "op" } ]; const q = e[rand(0, e.length - 1)]; this.ans = q.a; this.type = q.t; document.getElementById('repairProblem').textContent = q.p + " ❌"; document.getElementById('repairType').value = ''; document.getElementById('repairInput').value = ''; },
+    check() { const t = document.getElementById('repairType').value; const v = parseInt(document.getElementById('repairInput').value); if (t === this.type && v === this.ans) { app.addStar(); app.state.zones.repair.score = Math.min(5, app.state.zones.repair.score + 1); if(app.state.zones.repair.score >= 5) app.state.zones.repair.done = true; app.autoAdvance('repairOverlay', 'repair'); } else { app.showFeedback("STILL BROKEN! 🛠️", "bad"); } }
+  },
+  boss: {
+    h: 3, r: 0, ans: 0,
+    init() { if(!this.ans) this.newProblem(); },
+    newProblem() { const a = rand(10, 50); const b = rand(5, 20); const op = Math.random() > 0.5 ? '+' : '-'; this.ans = op === '+' ? a + b : a - b; document.getElementById('bossProblem').textContent = `${a} ${op} ${b} = ?`; document.getElementById('bossInput').value = ''; },
+    check() { const v = parseInt(document.getElementById('bossInput').value); if (v === this.ans) { this.r++; app.addStar(20); if (this.r >= 5) { app.state.zones.boss.done = true; app.state.zones.boss.score = 5; alert("DRAGON DEFEATED! 🏆"); app.setPanel('report'); } else { this.newProblem(); } } else { this.h--; app.showFeedback("BLOCKED! 🐲", "bad"); if (this.h <= 0) { alert("FAILED! Retrying..."); this.h = 3; this.r = 0; this.newProblem(); } } this.updateUI(); },
+    updateUI() { document.getElementById('bossHealth').textContent = "❤️".repeat(this.h); document.getElementById('bossRound').textContent = `${this.r}/5`; }
+  }
+};
+
+function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+window.onload = () => app.init();
+</script>
+</body>
+</html>
