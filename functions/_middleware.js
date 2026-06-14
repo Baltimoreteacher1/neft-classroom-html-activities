@@ -28,21 +28,34 @@ export async function onRequest(context) {
   // Never gate the API endpoints or lesson config JSON files — they have their own auth
   // or are fetched by external automation (like Google Apps Script slide generator).
   const url = new URL(request.url);
-  if (url.pathname.startsWith('/api/') || url.pathname.endsWith('/config.json')) return next();
+  if (url.pathname.startsWith("/api/") || url.pathname.endsWith("/config.json"))
+    return next();
 
-  const header = request.headers.get('Authorization') || '';
-  const [scheme, encoded] = header.split(' ');
+  // Public, student-facing pages that must work WITHOUT the class password so
+  // they can be posted directly to students. Keep this list exact — the teacher
+  // setup page (.../teacher/) is intentionally NOT here and stays gated.
+  const PUBLIC_PATHS = new Set([
+    "/curriculum/student-digital-mailbox",
+    "/curriculum/student-digital-mailbox/",
+    "/curriculum/student-digital-mailbox/index.html",
+    "/curriculum/student-digital-mailbox/mailbox.css",
+    "/curriculum/student-digital-mailbox/mailbox-links.js",
+  ]);
+  if (PUBLIC_PATHS.has(url.pathname)) return next();
 
-  if (scheme === 'Basic' && encoded) {
+  const header = request.headers.get("Authorization") || "";
+  const [scheme, encoded] = header.split(" ");
+
+  if (scheme === "Basic" && encoded) {
     const decoded = atob(encoded);
-    const supplied = decoded.slice(decoded.indexOf(':') + 1);
+    const supplied = decoded.slice(decoded.indexOf(":") + 1);
     if (supplied === password) return next(); // correct password -> allow
   }
 
-  return new Response('Authentication required.', {
+  return new Response("Authentication required.", {
     status: 401,
     headers: {
-      'WWW-Authenticate': 'Basic realm="EduWonderLab", charset="UTF-8"',
+      "WWW-Authenticate": 'Basic realm="EduWonderLab", charset="UTF-8"',
     },
   });
 }
