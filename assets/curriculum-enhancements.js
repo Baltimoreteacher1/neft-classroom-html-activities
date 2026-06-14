@@ -886,10 +886,41 @@
     scheduleEnhance();
   }
 
+  function updateResultCount() {
+    var el = document.getElementById("result-count");
+    if (!el || !hubApi || !hubApi.unitsData) return;
+    var q = (hubApi.searchBox && hubApi.searchBox.value) || "";
+    var total = hubApi.unitsData.reduce(function (n, u) {
+      return n + (u.lessons ? u.lessons.length : 0);
+    }, 0);
+    if (!q.trim() && activeFilter === FILTER_ALL) {
+      el.textContent =
+        total + " lessons across " + hubApi.unitsData.length + " units";
+      return;
+    }
+    var filtered = filterUnitsData(hubApi.unitsData, q, activeFilter);
+    var shown = filtered.reduce(function (n, u) {
+      return n + (u.lessons ? u.lessons.length : 0);
+    }, 0);
+    el.textContent = shown
+      ? "Showing " +
+        shown +
+        " of " +
+        total +
+        " lesson" +
+        (shown === 1 ? "" : "s") +
+        " in " +
+        filtered.length +
+        " unit" +
+        (filtered.length === 1 ? "" : "s")
+      : "No lessons match — try a different word or standard.";
+  }
+
   function runSearch() {
     if (!hubApi || !hubApi.searchBox) return;
     var q = (hubApi.searchBox.value || "").trim().toLowerCase();
     if (q.length === 1) return;
+    updateResultCount();
     if (q) {
       hubApi.renderSearchResults(q);
     } else if (activeFilter !== FILTER_ALL) {
@@ -1186,6 +1217,8 @@
         searchTimer = setTimeout(runSearch, 120);
       });
     }
+
+    updateResultCount();
 
     var observer = new MutationObserver(function () {
       patchStaticGoogleSlidesLinks();
