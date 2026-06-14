@@ -2,6 +2,7 @@
   const DATA = window.ACCESS_LAB_DATA;
   const $ = (id) => document.getElementById(id);
   const storagePrefix = "accessPracticeLab:v1";
+  const BUILD = "20260613-r6"; // bump with the app.js ?v= query on each release
 
   // Official WIDA-style Google Forms (student RESPONSE links).
   //
@@ -155,6 +156,21 @@
         }
       }
     }
+  })();
+
+  // ── visible build stamp so a stale cache is obvious (loaded build + activity count) ──
+  (function setBuildStamp() {
+    let total = 0;
+    for (const d of Object.values(DATA.domains))
+      for (const L of Object.values(d.levels))
+        total += (L.activities || []).length;
+    const set = () => {
+      const el = document.getElementById("labBuild");
+      if (el)
+        el.textContent = `ACCESS Practice Lab · build ${BUILD} · ${total} activities loaded`;
+    };
+    if (document.readyState !== "loading") set();
+    else document.addEventListener("DOMContentLoaded", set);
   })();
 
   // ── v9 content module: QA + WIDA-alignment field patches (Object.assign by id) ──
