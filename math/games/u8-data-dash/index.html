@@ -3,358 +3,112 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Data Dash — Lessons 8.1–8.7 Game | Neft Teacher</title>
+    <title>Data Dash — Mean, Median &amp; Range Catcher | Neft Teacher</title>
     <meta
       name="description"
-      content="Arcade review game for Grade 6 lessons 8.1–8.7: mean, median, and range of data sets (6.SP)."
+      content="A 2D catcher game for Grade 6 lessons 8.1-8.7 (6.SP): compute the mean, median, and range of a data set, then slide your collector cart to catch the falling answer tile."
     />
-    <link rel="stylesheet" href="/assets/shared.css" />
     <style>
-      :root {
-        --navy: #0f2b3c;
-        --blue: #1a6fb5;
-        --teal: #0e8a7d;
-        --gold: #d4952a;
-        --coral: #c45a3c;
-        --green: #2d874b;
-        --ink: #1a2633;
-        --muted: #5e6e7e;
-        --line: #e2e7ec;
-        --bg: #f7f9fb;
-        --font: "Segoe UI", system-ui, sans-serif;
-      }
       * {
+        margin: 0;
+        padding: 0;
         box-sizing: border-box;
       }
       body {
-        margin: 0;
-        font-family: var(--font);
-        color: var(--ink);
-        background: var(--bg);
-        line-height: 1.5;
-      }
-      .wrap {
-        max-width: 680px;
-        margin: 0 auto;
-        padding: 0 18px 60px;
-      }
-      .ghero {
-        background: linear-gradient(135deg, #1a3fb5, #0e7a8a);
-        color: #fff;
-        text-align: center;
-        padding: 30px 20px 26px;
-        position: relative;
+        background: #06141f;
         overflow: hidden;
+        font-family: "Segoe UI", system-ui, sans-serif;
       }
-      .ghero > .deco,
-      .ghero > h1,
-      .ghero > p {
+      canvas {
+        display: block;
+        margin: 0 auto;
         position: relative;
         z-index: 1;
       }
-      .ghero .deco {
-        font-size: 48px;
+      canvas:focus-visible {
+        outline: 3px solid #2bd1c4;
+        outline-offset: 4px;
+        border-radius: 8px;
       }
-      .ghero h1 {
-        margin: 8px 0 6px;
-        font-size: clamp(24px, 5vw, 34px);
+      canvas:focus:not(:focus-visible) {
+        outline: none;
       }
-      .ghero p {
-        margin: 0 auto;
-        max-width: 520px;
-        color: rgba(255, 255, 255, 0.9);
-      }
-      .breadcrumb {
-        font-size: 13px;
-        padding: 14px 0;
-        color: var(--muted);
-      }
-      .breadcrumb a {
-        color: var(--blue);
-        text-decoration: none;
-        font-weight: 600;
-      }
-      .hud {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        background: #fff;
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 12px 16px;
-        margin: 18px 0;
-        font-weight: 800;
-        box-shadow: 0 2px 10px rgba(15, 43, 60, 0.06);
-      }
-      .hud .lbl {
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        color: var(--muted);
-        display: block;
-      }
-      .hud .val {
-        font-size: 22px;
-      }
-      .hearts {
-        color: var(--coral);
-        letter-spacing: 2px;
-      }
-      .card {
-        background: #fff;
-        border: 1px solid var(--line);
-        border-radius: 18px;
-        padding: 26px 22px;
-        box-shadow: 0 6px 22px rgba(15, 43, 60, 0.08);
-        text-align: center;
-      }
-      .mode-tag {
-        font-size: 12px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--teal);
-      }
-      .prompt {
-        font-size: clamp(22px, 5vw, 30px);
-        font-weight: 800;
-        margin: 8px 0 4px;
-      }
-      .sub {
-        color: var(--muted);
-        margin: 0 0 18px;
-      }
-      .opts {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
-      @media (max-width: 460px) {
-        .opts {
-          grid-template-columns: 1fr;
-        }
-      }
-      .opt {
-        padding: 16px;
-        border: 2px solid var(--line);
-        border-radius: 14px;
-        background: #fff;
-        font-size: 20px;
-        font-weight: 800;
-        cursor: pointer;
-        font-family: inherit;
-        color: var(--ink);
-        transition:
-          transform 0.06s,
-          border-color 0.15s;
-      }
-      .opt:hover {
-        border-color: var(--blue);
-      }
-      .opt:focus-visible {
-        outline: 3px solid var(--blue);
-        outline-offset: 2px;
-        border-color: var(--blue);
-      }
-      .opt:active {
-        transform: scale(0.97);
-      }
-      .opt.right {
-        border-color: var(--green);
-        background: #e6f4eb;
-        color: var(--green);
-        animation: pop 0.3s;
-      }
-      .opt.wrong {
-        border-color: var(--coral);
-        background: #fdeee9;
-        color: var(--coral);
-        animation: shake 0.3s;
-      }
-      @keyframes pop {
-        50% {
-          transform: scale(1.06);
-        }
-      }
-      @keyframes shake {
-        25% {
-          transform: translateX(-6px);
-        }
-        75% {
-          transform: translateX(6px);
-        }
-      }
-      .feedback {
-        min-height: 26px;
-        margin-top: 16px;
-        font-weight: 800;
-      }
-      .feedback.ok {
-        color: var(--green);
-      }
-      .feedback.no {
-        color: var(--coral);
-      }
-      .btn {
-        background: var(--blue);
-        color: #fff;
-        border: none;
-        border-radius: 12px;
-        padding: 13px 26px;
-        font-size: 16px;
-        font-weight: 800;
-        cursor: pointer;
-        font-family: inherit;
-        margin-top: 8px;
-      }
-      .btn:hover {
-        filter: brightness(1.08);
-      }
-      .btn.start {
-        background: var(--teal);
-        font-size: 18px;
-        padding: 15px 34px;
-      }
-      .bar {
-        height: 10px;
-        background: var(--line);
-        border-radius: 50px;
+      /* Decorative animated chart-bar field behind the Phaser canvas. */
+      #dd-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
         overflow: hidden;
-        margin: 14px 0 2px;
+        pointer-events: none;
+        background: radial-gradient(
+          130% 90% at 50% 0%,
+          #103048 0%,
+          #0a1c2c 55%,
+          #050d16 100%
+        );
       }
-      .bar > div {
-        height: 100%;
-        width: 100%;
-        background: linear-gradient(90deg, var(--gold), var(--coral));
-        transition: width 0.25s linear;
+      #dd-bg-layer {
+        position: absolute;
+        inset: -6% -6%;
+        will-change: transform;
+        transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
       }
-      .hidden {
-        display: none;
+      .dd-bar {
+        position: absolute;
+        bottom: 0;
+        border-radius: 4px 4px 0 0;
+        opacity: 0.4;
+        animation: ddPulse var(--p, 4s) ease-in-out infinite;
       }
-      .big-score {
-        font-size: 52px;
-        font-weight: 900;
-        color: var(--blue);
-        margin: 6px 0;
-      }
-      .legend {
-        font-size: 13px;
-        color: var(--muted);
-        margin-top: 18px;
-      }
-      .legend a {
-        color: var(--blue);
-        font-weight: 700;
-      }
-      ul.modes {
-        text-align: left;
-        max-width: 430px;
-        margin: 14px auto;
-        color: var(--muted);
-        font-size: 15px;
-      }
-      /* --- bespoke: inline data visualization --- */
-      .dataviz {
-        margin: 14px auto 4px;
-        max-width: 460px;
-      }
-      .dataviz svg {
-        display: block;
-        width: 100%;
-        height: auto;
-      }
-      .viz-bar {
-        fill: var(--blue);
-      }
-      .viz-bar-label {
-        font: 700 12px var(--font);
-        fill: var(--ink);
-      }
-      .viz-base {
-        stroke: var(--line);
-        stroke-width: 1.5;
-      }
-      /* colored marker lines that draw in for the stat being asked */
-      .viz-marker {
-        stroke-width: 2.5;
-        stroke-dasharray: 4 3;
-        opacity: 0;
-      }
-      .viz-dot {
-        fill: var(--navy);
-      }
-      .viz-axis {
-        font: 600 10px var(--font);
-        fill: var(--muted);
-      }
-      /* colored glyphs: mean (teal), median (gold), range (coral) */
-      .stat-glyph {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-weight: 800;
-      }
-      .glyph-chip {
-        display: inline-grid;
-        place-items: center;
-        width: 22px;
-        height: 22px;
-        border-radius: 7px;
-        color: #fff;
-        font-size: 13px;
-        line-height: 1;
-      }
-      .glyph-mean {
-        background: var(--teal);
-      }
-      .glyph-median {
-        background: var(--gold);
-      }
-      .glyph-range {
-        background: var(--coral);
-      }
-      .feedback .chose {
-        display: block;
-        font-weight: 700;
-        font-size: 14px;
-        color: var(--muted);
-        margin-top: 6px;
-      }
-      @media (prefers-reduced-motion: no-preference) {
-        .dataviz .viz-bar {
-          transform-box: fill-box;
-          transform-origin: bottom;
-          animation: vizGrow 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      @keyframes ddPulse {
+        0%,
+        100% {
+          opacity: 0.22;
         }
-        .dataviz.show-marker .viz-marker {
-          animation: vizMark 0.5s ease forwards;
+        50% {
+          opacity: 0.5;
         }
       }
-      @keyframes vizGrow {
-        from {
-          transform: scaleY(0.02);
-        }
-        to {
-          transform: scaleY(1);
-        }
-      }
-      @keyframes vizMark {
-        from {
-          opacity: 0;
-          stroke-dashoffset: 12;
-        }
-        to {
-          opacity: 1;
-          stroke-dashoffset: 0;
-        }
-      }
-      /* score increment count-up: marker shown immediately when reduced motion */
       @media (prefers-reduced-motion: reduce) {
-        .dataviz.show-marker .viz-marker {
-          opacity: 1;
+        #dd-bg-layer {
+          transition: none !important;
+          transform: none !important;
         }
+        .dd-bar {
+          animation: none !important;
+          opacity: 0.34 !important;
+        }
+      }
+      #dd-sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
       }
     </style>
+    <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
+    <script>
+      // CDN fallback: if the local vendor copy failed, synchronously load Phaser
+      // from a mirror (document.write blocks parsing so the mirror is ready
+      // before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      // If both sources are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#bfe9ff">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
@@ -363,715 +117,958 @@
     <!-- gfx-injected:end -->
   </head>
   <body>
-    <header class="ghero" data-parallax>
-      <div
-        class="deco"
-        data-parallax-layer
-        aria-hidden="true"
-        style="
-          position: absolute;
-          inset: 0;
-          font-size: 48px;
-          pointer-events: none;
-          opacity: 0.16;
-          display: flex;
-          align-items: center;
-          justify-content: space-around;
-        "
-      >
-        <span>📈</span><span>📉</span><span>📊</span>
-      </div>
-      <div class="deco">📊</div>
-      <h1>Data Dash</h1>
-      <p>Race the clock on mean, median, and range of real data sets.</p>
-    </header>
-    <div class="wrap">
-      <nav class="breadcrumb">
-        <a href="/">Home</a> / <a href="/math/">Math</a> /
-        <a href="/math/games/">Games</a> / Data Dash
-      </nav>
-
-      <section class="card" id="startScreen">
-        <p class="mode-tag">Lessons 8.1–8.7 · 6.SP</p>
-        <h2 style="margin: 6px 0">Ready to dash?</h2>
-        <ul class="modes">
-          <li>
-            <strong>Round 1 — Mean.</strong> Find the average of a set of whole
-            numbers.
-          </li>
-          <li>
-            <strong>Round 2 — Median.</strong> Find the middle value of a sorted
-            data set.
-          </li>
-          <li>
-            <strong>Round 3 — Range.</strong> Find the difference between the
-            max and min.
-          </li>
-        </ul>
-        <p class="sub">
-          You have <strong>3 ❤</strong> and a timer on each question. Build a
-          streak for bonus points!
-        </p>
-        <button class="btn start" id="startBtn" type="button">
-          Start Game ▶
-        </button>
-      </section>
-
-      <section id="playScreen" class="hidden">
-        <div class="hud">
-          <div>
-            <span class="lbl">Score</span><span class="val" id="score">0</span>
-          </div>
-          <div>
-            <span class="lbl">Streak</span
-            ><span class="val" id="streak">0</span>
-          </div>
-          <div>
-            <span class="lbl">Lives</span
-            ><span class="val hearts" id="lives">❤❤❤</span>
-          </div>
-          <div>
-            <span class="lbl">Question</span
-            ><span class="val" id="qnum">1</span>
-          </div>
-        </div>
-        <div class="bar"><div id="timebar"></div></div>
-        <div class="card" style="margin-top: 14px">
-          <span class="mode-tag" id="modeTag"></span>
-          <div class="prompt" id="prompt"></div>
-          <p class="sub" id="sub"></p>
-          <div class="dataviz" id="dataviz"></div>
-          <div class="opts" id="opts"></div>
-          <div class="feedback" id="feedback"></div>
-          <button class="btn hidden" id="nextBtn" type="button">Next ▶</button>
-        </div>
-      </section>
-
-      <section class="card hidden" id="resultScreen">
-        <p class="mode-tag">Game Over</p>
-        <div class="big-score" id="finalScore">0</div>
-        <p id="resultMsg" style="font-weight: 700"></p>
-        <p class="sub" id="resultDetail"></p>
-        <button class="btn start" id="againBtn" type="button">
-          Play Again 🔁
-        </button>
-        <p class="legend">
-          More review:
-          <a href="/math/review-arcade/">Boss-Battle Review Arcade</a> ·
-          <a href="/math/games/">All Games</a>
-        </p>
-      </section>
+    <!-- Decorative animated chart-bar field (behind the Phaser canvas). -->
+    <div id="dd-bg" data-parallax aria-hidden="true">
+      <div id="dd-bg-layer" data-parallax-layer></div>
     </div>
+    <!-- Screen-reader live region mirrors the current question + result. -->
+    <div id="dd-sr" role="status" aria-live="polite"></div>
 
-    <!-- validator-compat: Volume Blast 📦 6.G.2 Lessons 10.1 -->
     <script>
-      function rnd(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-      }
+      // Decorative chart-bar builder + pointer parallax (gameplay-neutral).
+      (function () {
+        var layer = document.getElementById("dd-bg-layer");
+        if (!layer) return;
+        var reduce =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var colors = ["#1a6fb5", "#0e8a7d", "#d4952a", "#2d874b", "#2bd1c4"];
+        var frag = document.createDocumentFragment();
+        var n = Math.max(14, Math.round((window.innerWidth || 900) / 60));
+        for (var i = 0; i < n; i++) {
+          var b = document.createElement("div");
+          b.className = "dd-bar";
+          var w = 22 + Math.random() * 26;
+          b.style.width = w + "px";
+          b.style.height = 30 + Math.random() * 220 + "px";
+          b.style.left = (i / n) * 100 + Math.random() * 2 + "%";
+          b.style.background = colors[(Math.random() * colors.length) | 0];
+          b.style.setProperty("--p", (3 + Math.random() * 4).toFixed(2) + "s");
+          b.style.animationDelay = (-Math.random() * 5).toFixed(2) + "s";
+          frag.appendChild(b);
+        }
+        layer.appendChild(frag);
+        if (reduce) return;
+        window.addEventListener(
+          "pointermove",
+          function (e) {
+            var tx = (e.clientX / window.innerWidth - 0.5) * -22;
+            var ty = (e.clientY / window.innerHeight - 0.5) * -14;
+            layer.style.transform =
+              "translate3d(" + tx + "px," + ty + "px,0)";
+          },
+          { passive: true },
+        );
+      })();
+    </script>
+
+    <script>
+      // ════════════════════════════════════════════════════════════════════
+      //  DATA DASH — STAT CATCHER   ·   Lessons 8.1-8.7 · 6.SP
+      //  True 2D mechanic: a data set is shown; four answer tiles fall from the
+      //  top; slide your collector cart (← → / pointer) to CATCH the tile that
+      //  equals the requested statistic (mean, median, or range). Catch a wrong
+      //  tile or let the correct one hit the floor = lose a life.
+      //  Rising difficulty: Round 1 mean → Round 2 median (ODD sets) →
+      //  Round 3 range; faster drops + larger data sets at higher levels.
+      // ════════════════════════════════════════════════════════════════════
+      const W = 900,
+        H = 620;
+
+      const C = {
+        bg: 0x0a1c2c,
+        panel: 0x10283c,
+        panelEdge: 0x244a63,
+        ink: "#eaf6ff",
+        sub: "#9cc4dd",
+        accent: 0x2bd1c4,
+        good: 0x4fd18b,
+        bad: 0xff6b6b,
+        gold: 0xffcd4d,
+        mean: 0x0e8a7d,
+        median: 0xd4952a,
+        range: 0xc45a3c,
+        cart: 0x2bd1c4,
+        tile: 0x163a52,
+      };
+
+      const STAT_INFO = {
+        mean: { label: "MEAN", color: C.mean, hint: "Add all values, then divide by how many there are." },
+        median: { label: "MEDIAN", color: C.median, hint: "Sort the values; the median is the middle one." },
+        range: { label: "RANGE", color: C.range, hint: "Range = greatest value − least value." },
+      };
+
+      const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+      const choice = (arr) => arr[Math.floor(Math.random() * arr.length)];
       function shuffle(a) {
-        for (var i = a.length - 1; i > 0; i--) {
-          var j = Math.floor(Math.random() * (i + 1));
-          var t = a[i];
-          a[i] = a[j];
-          a[j] = t;
+        a = a.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
         }
         return a;
       }
+      const VV_RM_QUERY =
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)");
+      const reducedMotion = () => !!(VV_RM_QUERY && VV_RM_QUERY.matches);
 
-      var TOTAL = 12,
-        TIME = 12;
-      var state = {};
+      const TOTAL_LEVELS = 3;
+      const ROUNDS_PER_LEVEL = 4; // catches needed to clear a level
+      const START_LIVES = 3;
 
-      function prefersReducedMotion() {
-        return (
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        );
-      }
+      // ── Question generators (exported on window for stress testing) ──
 
-      // Colored glyph chips: mean=teal Σ̄, median=gold |, range=coral ↔
-      var GLYPHS = {
-        mean: { cls: "glyph-mean", sym: "x̄", color: "#0e8a7d", label: "mean" },
-        median: {
-          cls: "glyph-median",
-          sym: "|",
-          color: "#d4952a",
-          label: "median",
-        },
-        range: {
-          cls: "glyph-range",
-          sym: "↔",
-          color: "#c45a3c",
-          label: "range",
-        },
-      };
-
-      function svgEl(name, attrs) {
-        var el = document.createElementNS("http://www.w3.org/2000/svg", name);
-        for (var k in attrs) el.setAttribute(k, attrs[k]);
-        return el;
-      }
-
-      // Render an inline bar chart of the data set, with a colored marker
-      // line for the stat being asked (mean / median / range span).
-      function renderViz(q) {
-        var host = document.getElementById("dataviz");
-        host.innerHTML = "";
-        host.classList.remove("show-marker");
-        if (!q || !q.nums || !q.nums.length) return;
-        var nums = q.nums;
-        var W = 460,
-          H = 150,
-          padX = 14,
-          padTop = 14,
-          baseY = 120;
-        var maxV = Math.max.apply(null, nums);
-        var n = nums.length;
-        var gap = 10;
-        var bw = (W - padX * 2 - gap * (n - 1)) / n;
-        var scale = (baseY - padTop) / (maxV || 1);
-        var svg = svgEl("svg", {
-          viewBox: "0 0 " + W + " " + H,
-          role: "img",
-          "aria-label": q.statType + " data chart of values " + nums.join(", "),
-        });
-        // baseline
-        svg.appendChild(
-          svgEl("line", {
-            x1: padX,
-            y1: baseY,
-            x2: W - padX,
-            y2: baseY,
-            class: "viz-base",
-          }),
-        );
-        // bars + value labels
-        for (var i = 0; i < n; i++) {
-          var v = nums[i];
-          var h = Math.max(2, v * scale);
-          var x = padX + i * (bw + gap);
-          var y = baseY - h;
-          var bar = svgEl("rect", {
-            x: x,
-            y: y,
-            width: bw,
-            height: h,
-            rx: 3,
-            class: "viz-bar",
-          });
-          bar.style.animationDelay = i * 0.05 + "s";
-          svg.appendChild(bar);
-          var lbl = svgEl("text", {
-            x: x + bw / 2,
-            y: y - 5,
-            "text-anchor": "middle",
-            class: "viz-bar-label",
-          });
-          lbl.textContent = v;
-          svg.appendChild(lbl);
-        }
-        // colored stat marker
-        var g = GLYPHS[q.statType];
-        if (q.statType === "range") {
-          // draw a coral span bracket from min to max along the baseline
-          var yMark = baseY + 16;
-          // find x-centers of min and max bars
-          var minIdx = nums.indexOf(q.statMin),
-            maxIdx = nums.indexOf(q.statMax);
-          var cx = function (idx) {
-            return padX + idx * (bw + gap) + bw / 2;
-          };
-          var mk = svgEl("line", {
-            x1: cx(minIdx),
-            y1: yMark,
-            x2: cx(maxIdx),
-            y2: yMark,
-            stroke: g.color,
-            class: "viz-marker",
-          });
-          svg.appendChild(mk);
-          var t = svgEl("text", {
-            x: (cx(minIdx) + cx(maxIdx)) / 2,
-            y: yMark + 14,
-            "text-anchor": "middle",
-            class: "viz-axis",
-            fill: g.color,
-          });
-          t.textContent = "range = " + q.statVal;
-          svg.appendChild(t);
-        } else {
-          // horizontal dashed line at the stat value (mean or median)
-          var yv = baseY - q.statVal * scale;
-          var mk2 = svgEl("line", {
-            x1: padX,
-            y1: yv,
-            x2: W - padX,
-            y2: yv,
-            stroke: g.color,
-            class: "viz-marker",
-          });
-          svg.appendChild(mk2);
-          var t2 = svgEl("text", {
-            x: W - padX,
-            y: yv - 4,
-            "text-anchor": "end",
-            class: "viz-axis",
-            fill: g.color,
-          });
-          t2.textContent = g.label + " = " + q.statVal;
-          svg.appendChild(t2);
-        }
-        host.appendChild(svg);
-      }
-
-      // reveal the colored stat marker (called after an answer)
-      function revealVizMarker() {
-        document.getElementById("dataviz").classList.add("show-marker");
-      }
-
-      // build a colored glyph chip + text for feedback
-      function glyphHTML(statType) {
-        var g = GLYPHS[statType];
-        if (!g) return "";
-        return (
-          '<span class="stat-glyph"><span class="glyph-chip ' +
-          g.cls +
-          '">' +
-          g.sym +
-          "</span>" +
-          g.label +
-          "</span>"
-        );
-      }
-
-      // eased count-up animation for the score (cubic ease-out)
-      function animateScore(from, to) {
-        var el = document.getElementById("score");
-        if (from === to) {
-          el.textContent = to;
-          return;
-        }
-        if (prefersReducedMotion()) {
-          el.textContent = to;
-          return;
-        }
-        var dur = 420,
-          start = null;
-        function ease(t) {
-          return 1 - Math.pow(1 - t, 3);
-        }
-        function step(ts) {
-          if (start === null) start = ts;
-          var p = Math.min(1, (ts - start) / dur);
-          el.textContent = Math.round(from + (to - from) * ease(p));
-          if (p < 1) requestAnimationFrame(step);
-          else el.textContent = to;
-        }
-        requestAnimationFrame(step);
-      }
-
-      function distinctOpts(correct, makeWrong, fmt) {
-        var set = {};
-        set[fmt(correct)] = true;
-        var opts = [fmt(correct)];
-        var guard = 0;
-        while (opts.length < 4 && guard < 50) {
+      // MEAN: choose a whole-number target mean and a count, build values that
+      // sum to mean*count so the mean is always an exact integer.
+      function buildMeanQuestion(level) {
+        const count = level === 0 ? 4 : level === 1 ? 5 : 6;
+        const mean = randInt(4, 14);
+        let nums, total, computed;
+        let guard = 0;
+        do {
+          nums = [];
+          let offsetSum = 0;
+          for (let k = 0; k < count - 1; k++) {
+            const delta = randInt(-3, 3);
+            nums.push(mean + delta);
+            offsetSum += delta;
+          }
+          nums.push(mean - offsetSum); // corrects the sum so total = mean*count
+          total = nums.reduce((a, b) => a + b, 0);
+          computed = total / count;
           guard++;
-          var w = makeWrong();
-          var k = fmt(w);
-          if (!set[k]) {
-            set[k] = true;
-            opts.push(k);
+        } while (
+          (nums.some((v) => v < 1) || computed !== Math.floor(computed)) &&
+          guard < 40
+        );
+        if (nums.some((v) => v < 1) || computed !== Math.floor(computed)) {
+          // deterministic fallback (always integer mean, all positive)
+          nums = [];
+          for (let k = 0; k < count; k++) nums.push(mean);
+          total = mean * count;
+          computed = mean;
+        }
+        return finishQuestion("mean", nums, computed,
+          "Sum = " + total + "; " + total + " ÷ " + count + " = " + computed + ".");
+      }
+
+      // MEDIAN: ODD-length set (5 or 7), distinct values, answer = middle.
+      function buildMedianQuestion(level) {
+        const count = level <= 1 ? 5 : 7; // always odd
+        const seen = {};
+        const nums = [];
+        while (nums.length < count) {
+          const v = randInt(1, 24);
+          if (!seen[v]) {
+            seen[v] = true;
+            nums.push(v);
           }
         }
-        var pad = 1;
-        while (opts.length < 4) {
-          var ek = fmt(correct + pad * 2 + 1);
-          if (!set[ek]) {
-            set[ek] = true;
-            opts.push(ek);
+        const sorted = nums.slice().sort((a, b) => a - b);
+        const median = sorted[(count - 1) / 2];
+        return finishQuestion("median", nums, median,
+          "Sorted: " + sorted.join(", ") + ". Middle value = " + median + ".");
+      }
+
+      // RANGE: distinct values; answer = max - min.
+      function buildRangeQuestion(level) {
+        const count = level === 0 ? 4 : level === 1 ? 5 : 6;
+        const seen = {};
+        const nums = [];
+        while (nums.length < count) {
+          const v = randInt(1, 28);
+          if (!seen[v]) {
+            seen[v] = true;
+            nums.push(v);
+          }
+        }
+        const mn = Math.min.apply(null, nums);
+        const mx = Math.max.apply(null, nums);
+        const range = mx - mn;
+        return finishQuestion("range", nums, range,
+          "Max = " + mx + ", Min = " + mn + "; " + mx + " − " + mn + " = " + range + ".");
+      }
+
+      // Build four DISTINCT integer answer tiles, exactly one correct.
+      function finishQuestion(statType, nums, answer, why) {
+        const seen = {};
+        seen[answer] = true;
+        const tiles = [answer];
+        let guard = 0;
+        while (tiles.length < 4 && guard < 60) {
+          guard++;
+          const sign = Math.random() < 0.5 ? 1 : -1;
+          let cand = answer + randInt(1, 5) * sign;
+          if (cand < 0) cand = answer + randInt(1, 5); // keep non-negative
+          if (!seen[cand]) {
+            seen[cand] = true;
+            tiles.push(cand);
+          }
+        }
+        // deterministic padding so we always render 4 distinct tiles
+        let pad = 1;
+        while (tiles.length < 4) {
+          const cand = answer + pad;
+          if (!seen[cand]) {
+            seen[cand] = true;
+            tiles.push(cand);
           }
           pad++;
         }
-        return { opts: shuffle(opts), correct: fmt(correct) };
-      }
-
-      // MEAN questions: pick a target mean and count, then build numbers around it
-      function buildMeanQuestion() {
-        // guaranteed-integer approach: pick mean and count, generate (count-1) random offsets
-        // that sum to 0 (some +delta, some -delta), then all values = mean ± delta
-        var count = Math.random() < 0.5 ? 4 : 5;
-        var mean = rnd(4, 14); // target mean
-        var nums = [];
-        // generate (count-1) values as mean + offset, track offset sum
-        var offsetSum = 0;
-        for (var k = 0; k < count - 1; k++) {
-          var delta = rnd(-3, 3);
-          nums.push(mean + delta);
-          offsetSum += delta;
-        }
-        // last value corrects the offset so total sum = mean * count
-        nums.push(mean - offsetSum);
-        // verify all positive
-        var allPos = true;
-        for (var k = 0; k < nums.length; k++) {
-          if (nums[k] < 1) {
-            allPos = false;
-            break;
-          }
-        }
-        if (!allPos) {
-          // fallback: simple evenly-spaced set
-          if (count === 4) {
-            nums = [mean - 3, mean - 1, mean + 1, mean + 3];
-          } else {
-            nums = [mean - 4, mean - 2, mean, mean + 2, mean + 4];
-          }
-        }
-        var total = 0;
-        for (var k = 0; k < nums.length; k++) total += nums[k];
-        var computedMean = total / count;
-        // safety check
-        if (computedMean !== Math.floor(computedMean) || computedMean < 1) {
-          nums = [4, 6, 8, 10];
-          count = 4;
-          total = 28;
-          mean = 7;
-          computedMean = 7;
-        }
-        var setStr = nums.join(", ");
-        var finalMean = computedMean;
-        var finalTotal = total;
-        var finalCount = count;
-        var o = distinctOpts(
-          finalMean,
-          function () {
-            return finalMean + rnd(1, 4) * (Math.random() < 0.5 ? 1 : -1);
-          },
-          String,
-        );
         return {
-          tag: "Mean",
-          statType: "mean",
+          statType: statType,
           nums: nums.slice(),
-          statVal: finalMean,
-          prompt: "Mean of " + setStr + " = ?",
-          sub:
-            "Add all values, then divide by the count (" +
-            finalCount +
-            " numbers).",
-          opts: o.opts,
-          correct: o.correct,
-          why:
-            "Sum = " +
-            finalTotal +
-            "; " +
-            finalTotal +
-            " ÷ " +
-            finalCount +
-            " = " +
-            finalMean +
-            ".",
+          answer: answer,
+          tiles: shuffle(tiles),
+          why: why,
         };
       }
 
-      function buildMedianQuestion() {
-        // odd-length (5) sorted set, answer is middle value
-        var nums = [];
-        var seen = {};
-        while (nums.length < 5) {
-          var v = rnd(1, 20);
-          if (!seen[v]) {
-            seen[v] = true;
-            nums.push(v);
-          }
-        }
-        nums.sort(function (a, b) {
-          return a - b;
-        });
-        var median = nums[2]; // middle of 5
-        var setStr = nums.join(", ");
-        var o = distinctOpts(
-          median,
-          function () {
-            return median + rnd(1, 4) * (Math.random() < 0.5 ? 1 : -1);
-          },
-          String,
-        );
-        return {
-          tag: "Median",
-          statType: "median",
-          nums: nums.slice(),
-          statVal: median,
-          prompt: "Median of " + setStr + " = ?",
-          sub: "Sort the values and find the middle one (5 numbers).",
-          opts: o.opts,
-          correct: o.correct,
-          why: "Sorted: " + setStr + ". Middle value = " + median + ".",
-        };
+      function buildQuestion(level) {
+        // Round (statistic) cycles by level: 0=mean, 1=median, 2=range
+        if (level === 0) return buildMeanQuestion(level);
+        if (level === 1) return buildMedianQuestion(level);
+        return buildRangeQuestion(level);
       }
-
-      function buildRangeQuestion() {
-        // range = max - min; use 4 or 5 distinct values
-        var count = Math.random() < 0.5 ? 4 : 5;
-        var nums = [];
-        var seen = {};
-        while (nums.length < count) {
-          var v = rnd(1, 25);
-          if (!seen[v]) {
-            seen[v] = true;
-            nums.push(v);
-          }
-        }
-        var mn = nums[0],
-          mx = nums[0];
-        for (var k = 1; k < nums.length; k++) {
-          if (nums[k] < mn) mn = nums[k];
-          if (nums[k] > mx) mx = nums[k];
-        }
-        var range = mx - mn;
-        var display = nums.join(", ");
-        var o = distinctOpts(
-          range,
-          function () {
-            return range + rnd(1, 5) * (Math.random() < 0.5 ? 1 : -1);
-          },
-          String,
-        );
-        return {
-          tag: "Range",
-          statType: "range",
-          nums: nums.slice(),
-          statVal: range,
-          statMin: mn,
-          statMax: mx,
-          prompt: "Range of " + display + " = ?",
-          sub: "Subtract the minimum from the maximum.",
-          opts: o.opts,
-          correct: o.correct,
-          why:
-            "Max = " +
-            mx +
-            ", Min = " +
-            mn +
-            "; " +
-            mx +
-            " − " +
-            mn +
-            " = " +
-            range +
-            ".",
-        };
-      }
-
-      function buildQuestion(i) {
-        var round = i < 4 ? 1 : i < 8 ? 2 : 3;
-        if (round === 1) {
-          return buildMeanQuestion();
-        }
-        if (round === 2) {
-          return buildMedianQuestion();
-        }
-        return buildRangeQuestion();
-      }
-
-      function startGame() {
-        state = { i: 0, score: 0, streak: 0, lives: 3, locked: false };
-        document.getElementById("score").textContent = "0";
-        document.getElementById("streak").textContent = "0";
-        document.getElementById("lives").textContent = "❤❤❤";
-        document.getElementById("startScreen").classList.add("hidden");
-        document.getElementById("resultScreen").classList.add("hidden");
-        document.getElementById("playScreen").classList.remove("hidden");
-        nextQuestion();
-      }
-      function nextQuestion() {
-        if (state.lives <= 0 || state.i >= TOTAL) {
-          return endGame();
-        }
-        state.locked = false;
-        state.q = buildQuestion(state.i);
-        document.getElementById("qnum").textContent = state.i + 1 + "/" + TOTAL;
-        document.getElementById("modeTag").textContent = state.q.tag;
-        document.getElementById("prompt").textContent = state.q.prompt;
-        document.getElementById("sub").textContent = state.q.sub;
-        document.getElementById("feedback").textContent = "";
-        document.getElementById("feedback").className = "feedback";
-        document.getElementById("nextBtn").classList.add("hidden");
-        renderViz(state.q);
-        var box = document.getElementById("opts");
-        box.innerHTML = "";
-        state.q.opts.forEach(function (o, idx) {
-          var b = document.createElement("button");
-          b.type = "button";
-          b.className = "opt";
-          b.textContent = o;
-          b.setAttribute("aria-label", "Answer " + o);
-          b.onclick = function () {
-            answer(o, b);
-          };
-          b.onkeydown = function (e) {
-            var btns = Array.prototype.slice.call(box.querySelectorAll(".opt"));
-            var cur = btns.indexOf(b),
-              ni = cur;
-            if (e.key === "ArrowRight" || e.key === "ArrowDown")
-              ni = (cur + 1) % btns.length;
-            else if (e.key === "ArrowLeft" || e.key === "ArrowUp")
-              ni = (cur - 1 + btns.length) % btns.length;
-            else return;
-            e.preventDefault();
-            btns[ni].focus();
-          };
-          box.appendChild(b);
-        });
-        startTimer();
-      }
-      function startTimer() {
-        var t = TIME,
-          bar = document.getElementById("timebar");
-        bar.style.width = "100%";
-        clearInterval(state.timer);
-        state.timer = setInterval(function () {
-          t -= 0.1;
-          bar.style.width = Math.max(0, (t / TIME) * 100) + "%";
-          if (t <= 0) {
-            clearInterval(state.timer);
-            if (!state.locked) {
-              timeUp();
-            }
-          }
-        }, 100);
-      }
-      // explain which value the student chose and why it is not the stat
-      function whyWrong(choice, q) {
-        var g = GLYPHS[q.statType];
-        var label = g ? g.label : "answer";
-        return (
-          '<span class="chose">You chose <strong>' +
-          choice +
-          "</strong>, but the " +
-          label +
-          " is <strong>" +
-          q.statVal +
-          "</strong>. " +
-          q.why +
-          "</span>"
-        );
-      }
-      function answer(choice, btn) {
-        if (state.locked) return;
-        state.locked = true;
-        clearInterval(state.timer);
-        revealVizMarker();
-        var fb = document.getElementById("feedback"),
-          correct = choice === state.q.correct;
-        var prevScore = state.score;
-        Array.prototype.forEach.call(
-          document.querySelectorAll(".opt"),
-          function (b) {
-            if (b.textContent === state.q.correct) b.classList.add("right");
-            else if (b === btn) b.classList.add("wrong");
-          },
-        );
-        var glyph = glyphHTML(state.q.statType);
-        if (correct) {
-          state.streak++;
-          state.score += 10 + Math.min(state.streak, 5) * 2;
-          fb.innerHTML =
-            glyph +
-            " ✓ Correct! " +
-            state.q.why +
-            (state.streak > 1 ? "  🔥 Streak ×" + state.streak : "");
-          fb.className = "feedback ok";
-          // The shared FX kit auto-fires a spark-burst when .opt gains
-          // `.right`; we only add a tactile pop here to avoid doubling
-          // particle bursts.
-          try {
-            if (window.GameFX && GameFX.pop && btn) GameFX.pop(btn);
-          } catch (e) {}
-        } else {
-          state.streak = 0;
-          state.lives--;
-          fb.innerHTML =
-            glyph + " ✗ Not quite. (−1 ❤)" + whyWrong(choice, state.q);
-          fb.className = "feedback no";
-        }
-        updateHud(prevScore);
-        document.getElementById("nextBtn").classList.remove("hidden");
-      }
-      function timeUp() {
-        state.locked = true;
-        state.streak = 0;
-        state.lives--;
-        revealVizMarker();
-        var prevScore = state.score;
-        Array.prototype.forEach.call(
-          document.querySelectorAll(".opt"),
-          function (b) {
-            if (b.textContent === state.q.correct) b.classList.add("right");
-          },
-        );
-        var fb = document.getElementById("feedback");
-        fb.innerHTML =
-          glyphHTML(state.q.statType) +
-          " ⏰ Time! The " +
-          (GLYPHS[state.q.statType]
-            ? GLYPHS[state.q.statType].label
-            : "answer") +
-          " is " +
-          state.q.statVal +
-          ". " +
-          state.q.why +
-          "  (−1 ❤)";
-        fb.className = "feedback no";
-        updateHud(prevScore);
-        document.getElementById("nextBtn").classList.remove("hidden");
-      }
-      function updateHud(prevScore) {
-        if (typeof prevScore === "number" && prevScore !== state.score) {
-          animateScore(prevScore, state.score);
-        } else {
-          document.getElementById("score").textContent = state.score;
-        }
-        document.getElementById("streak").textContent = state.streak;
-        document.getElementById("lives").textContent =
-          state.lives > 0 ? "❤".repeat(state.lives) : "—";
-      }
-      function endGame() {
-        clearInterval(state.timer);
-        document.getElementById("playScreen").classList.add("hidden");
-        document.getElementById("resultScreen").classList.remove("hidden");
-        document.getElementById("finalScore").textContent = state.score;
-        var msg;
-        if (state.score >= 180) msg = "🏆 Data Champion!";
-        else if (state.score >= 120) msg = "🌟 Fast and accurate!";
-        else if (state.score >= 60) msg = "👍 Nice work — keep practicing.";
-        else msg = "💪 Try again to beat your score!";
-        document.getElementById("resultMsg").textContent = msg;
-        document.getElementById("resultDetail").textContent =
-          (state.lives <= 0
-            ? "Out of lives! "
-            : "You finished all " + TOTAL + " questions! ") +
-          "Final score: " +
-          state.score +
-          ".";
-        try {
-          window.EduPulse &&
-            EduPulse.record({
-              activityTitle: document.title,
-              score: state.score,
-              problemsAttempted: state.i,
-              standard: "6.SP.5",
-            });
-        } catch (e) {}
-      }
-      document.getElementById("startBtn").onclick = startGame;
-      document.getElementById("againBtn").onclick = startGame;
-      document.getElementById("nextBtn").onclick = function () {
-        state.i++;
-        nextQuestion();
+      // expose for offline stress testing
+      window.DataDash = {
+        buildMeanQuestion,
+        buildMedianQuestion,
+        buildRangeQuestion,
+        buildQuestion,
       };
+
+      // ════════════════════════════════════════════════════════════════════
+      //  BOOT
+      // ════════════════════════════════════════════════════════════════════
+      class BootScene extends Phaser.Scene {
+        constructor() {
+          super("Boot");
+        }
+        create() {
+          const g = this.make.graphics({ add: false });
+          g.fillStyle(0xffffff).fillCircle(4, 4, 4);
+          g.generateTexture("dot", 8, 8);
+          g.clear();
+          g.fillStyle(0xffffff).fillRect(0, 0, 7, 4);
+          g.generateTexture("chip", 7, 4);
+          g.clear();
+          g.destroy();
+          this.scene.start("Title");
+        }
+      }
+
+      // ════════════════════════════════════════════════════════════════════
+      //  TITLE
+      // ════════════════════════════════════════════════════════════════════
+      class TitleScene extends Phaser.Scene {
+        constructor() {
+          super("Title");
+        }
+        create() {
+          this.cameras.main.setBackgroundColor(C.bg);
+          const cx = W / 2;
+
+          // mini bar-chart emblem
+          const badge = this.add.container(cx, 150);
+          const heights = [40, 70, 54, 86, 62];
+          heights.forEach((h, i) => {
+            badge.add(
+              this.add
+                .rectangle(-90 + i * 45, 0 - h / 2, 32, h,
+                  [C.mean, C.median, C.range, C.accent, C.gold][i])
+                .setOrigin(0.5, 0.5),
+            );
+          });
+          if (!reducedMotion()) {
+            this.tweens.add({
+              targets: badge,
+              y: 138,
+              duration: 1600,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.inOut",
+            });
+          }
+
+          this.add
+            .text(cx, 250, "DATA DASH", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "56px",
+              fontStyle: "900",
+              color: "#eaf6ff",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 296, "Stat Catcher", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "26px",
+              fontStyle: "bold",
+              color: "#2bd1c4",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              cx,
+              350,
+              "Read the data set, then slide your cart to CATCH the tile\nthat equals the mean, median, or range.",
+              {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "18px",
+                color: "#9cc4dd",
+                align: "center",
+                lineSpacing: 6,
+              },
+            )
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 406, "Grade 6 · Lessons 8.1–8.7 · Standard 6.SP", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#2bd1c4",
+            })
+            .setOrigin(0.5);
+
+          this.makeButton(cx, 474, "▶  START GAME", 0x0e8a7d, () =>
+            this.scene.start("Game", { level: 0, score: 0, lives: START_LIVES }),
+          );
+          this.add
+            .text(
+              cx,
+              548,
+              "Move with ← → arrows or your finger.   Catch the correct tile, dodge the rest.",
+              {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "14px",
+                color: "#7fa9c2",
+              },
+            )
+            .setOrigin(0.5);
+          this.makeLink(cx, 586, "← Back to Math Games");
+          this.setSR(
+            "Data Dash, Stat Catcher. A catcher game for mean, median, and range, standard 6.SP. Press start to play.",
+          );
+        }
+        makeButton(x, y, label, color, cb) {
+          const b = this.add
+            .rectangle(x, y, 290, 56, color)
+            .setStrokeStyle(3, 0xffffff, 0.85)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(x, y, label, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "22px",
+              fontStyle: "bold",
+              color: "#ffffff",
+            })
+            .setOrigin(0.5);
+          b.on("pointerover", () => b.setScale(1.04));
+          b.on("pointerout", () => b.setScale(1));
+          b.on("pointerdown", cb);
+          this.input.keyboard.once("keydown-SPACE", cb);
+          this.input.keyboard.once("keydown-ENTER", cb);
+          return b;
+        }
+        makeLink(x, y, label) {
+          const t = this.add
+            .text(x, y, label, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#9cc4dd",
+            })
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true });
+          t.on("pointerover", () => t.setColor("#2bd1c4"));
+          t.on("pointerout", () => t.setColor("#9cc4dd"));
+          t.on("pointerdown", () => {
+            window.location.href = "/math/games/";
+          });
+          return t;
+        }
+        setSR(msg) {
+          const el = document.getElementById("dd-sr");
+          if (el) el.textContent = msg;
+        }
+      }
+
+      // ════════════════════════════════════════════════════════════════════
+      //  GAME
+      // ════════════════════════════════════════════════════════════════════
+      class GameScene extends Phaser.Scene {
+        constructor() {
+          super("Game");
+        }
+        init(data) {
+          this.levelIndex = data.level || 0;
+          this.score = data.score || 0;
+          this.lives = data.lives != null ? data.lives : START_LIVES;
+          this.streak = 0;
+          this.caught = 0; // catches this level
+          this.locked = false;
+          this.tiles = [];
+          this.falling = false;
+        }
+        create() {
+          this.cameras.main.setBackgroundColor(C.bg);
+          this.playLeft = 30;
+          this.playRight = W - 30;
+          this.floorY = H - 70;
+
+          this.buildHUD();
+          this.buildDataPanel();
+          this.buildCart();
+
+          // input
+          this.cursors = this.input.keyboard.createCursorKeys();
+          this.aKey = this.input.keyboard.addKey("A");
+          this.dKey = this.input.keyboard.addKey("D");
+          this.input.on("pointermove", (p) => {
+            if (this.falling) this.targetX = Phaser.Math.Clamp(p.x, this.playLeft + 50, this.playRight - 50);
+          });
+
+          this.targetX = W / 2;
+          this.nextQuestion();
+          this.cameras.main.fadeIn(400);
+        }
+
+        buildHUD() {
+          this.add.rectangle(W / 2, 30, W, 60, C.panel).setDepth(1);
+          this.add.rectangle(W / 2, 60, W, 2, C.panelEdge).setDepth(1);
+          const mk = (x, label) => {
+            this.add
+              .text(x, 16, label, {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "12px",
+                color: "#7fa9c2",
+              })
+              .setOrigin(1, 0)
+              .setDepth(2);
+            return this.add
+              .text(x, 30, "", {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "22px",
+                fontStyle: "900",
+                color: "#eaf6ff",
+              })
+              .setOrigin(1, 0)
+              .setDepth(2);
+          };
+          this.add
+            .text(20, 18, "📊 Data Dash", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "18px",
+              fontStyle: "bold",
+              color: "#2bd1c4",
+            })
+            .setDepth(2);
+          this.scoreT = mk(W - 20, "SCORE");
+          this.levelT = mk(W - 150, "ROUND");
+          this.streakT = mk(W - 290, "STREAK");
+          this.livesT = mk(W - 420, "LIVES");
+
+          const menu = this.add
+            .text(180, 30, "☰ Menu", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "14px",
+              fontStyle: "bold",
+              color: "#9cc4dd",
+            })
+            .setOrigin(0, 0.5)
+            .setDepth(2)
+            .setInteractive({ useHandCursor: true });
+          menu.on("pointerdown", () => this.scene.start("Title"));
+          menu.on("pointerover", () => menu.setColor("#2bd1c4"));
+          menu.on("pointerout", () => menu.setColor("#9cc4dd"));
+          this.refreshHUD();
+        }
+        refreshHUD() {
+          this.scoreT.setText(String(this.score));
+          this.levelT.setText(`${this.levelIndex + 1} / ${TOTAL_LEVELS}`);
+          this.streakT.setText(this.streak > 0 ? `×${this.streak}` : "—");
+          this.livesT.setText("❤".repeat(Math.max(0, this.lives)) || "—");
+        }
+
+        buildDataPanel() {
+          this.add
+            .rectangle(W / 2, 122, W - 60, 96, C.panel)
+            .setStrokeStyle(2, C.panelEdge)
+            .setDepth(1);
+          this.statTag = this.add
+            .text(W / 2, 90, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              fontStyle: "900",
+            })
+            .setOrigin(0.5)
+            .setDepth(2);
+          this.dataText = this.add
+            .text(W / 2, 120, "", {
+              fontFamily: "Consolas, monospace",
+              fontSize: "26px",
+              fontStyle: "bold",
+              color: "#eaf6ff",
+            })
+            .setOrigin(0.5)
+            .setDepth(2);
+          this.hintText = this.add
+            .text(W / 2, 150, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "14px",
+              color: "#9cc4dd",
+            })
+            .setOrigin(0.5)
+            .setDepth(2);
+
+          // floor / collection line
+          this.add
+            .rectangle(W / 2, this.floorY + 26, W, 4, C.panelEdge)
+            .setDepth(1);
+
+          this.fbText = this.add
+            .text(W / 2, this.floorY + 46, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#9cc4dd",
+              align: "center",
+              wordWrap: { width: W - 80 },
+            })
+            .setOrigin(0.5, 0)
+            .setDepth(2);
+        }
+
+        buildCart() {
+          this.cart = this.add.container(W / 2, this.floorY).setDepth(6);
+          const body = this.add
+            .rectangle(0, 0, 110, 30, C.cart)
+            .setStrokeStyle(3, 0x0a5a54);
+          const rim = this.add
+            .rectangle(0, -16, 110, 8, 0x0a5a54);
+          const w1 = this.add.circle(-34, 20, 9, 0x123040).setStrokeStyle(3, C.cart);
+          const w2 = this.add.circle(34, 20, 9, 0x123040).setStrokeStyle(3, C.cart);
+          this.cartGlow = this.add
+            .rectangle(0, 0, 110, 36, 0xffffff, 0)
+            .setStrokeStyle(0);
+          this.cart.add([w1, w2, rim, body, this.cartGlow]);
+          this.cartHalf = 55;
+        }
+
+        nextQuestion() {
+          this.locked = false;
+          this.q = buildQuestion(this.levelIndex);
+          const info = STAT_INFO[this.q.statType];
+          this.statTag.setText("FIND THE " + info.label).setColor(
+            "#" + info.color.toString(16).padStart(6, "0"),
+          );
+          this.dataText.setText(this.q.nums.join("   "));
+          this.hintText.setText(info.hint);
+          this.fbText.setText("Catch the tile that equals the " + info.label.toLowerCase() + "!");
+
+          this.spawnTiles();
+          this.setSR(
+            "Find the " + info.label.toLowerCase() +
+              " of " + this.q.nums.join(", ") + ". " +
+              "Falling answers: " + this.q.tiles.join(", ") +
+              ". Move your cart to catch the correct one.",
+          );
+        }
+
+        spawnTiles() {
+          this.tiles.forEach((t) => t.destroy());
+          this.tiles = [];
+          // four lanes across the play area
+          const lanes = 4;
+          const usable = this.playRight - this.playLeft - 120;
+          const order = shuffle([0, 1, 2, 3]);
+          const speedBase = 70 + this.levelIndex * 35 + this.streak * 4; // px/sec
+          this.q.tiles.forEach((val, i) => {
+            const lane = order[i];
+            const x = this.playLeft + 60 + (usable / (lanes - 1)) * lane;
+            const y = 200 - i * 70 - randInt(0, 40); // staggered start above view
+            const cont = this.add.container(x, y).setDepth(5);
+            const isCorrect = val === this.q.answer;
+            const rect = this.add
+              .rectangle(0, 0, 78, 54, C.tile)
+              .setStrokeStyle(3, C.panelEdge);
+            const lab = this.add
+              .text(0, 0, String(val), {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "26px",
+                fontStyle: "900",
+                color: "#eaf6ff",
+              })
+              .setOrigin(0.5);
+            cont.add([rect, lab]);
+            cont.rect = rect;
+            cont.lab = lab;
+            cont.value = val;
+            cont.correct = isCorrect;
+            cont.speed = speedBase + randInt(-10, 20);
+            cont.done = false;
+            this.tiles.push(cont);
+          });
+          this.falling = true;
+        }
+
+        update(time, delta) {
+          // cart movement
+          const dt = delta / 1000;
+          const speed = 460;
+          let dx = 0;
+          if (this.cursors.left.isDown || this.aKey.isDown) dx -= 1;
+          if (this.cursors.right.isDown || this.dKey.isDown) dx += 1;
+          if (dx !== 0) {
+            this.cart.x = Phaser.Math.Clamp(
+              this.cart.x + dx * speed * dt,
+              this.playLeft + this.cartHalf,
+              this.playRight - this.cartHalf,
+            );
+          } else if (this.input.activePointer.isDown && this.falling) {
+            // follow pointer when held
+            this.cart.x = Phaser.Math.Clamp(
+              this.input.activePointer.x,
+              this.playLeft + this.cartHalf,
+              this.playRight - this.cartHalf,
+            );
+          }
+
+          if (!this.falling) return;
+          const catchY = this.floorY;
+          this.tiles.forEach((t) => {
+            if (t.done) return;
+            t.y += t.speed * dt;
+            // catch zone: tile bottom reaches cart top and within cart width
+            if (t.y >= catchY - 24 && t.y <= catchY + 30) {
+              if (Math.abs(t.x - this.cart.x) <= this.cartHalf + 38) {
+                t.done = true;
+                this.resolveCatch(t);
+              }
+            } else if (t.y > this.floorY + 40) {
+              // hit floor uncaught
+              t.done = true;
+              this.resolveMiss(t);
+            }
+          });
+        }
+
+        resolveCatch(tile) {
+          if (this.locked) return;
+          this.locked = true;
+          this.falling = false;
+          const info = STAT_INFO[this.q.statType];
+          if (tile.correct) {
+            tile.rect.setFillStyle(0x1c5a3a).setStrokeStyle(3, C.good);
+            this.streak++;
+            this.caught++;
+            const gain = 100 + Math.min(this.streak, 5) * 20;
+            this.score += gain;
+            this.fbText.setColor("#4fd18b").setText("✓ +" + gain + "   " + this.q.why);
+            this.burst(tile.x, tile.y, C.good);
+            this.flashCart(C.good);
+            this.setSR("Correct. " + this.q.why);
+          } else {
+            tile.rect.setFillStyle(0x5a1c1c).setStrokeStyle(3, C.bad);
+            this.streak = 0;
+            this.lives--;
+            this.fbText.setColor("#ff8f8f").setText(
+              "✗ That was " + tile.value + ", not the " + info.label.toLowerCase() +
+                " (" + this.q.answer + "). " + this.q.why,
+            );
+            this.flashCart(C.bad);
+            if (!reducedMotion()) this.cameras.main.shake(180, 0.006);
+            this.setSR("Not quite. " + this.q.why);
+          }
+          this.refreshHUD();
+          this.afterResolve(tile.correct);
+        }
+
+        resolveMiss(tile) {
+          if (this.locked) return;
+          // only penalize if the CORRECT tile hit the floor uncaught
+          if (tile.correct) {
+            this.locked = true;
+            this.falling = false;
+            this.streak = 0;
+            this.lives--;
+            this.fbText.setColor("#ff8f8f").setText(
+              "✗ Missed it! The " + STAT_INFO[this.q.statType].label.toLowerCase() +
+                " was " + this.q.answer + ". " + this.q.why,
+            );
+            if (!reducedMotion()) this.cameras.main.shake(160, 0.005);
+            this.refreshHUD();
+            this.setSR("Missed. " + this.q.why);
+            this.afterResolve(false);
+          }
+        }
+
+        afterResolve(correct) {
+          this.time.delayedCall(correct ? 1000 : 1700, () => {
+            this.tiles.forEach((t) => t.destroy());
+            this.tiles = [];
+            if (this.lives <= 0) return this.gameOver();
+            if (this.caught >= ROUNDS_PER_LEVEL) return this.completeLevel();
+            this.nextQuestion();
+          });
+        }
+
+        flashCart(color) {
+          if (reducedMotion()) return;
+          this.cartGlow.setStrokeStyle(4, color, 1);
+          this.tweens.add({
+            targets: this.cartGlow,
+            alpha: { from: 1, to: 0 },
+            duration: 500,
+            onComplete: () => {
+              this.cartGlow.setStrokeStyle(0).setAlpha(1);
+            },
+          });
+        }
+
+        burst(x, y, color) {
+          const p = this.add.particles(x, y, "dot", {
+            speed: { min: 60, max: 180 },
+            angle: { min: 0, max: 360 },
+            scale: { start: 1, end: 0 },
+            lifespan: 500,
+            quantity: 14,
+            tint: color,
+          });
+          this.time.delayedCall(550, () => p.destroy());
+        }
+
+        completeLevel() {
+          this.score += 250;
+          this.refreshHUD();
+          const ov = this.add.container(0, 0).setDepth(20);
+          ov.add(this.add.rectangle(W / 2, H / 2, W, H, 0x05101d, 0.8));
+          ov.add(
+            this.add
+              .text(W / 2, 230, "ROUND CLEAR!", {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "42px",
+                fontStyle: "900",
+                color: "#4fd18b",
+              })
+              .setOrigin(0.5),
+          );
+          ov.add(
+            this.add
+              .text(
+                W / 2,
+                292,
+                "You mastered the " + STAT_INFO[this.q.statType].label.toLowerCase() +
+                  "!\n+250 round bonus",
+                {
+                  fontFamily: "Segoe UI, sans-serif",
+                  fontSize: "20px",
+                  color: "#eaf6ff",
+                  align: "center",
+                  lineSpacing: 6,
+                },
+              )
+              .setOrigin(0.5),
+          );
+          this.confetti();
+          const last = this.levelIndex + 1 >= TOTAL_LEVELS;
+          const label = last ? "🏁  SEE RESULTS" : "▶  NEXT ROUND";
+          const btn = this.add
+            .rectangle(W / 2, 380, 300, 56, 0x0e8a7d)
+            .setStrokeStyle(3, 0xffffff, 0.85)
+            .setDepth(21)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2, 380, label, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "22px",
+              fontStyle: "bold",
+              color: "#fff",
+            })
+            .setOrigin(0.5)
+            .setDepth(22);
+          btn.on("pointerover", () => btn.setScale(1.04));
+          btn.on("pointerout", () => btn.setScale(1));
+          const go = () => {
+            if (last) {
+              this.scene.start("Result", { score: this.score, won: true });
+            } else {
+              this.scene.start("Game", {
+                level: this.levelIndex + 1,
+                score: this.score,
+                lives: this.lives,
+              });
+            }
+          };
+          btn.on("pointerdown", go);
+          this.input.keyboard.once("keydown-SPACE", go);
+          this.setSR(
+            "Round clear. You mastered the " +
+              STAT_INFO[this.q.statType].label.toLowerCase() +
+              ". Score " + this.score + ".",
+          );
+        }
+
+        gameOver() {
+          this.scene.start("Result", { score: this.score, won: false });
+        }
+
+        confetti() {
+          const p = this.add.particles(W / 2, -10, "chip", {
+            x: { min: 0, max: W },
+            y: -10,
+            speedY: { min: 120, max: 280 },
+            speedX: { min: -60, max: 60 },
+            angle: { min: 0, max: 360 },
+            rotate: { min: 0, max: 360 },
+            scale: { min: 0.7, max: 1.4 },
+            lifespan: 2600,
+            quantity: 3,
+            frequency: 40,
+            tint: [0xffcd4d, 0x2bd1c4, 0x4fd18b, 0xc45a3c],
+          });
+          this.time.delayedCall(1800, () => p.stop());
+        }
+
+        setSR(msg) {
+          const el = document.getElementById("dd-sr");
+          if (el) el.textContent = msg;
+        }
+      }
+
+      // ════════════════════════════════════════════════════════════════════
+      //  RESULT
+      // ════════════════════════════════════════════════════════════════════
+      class ResultScene extends Phaser.Scene {
+        constructor() {
+          super("Result");
+        }
+        init(data) {
+          this.score = data.score || 0;
+          this.won = !!data.won;
+        }
+        create() {
+          this.cameras.main.setBackgroundColor(C.bg);
+          const cx = W / 2;
+          const stars = this.score >= 1500 ? 3 : this.score >= 900 ? 2 : 1;
+          try {
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: document.title,
+                score: this.score,
+                stars: stars,
+              });
+          } catch (e) {}
+          this.add
+            .text(cx, 150, this.won ? "DATA MASTERED!" : "OUT OF LIVES", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "46px",
+              fontStyle: "900",
+              color: this.won ? "#4fd18b" : "#ff8f8f",
+            })
+            .setOrigin(0.5);
+          for (let i = 0; i < 3; i++) {
+            this.add
+              .text(cx - 80 + i * 80, 240, i < stars ? "★" : "☆", {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "64px",
+                color: i < stars ? "#ffcd4d" : "#3a5a74",
+              })
+              .setOrigin(0.5);
+          }
+          this.add
+            .text(cx, 326, "Final Score: " + this.score, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "30px",
+              fontStyle: "bold",
+              color: "#eaf6ff",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              cx,
+              372,
+              this.won
+                ? "You caught the mean, median, and range across every round."
+                : "Tip: mean = sum ÷ count, median = middle of the sorted set, range = max − min. Try again!",
+              {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "16px",
+                color: "#9cc4dd",
+                align: "center",
+                wordWrap: { width: 560 },
+              },
+            )
+            .setOrigin(0.5);
+          this.btn(cx - 150, 460, "↻  PLAY AGAIN", 0x0e8a7d, () =>
+            this.scene.start("Game", { level: 0, score: 0, lives: START_LIVES }),
+          );
+          this.btn(cx + 150, 460, "🏠  ALL GAMES", 0x355a86, () => {
+            window.location.href = "/math/games/";
+          });
+          const el = document.getElementById("dd-sr");
+          if (el)
+            el.textContent =
+              (this.won ? "Data mastered" : "Out of lives") +
+              ". Final score " + this.score + ", " + stars + " stars.";
+        }
+        btn(x, y, label, color, cb) {
+          const b = this.add
+            .rectangle(x, y, 270, 56, color)
+            .setStrokeStyle(3, 0xffffff, 0.85)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(x, y, label, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "20px",
+              fontStyle: "bold",
+              color: "#fff",
+            })
+            .setOrigin(0.5);
+          b.on("pointerover", () => b.setScale(1.04));
+          b.on("pointerout", () => b.setScale(1));
+          b.on("pointerdown", cb);
+        }
+      }
+
+      // ── launch ──
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: document.body,
+        backgroundColor: "#0a1c2c",
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+        scene: [BootScene, TitleScene, GameScene, ResultScene],
+      };
+      const ddGame = new Phaser.Game(config);
+
+      // ── Canvas accessibility (additive; no gameplay change) ──
+      ddGame.events.once("ready", function () {
+        try {
+          const cv = ddGame.canvas;
+          if (!cv) return;
+          cv.setAttribute("role", "application");
+          cv.setAttribute(
+            "aria-label",
+            "Data Dash Stat Catcher math game. Read the data set, then move your " +
+              "cart with the left and right arrow keys to catch the falling tile that " +
+              "equals the mean, median, or range.",
+          );
+          cv.setAttribute("aria-roledescription", "math game");
+          if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
+          cv.addEventListener("pointerdown", function () {
+            try {
+              cv.focus({ preventScroll: true });
+            } catch (e) {
+              cv.focus();
+            }
+          });
+        } catch (e) {}
+      });
     </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
