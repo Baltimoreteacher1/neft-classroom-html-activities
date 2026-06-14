@@ -621,6 +621,139 @@
         }
       }
 
+      /* ===================== WORD FAMILIES ===================== */
+      .rime-box {
+        text-align: center;
+        background: #fff1e8;
+        border-radius: 14px;
+        padding: 1.2rem;
+        margin-bottom: 1rem;
+      }
+
+      .rime-box .rime {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--accent);
+        letter-spacing: 1px;
+      }
+
+      .rime-box .rime-sub {
+        color: var(--muted);
+        font-size: 1.1rem;
+      }
+
+      /* ===================== MEMORY MATCH ===================== */
+      .memory-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.7rem;
+        max-width: 460px;
+        margin: 0 auto 1rem;
+      }
+
+      .mem-card {
+        min-height: 96px;
+        border: 4px solid var(--border);
+        border-radius: 16px;
+        background: var(--accent);
+        color: #fff;
+        font-size: 2rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          transform 0.12s ease,
+          background 0.12s ease,
+          border-color 0.12s ease;
+      }
+
+      .mem-card:hover {
+        transform: translateY(-3px);
+      }
+
+      .mem-card.flipped {
+        background: #fff;
+        color: var(--accent-dark);
+        border-color: var(--secondary);
+      }
+
+      .mem-card.matched {
+        background: var(--success-soft);
+        color: var(--success);
+        border-color: var(--success);
+        cursor: default;
+      }
+
+      .mem-card .mem-face {
+        font-size: 1.6rem;
+        font-weight: 800;
+      }
+
+      /* ===================== STORY ORDER ===================== */
+      .order-row {
+        font-size: 1.5rem;
+        font-weight: 700;
+        padding: 0.8rem 1rem;
+        border-radius: 14px;
+        margin-bottom: 0.6rem;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        background: #fff;
+        border: 3px solid var(--border);
+        transition:
+          transform 0.12s ease,
+          border-color 0.12s ease,
+          background 0.12s ease;
+      }
+
+      .order-row:hover {
+        transform: translateY(-2px);
+        border-color: var(--secondary);
+      }
+
+      .order-row.placed {
+        background: var(--success-soft);
+        border-color: var(--success);
+        cursor: default;
+      }
+
+      .order-row.wrong {
+        border-color: var(--accent);
+        animation: shake 0.4s ease;
+      }
+
+      .order-row .oe {
+        font-size: 2.4rem;
+        line-height: 1;
+      }
+
+      .order-row .ot {
+        flex: 1;
+      }
+
+      .order-row .obadge {
+        min-width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--secondary);
+        color: #7a5800;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+      }
+
+      .order-track {
+        font-weight: 800;
+        color: var(--accent-dark);
+        text-align: center;
+        font-size: 1.2rem;
+        margin-bottom: 0.6rem;
+      }
+
       @media (max-width: 520px) {
         .header-titles h1 {
           font-size: 1.3rem;
@@ -697,6 +830,46 @@
           tabindex="-1"
         >
           🖼️ Picture Match
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-firstsound"
+          aria-controls="panel-firstsound"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          🅰️ First Sounds
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-family"
+          aria-controls="panel-family"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          🏠 Word Families
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-memory"
+          aria-controls="panel-memory"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          🧠 Memory Match
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-order"
+          aria-controls="panel-order"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          📖 Story Order
         </button>
         <button
           class="tab"
@@ -901,6 +1074,159 @@
         </div>
       </section>
 
+      <!-- ============ FIRST SOUNDS ============ -->
+      <section
+        class="panel"
+        id="panel-firstsound"
+        role="tabpanel"
+        aria-labelledby="tab-firstsound"
+        tabindex="0"
+      >
+        <div class="card">
+          <div class="station-head">
+            <h2>First Sounds</h2>
+            <button
+              class="speak-btn small"
+              data-say="Listen to the sound. Tap the picture that starts with that sound."
+              aria-label="Read the instructions out loud"
+            >
+              🔊
+            </button>
+          </div>
+          <p class="instructions">
+            Listen to the <strong>sound</strong>. Tap the picture whose name
+            <strong>starts</strong> with it!
+          </p>
+          <div class="target-box">
+            <div class="tw" id="fsSoundLabel">
+              /b/
+              <button
+                class="speak-btn small"
+                id="fsSay"
+                aria-label="Hear the sound again"
+              >
+                🔊
+              </button>
+            </div>
+            <div class="rime-sub">Tap 🔊 to hear it again.</div>
+          </div>
+          <div class="choice-grid" id="fsChoices"></div>
+          <div class="feedback" id="fsFeedback" aria-live="polite"></div>
+          <div class="btn-row" style="margin-top: 0.8rem">
+            <button class="btn secondary" id="fsNext">New sound ➡</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ WORD FAMILIES ============ -->
+      <section
+        class="panel"
+        id="panel-family"
+        role="tabpanel"
+        aria-labelledby="tab-family"
+        tabindex="0"
+      >
+        <div class="card">
+          <div class="station-head">
+            <h2>Word Families</h2>
+            <button
+              class="speak-btn small"
+              data-say="These words are in the same family. Tap a word to read it and earn a star."
+              aria-label="Read the instructions out loud"
+            >
+              🔊
+            </button>
+          </div>
+          <p class="instructions">
+            All these words rhyme — they are a <strong>word family</strong>! Tap
+            each word to read it and earn a star.
+          </p>
+          <div class="rime-box">
+            <div class="rime" id="famRime">-at</div>
+            <div class="rime-sub" id="famSub">Words that end the same way.</div>
+          </div>
+          <div class="choice-grid" id="famChoices"></div>
+          <div class="feedback" id="famFeedback" aria-live="polite"></div>
+          <div class="btn-row" style="margin-top: 0.8rem">
+            <button class="btn secondary" id="famNext">New family ➡</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ MEMORY MATCH ============ -->
+      <section
+        class="panel"
+        id="panel-memory"
+        role="tabpanel"
+        aria-labelledby="tab-memory"
+        tabindex="0"
+      >
+        <div class="card">
+          <div class="station-head">
+            <h2>Memory Match</h2>
+            <button
+              class="speak-btn small"
+              data-say="Tap two cards to flip them. Find the words that match!"
+              aria-label="Read the instructions out loud"
+            >
+              🔊
+            </button>
+          </div>
+          <p class="instructions">
+            Tap two cards to flip them. Find the matching
+            <strong>words</strong>! Each card reads itself out loud.
+          </p>
+          <div
+            class="order-track"
+            id="memTrack"
+            aria-live="polite"
+            style="margin-bottom: 1rem"
+          >
+            Pairs found: 0 of 3
+          </div>
+          <div class="memory-grid" id="memGrid"></div>
+          <div class="feedback" id="memFeedback" aria-live="polite"></div>
+          <div class="btn-row" style="margin-top: 0.8rem">
+            <button class="btn secondary" id="memNext">New game ➡</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ STORY ORDER ============ -->
+      <section
+        class="panel"
+        id="panel-order"
+        role="tabpanel"
+        aria-labelledby="tab-order"
+        tabindex="0"
+      >
+        <div class="card">
+          <div class="station-head">
+            <h2>Story Order</h2>
+            <button
+              class="speak-btn small"
+              data-say="These story parts are mixed up. Tap them in the right order: first, next, last."
+              aria-label="Read the instructions out loud"
+            >
+              🔊
+            </button>
+          </div>
+          <p class="instructions">
+            These story parts are mixed up! Tap them in order —
+            <strong>first</strong>, <strong>next</strong>,
+            <strong>last</strong>.
+          </p>
+          <div class="order-track" id="orderTrack" aria-live="polite">
+            Tap the part that happens first.
+          </div>
+          <div id="orderRows"></div>
+          <div class="feedback" id="orderFeedback" aria-live="polite"></div>
+          <div class="btn-row" style="margin-top: 0.8rem">
+            <button class="btn secondary" id="orderNext">New story ➡</button>
+          </div>
+        </div>
+      </section>
+
       <!-- ============ READ A STORY ============ -->
       <section
         class="panel"
@@ -954,7 +1280,7 @@
       </section>
     </main>
 
-    <footer>EduWonderLab · Made with ❤️ for Noam</footer>
+    <footer>EduWonderLab · First Grade Readiness</footer>
 
     <script>
       "use strict";
@@ -2039,6 +2365,512 @@
           speak(MATCH_ITEMS[matchOrder[matchIdx]].w);
         });
       renderMatch();
+
+      /* ===================== STATION 7: FIRST SOUNDS ===================== */
+      /* Tap the picture-word that STARTS with the target sound.
+         Picture-words are grouped by their beginning letter so we can pick
+         one "right" word + distractors that start with a different sound. */
+      var FS_GROUPS = {
+        b: [
+          { w: "bat", e: "🦇" },
+          { w: "bug", e: "🐛" },
+          { w: "bed", e: "🛏️" },
+          { w: "ball", e: "⚽" },
+        ],
+        c: [
+          { w: "cat", e: "🐱" },
+          { w: "cup", e: "🥤" },
+          { w: "car", e: "🚗" },
+          { w: "cake", e: "🎂" },
+        ],
+        d: [
+          { w: "dog", e: "🐶" },
+          { w: "duck", e: "🦆" },
+          { w: "doll", e: "🪆" },
+        ],
+        f: [
+          { w: "fish", e: "🐟" },
+          { w: "fox", e: "🦊" },
+          { w: "fan", e: "🪭" },
+        ],
+        h: [
+          { w: "hat", e: "🎩" },
+          { w: "hen", e: "🐔" },
+          { w: "house", e: "🏠" },
+        ],
+        m: [
+          { w: "moon", e: "🌙" },
+          { w: "map", e: "🗺️" },
+          { w: "milk", e: "🥛" },
+          { w: "mug", e: "☕" },
+        ],
+        p: [
+          { w: "pig", e: "🐷" },
+          { w: "pen", e: "🖊️" },
+          { w: "pot", e: "🍲" },
+        ],
+        r: [
+          { w: "rug", e: "🧶" },
+          { w: "ring", e: "💍" },
+          { w: "rain", e: "🌧️" },
+        ],
+        s: [
+          { w: "sun", e: "☀️" },
+          { w: "sock", e: "🧦" },
+          { w: "snake", e: "🐍" },
+        ],
+        t: [
+          { w: "top", e: "🔝" },
+          { w: "tree", e: "🌳" },
+          { w: "train", e: "🚂" },
+        ],
+      };
+      var FS_LETTERS = Object.keys(FS_GROUPS);
+      var fsLabel = document.getElementById("fsSoundLabel");
+      var fsChoices = document.getElementById("fsChoices");
+      var fsFeedback = document.getElementById("fsFeedback");
+      var fsCurrent = null;
+
+      function fsRender() {
+        // pick a target letter (no immediate repeat)
+        var letter;
+        do {
+          letter = FS_LETTERS[Math.floor(Math.random() * FS_LETTERS.length)];
+        } while (FS_LETTERS.length > 1 && letter === fsCurrent);
+        fsCurrent = letter;
+        var sound = SOUNDS[letter] || letter;
+        var right = shuffle(FS_GROUPS[letter])[0];
+        // distractors: words that start with other letters
+        var others = [];
+        FS_LETTERS.forEach(function (L) {
+          if (L !== letter) others = others.concat(FS_GROUPS[L]);
+        });
+        var distractors = shuffle(others).slice(0, 3);
+        var choices = shuffle([right].concat(distractors));
+
+        fsLabel.childNodes[0].nodeValue = "/" + letter + "/ ";
+        fsFeedback.textContent = "";
+        fsFeedback.className = "feedback";
+        fsChoices.innerHTML = "";
+        choices.forEach(function (ch) {
+          var b = document.createElement("button");
+          b.className = "choice";
+          b.setAttribute("aria-label", ch.w);
+          b.innerHTML =
+            '<span aria-hidden="true">' +
+            ch.e +
+            '</span><span class="cw">' +
+            ch.w +
+            "</span>";
+          b.addEventListener("click", function () {
+            if (ch.w === right.w) {
+              b.classList.add("correct");
+              fsFeedback.textContent = "✅ " + praise();
+              fsFeedback.className = "feedback good";
+              speak(ch.w + " starts with " + sound + ". " + praise());
+              addStar(1);
+              setTimeout(fsRender, 1200);
+            } else {
+              b.classList.add("wrong");
+              fsFeedback.textContent = "Try again! 💪";
+              fsFeedback.className = "feedback try";
+              speak("Try again!");
+              setTimeout(function () {
+                b.classList.remove("wrong");
+              }, 500);
+            }
+          });
+          fsChoices.appendChild(b);
+        });
+        // say the sound when a new round loads
+        speak("Find the word that starts with " + sound);
+      }
+      document.getElementById("fsSay").addEventListener("click", function (e) {
+        e.stopPropagation();
+        speak(SOUNDS[fsCurrent] || fsCurrent);
+      });
+      document.getElementById("fsNext").addEventListener("click", fsRender);
+      fsRender();
+
+      /* ===================== STATION 8: WORD FAMILIES ===================== */
+      /* Show a rime; list the real words in that family; tap each word to
+         read it and earn a star (once per word per round). */
+      var FAMILIES = [
+        {
+          rime: "-at",
+          words: [
+            { w: "cat", e: "🐱" },
+            { w: "hat", e: "🎩" },
+            { w: "bat", e: "🦇" },
+            { w: "mat", e: "🟫" },
+          ],
+        },
+        {
+          rime: "-an",
+          words: [
+            { w: "van", e: "🚐" },
+            { w: "pan", e: "🍳" },
+            { w: "fan", e: "🪭" },
+            { w: "man", e: "🧑" },
+          ],
+        },
+        {
+          rime: "-ig",
+          words: [
+            { w: "pig", e: "🐷" },
+            { w: "wig", e: "👱" },
+            { w: "dig", e: "⛏️" },
+            { w: "fig", e: "🫐" },
+          ],
+        },
+        {
+          rime: "-op",
+          words: [
+            { w: "top", e: "🔝" },
+            { w: "mop", e: "🧹" },
+            { w: "hop", e: "🐰" },
+            { w: "pop", e: "🎈" },
+          ],
+        },
+        {
+          rime: "-ug",
+          words: [
+            { w: "bug", e: "🐛" },
+            { w: "rug", e: "🧶" },
+            { w: "mug", e: "☕" },
+            { w: "hug", e: "🤗" },
+          ],
+        },
+        {
+          rime: "-en",
+          words: [
+            { w: "pen", e: "🖊️" },
+            { w: "hen", e: "🐔" },
+            { w: "ten", e: "🔟" },
+            { w: "den", e: "🦊" },
+          ],
+        },
+        {
+          rime: "-un",
+          words: [
+            { w: "sun", e: "☀️" },
+            { w: "bun", e: "🍞" },
+            { w: "run", e: "🏃" },
+            { w: "fun", e: "🎉" },
+          ],
+        },
+      ];
+      var famIdx = 0;
+      var famOrder = shuffle(
+        FAMILIES.map(function (_, i) {
+          return i;
+        }),
+      );
+      var famRime = document.getElementById("famRime");
+      var famSub = document.getElementById("famSub");
+      var famChoices = document.getElementById("famChoices");
+      var famFeedback = document.getElementById("famFeedback");
+
+      function renderFamily() {
+        var fam = FAMILIES[famOrder[famIdx]];
+        famRime.textContent = fam.rime;
+        famSub.textContent =
+          "These words rhyme with " + fam.rime.replace("-", "") + "!";
+        famFeedback.textContent = "";
+        famFeedback.className = "feedback";
+        famChoices.innerHTML = "";
+        var readCount = 0;
+        var words = shuffle(fam.words);
+        words.forEach(function (item) {
+          var b = document.createElement("button");
+          b.className = "choice";
+          b.setAttribute("aria-label", item.w);
+          b.innerHTML =
+            '<span aria-hidden="true">' +
+            item.e +
+            '</span><span class="cw">' +
+            item.w +
+            "</span>";
+          var done = false;
+          b.addEventListener("click", function () {
+            speak(item.w);
+            if (done) return;
+            done = true;
+            readCount++;
+            b.classList.add("correct");
+            addStar(1);
+            if (readCount >= words.length) {
+              famFeedback.textContent = "🌟 You read the whole family!";
+              famFeedback.className = "feedback good";
+              speak("You read the whole " + fam.rime + " family! " + praise());
+            } else {
+              famFeedback.textContent = "⭐ " + praise();
+              famFeedback.className = "feedback good";
+            }
+          });
+          famChoices.appendChild(b);
+        });
+        speak("The " + fam.rime + " family.");
+      }
+      document.getElementById("famNext").addEventListener("click", function () {
+        var lastIndex = famOrder[famIdx];
+        famIdx = (famIdx + 1) % FAMILIES.length;
+        if (famIdx === 0) {
+          famOrder = shuffle(famOrder);
+          if (famOrder.length > 1 && famOrder[0] === lastIndex) {
+            famOrder.push(famOrder.shift());
+          }
+        }
+        renderFamily();
+      });
+      renderFamily();
+
+      /* ===================== STATION 9: MEMORY MATCH ===================== */
+      /* 3 pairs (6 cards). Flip two; matching sight-word pairs stay.
+         One star per matched pair; celebrate when all 3 are found. */
+      var MEM_WORDS = [
+        "the",
+        "and",
+        "you",
+        "see",
+        "go",
+        "is",
+        "my",
+        "we",
+        "like",
+        "look",
+        "can",
+        "here",
+        "play",
+        "run",
+        "big",
+      ];
+      var memGrid = document.getElementById("memGrid");
+      var memTrack = document.getElementById("memTrack");
+      var memFeedback = document.getElementById("memFeedback");
+      var memFirst = null;
+      var memLock = false;
+      var memMatched = 0;
+      var memLastSet = null;
+
+      function newMemoryGame() {
+        memFirst = null;
+        memLock = false;
+        memMatched = 0;
+        memFeedback.textContent = "";
+        memFeedback.className = "feedback";
+        memTrack.textContent = "Pairs found: 0 of 3";
+        // choose 3 distinct words (avoid repeating the exact same trio)
+        var trio;
+        do {
+          trio = shuffle(MEM_WORDS).slice(0, 3);
+        } while (memLastSet && trio.slice().sort().join() === memLastSet);
+        memLastSet = trio.slice().sort().join();
+        var deck = shuffle(trio.concat(trio));
+        memGrid.innerHTML = "";
+        deck.forEach(function (word) {
+          var c = document.createElement("button");
+          c.className = "mem-card";
+          c.dataset.word = word;
+          c.setAttribute("aria-label", "Hidden card. Tap to flip.");
+          c.innerHTML = '<span aria-hidden="true">❓</span>';
+          c.addEventListener("click", function () {
+            flipCard(c);
+          });
+          memGrid.appendChild(c);
+        });
+      }
+
+      function flipCard(card) {
+        if (memLock) return;
+        if (
+          card.classList.contains("flipped") ||
+          card.classList.contains("matched")
+        )
+          return;
+        var word = card.dataset.word;
+        card.classList.add("flipped");
+        card.innerHTML = '<span class="mem-face">' + word + "</span>";
+        card.setAttribute("aria-label", word);
+        speak(word);
+
+        if (!memFirst) {
+          memFirst = card;
+          return;
+        }
+        // second card
+        if (memFirst.dataset.word === word) {
+          // match!
+          memFirst.classList.add("matched");
+          card.classList.add("matched");
+          var a = memFirst;
+          memFirst = null;
+          memMatched++;
+          memTrack.textContent = "Pairs found: " + memMatched + " of 3";
+          addStar(1);
+          memFeedback.textContent = "✅ " + word + "! " + praise();
+          memFeedback.className = "feedback good";
+          setTimeout(function () {
+            speak(word + ". " + praise());
+          }, 350);
+          if (memMatched >= 3) {
+            memFeedback.textContent = "🎉 You found them all! " + praise();
+            speak("You matched them all! " + praise());
+          }
+        } else {
+          // no match — flip both back
+          memLock = true;
+          var first = memFirst;
+          memFeedback.textContent = "Try again! 💪";
+          memFeedback.className = "feedback try";
+          setTimeout(function () {
+            [first, card].forEach(function (el) {
+              el.classList.remove("flipped");
+              el.innerHTML = '<span aria-hidden="true">❓</span>';
+              el.setAttribute("aria-label", "Hidden card. Tap to flip.");
+            });
+            memFirst = null;
+            memLock = false;
+          }, 900);
+        }
+      }
+      document
+        .getElementById("memNext")
+        .addEventListener("click", newMemoryGame);
+      newMemoryGame();
+
+      /* ===================== STATION 10: STORY ORDER ===================== */
+      /* Three little events shown out of order. Tap them in order
+         (first, next, last). Correct tap locks in; wrong tap shakes. */
+      var ORDER_SETS = [
+        [
+          { e: "🌱", t: "Pam plants a seed." },
+          { e: "🌧️", t: "The rain helps it grow." },
+          { e: "🌻", t: "A big flower pops up!" },
+        ],
+        [
+          { e: "🥚", t: "There is one little egg." },
+          { e: "🐣", t: "The egg cracks open." },
+          { e: "🐤", t: "A baby chick hops out!" },
+        ],
+        [
+          { e: "🛒", t: "Dad gets the eggs and flour." },
+          { e: "🥣", t: "They mix the batter up." },
+          { e: "🎂", t: "We eat the yummy cake!" },
+        ],
+        [
+          { e: "😴", t: "Sam wakes up in bed." },
+          { e: "🥣", t: "Sam eats his breakfast." },
+          { e: "🚌", t: "Sam rides the bus to school." },
+        ],
+        [
+          { e: "🐛", t: "A little bug eats leaves." },
+          { e: "🛡️", t: "It makes a cozy cocoon." },
+          { e: "🦋", t: "Out comes a butterfly!" },
+        ],
+        [
+          { e: "☁️", t: "Dark clouds fill the sky." },
+          { e: "🌧️", t: "Rain falls down, down, down." },
+          { e: "🌈", t: "A bright rainbow shines!" },
+        ],
+      ];
+      var orderSetIdx = 0;
+      var orderDeck = shuffle(
+        ORDER_SETS.map(function (_, i) {
+          return i;
+        }),
+      );
+      var orderRows = document.getElementById("orderRows");
+      var orderTrack = document.getElementById("orderTrack");
+      var orderFeedback = document.getElementById("orderFeedback");
+      var orderNextNeeded = 0;
+      var orderTotal = 0;
+
+      function renderOrder() {
+        var set = ORDER_SETS[orderDeck[orderSetIdx]];
+        orderTotal = set.length;
+        orderNextNeeded = 0;
+        orderFeedback.textContent = "";
+        orderFeedback.className = "feedback";
+        orderTrack.textContent = "Tap the part that happens first.";
+        orderRows.innerHTML = "";
+        // present in a shuffled (out-of-order) sequence, tracking correct order
+        var shuffled = shuffle(
+          set.map(function (item, i) {
+            return { item: item, order: i };
+          }),
+        );
+        shuffled.forEach(function (entry) {
+          var row = document.createElement("button");
+          row.className = "order-row";
+          row.style.width = "100%";
+          row.style.textAlign = "left";
+          row.dataset.order = entry.order;
+          row.setAttribute(
+            "aria-label",
+            entry.item.t + " Tap to read and place in order.",
+          );
+          row.innerHTML =
+            '<span class="oe" aria-hidden="true">' +
+            entry.item.e +
+            '</span><span class="ot">' +
+            entry.item.t +
+            '</span><span class="obadge" aria-hidden="true">?</span>';
+          row.addEventListener("click", function () {
+            if (row.classList.contains("placed")) {
+              speak(entry.item.t);
+              return;
+            }
+            if (parseInt(row.dataset.order, 10) === orderNextNeeded) {
+              row.classList.add("placed");
+              var badge = row.querySelector(".obadge");
+              badge.textContent = orderNextNeeded + 1;
+              orderNextNeeded++;
+              speak(entry.item.t);
+              addStar(1);
+              if (orderNextNeeded >= orderTotal) {
+                orderFeedback.textContent = "🎉 You told the whole story!";
+                orderFeedback.className = "feedback good";
+                orderTrack.textContent = "All in order — great job!";
+                setTimeout(function () {
+                  speak("You told the whole story! " + praise());
+                }, 500);
+              } else {
+                orderFeedback.textContent = "✅ " + praise();
+                orderFeedback.className = "feedback good";
+                orderTrack.textContent =
+                  orderNextNeeded === 1
+                    ? "Now tap what happens next."
+                    : "Now tap what happens last.";
+              }
+            } else {
+              row.classList.add("wrong");
+              orderFeedback.textContent = "Not yet — tap them in order! 💪";
+              orderFeedback.className = "feedback try";
+              speak("Try a different one.");
+              setTimeout(function () {
+                row.classList.remove("wrong");
+              }, 500);
+            }
+          });
+          orderRows.appendChild(row);
+        });
+        speak("Put the story parts in order.");
+      }
+      document
+        .getElementById("orderNext")
+        .addEventListener("click", function () {
+          var lastIndex = orderDeck[orderSetIdx];
+          orderSetIdx = (orderSetIdx + 1) % ORDER_SETS.length;
+          if (orderSetIdx === 0) {
+            orderDeck = shuffle(orderDeck);
+            if (orderDeck.length > 1 && orderDeck[0] === lastIndex) {
+              orderDeck.push(orderDeck.shift());
+            }
+          }
+          renderOrder();
+        });
+      renderOrder();
 
       /* ===================== STATION 6: READ A STORY ===================== */
       /* Several short decodable stories. "Next story" cycles through a

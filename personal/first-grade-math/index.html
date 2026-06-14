@@ -467,6 +467,39 @@
         background: var(--accent);
       }
 
+      /* pattern strip (repeating shape/emoji patterns) */
+      .pattern-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+        align-items: center;
+        background: var(--bg);
+        border-radius: 14px;
+        padding: 1rem;
+        min-height: 90px;
+        max-width: 560px;
+        margin: 0.6rem auto;
+      }
+      .pattern-item {
+        font-size: 2.6rem;
+        line-height: 1;
+        user-select: none;
+      }
+      .pattern-item.blank {
+        width: 56px;
+        height: 56px;
+        border: 4px dashed var(--accent);
+        border-radius: 14px;
+        background: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent-dark);
+        font-size: 2rem;
+        font-weight: 900;
+      }
+
       /* confetti / star burst */
       #burst {
         position: fixed;
@@ -590,6 +623,46 @@
           tabindex="-1"
         >
           🔺 Shapes
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-compare"
+          aria-controls="panel-compare"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          🐘 Compare
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-next"
+          aria-controls="panel-next"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          🔢 What's Next?
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-patterns"
+          aria-controls="panel-patterns"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          🔁 Patterns
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-skip"
+          aria-controls="panel-skip"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          👣 Skip Count
         </button>
         <button
           class="tab"
@@ -800,6 +873,188 @@
         </div>
       </section>
 
+      <!-- ============ COMPARE ============ -->
+      <section
+        class="panel"
+        id="panel-compare"
+        role="tabpanel"
+        aria-labelledby="tab-compare"
+        hidden
+      >
+        <div class="card">
+          <h2 class="station-title">
+            🐘 Compare
+            <span
+              id="cmpRound"
+              style="font-size: 1.1rem; color: var(--ink-soft)"
+            ></span>
+          </h2>
+          <p class="instr">
+            <button
+              class="speak-btn"
+              id="cmpSay"
+              aria-label="Hear the question"
+            >
+              🔊
+            </button>
+            <span id="cmpPrompt">Tap the group that has MORE.</span>
+          </p>
+          <div class="vs">
+            <div class="group-box">
+              <div
+                class="group-side"
+                id="cmpLeft"
+                tabindex="0"
+                role="button"
+                aria-label="Left group"
+              >
+                <div
+                  class="objects"
+                  id="cmpLeftObj"
+                  style="max-width: none"
+                ></div>
+                <div class="count-label" id="cmpLeftCount"></div>
+              </div>
+            </div>
+            <div
+              style="
+                font-size: 2.4rem;
+                font-weight: 900;
+                color: var(--secondary-dark);
+              "
+              id="cmpSign"
+            >
+              ?
+            </div>
+            <div class="group-box">
+              <div
+                class="group-side"
+                id="cmpRight"
+                tabindex="0"
+                role="button"
+                aria-label="Right group"
+              >
+                <div
+                  class="objects"
+                  id="cmpRightObj"
+                  style="max-width: none"
+                ></div>
+                <div class="count-label" id="cmpRightCount"></div>
+              </div>
+            </div>
+          </div>
+          <div class="feedback" id="cmpFeedback" aria-live="polite"></div>
+          <div class="scoreline" id="cmpScore"></div>
+          <button class="btn accent" id="cmpNew" style="margin-top: 1rem">
+            ➡️ Next
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ WHAT'S NEXT? ============ -->
+      <section
+        class="panel"
+        id="panel-next"
+        role="tabpanel"
+        aria-labelledby="tab-next"
+        hidden
+      >
+        <div class="card">
+          <h2 class="station-title">
+            🔢 What's Next?
+            <span
+              id="nextRound"
+              style="font-size: 1.1rem; color: var(--ink-soft)"
+            ></span>
+          </h2>
+          <p class="instr">
+            <button
+              class="speak-btn"
+              id="nextSay"
+              aria-label="Hear the question"
+            >
+              🔊
+            </button>
+            <span id="nextPrompt">Find the number that is missing!</span>
+          </p>
+          <div class="big-num" id="nextSeq" style="font-size: 2.6rem"></div>
+          <div class="choices" id="nextChoices"></div>
+          <div class="feedback" id="nextFeedback" aria-live="polite"></div>
+          <div class="scoreline" id="nextScore"></div>
+          <button class="btn accent" id="nextNew" style="margin-top: 1rem">
+            ➡️ New One
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ PATTERNS ============ -->
+      <section
+        class="panel"
+        id="panel-patterns"
+        role="tabpanel"
+        aria-labelledby="tab-patterns"
+        hidden
+      >
+        <div class="card">
+          <h2 class="station-title">
+            🔺 Patterns
+            <span
+              id="ptnRound"
+              style="font-size: 1.1rem; color: var(--ink-soft)"
+            ></span>
+          </h2>
+          <p class="instr">
+            <button class="speak-btn" id="ptnSay" aria-label="Hear the pattern">
+              🔊
+            </button>
+            What comes next in the pattern? Tap it!
+          </p>
+          <div class="pattern-row" id="ptnSeq" aria-label="Pattern"></div>
+          <div class="choices" id="ptnChoices"></div>
+          <div class="feedback" id="ptnFeedback" aria-live="polite"></div>
+          <div class="scoreline" id="ptnScore"></div>
+          <button class="btn accent" id="ptnNew" style="margin-top: 1rem">
+            ➡️ New Pattern
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ SKIP COUNT ============ -->
+      <section
+        class="panel"
+        id="panel-skip"
+        role="tabpanel"
+        aria-labelledby="tab-skip"
+        hidden
+      >
+        <div class="card">
+          <h2 class="station-title">
+            👣 Skip Count
+            <span
+              id="skipRound"
+              style="font-size: 1.1rem; color: var(--ink-soft)"
+            ></span>
+          </h2>
+          <p class="instr">
+            <button
+              class="speak-btn"
+              id="skipSay"
+              aria-label="Hear the counting"
+            >
+              🔊
+            </button>
+            <span id="skipPrompt">Count by 2s! Tap the next number.</span>
+          </p>
+          <div class="big-num" id="skipSeq" style="font-size: 2.6rem"></div>
+          <div class="choices" id="skipChoices"></div>
+          <div class="feedback" id="skipFeedback" aria-live="polite"></div>
+          <div class="scoreline" id="skipScore"></div>
+          <button class="btn accent" id="skipNew" style="margin-top: 1rem">
+            ➡️ New Count
+          </button>
+        </div>
+      </section>
+
       <!-- ============ MORE OR LESS ============ -->
       <section
         class="panel"
@@ -916,7 +1171,7 @@
 
     <div id="burst" aria-hidden="true"></div>
 
-    <footer>EduWonderLab · Made with ❤️ for Noam</footer>
+    <footer>EduWonderLab · First Grade Readiness</footer>
 
     <script>
       "use strict";
@@ -1894,6 +2149,430 @@
       });
 
       /* ============================================================
+         STATION 7: COMPARE (more / less / equal as a number question)
+         ============================================================ */
+      var cmpLeftObj = document.getElementById("cmpLeftObj");
+      var cmpRightObj = document.getElementById("cmpRightObj");
+      var cmpLeftCount = document.getElementById("cmpLeftCount");
+      var cmpRightCount = document.getElementById("cmpRightCount");
+      var cmpLeft = document.getElementById("cmpLeft");
+      var cmpRight = document.getElementById("cmpRight");
+      var cmpSign = document.getElementById("cmpSign");
+      var cmpFeedback = document.getElementById("cmpFeedback");
+      var cmpPrompt = document.getElementById("cmpPrompt");
+      var cmpRoundEl = document.getElementById("cmpRound");
+      var cmpScoreEl = document.getElementById("cmpScore");
+      var cmpL = 0,
+        cmpR = 0,
+        cmpMode = "more",
+        cmpRound = 0,
+        cmpScore = 0;
+
+      function cmpQuestionText() {
+        if (cmpMode === "more") return "Tap the group that has MORE.";
+        if (cmpMode === "less") return "Tap the group that has LESS.";
+        return "Are they EQUAL? Tap a group if both are the same.";
+      }
+
+      function newCompare() {
+        cmpFeedback.textContent = "";
+        cmpFeedback.className = "feedback";
+        cmpRound++;
+        cmpRoundEl.textContent = "Round " + cmpRound;
+        cmpLeft.classList.remove("correct", "wrong");
+        cmpRight.classList.remove("correct", "wrong");
+        // Each round randomly asks MORE, LESS, or EQUAL.
+        cmpMode = pick(["more", "more", "less", "less", "equal"]);
+        var emojiL = pickEmoji();
+        var emojiR = pickEmoji();
+        var cGuard = 0;
+        do {
+          if (cmpMode === "equal") {
+            cmpL = rand(1, 15);
+            cmpR = cmpL;
+          } else {
+            cmpL = rand(1, 15);
+            cmpR = rand(1, 15);
+            while (cmpR === cmpL) cmpR = rand(1, 15); // ensure a clear winner
+          }
+          cGuard++;
+        } while (
+          isRepeat("cmp", cmpMode + ":" + cmpL + ":" + cmpR) &&
+          cGuard < 50
+        );
+        rememberKey("cmp", cmpMode + ":" + cmpL + ":" + cmpR);
+        fillCount(cmpLeftObj, cmpL, emojiL);
+        fillCount(cmpRightObj, cmpR, emojiR);
+        cmpLeftCount.textContent = cmpL;
+        cmpRightCount.textContent = cmpR;
+        cmpSign.textContent = "?";
+        cmpPrompt.textContent = cmpQuestionText();
+        speak(cmpQuestionText());
+      }
+
+      function judgeCompare(side) {
+        cmpSign.textContent = signFor(cmpL, cmpR);
+        var sideEl = side === "left" ? cmpLeft : cmpRight;
+        var ok;
+        if (cmpMode === "more") ok = side === (cmpL > cmpR ? "left" : "right");
+        else if (cmpMode === "less")
+          ok = side === (cmpL < cmpR ? "left" : "right");
+        else ok = cmpL === cmpR; // equal: correct only when both match
+
+        if (ok) {
+          sideEl.classList.add("correct");
+          praise(cmpFeedback);
+          speak(pick(PRAISE));
+          cmpScore++;
+          cmpScoreEl.textContent = "Correct: " + cmpScore;
+          addStar();
+        } else {
+          sideEl.classList.add("wrong");
+          tryAgain(cmpFeedback);
+          speak("Try again!");
+          setTimeout(function () {
+            sideEl.classList.remove("wrong");
+            cmpSign.textContent = "?";
+          }, 500);
+        }
+      }
+
+      function bindCmpSide(el, side) {
+        el.addEventListener("click", function () {
+          judgeCompare(side);
+        });
+        el.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            judgeCompare(side);
+          }
+        });
+      }
+      bindCmpSide(cmpLeft, "left");
+      bindCmpSide(cmpRight, "right");
+      document.getElementById("cmpNew").addEventListener("click", newCompare);
+      document.getElementById("cmpSay").addEventListener("click", function () {
+        speak(cmpPrompt.textContent);
+      });
+
+      /* ============================================================
+         STATION 8: WHAT'S NEXT? (number order: before / after / missing)
+         ============================================================ */
+      var nextSeq = document.getElementById("nextSeq");
+      var nextChoices = document.getElementById("nextChoices");
+      var nextFeedback = document.getElementById("nextFeedback");
+      var nextPrompt = document.getElementById("nextPrompt");
+      var nextRoundEl = document.getElementById("nextRound");
+      var nextScoreEl = document.getElementById("nextScore");
+      var nextAnswer = 0,
+        nextRound = 0,
+        nextScore = 0,
+        nextRead = "";
+
+      function newNext() {
+        nextFeedback.textContent = "";
+        nextFeedback.className = "feedback";
+        nextRound++;
+        nextRoundEl.textContent = "Round " + nextRound;
+        // kind: 0 after, 1 before, 2 missing-middle, 3 fill-in-a-run
+        var kind,
+          n,
+          key,
+          nGuard = 0;
+        do {
+          kind = rand(0, 3);
+          if (kind === 0) {
+            n = rand(0, 19);
+            nextAnswer = n + 1;
+            nextPrompt.textContent = "What comes after " + n + "?";
+            nextSeq.textContent = n + ", __";
+            nextRead = "What comes after " + n + "?";
+          } else if (kind === 1) {
+            n = rand(1, 20);
+            nextAnswer = n - 1;
+            nextPrompt.textContent = "What comes before " + n + "?";
+            nextSeq.textContent = "__, " + n;
+            nextRead = "What comes before " + n + "?";
+          } else if (kind === 2) {
+            n = rand(1, 18);
+            nextAnswer = n + 1;
+            nextPrompt.textContent = "Fill in the missing number.";
+            nextSeq.textContent = n + ", __, " + (n + 2);
+            nextRead = n + ", blank, " + (n + 2) + ". What is missing?";
+          } else {
+            n = rand(0, 16);
+            nextAnswer = n + 3;
+            nextPrompt.textContent = "Fill in the missing number.";
+            nextSeq.textContent = n + ", " + (n + 1) + ", " + (n + 2) + ", __";
+            nextRead =
+              n + ", " + (n + 1) + ", " + (n + 2) + ", what comes next?";
+          }
+          key = kind + ":" + n;
+          nGuard++;
+        } while (isRepeat("next", key) && nGuard < 30);
+        rememberKey("next", key);
+        speak(nextRead);
+        var choices = buildChoices(
+          nextAnswer,
+          Math.max(0, nextAnswer - 5),
+          nextAnswer + 5,
+          4,
+        );
+        nextChoices.innerHTML = "";
+        choices.forEach(function (c) {
+          var b = document.createElement("button");
+          b.className = "choice";
+          b.textContent = c;
+          b.setAttribute("aria-label", "Answer " + c);
+          b.addEventListener("click", function () {
+            if (c === nextAnswer) {
+              b.classList.add("correct");
+              nextSeq.textContent = nextSeq.textContent.replace(
+                "__",
+                nextAnswer,
+              );
+              praise(nextFeedback);
+              speak(pick(PRAISE));
+              nextScore++;
+              nextScoreEl.textContent = "Correct: " + nextScore;
+              addStar();
+              Array.prototype.forEach.call(nextChoices.children, function (x) {
+                x.disabled = true;
+              });
+            } else {
+              b.classList.add("wrong");
+              tryAgain(nextFeedback);
+              speak("Try again!");
+              setTimeout(function () {
+                b.classList.remove("wrong");
+              }, 400);
+            }
+          });
+          nextChoices.appendChild(b);
+        });
+      }
+      document.getElementById("nextNew").addEventListener("click", newNext);
+      document.getElementById("nextSay").addEventListener("click", function () {
+        speak(nextRead);
+      });
+
+      /* ============================================================
+         STATION 9: PATTERNS (repeating shape/emoji patterns AB/AAB/ABB/ABC)
+         ============================================================ */
+      var ptnSeq = document.getElementById("ptnSeq");
+      var ptnChoices = document.getElementById("ptnChoices");
+      var ptnFeedback = document.getElementById("ptnFeedback");
+      var ptnRoundEl = document.getElementById("ptnRound");
+      var ptnScoreEl = document.getElementById("ptnScore");
+      // Bold, easy-to-tell-apart emojis for visual pattern cores.
+      var PTN_EMOJIS = [
+        "🔺",
+        "🔵",
+        "🟡",
+        "🟢",
+        "🟣",
+        "🟥",
+        "⭐",
+        "❤️",
+        "🍎",
+        "🍌",
+        "🐶",
+        "🐱",
+        "🌸",
+        "🐠",
+        "🎈",
+      ];
+      var ptnAnswer = "",
+        ptnRound = 0,
+        ptnScore = 0;
+
+      function pickPtnEmojis(howMany) {
+        return shuffle(PTN_EMOJIS).slice(0, howMany);
+      }
+
+      function newPatterns() {
+        ptnFeedback.textContent = "";
+        ptnFeedback.className = "feedback";
+        ptnRound++;
+        ptnRoundEl.textContent = "Round " + ptnRound;
+        // Pattern cores: AB, AAB, ABB, ABC.
+        var cores = [
+          [0, 1],
+          [0, 0, 1],
+          [0, 1, 1],
+          [0, 1, 2],
+        ];
+        var full,
+          key,
+          pGuard = 0;
+        do {
+          var core = pick(cores);
+          var distinct = Math.max.apply(null, core) + 1;
+          var letters = pickPtnEmojis(distinct);
+          // repeat the core ~3 times, then the next item is the blank.
+          var reps = 3;
+          full = [];
+          for (var r = 0; r < reps; r++) {
+            for (var i = 0; i < core.length; i++) full.push(letters[core[i]]);
+          }
+          // the blank continues the cycle
+          ptnAnswer = letters[core[full.length % core.length]];
+          key = full.join("") + ">" + ptnAnswer;
+          pGuard++;
+        } while (isRepeat("ptn", key) && pGuard < 40);
+        rememberKey("ptn", key);
+
+        ptnSeq.innerHTML = "";
+        full.forEach(function (em) {
+          var span = document.createElement("span");
+          span.className = "pattern-item";
+          span.textContent = em;
+          ptnSeq.appendChild(span);
+        });
+        var blank = document.createElement("span");
+        blank.className = "pattern-item blank";
+        blank.textContent = "?";
+        blank.setAttribute("aria-label", "missing item");
+        ptnSeq.appendChild(blank);
+        speak("What comes next in the pattern?");
+
+        // build choices: the answer plus other emojis used in the pattern
+        var pool = {};
+        full.forEach(function (e) {
+          pool[e] = true;
+        });
+        var opts = [ptnAnswer];
+        Object.keys(pool).forEach(function (e) {
+          if (opts.indexOf(e) === -1) opts.push(e);
+        });
+        // pad to at least 3 options with fresh emojis if needed
+        var extra = shuffle(PTN_EMOJIS);
+        for (var k = 0; opts.length < 3 && k < extra.length; k++) {
+          if (opts.indexOf(extra[k]) === -1) opts.push(extra[k]);
+        }
+        opts = shuffle(opts);
+        ptnChoices.innerHTML = "";
+        opts.forEach(function (em) {
+          var b = document.createElement("button");
+          b.className = "choice";
+          b.textContent = em;
+          b.setAttribute("aria-label", "this one");
+          b.addEventListener("click", function () {
+            if (em === ptnAnswer) {
+              b.classList.add("correct");
+              blank.classList.remove("blank");
+              blank.classList.add("pattern-item");
+              blank.textContent = ptnAnswer;
+              praise(ptnFeedback);
+              speak(pick(PRAISE));
+              ptnScore++;
+              ptnScoreEl.textContent = "Correct: " + ptnScore;
+              addStar();
+              Array.prototype.forEach.call(ptnChoices.children, function (x) {
+                x.disabled = true;
+              });
+            } else {
+              b.classList.add("wrong");
+              tryAgain(ptnFeedback);
+              speak("Try again!");
+              setTimeout(function () {
+                b.classList.remove("wrong");
+              }, 400);
+            }
+          });
+          ptnChoices.appendChild(b);
+        });
+      }
+      document.getElementById("ptnNew").addEventListener("click", newPatterns);
+      document.getElementById("ptnSay").addEventListener("click", function () {
+        speak("What comes next in the pattern?");
+      });
+
+      /* ============================================================
+         STATION 10: SKIP COUNT (by 2s, 5s, 10s)
+         ============================================================ */
+      var skipSeq = document.getElementById("skipSeq");
+      var skipChoices = document.getElementById("skipChoices");
+      var skipFeedback = document.getElementById("skipFeedback");
+      var skipPrompt = document.getElementById("skipPrompt");
+      var skipRoundEl = document.getElementById("skipRound");
+      var skipScoreEl = document.getElementById("skipScore");
+      var skipAnswer = 0,
+        skipRound = 0,
+        skipScore = 0,
+        skipRead = "";
+
+      function newSkip() {
+        skipFeedback.textContent = "";
+        skipFeedback.className = "feedback";
+        skipRound++;
+        skipRoundEl.textContent = "Round " + skipRound;
+        var seq,
+          key,
+          sGuard = 0;
+        do {
+          var step = pick([2, 2, 5, 10]);
+          var terms = rand(3, 4); // show 3 or 4 numbers, ask for the next
+          // start at a multiple of the step so the count stays tidy
+          var maxStart = step === 2 ? 6 : step === 5 ? 10 : 20;
+          var start = rand(0, Math.floor(maxStart / step)) * step;
+          seq = [];
+          for (var t = 0; t < terms; t++) seq.push(start + t * step);
+          skipAnswer = start + terms * step;
+          skipPrompt.textContent =
+            "Count by " + step + "s! Tap the next number.";
+          key = step + ":" + seq.join(",");
+          sGuard++;
+        } while (isRepeat("skip", key) && sGuard < 40);
+        rememberKey("skip", key);
+        skipSeq.textContent = seq.join(", ") + ", ?";
+        skipRead = seq.join(", ") + ", what comes next?";
+        speak(skipRead);
+        var choices = buildChoices(
+          skipAnswer,
+          Math.max(0, skipAnswer - 10),
+          skipAnswer + 10,
+          4,
+        );
+        skipChoices.innerHTML = "";
+        choices.forEach(function (c) {
+          var b = document.createElement("button");
+          b.className = "choice";
+          b.textContent = c;
+          b.setAttribute("aria-label", "Answer " + c);
+          b.addEventListener("click", function () {
+            if (c === skipAnswer) {
+              b.classList.add("correct");
+              skipSeq.textContent = skipSeq.textContent.replace(
+                "?",
+                skipAnswer,
+              );
+              praise(skipFeedback);
+              speak(pick(PRAISE));
+              skipScore++;
+              skipScoreEl.textContent = "Correct: " + skipScore;
+              addStar();
+              Array.prototype.forEach.call(skipChoices.children, function (x) {
+                x.disabled = true;
+              });
+            } else {
+              b.classList.add("wrong");
+              tryAgain(skipFeedback);
+              speak("Try again!");
+              setTimeout(function () {
+                b.classList.remove("wrong");
+              }, 400);
+            }
+          });
+          skipChoices.appendChild(b);
+        });
+      }
+      document.getElementById("skipNew").addEventListener("click", newSkip);
+      document.getElementById("skipSay").addEventListener("click", function () {
+        speak(skipRead);
+      });
+
+      /* ============================================================
          INIT
          ============================================================ */
       loadStars();
@@ -1905,6 +2584,10 @@
       newFind();
       newMore();
       newPattern();
+      newCompare();
+      newNext();
+      newPatterns();
+      newSkip();
     </script>
   </body>
 </html>

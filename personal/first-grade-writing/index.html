@@ -529,6 +529,79 @@
         display: inline-block;
       }
 
+      /* ---------- Choice grids (Big & Small, Fix It) ---------- */
+      .choice-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.6rem;
+        margin: 0.6rem 0;
+      }
+      .choice {
+        font-family: inherit;
+        cursor: pointer;
+        border: 3px solid #e3ddff;
+        background: #fff;
+        color: var(--accent-dark);
+        font-weight: 800;
+        font-size: 2.2rem;
+        min-width: 72px;
+        min-height: 72px;
+        padding: 0.4rem 0.8rem;
+        border-radius: 14px;
+        box-shadow: 0 4px 0 #cfc3ff;
+        transition:
+          transform 0.08s,
+          background 0.15s,
+          border-color 0.15s;
+      }
+      .choice:active {
+        transform: translateY(3px);
+        box-shadow: 0 1px 0 #cfc3ff;
+      }
+      .choice:focus-visible {
+        outline: 3px solid var(--secondary);
+        outline-offset: 2px;
+      }
+      .choice.correct {
+        background: var(--good-soft);
+        border-color: var(--good);
+        color: var(--good);
+      }
+      .choice.wrong {
+        background: #ffeef2;
+        border-color: #ff5d8f;
+        color: #d23467;
+      }
+      .choice[disabled] {
+        cursor: default;
+        opacity: 0.55;
+      }
+      .choice-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        margin: 0.6rem 0;
+      }
+      .choice-list .choice {
+        font-size: 1.4rem;
+        width: 100%;
+        min-height: 60px;
+        text-align: center;
+        line-height: 1.2;
+      }
+      .fixit-sentence {
+        font-size: 1.9rem;
+        font-weight: 800;
+        color: var(--ink);
+        margin-bottom: 0.4rem;
+      }
+      .fixit-q {
+        color: var(--muted);
+        font-size: 1.1rem;
+        font-weight: 800;
+      }
+
       /* ---------- Star burst ---------- */
       #burst {
         position: fixed;
@@ -667,6 +740,46 @@
           tabindex="-1"
         >
           🎨 Draw &amp; Label
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-bigsmall"
+          aria-controls="panel-bigsmall"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          🔠🔡 Big &amp; Small
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-sbuild"
+          aria-controls="panel-sbuild"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          🔀 Word Order
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-fixit"
+          aria-controls="panel-fixit"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          🛠️ Fix It!
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-dlab"
+          aria-controls="panel-dlab"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          🖍️ Free Draw
         </button>
       </div>
     </header>
@@ -906,11 +1019,166 @@
           </div>
         </div>
       </section>
+
+      <!-- ===== BIG & SMALL ===== -->
+      <section
+        class="panel"
+        id="panel-bigsmall"
+        role="tabpanel"
+        aria-labelledby="tab-bigsmall"
+        tabindex="0"
+      >
+        <div class="card">
+          <h2>Big &amp; Small Letters</h2>
+          <p class="lead">
+            Look at the BIG letter. Tap its little buddy — the small letter that
+            matches!
+          </p>
+          <div class="target-card">
+            <div class="target-emoji" id="bsTarget" aria-hidden="true">A</div>
+            <button class="btn sec" id="bs-say" style="margin-top: 0.4rem">
+              🔊 Say Letter
+            </button>
+          </div>
+          <div
+            class="choice-grid"
+            id="bsChoices"
+            role="group"
+            aria-label="Pick the matching small letter"
+          ></div>
+          <div class="btn-row">
+            <button class="btn" id="bs-next">New Letter ➡️</button>
+          </div>
+          <div class="feedback" id="bs-fb">
+            <span class="ck" aria-hidden="true">✅</span><span></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== SENTENCE BUILDER ===== -->
+      <section
+        class="panel"
+        id="panel-sbuild"
+        role="tabpanel"
+        aria-labelledby="tab-sbuild"
+        tabindex="0"
+      >
+        <div class="card">
+          <h2>Sentence Builder</h2>
+          <p class="lead">
+            Tap the word tiles in order to make a sentence. Capital first, dot
+            last!
+          </p>
+          <button class="btn sec" id="sb-hint" style="margin-bottom: 0.5rem">
+            🔊 Hear a hint
+          </button>
+          <div
+            class="sentence-strip"
+            id="sbStrip"
+            aria-label="Your sentence"
+            aria-live="polite"
+          ></div>
+          <div class="word-bank" id="sbBank" aria-label="Word tiles"></div>
+          <div class="btn-row">
+            <button class="btn ghost" id="sb-clear">🧽 Start Over</button>
+            <button class="btn" id="sb-next">New One ➡️</button>
+          </div>
+          <div class="feedback" id="sb-fb">
+            <span class="ck" aria-hidden="true">✅</span><span></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== FIX IT! ===== -->
+      <section
+        class="panel"
+        id="panel-fixit"
+        role="tabpanel"
+        aria-labelledby="tab-fixit"
+        tabindex="0"
+      >
+        <div class="card">
+          <h2>Fix It!</h2>
+          <p class="lead">
+            Something is wrong with this sentence. Tap the choice that fixes it!
+          </p>
+          <div class="target-card">
+            <div class="fixit-sentence" id="fxSentence">the cat is big.</div>
+            <div class="fixit-q" id="fxQuestion">Pick the fixed sentence:</div>
+            <button class="btn sec" id="fx-say" style="margin-top: 0.5rem">
+              🔊 Read it
+            </button>
+          </div>
+          <div
+            class="choice-list"
+            id="fxChoices"
+            role="group"
+            aria-label="Pick the fix"
+          ></div>
+          <div class="btn-row">
+            <button class="btn" id="fx-next">New One ➡️</button>
+          </div>
+          <div class="feedback" id="fx-fb">
+            <span class="ck" aria-hidden="true">✅</span><span></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== DRAW & LABEL 2 ===== -->
+      <section
+        class="panel"
+        id="panel-dlab"
+        role="tabpanel"
+        aria-labelledby="tab-dlab"
+        tabindex="0"
+      >
+        <div class="card">
+          <h2>Draw &amp; Label</h2>
+          <div class="prompt-badge" id="dlPrompt">Draw your family! 👨‍👩‍👧</div>
+          <button
+            class="btn sec"
+            id="dl-prompt-say"
+            style="margin-bottom: 0.6rem"
+          >
+            🔊 Read Prompt
+          </button>
+          <div
+            class="swatches"
+            id="dlSwatches"
+            role="group"
+            aria-label="Pick a color"
+          ></div>
+          <div class="canvas-wrap">
+            <canvas id="dlabCanvas" aria-label="Drawing area"></canvas>
+          </div>
+          <div style="margin-top: 0.9rem">
+            <label class="field-label" for="dlStampLabel"
+              >Pick a label word for your picture:</label
+            >
+            <div
+              class="word-bank"
+              id="dlStamps"
+              aria-label="Label word choices"
+            ></div>
+            <div class="sentence-strip" id="dlLabelLine" aria-label="My label">
+              <span id="dlLabelText" style="display: none"></span>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn ghost" id="dlab-clear">🧽 Clear</button>
+            <button class="btn" id="dlab-next">New Prompt ➡️</button>
+            <button class="btn good" id="dlab-done">Done ⭐</button>
+          </div>
+          <div class="feedback" id="dlab-fb">
+            <span class="ck" aria-hidden="true">✅</span><span></span>
+          </div>
+        </div>
+      </section>
     </main>
 
     <div id="burst" aria-hidden="true"></div>
 
-    <footer>EduWonderLab · Made with ❤️ for Noam</footer>
+    <footer>EduWonderLab · First Grade Readiness</footer>
 
     <script>
       "use strict";
@@ -2123,6 +2391,609 @@
           });
         setPrompt();
 
+        /* =================== Big & Small (uppercase ↔ lowercase) =================== */
+        var BS_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+        var BS_SOUNDS = {
+          A: "a, as in apple",
+          B: "buh, as in ball",
+          C: "kuh, as in cat",
+          D: "duh, as in dog",
+          E: "eh, as in egg",
+          F: "fff, as in fish",
+          G: "guh, as in goat",
+          H: "huh, as in hat",
+          I: "ih, as in igloo",
+          J: "juh, as in jam",
+          K: "kuh, as in kite",
+          L: "lll, as in lion",
+          M: "mmm, as in moon",
+          N: "nnn, as in net",
+          O: "ah, as in octopus",
+          P: "puh, as in pig",
+          Q: "kwuh, as in queen",
+          R: "rrr, as in red",
+          S: "sss, as in sun",
+          T: "tuh, as in top",
+          U: "uh, as in umbrella",
+          V: "vvv, as in van",
+          W: "wuh, as in web",
+          X: "ks, as in box",
+          Y: "yuh, as in yo-yo",
+          Z: "zzz, as in zebra",
+        };
+        var bsTargetEl = document.getElementById("bsTarget");
+        var bsChoicesEl = document.getElementById("bsChoices");
+        var bsCurrent = "A";
+
+        function bsSay() {
+          var L = bsCurrent;
+          speak(
+            "Big " + L + ", little " + L.toLowerCase() + ". " + BS_SOUNDS[L],
+            "en-US",
+            0.78,
+          );
+        }
+        function bsNew() {
+          var L = bsCurrent;
+          while (L === bsCurrent && BS_LETTERS.length > 1) {
+            L = BS_LETTERS[Math.floor(Math.random() * BS_LETTERS.length)];
+          }
+          bsCurrent = L;
+          bsTargetEl.textContent = L;
+          // build 3 choices: the correct lowercase + 2 distractors
+          var others = BS_LETTERS.filter(function (x) {
+            return x !== L;
+          });
+          others = shuffle(others).slice(0, 2);
+          var opts = shuffle([L].concat(others));
+          bsChoicesEl.innerHTML = "";
+          opts.forEach(function (optL) {
+            var b = document.createElement("button");
+            b.className = "choice";
+            b.type = "button";
+            b.textContent = optL.toLowerCase();
+            b.setAttribute("aria-label", "Small letter " + optL.toLowerCase());
+            b.addEventListener("click", function () {
+              if (b.disabled) return;
+              if (optL === L) {
+                b.classList.add("correct");
+                Array.prototype.forEach.call(
+                  bsChoicesEl.children,
+                  function (c) {
+                    c.disabled = true;
+                  },
+                );
+                celebrate(
+                  document.getElementById("bs-fb"),
+                  "Big " + L + " matches little " + L.toLowerCase(),
+                );
+                setTimeout(bsNew, 1500);
+              } else {
+                b.classList.add("wrong");
+                b.disabled = true;
+                showFeedback(
+                  document.getElementById("bs-fb"),
+                  "Try again — find the " + L.toLowerCase() + "!",
+                );
+                speak("Try again", "en-US", 0.85);
+              }
+            });
+            bsChoicesEl.appendChild(b);
+          });
+          bsSay();
+        }
+        document.getElementById("bs-say").addEventListener("click", bsSay);
+        document.getElementById("bs-next").addEventListener("click", bsNew);
+        bsNew();
+
+        /* =================== Sentence Builder (tap in order) =================== */
+        var SB_SENTENCES = [
+          ["I", "like", "my", "dog", "."],
+          ["We", "play", "in", "the", "sun", "."],
+          ["My", "cat", "is", "soft", "."],
+          ["I", "can", "see", "a", "bird", "."],
+          ["The", "frog", "is", "green", "."],
+          ["I", "love", "my", "mom", "."],
+          ["We", "see", "a", "red", "ball", "."],
+          ["My", "dad", "is", "tall", "."],
+          ["I", "have", "a", "blue", "hat", "."],
+          ["The", "dog", "can", "run", "fast", "."],
+          ["We", "like", "to", "read", "books", "."],
+          ["A", "bee", "is", "on", "the", "flower", "."],
+        ];
+        var sbOrder = [];
+        var sbPos = 0;
+        var sbIdx = 0;
+        var sbBuilt = [];
+        var sbStrip = document.getElementById("sbStrip");
+        var sbBank = document.getElementById("sbBank");
+
+        function sbAdvance() {
+          if (!sbOrder.length || sbPos >= sbOrder.length) {
+            sbOrder = [];
+            for (var i = 0; i < SB_SENTENCES.length; i++) sbOrder.push(i);
+            sbOrder = shuffle(sbOrder);
+            sbPos = 0;
+          }
+          sbIdx = sbOrder[sbPos];
+          sbPos++;
+        }
+        function sbReadable(arr) {
+          return arr.join(" ").replace(/\s+\./, ".");
+        }
+        function sbLoad() {
+          sbBuilt = [];
+          sbStrip.innerHTML = "";
+          var target = SB_SENTENCES[sbIdx];
+          var scrambled = shuffle(target);
+          if (scrambled.join(" ") === target.join(" ") && target.length > 1) {
+            scrambled = shuffle(scrambled);
+          }
+          sbBank.innerHTML = "";
+          scrambled.forEach(function (word, k) {
+            var b = document.createElement("button");
+            b.className = "word";
+            b.type = "button";
+            b.textContent = word;
+            b.dataset.word = word;
+            b.dataset.id = "sw" + k;
+            b.setAttribute(
+              "aria-label",
+              word === "." ? "period" : "word " + word,
+            );
+            b.addEventListener("click", function () {
+              if (b.disabled) return;
+              b.disabled = true;
+              var placed = document.createElement("button");
+              placed.className = "word placed";
+              placed.type = "button";
+              placed.textContent = word;
+              placed.setAttribute(
+                "aria-label",
+                "Remove " + (word === "." ? "period" : word),
+              );
+              placed.addEventListener("click", function () {
+                var i = sbBuilt.findIndex(function (o) {
+                  return o.placed === placed;
+                });
+                if (i > -1) sbBuilt.splice(i, 1);
+                if (placed.parentNode) placed.parentNode.removeChild(placed);
+                b.disabled = false;
+              });
+              sbStrip.appendChild(placed);
+              sbBuilt.push({ word: word, placed: placed });
+              sbCheck();
+            });
+            sbBank.appendChild(b);
+          });
+        }
+        function sbCheck() {
+          var target = SB_SENTENCES[sbIdx];
+          if (sbBuilt.length !== target.length) return;
+          var built = sbBuilt.map(function (o) {
+            return o.word;
+          });
+          if (built.join(" ") === target.join(" ")) {
+            celebrate(document.getElementById("sb-fb"), sbReadable(target));
+            setTimeout(function () {
+              sbAdvance();
+              sbLoad();
+              speak("Make a new sentence", "en-US", 0.85);
+            }, 1800);
+          } else {
+            showFeedback(
+              document.getElementById("sb-fb"),
+              "Try the order again — capital first, dot last!",
+            );
+            speak("Try again", "en-US", 0.85);
+          }
+        }
+        document
+          .getElementById("sb-hint")
+          .addEventListener("click", function () {
+            speak(sbReadable(SB_SENTENCES[sbIdx]), "en-US", 0.75);
+          });
+        document
+          .getElementById("sb-clear")
+          .addEventListener("click", function () {
+            sbBuilt = [];
+            sbStrip.innerHTML = "";
+            Array.prototype.forEach.call(sbBank.children, function (b) {
+              b.disabled = false;
+            });
+          });
+        document
+          .getElementById("sb-next")
+          .addEventListener("click", function () {
+            sbAdvance();
+            sbLoad();
+            speak("Make a new sentence", "en-US", 0.85);
+          });
+        sbAdvance();
+        sbLoad();
+
+        /* =================== Fix It! (capitals & end marks) =================== */
+        // Each item: bad sentence shown, choices (one correct), question prompt.
+        var FIXIT = [
+          {
+            bad: "the cat is big.",
+            q: "It needs a CAPITAL at the start. Pick the fix:",
+            correct: "The cat is big.",
+            wrong: ["the cat is Big.", "the Cat is big."],
+          },
+          {
+            bad: "i like my dog.",
+            q: "It needs a CAPITAL at the start. Pick the fix:",
+            correct: "I like my dog.",
+            wrong: ["i Like my dog.", "i like my Dog."],
+          },
+          {
+            bad: "We play outside",
+            q: "It needs an end mark. Pick the fix:",
+            correct: "We play outside.",
+            wrong: ["We play outside,", "We play outside"],
+          },
+          {
+            bad: "Are you happy",
+            q: "This is a question. Pick the fix:",
+            correct: "Are you happy?",
+            wrong: ["Are you happy.", "Are you happy!"],
+          },
+          {
+            bad: "the sun is hot",
+            q: "It needs a CAPITAL and a dot. Pick the fix:",
+            correct: "The sun is hot.",
+            wrong: ["the sun is hot.", "The sun is hot"],
+          },
+          {
+            bad: "my mom is kind.",
+            q: "It needs a CAPITAL at the start. Pick the fix:",
+            correct: "My mom is kind.",
+            wrong: ["my Mom is kind.", "my mom is Kind."],
+          },
+          {
+            bad: "We can run fast",
+            q: "It needs an end mark. Pick the fix:",
+            correct: "We can run fast.",
+            wrong: ["We can run fast", "We can run fast,"],
+          },
+          {
+            bad: "do you like cake",
+            q: "This is a question. Pick the fix:",
+            correct: "Do you like cake?",
+            wrong: ["do you like cake?", "Do you like cake."],
+          },
+        ];
+        var fxOrder = [];
+        var fxPos = 0;
+        var fxIdx = 0;
+        var fxSentenceEl = document.getElementById("fxSentence");
+        var fxQuestionEl = document.getElementById("fxQuestion");
+        var fxChoicesEl = document.getElementById("fxChoices");
+
+        function fxAdvance() {
+          if (!fxOrder.length || fxPos >= fxOrder.length) {
+            fxOrder = [];
+            for (var i = 0; i < FIXIT.length; i++) fxOrder.push(i);
+            fxOrder = shuffle(fxOrder);
+            fxPos = 0;
+          }
+          fxIdx = fxOrder[fxPos];
+          fxPos++;
+        }
+        function fxLoad() {
+          var item = FIXIT[fxIdx];
+          fxSentenceEl.textContent = item.bad;
+          fxQuestionEl.textContent = item.q;
+          var opts = shuffle([item.correct].concat(item.wrong));
+          fxChoicesEl.innerHTML = "";
+          opts.forEach(function (text) {
+            var b = document.createElement("button");
+            b.className = "choice";
+            b.type = "button";
+            b.textContent = text;
+            b.setAttribute("aria-label", text);
+            b.addEventListener("click", function () {
+              if (b.disabled) return;
+              if (text === item.correct) {
+                b.classList.add("correct");
+                Array.prototype.forEach.call(
+                  fxChoicesEl.children,
+                  function (c) {
+                    c.disabled = true;
+                  },
+                );
+                celebrate(document.getElementById("fx-fb"), item.correct);
+                setTimeout(function () {
+                  fxAdvance();
+                  fxLoad();
+                  speak("Here is a new one to fix", "en-US", 0.85);
+                }, 1700);
+              } else {
+                b.classList.add("wrong");
+                b.disabled = true;
+                showFeedback(
+                  document.getElementById("fx-fb"),
+                  "Not quite — try another!",
+                );
+                speak("Try again", "en-US", 0.85);
+              }
+            });
+            fxChoicesEl.appendChild(b);
+          });
+        }
+        document
+          .getElementById("fx-say")
+          .addEventListener("click", function () {
+            speak(FIXIT[fxIdx].bad, "en-US", 0.8);
+          });
+        document
+          .getElementById("fx-next")
+          .addEventListener("click", function () {
+            fxAdvance();
+            fxLoad();
+            speak("Here is a new one to fix", "en-US", 0.85);
+          });
+        fxAdvance();
+        fxLoad();
+
+        /* =================== Draw & Label 2 (draw + stamp a label word) =================== */
+        var dlabCanvas = document.getElementById("dlabCanvas");
+        var dlctx = dlabCanvas ? dlabCanvas.getContext("2d") : null;
+        var dlColor = COLORS[0];
+        var dlErasing = false;
+        var dlDrawing = false,
+          dlLast = null;
+        var dlSwatchEls = [];
+
+        var dlSwatchesEl = document.getElementById("dlSwatches");
+        COLORS.forEach(function (c, i) {
+          var b = document.createElement("button");
+          b.className = "swatch";
+          b.type = "button";
+          b.style.background = c;
+          b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+          b.setAttribute("aria-label", "Color " + (i + 1));
+          b.addEventListener("click", function () {
+            dlColor = c;
+            dlErasing = false;
+            dlSwatchEls.forEach(function (s) {
+              s.setAttribute("aria-pressed", "false");
+            });
+            b.setAttribute("aria-pressed", "true");
+          });
+          dlSwatchesEl.appendChild(b);
+          dlSwatchEls.push(b);
+        });
+        var dlEraser = document.createElement("button");
+        dlEraser.className = "swatch eraser";
+        dlEraser.type = "button";
+        dlEraser.textContent = "🧹";
+        dlEraser.setAttribute("aria-label", "Eraser");
+        dlEraser.setAttribute("aria-pressed", "false");
+        dlEraser.addEventListener("click", function () {
+          dlErasing = true;
+          dlSwatchEls.forEach(function (s) {
+            s.setAttribute("aria-pressed", "false");
+          });
+          dlEraser.setAttribute("aria-pressed", "true");
+        });
+        dlSwatchesEl.appendChild(dlEraser);
+        dlSwatchEls.push(dlEraser);
+
+        function fitDlab() {
+          if (!dlabCanvas || !dlctx) return;
+          var wrap = dlabCanvas.parentNode;
+          var cssW = wrap.clientWidth;
+          var cssH = Math.max(260, Math.round(cssW * 0.62));
+          var dpr = window.devicePixelRatio || 1;
+          var prev = null;
+          try {
+            if (dlabCanvas.width > 0) prev = dlabCanvas.toDataURL();
+          } catch (e) {}
+          dlabCanvas.style.width = cssW + "px";
+          dlabCanvas.style.height = cssH + "px";
+          dlabCanvas.width = Math.round(cssW * dpr);
+          dlabCanvas.height = Math.round(cssH * dpr);
+          dlctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          dlctx.fillStyle = "#ffffff";
+          dlctx.fillRect(0, 0, cssW, cssH);
+          if (prev) {
+            var img = new Image();
+            img.onload = function () {
+              dlctx.drawImage(img, 0, 0, cssW, cssH);
+            };
+            img.src = prev;
+          }
+          dlabCanvas._cssW = cssW;
+          dlabCanvas._cssH = cssH;
+        }
+        function dlpos(e) {
+          var r = dlabCanvas.getBoundingClientRect();
+          var cx, cy;
+          if (e.touches && e.touches.length) {
+            cx = e.touches[0].clientX;
+            cy = e.touches[0].clientY;
+          } else {
+            cx = e.clientX;
+            cy = e.clientY;
+          }
+          return { x: cx - r.left, y: cy - r.top };
+        }
+        function dlStart(e) {
+          if (!dlctx) return;
+          dlDrawing = true;
+          dlLast = dlpos(e);
+          dlctx.beginPath();
+          dlctx.fillStyle = dlErasing ? "#ffffff" : dlColor;
+          dlctx.arc(dlLast.x, dlLast.y, dlErasing ? 14 : 5, 0, Math.PI * 2);
+          dlctx.fill();
+        }
+        function dlMove(e) {
+          if (!dlDrawing || !dlctx) return;
+          var p = dlpos(e);
+          dlctx.strokeStyle = dlErasing ? "#ffffff" : dlColor;
+          dlctx.lineWidth = dlErasing ? 28 : 9;
+          dlctx.lineCap = "round";
+          dlctx.lineJoin = "round";
+          dlctx.beginPath();
+          dlctx.moveTo(dlLast.x, dlLast.y);
+          dlctx.lineTo(p.x, p.y);
+          dlctx.stroke();
+          dlLast = p;
+        }
+        function dlEnd() {
+          dlDrawing = false;
+          dlLast = null;
+        }
+        if (dlabCanvas) {
+          if (window.PointerEvent) {
+            dlabCanvas.addEventListener("pointerdown", function (e) {
+              dlabCanvas.setPointerCapture &&
+                dlabCanvas.setPointerCapture(e.pointerId);
+              dlStart(e);
+            });
+            dlabCanvas.addEventListener("pointermove", dlMove);
+            dlabCanvas.addEventListener("pointerup", dlEnd);
+            dlabCanvas.addEventListener("pointercancel", dlEnd);
+            dlabCanvas.addEventListener("pointerleave", dlEnd);
+          } else {
+            dlabCanvas.addEventListener("mousedown", dlStart);
+            dlabCanvas.addEventListener("mousemove", dlMove);
+            window.addEventListener("mouseup", dlEnd);
+          }
+          dlabCanvas.addEventListener(
+            "touchstart",
+            function (e) {
+              e.preventDefault();
+              dlStart(e);
+            },
+            { passive: false },
+          );
+          dlabCanvas.addEventListener(
+            "touchmove",
+            function (e) {
+              e.preventDefault();
+              dlMove(e);
+            },
+            { passive: false },
+          );
+          dlabCanvas.addEventListener(
+            "touchend",
+            function (e) {
+              e.preventDefault();
+              dlEnd();
+            },
+            { passive: false },
+          );
+        }
+
+        // prompt + matching stamp words
+        var DL_PROMPTS = [
+          {
+            t: "Draw your family! 👨‍👩‍👧",
+            say: "Draw your family",
+            word: "family",
+          },
+          { t: "Draw your house! 🏠", say: "Draw your house", word: "house" },
+          { t: "Draw the sun! ☀️", say: "Draw the sun", word: "sun" },
+          { t: "Draw a dog! 🐶", say: "Draw a dog", word: "dog" },
+          { t: "Draw a cat! 🐱", say: "Draw a cat", word: "cat" },
+          { t: "Draw a tree! 🌳", say: "Draw a tree", word: "tree" },
+          { t: "Draw a fish! 🐟", say: "Draw a fish", word: "fish" },
+          { t: "Draw a star! ⭐", say: "Draw a star", word: "star" },
+          { t: "Draw a flower! 🌷", say: "Draw a flower", word: "flower" },
+          { t: "Draw a car! 🚗", say: "Draw a car", word: "car" },
+        ];
+        var dlIdx = 0;
+        var dlPromptEl = document.getElementById("dlPrompt");
+        var dlStampsEl = document.getElementById("dlStamps");
+        var dlLabelLine = document.getElementById("dlLabelLine");
+        var dlLabelText = document.getElementById("dlLabelText");
+        var dlPickedLabel = "";
+
+        function dlClearLabel() {
+          dlPickedLabel = "";
+          dlLabelLine.innerHTML = "";
+          var ph = document.createElement("span");
+          ph.id = "dlLabelText";
+          ph.style.display = "none";
+          dlLabelLine.appendChild(ph);
+        }
+        function dlSetPrompt() {
+          var item = DL_PROMPTS[dlIdx % DL_PROMPTS.length];
+          dlPromptEl.textContent = item.t;
+          dlClearLabel();
+          // build 3 word choices: correct word + 2 distractors
+          var others = DL_PROMPTS.filter(function (p) {
+            return p.word !== item.word;
+          });
+          others = shuffle(others)
+            .slice(0, 2)
+            .map(function (p) {
+              return p.word;
+            });
+          var opts = shuffle([item.word].concat(others));
+          dlStampsEl.innerHTML = "";
+          opts.forEach(function (w) {
+            var b = document.createElement("button");
+            b.className = "word";
+            b.type = "button";
+            b.textContent = w;
+            b.setAttribute("aria-label", "Label word " + w);
+            b.addEventListener("click", function () {
+              dlPickedLabel = w;
+              dlLabelLine.innerHTML = "";
+              var placed = document.createElement("button");
+              placed.className = "word placed";
+              placed.type = "button";
+              placed.textContent = w;
+              placed.setAttribute("aria-label", "My label says " + w);
+              placed.addEventListener("click", function () {
+                speak(w, "en-US", 0.8);
+              });
+              dlLabelLine.appendChild(placed);
+              speak(w, "en-US", 0.8);
+            });
+            dlStampsEl.appendChild(b);
+          });
+        }
+        document
+          .getElementById("dl-prompt-say")
+          .addEventListener("click", function () {
+            speak(DL_PROMPTS[dlIdx % DL_PROMPTS.length].say, "en-US", 0.85);
+          });
+        document
+          .getElementById("dlab-next")
+          .addEventListener("click", function () {
+            dlIdx = (dlIdx + 1) % DL_PROMPTS.length;
+            dlSetPrompt();
+            if (dlctx) {
+              dlctx.fillStyle = "#ffffff";
+              dlctx.fillRect(0, 0, dlabCanvas._cssW, dlabCanvas._cssH);
+            }
+            speak(DL_PROMPTS[dlIdx % DL_PROMPTS.length].say, "en-US", 0.85);
+          });
+        document
+          .getElementById("dlab-clear")
+          .addEventListener("click", function () {
+            if (dlctx) {
+              dlctx.fillStyle = "#ffffff";
+              dlctx.fillRect(0, 0, dlabCanvas._cssW, dlabCanvas._cssH);
+            }
+          });
+        document
+          .getElementById("dlab-done")
+          .addEventListener("click", function () {
+            var word =
+              dlPickedLabel || DL_PROMPTS[dlIdx % DL_PROMPTS.length].word;
+            celebrate(
+              document.getElementById("dlab-fb"),
+              "Great drawing of a " + word,
+            );
+          });
+        dlSetPrompt();
+
         /* =================== Resize handling =================== */
         function fitCanvases() {
           traceTracer.fit();
@@ -2132,6 +3003,7 @@
           nameTracer.setGuide(childName, "name");
           numTracer.setGuide(currentNum, "single");
           fitDraw();
+          fitDlab();
         }
         var rsTimer = null;
         window.addEventListener("resize", function () {

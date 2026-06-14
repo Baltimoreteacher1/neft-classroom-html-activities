@@ -569,6 +569,76 @@
         color: var(--accent-dark);
       }
 
+      /* ---------- Picture Match (memory) ---------- */
+      .memory-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .mem-card {
+        position: relative;
+        aspect-ratio: 1 / 1;
+        min-height: var(--tap);
+        border: 3px solid #dce7ff;
+        border-radius: 16px;
+        background: var(--accent);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.4rem;
+        color: #fff;
+        transition:
+          transform 0.12s ease,
+          border-color 0.15s ease,
+          background 0.15s ease;
+      }
+      .mem-card:hover {
+        transform: translateY(-3px);
+      }
+      .mem-card:focus-visible {
+        outline: 4px solid var(--secondary);
+        outline-offset: 2px;
+      }
+      .mem-card .mem-face {
+        display: none;
+        font-family: var(--hebrew-stack);
+        direction: rtl;
+        line-height: 1.05;
+        color: var(--ink);
+        text-align: center;
+      }
+      .mem-card .mem-face.is-emoji {
+        font-family: var(--ui-stack);
+        font-size: 2.6rem;
+      }
+      .mem-card .mem-face.is-word {
+        font-size: 1.5rem;
+      }
+      .mem-card.flipped {
+        background: #fff;
+        border-color: var(--accent);
+        color: var(--ink);
+      }
+      .mem-card.flipped .mem-back {
+        display: none;
+      }
+      .mem-card.flipped .mem-face {
+        display: block;
+      }
+      .mem-card.matched {
+        background: #eafff2;
+        border-color: var(--good);
+        cursor: default;
+      }
+      .mem-card.matched .mem-back {
+        display: none;
+      }
+      .mem-card.matched .mem-face {
+        display: block;
+      }
+
       .feedback {
         text-align: center;
         font-weight: 900;
@@ -737,6 +807,46 @@
           tabindex="-1"
         >
           🖼️ Picture &amp; Word
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-find"
+          aria-controls="panel-find"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          🔍 Find the Letter
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-finals"
+          aria-controls="panel-finals"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          🔚 Final Letters
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-count"
+          aria-controls="panel-count"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          🔟 Count in Hebrew
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-memory"
+          aria-controls="panel-memory"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          🃏 Match Game
         </button>
       </nav>
     </header>
@@ -1008,11 +1118,155 @@
           <div class="feedback" id="picFeedback" aria-live="polite"></div>
         </div>
       </section>
+
+      <!-- ===================== STATION 6: FIND THE LETTER ===================== -->
+      <section
+        class="panel"
+        id="panel-find"
+        role="tabpanel"
+        aria-labelledby="tab-find"
+        tabindex="0"
+      >
+        <div class="station-intro">
+          <h2>Find the Letter (מְצָא אֶת הָאוֹת)</h2>
+          <p>
+            Listen for the letter name, then tap the matching Hebrew letter. Tap
+            <strong>🔊 Hear again</strong> if you need another listen!
+          </p>
+        </div>
+        <div class="card">
+          <div class="quiz-head">
+            <span class="progress">Round <span id="findRound">1</span> ∞</span>
+            <button
+              class="btn btn-ghost"
+              id="findReplay"
+              aria-label="Hear the letter name again"
+            >
+              🔊 Hear again
+            </button>
+          </div>
+          <div class="prompt-area">
+            <div class="prompt-label" style="font-size: 1.3rem">
+              Find the letter:
+              <strong id="findPromptName">Alef</strong>
+            </div>
+            <div class="prompt-label">
+              (sound: <span id="findPromptSound">ah</span>)
+            </div>
+          </div>
+          <div class="choices" id="findChoices"></div>
+          <div class="feedback" id="findFeedback" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <!-- ===================== STATION 7: FINAL LETTERS ===================== -->
+      <section
+        class="panel"
+        id="panel-finals"
+        role="tabpanel"
+        aria-labelledby="tab-finals"
+        tabindex="0"
+      >
+        <div class="station-intro">
+          <h2>Final Letters (אוֹתִיּוֹת סוֹפִיּוֹת)</h2>
+          <p>
+            Five letters change shape at the end of a word! See a regular
+            letter, then tap its matching <strong>final (sofit)</strong> form.
+          </p>
+        </div>
+        <div class="card">
+          <div class="quiz-head">
+            <span class="progress">Round <span id="finRound">1</span> ∞</span>
+            <button
+              class="btn btn-ghost"
+              id="finReplay"
+              aria-label="Hear the letter again"
+            >
+              🔊 Hear again
+            </button>
+          </div>
+          <div class="prompt-area">
+            <div class="big-he" dir="rtl" lang="he" id="finPromptLetter">כ</div>
+            <div class="prompt-label">
+              This is <strong id="finPromptName">Kaf</strong>. Tap its
+              <strong>final form</strong>!
+            </div>
+          </div>
+          <div class="choices" id="finChoices"></div>
+          <div class="feedback" id="finFeedback" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <!-- ===================== STATION 8: COUNT IN HEBREW ===================== -->
+      <section
+        class="panel"
+        id="panel-count"
+        role="tabpanel"
+        aria-labelledby="tab-count"
+        tabindex="0"
+      >
+        <div class="station-intro">
+          <h2>Count in Hebrew (סְפִירָה בְּעִבְרִית)</h2>
+          <p>
+            Count the objects, then tap the matching Hebrew number word. The
+            number is read out loud for you!
+          </p>
+        </div>
+        <div class="card">
+          <div class="quiz-head">
+            <span class="progress">Round <span id="cntRound">1</span> ∞</span>
+            <button
+              class="btn btn-ghost"
+              id="cntReplay"
+              aria-label="Hear the number again"
+            >
+              🔊 Hear again
+            </button>
+          </div>
+          <div class="prompt-area">
+            <div class="big-emoji" id="cntPromptObjects" aria-hidden="true">
+              🍎🍎🍎
+            </div>
+            <div class="prompt-label">
+              How many? Tap the Hebrew number word.
+            </div>
+          </div>
+          <div class="choices" id="cntChoices"></div>
+          <div class="feedback" id="cntFeedback" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <!-- ===================== STATION 9: PICTURE MATCH (MEMORY) ===================== -->
+      <section
+        class="panel"
+        id="panel-memory"
+        role="tabpanel"
+        aria-labelledby="tab-memory"
+        tabindex="0"
+      >
+        <div class="station-intro">
+          <h2>Picture Match (זִכָּרוֹן תְּמוּנוֹת)</h2>
+          <p>
+            Flip two cards to find a matching pair — a picture and its Hebrew
+            word. Match them all to win! Each match earns a star.
+          </p>
+        </div>
+        <div class="card">
+          <div class="quiz-head">
+            <span class="progress"
+              >Matches: <span id="memFound">0</span> /
+              <span id="memTotal">5</span></span
+            >
+            <button class="btn btn-primary" id="memNew">🔄 New game</button>
+          </div>
+          <div class="memory-grid" id="memGrid"></div>
+          <div class="feedback" id="memFeedback" aria-live="polite"></div>
+        </div>
+      </section>
     </main>
 
     <footer>
-      EduWonderLab · Made with
-      <span class="heart" aria-hidden="true">❤️</span> for Noam
+      EduWonderLab · First Grade Readiness
     </footer>
 
     <script>
@@ -1523,6 +1777,10 @@
           "tab-words": "panel-words",
           "tab-match": "panel-match",
           "tab-picture": "panel-picture",
+          "tab-find": "panel-find",
+          "tab-finals": "panel-finals",
+          "tab-count": "panel-count",
+          "tab-memory": "panel-memory",
         };
         function selectTab(tab) {
           tabs.forEach(function (t) {
@@ -1898,6 +2156,348 @@
           }
         }
 
+        /* ===================== STATION 6: FIND THE LETTER (ENDLESS) ===================== */
+        // Hear a letter name → tap the matching Hebrew glyph among 4 choices.
+        var findCurrent = null,
+          findLocked = false,
+          findRound = 0;
+
+        function newFindRound() {
+          findLocked = false;
+          $("findFeedback").textContent = "";
+          $("findFeedback").className = "feedback";
+
+          var pick = rand(LETTERS);
+          if (findCurrent && LETTERS.length > 1) {
+            var guard = 0;
+            while (pick.name === findCurrent.name && guard < 12) {
+              pick = rand(LETTERS);
+              guard++;
+            }
+          }
+          findCurrent = pick;
+          $("findPromptName").textContent = findCurrent.name;
+          $("findPromptSound").textContent = findCurrent.sound;
+          $("findRound").textContent = findRound + 1;
+
+          var others = shuffle(
+            LETTERS.filter(function (l) {
+              return l.name !== findCurrent.name;
+            }),
+          ).slice(0, 3);
+          var opts = shuffle([findCurrent].concat(others));
+          var box = $("findChoices");
+          box.innerHTML = "";
+          opts.forEach(function (opt) {
+            var c = el("button", "choice");
+            c.type = "button";
+            c.setAttribute("aria-label", "Choose the letter " + opt.name);
+            c.innerHTML =
+              '<span class="he-choice" dir="rtl" lang="he">' +
+              opt.he +
+              "</span>";
+            c.addEventListener("click", function (ev) {
+              answerFind(opt, c, ev);
+            });
+            box.appendChild(c);
+          });
+          speakLetter(findCurrent);
+        }
+
+        function answerFind(opt, node, ev) {
+          if (findLocked) return;
+          var fb = $("findFeedback");
+          if (opt.name === findCurrent.name) {
+            findLocked = true;
+            node.classList.add("correct");
+            fb.textContent = rand(PRAISE);
+            fb.className = "feedback good";
+            addStar(ev ? ev.clientX : undefined, ev ? ev.clientY : undefined);
+            findRound += 1;
+            setTimeout(newFindRound, 1100);
+          } else {
+            node.classList.add("wrong");
+            fb.textContent = "Try again! 🙂";
+            fb.className = "feedback bad";
+            setTimeout(function () {
+              node.classList.remove("wrong");
+            }, 700);
+          }
+        }
+
+        /* ===================== STATION 7: FINAL LETTERS (ENDLESS) ===================== */
+        // See a regular letter → tap its matching sofit (final) form.
+        // FINALS already carry a `base` linking back to a LETTERS name.
+        var finCurrent = null,
+          finLocked = false,
+          finRound = 0;
+
+        function baseLetterFor(fin) {
+          for (var i = 0; i < LETTERS.length; i++) {
+            if (LETTERS[i].name === fin.base) return LETTERS[i];
+          }
+          return null;
+        }
+
+        function newFinRound() {
+          finLocked = false;
+          $("finFeedback").textContent = "";
+          $("finFeedback").className = "feedback";
+
+          var pick = rand(FINALS);
+          if (finCurrent && FINALS.length > 1) {
+            var guard = 0;
+            while (pick.name === finCurrent.name && guard < 12) {
+              pick = rand(FINALS);
+              guard++;
+            }
+          }
+          finCurrent = pick;
+          var base = baseLetterFor(finCurrent);
+          $("finPromptLetter").textContent = base ? base.he : finCurrent.base;
+          $("finPromptName").textContent = finCurrent.base;
+          $("finRound").textContent = finRound + 1;
+
+          // distractors: other final forms
+          var others = shuffle(
+            FINALS.filter(function (f) {
+              return f.name !== finCurrent.name;
+            }),
+          ).slice(0, 3);
+          var opts = shuffle([finCurrent].concat(others));
+          var box = $("finChoices");
+          box.innerHTML = "";
+          opts.forEach(function (opt) {
+            var c = el("button", "choice");
+            c.type = "button";
+            c.setAttribute("aria-label", "Choose " + opt.name);
+            c.innerHTML =
+              '<span class="he-choice" dir="rtl" lang="he">' +
+              opt.he +
+              "</span>";
+            c.addEventListener("click", function (ev) {
+              answerFin(opt, c, ev);
+            });
+            box.appendChild(c);
+          });
+          if (base) speakLetter(base);
+        }
+
+        function answerFin(opt, node, ev) {
+          if (finLocked) return;
+          var fb = $("finFeedback");
+          if (opt.name === finCurrent.name) {
+            finLocked = true;
+            node.classList.add("correct");
+            fb.textContent = rand(PRAISE);
+            fb.className = "feedback good";
+            speakLetter(finCurrent);
+            addStar(ev ? ev.clientX : undefined, ev ? ev.clientY : undefined);
+            finRound += 1;
+            setTimeout(newFinRound, 1200);
+          } else {
+            node.classList.add("wrong");
+            fb.textContent = "Look for the END shape! 🙂";
+            fb.className = "feedback bad";
+            setTimeout(function () {
+              node.classList.remove("wrong");
+            }, 700);
+          }
+        }
+
+        /* ===================== STATION 8: COUNT IN HEBREW (ENDLESS) ===================== */
+        // Show N objects → tap the matching Hebrew number word (1–10).
+        // Reuses the numbers group from WORDS so data stays single-source.
+        var NUMS = WORDS.numbers; // index 0 = one ... index 9 = ten
+        var COUNT_EMOJIS = ["🍎", "⭐", "🐟", "🌸", "🎈", "🐢", "🍀", "🚗"];
+        var cntCurrent = null,
+          cntLocked = false,
+          cntRound = 0;
+
+        function newCntRound() {
+          cntLocked = false;
+          $("cntFeedback").textContent = "";
+          $("cntFeedback").className = "feedback";
+
+          var idx = Math.floor(Math.random() * NUMS.length); // 0..9 → 1..10
+          if (cntCurrent && NUMS.length > 1) {
+            var guard = 0;
+            while (NUMS[idx] === cntCurrent && guard < 12) {
+              idx = Math.floor(Math.random() * NUMS.length);
+              guard++;
+            }
+          }
+          cntCurrent = NUMS[idx];
+          var count = idx + 1;
+          var emoji = rand(COUNT_EMOJIS);
+          var str = "";
+          for (var k = 0; k < count; k++) str += emoji;
+          var obj = $("cntPromptObjects");
+          obj.textContent = str;
+          obj.setAttribute("aria-label", count + " objects");
+          $("cntRound").textContent = cntRound + 1;
+
+          var others = shuffle(
+            NUMS.filter(function (n) {
+              return n !== cntCurrent;
+            }),
+          ).slice(0, 2);
+          var opts = shuffle([cntCurrent].concat(others));
+          var box = $("cntChoices");
+          box.innerHTML = "";
+          opts.forEach(function (opt) {
+            var c = el("button", "choice");
+            c.type = "button";
+            c.setAttribute("aria-label", "Choose " + opt.translit);
+            c.innerHTML =
+              '<span class="he-choice" dir="rtl" lang="he">' +
+              opt.he +
+              "</span>" +
+              '<span class="translit-choice">' +
+              opt.translit +
+              "</span>";
+            c.addEventListener("click", function (ev) {
+              answerCnt(opt, c, ev);
+            });
+            box.appendChild(c);
+          });
+          speak(cntCurrent.he, "he-IL");
+        }
+
+        function answerCnt(opt, node, ev) {
+          if (cntLocked) return;
+          var fb = $("cntFeedback");
+          if (opt === cntCurrent) {
+            cntLocked = true;
+            node.classList.add("correct");
+            fb.textContent = rand(PRAISE) + " — " + cntCurrent.translit + "!";
+            fb.className = "feedback good";
+            addStar(ev ? ev.clientX : undefined, ev ? ev.clientY : undefined);
+            cntRound += 1;
+            setTimeout(newCntRound, 1200);
+          } else {
+            node.classList.add("wrong");
+            fb.textContent = "Count again! 🙂";
+            fb.className = "feedback bad";
+            setTimeout(function () {
+              node.classList.remove("wrong");
+            }, 700);
+          }
+        }
+
+        /* ===================== STATION 9: PICTURE MATCH (MEMORY) ===================== */
+        // Flip-and-match: each pair = a picture card + its Hebrew word card.
+        // Uses 5 very simple first words; matching a pair speaks the word + star.
+        var MEM_WORDS = [
+          { emoji: "👨", he: "אַבָּא", translit: "Aba", en: "dad" },
+          { emoji: "👩", he: "אִמָּא", translit: "Ima", en: "mom" },
+          { emoji: "🐕", he: "כֶּלֶב", translit: "Kelev", en: "dog" },
+          { emoji: "🏠", he: "בַּיִת", translit: "Bayit", en: "house" },
+          { emoji: "☀️", he: "שֶׁמֶשׁ", translit: "Shemesh", en: "sun" },
+        ];
+        var memFirst = null,
+          memLock = false,
+          memMatched = 0;
+
+        function buildMemory() {
+          memFirst = null;
+          memLock = false;
+          memMatched = 0;
+          $("memFound").textContent = "0";
+          $("memTotal").textContent = MEM_WORDS.length;
+          $("memFeedback").textContent = "";
+          $("memFeedback").className = "feedback";
+
+          var deck = [];
+          MEM_WORDS.forEach(function (w, i) {
+            deck.push({ pair: i, kind: "emoji", w: w });
+            deck.push({ pair: i, kind: "word", w: w });
+          });
+          deck = shuffle(deck);
+
+          var grid = $("memGrid");
+          grid.innerHTML = "";
+          deck.forEach(function (card) {
+            var btn = el("button", "mem-card");
+            btn.type = "button";
+            var faceHtml;
+            if (card.kind === "emoji") {
+              btn.setAttribute(
+                "aria-label",
+                "Card showing a picture of " + card.w.en,
+              );
+              faceHtml =
+                '<span class="mem-face is-emoji" aria-hidden="true">' +
+                card.w.emoji +
+                "</span>";
+            } else {
+              btn.setAttribute(
+                "aria-label",
+                "Card showing the Hebrew word " + card.w.translit,
+              );
+              faceHtml =
+                '<span class="mem-face is-word" dir="rtl" lang="he">' +
+                card.w.he +
+                "</span>";
+            }
+            btn.innerHTML =
+              '<span class="mem-back" aria-hidden="true">❓</span>' + faceHtml;
+            btn._card = card;
+            btn.addEventListener("click", function (ev) {
+              flipMem(btn, ev);
+            });
+            grid.appendChild(btn);
+          });
+        }
+
+        function flipMem(btn, ev) {
+          if (memLock) return;
+          if (
+            btn.classList.contains("flipped") ||
+            btn.classList.contains("matched")
+          )
+            return;
+
+          btn.classList.add("flipped");
+          var card = btn._card;
+          speak(card.w.he, "he-IL");
+
+          if (!memFirst) {
+            memFirst = btn;
+            return;
+          }
+
+          // second card
+          var first = memFirst;
+          memFirst = null;
+          if (first._card.pair === card.pair) {
+            // match!
+            memLock = true;
+            setTimeout(function () {
+              first.classList.add("matched");
+              btn.classList.add("matched");
+              memMatched += 1;
+              $("memFound").textContent = memMatched;
+              var fb = $("memFeedback");
+              fb.textContent = rand(PRAISE) + " — " + card.w.translit + "!";
+              fb.className = "feedback good";
+              addStar(ev ? ev.clientX : undefined, ev ? ev.clientY : undefined);
+              memLock = false;
+              if (memMatched === MEM_WORDS.length) {
+                fb.textContent = "🎉 You matched them all! כל הכבוד!";
+              }
+            }, 550);
+          } else {
+            // no match → flip both back
+            memLock = true;
+            setTimeout(function () {
+              first.classList.remove("flipped");
+              btn.classList.remove("flipped");
+              memLock = false;
+            }, 850);
+          }
+        }
+
         /* ===================== INIT ===================== */
         buildLetterGrid();
         showDetail(LETTERS[0]);
@@ -1910,9 +2510,26 @@
         $("picReplay").addEventListener("click", function () {
           if (picCurrent) speak(picCurrent.he, "he-IL");
         });
+        $("findReplay").addEventListener("click", function () {
+          if (findCurrent) speakLetter(findCurrent);
+        });
+        $("finReplay").addEventListener("click", function () {
+          if (finCurrent) {
+            var b = baseLetterFor(finCurrent);
+            if (b) speakLetter(b);
+          }
+        });
+        $("cntReplay").addEventListener("click", function () {
+          if (cntCurrent) speak(cntCurrent.he, "he-IL");
+        });
+        $("memNew").addEventListener("click", buildMemory);
 
         newMatchRound();
         newPicRound();
+        newFindRound();
+        newFinRound();
+        newCntRound();
+        buildMemory();
       })();
     </script>
   </body>
