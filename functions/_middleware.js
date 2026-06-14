@@ -40,6 +40,9 @@ export async function onRequest(context) {
     "/curriculum/student-digital-mailbox/index.html",
     "/curriculum/student-digital-mailbox/mailbox.css",
     "/curriculum/student-digital-mailbox/mailbox-links.js",
+    "/personal/operation-quest",
+    "/personal/operation-quest/",
+    "/personal/operation-quest/index.html",
   ]);
   if (PUBLIC_PATHS.has(url.pathname)) return next();
 
