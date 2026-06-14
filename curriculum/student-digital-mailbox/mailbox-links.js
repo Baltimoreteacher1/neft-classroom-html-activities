@@ -9,6 +9,11 @@
  *   http(s):// URL, its button shows a disabled "Link coming soon" state — the
  *   page never breaks on a missing link.
  *
+ *   AFTER editing a link: bump the `?v=YYYY-MM-DD` date on the
+ *   <script src="...mailbox-links.js?v=..."> tag in BOTH index.html and
+ *   teacher/index.html. This busts the 4-hour browser/CDN cache so the new
+ *   link goes live instantly instead of after the cache expires.
+ *
  * SAFETY: These are public student-facing share links only. Do NOT paste any
  * teacher-only edit URLs, response-spreadsheet links, secrets, or private data
  * here — this file ships to the browser.
