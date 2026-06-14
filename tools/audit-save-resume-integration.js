@@ -46,6 +46,7 @@ const SKIP_TOPLEVEL = new Set([
   "dashboard",
   "teacher-data-dashboard",
   "teacher-tools",
+  "access-teacher",
   "neft-school-hub",
   "neft-data-studio",
   "results-worker",
@@ -56,6 +57,9 @@ const SKIP_TOPLEVEL = new Set([
   "curriculum",
 ]);
 const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b/i;
+// Teacher-facing pages (any nested ".../teacher/..." path) have no student
+// state, so they are intentionally excluded from save/resume integration.
+const SKIP_PATH_RE = /(^|\/)teacher(\/|$)/i;
 
 const issues = [];
 const stats = {
@@ -92,7 +96,7 @@ function count(haystack, needle) {
 
 function check(file) {
   const rel = relative(ROOT, file).split(sep).join("/");
-  if (SKIP_FILE_RE.test(rel)) {
+  if (SKIP_FILE_RE.test(rel) || SKIP_PATH_RE.test(rel)) {
     stats.skipped++;
     return;
   }
