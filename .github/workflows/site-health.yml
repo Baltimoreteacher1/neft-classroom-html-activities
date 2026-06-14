@@ -1,0 +1,33 @@
+name: Site Health
+# Scheduled early-warning system for the unwatched stretches (summer/breaks).
+# Runs the full read-only audit battery on a cadence + on demand. If anything
+# regresses (broken links, missing lesson resources, save/resume drift, a
+# clobbered curriculum hub), the run fails and GitHub emails the repo owner.
+# This does NOT build, deploy, commit, or modify anything.
+on:
+  schedule:
+    # Mondays 11:00 UTC (~7am ET) — weekly heartbeat.
+    - cron: "0 11 * * 1"
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Validate (static + reveal-math + hub lock)
+        run: npm run validate
+      - name: Internal link audit
+        run: npm run audit:links
+      - name: Curriculum structural audit
+        run: npm run audit
+      - name: Curriculum resource completeness
+        run: npm run audit:curriculum
+      - name: Save/Resume integration audit
+        run: node tools/audit-save-resume-integration.js

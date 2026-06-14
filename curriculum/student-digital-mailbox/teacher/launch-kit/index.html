@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Launch Kit — Student Digital Mailbox</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Nunito:wght@600;700;800;900&display=swap"
+    />
+    <link rel="stylesheet" href="../../mailbox.css" />
+    <style>
+      .kit-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin: 16px 0 28px;
+      }
+      .sheet {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 40px;
+        margin: 0 0 28px;
+        text-align: center;
+      }
+      .sheet .kicker {
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--teal);
+        font-size: 14px;
+      }
+      .sheet h2 {
+        font-family: "Nunito", system-ui, sans-serif;
+        font-size: clamp(2rem, 5vw, 3.2rem);
+        color: var(--navy);
+        margin: 8px 0 4px;
+        line-height: 1.05;
+      }
+      .sheet .sub {
+        font-size: clamp(1.05rem, 2.5vw, 1.4rem);
+        color: var(--ink);
+        margin: 0 0 24px;
+      }
+      .qr {
+        width: 300px;
+        height: 300px;
+        margin: 8px auto 16px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fff;
+        display: block;
+      }
+      .url-pill {
+        display: inline-block;
+        font-family: "Nunito", system-ui, sans-serif;
+        font-weight: 800;
+        font-size: clamp(1.1rem, 3vw, 1.6rem);
+        color: #fff;
+        background: var(--navy);
+        padding: 12px 22px;
+        border-radius: 999px;
+        word-break: break-all;
+      }
+      .steps-big {
+        list-style: none;
+        counter-reset: s;
+        padding: 0;
+        margin: 24px auto 0;
+        max-width: 560px;
+        text-align: left;
+      }
+      .steps-big li {
+        counter-increment: s;
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        font-size: 1.2rem;
+        margin: 12px 0;
+      }
+      .steps-big li::before {
+        content: counter(s);
+        flex: 0 0 auto;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--green);
+        color: #fff;
+        font-family: "Nunito", system-ui, sans-serif;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .boxes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 18px;
+        font-size: 1.1rem;
+      }
+      .boxes span {
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 6px 14px;
+      }
+      @media print {
+        body {
+          background: #fff;
+        }
+        body::before {
+          display: none;
+        }
+        .no-print {
+          display: none !important;
+        }
+        .wrap {
+          padding: 0;
+          max-width: none;
+        }
+        .sheet {
+          border: none;
+          border-radius: 0;
+          page-break-after: always;
+          padding: 24px;
+        }
+        .url-pill {
+          color: #000 !important;
+          background: #fff !important;
+          border: 2px solid #000;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="mb-head no-print">
+        <p class="mb-eyebrow">Teacher · Launch Kit</p>
+        <h1>
+          <span class="mb-emoji" aria-hidden="true">📣</span>Mailbox Launch Kit
+        </h1>
+        <p class="mb-intro">
+          Two printables to introduce the Student Digital Mailbox: a
+          <strong>wall poster</strong> with a scan-to-open QR code, and a
+          <strong>projector intro slide</strong> for day one. Use your browser's
+          Print to print or save as PDF — each section prints on its own page.
+        </p>
+        <div class="kit-actions">
+          <button class="mb-btn primary" type="button" onclick="window.print()">
+            🖨️ Print / Save as PDF
+          </button>
+          <a
+            class="mb-btn ghost"
+            href="/curriculum/student-digital-mailbox/teacher/"
+            >← Teacher Setup</a
+          >
+        </div>
+      </header>
+
+      <!-- Wall poster -->
+      <section class="sheet" aria-label="Wall poster">
+        <p class="kicker">Mr. Neft's Math Class</p>
+        <h2>Student Digital Mailbox 📬</h2>
+        <p class="sub">
+          Share an idea, question, suggestion, or how class is going.
+        </p>
+        <img
+          class="qr"
+          alt="QR code linking to the Student Digital Mailbox"
+          src="https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=10&data=https%3A%2F%2Feduwonderlab.com%2Fcurriculum%2Fstudent-digital-mailbox%2F"
+          onerror="
+            this.replaceWith(
+              Object.assign(document.createElement('p'), {
+                textContent: '(Scan unavailable — type the link below)',
+                className: 'sub',
+              }),
+            )
+          "
+        />
+        <div>
+          <span class="url-pill"
+            >eduwonderlab.com/curriculum/student-digital-mailbox</span
+          >
+        </div>
+        <p class="sub" style="margin-top: 18px; font-size: 1rem">
+          No name needed. No password. Open it any time.
+        </p>
+      </section>
+
+      <!-- Projector intro slide -->
+      <section class="sheet" aria-label="Intro slide">
+        <p class="kicker">New this year</p>
+        <h2>Tell me what's going on 💬</h2>
+        <p class="sub">
+          Use the Student Digital Mailbox to send me ideas, questions, and
+          honest feedback — anytime, in your own words.
+        </p>
+        <ol class="steps-big">
+          <li>Open the link (scan the poster or click it in Classroom).</li>
+          <li>Pick the box that fits what you want to share.</li>
+          <li>Answer honestly and respectfully, then submit.</li>
+        </ol>
+        <div class="boxes" aria-hidden="true">
+          <span>🌤️ Check-In</span><span>🤔 I'm Confused</span
+          ><span>💡 Suggestion</span><span>🎉 Shout-Out</span
+          ><span>🔒 Private Note</span><span>❓ Anonymous Question</span>
+        </div>
+        <p class="sub" style="margin-top: 22px; font-size: 1rem">
+          It's safe and you don't have to use your name.
+        </p>
+      </section>
+    </div>
+  </body>
+</html>
