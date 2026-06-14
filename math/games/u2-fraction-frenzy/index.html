@@ -746,11 +746,15 @@
           var o = distinctOpts(
             ans,
             function () {
-              return ans + rnd(-3, 3) * d || ans + d;
+              // Nearby whole-number distractors, always positive and distinct
+              // from the answer (no "−5"-style options). Offset by ±1..3 groups
+              // of d, then a fallback small offset if that lands on/below zero.
+              var step = rnd(1, 3) * (Math.random() < 0.5 ? 1 : -1);
+              var w = ans + step * d;
+              return w > 0 && w !== ans ? w : ans + rnd(1, 3);
             },
             String,
           );
-          // ensure no zero or negative in opts by rebuilding if needed
           return {
             tag: "Whole ÷ Unit Fraction",
             prompt: n + " ÷ 1/" + d + " = ?",

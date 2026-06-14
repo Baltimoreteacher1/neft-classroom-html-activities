@@ -146,10 +146,19 @@
           round < 3 ? [10, 25, 50] : round < 6 ? [15, 30, 45] : [20, 35, 40];
         Phaser.Utils.Array.Shuffle(pcts);
         const emoji = Phaser.Utils.Array.GetRandom(items);
-        const cells = pcts.map((p) => ({
-          pct: p,
-          sale: Math.round(base * (1 - p / 100) * 100) / 100,
-        }));
+        // Pedagogy fix: give each lane its OWN original price (close to the row
+        // base) so the cheapest sale price is NOT just "biggest % off wins" —
+        // students must actually compute price × (1 − %/100) to compare. The
+        // larger price spread on later rounds keeps the comparison non-trivial.
+        const spread = round < 4 ? 8 : 14;
+        const cells = pcts.map((p) => {
+          const cellBase = Math.max(5, base + randInt(-spread, spread));
+          return {
+            pct: p,
+            base: cellBase,
+            sale: Math.round(cellBase * (1 - p / 100) * 100) / 100,
+          };
+        });
         // best deal = lowest sale price
         let bestIdx = 0;
         cells.forEach((c, i) => {
@@ -194,7 +203,7 @@
             .text(
               W / 2,
               320,
-              "Sprint the aisle. Each row shows the SAME item at\ndifferent % off. Steer into the lane with the\nLOWEST sale price to grab the best deal!",
+              "Sprint the aisle. Each lane shows the same kind of item\nat its own price and % off. Steer into the lane with the\nLOWEST sale price to grab the best deal!",
               {
                 fontFamily: "Segoe UI",
                 fontSize: "21px",
@@ -249,6 +258,22 @@
           };
           btn.on("pointerdown", go);
           this.input.keyboard.once("keydown-ENTER", go);
+
+          // Back-to-hub link (returns to the Unit 4 collection page).
+          const hub = this.add
+            .text(W / 2, 690, "← Back to Unit 4 hub", {
+              fontFamily: "Segoe UI",
+              fontSize: "16px",
+              fontStyle: "700",
+              color: "#94a3b8",
+            })
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true });
+          hub.on("pointerover", () => hub.setColor("#74c0fc"));
+          hub.on("pointerout", () => hub.setColor("#94a3b8"));
+          hub.on("pointerdown", () => {
+            window.location.href = "/math/unit-4/";
+          });
         }
       }
 
@@ -458,7 +483,7 @@
               .text(0, -42, data.emoji, { fontSize: "40px" })
               .setOrigin(0.5);
             const wasT = this.add
-              .text(0, 2, money(data.base), {
+              .text(0, 2, money(cell.base), {
                 fontFamily: "Segoe UI",
                 fontSize: "16px",
                 color: "#94a3b8",
@@ -502,7 +527,8 @@
           const rm = reducedMotion();
           const isBest = laneIdx === row.data.bestIdx;
           if (isBest) {
-            const saved = row.data.base - row.data.cells[laneIdx].sale;
+            const cell = row.data.cells[laneIdx];
+            const saved = cell.base - cell.sale;
             this.combo++;
             const pts = 100 + this.combo * 15;
             this.score += pts;
@@ -549,11 +575,13 @@
             this.wrongFlash();
             const best = row.data.cells[row.data.bestIdx];
             this.popText(
-              "Overpaid! Best was " +
-                best.pct +
-                "% off (" +
+              "Overpaid! Best sale price was " +
                 money(best.sale) +
-                ")",
+                " (" +
+                money(best.base) +
+                " at " +
+                best.pct +
+                "% off)",
               "#ff6b6b",
             );
           }
@@ -857,8 +885,36 @@
         },
         scene: [BootScene, TitleScene, GameScene, ResultsScene],
       };
-      new Phaser.Game(config);
-    </script>
+      const ddGame = new Phaser.Game(config);
+
+      // ── Canvas accessibility (additive; no gameplay change) ──
+      // Phaser renders to one <canvas> that is not in the tab order by default,
+      // so keyboard-only students cannot focus the game to use the arrow / A-D
+      // lane controls. Label the canvas, make it focusable, and focus it on
+      // first pointer so the existing keyboard controls work immediately.
+      ddGame.events.once("ready", function () {
+        try {
+          const cv = ddGame.canvas;
+          if (!cv) return;
+          cv.setAttribute("role", "application");
+          cv.setAttribute(
+            "aria-label",
+            "Discount Dash sale runner math game. Steer into the lane with " +
+              "the lowest sale price. Use the left and right arrow keys or A " +
+              "and D to change lanes, and Enter to start.",
+          );
+          cv.setAttribute("aria-roledescription", "math game");
+          if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
+          cv.addEventListener("pointerdown", function () {
+            try {
+              cv.focus({ preventScroll: true });
+            } catch (e) {
+              cv.focus();
+            }
+          });
+        } catch (e) {}
+      });
+</script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>

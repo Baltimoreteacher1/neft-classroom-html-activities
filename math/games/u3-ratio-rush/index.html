@@ -743,6 +743,11 @@
 
       function startGame() {
         state = { i: 0, score: 0, streak: 0, lives: 3, locked: false };
+        // Reset the HUD display so a replay's animated counters start from zero
+        // (otherwise countTo() would tween down from the previous final score).
+        document.getElementById("score").textContent = "0";
+        document.getElementById("streak").textContent = "0";
+        document.getElementById("lives").textContent = "❤❤❤";
         document.getElementById("startScreen").classList.add("hidden");
         document.getElementById("resultScreen").classList.add("hidden");
         document.getElementById("playScreen").classList.remove("hidden");

@@ -120,8 +120,22 @@
           return b;
         }
         function makeQ(text, correct, wrongs, hint, tier) {
-          const opts = shuffle([correct, ...wrongs]);
-          return { text, correct, options: opts, hint, tier };
+          // De-duplicate distractors against the correct answer AND each other.
+          // Several generators can, for specific parameter draws (e.g. a=2,c=2
+          // makes a+c === a*c), produce a wrong option string identical to the
+          // correct one or to another wrong — which would show two identical
+          // buttons (one scored wrong). Keep only distinct wrongs.
+          const seen = new Set([String(correct)]);
+          const cleanWrongs = [];
+          wrongs.forEach((w) => {
+            const s = String(w);
+            if (!seen.has(s)) {
+              seen.add(s);
+              cleanWrongs.push(s);
+            }
+          });
+          const opts = shuffle([String(correct), ...cleanWrongs]);
+          return { text, correct: String(correct), options: opts, hint, tier };
         }
         // TIER 1: Simple evaluation
         for (let i = 0; i < 6; i++) {
@@ -292,7 +306,7 @@
         }
         glassBreak() {
           this.noise(0.2, 0.12);
-          this.play("800", 0.05, "square", 0.08);
+          this.play(800, 0.05, "square", 0.08);
           setTimeout(() => this.play(600, 0.06, "square", 0.06), 50);
         }
         click() {
@@ -652,6 +666,21 @@
               { fontSize: "12px", color: "#475569" },
             )
             .setOrigin(0.5);
+
+          // Back-to-hub link (returns to the Unit 6 collection page).
+          const hub = this.add
+            .text(cx, 730, "← Back to Unit 6 hub", {
+              fontSize: "13px",
+              fontStyle: "bold",
+              color: "#64748b",
+            })
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true });
+          hub.on("pointerover", () => hub.setColor("#fbbf24"));
+          hub.on("pointerout", () => hub.setColor("#64748b"));
+          hub.on("pointerdown", () => {
+            window.location.href = "/math/unit-6/";
+          });
 
           this.cameras.main.fadeIn(500);
         }

@@ -19,6 +19,25 @@
         display: block;
         margin: 0 auto;
       }
+      /* Back-to-hub link, kept above the full-bleed canvas. */
+      .nt-back-hub {
+        position: fixed;
+        top: 8px;
+        left: 8px;
+        z-index: 50;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font: 600 13px/1 "Segoe UI", system-ui, sans-serif;
+        color: #e6f1ff;
+        background: rgba(10, 22, 40, 0.7);
+        border: 1px solid rgba(120, 160, 220, 0.5);
+        text-decoration: none;
+      }
+      .nt-back-hub:hover,
+      .nt-back-hub:focus {
+        background: rgba(20, 40, 70, 0.9);
+        outline: 2px solid #00ccff;
+      }
     </style>
     <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
     <script>
@@ -45,6 +64,9 @@
     <!-- gfx-injected:end -->
   </head>
   <body>
+    <a class="nt-back-hub" href="../index.html" aria-label="Back to Unit 3 hub"
+      >← Back to Unit&nbsp;3</a
+    >
     <script>
       // ── RATIO RALLY — Top-Down Racing Game (Enhanced) ──
       // Phaser 3 — Grade 6 Math — Equivalent Ratios, Proportions, Unit Rates
@@ -197,6 +219,21 @@
         const g = gcd(a, b);
         return `${a / g}:${b / g}`;
       }
+      // True if a ratio-shaped string ("x:y") is mathematically equivalent to
+      // the answer ratio. Used to weed out distractors that *reduce* to the
+      // correct ratio (e.g. 1:1 collisions when a === b), which would make a
+      // question have two right answers.
+      function ratioEquiv(choice, answer) {
+        const cm = /^(\d+):(\d+)$/.exec(choice);
+        const am = /^(\d+):(\d+)$/.exec(answer);
+        if (!cm || !am) return false;
+        const cn = +cm[1],
+          cd = +cm[2],
+          an = +am[1],
+          ad = +am[2];
+        if (cd === 0 || ad === 0) return false;
+        return cn * ad === an * cd; // cross-multiply: equal ratios
+      }
 
       // ── Question Generator ──
       function generateQuestions(difficulty) {
@@ -206,15 +243,20 @@
           let q, answer, choices, prompt;
 
           if (type === 0) {
-            const a = randInt(2, 10),
-              b = randInt(2, 10);
+            const a = randInt(2, 10);
+            let b = randInt(2, 10);
+            // Keep a !== b so the reversed-order distractor (b:a) stays a
+            // genuine wrong answer instead of duplicating a 1:1 ratio.
+            while (b === a) b = randInt(2, 10);
             prompt = `A bag has ${a} red and ${b} blue marbles. Ratio of red to blue?`;
             answer = `${a}:${b}`;
-            const g = gcd(a, b);
             choices = [answer, `${b}:${a}`, `${a + 1}:${b}`, `${a}:${b + 2}`];
           } else if (type === 1) {
-            const a = randInt(2, 6),
-              b = randInt(2, 6);
+            const a = randInt(2, 6);
+            let b = randInt(2, 6);
+            // a !== b avoids collapsing every choice to a 1:1 ratio, which
+            // would create multiple correct answers.
+            while (b === a) b = randInt(2, 6);
             const mult = randInt(2, 5);
             prompt = `Which ratio equals ${a}:${b}?`;
             answer = `${a * mult}:${b * mult}`;
@@ -223,6 +265,13 @@
               `${a * mult + 1}:${b * mult}`,
               `${a * mult}:${b * mult + 2}`,
               `${a + b}:${b * 2}`,
+            ];
+            // Drop any distractor that is actually equivalent to the answer.
+            choices = [
+              answer,
+              ...choices
+                .slice(1)
+                .filter((c) => !ratioEquiv(c, answer)),
             ];
           } else if (type === 2) {
             const a = randInt(2, 6),
@@ -249,9 +298,12 @@
               `$${items}`,
             ];
           } else {
-            const a = randInt(2, 8),
-              b = randInt(2, 8),
-              mult = randInt(2, 5);
+            const a = randInt(2, 8);
+            let b = randInt(2, 8);
+            // a !== b keeps the "a*mult" distractor distinct from the answer
+            // (b*mult); when a === b they coincide and the item loses a choice.
+            while (b === a) b = randInt(2, 8);
+            const mult = randInt(2, 5);
             prompt = `${a}/${b} = ${a * mult}/?`;
             answer = String(b * mult);
             choices = [
@@ -263,7 +315,26 @@
           }
 
           choices = [...new Set(choices)];
-          while (choices.length < 4) choices.push(String(randInt(1, 50)));
+          // Format-aware filler so a backfilled distractor matches the answer's
+          // shape ($ rate / a:b ratio / plain number) and never gives the format
+          // away. Guard against duplicating the answer or an existing choice.
+          let fillGuard = 0;
+          while (choices.length < 4 && fillGuard < 200) {
+            fillGuard++;
+            let fill;
+            if (answer[0] === "$") fill = `$${randInt(1, 30)}`;
+            else if (answer.includes(":"))
+              fill = `${randInt(1, 20)}:${randInt(1, 20)}`;
+            else fill = String(randInt(1, 50));
+            // Reject fillers equal to the answer, already present, OR (for
+            // ratio answers) mathematically equivalent to it.
+            if (
+              fill !== answer &&
+              !choices.includes(fill) &&
+              !ratioEquiv(fill, answer)
+            )
+              choices.push(fill);
+          }
           choices = choices.slice(0, 4);
           if (!choices.includes(answer)) {
             choices[3] = answer;
@@ -1085,7 +1156,7 @@
           emitting: false,
           quantity: 2,
           tint: [0x888888, 0x666666],
-          angle: { min: 80, to: 100 },
+          angle: { min: 80, max: 100 },
         });
 
         // Confetti emitter (for correct answers)

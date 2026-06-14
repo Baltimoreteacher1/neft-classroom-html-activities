@@ -1006,7 +1006,7 @@
             })
             .setOrigin(0.5);
           this.add
-            .text(W / 2, 370, "Best: " + localStorage.getItem(LS_KEY), {
+            .text(W / 2, 370, "Best: " + (localStorage.getItem(LS_KEY) || "0"), {
               fontFamily: "Segoe UI",
               fontSize: "22px",
               color: "#74c0fc",
@@ -1035,10 +1035,10 @@
               color: "#0c1733",
             })
             .setOrigin(0.5);
-          btn.on("pointerdown", () => this.scene.start("Title"));
-          this.input.keyboard.once("keydown-ENTER", () =>
-            this.scene.start("Title"),
-          );
+          const again = () => this.scene.start("Title");
+          btn.on("pointerdown", again);
+          this.input.keyboard.once("keydown-ENTER", again);
+          this.input.keyboard.once("keydown-SPACE", again);
         }
       }
 
@@ -1056,6 +1056,22 @@
         scene: [BootScene, TitleScene, GameScene, ResultsScene],
       };
       new Phaser.Game(config);
+
+      // ── ADDITIVE a11y: label the Phaser canvas for assistive tech once it
+      //    mounts (the canvas is otherwise opaque to screen readers). Mirrors
+      //    the labeling pattern used by the sibling games. No game logic.
+      (function labelCanvas() {
+        const c = document.querySelector("#game canvas, canvas");
+        if (c) {
+          c.setAttribute("role", "img");
+          c.setAttribute(
+            "aria-label",
+            "Volume Vault crate-packer game. Slide the crate with the arrow keys or A and D to catch falling cubes and pack each prism to its exact volume (length times width times height). A spoken status of packed and target volume is announced as you play.",
+          );
+        } else {
+          requestAnimationFrame(labelCanvas);
+        }
+      })();
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>

@@ -146,6 +146,12 @@
       .opt:hover {
         border-color: var(--blue);
       }
+      .opt:focus-visible,
+      .btn:focus-visible {
+        outline: 3px solid var(--blue);
+        outline-offset: 2px;
+        border-color: var(--blue);
+      }
       .opt:active {
         transform: scale(0.97);
       }
@@ -495,6 +501,18 @@
             opts.push(w);
           }
         }
+        // Guarantee 4 distinct options even if makeWrong keeps colliding,
+        // so the grid never renders short. Pad with nearby positive integers.
+        var nCorrect = parseInt(correctStr, 10);
+        var pad = 1;
+        while (opts.length < 4 && pad < 50) {
+          var cand = String((isNaN(nCorrect) ? 0 : nCorrect) + pad);
+          if (!set[cand]) {
+            set[cand] = true;
+            opts.push(cand);
+          }
+          pad++;
+        }
         return { opts: shuffle(opts), correct: correctStr };
       }
 
@@ -564,16 +582,29 @@
           setNums[String(b)] = true;
           setNums[String(c)] = true;
           var optsArr = [String(a), String(b), String(c)];
-          // Add a 4th distractor integer not in the set
+          // Add a 4th distractor integer not in the set. It MUST be greater
+          // than the listed minimum, otherwise an option smaller than the
+          // "least of these three" would appear and make the answer ambiguous.
           var guard2 = 0;
-          while (optsArr.length < 4 && guard2 < 50) {
+          while (optsArr.length < 4 && guard2 < 80) {
             guard2++;
-            var extra = rnd(-15, 15);
+            var extra = rnd(minVal + 1, 15);
             var extraStr = String(extra);
             if (!setNums[extraStr]) {
               setNums[extraStr] = true;
               optsArr.push(extraStr);
             }
+          }
+          // Deterministic fallback so a 4th choice always exists and is never
+          // smaller than the listed minimum (keeps the answer unambiguous).
+          var extraScan = minVal + 1;
+          while (optsArr.length < 4 && extraScan <= 50) {
+            var es = String(extraScan);
+            if (!setNums[es]) {
+              setNums[es] = true;
+              optsArr.push(es);
+            }
+            extraScan++;
           }
           optsArr = shuffle(optsArr);
           // Format prompt display: show negative numbers with minus sign
