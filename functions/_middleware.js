@@ -46,6 +46,21 @@ export async function onRequest(context) {
     "/personal/ai-study-guide",
     "/personal/ai-study-guide/",
     "/personal/ai-study-guide/index.html",
+    "/personal/first-grade",
+    "/personal/first-grade/",
+    "/personal/first-grade/index.html",
+    "/personal/first-grade-math",
+    "/personal/first-grade-math/",
+    "/personal/first-grade-math/index.html",
+    "/personal/first-grade-reading",
+    "/personal/first-grade-reading/",
+    "/personal/first-grade-reading/index.html",
+    "/personal/first-grade-writing",
+    "/personal/first-grade-writing/",
+    "/personal/first-grade-writing/index.html",
+    "/personal/first-grade-hebrew",
+    "/personal/first-grade-hebrew/",
+    "/personal/first-grade-hebrew/index.html",
   ]);
   if (PUBLIC_PATHS.has(url.pathname)) return next();
 
