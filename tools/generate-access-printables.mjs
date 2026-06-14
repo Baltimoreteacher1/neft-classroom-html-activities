@@ -16,9 +16,17 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import {
-  Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle,
-} from "docx";
+
+// docx is optional at build time: if it can't load, we still emit the HTML
+// packets and the build continues (never let a content generator break deploy).
+let Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle;
+let docxAvailable = false;
+try {
+  ({ Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle } = await import("docx"));
+  docxAvailable = true;
+} catch (e) {
+  console.warn("generate-access-printables: docx unavailable, skipping .docx packets —", e.message);
+}
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -141,21 +149,28 @@ function buildDocx(domain, levelKey, level) {
 }
 
 // ── generate ──
-mkdirSync(outDir, { recursive: true });
-const manifest = [];
-let html = 0, docx = 0;
-const jobs = [];
-for (const [domain, d] of Object.entries(DATA.domains)) {
-  for (const [levelKey, level] of Object.entries(d.levels)) {
-    if (!(level.activities || []).length) continue;
-    const base = `${domain}-${levelKey}`.replace(/\s+/g, "");
-    writeFileSync(join(outDir, `${base}.html`), buildHTML(domain, levelKey, level)); html++;
-    jobs.push(
-      Packer.toBuffer(buildDocx(domain, levelKey, level)).then((buf) => { writeFileSync(join(outDir, `${base}.docx`), buf); docx++; }),
-    );
-    manifest.push({ domain, levelKey, base, count: (level.activities || []).length });
+try {
+  mkdirSync(outDir, { recursive: true });
+  const manifest = [];
+  let html = 0, docx = 0;
+  const jobs = [];
+  for (const [domain, d] of Object.entries(DATA.domains)) {
+    for (const [levelKey, level] of Object.entries(d.levels)) {
+      if (!(level.activities || []).length) continue;
+      const base = `${domain}-${levelKey}`.replace(/\s+/g, "");
+      writeFileSync(join(outDir, `${base}.html`), buildHTML(domain, levelKey, level)); html++;
+      if (docxAvailable) {
+        jobs.push(
+          Packer.toBuffer(buildDocx(domain, levelKey, level)).then((buf) => { writeFileSync(join(outDir, `${base}.docx`), buf); docx++; }),
+        );
+      }
+      manifest.push({ domain, levelKey, base, count: (level.activities || []).length });
+    }
   }
+  await Promise.all(jobs);
+  writeFileSync(join(outDir, "manifest.json"), JSON.stringify(manifest, null, 1));
+  console.log(`generate-access-printables: ${html} HTML + ${docx} DOCX packets → ${outDir.replace(root + "/", "")}`);
+} catch (e) {
+  console.warn("generate-access-printables: non-fatal error, continuing build —", e.message);
+  process.exit(0);
 }
-await Promise.all(jobs);
-writeFileSync(join(outDir, "manifest.json"), JSON.stringify(manifest, null, 1));
-console.log(`generate-access-printables: ${html} HTML + ${docx} DOCX packets → ${outDir.replace(root + "/", "")}`);
