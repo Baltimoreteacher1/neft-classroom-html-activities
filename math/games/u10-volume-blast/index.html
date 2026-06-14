@@ -684,6 +684,7 @@
             b.style.setProperty("--optd", idx * 0.07 + "s");
           }
           b.textContent = o;
+          b.setAttribute("aria-label", "Answer choice " + (idx + 1) + ": " + o);
           b.onclick = function () {
             answer(o, b);
           };
@@ -797,6 +798,29 @@
         state.i++;
         nextQuestion();
       };
+
+      // Keyboard support: 1–4 pick an option, Enter/Space advances when Next is shown.
+      document.addEventListener("keydown", function (e) {
+        var play = document.getElementById("playScreen");
+        if (!play || play.classList.contains("hidden")) return;
+        var nextBtn = document.getElementById("nextBtn");
+        var nextVisible = nextBtn && !nextBtn.classList.contains("hidden");
+        if ((e.key === "Enter" || e.key === " ") && nextVisible) {
+          var tag = (e.target && e.target.tagName) || "";
+          if (tag === "BUTTON") return; // let native button activation handle it
+          e.preventDefault();
+          nextBtn.click();
+          return;
+        }
+        if (!state.locked && /^[1-4]$/.test(e.key)) {
+          var opts = document.querySelectorAll("#opts .opt");
+          var idx = parseInt(e.key, 10) - 1;
+          if (opts[idx]) {
+            e.preventDefault();
+            opts[idx].click();
+          }
+        }
+      });
 
       /* ===========================================================
          BESPOKE VISUAL FX (additive only — no gameplay/scoring ties)

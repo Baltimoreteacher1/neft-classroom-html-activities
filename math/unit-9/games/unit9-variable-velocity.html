@@ -214,6 +214,13 @@
       };
 
       // ── small helpers ──
+      // Reduced-motion guard (additive; never changes gameplay/scoring). Lets
+      // in-canvas decorative motion be softened to match the CSS star-field,
+      // which already honors prefers-reduced-motion.
+      const VV_RM_QUERY =
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)");
+      const reducedMotion = () => !!(VV_RM_QUERY && VV_RM_QUERY.matches);
       const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
       const choice = (arr) => arr[Math.floor(Math.random() * arr.length)];
       function shuffle(a) {
@@ -360,14 +367,16 @@
           const w2 = this.add.circle(34, 36, 16, 0x223b55).setStrokeStyle(3, C.gold);
           const dish = this.add.circle(-34, -28, 11, 0x0e2840).setStrokeStyle(2, C.accent);
           badge.add([w1, w2, body, cab, dish]);
-          this.tweens.add({
-            targets: badge,
-            y: 138,
-            duration: 1600,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.inOut",
-          });
+          if (!reducedMotion()) {
+            this.tweens.add({
+              targets: badge,
+              y: 138,
+              duration: 1600,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.inOut",
+            });
+          }
 
           this.add
             .text(cx, 250, "VARIABLE VELOCITY", {
@@ -847,7 +856,9 @@
             plotY: y,
             prompt: `The rover reached y = ${y} ${level.dvShort}. What was x (${level.ivShort})?`,
             choices: opts,
-            explain: `${y}${b ? ` − ${b}` : ""} ÷ ${k} = ${x}.`,
+            explain: b
+              ? `(${y} − ${b}) ÷ ${k} = ${x}.`
+              : `${y} ÷ ${k} = ${x}.`,
           };
         }
 
@@ -1020,7 +1031,7 @@
             this.fbText
               .setColor("#ff8f8f")
               .setText(`✗ Answer: ${right.label}.  ${q.explain}`);
-            this.cameras.main.shake(180, 0.006);
+            if (!reducedMotion()) this.cameras.main.shake(180, 0.006);
             this.setSR(`Not quite. ${q.explain}`);
           }
           this.refreshHUD();
@@ -1047,14 +1058,19 @@
           this.plotGfx.lineStyle(2, 0x6b4e00, 1);
           this.plotGfx.strokeCircle(px, py, 6);
           this.plottedPts.push({ px, py, x, y });
-          // drive rover
-          this.tweens.add({
-            targets: this.rover,
-            x: px,
-            y: py,
-            duration: 600,
-            ease: "Sine.inOut",
-          });
+          // drive rover (snap instantly under reduced motion)
+          if (reducedMotion()) {
+            this.rover.x = px;
+            this.rover.y = py;
+          } else {
+            this.tweens.add({
+              targets: this.rover,
+              x: px,
+              y: py,
+              duration: 600,
+              ease: "Sine.inOut",
+            });
+          }
           // point label
           this.add
             .text(px + 8, py - 8, `(${x}, ${y})`, {
@@ -1195,6 +1211,16 @@
           const cx = W / 2;
           // stars based on score
           const stars = this.score >= 2200 ? 3 : this.score >= 1400 ? 2 : 1;
+          // Record progress for the classroom dashboard (safe no-op if the
+          // EduPulse bridge is unavailable).
+          try {
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: document.title,
+                score: this.score,
+                stars: stars,
+              });
+          } catch (e) {}
           this.add
             .text(cx, 150, this.won ? "RELAY COMPLETE!" : "OUT OF FUEL", {
               fontFamily: "Segoe UI, sans-serif",
@@ -1287,8 +1313,39 @@
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
         scene: [BootScene, TitleScene, GameScene, ResultScene],
       };
-      new Phaser.Game(config);
+      const vvGame = new Phaser.Game(config);
+
+      // ── Canvas accessibility (additive; no gameplay change) ──
+      // Phaser renders into one <canvas> that is not in the tab order by
+      // default, so keyboard-only students cannot focus the game to use the
+      // 1-4 answer keys. Label the canvas, make it focusable, and focus it on
+      // first pointer so the existing keyboard controls work immediately.
+      vvGame.events.once("ready", function () {
+        try {
+          const cv = vvGame.canvas;
+          if (!cv) return;
+          cv.setAttribute("role", "application");
+          cv.setAttribute(
+            "aria-label",
+            "Variable Velocity Rover Relay math game. Identify variables, " +
+              "find the rule y = kx, and plot the line. Use number keys 1 to 4 " +
+              "to choose an answer.",
+          );
+          cv.setAttribute("aria-roledescription", "math game");
+          if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
+          cv.addEventListener("pointerdown", function () {
+            try {
+              cv.focus({ preventScroll: true });
+            } catch (e) {
+              cv.focus();
+            }
+          });
+        } catch (e) {}
+      });
     </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->

@@ -240,7 +240,37 @@
           return b;
         }
         function mkQ(text, correct, wrongs, explain, tier, room) {
-          const opts = shuffle([correct, ...wrongs]);
+          // Guarantee every option is distinct. Procedurally generated
+          // distractors can collide with the correct answer or each other
+          // (e.g. "x = c" when c happens to equal the answer), which would make
+          // the item ambiguous — two identical choices, one of them "right".
+          // For numeric "x = N" options we nudge any duplicate to a nearby
+          // unused integer; otherwise we fall back to a simple suffix.
+          const seen = new Set([correct]);
+          const uniqueWrongs = wrongs.map((wOrig) => {
+            let w = wOrig;
+            const m = /^x = (-?\d+)$/.exec(w);
+            if (m) {
+              const base = parseInt(m[1], 10);
+              let n = base,
+                k = 1;
+              // Search outward (+1,-1,+2,-2,...) for an unused value.
+              while (seen.has("x = " + n)) {
+                n = base + (k % 2 === 1 ? Math.ceil(k / 2) : -(k / 2));
+                k++;
+              }
+              w = "x = " + n;
+            } else {
+              let suffix = 0;
+              while (seen.has(w)) {
+                suffix++;
+                w = wOrig + " ".repeat(suffix);
+              }
+            }
+            seen.add(w);
+            return w;
+          });
+          const opts = shuffle([correct, ...uniqueWrongs]);
           return { text, correct, options: opts, explain, tier, room };
         }
         // Tier 1: One-step add/sub
@@ -2233,6 +2263,22 @@
           document.addEventListener("DOMContentLoaded", attach, { once: true });
         } else {
           attach();
+        }
+      })();
+
+      // ── ADDITIVE a11y: label the Phaser canvas for assistive tech once it
+      //    mounts (the canvas is otherwise opaque to screen readers). Questions
+      //    and feedback are also pushed to the aria-live region by announce().
+      (function labelCanvas() {
+        const c = document.querySelector("canvas");
+        if (c) {
+          c.setAttribute("role", "img");
+          c.setAttribute(
+            "aria-label",
+            "Equation Escape dungeon game. Solve one-step equations to unlock each door. Use number keys 1 to 4 or the arrow keys and Enter to choose an answer. Questions and results are also announced as text.",
+          );
+        } else {
+          requestAnimationFrame(labelCanvas);
         }
       })();
     </script>

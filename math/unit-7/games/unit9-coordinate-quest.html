@@ -2444,6 +2444,22 @@
           if (g && g.navSelect) g.navSelect();
         });
       })();
+
+      // ── ADDITIVE a11y: label the Phaser canvas for assistive tech once it
+      //    mounts (the canvas is otherwise opaque to screen readers). Questions
+      //    and choices are also pushed to the sr-live region by announce().
+      (function labelCanvas() {
+        const c = document.querySelector("canvas");
+        if (c) {
+          c.setAttribute("role", "img");
+          c.setAttribute(
+            "aria-label",
+            "Coordinate Quest space-navigation game. Answer questions about the coordinate plane, quadrants, integers, and absolute value. Use number keys 1 to 4 or the arrow keys and Enter to choose an answer. Questions are also announced as text.",
+          );
+        } else {
+          requestAnimationFrame(labelCanvas);
+        }
+      })();
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>

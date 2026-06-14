@@ -434,6 +434,10 @@
       </p>
     </header>
     <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/games/">Games</a> / Factor Frenzy
+      </nav>
       <!-- START -->
       <section class="card" id="startScreen">
         <p class="mode-tag">Lessons 1.1–1.3 · 6.NS.4</p>
@@ -865,7 +869,9 @@
         var r = document.getElementById("resultScreen");
         r.classList.remove("hidden");
         document.getElementById("finalScore").textContent = state.score;
-        var answered = state.i; // questions seen
+        // Questions actually attempted: when the game ends on running out of
+        // lives, the current question (state.i) was attempted, so count it.
+        var answered = state.lives <= 0 ? state.i + 1 : state.i;
         var msg, tier;
         if (state.lives <= 0) {
           tier = "Out of lives!";

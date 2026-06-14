@@ -88,6 +88,25 @@
         border-radius: 10px;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
       }
+      /* Back-to-hub link, kept above the canvas. */
+      .nt-back-hub {
+        position: fixed;
+        top: 8px;
+        left: 8px;
+        z-index: 50;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font: 600 13px/1 "Segoe UI", system-ui, sans-serif;
+        color: #e6f1ff;
+        background: rgba(10, 10, 46, 0.7);
+        border: 1px solid rgba(120, 160, 220, 0.5);
+        text-decoration: none;
+      }
+      .nt-back-hub:hover,
+      .nt-back-hub:focus {
+        background: rgba(34, 34, 104, 0.9);
+        outline: 2px solid #ffd23f;
+      }
       /* Respect reduced-motion: freeze every backdrop drift. */
       @media (prefers-reduced-motion: reduce) {
         #fx-chains,
@@ -124,6 +143,9 @@
     <!-- gfx-injected:end -->
   </head>
   <body>
+    <a class="nt-back-hub" href="../index.html" aria-label="Back to Unit 1 hub"
+      >← Back to Unit&nbsp;1</a
+    >
     <!-- Parallax prime-chain backdrop (GameFX pointer-parallax target; both
          layers freeze under prefers-reduced-motion via CSS + the FX kit). -->
     <div id="fx-backdrop" data-parallax aria-hidden="true">
@@ -1376,13 +1398,16 @@
             const free = this.tiles.filter((t) => !t.seatedIn);
             if (!free.length) return;
             this.kbIndex = (this.kbIndex + dir + free.length) % free.length;
-            free.forEach((t, i) =>
+            // The prime-round number block is draggable but has no `_box`
+            // outline, so guard before styling to keep TAB from throwing.
+            free.forEach((t, i) => {
+              if (!t._box) return;
               t._box.setStrokeStyle(
-                i === free.indexOf(free[this.kbIndex]) ? 4 : 3,
+                i === this.kbIndex ? 4 : 3,
                 i === this.kbIndex ? C.gold : 0x000000,
                 i === this.kbIndex ? 1 : 0.35,
-              ),
-            );
+              );
+            });
             this.kbTile = free[this.kbIndex];
             sfxClick();
           }

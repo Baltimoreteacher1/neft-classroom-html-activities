@@ -312,6 +312,12 @@
         }
       }
       /* HUD value emphasis pop (staggered from JS for score/streak/lives). */
+      /* Visible keyboard focus ring on every interactive control. */
+      .opt:focus-visible,
+      .btn:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
       .hud .val.bump {
         animation: hudBump 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
       }
@@ -379,6 +385,10 @@
       </p>
     </header>
     <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/games/">Games</a> / Decimal Dash
+      </nav>
       <section class="card" id="startScreen">
         <p class="mode-tag">Lessons 1.4–1.7 · 6.NS.2 · 6.NS.3</p>
         <h2 style="margin: 6px 0">Ready to dash?</h2>
@@ -566,9 +576,11 @@
           var o = distinctOpts(
             ans,
             function () {
-              return round2(
+              // Keep distractors positive so no "−0.40"-style option appears.
+              var w = round2(
                 ans + (rnd(1, 9) / 10) * (Math.random() < 0.5 ? 1 : -1),
               );
+              return w > 0 ? w : round2(ans + rnd(1, 9) / 10);
             },
             money,
           );
@@ -598,9 +610,10 @@
           var o3 = distinctOpts(
             ans3,
             function () {
-              return round2(
+              var w = round2(
                 ans3 + (rnd(1, 9) / 10) * (Math.random() < 0.5 ? 1 : -1),
               );
+              return w > 0 ? w : round2(ans3 + rnd(1, 9) / 10);
             },
             money,
           );
@@ -619,9 +632,10 @@
           var o4 = distinctOpts(
             quo,
             function () {
-              return round2(
+              var w = round2(
                 quo + (rnd(1, 9) / 10) * (Math.random() < 0.5 ? 1 : -1),
               );
+              return w > 0 ? w : round2(quo + rnd(1, 9) / 10);
             },
             money,
           );
@@ -782,7 +796,7 @@
             EduPulse.record({
               activityTitle: document.title,
               score: state.score,
-              problemsAttempted: state.i,
+              problemsAttempted: state.lives <= 0 ? state.i + 1 : state.i,
               standard: "6.NS.2",
             });
         } catch (e) {}
