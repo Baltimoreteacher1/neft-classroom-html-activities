@@ -18,6 +18,14 @@
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 
+# ACCESS Practice Lab HTML shell: NEVER cache the entry pages, so a deploy is
+# seen immediately (the versioned ?v= app.js/data underneath still cache fine).
+# This is the SPA hub + the clean activity/test URLs served by the Pages Function.
+/access-practice-lab/
+  Cache-Control: no-store
+/access-teacher/
+  Cache-Control: no-store
+
 # Command Center PWA: service worker and manifest must always revalidate.
 /teacher-tools/neftos-command-center/service-worker.js
   Cache-Control: public, max-age=0, must-revalidate
