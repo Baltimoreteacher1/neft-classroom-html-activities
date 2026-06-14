@@ -31,3 +31,15 @@ jobs:
         run: npm run audit:curriculum
       - name: Save/Resume integration audit
         run: node tools/audit-save-resume-integration.js
+
+  live-smoke:
+    # Checks the DEPLOYED site (catches a broken Cloudflare deploy that source
+    # audits would miss). Runs independently of the source-audit job.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Live-site smoke test
+        run: node tools/smoke-live-site.mjs
