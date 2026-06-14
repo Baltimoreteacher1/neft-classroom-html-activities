@@ -737,7 +737,7 @@
           <div class="grid2">
             <div>
               <label class="fld" for="worldCountry">Professional Player Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+              <input type="text" id="worldCountry" data-save placeholder="e.g. Stephen Curry" oninput="recalcAll()">
             </div>
             <div>
               <label class="fld" for="r-pts">Total points (season)</label>
@@ -790,9 +790,9 @@
         <strong>Working with Ratios, Rates, & Tape Diagrams:</strong>
       </p>
       <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Identify the parts in your ratio: **Part A : Part B** (e.g. 2 cups blue paint to 3 cups yellow paint).</li>
-        <li>Add the parts to find the **Total Parts** in the whole mixture ($2 + 3 = 5$ parts).</li>
-        <li>Divide the total mixture volume by the total parts to find the **Value of One Box** in your tape diagram.</li>
+        <li>Identify the parts in your ratio: <b>Part A : Part B</b> (e.g. 2 cups blue paint to 3 cups yellow paint).</li>
+        <li>Add the parts to find the <b>Total Parts</b> in the whole mixture ($2 + 3 = 5$ parts).</li>
+        <li>Divide the total mixture volume by the total parts to find the <b>Value of One Box</b> in your tape diagram.</li>
         <li>Multiply the value of one box by the parts of each ingredient to find the target amounts.</li>
       </ol>
       <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
@@ -884,9 +884,9 @@
         <strong>Working with Ratios, Rates, & Tape Diagrams:</strong>
       </p>
       <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Identify the parts in your ratio: **Part A : Part B** (e.g. 2 cups blue paint to 3 cups yellow paint).</li>
-        <li>Add the parts to find the **Total Parts** in the whole mixture ($2 + 3 = 5$ parts).</li>
-        <li>Divide the total mixture volume by the total parts to find the **Value of One Box** in your tape diagram.</li>
+        <li>Identify the parts in your ratio: <b>Part A : Part B</b> (e.g. 2 cups blue paint to 3 cups yellow paint).</li>
+        <li>Add the parts to find the <b>Total Parts</b> in the whole mixture ($2 + 3 = 5$ parts).</li>
+        <li>Divide the total mixture volume by the total parts to find the <b>Value of One Box</b> in your tape diagram.</li>
         <li>Multiply the value of one box by the parts of each ingredient to find the target amounts.</li>
       </ol>
       <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
@@ -1283,10 +1283,11 @@
     <script>
       document.getElementById("yr").textContent = new Date().getFullYear();
       const $ = (id) => document.getElementById(id);
-      const num = (id) => parseFloat($(id).value);
+      const num = (id) => { const e = $(id); return e ? parseFloat(e.value) : NaN; };
 
       function show(id, html) {
         const el = $(id);
+        if (!el) return;
         el.innerHTML = html;
         el.classList.add("show");
         updateProgress();
@@ -1473,7 +1474,7 @@
         }
         
         const labels =
-          $("worldCat").value === "costPerGuest" || $("worldCat").value === "price"
+          ($("worldCat") || {}).value === "costPerGuest" || ($("worldCat") || {}).value === "price"
             ? { mean: "City avg $", me: "Me $" }
             : { mean: "City avg", me: "Me" };
             

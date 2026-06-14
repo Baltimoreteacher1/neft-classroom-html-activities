@@ -711,7 +711,7 @@
           <div class="grid2">
             <div>
               <label class="fld" for="worldCountry">Creator Niche Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+              <input type="text" id="worldCountry" data-save placeholder="e.g. Gaming channel" oninput="recalcAll()">
             </div>
             <div>
               <label class="fld" for="k-rate">Typical Revenue per 1,000 views ($)</label>
@@ -804,17 +804,17 @@
         <strong>Plotting Coordinates & Finding Grid Distance:</strong>
       </p>
       <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Ordered pairs are written as **$(x, y)$**:
+        <li>Ordered pairs are written as <b>$(x, y)$</b>:
           <ul>
             <li>$x$-coordinate: Move horizontally (right if positive, left if negative).</li>
             <li>$y$-coordinate: Move vertically (up if positive, down if negative).</li>
           </ul>
         </li>
-        <li>Identify which **Quadrant** the point lies in (I, II, III, or IV).</li>
-        <li>**Finding distance between points** in the same line:
+        <li>Identify which <b>Quadrant</b> the point lies in (I, II, III, or IV).</li>
+        <li><b>Finding distance between points</b> in the same line:
           <ul>
-            <li>If the coordinates have the same sign, **subtract** their absolute values.</li>
-            <li>If signs are opposite (across an axis), **add** their absolute values.</li>
+            <li>If the coordinates have the same sign, <b>subtract</b> their absolute values.</li>
+            <li>If signs are opposite (across an axis), <b>add</b> their absolute values.</li>
           </ul>
         </li>
       </ol>
@@ -881,17 +881,17 @@
         <strong>Plotting Coordinates & Finding Grid Distance:</strong>
       </p>
       <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Ordered pairs are written as **$(x, y)$**:
+        <li>Ordered pairs are written as <b>$(x, y)$</b>:
           <ul>
             <li>$x$-coordinate: Move horizontally (right if positive, left if negative).</li>
             <li>$y$-coordinate: Move vertically (up if positive, down if negative).</li>
           </ul>
         </li>
-        <li>Identify which **Quadrant** the point lies in (I, II, III, or IV).</li>
-        <li>**Finding distance between points** in the same line:
+        <li>Identify which <b>Quadrant</b> the point lies in (I, II, III, or IV).</li>
+        <li><b>Finding distance between points</b> in the same line:
           <ul>
-            <li>If the coordinates have the same sign, **subtract** their absolute values.</li>
-            <li>If signs are opposite (across an axis), **add** their absolute values.</li>
+            <li>If the coordinates have the same sign, <b>subtract</b> their absolute values.</li>
+            <li>If signs are opposite (across an axis), <b>add</b> their absolute values.</li>
           </ul>
         </li>
       </ol>
@@ -984,17 +984,17 @@
         <strong>Plotting Coordinates & Finding Grid Distance:</strong>
       </p>
       <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Ordered pairs are written as **$(x, y)$**:
+        <li>Ordered pairs are written as <b>$(x, y)$</b>:
           <ul>
             <li>$x$-coordinate: Move horizontally (right if positive, left if negative).</li>
             <li>$y$-coordinate: Move vertically (up if positive, down if negative).</li>
           </ul>
         </li>
-        <li>Identify which **Quadrant** the point lies in (I, II, III, or IV).</li>
-        <li>**Finding distance between points** in the same line:
+        <li>Identify which <b>Quadrant</b> the point lies in (I, II, III, or IV).</li>
+        <li><b>Finding distance between points</b> in the same line:
           <ul>
-            <li>If the coordinates have the same sign, **subtract** their absolute values.</li>
-            <li>If signs are opposite (across an axis), **add** their absolute values.</li>
+            <li>If the coordinates have the same sign, <b>subtract</b> their absolute values.</li>
+            <li>If signs are opposite (across an axis), <b>add</b> their absolute values.</li>
           </ul>
         </li>
       </ol>
@@ -1097,17 +1097,17 @@
         <strong>Plotting Coordinates & Finding Grid Distance:</strong>
       </p>
       <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Ordered pairs are written as **$(x, y)$**:
+        <li>Ordered pairs are written as <b>$(x, y)$</b>:
           <ul>
             <li>$x$-coordinate: Move horizontally (right if positive, left if negative).</li>
             <li>$y$-coordinate: Move vertically (up if positive, down if negative).</li>
           </ul>
         </li>
-        <li>Identify which **Quadrant** the point lies in (I, II, III, or IV).</li>
-        <li>**Finding distance between points** in the same line:
+        <li>Identify which <b>Quadrant</b> the point lies in (I, II, III, or IV).</li>
+        <li><b>Finding distance between points</b> in the same line:
           <ul>
-            <li>If the coordinates have the same sign, **subtract** their absolute values.</li>
-            <li>If signs are opposite (across an axis), **add** their absolute values.</li>
+            <li>If the coordinates have the same sign, <b>subtract</b> their absolute values.</li>
+            <li>If signs are opposite (across an axis), <b>add</b> their absolute values.</li>
           </ul>
         </li>
       </ol>
@@ -1498,10 +1498,11 @@
     <script>
       document.getElementById("yr").textContent = new Date().getFullYear();
       const $ = (id) => document.getElementById(id);
-      const num = (id) => parseFloat($(id).value);
+      const num = (id) => { const e = $(id); return e ? parseFloat(e.value) : NaN; };
 
       function show(id, html) {
         const el = $(id);
+        if (!el) return;
         el.innerHTML = html;
         el.classList.add("show");
         updateProgress();
@@ -1846,7 +1847,7 @@
         }
         
         const labels =
-          $("worldCat").value === "costPerGuest" || $("worldCat").value === "price"
+          ($("worldCat") || {}).value === "costPerGuest" || ($("worldCat") || {}).value === "price"
             ? { mean: "City avg $", me: "Me $" }
             : { mean: "City avg", me: "Me" };
             

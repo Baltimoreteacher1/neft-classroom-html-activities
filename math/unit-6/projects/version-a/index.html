@@ -796,8 +796,8 @@
       <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
         <li>Identify the constant (one-time fee) and the rate (cost per item).</li>
         <li>Write the variable expression: $\text{Rate} \times x + \text{Constant}$ (e.g. $15x + 50$, where $x$ is the variable).</li>
-        <li>**Evaluate the expression**: Replace the variable $x$ with the specified number of items.</li>
-        <li>Follow the **Order of Operations (PEMDAS)**: Multiply first, then add the constant.</li>
+        <li><b>Evaluate the expression</b>: Replace the variable $x$ with the specified number of items.</li>
+        <li>Follow the <b>Order of Operations (PEMDAS)</b>: Multiply first, then add the constant.</li>
       </ol>
       <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
         💡 <b>Example:</b> Gym cost is $15 per month plus a $30 signup fee. Expression = $15m + 30$. For 6 months: $(15 \times 6) + 30 = 90 + 30 = \mathbf{\$120}$.
@@ -851,7 +851,7 @@
           <div class="grid2">
             <div>
               <label class="fld" for="worldCountry">Game Title Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+              <input type="text" id="worldCountry" data-save placeholder="e.g. Minecraft" oninput="recalcAll()">
             </div>
             <div>
               <label class="fld" for="exp-base">Your base score (2–10)</label>
@@ -911,8 +911,8 @@
       <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
         <li>Identify the constant (one-time fee) and the rate (cost per item).</li>
         <li>Write the variable expression: $\text{Rate} \times x + \text{Constant}$ (e.g. $15x + 50$, where $x$ is the variable).</li>
-        <li>**Evaluate the expression**: Replace the variable $x$ with the specified number of items.</li>
-        <li>Follow the **Order of Operations (PEMDAS)**: Multiply first, then add the constant.</li>
+        <li><b>Evaluate the expression</b>: Replace the variable $x$ with the specified number of items.</li>
+        <li>Follow the <b>Order of Operations (PEMDAS)</b>: Multiply first, then add the constant.</li>
       </ol>
       <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
         💡 <b>Example:</b> Gym cost is $15 per month plus a $30 signup fee. Expression = $15m + 30$. For 6 months: $(15 \times 6) + 30 = 90 + 30 = \mathbf{\$120}$.
@@ -1050,8 +1050,8 @@
       <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
         <li>Identify the constant (one-time fee) and the rate (cost per item).</li>
         <li>Write the variable expression: $\text{Rate} \times x + \text{Constant}$ (e.g. $15x + 50$, where $x$ is the variable).</li>
-        <li>**Evaluate the expression**: Replace the variable $x$ with the specified number of items.</li>
-        <li>Follow the **Order of Operations (PEMDAS)**: Multiply first, then add the constant.</li>
+        <li><b>Evaluate the expression</b>: Replace the variable $x$ with the specified number of items.</li>
+        <li>Follow the <b>Order of Operations (PEMDAS)</b>: Multiply first, then add the constant.</li>
       </ol>
       <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
         💡 <b>Example:</b> Gym cost is $15 per month plus a $30 signup fee. Expression = $15m + 30$. For 6 months: $(15 \times 6) + 30 = 90 + 30 = \mathbf{\$120}$.
@@ -1458,10 +1458,11 @@
     <script>
       document.getElementById("yr").textContent = new Date().getFullYear();
       const $ = (id) => document.getElementById(id);
-      const num = (id) => parseFloat($(id).value);
+      const num = (id) => { const e = $(id); return e ? parseFloat(e.value) : NaN; };
 
       function show(id, html) {
         const el = $(id);
+        if (!el) return;
         el.innerHTML = html;
         el.classList.add("show");
         updateProgress();
@@ -1709,7 +1710,7 @@
           .join("");
       }
       function worldSample() {
-        const cat = $("worldCat").value;
+        const cat = ($("worldCat") || {}).value;
         if (cat === "score") return world.map((r) => worldScore(r));
         return world.map((r) => r[wIdx[cat]]);
       }
@@ -1725,7 +1726,7 @@
         }
         
         const labels =
-          $("worldCat").value === "costPerGuest" || $("worldCat").value === "price"
+          ($("worldCat") || {}).value === "costPerGuest" || ($("worldCat") || {}).value === "price"
             ? { mean: "City avg $", me: "Me $" }
             : { mean: "City avg", me: "Me" };
             

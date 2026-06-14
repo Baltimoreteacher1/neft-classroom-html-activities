@@ -889,7 +889,7 @@
           <div class="grid2">
             <div>
               <label class="fld" for="worldCountry">Food Plan Category Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+              <input type="text" id="worldCountry" data-save placeholder="e.g. Low-Cost Food Plan" oninput="recalcAll()">
             </div>
             <div>
               <label class="fld" for="c-food">Food &amp; drinks ($)</label>
@@ -967,10 +967,10 @@
           <strong>Adding and Subtracting Decimals for Budgets:</strong>
         </p>
         <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-          <li>Enter your prices carefully. **Always align the decimal points** when writing them down.</li>
-          <li>Add up all your costs (food, rentals, DJ fee) to find your **Total Expenses**.</li>
-          <li>Subtract your Total Expenses from your starting **$600 budget** to find your remaining **Leftover Cash**.</li>
-          <li>*Rule:* If your expenses are over $600, you must reduce item counts or find cheaper options!</li>
+          <li>Enter your prices carefully. <b>Always align the decimal points</b> when writing them down.</li>
+          <li>Add up all your costs (food, rentals, DJ fee) to find your <b>Total Expenses</b>.</li>
+          <li>Subtract your Total Expenses from your starting <b>$600 budget</b> to find your remaining <b>Leftover Cash</b>.</li>
+          <li><i>Rule:</i> If your expenses are over $600, you must reduce item counts or find cheaper options!</li>
         </ol>
         <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
           💡 <b>Example:</b> Budget $600.00 − Expenses $420.50 = Leftover $179.50.
@@ -1068,8 +1068,8 @@
           <strong>Dividing Decimals for Shared Cost Per Guest:</strong>
         </p>
         <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-          <li>Take your **Total Expenses** calculated from your budget.</li>
-          <li>Divide this total by the number of **expected guests** (e.g. 50 guests).</li>
+          <li>Take your <b>Total Expenses</b> calculated from your budget.</li>
+          <li>Divide this total by the number of <b>expected guests</b> (e.g. 50 guests).</li>
           <li>This gives you the exact cost contribution per guest.</li>
           <li>When dividing decimals by a whole number, place the decimal point in the quotient directly above the decimal point in the dividend.</li>
         </ol>
@@ -1436,7 +1436,7 @@
     <script>
       document.getElementById("yr").textContent = new Date().getFullYear();
       const $ = (id) => document.getElementById(id);
-      const num = (id) => parseFloat($(id).value);
+      const num = (id) => { const e = $(id); return e ? parseFloat(e.value) : NaN; };
 
       /* ---- Unit-specific calculators (kept in page) ---- */
       function gcd(a, b) {
@@ -1452,6 +1452,7 @@
       }
       function show(id, html) {
         const el = $(id);
+        if (!el) return;
         el.innerHTML = html;
         el.classList.add("show");
         updateProgress();
@@ -1641,7 +1642,7 @@
           .join("");
       }
       function worldSample() {
-        return world.map((r) => r[wIdx[$("worldCat").value]]);
+        return world.map((r) => r[wIdx[($("worldCat") || {}).value]]);
       }
       
       function worldGo() {
@@ -1655,7 +1656,7 @@
         }
         
         const labels =
-          $("worldCat").value === "costPerGuest" || $("worldCat").value === "price"
+          ($("worldCat") || {}).value === "costPerGuest" || ($("worldCat") || {}).value === "price"
             ? { mean: "City avg $", me: "Me $" }
             : { mean: "City avg", me: "Me" };
             

@@ -665,7 +665,7 @@
           <div class="grid2">
             <div>
               <label class="fld" for="worldCountry">Researched Item/Region</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+              <input type="text" id="worldCountry" data-save placeholder="e.g. Milk (1 gallon)" oninput="recalcAll()">
             </div>
             <div>
               <label class="fld" for="a-price">Price ($)</label>
@@ -898,10 +898,10 @@
         <strong>Calculating Percentages, Taxes, and Discounts:</strong>
       </p>
       <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>**Convert the percentage to a decimal**: Divide the percent by 100 (move the decimal point 2 places left, e.g., $6.5\% = 0.065$).</li>
-        <li>**Calculate tax or tip amount**: Multiply the original price by the decimal value.</li>
-        <li>**Find the total cost**: Add the tax or tip amount to the original price.</li>
-        <li>*For discounts:* Multiply by the discount decimal, then **subtract** it from the original price.</li>
+        <li><b>Convert the percentage to a decimal</b>: Divide the percent by 100 (move the decimal point 2 places left, e.g., $6.5\% = 0.065$).</li>
+        <li><b>Calculate tax or tip amount</b>: Multiply the original price by the decimal value.</li>
+        <li><b>Find the total cost</b>: Add the tax or tip amount to the original price.</li>
+        <li><i>For discounts:</i> Multiply by the discount decimal, then <b>subtract</b> it from the original price.</li>
       </ol>
       <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
         💡 <b>Example:</b> $20.00 shirt with 8% sales tax. Tax = $20 \times 0.08 = $1.60. Total = $21.60.
@@ -1263,10 +1263,11 @@
     <script>
       document.getElementById("yr").textContent = new Date().getFullYear();
       const $ = (id) => document.getElementById(id);
-      const num = (id) => parseFloat($(id).value);
+      const num = (id) => { const e = $(id); return e ? parseFloat(e.value) : NaN; };
 
       function show(id, html) {
         const el = $(id);
+        if (!el) return;
         el.innerHTML = html;
         el.classList.add("show");
         updateProgress();
@@ -1567,7 +1568,7 @@
         }
         
         const labels =
-          $("worldCat").value === "costPerGuest" || $("worldCat").value === "price"
+          ($("worldCat") || {}).value === "costPerGuest" || ($("worldCat") || {}).value === "price"
             ? { mean: "City avg $", me: "Me $" }
             : { mean: "City avg", me: "Me" };
             
