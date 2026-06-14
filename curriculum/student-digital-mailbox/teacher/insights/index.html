@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <meta
+      name="description"
+      content="Class Pulse — anonymous insights dashboard for the Student Digital Mailbox (teacher only)."
+    />
+    <title>Class Pulse — Student Digital Mailbox Insights</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Nunito:wght@600;700;800;900&display=swap"
+    />
+    <link rel="stylesheet" href="../../mailbox.css" />
+    <style>
+      .stat-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin: 18px 0 8px;
+      }
+      .stat {
+        flex: 1 1 160px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px 18px;
+      }
+      .stat .n {
+        font-family: "Nunito", system-ui, sans-serif;
+        font-size: 2.2rem;
+        font-weight: 800;
+        line-height: 1;
+        color: var(--navy);
+      }
+      .stat .lbl {
+        color: var(--muted);
+        font-size: 0.92rem;
+        margin-top: 6px;
+      }
+      .stat.alert .n {
+        color: #b42318;
+      }
+      .stat.alert {
+        background: #fff4e9;
+        border-color: #f3c79a;
+      }
+      .ch-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 16px;
+        margin: 10px 0 24px;
+      }
+      .ch {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px 20px;
+      }
+      .ch h2 {
+        font-family: "Nunito", system-ui, sans-serif;
+        font-size: 1.18rem;
+        margin: 0 0 4px;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .ch .counts {
+        color: var(--muted);
+        font-size: 0.95rem;
+        margin: 0 0 10px;
+      }
+      .ch .counts b {
+        color: var(--navy);
+        font-weight: 800;
+      }
+      .badge-urgent {
+        background: #b42318;
+        color: #fff;
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 999px;
+      }
+      .entries {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 8px;
+      }
+      .entries li {
+        background: var(--surface-2);
+        border-radius: 10px;
+        padding: 9px 12px;
+        font-size: 0.95rem;
+        color: var(--ink);
+      }
+      .ch .note {
+        font-size: 0.9rem;
+        color: var(--muted);
+        font-style: italic;
+      }
+      .ch .empty {
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+      #status {
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+      #error {
+        background: #fff4e9;
+        border: 1px solid #f3c79a;
+        color: #6b4310;
+        border-radius: 14px;
+        padding: 16px 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="mb-head">
+        <p class="mb-eyebrow">Teacher · Anonymous Insights</p>
+        <h1><span class="mb-emoji" aria-hidden="true">📊</span>Class Pulse</h1>
+        <p class="mb-intro">
+          A live, anonymous read of your Student Digital Mailbox. No student
+          names are collected. Private Notes show counts only — read those in
+          the form. <span id="status">Loading…</span>
+        </p>
+      </header>
+
+      <div id="error" hidden role="alert"></div>
+
+      <section aria-label="Weekly totals">
+        <div class="stat-row" id="stats"></div>
+        <p class="mb-intro" id="generated" style="font-size: 0.85rem"></p>
+      </section>
+
+      <section aria-label="Channels">
+        <div class="ch-grid" id="channels"></div>
+      </section>
+
+      <footer class="mb-foot">
+        <a
+          class="mb-btn ghost"
+          href="/curriculum/student-digital-mailbox/teacher/"
+          >← Teacher Setup</a
+        >
+        <a
+          class="mb-btn ghost"
+          href="https://drive.google.com/drive/folders/1NGNJCslmlYZdZV33IrD4zRlpqo0Zk0yP"
+          target="_blank"
+          rel="noopener"
+          >Open responses in Drive →</a
+        >
+      </footer>
+    </div>
+
+    <script>
+      // Read-only Apps Script Web App returning ANONYMOUS aggregate JSON.
+      // Safe to expose: no secrets, no student identity, and this page is behind
+      // the site password (it is NOT in the public allowlist).
+      var INSIGHTS_URL =
+        "https://script.google.com/macros/s/AKfycbxs4s0aA4LQCuIyrmdg6RIvv27eVm7PpbDrWR1SVmWsqvRVdfDWHEzFzaEpnorpPe7wrQ/exec";
+
+      function esc(s) {
+        var d = document.createElement("div");
+        d.textContent = s == null ? "" : String(s);
+        return d.innerHTML;
+      }
+
+      function render(data) {
+        document.getElementById("status").textContent = "";
+        document.getElementById("generated").textContent =
+          "Updated " + (data.generated || "—");
+
+        var stats = document.getElementById("stats");
+        stats.innerHTML =
+          '<div class="stat"><div class="n">' +
+          (data.weekTotal || 0) +
+          '</div><div class="lbl">new this week</div></div>' +
+          '<div class="stat' +
+          (data.urgentTotal ? " alert" : "") +
+          '"><div class="n">' +
+          (data.urgentTotal || 0) +
+          '</div><div class="lbl">marked urgent</div></div>' +
+          '<div class="stat"><div class="n">' +
+          (data.channels || []).length +
+          '</div><div class="lbl">channels</div></div>';
+
+        var wrap = document.getElementById("channels");
+        wrap.innerHTML = "";
+        (data.channels || []).forEach(function (c) {
+          var el = document.createElement("article");
+          el.className = "ch";
+          var urgentBadge = c.urgent
+            ? ' <span class="badge-urgent">' + c.urgent + " urgent</span>"
+            : "";
+          var counts =
+            '<p class="counts"><b>' +
+            (c.week || 0) +
+            "</b> this week · <b>" +
+            (c.total || 0) +
+            "</b> total</p>";
+
+          var bodyHtml;
+          if (c.error) {
+            bodyHtml = '<p class="empty">Could not read this channel yet.</p>';
+          } else if (c.sensitive) {
+            bodyHtml =
+              '<p class="note">Private — counts only. Read entries in the form / your email alerts.</p>';
+          } else if (c.recent && c.recent.length) {
+            bodyHtml =
+              '<ul class="entries">' +
+              c.recent
+                .map(function (r) {
+                  return "<li>" + esc(r) + "</li>";
+                })
+                .join("") +
+              "</ul>";
+          } else {
+            bodyHtml = '<p class="empty">No entries this week.</p>';
+          }
+
+          el.innerHTML =
+            "<h2>" + esc(c.label) + urgentBadge + "</h2>" + counts + bodyHtml;
+          wrap.appendChild(el);
+        });
+      }
+
+      function showError(msg) {
+        document.getElementById("status").textContent = "";
+        var box = document.getElementById("error");
+        box.hidden = false;
+        box.textContent = msg;
+      }
+
+      fetch(INSIGHTS_URL)
+        .then(function (r) {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        })
+        .then(render)
+        .catch(function () {
+          showError(
+            "Couldn't load live data right now. Open the responses folder in Drive to review submissions directly.",
+          );
+        });
+    </script>
+  </body>
+</html>
