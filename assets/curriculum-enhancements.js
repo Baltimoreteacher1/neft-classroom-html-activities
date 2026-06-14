@@ -840,8 +840,7 @@
           li.insertBefore(check, link);
         });
 
-      var actSelect = card.querySelector(".activity-select");
-      if (actSelect) {
+      card.querySelectorAll(".activity-select").forEach(function (actSelect) {
         Array.prototype.forEach.call(actSelect.options, function (opt) {
           if (!opt.value) return;
           var text = opt.textContent.trim();
@@ -849,7 +848,7 @@
           opt.hidden =
             !teacherMode && isTeacherResource({ text: text, href: href });
         });
-      }
+      });
     });
 
     updateProgressSummary();
@@ -866,13 +865,13 @@
           enhanceUnitCards();
         });
       });
-      var actSelect = card.querySelector(".activity-select");
-      if (actSelect && !actSelect._enhancedChange) {
+      card.querySelectorAll(".activity-select").forEach(function (actSelect) {
+        if (actSelect._enhancedChange) return;
         actSelect._enhancedChange = true;
         actSelect.addEventListener("change", function () {
           requestAnimationFrame(enhanceUnitCards);
         });
-      }
+      });
     });
   }
 

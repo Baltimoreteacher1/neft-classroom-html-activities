@@ -480,8 +480,26 @@
         gap: 12px;
         align-items: center;
       }
-      @media (max-width: 480px) {
+      .selector-group--lesson {
+        grid-template-columns: 1fr;
+        margin-bottom: 10px;
+      }
+      /* Three horizontally-aligned phase dropdowns: Pre / Lesson / Post. */
+      .phase-selectors {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        align-items: end;
+      }
+      .phase-selectors .select-control:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      @media (max-width: 560px) {
         .selector-group {
+          grid-template-columns: 1fr;
+        }
+        .phase-selectors {
           grid-template-columns: 1fr;
         }
       }
@@ -2556,7 +2574,8 @@
               ><a class="res" href="/graphic-novels/unit6/graphic-novel-2.html"
                 >Graphic Novel #2
                 <span class="res-sub">Level 2 · Enrichment</span></a
-              ><a class="res" href="/games/3d/unit-6/">Game: Expression Engine</a
+              ><a class="res" href="/games/3d/unit-6/"
+                >Game: Expression Engine</a
               ><a class="res" href="/pre-test/unit6-review.html"
                 >Pre-Test <span class="res-sub">+ L1/L2</span></a
               ><a
@@ -6471,6 +6490,43 @@
             listEl.appendChild(groupEl);
           });
         }
+        // Sort an activity into one of three lesson phases for the
+        // Pre-Lesson / Lesson / Post-Lesson dropdowns:
+        //   0 = Pre-Lesson  — readiness warm-up / vocabulary (before the lesson)
+        //   1 = Lesson      — the lesson work: interactive HTML, slides, notes
+        //   2 = Post-Lesson — homework, family homework, forms, games,
+        //                     bonus activities, printables, projects
+        function lessonPhaseIndex(act, isProject) {
+          var name = (act.text || "").toLowerCase();
+          var href = (act.href || "").toLowerCase();
+          if (
+            /get ready|readiness|pre-?lesson|vocab|warm[- ]?up/.test(name) ||
+            /\/readiness\//.test(href)
+          ) {
+            return 0;
+          }
+          if (
+            isProject ||
+            act.isBonus ||
+            act.isFamilyHomework ||
+            act.isPrintable ||
+            /homework|family|forms|quiz|assessment|game|project|practice|printable|word search|color by|paper|relay|escape|arcade|odyssey|netfold|hunt|challenge|maze|puzzle/.test(
+              name,
+            )
+          ) {
+            return 2;
+          }
+          if (
+            /interactive lesson|open the lesson|reveal math|editable slides|google slides|google drive|present|slides|notes|handout|packet|guided/.test(
+              name,
+            )
+          ) {
+            return 1;
+          }
+          // Unrecognized extras default to Post-Lesson activities.
+          return 2;
+        }
+
         // Sort key for a lessonId like "1-5" or "1-1-flagship": unit, then
         // lesson, then flagship variants immediately after their base lesson.
         function lessonRank(lessonId) {
@@ -6693,15 +6749,19 @@
 
           if (actHref) {
             requestAnimationFrame(function () {
-              var actSelect = card.querySelector(".activity-select");
-              if (!actSelect) return;
-              for (var i = 0; i < actSelect.options.length; i++) {
-                if (actSelect.options[i].value === actHref) {
-                  actSelect.selectedIndex = i;
-                  actSelect.dispatchEvent(new Event("change"));
-                  break;
+              var actSelects = card.querySelectorAll(".activity-select");
+              var matched = false;
+              Array.prototype.forEach.call(actSelects, function (actSelect) {
+                if (matched) return;
+                for (var i = 0; i < actSelect.options.length; i++) {
+                  if (actSelect.options[i].value === actHref) {
+                    actSelect.selectedIndex = i;
+                    actSelect.dispatchEvent(new Event("change"));
+                    matched = true;
+                    break;
+                  }
                 }
-              }
+              });
             });
           }
 
@@ -6769,11 +6829,10 @@
               card.appendChild(resRow);
             }
 
-            // Select Dropdowns Group
+            // Lesson Selector — picks which lesson in the unit.
             var selectorGroup = document.createElement("div");
-            selectorGroup.className = "selector-group";
+            selectorGroup.className = "selector-group selector-group--lesson";
 
-            // Lesson Selector
             var lessonField = document.createElement("div");
             lessonField.className = "selector-field";
             lessonField.innerHTML =
@@ -6794,22 +6853,35 @@
             lessonWrapper.appendChild(lessonSelect);
             lessonField.appendChild(lessonWrapper);
             selectorGroup.appendChild(lessonField);
-
-            // Activity Selector
-            var actField = document.createElement("div");
-            actField.className = "selector-field";
-            actField.innerHTML = '<span class="selector-label">Activity</span>';
-
-            var actWrapper = document.createElement("div");
-            actWrapper.className = "select-wrapper";
-
-            var actSelect = document.createElement("select");
-            actSelect.className = "select-control activity-select";
-            actWrapper.appendChild(actSelect);
-            actField.appendChild(actWrapper);
-            selectorGroup.appendChild(actField);
-
             card.appendChild(selectorGroup);
+
+            // Phase Selectors — three horizontally-aligned dropdowns
+            // (Pre-Lesson / Lesson / Post-Lesson). Each holds the resources
+            // for that phase of the selected lesson.
+            var PHASE_LABELS = ["Pre-Lesson", "Lesson", "Post-Lesson"];
+            var phaseGroup = document.createElement("div");
+            phaseGroup.className = "phase-selectors";
+            var phaseSelects = [];
+            PHASE_LABELS.forEach(function (label, pIdx) {
+              var field = document.createElement("div");
+              field.className = "selector-field";
+              var lab = document.createElement("span");
+              lab.className = "selector-label";
+              lab.textContent = label;
+              field.appendChild(lab);
+
+              var wrap = document.createElement("div");
+              wrap.className = "select-wrapper";
+              var sel = document.createElement("select");
+              sel.className = "select-control activity-select phase-select";
+              sel.setAttribute("data-phase", String(pIdx));
+              sel.setAttribute("aria-label", label + " activities");
+              wrap.appendChild(sel);
+              field.appendChild(wrap);
+              phaseGroup.appendChild(field);
+              phaseSelects.push(sel);
+            });
+            card.appendChild(phaseGroup);
 
             // Dynamic details block
             var infoBlock = document.createElement("div");
@@ -6854,56 +6926,73 @@
               // Combine activities and projects
               var allActs = lesson.activities.concat(lesson.projects || []);
 
-              // Update Activity select dropdown — start on a blank placeholder
-              // so that choosing ANY activity (incl. the first, "Interactive
-              // Lesson") fires a change event and opens it.
-              actSelect.innerHTML = "";
-              var actPlaceholder = document.createElement("option");
-              actPlaceholder.value = "";
-              actPlaceholder.textContent = "— Choose an activity —";
-              actPlaceholder.selected = true;
-              actSelect.appendChild(actPlaceholder);
+              // Sort each activity into a phase bucket:
+              // 0 = Pre-Lesson, 1 = Lesson, 2 = Post-Lesson.
+              var phaseBuckets = [[], [], []];
               allActs.forEach(function (act) {
-                var opt = document.createElement("option");
-                opt.value = act.href;
-                opt.textContent = act.text;
-                actSelect.appendChild(opt);
+                var isProject = (lesson.projects || []).indexOf(act) > -1;
+                phaseBuckets[lessonPhaseIndex(act, isProject)].push(act);
               });
 
-              // Update Outline list — grouped into 4 labeled sections
+              // Populate the three phase dropdowns. Each starts on a blank
+              // placeholder so choosing ANY activity fires a change event and
+              // opens it. Empty phases are disabled with a "— None —" label.
+              phaseSelects.forEach(function (sel, pIdx) {
+                var items = phaseBuckets[pIdx];
+                sel.innerHTML = "";
+                var placeholder = document.createElement("option");
+                placeholder.value = "";
+                placeholder.textContent = items.length
+                  ? "— Choose —"
+                  : "— None —";
+                placeholder.selected = true;
+                sel.appendChild(placeholder);
+                sel.disabled = items.length === 0;
+                items.forEach(function (act) {
+                  var opt = document.createElement("option");
+                  opt.value = act.href;
+                  opt.textContent = act.text;
+                  sel.appendChild(opt);
+                });
+              });
+
+              // Update Outline list — grouped into labeled sections
               // (appearance/organization only; same items, no data changed).
               outlineList.innerHTML = "";
               buildGroupedOutline(outlineList, allActs, lesson.projects);
 
-              // Launch Button handler
-              function updateLauncher() {
-                var href = actSelect.value;
-                if (href) {
-                  launchBtn.href = href;
-                  launchBtn.style.display = "";
-                  var selectedActText =
-                    actSelect.options[actSelect.selectedIndex].textContent;
-                  launchBtn.textContent = "Launch: " + selectedActText + " →";
-                } else {
+              // Launch from whichever phase dropdown changed. Selecting an
+              // activity in one phase resets the other two to their
+              // placeholders so the active choice is unambiguous.
+              function launchFromSelect(sel) {
+                var href = sel.value;
+                if (!href) {
                   launchBtn.style.display = "none";
+                  syncHubUrl(u, lesson.lessonId, "");
+                  return;
+                }
+                var selectedActText =
+                  sel.options[sel.selectedIndex].textContent;
+                launchBtn.href = href;
+                launchBtn.style.display = "";
+                launchBtn.textContent = "Launch: " + selectedActText + " →";
+                syncHubUrl(u, lesson.lessonId, href);
+                var isMobile = window.matchMedia("(max-width: 640px)").matches;
+                if (!isMobile) {
+                  showLaunchModal(selectedActText, href);
                 }
               }
 
-              actSelect.onchange = updateLauncher;
-              actSelect.addEventListener("change", function () {
-                var href = actSelect.value;
-                syncHubUrl(u, lesson.lessonId, href || "");
-                if (href) {
-                  var selectedActText =
-                    actSelect.options[actSelect.selectedIndex].textContent;
-                  var isMobile =
-                    window.matchMedia("(max-width: 640px)").matches;
-                  if (!isMobile) {
-                    showLaunchModal(selectedActText, href);
-                  }
-                }
+              phaseSelects.forEach(function (sel) {
+                sel.onchange = function () {
+                  phaseSelects.forEach(function (other) {
+                    if (other !== sel) other.selectedIndex = 0;
+                  });
+                  launchFromSelect(sel);
+                };
               });
-              updateLauncher();
+
+              launchBtn.style.display = "none";
               syncHubUrl(u, lesson.lessonId, "");
             }
 
@@ -7084,7 +7173,7 @@
       defer
     ></script>
     <script
-      src="/assets/curriculum-enhancements.js?v=20260614-readiness2"
+      src="/assets/curriculum-enhancements.js?v=20260614-phases3"
       defer
     ></script>
     <script src="/assets/curriculum-audit-badges.js" defer></script>
