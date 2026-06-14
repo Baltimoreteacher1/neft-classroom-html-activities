@@ -43,6 +43,9 @@ export async function onRequest(context) {
     "/personal/operation-quest",
     "/personal/operation-quest/",
     "/personal/operation-quest/index.html",
+    "/personal/ai-study-guide",
+    "/personal/ai-study-guide/",
+    "/personal/ai-study-guide/index.html",
   ]);
   if (PUBLIC_PATHS.has(url.pathname)) return next();
 
