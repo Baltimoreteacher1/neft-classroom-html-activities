@@ -14,14 +14,23 @@
  * here — this file ships to the browser.
  */
 window.studentDigitalMailboxLinks = {
+  // --- Private boxes: keep these as Google Forms so each student only sees
+  //     their own submission. Replace with the Form's "anyone with link" URL. ---
   classCheckIn: "GOOGLE_FORM_CLASS_CHECKIN_URL",
   confused: "GOOGLE_FORM_CONFUSED_URL",
-  suggestion: "GOOGLE_FORM_SUGGESTION_URL",
-  shoutOut: "GOOGLE_FORM_SHOUTOUT_URL",
   privateNote: "GOOGLE_FORM_PRIVATE_NOTE_URL",
+  anonymousQuestion: "GOOGLE_FORM_ANONYMOUS_QUESTION_URL",
+
+  // --- Public / collaborative boxes: live now. These are shared Google files
+  //     where contributions are visible to the class (that is intended here). ---
+  suggestion:
+    "https://docs.google.com/spreadsheets/d/1tjXjvywDxFMNJJPfHtnppwgImmg1QCuvpgd3peypoNA/edit",
+  shoutOut:
+    "https://docs.google.com/spreadsheets/d/1nteYAiuSp1cXr8lAoXTOW-OxpqLeng_zkd2fglmi6Mk/edit",
   classIdeaDoc:
     "https://docs.google.com/document/d/1ZETBBYNcSs3qFS9LAWidK4_4CWiZcNBex6_fSeSp3Tc/edit",
-  anonymousQuestion: "GOOGLE_FORM_ANONYMOUS_QUESTION_URL",
+  ideaWall:
+    "https://docs.google.com/presentation/d/1nwAWKfe3OVxopjZF_0BUPrnIQnWd6tco6Bw8UEyZrKY/edit",
 };
 
 /**
