@@ -19,7 +19,8 @@ window.studentDigitalMailboxLinks = {
   suggestion: "GOOGLE_FORM_SUGGESTION_URL",
   shoutOut: "GOOGLE_FORM_SHOUTOUT_URL",
   privateNote: "GOOGLE_FORM_PRIVATE_NOTE_URL",
-  classIdeaDoc: "GOOGLE_DOC_CLASS_IDEAS_URL",
+  classIdeaDoc:
+    "https://docs.google.com/document/d/1ZETBBYNcSs3qFS9LAWidK4_4CWiZcNBex6_fSeSp3Tc/edit",
   anonymousQuestion: "GOOGLE_FORM_ANONYMOUS_QUESTION_URL",
 };
 
