@@ -1264,12 +1264,74 @@
     onScroll();
   }
 
+  function setupPrintView() {
+    // The static details.unit list (hidden on screen) is the print fallback.
+    // Inject a print-only header and force every unit/lesson open while
+    // printing so no collapsed content is dropped, then restore afterwards.
+    if (!document.getElementById("hub-print-header")) {
+      var header = document.createElement("div");
+      header.id = "hub-print-header";
+      var unitCount =
+        (hubApi && hubApi.unitsData && hubApi.unitsData.length) || 0;
+      var lessonCount = (
+        hubApi && hubApi.unitsData ? hubApi.unitsData : []
+      ).reduce(function (n, u) {
+        return n + (u.lessons ? u.lessons.length : 0);
+      }, 0);
+      header.innerHTML =
+        "<h2>Grade 6 Math — Curriculum at a Glance</h2>" +
+        "<p>Neft Teacher · " +
+        unitCount +
+        " units · " +
+        lessonCount +
+        " lessons · eduwonderlab.com/curriculum</p>";
+      var wrap = document.querySelector(".wrap");
+      var firstUnit = document.querySelector("details.unit");
+      if (wrap && firstUnit) {
+        wrap.insertBefore(header, firstUnit);
+      } else if (wrap) {
+        wrap.appendChild(header);
+      }
+    }
+
+    var savedOpen = null;
+    function expandAll() {
+      var all = document.querySelectorAll("details.unit, details.lesson");
+      savedOpen = [];
+      all.forEach(function (d) {
+        savedOpen.push(d.open);
+        d.open = true;
+      });
+    }
+    function restoreAll() {
+      if (!savedOpen) return;
+      var all = document.querySelectorAll("details.unit, details.lesson");
+      all.forEach(function (d, i) {
+        d.open = savedOpen[i];
+      });
+      savedOpen = null;
+    }
+    window.addEventListener("beforeprint", expandAll);
+    window.addEventListener("afterprint", restoreAll);
+    // Safari/Chrome matchMedia print fallback.
+    if (window.matchMedia) {
+      var mql = window.matchMedia("print");
+      var onChange = function (m) {
+        if (m.matches) expandAll();
+        else restoreAll();
+      };
+      if (mql.addEventListener) mql.addEventListener("change", onChange);
+      else if (mql.addListener) mql.addListener(onChange);
+    }
+  }
+
   function initEnhancements() {
     teacherMode = loadTeacherMode();
     loadProgress();
     buildControls();
     buildSearchUX();
     buildBackToTop();
+    setupPrintView();
     wrapHubRenderers();
     upgradeGoogleSlidesLinks();
     injectSupplementalActivities();

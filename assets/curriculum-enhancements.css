@@ -432,11 +432,97 @@ body.light-theme .lesson-real-world {
   outline-offset: 2px;
 }
 @media print {
+  /* --- "Unit at a glance": clean printable curriculum overview --- */
   .hub-back-to-top,
   .curr-search-clear,
-  .skip-link {
+  .skip-link,
+  #hub-toolbar-sticky,
+  .hub-enhance-controls,
+  .hub-filter-chips,
+  #hub-progress-summary,
+  .hub-student-hint,
+  .controls,
+  .result-count,
+  .no-results,
+  .mailbox-feature,
+  .eoy-callout,
+  details.teacher-tools,
+  #launch-modal {
     display: none !important;
   }
+
+  body,
+  body.light-theme {
+    background: #fff !important;
+    color: #14223a !important;
+  }
+  .wrap {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  /* Print-only header injected by JS */
+  #hub-print-header {
+    display: block !important;
+    margin: 0 0 14px;
+    padding: 0 0 10px;
+    border-bottom: 2px solid #15487f;
+  }
+  #hub-print-header h2 {
+    margin: 0 0 2px;
+    font-size: 20pt;
+    color: #15487f;
+  }
+  #hub-print-header p {
+    margin: 0;
+    font-size: 10pt;
+    color: #56627a;
+  }
+
+  /* Force every unit + lesson open and visible (JS also sets [open]) */
+  details.unit,
+  details.lesson {
+    display: block !important;
+    border: 1px solid #c9d4e3 !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  details.unit {
+    margin: 0 0 10px !important;
+  }
+  details.unit > summary,
+  details.lesson > summary {
+    list-style: none;
+  }
+  details.unit .unit-body,
+  details.lesson .lesson-body {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  details.lesson {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Links: keep readable text, drop hover chrome, no URL spew */
+  a {
+    color: #15487f !important;
+    text-decoration: none !important;
+  }
+  a[href]::after {
+    content: "" !important;
+  }
+
+  @page {
+    margin: 1.4cm;
+  }
+}
+
+/* Print header is hidden on screen, revealed only in @media print above */
+#hub-print-header {
+  display: none;
 }
 @media (prefers-reduced-motion: reduce) {
   .hub-back-to-top {
