@@ -1182,10 +1182,94 @@
     hubApi._slidesUpgradeWrapped = true;
   }
 
+  function buildSearchUX() {
+    var box = hubApi && hubApi.searchBox;
+    if (!box || document.getElementById("curr-search-clear")) return;
+    var search = box.closest(".search") || box.parentNode;
+
+    var clearBtn = document.createElement("button");
+    clearBtn.type = "button";
+    clearBtn.id = "curr-search-clear";
+    clearBtn.className = "curr-search-clear";
+    clearBtn.setAttribute("aria-label", "Clear search");
+    clearBtn.title = "Clear search (Esc)";
+    clearBtn.innerHTML = "&times;";
+    clearBtn.hidden = !box.value;
+    clearBtn.addEventListener("click", function () {
+      box.value = "";
+      box.dispatchEvent(new Event("input", { bubbles: true }));
+      box.focus();
+    });
+    if (search) search.appendChild(clearBtn);
+
+    box.addEventListener("input", function () {
+      clearBtn.hidden = !box.value;
+    });
+
+    // Press "/" anywhere to jump to search; Esc clears it.
+    document.addEventListener("keydown", function (e) {
+      var t = e.target;
+      var typing =
+        t &&
+        (t.tagName === "INPUT" ||
+          t.tagName === "TEXTAREA" ||
+          t.tagName === "SELECT" ||
+          t.isContentEditable);
+      if (e.key === "/" && !typing && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        e.preventDefault();
+        box.focus();
+        box.select();
+        return;
+      }
+      if (e.key === "Escape" && t === box && box.value) {
+        // Don't swallow Escape when the launch modal is open.
+        var modal = document.getElementById("launch-modal");
+        if (modal && modal.classList.contains("show")) return;
+        e.stopPropagation();
+        box.value = "";
+        box.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+    });
+  }
+
+  function buildBackToTop() {
+    if (document.getElementById("hub-back-to-top")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.id = "hub-back-to-top";
+    btn.className = "hub-back-to-top";
+    btn.setAttribute("aria-label", "Back to top");
+    btn.title = "Back to top";
+    btn.innerHTML = "↑";
+    btn.addEventListener("click", function () {
+      var reduce =
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+      var box = hubApi && hubApi.searchBox;
+      if (box) box.focus({ preventScroll: true });
+    });
+    document.body.appendChild(btn);
+
+    var ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        btn.classList.toggle("show", window.scrollY > 600);
+        ticking = false;
+      });
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+  }
+
   function initEnhancements() {
     teacherMode = loadTeacherMode();
     loadProgress();
     buildControls();
+    buildSearchUX();
+    buildBackToTop();
     wrapHubRenderers();
     upgradeGoogleSlidesLinks();
     injectSupplementalActivities();

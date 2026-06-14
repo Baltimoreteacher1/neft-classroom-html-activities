@@ -359,3 +359,91 @@ body.light-theme .lesson-real-world {
 .result-count:empty {
   display: none;
 }
+
+/* --- Search clear (x) button --- */
+.curr-search-clear {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #eef2f7;
+  color: #56627a;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.curr-search-clear:hover {
+  background: #e2e8f0;
+  color: #15487f;
+}
+.curr-search-clear:focus-visible {
+  outline: 3px solid #2c7d6b;
+  outline-offset: 2px;
+}
+.curr-search-clear[hidden] {
+  display: none;
+}
+
+/* --- Back-to-top floating button --- */
+.hub-back-to-top {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 900;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: #15487f;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(21, 72, 127, 0.35);
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    background 0.15s;
+}
+.hub-back-to-top.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.hub-back-to-top:hover {
+  background: #205fa6;
+}
+.hub-back-to-top:focus-visible {
+  outline: 3px solid #2c7d6b;
+  outline-offset: 2px;
+}
+@media print {
+  .hub-back-to-top,
+  .curr-search-clear,
+  .skip-link {
+    display: none !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hub-back-to-top {
+    transition: opacity 0.2s ease;
+    transform: none;
+  }
+  .hub-back-to-top.show {
+    transform: none;
+  }
+}
