@@ -11,7 +11,7 @@ const dir = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../../blood-on-the-river",
 );
-const V = "20260615a";
+const V = "20260615b";
 
 const template = (n, dataLiteral) => `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Blood on the River — Chapter ${n}</title>
 <link rel="stylesheet" href="/blood-on-the-river/chapter.css?v=${V}">

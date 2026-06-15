@@ -204,12 +204,24 @@ function renderChapter(data) {
   const importantCard = `
     <section class="card" id="card-important">
       <div class="card-head"><span class="card-icon">⭐</span><h2>Important Things</h2></div>
-      <p class="card-note">Setting, big ideas, and words to know.</p>
+      <p class="card-note">Setting and the big ideas to watch for.</p>
       <ul class="facts">${facts}</ul>
-      ${vocab ? `<h3 class="sub">Words to know</h3><ul class="vocab">${vocab}</ul>` : ""}
     </section>`;
 
-  setHTML("#cardDeck", charactersCard + eventsCard + importantCard);
+  // --- Card 4: Vocabulary ---
+  const vocabularyCard = vocab
+    ? `
+    <section class="card" id="card-vocabulary">
+      <div class="card-head"><span class="card-icon">📖</span><h2>Vocabulary</h2></div>
+      <p class="card-note">Words to know. Tap 🔊 to hear each one.</p>
+      <ul class="vocab">${vocab}</ul>
+    </section>`
+    : "";
+
+  setHTML(
+    "#cardDeck",
+    charactersCard + eventsCard + importantCard + vocabularyCard,
+  );
 
   bindInteractions();
 }
