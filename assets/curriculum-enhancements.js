@@ -728,6 +728,89 @@
     hubApi._enhancedSearch = true;
   }
 
+  var CANONICAL_ORIGIN = "https://eduwonderlab.com";
+
+  function buildLessonShareLink(card, unit) {
+    var lessonSelect = card.querySelector(".lesson-select");
+    if (!lessonSelect) return null;
+    var lessonIdx = parseInt(lessonSelect.value, 10) || 0;
+    var lesson = unit.lessons[lessonIdx];
+    if (!lesson || !lesson.lessonId) return null;
+    var qs =
+      "?u=" +
+      encodeURIComponent(unit.unitIndex) +
+      "&l=" +
+      encodeURIComponent(lesson.lessonId);
+    var launch = card.querySelector(".btn-launch");
+    var aHref =
+      launch && launch.style.display !== "none"
+        ? launch.getAttribute("href")
+        : "";
+    if (aHref && aHref !== "#") qs += "&a=" + encodeURIComponent(aHref);
+    return CANONICAL_ORIGIN + "/curriculum/" + qs;
+  }
+
+  function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise(function (resolve, reject) {
+      try {
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        resolve();
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  function injectCopyLink(card, unit) {
+    var infoBlock = card.querySelector(".lesson-info");
+    if (!infoBlock || infoBlock.querySelector(".lesson-copy-link")) return;
+    var launch = infoBlock.querySelector(".btn-launch");
+
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "lesson-copy-link";
+    btn.innerHTML = "🔗 Copy link";
+    btn.title = "Copy a shareable link to this lesson (for Classroom / Canvas)";
+    btn.addEventListener("click", function () {
+      var link = buildLessonShareLink(card, unit);
+      if (!link) return;
+      copyToClipboard(link).then(
+        function () {
+          var prev = btn.innerHTML;
+          btn.innerHTML = "✓ Copied!";
+          btn.classList.add("copied");
+          setTimeout(function () {
+            btn.innerHTML = prev;
+            btn.classList.remove("copied");
+          }, 1600);
+        },
+        function () {
+          btn.innerHTML = "Press ⌘/Ctrl+C";
+          setTimeout(function () {
+            btn.innerHTML = "🔗 Copy link";
+          }, 2000);
+        },
+      );
+    });
+
+    if (launch && launch.parentNode) {
+      launch.parentNode.insertBefore(btn, launch.nextSibling);
+    } else {
+      infoBlock.appendChild(btn);
+    }
+  }
+
   function enhanceUnitCards() {
     if (!hubApi || !hubApi.hubEl) return;
     var cards = hubApi.hubEl.querySelectorAll(".unit-card");
@@ -773,6 +856,7 @@
 
       var lessonId = lessonIdFromTitle(lesson.title);
       injectStandardBadge(infoBlock, lesson.lessonId || lessonId);
+      injectCopyLink(card, u);
       var rw =
         realWorldMap[lessonId] ||
         realWorldMap[lessonId.replace("-flagship", "")];
