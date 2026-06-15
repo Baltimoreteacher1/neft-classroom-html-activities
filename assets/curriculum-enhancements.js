@@ -1464,7 +1464,7 @@
         '<span class="hsc-code">' +
         d.code +
         "</span>" +
-        (d.short ? '<span class="hsc-label">' + d.short + "</span>" : "");
+        (d.token ? '<span class="hsc-label">' + d.label + "</span>" : "");
       chip.addEventListener("click", function () {
         box.value = d.token;
         box.dispatchEvent(new Event("input", { bubbles: true }));
