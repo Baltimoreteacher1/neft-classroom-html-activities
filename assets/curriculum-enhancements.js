@@ -257,6 +257,27 @@
     var q = (query || "").trim();
     if (!q && filter === FILTER_ALL) return unitsData;
 
+    // Standard-code queries (e.g. "6.rp", "6.rp.3", "6.rp.3a") must narrow to
+    // the lessons actually tagged with that standard. MiniSearch tokenizes on
+    // punctuation and OR-combines, so the shared "6" token matches every
+    // lesson — instead match the standard prefix directly against each
+    // lesson's indexed text (the same source the standard dropdowns derive
+    // from), so "6.rp.3" also captures "6.rp.3a/b/c" but nothing outside 6.RP.
+    if (/^6\.(rp|ns|ee|g|sp)(\.[0-9]+[a-z]?)?$/.test(q.toLowerCase())) {
+      var token = q.toLowerCase();
+      return unitsData
+        .map(function (u) {
+          var lessons = (u.lessons || []).filter(function (l) {
+            var text =
+              (l.dataSearch || "") + " " + (l.title || "").toLowerCase();
+            return text.indexOf(token) > -1 && lessonMatchesFilter(l, filter);
+          });
+          if (!lessons.length) return null;
+          return Object.assign({}, u, { lessons: lessons });
+        })
+        .filter(Boolean);
+    }
+
     if (searchIndex && q.length >= 2) {
       var hits = searchIndex.search(q, { prefix: true, fuzzy: 0.15 });
       var lessonIds = {};
