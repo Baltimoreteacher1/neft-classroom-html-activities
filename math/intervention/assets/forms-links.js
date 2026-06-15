@@ -5,9 +5,19 @@
 
    Per topic: preStudent / postStudent  = clean responder links (give to students)
               preTeacher / postTeacher  = quiz-mode editor/answer-key links (staff)
+
+   NOTE: the keys below MUST match the topic slugs in scripts/intervention/data.mjs
+   (the page looks up window.INTERVENTION_FORMS[<topic slug>]). Running
+   scripts/intervention/forms.gs prints this block with the correct keys.
    ========================================================================== */
 window.INTERVENTION_FORMS = {
-  "mult-div-fluency": {
+  "number-operations": {
+    preStudent: "",
+    preTeacher: "",
+    postStudent: "",
+    postTeacher: "",
+  },
+  "factors-multiples": {
     preStudent: "",
     preTeacher: "",
     postStudent: "",
@@ -25,19 +35,49 @@ window.INTERVENTION_FORMS = {
     postStudent: "",
     postTeacher: "",
   },
-  "ratios-rates-percents": {
+  "ratios-rates": {
     preStudent: "",
     preTeacher: "",
     postStudent: "",
     postTeacher: "",
   },
-  "integers-coordinate": {
+  percents: {
     preStudent: "",
     preTeacher: "",
     postStudent: "",
     postTeacher: "",
   },
-  "expressions-equations": {
+  "integers-number-line": {
+    preStudent: "",
+    preTeacher: "",
+    postStudent: "",
+    postTeacher: "",
+  },
+  "coordinate-plane": {
+    preStudent: "",
+    preTeacher: "",
+    postStudent: "",
+    postTeacher: "",
+  },
+  expressions: {
+    preStudent: "",
+    preTeacher: "",
+    postStudent: "",
+    postTeacher: "",
+  },
+  "equations-inequalities": {
+    preStudent: "",
+    preTeacher: "",
+    postStudent: "",
+    postTeacher: "",
+  },
+  "geometry-measure": {
+    preStudent: "",
+    preTeacher: "",
+    postStudent: "",
+    postTeacher: "",
+  },
+  "statistics-data": {
     preStudent: "",
     preTeacher: "",
     postStudent: "",
