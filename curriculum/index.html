@@ -62,6 +62,10 @@
       rel="stylesheet"
       href="/assets/curriculum-enhancements.css?v=20260615-substd2"
     />
+    <link
+      rel="stylesheet"
+      href="/assets/curriculum-sidebar.css?v=20260615-sidebar3"
+    />
     <style>
       :root {
         /* ACCESS Practice Lab palette — light, formal, academic */
@@ -1251,12 +1255,17 @@
           box-shadow: 0 12px 30px rgba(23, 18, 53, 0.3);
           overflow: hidden;
           border: 1px solid rgba(161, 66, 244, 0.2);
-          transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+          transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease,
+            border-color 0.2s ease;
         }
         .ai-hub-feature:hover {
           transform: translateY(-2px);
           border-color: rgba(161, 66, 244, 0.4);
-          box-shadow: 0 16px 35px rgba(23, 18, 53, 0.4), 0 0 15px rgba(161, 66, 244, 0.15);
+          box-shadow:
+            0 16px 35px rgba(23, 18, 53, 0.4),
+            0 0 15px rgba(161, 66, 244, 0.15);
         }
         .ai-hub-feature .ahf-icon {
           flex: 0 0 auto;
@@ -1319,7 +1328,11 @@
           font-size: 1rem;
           text-decoration: none;
           border: 2px solid transparent;
-          transition: background 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s;
+          transition:
+            background 0.15s,
+            color 0.15s,
+            border-color 0.15s,
+            box-shadow 0.15s;
         }
         .ai-hub-feature .ahf-btn.solid {
           background: linear-gradient(90deg, #8ab4f8, #c58af9);
@@ -1350,13 +1363,15 @@
           }
         }
         @media (max-width: 600px) {
-          .mailbox-feature, .ai-hub-feature {
+          .mailbox-feature,
+          .ai-hub-feature {
             flex-direction: column;
             align-items: flex-start;
             text-align: left;
             padding: 22px 24px;
           }
-          .mailbox-feature .mf-icon, .ai-hub-feature .ahf-icon {
+          .mailbox-feature .mf-icon,
+          .ai-hub-feature .ahf-icon {
             width: 56px;
             height: 56px;
             font-size: 2rem;
@@ -1365,7 +1380,10 @@
       </style>
 
       <div class="features-grid">
-        <section class="mailbox-feature" aria-labelledby="mailbox-feature-title">
+        <section
+          class="mailbox-feature"
+          aria-labelledby="mailbox-feature-title"
+        >
           <span class="mf-icon" aria-hidden="true">✉️</span>
           <div class="mf-body">
             <span class="mf-tag">Featured Tool</span>
@@ -1376,10 +1394,13 @@
             </p>
             <p class="mf-text">
               Give students a simple way to tell Mr. Neft what is going on in
-              class, what is helping, what is confusing, and what ideas they have.
+              class, what is helping, what is confusing, and what ideas they
+              have.
             </p>
             <div class="mf-actions">
-              <a class="mf-btn solid" href="/curriculum/student-digital-mailbox/"
+              <a
+                class="mf-btn solid"
+                href="/curriculum/student-digital-mailbox/"
                 >Open Student Mailbox</a
               >
               <a
@@ -1393,10 +1414,26 @@
 
         <section class="ai-hub-feature" aria-labelledby="ai-hub-feature-title">
           <div class="ahf-icon" aria-hidden="true">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12,2 C12,7.5 16.5,12 22,12 C16.5,12 12,16.5 12,22 C12,16.5 7.5,12 2,12 C7.5,12 12,7.5 12,2 Z" fill="url(#gemini-star-grad)" />
+            <svg
+              width="36"
+              height="36"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12,2 C12,7.5 16.5,12 22,12 C16.5,12 12,16.5 12,22 C12,16.5 7.5,12 2,12 C7.5,12 12,7.5 12,2 Z"
+                fill="url(#gemini-star-grad)"
+              />
               <defs>
-                <linearGradient id="gemini-star-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                <linearGradient
+                  id="gemini-star-grad"
+                  x1="2"
+                  y1="2"
+                  x2="22"
+                  y2="22"
+                  gradientUnits="userSpaceOnUse"
+                >
                   <stop offset="0%" stop-color="#4285F4" />
                   <stop offset="35%" stop-color="#9b72cb" />
                   <stop offset="70%" stop-color="#d96a8f" />
@@ -1412,11 +1449,16 @@
               Responsible usage guides &amp; interactive practice activities.
             </p>
             <p class="ahf-text">
-              Learn how to use Gemini as your personal step-by-step math tutor. Try unit-specific AI challenges designed for students and parents.
+              Learn how to use Gemini as your personal step-by-step math tutor.
+              Try unit-specific AI challenges designed for students and parents.
             </p>
             <div class="ahf-actions">
-              <a class="ahf-btn solid" href="/curriculum/ai-hub/">Open AI Hub</a>
-              <a class="ahf-btn outline" href="/curriculum/ai-hub/#parents">Parent Guide</a>
+              <a class="ahf-btn solid" href="/curriculum/ai-hub/"
+                >Open AI Hub</a
+              >
+              <a class="ahf-btn outline" href="/curriculum/ai-hub/#parents"
+                >Parent Guide</a
+              >
             </div>
           </div>
         </section>
@@ -7325,7 +7367,7 @@
             card.appendChild(infoBlock);
 
             // Update details depending on the selected lesson
-            function updateCardState() {
+            function updateCardState(fromUser) {
               var selectedLessonIdx = parseInt(lessonSelect.value) || 0;
               var lesson = u.lessons[selectedLessonIdx];
               if (!lesson) {
@@ -7409,11 +7451,13 @@
               });
 
               launchBtn.style.display = "none";
-              syncHubUrl(u, lesson.lessonId, "");
+              if (fromUser) syncHubUrl(u, lesson.lessonId, "");
             }
 
-            lessonSelect.onchange = updateCardState;
-            updateCardState();
+            lessonSelect.onchange = function () {
+              updateCardState(true);
+            };
+            updateCardState(false);
 
             grid.appendChild(card);
           });
@@ -7600,5 +7644,9 @@
       defer
     ></script>
     <script src="/assets/curriculum-audit-badges.js" defer></script>
+    <script
+      src="/assets/curriculum-sidebar.js?v=20260615-sidebar3"
+      defer
+    ></script>
   </body>
 </html>
