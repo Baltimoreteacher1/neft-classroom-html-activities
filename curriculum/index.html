@@ -60,7 +60,7 @@
     />
     <link
       rel="stylesheet"
-      href="/assets/curriculum-enhancements.css?v=20260615-boxchips"
+      href="/assets/curriculum-enhancements.css?v=20260615-substd"
     />
     <style>
       :root {
@@ -475,6 +475,14 @@
         display: flex;
         flex-direction: column;
         gap: 20px;
+      }
+      /* The unit a deep link (?u=&l=) points to — highlighted so it is easy
+         to find after the page opens at the top. No layout shift. */
+      .unit-card.is-linked {
+        border-color: var(--teal);
+        box-shadow:
+          0 0 0 2px var(--teal),
+          0 10px 30px -10px rgba(0, 0, 0, 0.4);
       }
       .unit-card:hover {
         transform: translateY(-4px);
@@ -7004,7 +7012,11 @@
             });
           }
 
-          card.scrollIntoView({ block: "nearest", behavior: "smooth" });
+          // Land at the top of the page (the hero) rather than jumping the
+          // deep-linked card into view. Briefly highlight the linked unit so
+          // it's still easy to find as you scroll down.
+          card.classList.add("is-linked");
+          window.scrollTo({ top: 0 });
         }
 
         // 2. Create Mount Point
@@ -7390,9 +7402,16 @@
           };
         }
 
+        // Always open at the top of the page, even when a deep link (?u=&l=)
+        // is present and even if the browser would restore a prior scroll.
+        if ("scrollRestoration" in history) {
+          history.scrollRestoration = "manual";
+        }
+
         // Initial Hub Render
         renderHub();
         applyDeepLink();
+        window.scrollTo(0, 0);
       })();
     </script>
     <script src="/assets/curriculum-progress-bridge.js" defer></script>
@@ -7412,7 +7431,7 @@
       defer
     ></script>
     <script
-      src="/assets/curriculum-enhancements.js?v=20260615-boxes"
+      src="/assets/curriculum-enhancements.js?v=20260615-substd"
       defer
     ></script>
     <script src="/assets/curriculum-audit-badges.js" defer></script>

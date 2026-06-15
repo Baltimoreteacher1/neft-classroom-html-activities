@@ -1434,6 +1434,58 @@
     },
   ];
 
+  // Anchor the page at the top when a filter is applied (matches the
+  // "open at the top" behaviour of the rest of the hub).
+  function scrollHubTop() {
+    var smooth = !(
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    );
+    window.scrollTo({ top: 0, behavior: smooth ? "smooth" : "auto" });
+  }
+
+  // Format a raw standard token (e.g. "6.rp.3a") for display ("6.RP.3a").
+  // Only the domain letters are upper-cased; the CCSS sub-letter stays lower.
+  function displayStd(code) {
+    return code.replace(
+      /^(6\.)(rp|ns|ee|g|sp)(\..*)$/i,
+      function (_, p1, p2, p3) {
+        return p1 + p2.toUpperCase() + p3;
+      },
+    );
+  }
+
+  // Natural-sort standard codes: 6.rp.1 < 6.rp.2 < 6.rp.3 < 6.rp.3a < 6.rp.3b.
+  function compareStandards(a, b) {
+    var na = parseInt(a.split(".")[2] || "0", 10);
+    var nb = parseInt(b.split(".")[2] || "0", 10);
+    if (na !== nb) return na - nb;
+    return a.localeCompare(b);
+  }
+
+  // Scan every lesson's search text for the specific CCSS standards it carries
+  // and group them by domain token. Data-driven, so it never goes stale.
+  function collectDomainStandards() {
+    var map = {};
+    if (!hubApi || !hubApi.unitsData) return map;
+    hubApi.unitsData.forEach(function (u) {
+      (u.lessons || []).forEach(function (l) {
+        var text = ((l.dataSearch || "") + " " + (l.title || "")).toLowerCase();
+        var re = /6\.(rp|ns|ee|g|sp)\.[0-9]+[a-d]?/g;
+        var m;
+        while ((m = re.exec(text))) {
+          var code = m[0];
+          var dom = "6." + m[1];
+          (map[dom] = map[dom] || {})[code] = true;
+        }
+      });
+    });
+    Object.keys(map).forEach(function (dom) {
+      map[dom] = Object.keys(map[dom]).sort(compareStandards);
+    });
+    return map;
+  }
+
   function buildStandardFilter() {
     if (!hubApi || !hubApi.searchBox) return;
     if (document.getElementById("hub-standards")) return;
@@ -1441,6 +1493,8 @@
     if (!anchor) return;
 
     var box = hubApi.searchBox;
+    var domainStds = collectDomainStandards();
+
     var wrap = document.createElement("div");
     wrap.id = "hub-standards";
     wrap.className = "hub-standards";
@@ -1451,6 +1505,13 @@
     lead.className = "hub-standards-lead";
     lead.textContent = "By standard:";
     wrap.appendChild(lead);
+
+    function applyToken(token) {
+      box.value = token;
+      box.dispatchEvent(new Event("input", { bubbles: true }));
+      syncStandardChips();
+      if (token) scrollHubTop();
+    }
 
     STANDARD_DOMAINS.forEach(function (d) {
       var chip = document.createElement("button");
@@ -1466,21 +1527,49 @@
         "</span>" +
         (d.token ? '<span class="hsc-label">' + d.label + "</span>" : "");
       chip.addEventListener("click", function () {
-        box.value = d.token;
-        box.dispatchEvent(new Event("input", { bubbles: true }));
-        syncStandardChips();
-        if (d.token) {
-          window.scrollTo({
-            top: 0,
-            behavior:
-              window.matchMedia &&
-              window.matchMedia("(prefers-reduced-motion: reduce)").matches
-                ? "auto"
-                : "smooth",
-          });
-        }
+        applyToken(d.token);
       });
-      wrap.appendChild(chip);
+
+      // The "All standards" chip stands alone. Each domain gets a dropdown of
+      // its specific standards directly beneath the chip, so picking one jumps
+      // straight to that standard's lessons and activities.
+      if (!d.token) {
+        wrap.appendChild(chip);
+        return;
+      }
+
+      var group = document.createElement("div");
+      group.className = "hub-standard-group";
+      group.appendChild(chip);
+
+      var codes = domainStds[d.token] || [];
+      if (codes.length) {
+        var sel = document.createElement("select");
+        sel.className = "hub-substd-select";
+        sel.setAttribute(
+          "aria-label",
+          "Jump to a specific " + d.code + " standard",
+        );
+
+        var ph = document.createElement("option");
+        ph.value = d.token;
+        ph.textContent = "All " + d.code + " standards";
+        sel.appendChild(ph);
+
+        codes.forEach(function (code) {
+          var opt = document.createElement("option");
+          opt.value = code;
+          opt.textContent = displayStd(code);
+          sel.appendChild(opt);
+        });
+
+        sel.addEventListener("change", function () {
+          applyToken(sel.value);
+        });
+        group.appendChild(sel);
+      }
+
+      wrap.appendChild(group);
     });
 
     anchor.parentNode.insertBefore(wrap, anchor.nextSibling);
@@ -1497,13 +1586,27 @@
     var matched = false;
     wrap.querySelectorAll(".hub-standard-chip").forEach(function (chip) {
       var tok = chip.dataset.token;
-      var on = tok !== "" && val === tok;
+      // A domain chip lights up for its own token AND for any specific
+      // standard inside it (e.g. "6.rp.3" lights the 6.RP chip).
+      var on = tok !== "" && (val === tok || val.indexOf(tok + ".") === 0);
       if (on) matched = true;
       chip.setAttribute("aria-pressed", on ? "true" : "false");
     });
     var allChip = wrap.querySelector('.hub-standard-chip[data-token=""]');
     if (allChip)
       allChip.setAttribute("aria-pressed", matched ? "false" : "true");
+
+    // Reflect the current value in the per-domain dropdowns.
+    wrap.querySelectorAll(".hub-substd-select").forEach(function (sel) {
+      var idx = 0;
+      for (var i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].value === val) {
+          idx = i;
+          break;
+        }
+      }
+      sel.selectedIndex = idx;
+    });
   }
 
   var RECENT_KEY = "nt-curriculum-recent";
