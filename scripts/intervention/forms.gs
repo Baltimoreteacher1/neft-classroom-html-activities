@@ -24,169 +24,336 @@
 var FOLDER_NAME = "Neft Teacher — Math Intervention Quizzes";
 
 var QUIZ_DATA = {
-  "mult-div-fluency": {
-    "title": "Multiplication & Division Fluency",
+  "number-operations": {
+    "title": "Whole-Number Operations & Fluency",
     "pre": [
       {
-        "q": "9 × 7 = ?",
-        "answer": "63",
+        "q": "What is 38 × 7?",
+        "answer": "266",
         "options": [
-          "63",
-          "56",
-          "72",
-          "54"
+          "266",
+          "256",
+          "276",
+          "45"
         ]
       },
       {
-        "q": "8 × 6 = ?",
-        "answer": "48",
+        "q": "What is 56 × 89?",
+        "answer": "4,984",
         "options": [
-          "48",
+          "4,984",
+          "4,884",
+          "4,994",
+          "145"
+        ]
+      },
+      {
+        "q": "What is 365 ÷ 12 written with a remainder?",
+        "answer": "30 R5",
+        "options": [
+          "30 R5",
+          "30 R4",
+          "31 R5",
+          "30"
+        ]
+      },
+      {
+        "q": "What is 584 ÷ 9 written with a remainder?",
+        "answer": "64 R8",
+        "options": [
+          "64 R8",
+          "64 R7",
+          "65 R8",
+          "64"
+        ]
+      },
+      {
+        "q": "Estimate 39 × 21 by rounding each number to the nearest ten.",
+        "answer": "800",
+        "options": [
+          "800",
+          "600",
+          "819",
+          "1,000"
+        ]
+      },
+      {
+        "q": "Evaluate 7 + 2 × 5 − 3.",
+        "answer": "14",
+        "options": [
+          "14",
           "42",
-          "54",
-          "56"
+          "12",
+          "20"
         ]
       },
       {
-        "q": "72 ÷ 8 = ?",
-        "answer": "9",
+        "q": "Evaluate 36 ÷ 4 + 5 × 2.",
+        "answer": "19",
         "options": [
-          "9",
-          "8",
-          "7",
-          "6"
+          "19",
+          "28",
+          "13",
+          "17"
         ]
       },
       {
-        "q": "34 × 5 = ?",
-        "answer": "170",
+        "q": "A store splits 2,476 marbles equally into 8 jars. How many per jar, and how many are left over?",
+        "answer": "309 per jar, 4 left",
         "options": [
-          "170",
-          "150",
-          "175",
-          "160"
-        ]
-      },
-      {
-        "q": "96 ÷ 6 = ?",
-        "answer": "16",
-        "options": [
-          "16",
-          "15",
-          "18",
-          "14"
-        ]
-      },
-      {
-        "q": "11 × 12 = ?",
-        "answer": "132",
-        "options": [
-          "132",
-          "121",
-          "122",
-          "144"
-        ]
-      },
-      {
-        "q": "Estimate 58 × 41.",
-        "answer": "2400",
-        "options": [
-          "2400",
-          "2000",
-          "1800",
-          "3200"
-        ]
-      },
-      {
-        "q": "How many 6s are in 54?",
-        "answer": "9",
-        "options": [
-          "9",
-          "8",
-          "7",
-          "10"
+          "309 per jar, 4 left",
+          "309 per jar, 2 left",
+          "308 per jar, 4 left",
+          "310 per jar, 4 left"
         ]
       }
     ],
     "post": [
       {
-        "q": "7 × 9 = ?",
-        "answer": "63",
+        "q": "What is 47 × 6?",
+        "answer": "282",
         "options": [
-          "63",
-          "54",
-          "56",
-          "72"
-        ]
-      },
-      {
-        "q": "6 × 12 = ?",
-        "answer": "72",
-        "options": [
-          "72",
-          "60",
-          "66",
-          "84"
-        ]
-      },
-      {
-        "q": "64 ÷ 8 = ?",
-        "answer": "8",
-        "options": [
-          "8",
-          "7",
-          "9",
-          "6"
-        ]
-      },
-      {
-        "q": "46 × 7 = ?",
-        "answer": "322",
-        "options": [
-          "322",
-          "312",
           "282",
-          "332"
+          "272",
+          "288",
+          "53"
         ]
       },
       {
-        "q": "132 ÷ 11 = ?",
+        "q": "What is 72 × 48?",
+        "answer": "3,456",
+        "options": [
+          "3,456",
+          "3,356",
+          "3,476",
+          "120"
+        ]
+      },
+      {
+        "q": "What is 738 ÷ 6?",
+        "answer": "123",
+        "options": [
+          "123",
+          "122",
+          "133",
+          "123 R1"
+        ]
+      },
+      {
+        "q": "What is 925 ÷ 4 written with a remainder?",
+        "answer": "231 R1",
+        "options": [
+          "231 R1",
+          "230 R1",
+          "231 R2",
+          "231"
+        ]
+      },
+      {
+        "q": "Estimate 58 × 31 by rounding each number to the nearest ten.",
+        "answer": "1,800",
+        "options": [
+          "1,800",
+          "1,500",
+          "1,798",
+          "2,100"
+        ]
+      },
+      {
+        "q": "Evaluate 6 + 4 × 5.",
+        "answer": "26",
+        "options": [
+          "26",
+          "50",
+          "30",
+          "20"
+        ]
+      },
+      {
+        "q": "Evaluate (15 − 7) × 3.",
+        "answer": "24",
+        "options": [
+          "24",
+          "18",
+          "11",
+          "36"
+        ]
+      },
+      {
+        "q": "A farmer packs 1,500 eggs into cartons of 12. How many full cartons can she fill?",
+        "answer": "125",
+        "options": [
+          "125",
+          "124",
+          "126",
+          "1,488"
+        ]
+      }
+    ]
+  },
+  "factors-multiples": {
+    "title": "Factors, Multiples & Primes",
+    "pre": [
+      {
+        "q": "Which list shows all the factors of 10?",
+        "answer": "1, 2, 5, 10",
+        "options": [
+          "1, 2, 5, 10",
+          "1, 2, 10",
+          "2, 5",
+          "1, 5, 10"
+        ]
+      },
+      {
+        "q": "Which number is a multiple of 6?",
+        "answer": "24",
+        "options": [
+          "24",
+          "26",
+          "15",
+          "34"
+        ]
+      },
+      {
+        "q": "Is the number 11 prime or composite?",
+        "answer": "Prime",
+        "options": [
+          "Prime",
+          "Composite",
+          "Neither",
+          "Both"
+        ]
+      },
+      {
+        "q": "What is the GCF of 12 and 18?",
+        "answer": "6",
+        "options": [
+          "6",
+          "3",
+          "2",
+          "36"
+        ]
+      },
+      {
+        "q": "What is the LCM of 3 and 4?",
         "answer": "12",
         "options": [
           "12",
-          "11",
-          "13",
-          "14"
+          "24",
+          "7",
+          "1"
         ]
       },
       {
-        "q": "125 × 8 = ?",
-        "answer": "1000",
+        "q": "What is the prime factorization of 12?",
+        "answer": "2 × 2 × 3",
         "options": [
-          "1000",
-          "900",
-          "1025",
-          "1250"
+          "2 × 2 × 3",
+          "2 × 6",
+          "3 × 4",
+          "2 × 2 × 2"
         ]
       },
       {
-        "q": "Estimate 78 × 19.",
-        "answer": "1600",
+        "q": "Using the distributive property, 12 + 18 can be written as which expression?",
+        "answer": "6 × (2 + 3)",
         "options": [
-          "1600",
-          "1400",
-          "1800",
-          "800"
+          "6 × (2 + 3)",
+          "6 × (2 + 6)",
+          "3 × (4 + 6)",
+          "6 × (12 + 18)"
         ]
       },
       {
-        "q": "864 ÷ 9 = ?",
-        "answer": "96",
+        "q": "Tennis balls come in cans of 4 and players come in groups of 6. What is the least number you need to have an equal number with none left over?",
+        "answer": "12",
         "options": [
-          "96",
-          "95",
-          "97",
-          "86"
+          "12",
+          "24",
+          "10",
+          "2"
+        ]
+      }
+    ],
+    "post": [
+      {
+        "q": "Which list shows all the factors of 16?",
+        "answer": "1, 2, 4, 8, 16",
+        "options": [
+          "1, 2, 4, 8, 16",
+          "1, 2, 4, 16",
+          "2, 4, 8",
+          "1, 4, 8, 16"
+        ]
+      },
+      {
+        "q": "Which number is a multiple of 7?",
+        "answer": "28",
+        "options": [
+          "28",
+          "27",
+          "32",
+          "17"
+        ]
+      },
+      {
+        "q": "Is the number 13 prime or composite?",
+        "answer": "Prime",
+        "options": [
+          "Prime",
+          "Composite",
+          "Neither",
+          "Both"
+        ]
+      },
+      {
+        "q": "What is the GCF of 20 and 30?",
+        "answer": "10",
+        "options": [
+          "10",
+          "5",
+          "2",
+          "60"
+        ]
+      },
+      {
+        "q": "What is the LCM of 4 and 5?",
+        "answer": "20",
+        "options": [
+          "20",
+          "40",
+          "9",
+          "1"
+        ]
+      },
+      {
+        "q": "What is the prime factorization of 40?",
+        "answer": "2 × 2 × 2 × 5",
+        "options": [
+          "2 × 2 × 2 × 5",
+          "2 × 2 × 5",
+          "4 × 10",
+          "2 × 4 × 5"
+        ]
+      },
+      {
+        "q": "Using the distributive property, 15 + 20 can be written as which expression?",
+        "answer": "5 × (3 + 4)",
+        "options": [
+          "5 × (3 + 4)",
+          "5 × (3 + 5)",
+          "3 × (5 + 7)",
+          "5 × (15 + 20)"
+        ]
+      },
+      {
+        "q": "Pencils come in boxes of 9 and erasers in boxes of 12. What is the least number of each you must buy to have an equal amount with none left over?",
+        "answer": "36",
+        "options": [
+          "36",
+          "72",
+          "21",
+          "108"
         ]
       }
     ]
@@ -195,165 +362,165 @@ var QUIZ_DATA = {
     "title": "Fraction Sense",
     "pre": [
       {
-        "q": "Which equals 2/4?",
-        "answer": "1/2",
+        "q": "Which fraction is equivalent to 1/3?",
+        "answer": "2/6",
         "options": [
-          "1/2",
-          "2/3",
-          "1/4",
-          "3/4"
-        ]
-      },
-      {
-        "q": "1/5 + 2/5 = ?",
-        "answer": "3/5",
-        "options": [
-          "3/5",
-          "3/10",
-          "2/5",
-          "3/25"
-        ]
-      },
-      {
-        "q": "Simplify 4/8.",
-        "answer": "1/2",
-        "options": [
-          "1/2",
-          "2/8",
-          "4/4",
-          "1/4"
-        ]
-      },
-      {
-        "q": "Which is larger: 1/2 or 1/3?",
-        "answer": "1/2",
-        "options": [
-          "1/2",
-          "1/3",
-          "equal",
-          "can't tell"
-        ]
-      },
-      {
-        "q": "3/4 − 1/4 = ?",
-        "answer": "1/2",
-        "options": [
-          "1/2",
-          "2/0",
-          "1/4",
-          "4/4"
-        ]
-      },
-      {
-        "q": "1/2 of 8 = ?",
-        "answer": "4",
-        "options": [
-          "4",
-          "2",
-          "16",
-          "6"
-        ]
-      },
-      {
-        "q": "1/3 × 1/2 = ?",
-        "answer": "1/6",
-        "options": [
-          "1/6",
-          "1/5",
           "2/6",
+          "1/6",
+          "2/3",
+          "3/6"
+        ]
+      },
+      {
+        "q": "Write 6/9 in simplest form.",
+        "answer": "2/3",
+        "options": [
+          "2/3",
+          "3/9",
+          "6/9",
           "1/3"
         ]
       },
       {
-        "q": "Write 6/10 simplest.",
-        "answer": "3/5",
+        "q": "Compare: 2/5 ___ 4/5",
+        "answer": "<",
         "options": [
-          "3/5",
-          "6/10",
+          "<",
+          ">",
+          "=",
+          "+"
+        ]
+      },
+      {
+        "q": "What is 1/8 + 3/8?",
+        "answer": "1/2",
+        "options": [
           "1/2",
-          "2/5"
+          "4/16",
+          "3/8",
+          "4/8 only"
+        ]
+      },
+      {
+        "q": "What is 2/3 - 1/6?",
+        "answer": "1/2",
+        "options": [
+          "1/2",
+          "1/3",
+          "3/6 wrong reduce",
+          "1/6"
+        ]
+      },
+      {
+        "q": "What is 3/5 x 2/3?",
+        "answer": "2/5",
+        "options": [
+          "2/5",
+          "5/8",
+          "6/8",
+          "2/3"
+        ]
+      },
+      {
+        "q": "What is 1/2 ÷ 1/6?",
+        "answer": "3",
+        "options": [
+          "3",
+          "1/12",
+          "1/3",
+          "6"
+        ]
+      },
+      {
+        "q": "A recipe needs 3/4 cup of milk. You make half. How much milk do you need?",
+        "answer": "3/8 cup",
+        "options": [
+          "3/8 cup",
+          "3/2 cup",
+          "1/4 cup",
+          "6/4 cup"
         ]
       }
     ],
     "post": [
       {
-        "q": "Which equals 3/9?",
-        "answer": "1/3",
+        "q": "Which fraction is equivalent to 1/4?",
+        "answer": "2/8",
         "options": [
-          "1/3",
-          "3/6",
-          "1/9",
-          "2/3"
+          "2/8",
+          "1/8",
+          "2/4",
+          "3/8"
         ]
       },
       {
-        "q": "1/4 + 3/8 = ?",
+        "q": "Write 8/12 in simplest form.",
+        "answer": "2/3",
+        "options": [
+          "2/3",
+          "4/12",
+          "8/12",
+          "1/3"
+        ]
+      },
+      {
+        "q": "Compare: 5/8 ___ 3/8",
+        "answer": ">",
+        "options": [
+          ">",
+          "<",
+          "=",
+          "-"
+        ]
+      },
+      {
+        "q": "What is 2/9 + 4/9?",
+        "answer": "2/3",
+        "options": [
+          "2/3",
+          "6/18",
+          "6/9 only",
+          "2/9"
+        ]
+      },
+      {
+        "q": "What is 3/4 - 1/8?",
         "answer": "5/8",
         "options": [
           "5/8",
-          "4/12",
-          "1/2",
-          "4/8"
+          "2/4",
+          "2/8",
+          "1/8"
         ]
       },
       {
-        "q": "2/3 × 3/5 = ?",
-        "answer": "2/5",
+        "q": "What is 2/5 x 5/6?",
+        "answer": "1/3",
         "options": [
-          "2/5",
-          "6/15",
-          "5/8",
-          "2/8"
+          "1/3",
+          "7/11",
+          "4/6",
+          "2/6"
         ]
       },
       {
-        "q": "3/4 ÷ 1/4 = ?",
+        "q": "What is 1/3 ÷ 1/9?",
         "answer": "3",
         "options": [
           "3",
-          "3/16",
-          "1",
-          "12"
+          "1/27",
+          "1/3",
+          "9"
         ]
       },
       {
-        "q": "Which is larger: 4/5 or 5/7?",
-        "answer": "4/5",
+        "q": "A board is 5/6 foot long. You use 1/2 of it. How much do you use?",
+        "answer": "5/12 foot",
         "options": [
-          "4/5",
-          "5/7",
-          "equal",
-          "can't tell"
-        ]
-      },
-      {
-        "q": "Simplify 9/12.",
-        "answer": "3/4",
-        "options": [
-          "3/4",
-          "3/12",
-          "9/4",
-          "2/3"
-        ]
-      },
-      {
-        "q": "3/5 of 25 = ?",
-        "answer": "15",
-        "options": [
-          "15",
-          "5",
-          "10",
-          "20"
-        ]
-      },
-      {
-        "q": "★ Cut 2/3 m into 1/6-m pieces. How many?",
-        "answer": "4",
-        "options": [
-          "4",
-          "3",
-          "6",
-          "8"
+          "5/12 foot",
+          "5/3 foot",
+          "1/3 foot",
+          "10/6 foot"
         ]
       }
     ]
@@ -362,666 +529,1501 @@ var QUIZ_DATA = {
     "title": "Decimals & Place Value",
     "pre": [
       {
-        "q": "Which is larger: 0.6 or 0.59?",
-        "answer": "0.6",
+        "q": "What is the value of the 3 in 8.37?",
+        "answer": "3 tenths",
         "options": [
-          "0.6",
-          "0.59",
-          "equal",
-          "can't tell"
+          "3 tenths",
+          "3 hundredths",
+          "3 ones",
+          "3 thousandths"
         ]
       },
       {
-        "q": "0.2 + 0.5 = ?",
+        "q": "Compare: which is greater, 0.4 or 0.38?",
+        "answer": "0.4",
+        "options": [
+          "0.4",
+          "0.38",
+          "They are equal",
+          "0.038"
+        ]
+      },
+      {
+        "q": "Round 7.6 to the nearest whole number.",
+        "answer": "8",
+        "options": [
+          "8",
+          "7",
+          "7.5",
+          "6"
+        ]
+      },
+      {
+        "q": "What is 5.3 + 2.75 ?",
+        "answer": "8.05",
+        "options": [
+          "8.05",
+          "7.05",
+          "8.5",
+          "7.78"
+        ]
+      },
+      {
+        "q": "What is 10 - 4.6 ?",
+        "answer": "5.4",
+        "options": [
+          "5.4",
+          "6.4",
+          "5.6",
+          "4.4"
+        ]
+      },
+      {
+        "q": "What is 3.2 x 0.5 ?",
+        "answer": "1.6",
+        "options": [
+          "1.6",
+          "16",
+          "0.16",
+          "1.5"
+        ]
+      },
+      {
+        "q": "What is 12.6 / 0.6 ?",
+        "answer": "21",
+        "options": [
+          "21",
+          "2.1",
+          "210",
+          "0.21"
+        ]
+      },
+      {
+        "q": "A pen costs $1.25. How much do 4 pens cost?",
+        "answer": "$5.00",
+        "options": [
+          "$5.00",
+          "$4.00",
+          "$5.25",
+          "$4.25"
+        ]
+      }
+    ],
+    "post": [
+      {
+        "q": "What is the value of the 9 in 6.94?",
+        "answer": "9 tenths",
+        "options": [
+          "9 tenths",
+          "9 hundredths",
+          "9 ones",
+          "9 thousandths"
+        ]
+      },
+      {
+        "q": "Compare: which is greater, 0.7 or 0.65?",
         "answer": "0.7",
         "options": [
           "0.7",
-          "0.07",
-          "0.25",
-          "7"
+          "0.65",
+          "They are equal",
+          "0.065"
         ]
       },
       {
-        "q": "Round 3.42 to the nearest tenth.",
-        "answer": "3.4",
+        "q": "Round 4.5 to the nearest whole number.",
+        "answer": "5",
         "options": [
-          "3.4",
-          "3.5",
-          "3.0",
-          "4.0"
+          "5",
+          "4",
+          "4.5",
+          "6"
         ]
       },
       {
-        "q": "Write 1/2 as a decimal.",
-        "answer": "0.5",
+        "q": "What is 6.4 + 3.85 ?",
+        "answer": "10.25",
         "options": [
-          "0.5",
-          "0.2",
-          "0.12",
-          "5.0"
+          "10.25",
+          "9.25",
+          "10.5",
+          "9.89"
         ]
       },
       {
-        "q": "$5 − $2.25 = ?",
-        "answer": "$2.75",
+        "q": "What is 15 - 7.3 ?",
+        "answer": "7.7",
         "options": [
-          "$2.75",
-          "$3.25",
-          "$2.85",
-          "$3.75"
+          "7.7",
+          "8.7",
+          "7.3",
+          "8.3"
         ]
       },
       {
-        "q": "Which place is the 4 in 6.04?",
-        "answer": "hundredths",
+        "q": "What is 4.6 x 0.5 ?",
+        "answer": "2.3",
         "options": [
-          "hundredths",
-          "tenths",
-          "ones",
-          "tens"
-        ]
-      },
-      {
-        "q": "0.5 × 4 = ?",
-        "answer": "2",
-        "options": [
-          "2",
-          "0.2",
-          "20",
+          "2.3",
+          "23",
+          "0.23",
           "2.5"
         ]
       },
       {
-        "q": "Smallest: 0.3, 0.03, 0.33?",
-        "answer": "0.03",
+        "q": "What is 18.8 / 0.4 ?",
+        "answer": "47",
         "options": [
-          "0.03",
-          "0.3",
-          "0.33",
-          "equal"
-        ]
-      }
-    ],
-    "post": [
-      {
-        "q": "Which is larger: 0.8 or 0.79?",
-        "answer": "0.8",
-        "options": [
-          "0.8",
-          "0.79",
-          "equal",
-          "can't tell"
+          "47",
+          "4.7",
+          "470",
+          "0.47"
         ]
       },
       {
-        "q": "2.4 + 1.75 = ?",
-        "answer": "4.15",
+        "q": "A juice box costs $1.50. How much do 4 juice boxes cost?",
+        "answer": "$6.00",
         "options": [
-          "4.15",
-          "4.79",
-          "3.15",
-          "41.5"
-        ]
-      },
-      {
-        "q": "Round 9.851 to tenths.",
-        "answer": "9.9",
-        "options": [
-          "9.9",
-          "9.8",
-          "10.0",
-          "9.85"
-        ]
-      },
-      {
-        "q": "Write 0.25 as a fraction.",
-        "answer": "1/4",
-        "options": [
-          "1/4",
-          "1/2",
-          "25",
-          "2/5"
-        ]
-      },
-      {
-        "q": "0.6 × 0.4 = ?",
-        "answer": "0.24",
-        "options": [
-          "0.24",
-          "2.4",
-          "0.10",
-          "0.024"
-        ]
-      },
-      {
-        "q": "$50 − $36.40 = ?",
-        "answer": "$13.60",
-        "options": [
-          "$13.60",
-          "$14.60",
-          "$13.40",
-          "$23.60"
-        ]
-      },
-      {
-        "q": "7.2 ÷ 3 = ?",
-        "answer": "2.4",
-        "options": [
-          "2.4",
-          "2.1",
-          "0.24",
-          "24"
-        ]
-      },
-      {
-        "q": "★ Split $42.30 among 3. Each?",
-        "answer": "$14.10",
-        "options": [
-          "$14.10",
-          "$13.10",
-          "$14.30",
-          "$15.10"
+          "$6.00",
+          "$5.00",
+          "$6.50",
+          "$4.50"
         ]
       }
     ]
   },
-  "ratios-rates-percents": {
-    "title": "Ratios, Rates & Percents",
+  "ratios-rates": {
+    "title": "Ratios & Rates",
     "pre": [
       {
-        "q": "Ratio 2:1, 4 boys — how many girls?",
-        "answer": "2",
+        "q": "There are 4 cats and 7 dogs. What is the ratio of cats to dogs?",
+        "answer": "4 to 7",
         "options": [
-          "2",
-          "1",
-          "4",
-          "8"
+          "4 to 7",
+          "7 to 4",
+          "4 to 11",
+          "11 to 4"
         ]
       },
       {
-        "q": "What is 10% of 60?",
-        "answer": "6",
+        "q": "Simplify the ratio 6 to 9.",
+        "answer": "2 to 3",
         "options": [
-          "6",
-          "16",
-          "60",
-          "0.6"
+          "2 to 3",
+          "3 to 2",
+          "2 to 9",
+          "6 to 3"
         ]
       },
       {
-        "q": "6 for $3. Unit price?",
-        "answer": "$0.50",
+        "q": "Which ratio is equivalent to 2:5?",
+        "answer": "6:15",
         "options": [
-          "$0.50",
-          "$2",
-          "$0.30",
-          "$18"
+          "6:15",
+          "5:2",
+          "4:8",
+          "6:10"
         ]
       },
       {
-        "q": "Simplify 6:9.",
-        "answer": "2:3",
-        "options": [
-          "2:3",
-          "3:2",
-          "1:3",
-          "6:9"
-        ]
-      },
-      {
-        "q": "What is 50% of 24?",
+        "q": "A ratio table shows 3:4. What completes 9:?",
         "answer": "12",
         "options": [
           "12",
-          "6",
-          "24",
-          "48"
+          "10",
+          "13",
+          "16"
         ]
       },
       {
-        "q": "90 mi in 3 hr =",
-        "answer": "30 mph",
+        "q": "A car goes 80 miles in 2 hours. What is the unit rate?",
+        "answer": "40 miles per hour",
         "options": [
-          "30 mph",
-          "60 mph",
-          "270 mph",
-          "93 mph"
+          "40 miles per hour",
+          "80 miles per hour",
+          "160 miles per hour",
+          "20 miles per hour"
         ]
       },
       {
-        "q": "What is 25% of 16?",
-        "answer": "4",
+        "q": "6 apples cost $3. What is the cost of one apple?",
+        "answer": "$0.50",
         "options": [
-          "4",
-          "8",
-          "12",
-          "2"
+          "$0.50",
+          "$2.00",
+          "$1.50",
+          "$3.00"
         ]
       },
       {
-        "q": "4:8 equals…",
-        "answer": "1:2",
+        "q": "A recipe uses 2 cups rice for 3 cups water. How much water for 8 cups of rice?",
+        "answer": "12 cups",
         "options": [
-          "1:2",
-          "2:1",
-          "2:3",
-          "4:8"
+          "12 cups",
+          "10 cups",
+          "6 cups",
+          "16 cups"
+        ]
+      },
+      {
+        "q": "Which is the better buy: 4 pens for $2.00 or 6 pens for $2.40?",
+        "answer": "6 pens for $2.40",
+        "options": [
+          "6 pens for $2.40",
+          "4 pens for $2.00",
+          "They are equal",
+          "Cannot tell"
         ]
       }
     ],
     "post": [
       {
-        "q": "Ratio 5:3, 10 red — how many blue?",
-        "answer": "6",
+        "q": "There are 5 pens and 8 markers. What is the ratio of pens to markers?",
+        "answer": "5 to 8",
         "options": [
-          "6",
-          "3",
-          "5",
-          "8"
+          "5 to 8",
+          "8 to 5",
+          "5 to 13",
+          "13 to 5"
         ]
       },
       {
-        "q": "What is 30% of 80?",
-        "answer": "24",
+        "q": "Simplify the ratio 8 to 12.",
+        "answer": "2 to 3",
         "options": [
-          "24",
-          "18",
-          "30",
-          "8"
+          "2 to 3",
+          "3 to 2",
+          "2 to 12",
+          "4 to 3"
         ]
       },
       {
-        "q": "9 for $4.50. Unit price?",
+        "q": "Which ratio is equivalent to 3:4?",
+        "answer": "9:12",
+        "options": [
+          "9:12",
+          "4:3",
+          "6:10",
+          "9:16"
+        ]
+      },
+      {
+        "q": "A ratio table shows 2:5. What completes 8:?",
+        "answer": "20",
+        "options": [
+          "20",
+          "15",
+          "11",
+          "18"
+        ]
+      },
+      {
+        "q": "A train goes 90 miles in 3 hours. What is the unit rate?",
+        "answer": "30 miles per hour",
+        "options": [
+          "30 miles per hour",
+          "90 miles per hour",
+          "270 miles per hour",
+          "3 miles per hour"
+        ]
+      },
+      {
+        "q": "8 muffins cost $4. What is the cost of one muffin?",
         "answer": "$0.50",
         "options": [
           "$0.50",
-          "$0.45",
-          "$2",
-          "$13.50"
+          "$2.00",
+          "$4.00",
+          "$1.00"
         ]
       },
       {
-        "q": "Simplify 12:16.",
-        "answer": "3:4",
+        "q": "A recipe uses 3 cups oats for 4 cups milk. How much milk for 12 cups of oats?",
+        "answer": "16 cups",
         "options": [
-          "3:4",
-          "4:3",
-          "2:3",
-          "6:8"
+          "16 cups",
+          "14 cups",
+          "8 cups",
+          "20 cups"
         ]
       },
       {
-        "q": "What is 75% of 60?",
-        "answer": "45",
+        "q": "Which is the better buy: 5 juice boxes for $3.00 or 8 juice boxes for $4.00?",
+        "answer": "8 juice boxes for $4.00",
         "options": [
-          "45",
-          "40",
-          "50",
-          "15"
-        ]
-      },
-      {
-        "q": "160 mi in 4 hr =",
-        "answer": "40 mph",
-        "options": [
-          "40 mph",
-          "32 mph",
-          "64 mph",
-          "640 mph"
-        ]
-      },
-      {
-        "q": "21 is what percent of 28?",
-        "answer": "75%",
-        "options": [
-          "75%",
-          "70%",
-          "21%",
-          "84%"
-        ]
-      },
-      {
-        "q": "★ 60% of a number is 30. Number?",
-        "answer": "50",
-        "options": [
-          "50",
-          "18",
-          "36",
-          "90"
+          "8 juice boxes for $4.00",
+          "5 juice boxes for $3.00",
+          "They are equal",
+          "Cannot tell"
         ]
       }
     ]
   },
-  "integers-coordinate": {
-    "title": "Integers & the Coordinate Plane",
+  "percents": {
+    "title": "Percents & Proportions",
     "pre": [
       {
-        "q": "Which is greater: −2 or −5?",
-        "answer": "−2",
+        "q": "What is 10% of 70?",
+        "answer": "7",
         "options": [
-          "−2",
-          "−5",
-          "equal",
-          "can't tell"
+          "7",
+          "10",
+          "17",
+          "70"
         ]
       },
       {
-        "q": "What is |−4|?",
-        "answer": "4",
+        "q": "Write 1/2 as a percent.",
+        "answer": "50%",
         "options": [
-          "4",
-          "−4",
-          "0",
-          "8"
+          "50%",
+          "12%",
+          "21%",
+          "25%"
         ]
       },
       {
-        "q": "−3 + 5 = ?",
-        "answer": "2",
+        "q": "Write 0.4 as a percent.",
+        "answer": "40%",
         "options": [
-          "2",
-          "−2",
-          "8",
-          "−8"
+          "40%",
+          "4%",
+          "400%",
+          "0.4%"
         ]
       },
       {
-        "q": "Opposite of −6?",
-        "answer": "6",
+        "q": "What is 20% of 50?",
+        "answer": "10",
         "options": [
-          "6",
-          "−6",
-          "0",
-          "1/6"
+          "10",
+          "20",
+          "30",
+          "5"
         ]
       },
       {
-        "q": "Quadrant of (3, 4)?",
-        "answer": "I",
+        "q": "Write 25% as a decimal.",
+        "answer": "0.25",
         "options": [
-          "I",
-          "II",
-          "III",
-          "IV"
+          "0.25",
+          "2.5",
+          "25",
+          "0.025"
         ]
       },
       {
-        "q": "2 − 7 = ?",
-        "answer": "−5",
+        "q": "10 is 25% of what number?",
+        "answer": "40",
         "options": [
-          "−5",
+          "40",
+          "2.5",
           "5",
-          "−9",
+          "250"
+        ]
+      },
+      {
+        "q": "A toy is $30 and is 10% off. What is the sale price?",
+        "answer": "$27",
+        "options": [
+          "$27",
+          "$3",
+          "$33",
+          "$20"
+        ]
+      },
+      {
+        "q": "A $20 meal has a 15% tip. How much is the tip?",
+        "answer": "$3",
+        "options": [
+          "$3",
+          "$15",
+          "$2",
+          "$23"
+        ]
+      }
+    ],
+    "post": [
+      {
+        "q": "What is 10% of 90?",
+        "answer": "9",
+        "options": [
+          "9",
+          "10",
+          "19",
+          "90"
+        ]
+      },
+      {
+        "q": "Write 1/4 as a percent.",
+        "answer": "25%",
+        "options": [
+          "25%",
+          "14%",
+          "41%",
+          "20%"
+        ]
+      },
+      {
+        "q": "Write 0.7 as a percent.",
+        "answer": "70%",
+        "options": [
+          "70%",
+          "7%",
+          "700%",
+          "0.7%"
+        ]
+      },
+      {
+        "q": "What is 30% of 90?",
+        "answer": "27",
+        "options": [
+          "27",
+          "30",
+          "60",
           "9"
         ]
       },
       {
-        "q": "The origin is the point…",
-        "answer": "(0, 0)",
+        "q": "Write 35% as a decimal.",
+        "answer": "0.35",
         "options": [
-          "(0, 0)",
-          "(1, 1)",
-          "(0, 1)",
-          "(−1, 0)"
+          "0.35",
+          "3.5",
+          "35",
+          "0.035"
         ]
       },
       {
-        "q": "Smallest: −2, 1, −6?",
-        "answer": "−6",
+        "q": "12 is 20% of what number?",
+        "answer": "60",
         "options": [
-          "−6",
-          "−2",
-          "1",
-          "0"
+          "60",
+          "2.4",
+          "40",
+          "240"
+        ]
+      },
+      {
+        "q": "A jacket is $80 and is 25% off. What is the sale price?",
+        "answer": "$60",
+        "options": [
+          "$60",
+          "$20",
+          "$55",
+          "$100"
+        ]
+      },
+      {
+        "q": "A $60 meal has a 10% tip and 5% tax. What is the total?",
+        "answer": "$69",
+        "options": [
+          "$69",
+          "$66",
+          "$63",
+          "$75"
+        ]
+      }
+    ]
+  },
+  "integers-number-line": {
+    "title": "Integers & the Number Line",
+    "pre": [
+      {
+        "q": "Write the integer for \"5 below zero.\"",
+        "answer": "-5",
+        "options": [
+          "-5",
+          "5",
+          "0",
+          "-0.5"
+        ]
+      },
+      {
+        "q": "What is the opposite of -12?",
+        "answer": "12",
+        "options": [
+          "12",
+          "-12",
+          "0",
+          "-24"
+        ]
+      },
+      {
+        "q": "What is |-9|?",
+        "answer": "9",
+        "options": [
+          "9",
+          "-9",
+          "0",
+          "18"
+        ]
+      },
+      {
+        "q": "Compare: -8 ___ -3",
+        "answer": "<",
+        "options": [
+          "<",
+          ">",
+          "=",
+          "≥"
+        ]
+      },
+      {
+        "q": "Order from least to greatest: -2, 3, -6, 0",
+        "answer": "-6, -2, 0, 3",
+        "options": [
+          "-6, -2, 0, 3",
+          "0, -2, 3, -6",
+          "-2, -6, 0, 3",
+          "3, 0, -2, -6"
+        ]
+      },
+      {
+        "q": "Find -7 + 2.",
+        "answer": "-5",
+        "options": [
+          "-5",
+          "5",
+          "-9",
+          "9"
+        ]
+      },
+      {
+        "q": "Find 9 - (-4).",
+        "answer": "13",
+        "options": [
+          "13",
+          "5",
+          "-13",
+          "-5"
+        ]
+      },
+      {
+        "q": "The temperature is -3°C and drops 6 degrees. What is the new temperature?",
+        "answer": "-9°C",
+        "options": [
+          "-9°C",
+          "3°C",
+          "-3°C",
+          "9°C"
         ]
       }
     ],
     "post": [
       {
-        "q": "Which is greater: −1 or −9?",
-        "answer": "−1",
+        "q": "Write the integer for \"8 below zero.\"",
+        "answer": "-8",
         "options": [
-          "−1",
-          "−9",
-          "equal",
-          "can't tell"
-        ]
-      },
-      {
-        "q": "Evaluate |−15|.",
-        "answer": "15",
-        "options": [
-          "15",
-          "−15",
+          "-8",
+          "8",
           "0",
-          "30"
+          "-0.8"
         ]
       },
       {
-        "q": "−8 + 3 = ?",
-        "answer": "−5",
+        "q": "What is the opposite of -20?",
+        "answer": "20",
         "options": [
-          "−5",
-          "5",
-          "−11",
-          "11"
+          "20",
+          "-20",
+          "0",
+          "-40"
         ]
       },
       {
-        "q": "−4 − 6 = ?",
-        "answer": "−10",
+        "q": "What is |-14|?",
+        "answer": "14",
         "options": [
-          "−10",
+          "14",
+          "-14",
+          "0",
+          "28"
+        ]
+      },
+      {
+        "q": "Compare: -2 ___ -9",
+        "answer": ">",
+        "options": [
+          ">",
+          "<",
+          "=",
+          "≤"
+        ]
+      },
+      {
+        "q": "Order from least to greatest: -4, 1, -1, 5",
+        "answer": "-4, -1, 1, 5",
+        "options": [
+          "-4, -1, 1, 5",
+          "1, -1, 5, -4",
+          "-1, -4, 1, 5",
+          "5, 1, -1, -4"
+        ]
+      },
+      {
+        "q": "Find -6 + 4.",
+        "answer": "-2",
+        "options": [
+          "-2",
           "2",
-          "10",
-          "−2"
+          "-10",
+          "10"
         ]
       },
       {
-        "q": "Quadrant of (−2, 5)?",
-        "answer": "II",
+        "q": "Find 11 - (-3).",
+        "answer": "14",
         "options": [
-          "II",
-          "I",
-          "III",
-          "IV"
+          "14",
+          "8",
+          "-14",
+          "-8"
         ]
       },
       {
-        "q": "Opposite of 23?",
-        "answer": "−23",
+        "q": "A diver is at -60 feet and rises 25 feet. What is the new depth?",
+        "answer": "-35 feet",
         "options": [
-          "−23",
-          "23",
-          "0",
-          "1/23"
+          "-35 feet",
+          "-85 feet",
+          "35 feet",
+          "-25 feet"
+        ]
+      }
+    ]
+  },
+  "coordinate-plane": {
+    "title": "The Coordinate Plane",
+    "pre": [
+      {
+        "q": "In the ordered pair (8, 1), what is the x-coordinate?",
+        "answer": "8",
+        "options": [
+          "8",
+          "1",
+          "9",
+          "0"
         ]
       },
       {
-        "q": "Point (4, 0) lies on…",
-        "answer": "x-axis",
+        "q": "Which quadrant contains the point (5, 6)?",
+        "answer": "Quadrant I",
         "options": [
-          "x-axis",
+          "Quadrant I",
+          "Quadrant II",
+          "Quadrant III",
+          "Quadrant IV"
+        ]
+      },
+      {
+        "q": "Which quadrant contains the point (-3, 7)?",
+        "answer": "Quadrant II",
+        "options": [
+          "Quadrant II",
+          "Quadrant I",
+          "Quadrant III",
+          "Quadrant IV"
+        ]
+      },
+      {
+        "q": "The point (0, 9) lies on which axis?",
+        "answer": "y-axis",
+        "options": [
           "y-axis",
+          "x-axis",
           "Quadrant I",
           "origin"
         ]
       },
       {
-        "q": "★ Distance from (−3, 2) to (5, 2)?",
-        "answer": "8 units",
+        "q": "What is the distance between (3, 2) and (3, 8)?",
+        "answer": "6 units",
         "options": [
-          "8 units",
-          "2 units",
-          "3 units",
-          "−8 units"
-        ]
-      }
-    ]
-  },
-  "expressions-equations": {
-    "title": "Expressions & One-Step Equations",
-    "pre": [
-      {
-        "q": "Evaluate 2 + 3 × 4.",
-        "answer": "14",
-        "options": [
-          "14",
-          "20",
-          "9",
-          "24"
+          "6 units",
+          "5 units",
+          "11 units",
+          "10 units"
         ]
       },
       {
-        "q": "Evaluate 5x when x = 3.",
-        "answer": "15",
+        "q": "What is the distance between (2, 5) and (9, 5)?",
+        "answer": "7 units",
         "options": [
-          "15",
-          "8",
-          "53",
-          "18"
+          "7 units",
+          "4 units",
+          "14 units",
+          "11 units"
         ]
       },
       {
-        "q": "Solve x + 5 = 9.",
-        "answer": "4",
+        "q": "Reflect (4, 6) across the x-axis. What is the new point?",
+        "answer": "(4, -6)",
         "options": [
-          "4",
-          "14",
-          "5",
-          "45"
+          "(4, -6)",
+          "(-4, 6)",
+          "(-4, -6)",
+          "(6, 4)"
         ]
       },
       {
-        "q": "Solve 4x = 20.",
-        "answer": "5",
+        "q": "A library is at (-7, 2) and a park at (4, 2), each unit 1 block. How many blocks apart are they?",
+        "answer": "11 blocks",
         "options": [
-          "5",
-          "16",
-          "24",
-          "80"
-        ]
-      },
-      {
-        "q": "Evaluate 3².",
-        "answer": "9",
-        "options": [
-          "9",
-          "6",
-          "5",
-          "33"
-        ]
-      },
-      {
-        "q": "Solve x − 3 = 7.",
-        "answer": "10",
-        "options": [
-          "10",
-          "4",
-          "21",
-          "−4"
-        ]
-      },
-      {
-        "q": "Write '5 more than y'.",
-        "answer": "y + 5",
-        "options": [
-          "y + 5",
-          "5y",
-          "y − 5",
-          "5 − y"
-        ]
-      },
-      {
-        "q": "Evaluate 2(3 + 1).",
-        "answer": "8",
-        "options": [
-          "8",
-          "7",
-          "6",
-          "5"
+          "11 blocks",
+          "3 blocks",
+          "9 blocks",
+          "5 blocks"
         ]
       }
     ],
     "post": [
       {
-        "q": "Evaluate 10 − 2 × 3.",
-        "answer": "4",
+        "q": "In the ordered pair (6, 9), what is the x-coordinate?",
+        "answer": "6",
         "options": [
-          "4",
-          "24",
+          "6",
+          "9",
+          "15",
+          "0"
+        ]
+      },
+      {
+        "q": "Which quadrant contains the point (7, 3)?",
+        "answer": "Quadrant I",
+        "options": [
+          "Quadrant I",
+          "Quadrant II",
+          "Quadrant III",
+          "Quadrant IV"
+        ]
+      },
+      {
+        "q": "Which quadrant contains the point (-6, 4)?",
+        "answer": "Quadrant II",
+        "options": [
+          "Quadrant II",
+          "Quadrant I",
+          "Quadrant III",
+          "Quadrant IV"
+        ]
+      },
+      {
+        "q": "The point (0, -4) lies on which axis?",
+        "answer": "y-axis",
+        "options": [
+          "y-axis",
+          "x-axis",
+          "Quadrant IV",
+          "origin"
+        ]
+      },
+      {
+        "q": "What is the distance between (5, 1) and (5, 9)?",
+        "answer": "8 units",
+        "options": [
+          "8 units",
+          "4 units",
+          "14 units",
+          "10 units"
+        ]
+      },
+      {
+        "q": "What is the distance between (3, 6) and (11, 6)?",
+        "answer": "8 units",
+        "options": [
+          "8 units",
+          "5 units",
+          "17 units",
+          "14 units"
+        ]
+      },
+      {
+        "q": "Reflect (5, 7) across the x-axis. What is the new point?",
+        "answer": "(5, -7)",
+        "options": [
+          "(5, -7)",
+          "(-5, 7)",
+          "(-5, -7)",
+          "(7, 5)"
+        ]
+      },
+      {
+        "q": "A store is at (-8, 3) and a school at (5, 3), each unit 1 block. How many blocks apart are they?",
+        "answer": "13 blocks",
+        "options": [
+          "13 blocks",
+          "3 blocks",
+          "11 blocks",
+          "6 blocks"
+        ]
+      }
+    ]
+  },
+  "expressions": {
+    "title": "Expressions & Properties",
+    "pre": [
+      {
+        "q": "Write 2 × 2 × 2 × 2 × 2 using an exponent.",
+        "answer": "2^5",
+        "options": [
+          "2^5",
+          "5^2",
+          "2^4",
+          "2 × 5"
+        ]
+      },
+      {
+        "q": "What is the value of 4^2?",
+        "answer": "16",
+        "options": [
+          "16",
           "8",
-          "30"
+          "6",
+          "42"
         ]
       },
       {
-        "q": "Evaluate 6x when x = 4.",
-        "answer": "24",
+        "q": "Evaluate 6x when x = 3.",
+        "answer": "18",
         "options": [
-          "24",
-          "10",
-          "64",
-          "2"
+          "18",
+          "9",
+          "63",
+          "12"
         ]
       },
       {
-        "q": "Solve x + 8 = 17.",
+        "q": "Which expression means '5 more than a number n'?",
+        "answer": "n + 5",
+        "options": [
+          "n + 5",
+          "5 - n",
+          "5n",
+          "n - 5"
+        ]
+      },
+      {
+        "q": "Combine like terms: 2x + 7x.",
+        "answer": "9x",
+        "options": [
+          "9x",
+          "9",
+          "14x",
+          "9x^2"
+        ]
+      },
+      {
+        "q": "Use the distributive property: 3(x + 2).",
+        "answer": "3x + 6",
+        "options": [
+          "3x + 6",
+          "3x + 2",
+          "x + 6",
+          "3x + 5"
+        ]
+      },
+      {
+        "q": "Evaluate 2x + 1 when x = 4.",
         "answer": "9",
         "options": [
           "9",
-          "25",
+          "7",
           "8",
-          "136"
+          "24"
         ]
       },
       {
-        "q": "Solve 6x = 42.",
+        "q": "A book costs b dollars. Write an expression for the cost of 5 books.",
+        "answer": "5b",
+        "options": [
+          "5b",
+          "b + 5",
+          "b - 5",
+          "5 + b"
+        ]
+      }
+    ],
+    "post": [
+      {
+        "q": "Write 3 × 3 × 3 × 3 using an exponent.",
+        "answer": "3^4",
+        "options": [
+          "3^4",
+          "4^3",
+          "3^3",
+          "3 × 4"
+        ]
+      },
+      {
+        "q": "What is the value of 5^2?",
+        "answer": "25",
+        "options": [
+          "25",
+          "10",
+          "7",
+          "52"
+        ]
+      },
+      {
+        "q": "Evaluate 7x when x = 4.",
+        "answer": "28",
+        "options": [
+          "28",
+          "11",
+          "74",
+          "21"
+        ]
+      },
+      {
+        "q": "Which expression means '6 less than a number p'?",
+        "answer": "p - 6",
+        "options": [
+          "p - 6",
+          "6 - p",
+          "p + 6",
+          "6p"
+        ]
+      },
+      {
+        "q": "Combine like terms: 4x + 5x.",
+        "answer": "9x",
+        "options": [
+          "9x",
+          "9",
+          "20x",
+          "9x^2"
+        ]
+      },
+      {
+        "q": "Use the distributive property: 4(x + 3).",
+        "answer": "4x + 12",
+        "options": [
+          "4x + 12",
+          "4x + 3",
+          "x + 12",
+          "4x + 7"
+        ]
+      },
+      {
+        "q": "Evaluate 3x + 2 when x = 5.",
+        "answer": "17",
+        "options": [
+          "17",
+          "15",
+          "10",
+          "35"
+        ]
+      },
+      {
+        "q": "A pen costs c dollars. Write an expression for the cost of 8 pens.",
+        "answer": "8c",
+        "options": [
+          "8c",
+          "c + 8",
+          "c - 8",
+          "8 + c"
+        ]
+      }
+    ]
+  },
+  "equations-inequalities": {
+    "title": "One-Step Equations & Inequalities",
+    "pre": [
+      {
+        "q": "Solve: x + 5 = 11",
+        "answer": "6",
+        "options": [
+          "6",
+          "16",
+          "5",
+          "55"
+        ]
+      },
+      {
+        "q": "Solve: x - 4 = 9",
+        "answer": "13",
+        "options": [
+          "13",
+          "5",
+          "36",
+          "13.5"
+        ]
+      },
+      {
+        "q": "Solve: 6x = 30",
+        "answer": "5",
+        "options": [
+          "5",
+          "36",
+          "24",
+          "180"
+        ]
+      },
+      {
+        "q": "Solve: x ÷ 2 = 7",
+        "answer": "14",
+        "options": [
+          "14",
+          "5",
+          "9",
+          "3.5"
+        ]
+      },
+      {
+        "q": "Is x = 3 a solution to x + 6 = 9?",
+        "answer": "Yes, because 3 + 6 = 9",
+        "options": [
+          "Yes, because 3 + 6 = 9",
+          "No, because 3 + 6 = 18",
+          "Yes, because 9 - 3 = 5",
+          "No, because x must be 6"
+        ]
+      },
+      {
+        "q": "Which inequality means 'x is at least 5'?",
+        "answer": "x ≥ 5",
+        "options": [
+          "x ≥ 5",
+          "x ≤ 5",
+          "x > 5",
+          "x < 5"
+        ]
+      },
+      {
+        "q": "A box holds 8 crayons. The equation 8b = 56 finds the number of boxes b for 56 crayons. Find b.",
         "answer": "7",
         "options": [
           "7",
-          "36",
           "48",
-          "252"
+          "64",
+          "8"
         ]
       },
       {
-        "q": "Evaluate (5 + 2)².",
-        "answer": "49",
+        "q": "In y = 3x, which is the independent variable?",
+        "answer": "x",
         "options": [
-          "49",
-          "14",
-          "29",
-          "27"
+          "x",
+          "y",
+          "3",
+          "none"
+        ]
+      }
+    ],
+    "post": [
+      {
+        "q": "Solve: x + 8 = 15",
+        "answer": "7",
+        "options": [
+          "7",
+          "23",
+          "8",
+          "58"
         ]
       },
       {
-        "q": "Solve x / 3 = 12.",
-        "answer": "36",
+        "q": "Solve: x - 6 = 10",
+        "answer": "16",
         "options": [
-          "36",
+          "16",
           "4",
-          "15",
+          "60",
+          "16.5"
+        ]
+      },
+      {
+        "q": "Solve: 7x = 49",
+        "answer": "7",
+        "options": [
+          "7",
+          "56",
+          "42",
+          "343"
+        ]
+      },
+      {
+        "q": "Solve: x ÷ 3 = 8",
+        "answer": "24",
+        "options": [
+          "24",
+          "5",
+          "11",
+          "2.67"
+        ]
+      },
+      {
+        "q": "Is x = 4 a solution to x + 7 = 11?",
+        "answer": "Yes, because 4 + 7 = 11",
+        "options": [
+          "Yes, because 4 + 7 = 11",
+          "No, because 4 + 7 = 28",
+          "Yes, because 11 - 4 = 6",
+          "No, because x must be 7"
+        ]
+      },
+      {
+        "q": "Which inequality means 'x is at most 9'?",
+        "answer": "x ≤ 9",
+        "options": [
+          "x ≤ 9",
+          "x ≥ 9",
+          "x < 9",
+          "x > 9"
+        ]
+      },
+      {
+        "q": "A pack holds 9 stickers. The equation 9p = 63 finds the number of packs p for 63 stickers. Find p.",
+        "answer": "7",
+        "options": [
+          "7",
+          "54",
+          "72",
           "9"
         ]
       },
       {
-        "q": "Write 'three times a number k'.",
-        "answer": "3k",
+        "q": "In d = 4t, which is the dependent variable?",
+        "answer": "d",
         "options": [
-          "3k",
-          "k + 3",
-          "k³",
-          "k/3"
+          "d",
+          "t",
+          "4",
+          "none"
+        ]
+      }
+    ]
+  },
+  "geometry-measure": {
+    "title": "Area, Surface Area & Volume",
+    "pre": [
+      {
+        "q": "What is the area of a parallelogram with base 5 cm and height 4 cm?",
+        "answer": "20 cm²",
+        "options": [
+          "20 cm²",
+          "9 cm²",
+          "18 cm²",
+          "40 cm²"
         ]
       },
       {
-        "q": "★ 4w = 36, solve for w.",
+        "q": "A triangle has base 8 m and height 6 m. What is its area?",
+        "answer": "24 m²",
+        "options": [
+          "24 m²",
+          "48 m²",
+          "14 m²",
+          "28 m²"
+        ]
+      },
+      {
+        "q": "What is the area of a trapezoid with parallel sides 4 cm and 8 cm and height 5 cm?",
+        "answer": "30 cm²",
+        "options": [
+          "30 cm²",
+          "60 cm²",
+          "20 cm²",
+          "40 cm²"
+        ]
+      },
+      {
+        "q": "What is the volume of a box that is 6 cm by 2 cm by 4 cm?",
+        "answer": "48 cm³",
+        "options": [
+          "48 cm³",
+          "12 cm³",
+          "88 cm³",
+          "24 cm³"
+        ]
+      },
+      {
+        "q": "What is the surface area of a cube with edge length 3 in?",
+        "answer": "54 in²",
+        "options": [
+          "54 in²",
+          "27 in²",
+          "9 in²",
+          "18 in²"
+        ]
+      },
+      {
+        "q": "A box is ½ ft by 4 ft by 3 ft. What is its volume?",
+        "answer": "6 ft³",
+        "options": [
+          "6 ft³",
+          "7½ ft³",
+          "12 ft³",
+          "2 ft³"
+        ]
+      },
+      {
+        "q": "A composite figure is a 5 cm by 4 cm rectangle with a triangle on top (base 5 cm, height 2 cm). What is the total area?",
+        "answer": "25 cm²",
+        "options": [
+          "25 cm²",
+          "20 cm²",
+          "30 cm²",
+          "23 cm²"
+        ]
+      },
+      {
+        "q": "You wrap a box that is 7 in by 3 in by 2 in. How much paper (surface area) do you need?",
+        "answer": "82 in²",
+        "options": [
+          "82 in²",
+          "42 in²",
+          "41 in²",
+          "164 in²"
+        ]
+      }
+    ],
+    "post": [
+      {
+        "q": "What is the area of a parallelogram with base 7 cm and height 5 cm?",
+        "answer": "35 cm²",
+        "options": [
+          "35 cm²",
+          "12 cm²",
+          "24 cm²",
+          "70 cm²"
+        ]
+      },
+      {
+        "q": "A triangle has base 6 m and height 8 m. What is its area?",
+        "answer": "24 m²",
+        "options": [
+          "24 m²",
+          "48 m²",
+          "14 m²",
+          "28 m²"
+        ]
+      },
+      {
+        "q": "What is the area of a trapezoid with parallel sides 5 cm and 7 cm and height 4 cm?",
+        "answer": "24 cm²",
+        "options": [
+          "24 cm²",
+          "48 cm²",
+          "16 cm²",
+          "35 cm²"
+        ]
+      },
+      {
+        "q": "What is the volume of a box that is 5 cm by 3 cm by 4 cm?",
+        "answer": "60 cm³",
+        "options": [
+          "60 cm³",
+          "12 cm³",
+          "94 cm³",
+          "23 cm³"
+        ]
+      },
+      {
+        "q": "What is the surface area of a cube with edge length 4 in?",
+        "answer": "96 in²",
+        "options": [
+          "96 in²",
+          "64 in²",
+          "16 in²",
+          "24 in²"
+        ]
+      },
+      {
+        "q": "A box is ½ ft by 3 ft by 2 ft. What is its volume?",
+        "answer": "3 ft³",
+        "options": [
+          "3 ft³",
+          "5½ ft³",
+          "6 ft³",
+          "1½ ft³"
+        ]
+      },
+      {
+        "q": "A composite figure is a 6 cm by 4 cm rectangle with a triangle on top (base 6 cm, height 4 cm). What is the total area?",
+        "answer": "36 cm²",
+        "options": [
+          "36 cm²",
+          "24 cm²",
+          "48 cm²",
+          "30 cm²"
+        ]
+      },
+      {
+        "q": "You wrap a box that is 8 in by 3 in by 2 in. How much paper (surface area) do you need?",
+        "answer": "92 in²",
+        "options": [
+          "92 in²",
+          "48 in²",
+          "46 in²",
+          "184 in²"
+        ]
+      }
+    ]
+  },
+  "statistics-data": {
+    "title": "Statistics & Data",
+    "pre": [
+      {
+        "q": "Which is a statistical question?",
+        "answer": "How many books did each student read this month?",
+        "options": [
+          "How many books did each student read this month?",
+          "How many books did I read this month?",
+          "What is my favorite book?",
+          "How many pages are in this book?"
+        ]
+      },
+      {
+        "q": "What is the mode of 4, 5, 5, 7, 9?",
+        "answer": "5",
+        "options": [
+          "5",
+          "7",
+          "9",
+          "4"
+        ]
+      },
+      {
+        "q": "What is the range of 6, 14, 9, 20, 11?",
+        "answer": "14",
+        "options": [
+          "14",
+          "20",
+          "11",
+          "9"
+        ]
+      },
+      {
+        "q": "What is the mean of 8, 12, and 10?",
+        "answer": "10",
+        "options": [
+          "10",
+          "12",
+          "30",
+          "9"
+        ]
+      },
+      {
+        "q": "What is the median of 3, 7, 5, 9, 1 (order first)?",
+        "answer": "5",
+        "options": [
+          "5",
+          "7",
+          "9",
+          "3"
+        ]
+      },
+      {
+        "q": "On a dot plot, 6 dots are stacked above the number 4. What does this mean?",
+        "answer": "The value 4 appears 6 times",
+        "options": [
+          "The value 4 appears 6 times",
+          "The value 6 appears 4 times",
+          "The total is 24",
+          "The mean is 4"
+        ]
+      },
+      {
+        "q": "What is the mean absolute deviation of 3, 5, 7, 9 (mean is 6)?",
+        "answer": "2",
+        "options": [
+          "2",
+          "6",
+          "4",
+          "3"
+        ]
+      },
+      {
+        "q": "A player scored a mean of 15 points over 4 games. What was the total?",
+        "answer": "60",
+        "options": [
+          "60",
+          "19",
+          "15",
+          "4"
+        ]
+      }
+    ],
+    "post": [
+      {
+        "q": "Which is a statistical question?",
+        "answer": "How many minutes does each student spend on homework?",
+        "options": [
+          "How many minutes does each student spend on homework?",
+          "How many minutes did I spend on homework?",
+          "What is my homework grade?",
+          "What time is it now?"
+        ]
+      },
+      {
+        "q": "What is the mode of 2, 6, 6, 8, 10?",
+        "answer": "6",
+        "options": [
+          "6",
+          "8",
+          "10",
+          "2"
+        ]
+      },
+      {
+        "q": "What is the range of 5, 13, 8, 19, 10?",
+        "answer": "14",
+        "options": [
+          "14",
+          "19",
+          "10",
+          "8"
+        ]
+      },
+      {
+        "q": "What is the mean of 7, 11, and 9?",
         "answer": "9",
         "options": [
           "9",
-          "32",
-          "40",
-          "144"
+          "11",
+          "27",
+          "8"
+        ]
+      },
+      {
+        "q": "What is the median of 2, 8, 4, 10, 6 (order first)?",
+        "answer": "6",
+        "options": [
+          "6",
+          "8",
+          "10",
+          "4"
+        ]
+      },
+      {
+        "q": "On a dot plot, 5 dots are stacked above the number 3. What does this mean?",
+        "answer": "The value 3 appears 5 times",
+        "options": [
+          "The value 3 appears 5 times",
+          "The value 5 appears 3 times",
+          "The total is 15",
+          "The mean is 3"
+        ]
+      },
+      {
+        "q": "What is the mean absolute deviation of 4, 6, 8, 10 (mean is 7)?",
+        "answer": "2",
+        "options": [
+          "2",
+          "7",
+          "4",
+          "3"
+        ]
+      },
+      {
+        "q": "A player scored a mean of 12 points over 5 games. What was the total?",
+        "answer": "60",
+        "options": [
+          "60",
+          "17",
+          "12",
+          "5"
         ]
       }
     ]
