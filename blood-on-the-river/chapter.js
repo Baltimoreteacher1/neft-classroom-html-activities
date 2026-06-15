@@ -20,44 +20,63 @@ window.speakText = function (text, lang = "en") {
 
 function renderChapter(data) {
   const $ = (s) => document.querySelector(s);
+  // Null-safe setters so a future HTML/JS skew degrades gracefully
+  // instead of throwing and leaving a blank page.
+  const setText = (s, v) => {
+    const el = $(s);
+    if (el) el.textContent = v;
+  };
+  const setHTML = (s, v) => {
+    const el = $(s);
+    if (el) el.innerHTML = v;
+  };
+
   document.title = `Blood on the River — Chapter ${data.chapter}`;
-  $("[data-chapter-title]").textContent = `Chapter ${data.chapter}`;
-  $("[data-hero-kicker]").textContent = `Chapter ${data.chapter}`;
-  $("[data-hero-copy]").textContent = data.heroCopy;
-  $("[data-open-chapter]").textContent = "Start reading ▸";
-  $("[data-brand]").textContent = `Chapter ${data.chapter}`;
-  const sc = $("[data-scene-count]");
-  if (sc) sc.textContent = `${data.scenes.length} parts`;
+  setText("[data-chapter-title]", `Chapter ${data.chapter}`);
+  setText("[data-hero-kicker]", `Chapter ${data.chapter}`);
+  setText("[data-hero-copy]", data.heroCopy);
+  setText("[data-open-chapter]", "Start reading ▸");
+  setText("[data-brand]", `Chapter ${data.chapter}`);
+  setText("[data-scene-count]", `${data.scenes.length} parts`);
 
   // Quick facts
-  $("#snapshotGrid").innerHTML = (data.snapshot || [])
-    .map(
-      (s) =>
-        `<li><span class="fk">${esc(s[0])}</span><span class="fv">${esc(s[1])}</span></li>`,
-    )
-    .join("");
+  setHTML(
+    "#snapshotGrid",
+    (data.snapshot || [])
+      .map(
+        (s) =>
+          `<li><span class="fk">${esc(s[0])}</span><span class="fv">${esc(s[1])}</span></li>`,
+      )
+      .join(""),
+  );
 
   // What happens (plain-language outline)
-  $("#structureList").innerHTML = (data.structure || [])
-    .map((x) => `<li>${esc(x)}</li>`)
-    .join("");
+  setHTML(
+    "#structureList",
+    (data.structure || []).map((x) => `<li>${esc(x)}</li>`).join(""),
+  );
 
   // Vocabulary — compact list with read-aloud
-  $("#vocabGrid").innerHTML = data.vocab
-    .map(
-      (v) => `<li class="vrow">
+  setHTML(
+    "#vocabGrid",
+    data.vocab
+      .map(
+        (v) => `<li class="vrow">
         <span class="vword">${esc(v[0])}
           <button class="speak" type="button" data-text="${esc(v[0])}: ${esc(v[1])}" title="Read aloud" aria-label="Read ${esc(v[0])} aloud">🔊</button>
         </span>
         <span class="vdef">${esc(v[1])}</span>
       </li>`,
-    )
-    .join("");
+      )
+      .join(""),
+  );
 
   // Scenes — compact rows, optional "why it matters & check" toggle
-  $("#sceneStack").innerHTML = data.scenes
-    .map(
-      (s) => `<article class="scene">
+  setHTML(
+    "#sceneStack",
+    data.scenes
+      .map(
+        (s) => `<article class="scene">
         <div class="scene-no">${esc(s.n)}</div>
         <div class="scene-body">
           <div class="scene-top">
@@ -80,22 +99,24 @@ function renderChapter(data) {
           </details>
         </div>
       </article>`,
-    )
-    .join("");
+      )
+      .join(""),
+  );
 
   // Quick check question
-  $("#quickQuestion").textContent = data.quick.question;
-  $("#choices").innerHTML = data.quick.choices
-    .map(
-      (c, i) =>
-        `<label class="choice"><input type="radio" name="q1" data-correct="${i === data.quick.correct}"> ${esc(c)}</label>`,
-    )
-    .join("");
+  setText("#quickQuestion", data.quick.question);
+  setHTML(
+    "#choices",
+    data.quick.choices
+      .map(
+        (c, i) =>
+          `<label class="choice"><input type="radio" name="q1" data-correct="${i === data.quick.correct}"> ${esc(c)}</label>`,
+      )
+      .join(""),
+  );
 
   // I can statements
-  $("#icanList").innerHTML = data.ican
-    .map((x) => `<li>${esc(x)}</li>`)
-    .join("");
+  setHTML("#icanList", data.ican.map((x) => `<li>${esc(x)}</li>`).join(""));
 
   bindInteractions(data.quick.feedback, data.chapter);
 }
