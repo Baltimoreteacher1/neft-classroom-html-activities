@@ -2353,14 +2353,17 @@
       let parentLang = "en";
       let completedChallenges = {};
 
-      function getLessonLabel(skill) {
+      function getLessonLabel(ex, idx) {
+        const hmhMatch = ex.hmh.match(/Lesson\s+([0-9.]+)/);
+        const lessonNum = hmhMatch ? hmhMatch[1] : `${selectedUnit}.${idx + 1}`;
+        
         const MAP = {
           "Decimal Multiplication Area Grid": "Area Grid Multiplication 🔢",
           "Decimal Division Shares": "Equal Shares Division ➗",
           "Decimal Partial Products Grid": "Partial Products Multiplication 📊",
           "GCF Venn Diagram": "Venn Diagram GCF 🧮",
           "LCM Multiple Search": "Multiples Search LCM 🧠",
-          "Reciprocal Fraction Division": "Fraction Division (Keep-Change-Flip) ➗",
+          "Reciprocal Fraction Division": "Fraction Keep-Change-Flip ➗",
           "Fraction Division Scaling": "Fraction Scaling Model 📊",
           "Fraction Quotients Net": "Fraction Quotient Nets 🕸️",
           "Mixed Fraction Division": "Mixed Fraction Division 🧮",
@@ -2406,7 +2409,28 @@
           "Financial Income Receipt": "Hourly Wage Earnings 💵",
           "Ledger Account Compare": "Checking Account Compare 💳"
         };
-        return MAP[skill] || skill;
+        const title = MAP[ex.skill] || ex.skill;
+        return `Lesson ${lessonNum}: ${title}`;
+      }
+
+      function getUnitRoles(unitNum) {
+        const SPECIAL = {
+          1: "Decimal Detective 🔍",
+          2: "Fraction Explorer 🧭",
+          3: "Ratio Chef 👨‍🍳",
+          4: "Arcade Prize Designer 🕹️",
+          5: "Architect 📐",
+          6: "Music Studio Engineer 🎚️",
+          7: "Equation Balancer ⚖️",
+          8: "Sports Analyst 📊",
+          9: "Treasure Map Navigator 🗺️",
+          10: "Time Capsule Accountant 💰"
+        };
+        return [
+          SPECIAL[unitNum] || "Math Coach 🧠",
+          "Math Teacher 🍎",
+          "Student Helper 🎒"
+        ];
       }
 
       const LEVELS = {
@@ -2544,14 +2568,12 @@
                   <div class="builder-grid">
                     <div class="builder-col">
                       <span class="col-label">1. Choose Role</span>
-                      <button class="builder-chip" onclick="selectChip('role', 'Math Tutor 🏫', this)">Math Tutor 🏫</button>
-                      <button class="builder-chip" onclick="selectChip('role', 'Study Coach 🏆', this)">Study Coach 🏆</button>
-                      <button class="builder-chip" onclick="selectChip('role', 'Socratic Guide 🧠', this)">Socratic Guide 🧠</button>
+                      ${getUnitRoles(selectedUnit).map(r => `<button class="builder-chip" onclick="selectChip('role', '${r}', this)">${r}</button>`).join('')}
                     </div>
                     <div class="builder-col">
                       <span class="col-label">2. Choose Lesson</span>
                       ${data.examples.map((ex, idx) => {
-                        const label = getLessonLabel(ex.skill);
+                        const label = getLessonLabel(ex, idx);
                         return `<button class="builder-chip" onclick="selectChip('topic', '${label}', this, ${idx})">${label}</button>`;
                       }).join('')}
                     </div>
