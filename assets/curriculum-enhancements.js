@@ -1264,6 +1264,134 @@
     onScroll();
   }
 
+  var RECENT_KEY = "nt-curriculum-recent";
+
+  function loadRecent() {
+    try {
+      var raw = localStorage.getItem(RECENT_KEY);
+      var arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveRecent(arr) {
+    try {
+      localStorage.setItem(RECENT_KEY, JSON.stringify(arr.slice(0, 6)));
+    } catch (e) {
+      /* storage unavailable — non-fatal */
+    }
+  }
+
+  function resolveLessonLabel(uNum, lessonId) {
+    if (!hubApi || !hubApi.unitsData) return null;
+    var unit = null;
+    hubApi.unitsData.forEach(function (u) {
+      if (String(u.unitIndex) === String(uNum)) unit = u;
+    });
+    if (!unit) return null;
+    var lesson = (unit.lessons || []).filter(function (l) {
+      return l.lessonId === lessonId;
+    })[0];
+    if (!lesson) return null;
+    return { unitNum: unit.num, title: lesson.title };
+  }
+
+  function recordRecentFromUrl() {
+    var params = new URLSearchParams(location.search);
+    var u = params.get("u");
+    var l = params.get("l");
+    if (!u || !l) return;
+    var a = params.get("a") || "";
+    var info = resolveLessonLabel(u, l);
+    if (!info) return;
+    var entry = {
+      u: u,
+      l: l,
+      a: a,
+      unitNum: info.unitNum,
+      title: info.title,
+    };
+    var key = u + "|" + l;
+    var list = loadRecent().filter(function (e) {
+      return e.u + "|" + e.l !== key;
+    });
+    list.unshift(entry);
+    saveRecent(list);
+    renderRecent();
+  }
+
+  function renderRecent() {
+    if (!hubApi || !hubApi.hubEl) return;
+    var list = loadRecent();
+    var strip = document.getElementById("hub-recent");
+
+    if (!list.length) {
+      if (strip) strip.remove();
+      return;
+    }
+
+    if (!strip) {
+      strip = document.createElement("section");
+      strip.id = "hub-recent";
+      strip.className = "hub-recent";
+      strip.setAttribute("aria-label", "Recently opened lessons");
+      hubApi.hubEl.parentNode.insertBefore(strip, hubApi.hubEl);
+    }
+
+    strip.innerHTML = "";
+    var head = document.createElement("div");
+    head.className = "hub-recent-head";
+    head.innerHTML = '<span class="hub-recent-title">↩ Jump back in</span>';
+    var clear = document.createElement("button");
+    clear.type = "button";
+    clear.className = "hub-recent-clear";
+    clear.textContent = "Clear";
+    clear.setAttribute("aria-label", "Clear recently opened lessons");
+    clear.addEventListener("click", function () {
+      saveRecent([]);
+      renderRecent();
+    });
+    head.appendChild(clear);
+    strip.appendChild(head);
+
+    var row = document.createElement("div");
+    row.className = "hub-recent-row";
+    list.forEach(function (e) {
+      var chip = document.createElement("a");
+      chip.className = "hub-recent-chip";
+      var qs =
+        "?u=" + encodeURIComponent(e.u) + "&l=" + encodeURIComponent(e.l);
+      if (e.a) qs += "&a=" + encodeURIComponent(e.a);
+      chip.href = "/curriculum/" + qs;
+      chip.title = e.unitNum + " · " + e.title;
+      chip.innerHTML =
+        '<span class="hub-recent-unit">' +
+        e.unitNum +
+        '</span><span class="hub-recent-name">' +
+        e.title +
+        "</span>";
+      row.appendChild(chip);
+    });
+    strip.appendChild(row);
+  }
+
+  function buildRecent() {
+    document.addEventListener(
+      "click",
+      function (ev) {
+        var t = ev.target;
+        if (!t || !t.closest) return;
+        var launch = t.closest("a.btn-launch, #modal-launch-link");
+        if (!launch) return;
+        recordRecentFromUrl();
+      },
+      true,
+    );
+    renderRecent();
+  }
+
   function setupPrintView() {
     // The static details.unit list (hidden on screen) is the print fallback.
     // Inject a print-only header and force every unit/lesson open while
@@ -1331,6 +1459,7 @@
     buildControls();
     buildSearchUX();
     buildBackToTop();
+    buildRecent();
     setupPrintView();
     wrapHubRenderers();
     upgradeGoogleSlidesLinks();
