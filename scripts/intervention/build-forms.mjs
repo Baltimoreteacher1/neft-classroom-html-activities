@@ -47,7 +47,12 @@ var FOLDER_NAME = "Neft Teacher — Math Intervention Quizzes";
 var QUIZ_DATA = ${JSON.stringify(QUIZ, null, 2)};
 
 function createAllInterventionForms() {
-  var folder = getOrCreateFolder_(FOLDER_NAME);
+  // Fall back to a default if the top FOLDER_NAME line was missed when pasting.
+  var folderName =
+    typeof FOLDER_NAME !== "undefined"
+      ? FOLDER_NAME
+      : "Neft Teacher — Math Intervention Quizzes";
+  var folder = getOrCreateFolder_(folderName);
   var out = {};
   Object.keys(QUIZ_DATA).forEach(function (slug) {
     var topic = QUIZ_DATA[slug];
