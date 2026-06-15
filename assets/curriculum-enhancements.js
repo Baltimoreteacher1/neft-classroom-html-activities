@@ -1406,16 +1406,32 @@
   }
 
   var STANDARD_DOMAINS = [
-    { token: "", code: "All", label: "All standards" },
+    { token: "", code: "All", short: "", label: "All standards" },
     {
       token: "6.rp",
       code: "6.RP",
+      short: "Ratios",
       label: "Ratios & Proportional Relationships",
     },
-    { token: "6.ns", code: "6.NS", label: "The Number System" },
-    { token: "6.ee", code: "6.EE", label: "Expressions & Equations" },
-    { token: "6.g", code: "6.G", label: "Geometry" },
-    { token: "6.sp", code: "6.SP", label: "Statistics & Probability" },
+    {
+      token: "6.ns",
+      code: "6.NS",
+      short: "Number System",
+      label: "The Number System",
+    },
+    {
+      token: "6.ee",
+      code: "6.EE",
+      short: "Expressions",
+      label: "Expressions & Equations",
+    },
+    { token: "6.g", code: "6.G", short: "Geometry", label: "Geometry" },
+    {
+      token: "6.sp",
+      code: "6.SP",
+      short: "Statistics",
+      label: "Statistics & Probability",
+    },
   ];
 
   function buildStandardFilter() {
@@ -1443,13 +1459,12 @@
       chip.dataset.token = d.token;
       chip.setAttribute("aria-pressed", d.token === "" ? "true" : "false");
       chip.title = d.label;
-      chip.innerHTML = d.token
-        ? '<span class="hsc-code">' +
-          d.code +
-          '</span><span class="hsc-label">' +
-          d.label +
-          "</span>"
-        : '<span class="hsc-code">' + d.code + "</span>";
+      chip.setAttribute("aria-label", d.token ? d.label : "All standards");
+      chip.innerHTML =
+        '<span class="hsc-code">' +
+        d.code +
+        "</span>" +
+        (d.short ? '<span class="hsc-label">' + d.short + "</span>" : "");
       chip.addEventListener("click", function () {
         box.value = d.token;
         box.dispatchEvent(new Event("input", { bubbles: true }));
