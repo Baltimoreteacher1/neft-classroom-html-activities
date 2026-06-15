@@ -54,6 +54,23 @@
         -webkit-font-smoothing: antialiased;
       }
 
+      body.ai101-light {
+        --bg-dark: #f6f8fc;
+        --bg-panel: rgba(255, 255, 255, 0.86);
+        --bg-panel-border: rgba(15, 23, 42, 0.14);
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --button-solid: linear-gradient(90deg, #dbeafe, #f0abfc);
+        background-color: #f6f8fc;
+        background-image:
+          radial-gradient(circle at 8% 12%, rgba(66, 133, 244, 0.14), transparent 38%),
+          radial-gradient(circle at 92% 82%, rgba(16, 185, 129, 0.12), transparent 42%);
+      }
+
+      body.ai101-light header.ai-header {
+        background: rgba(246, 248, 252, 0.88);
+      }
+
       /* Co-Branded Publisher Header */
       header.ai-header {
         border-bottom: 1px solid var(--bg-panel-border);
@@ -1078,6 +1095,40 @@
         padding: 8px 12px;
       }
 
+      .ai101-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .ai101-theme-toggle,
+      .ai101-small-action {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 999px;
+        color: var(--text-primary);
+        cursor: pointer;
+        font-family: var(--font-heading);
+        font-size: 0.85rem;
+        font-weight: 900;
+        padding: 8px 12px;
+      }
+
+      body.ai101-light .ai101-theme-toggle,
+      body.ai101-light .ai101-small-action,
+      body.ai101-light .ai101-card-btn,
+      body.ai101-light .ai101-chip,
+      body.ai101-light .ai101-plan-check,
+      body.ai101-light .ai101-slide,
+      body.ai101-light .ai101-activity,
+      body.ai101-light .ai101-resource-card,
+      body.ai101-light .ai101-frame,
+      body.ai101-light .ai101-share-panel {
+        background: rgba(255, 255, 255, 0.72);
+        border-color: rgba(15, 23, 42, 0.13);
+      }
+
       .ai101-path {
         display: grid;
         gap: 10px;
@@ -1363,6 +1414,103 @@
         margin-top: 20px;
       }
 
+      .ai101-lab {
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 16px;
+        margin-top: 14px;
+        padding: 16px;
+      }
+
+      .ai101-lab h5 {
+        font-family: var(--font-heading);
+        font-size: 1.05rem;
+        font-weight: 900;
+        margin: 0 0 8px;
+      }
+
+      .ai101-lab-grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .ai101-field {
+        display: grid;
+        gap: 6px;
+      }
+
+      .ai101-field label {
+        color: #dbeafe;
+        font-family: var(--font-heading);
+        font-size: 0.82rem;
+        font-weight: 900;
+      }
+
+      body.ai101-light .ai101-field label {
+        color: #1d4ed8;
+      }
+
+      .ai101-input,
+      .ai101-textarea,
+      .ai101-select {
+        background: rgba(7, 9, 19, 0.72);
+        border: 1px solid rgba(255, 255, 255, 0.13);
+        border-radius: 12px;
+        color: var(--text-primary);
+        font-family: var(--font-body);
+        font-size: 0.96rem;
+        line-height: 1.45;
+        padding: 11px 12px;
+        width: 100%;
+      }
+
+      body.ai101-light .ai101-input,
+      body.ai101-light .ai101-textarea,
+      body.ai101-light .ai101-select {
+        background: rgba(255, 255, 255, 0.82);
+        border-color: rgba(15, 23, 42, 0.18);
+        color: #0f172a;
+      }
+
+      .ai101-textarea {
+        min-height: 92px;
+        resize: vertical;
+      }
+
+      .ai101-output {
+        background: rgba(16, 185, 129, 0.09);
+        border: 1px solid rgba(16, 185, 129, 0.28);
+        border-radius: 12px;
+        color: #d1fae5;
+        margin-top: 12px;
+        min-height: 54px;
+        padding: 12px;
+        white-space: pre-wrap;
+      }
+
+      body.ai101-light .ai101-output {
+        background: rgba(220, 252, 231, 0.92);
+        color: #064e3b;
+      }
+
+      .ai101-progress {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 999px;
+        height: 12px;
+        overflow: hidden;
+        margin-top: 12px;
+      }
+
+      .ai101-progress span {
+        background: linear-gradient(90deg, #10b981, #8ab4f8);
+        display: block;
+        height: 100%;
+        transition: width 0.2s ease;
+        width: 0%;
+      }
+
       .ai101-share-panel {
         background: rgba(6, 8, 19, 0.52);
         border: 1px solid rgba(255, 255, 255, 0.09);
@@ -1443,7 +1591,8 @@
         .ai101-sort-grid,
         .ai101-choice-grid,
         .ai101-plan-grid,
-        .ai101-visual-routine {
+        .ai101-visual-routine,
+        .ai101-lab-grid {
           grid-template-columns: 1fr;
         }
       }
@@ -1510,6 +1659,10 @@
               <span class="ai101-es">Un mini-curso de 25 a 35 minutos para familias y estudiantes con videos cortos, diapositivas guiadas y practica. Las familias aprenden a usar la IA como tutor, proteger la privacidad, verificar respuestas y crear un acuerdo para el hogar.</span>
             </p>
             <div class="ai101-language-note">English + Espanol on every step</div>
+            <div class="ai101-toolbar">
+              <button class="ai101-theme-toggle" id="ai101-theme-toggle" type="button" onclick="ai101ToggleTheme()">Switch to Light Mode</button>
+              <button class="ai101-small-action" type="button" onclick="ai101ShowModule(1)">Start at Module 1</button>
+            </div>
           </div>
           <aside class="ai101-outcome-card" aria-label="AI 101 outcomes">
             <strong>By the end, families can / Al final, las familias pueden:</strong>
@@ -1631,6 +1784,20 @@
                 <li><strong>Family phrase:</strong> "Use AI to get unstuck, then show me what you understand." <span class="ai101-es">"Usa la IA para destrabarte, luego muestrame lo que entiendes."</span></li>
                 <li><strong>Student phrase:</strong> "Explain it another way, but do not give me the final answer yet." <span class="ai101-es">"Explicalo de otra manera, pero todavia no me des la respuesta final."</span></li>
               </ul>
+
+              <div class="ai101-lab">
+                <h5>AI Detective Lab / Laboratorio detective</h5>
+                <p>Read the AI answer. Pick what a family should do next.</p>
+                <div class="ai101-frame">
+                  <strong>AI answer:</strong> "The moon makes its own light, so it shines at night. You can write that in your science paragraph."
+                </div>
+                <div class="ai101-choice-grid" style="margin-top: 12px;">
+                  <button class="ai101-card-btn" type="button" onclick="ai101Detective(this, 'Good catch. The moon reflects sunlight; it does not make its own light. Ask AI for a source and check class notes. / Buena observacion. La luna refleja luz del sol; no produce su propia luz. Pide una fuente y revisa los apuntes.')">Check the fact before using it.</button>
+                  <button class="ai101-card-btn" type="button" onclick="ai101Detective(this, 'Risky. A confident answer can still be wrong. Students should verify before trusting it. / Riesgoso. Una respuesta segura aun puede estar equivocada. Hay que verificar.')">Trust it because it sounds confident.</button>
+                  <button class="ai101-card-btn" type="button" onclick="ai101Detective(this, 'Helpful, but incomplete. Rewording does not fix a false fact. Verify first, then rewrite. / Util, pero incompleto. Cambiar palabras no corrige un dato falso. Verifica primero.')">Ask AI to make it sound better.</button>
+                </div>
+                <div class="ai101-output" id="ai101-detective-output" aria-live="polite">Choose a next step.</div>
+              </div>
             </div>
           </div>
         </article>
@@ -1683,6 +1850,40 @@
                 <strong>Marco en espanol:</strong><br />
                 <code>Actua como tutor para grado __. Mi estudiante esta trabajando en __. Primero haz preguntas. Da pistas, ejemplos y retroalimentacion, pero no escribas la respuesta final.</code>
               </div>
+
+              <div class="ai101-lab">
+                <h5>Build-a-Tutor Prompt Studio</h5>
+                <p>Fill in the blanks. The studio builds a safe tutoring prompt families can copy.</p>
+                <div class="ai101-lab-grid">
+                  <div class="ai101-field">
+                    <label for="ai101-grade">Grade / Grado</label>
+                    <input class="ai101-input" id="ai101-grade" value="6th grade" />
+                  </div>
+                  <div class="ai101-field">
+                    <label for="ai101-subject">Class topic / Tema</label>
+                    <input class="ai101-input" id="ai101-subject" value="fractions and word problems" />
+                  </div>
+                  <div class="ai101-field">
+                    <label for="ai101-stuck">What is hard? / Que es dificil?</label>
+                    <input class="ai101-input" id="ai101-stuck" value="knowing which operation to use" />
+                  </div>
+                  <div class="ai101-field">
+                    <label for="ai101-support">Support style / Tipo de ayuda</label>
+                    <select class="ai101-select" id="ai101-support">
+                      <option>ask questions first</option>
+                      <option>give a similar example</option>
+                      <option>make a checklist</option>
+                      <option>explain vocabulary in simple words</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="ai101-action-row">
+                  <button class="ai101-primary-action" type="button" onclick="ai101BuildPrompt()">Build Tutor Prompt</button>
+                  <button class="ai101-small-action" type="button" onclick="ai101CopyOutput('ai101-built-prompt')">Copy Prompt</button>
+                </div>
+                <div class="ai101-output" id="ai101-built-prompt" aria-live="polite">Your safe tutoring prompt will appear here.</div>
+                <div class="ai101-progress" aria-label="Prompt quality progress"><span id="ai101-prompt-progress"></span></div>
+              </div>
             </div>
           </div>
         </article>
@@ -1728,6 +1929,32 @@
               <div class="ai101-feedback" id="ai101-scenario-feedback" aria-live="polite">
                 Choose a scenario to practice the 3-check routine. / Elige una situacion para practicar la rutina de 3 revisiones.
               </div>
+
+              <div class="ai101-lab">
+                <h5>Privacy Redaction Practice</h5>
+                <p>Practice removing details that should not be pasted into AI.</p>
+                <div class="ai101-field">
+                  <label for="ai101-redact-input">Sample message / Mensaje de practica</label>
+                  <textarea class="ai101-textarea" id="ai101-redact-input">My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers2026! I have an IEP for reading and need help writing an email to my teacher about missing homework.</textarea>
+                </div>
+                <div class="ai101-action-row">
+                  <button class="ai101-primary-action" type="button" onclick="ai101RedactPrivacy()">Remove Private Details</button>
+                  <button class="ai101-small-action" type="button" onclick="ai101ResetRedaction()">Reset Sample</button>
+                </div>
+                <div class="ai101-output" id="ai101-redact-output" aria-live="polite">Click the button to create a safer version.</div>
+              </div>
+
+              <div class="ai101-lab">
+                <h5>Fact-Check Sprint</h5>
+                <p>Pick the best verification move for this AI claim.</p>
+                <div class="ai101-frame"><strong>AI claim:</strong> "Baltimore was the first capital of the United States."</div>
+                <div class="ai101-choice-grid" style="margin-top: 12px;">
+                  <button class="ai101-card-btn" type="button" onclick="ai101FactCheck(this, 'Best move. Check a trusted history source, textbook, or teacher-approved site before using the claim. / Mejor accion: verifica con una fuente confiable antes de usarlo.')">Check a trusted source before using it.</button>
+                  <button class="ai101-card-btn" type="button" onclick="ai101FactCheck(this, 'Not enough. Asking the same tool again can repeat the same error. Use an outside source. / No basta. La misma herramienta puede repetir el error.')">Ask AI the same question again.</button>
+                  <button class="ai101-card-btn" type="button" onclick="ai101FactCheck(this, 'Risky. Confidence is not evidence. Verify first. / Riesgoso. La seguridad no es evidencia.')">Use it because it sounds specific.</button>
+                </div>
+                <div class="ai101-output" id="ai101-fact-output" aria-live="polite">Choose a verification move.</div>
+              </div>
             </div>
           </div>
         </article>
@@ -1763,6 +1990,31 @@
               <div class="ai101-frame">
                 <strong>Multilingual learner support:</strong> AI can translate directions, define vocabulary, and model sentence frames. Students should still answer in their own words and check meaning with a person when the topic matters.
                 <span class="ai101-es">Apoyo para estudiantes multilingues: La IA puede traducir instrucciones, definir vocabulario y modelar marcos de oraciones. Los estudiantes todavia deben responder con sus propias palabras y verificar el significado con una persona cuando el tema importa.</span>
+              </div>
+
+              <div class="ai101-lab">
+                <h5>15-Minute Homework Routine Builder</h5>
+                <p>Create a simple routine families can use tonight.</p>
+                <div class="ai101-lab-grid">
+                  <div class="ai101-field">
+                    <label for="ai101-routine-subject">Subject / Materia</label>
+                    <input class="ai101-input" id="ai101-routine-subject" value="math homework" />
+                  </div>
+                  <div class="ai101-field">
+                    <label for="ai101-routine-goal">Goal / Meta</label>
+                    <select class="ai101-select" id="ai101-routine-goal">
+                      <option>get unstuck without giving the answer</option>
+                      <option>study for a quiz</option>
+                      <option>revise writing</option>
+                      <option>understand directions</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="ai101-action-row">
+                  <button class="ai101-primary-action" type="button" onclick="ai101BuildRoutine()">Build Routine</button>
+                  <button class="ai101-small-action" type="button" onclick="ai101CopyOutput('ai101-routine-output')">Copy Routine</button>
+                </div>
+                <div class="ai101-output" id="ai101-routine-output" aria-live="polite">Your family routine will appear here.</div>
               </div>
             </div>
           </div>
@@ -4544,6 +4796,79 @@ Instructions:
         });
       }
 
+      function ai101ApplyTheme(theme) {
+        const isLight = theme === "light";
+        document.body.classList.toggle("ai101-light", isLight);
+        const toggle = document.getElementById("ai101-theme-toggle");
+        if (toggle) toggle.textContent = isLight ? "Switch to Dark Mode" : "Switch to Light Mode";
+        try {
+          localStorage.setItem("ai101-theme", theme);
+        } catch (_) {}
+      }
+
+      function ai101ToggleTheme() {
+        ai101ApplyTheme(document.body.classList.contains("ai101-light") ? "dark" : "light");
+      }
+
+      function ai101SetOutput(id, text) {
+        const output = document.getElementById(id);
+        if (output) output.textContent = text;
+      }
+
+      function ai101CopyOutput(id) {
+        const text = document.getElementById(id)?.textContent || "";
+        navigator.clipboard.writeText(text);
+      }
+
+      function ai101Detective(button, feedback) {
+        ai101ClearSelected("#ai101-module-1 .ai101-lab .ai101-card-btn");
+        button.classList.add("selected");
+        ai101SetOutput("ai101-detective-output", feedback);
+      }
+
+      function ai101BuildPrompt() {
+        const grade = document.getElementById("ai101-grade").value.trim() || "my student's grade";
+        const subject = document.getElementById("ai101-subject").value.trim() || "today's assignment";
+        const stuck = document.getElementById("ai101-stuck").value.trim() || "getting started";
+        const support = document.getElementById("ai101-support").value;
+        const prompt = `Act like a patient tutor for ${grade}. My student is working on ${subject} and is stuck on ${stuck}. Please ${support}. Ask one question at a time. Give hints and a similar example, but do not write the final answer. After my student tries, give feedback and ask them to explain the idea in their own words.`;
+        ai101SetOutput("ai101-built-prompt", prompt);
+        const progress = document.getElementById("ai101-prompt-progress");
+        if (progress) progress.style.width = "100%";
+      }
+
+      function ai101RedactPrivacy() {
+        const original = document.getElementById("ai101-redact-input").value;
+        const redacted = original
+          .replace(/\b(My name is|I am|I'm)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?\b/g, "$1 [student name removed]")
+          .replace(/\bmy student\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?\b/gi, "my student [student name removed]")
+          .replace(/\b\d{1,5}\s+[A-Z][A-Za-z]*(?:\s+[A-Z][A-Za-z]*){0,3}\s+(?:Street|St\.?|Road|Rd\.?|Avenue|Ave\.?|Lane|Ln\.?|Drive|Dr\.?|Court|Ct\.?|Boulevard|Blvd\.?)\b/gi, "[address removed]")
+          .replace(/\b(?:\(?\d{3}\)?[-.\s]?)?\d{3}[-.\s]?\d{4}\b/g, "[phone removed]")
+          .replace(/\b(?:school\s+)?password\s+(?:is\s+)?[^\s.]+/gi, "school password [password removed]")
+          .replace(/\b(?:IEP|504 plan|diagnosis|medical|medication|counseling|therapy)(?:\s+for\s+[A-Za-z\s]+)?\b/gi, "[private learning or health detail removed]")
+          .replace(/\b(Mr\.|Ms\.|Mrs\.|Mx\.)\s+[A-Z][a-z]+(?:'s)?\b/g, "[teacher name removed]")
+          .replace(/\b\d+(?:st|nd|rd|th)\s+grade\s+class\b/gi, "[class detail removed]");
+        ai101SetOutput("ai101-redact-output", `${redacted}\n\nFamily check: This keeps the learning question but removes personal details.`);
+      }
+
+      function ai101ResetRedaction() {
+        document.getElementById("ai101-redact-input").value = "My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers2026! I have an IEP for reading and need help writing an email to my teacher about missing homework.";
+        ai101SetOutput("ai101-redact-output", "Click the button to create a safer version.");
+      }
+
+      function ai101FactCheck(button, feedback) {
+        ai101ClearSelected("#ai101-module-3 .ai101-lab .ai101-card-btn");
+        button.classList.add("selected");
+        ai101SetOutput("ai101-fact-output", feedback);
+      }
+
+      function ai101BuildRoutine() {
+        const subject = document.getElementById("ai101-routine-subject").value.trim() || "homework";
+        const goal = document.getElementById("ai101-routine-goal").value;
+        const routine = `15-Minute Family AI Routine\n1. Student explains the ${subject} task in their own words. (2 minutes)\n2. Family asks: "What have you already tried?" (2 minutes)\n3. Use AI only for the goal: ${goal}. Ask for hints, not final answers. (5 minutes)\n4. Student solves or revises without AI writing the final response. (4 minutes)\n5. Student says: "Here is what I understand now." (2 minutes)\n\nRutina familiar: usar IA para pistas, ejemplos y practica, no para reemplazar el pensamiento del estudiante.`;
+        ai101SetOutput("ai101-routine-output", routine);
+      }
+
       function ai101ClearSelected(groupSelector) {
         document.querySelectorAll(groupSelector).forEach((button) => {
           button.classList.remove("selected");
@@ -4647,11 +4972,21 @@ Instructions:
 
       if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", () => {
+          let savedTheme = "dark";
+          try {
+            savedTheme = localStorage.getItem("ai101-theme") || "dark";
+          } catch (_) {}
+          ai101ApplyTheme(savedTheme);
           ai101RenderPlan();
           handleDeepLink();
           window.addEventListener("hashchange", handleDeepLink);
         });
       } else {
+        let savedTheme = "dark";
+        try {
+          savedTheme = localStorage.getItem("ai101-theme") || "dark";
+        } catch (_) {}
+        ai101ApplyTheme(savedTheme);
         ai101RenderPlan();
         handleDeepLink();
         window.addEventListener("hashchange", handleDeepLink);
