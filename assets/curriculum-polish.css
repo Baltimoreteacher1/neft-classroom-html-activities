@@ -524,3 +524,212 @@ footer.hub-footer {
     transition: none;
   }
 }
+
+/* ==========================================================================
+   Larger, clearer type — a more legible, professional scale
+   ========================================================================== */
+body.light-theme {
+  font-size: 17.5px;
+  line-height: 1.62;
+}
+header.hub p.lede {
+  font-size: 18px;
+  line-height: 1.6;
+}
+.search input,
+.search input::placeholder {
+  font-size: 16.5px;
+}
+.search label,
+.audit-controls,
+.hub-progress-summary {
+  font-size: 14px;
+}
+body.light-theme .hub-filter-chip {
+  font-size: 14px;
+}
+.hub-standard-chip,
+.hub-standard-chip .hsc-code,
+.hub-standard-chip .hsc-label {
+  font-size: 13.5px;
+}
+.cri-num {
+  font-size: 15px;
+}
+.cri-name {
+  font-size: 12.5px;
+}
+.unit-card-name {
+  font-size: 16px;
+}
+.lesson-info-obj {
+  font-size: 14.5px;
+}
+.lesson-real-world {
+  font-size: 14px !important;
+}
+body.light-theme .select-control {
+  font-size: 15px;
+}
+body.light-theme .lesson-outline-item a {
+  font-size: 14px;
+}
+.lesson-outline-group-title,
+.selector-label {
+  font-size: 11.5px;
+}
+/* Slightly stronger muted contrast for accessibility */
+body.light-theme {
+  --muted: #4d5b72;
+}
+
+/* ==========================================================================
+   Two-pane layout — static intro/controls on the left, scrolling units right
+   Engages only on wide screens; below 1080px it stays single-column (mobile).
+   ========================================================================== */
+@media (min-width: 1080px) {
+  .wrap {
+    max-width: 1340px;
+    display: grid;
+    grid-template-columns: minmax(360px, 400px) minmax(0, 1fr);
+    column-gap: 40px;
+    align-items: start;
+    padding-top: clamp(28px, 4vw, 52px);
+  }
+
+  /* Left pane: pinned, scrolls internally if taller than the viewport */
+  .hub-side {
+    grid-column: 1;
+    grid-row: 1;
+    position: sticky;
+    top: 0;
+    align-self: start;
+    max-height: 100vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 4px 10px 24px 2px;
+    margin: -4px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  /* Thin, unobtrusive scrollbar for the left pane */
+  .hub-side::-webkit-scrollbar {
+    width: 8px;
+  }
+  .hub-side::-webkit-scrollbar-thumb {
+    background: #cdd8e6;
+    border-radius: 999px;
+  }
+
+  /* Right pane: the curriculum, scrolls with the page */
+  #interactive-hub {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+  }
+  .wrap > .no-results,
+  .wrap > .result-count,
+  .wrap > #hub-print-header {
+    grid-column: 2;
+  }
+  .wrap > footer.hub {
+    grid-column: 1 / -1;
+    margin-top: 24px;
+  }
+
+  /* The control panel no longer needs its own sticky — the whole side is pinned */
+  #hub-toolbar-sticky {
+    position: static;
+    margin-bottom: 0;
+  }
+
+  /* Reset per-item margins/spacing inside the flex side column */
+  .hub-side > * {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* Compact masthead in the narrow column */
+  header.hub h1 {
+    font-size: clamp(2rem, 3vw, 2.6rem);
+    margin: 14px 0 10px;
+  }
+  header.hub p.lede {
+    font-size: 15.5px;
+  }
+
+  /* Feature cards become compact link cards: icon + title + buttons only.
+     The long descriptions are hidden in the narrow sidebar so the search and
+     filters below stay within easy reach. */
+  .features-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+  .mailbox-feature,
+  .ai-hub-feature {
+    padding: 16px 18px !important;
+  }
+  .mailbox-feature .mf-text,
+  .ai-hub-feature .ahf-text,
+  .mailbox-feature .mf-sub,
+  .ai-hub-feature .ahf-sub {
+    display: none !important;
+  }
+  .mailbox-feature h2,
+  .ai-hub-feature h2 {
+    font-size: 1.18rem !important;
+    margin: 2px 0 10px !important;
+  }
+  .mailbox-feature .mf-icon,
+  .ai-hub-feature .ahf-icon {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  .mailbox-feature .mf-btn,
+  .ai-hub-feature .ahf-btn {
+    font-size: 13px !important;
+    min-height: 40px !important;
+  }
+
+  /* Tighten the secondary blocks so controls stay reachable */
+  .eoy-callout {
+    padding: 13px 15px !important;
+  }
+  .eoy-callout .eoy-text {
+    font-size: 13.5px !important;
+  }
+
+  /* Compact the control panel inside the narrow sidebar */
+  #hub-toolbar-sticky {
+    padding: 16px 16px 14px !important;
+  }
+  .hub-filter-chip {
+    min-height: 34px;
+    padding: 0 14px !important;
+  }
+  .hub-standards {
+    padding: 11px 12px;
+    gap: 7px 8px;
+  }
+  .hub-standard-chip {
+    min-height: 32px;
+    padding: 0 10px;
+  }
+  .hub-substd-select {
+    min-height: 30px;
+    max-width: none;
+  }
+  .hub-mode-toggle {
+    min-height: 40px !important;
+  }
+}
+
+/* In two-pane mode the unit rail sits inside the right pane beside the detail;
+   keep the shell from feeling cramped. */
+@media (min-width: 1080px) {
+  .curr-shell {
+    grid-template-columns: 210px minmax(0, 1fr);
+    gap: 24px;
+  }
+}
