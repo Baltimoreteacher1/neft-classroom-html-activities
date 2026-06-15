@@ -977,6 +977,15 @@
         line-height: 1.4;
       }
 
+      .hub-tab-panel {
+        display: none;
+      }
+
+      .hub-tab-panel.active {
+        display: block;
+        animation: fadeIn 0.28s ease-out;
+      }
+
       /* AI 101 Family Studio */
       .ai101-studio {
         background: rgba(255, 255, 255, 0.025);
@@ -1354,6 +1363,53 @@
         margin-top: 20px;
       }
 
+      .ai101-share-panel {
+        background: rgba(6, 8, 19, 0.52);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 18px;
+        margin: 0 0 22px;
+        padding: 18px;
+      }
+
+      .ai101-share-panel h4 {
+        font-family: var(--font-heading);
+        font-size: 1.15rem;
+        font-weight: 900;
+        margin: 0 0 8px;
+      }
+
+      .ai101-share-panel p {
+        color: var(--text-secondary);
+        margin: 0 0 14px;
+      }
+
+      .ai101-link-grid {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      .ai101-direct-link {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        color: #dbeafe;
+        font-family: var(--font-heading);
+        font-size: 0.88rem;
+        font-weight: 800;
+        padding: 10px;
+        text-decoration: none;
+        transition: all 0.18s ease;
+      }
+
+      .ai101-direct-link:hover,
+      .ai101-direct-link:focus-visible {
+        border-color: rgba(138, 180, 248, 0.48);
+        color: #fff;
+        outline: none;
+        transform: translateY(-1px);
+      }
+
       /* Animations */
       @keyframes fadeIn {
         from { opacity: 0; transform: translateY(10px); }
@@ -1371,7 +1427,8 @@
         .ai101-header,
         .ai101-slide-grid,
         .ai101-resource-grid,
-        .ai101-path {
+        .ai101-path,
+        .ai101-link-grid {
           grid-template-columns: 1fr;
         }
         .ai101-tabs {
@@ -1443,7 +1500,7 @@
         </p>
       </section>
 
-      <section class="ai101-studio" id="ai101" aria-labelledby="ai101-title">
+      <section class="ai101-studio hub-tab-panel" id="ai101" aria-labelledby="ai101-title">
         <div class="ai101-header">
           <div>
             <span class="ai101-kicker">Family Learning Studio / Estudio Familiar</span>
@@ -1480,6 +1537,21 @@
           <div class="ai101-path-step">
             <strong>4. Use / Usa</strong>
             Apply the routine during homework tonight.
+          </div>
+        </div>
+
+        <div class="ai101-share-panel" aria-labelledby="ai101-share-title">
+          <h4 id="ai101-share-title">Send a direct link / Envia un enlace directo</h4>
+          <p class="ai101-bilingual">
+            <span>Use these links when you want students or families to open a specific AI 101 page.</span>
+            <span class="ai101-es">Usa estos enlaces cuando quieras que estudiantes o familias abran una pagina especifica de AI 101.</span>
+          </p>
+          <div class="ai101-link-grid">
+            <a class="ai101-direct-link" href="#ai101">AI 101 Overview</a>
+            <a class="ai101-direct-link" href="#ai101-basics">Module 1: What AI Is</a>
+            <a class="ai101-direct-link" href="#ai101-tutor">Module 2: Tutor Rule</a>
+            <a class="ai101-direct-link" href="#ai101-safety">Module 3: Privacy</a>
+            <a class="ai101-direct-link" href="#ai101-plan">Module 4: Family Plan</a>
           </div>
         </div>
 
@@ -1715,6 +1787,7 @@
         </div>
       </section>
 
+      <section class="hub-tab-panel active" id="gemini-tools" aria-label="Gemini study builder">
       <!-- Stepper Progress Bar -->
       <nav class="stepper" aria-label="Progress Stepper">
         <div class="step-dot active" id="dot-1"><span>1</span> Choose Role</div>
@@ -1725,7 +1798,7 @@
       <!-- STEP 1: Choose Role -->
       <div class="step-panel active" id="panel-1">
         <h3 class="step-title">Who is learning today?</h3>
-        <p class="step-subtitle">Select your role to unlock student practice challenges, family guides, or teacher integrations.</p>
+        <p class="step-subtitle">Select your path to open student practice, family tutoring prompts, or the AI 101 learning studio.</p>
         
         <div class="role-grid">
           <div class="role-card" onclick="selectRole('student')">
@@ -1740,11 +1813,11 @@
             <p>Get pre-made parent prompts to generate practice questions or analogies for home tutoring.</p>
             <button class="role-btn">Start Family Guide</button>
           </div>
-          <div class="role-card" onclick="selectRole('teacher')">
-            <span class="role-icon" aria-hidden="true">🍎</span>
-            <h4>I am a Teacher</h4>
-            <p>Access lesson plans and curriculum cross-walks aligned to Pearson Envision and HMH Into Math.</p>
-            <button class="role-btn">Open Teacher Panel</button>
+          <div class="role-card" onclick="selectRole('ai101')">
+            <span class="role-icon" aria-hidden="true">AI</span>
+            <h4>AI 101</h4>
+            <p>Open bilingual mini-modules about safe, effective AI use for students and families.</p>
+            <button class="role-btn">Open AI 101 Studio</button>
           </div>
         </div>
       </div>
@@ -1778,9 +1851,10 @@
 
         <div class="step-actions">
           <button class="nav-btn" onclick="goToStep(2)">← Change Unit</button>
-          <button class="nav-btn" onclick="goToStep(1)" style="border-color: var(--gemini-purple); color: #c58af9;">🔄 Start Over</button>
-        </div>
+        <button class="nav-btn" onclick="goToStep(1)" style="border-color: var(--gemini-purple); color: #c58af9;">🔄 Start Over</button>
       </div>
+      </div>
+      </section>
     </div>
 
     <script>
@@ -3173,6 +3247,15 @@
       // Select Role (Step 1)
       function selectRole(selectedRole) {
         role = selectedRole;
+        if (role === "ai101") {
+          showHubTab("ai101");
+          ai101ShowModule(1);
+          ai101RenderPlan();
+          document.getElementById("ai101")?.scrollIntoView({ behavior: "smooth", block: "start" });
+          return;
+        }
+
+        showHubTab("gemini");
         document.getElementById("dot-1").classList.add("completed");
         
         let pillText = "Student Guide";
@@ -4443,6 +4526,12 @@ Instructions:
         canvas.innerHTML = svgContent;
       }
 
+      function showHubTab(tabName) {
+        const showAi101 = tabName === "ai101";
+        document.getElementById("ai101")?.classList.toggle("active", showAi101);
+        document.getElementById("gemini-tools")?.classList.toggle("active", !showAi101);
+      }
+
       function ai101ShowModule(moduleNumber) {
         document.querySelectorAll(".ai101-tab").forEach((tab, index) => {
           const isActive = index + 1 === moduleNumber;
@@ -4528,14 +4617,31 @@ Instructions:
       // Check for deep links on load
       function handleDeepLink() {
         const hash = window.location.hash;
-        if (hash === "#ai101" || hash === "#family-ai" || hash === "#families") {
+        const ai101Routes = {
+          "#ai101": 1,
+          "#family-ai": 1,
+          "#families": 1,
+          "#ai101-basics": 1,
+          "#ai101-tutor": 2,
+          "#ai101-safety": 3,
+          "#ai101-plan": 4
+        };
+
+        if (ai101Routes[hash]) {
+          showHubTab("ai101");
+          ai101ShowModule(ai101Routes[hash]);
           document.getElementById("ai101")?.scrollIntoView({ behavior: "smooth", block: "start" });
         } else if (hash === "#parents" || hash === "#parent") {
+          showHubTab("gemini");
           selectRole("parent");
         } else if (hash === "#teachers" || hash === "#teacher") {
+          showHubTab("gemini");
           selectRole("teacher");
         } else if (hash === "#students" || hash === "#student") {
+          showHubTab("gemini");
           selectRole("student");
+        } else {
+          showHubTab("gemini");
         }
       }
 
@@ -4543,10 +4649,12 @@ Instructions:
         document.addEventListener("DOMContentLoaded", () => {
           ai101RenderPlan();
           handleDeepLink();
+          window.addEventListener("hashchange", handleDeepLink);
         });
       } else {
         ai101RenderPlan();
         handleDeepLink();
+        window.addEventListener("hashchange", handleDeepLink);
       }
     </script>
   </body>
