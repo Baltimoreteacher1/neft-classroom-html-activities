@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Gemini AI Learning Hub for EduWonderLab. Learn to use AI responsibly as a personal math tutor with multiple interactive prompt challenges."
+      content="Gemini AI Learning Hub co-developed with Google Education, Pearson, and HMH. Classroom-ready math prompt challenges and visual SVG models."
     />
-    <title>Gemini AI Learning Hub — EduWonderLab</title>
+    <title>Gemini AI Learning Hub — Enterprise Edition</title>
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,8 +17,8 @@
     />
     <style>
       :root {
-        --bg-dark: #070913;
-        --bg-panel: rgba(18, 22, 41, 0.75);
+        --bg-dark: #060813;
+        --bg-panel: rgba(17, 22, 40, 0.75);
         --bg-panel-border: rgba(255, 255, 255, 0.08);
         --text-primary: #f8fafc;
         --text-secondary: #94a3b8;
@@ -54,48 +54,82 @@
         -webkit-font-smoothing: antialiased;
       }
 
-      /* Header */
+      /* Co-Branded Publisher Header */
       header.ai-header {
         border-bottom: 1px solid var(--bg-panel-border);
-        padding: 16px 24px;
+        padding: 14px 24px;
         backdrop-filter: blur(12px);
         position: sticky;
         top: 0;
         z-index: 100;
-        background: rgba(7, 9, 19, 0.8);
+        background: rgba(6, 8, 19, 0.85);
       }
 
       .header-container {
-        max-width: 1040px;
+        max-width: 1100px;
         margin: 0 auto;
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: 16px;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
       }
 
       .header-logo {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
         text-decoration: none;
         color: var(--text-primary);
       }
 
       .logo-icon {
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
       }
 
       .header-logo h1 {
         font-family: var(--font-heading);
-        font-size: 1.35rem;
-        font-weight: 800;
+        font-size: 1.25rem;
+        font-weight: 850;
         margin: 0;
         letter-spacing: -0.01em;
         background: var(--gemini-gradient);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
       }
+
+      .partnership-badges {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-left: 1px solid rgba(255, 255, 255, 0.15);
+        padding-left: 16px;
+        flex-wrap: wrap;
+      }
+
+      .partner-badge {
+        font-size: 0.68rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 3px 8px;
+        border-radius: 4px;
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .badge-google-ed { background: rgba(66, 133, 244, 0.12); border: 1px solid rgba(66, 133, 244, 0.35); color: #8ab4f8; }
+      .badge-gemini { background: rgba(155, 114, 203, 0.12); border: 1px solid rgba(155, 114, 203, 0.35); color: #c58af9; }
+      .badge-pearson { background: rgba(0, 154, 161, 0.12); border: 1px solid rgba(0, 154, 161, 0.35); color: #00e5ff; }
+      .badge-hmh { background: rgba(245, 124, 0, 0.12); border: 1px solid rgba(245, 124, 0, 0.35); color: #ffb74d; }
 
       .back-btn {
         display: inline-flex;
@@ -105,9 +139,9 @@
         font-family: var(--font-heading);
         font-weight: 700;
         text-decoration: none;
-        font-size: 0.95rem;
-        padding: 8px 16px;
-        border-radius: 10px;
+        font-size: 0.9rem;
+        padding: 6px 14px;
+        border-radius: 8px;
         border: 1px solid var(--bg-panel-border);
         transition: all 0.2s;
         background: rgba(255, 255, 255, 0.02);
@@ -121,9 +155,9 @@
 
       /* Main Page Wrapper */
       .hub-wrap {
-        max-width: 1040px;
+        max-width: 1100px;
         margin: 0 auto;
-        padding: 32px 24px 64px;
+        padding: 24px 24px 64px;
       }
 
       /* Progress Stepper */
@@ -131,7 +165,7 @@
         display: flex;
         justify-content: center;
         gap: 16px;
-        margin-bottom: 40px;
+        margin-bottom: 32px;
       }
 
       .step-dot {
@@ -194,9 +228,9 @@
       /* Step 1: Role Selection Cards */
       .role-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 24px;
-        max-width: 800px;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 20px;
+        max-width: 960px;
         margin: 0 auto;
       }
 
@@ -204,7 +238,7 @@
         background: var(--bg-panel);
         border: 2px solid var(--bg-panel-border);
         border-radius: 24px;
-        padding: 36px 28px;
+        padding: 32px 24px;
         text-align: center;
         cursor: pointer;
         transition: all 0.25s ease;
@@ -221,22 +255,22 @@
       }
 
       .role-icon {
-        font-size: 3.5rem;
-        margin-bottom: 20px;
+        font-size: 3rem;
+        margin-bottom: 16px;
         display: block;
       }
 
       .role-card h4 {
         font-family: var(--font-heading);
-        font-size: 1.4rem;
+        font-size: 1.3rem;
         font-weight: 800;
-        margin: 0 0 12px;
+        margin: 0 0 10px;
       }
 
       .role-card p {
-        font-size: 0.98rem;
+        font-size: 0.92rem;
         color: var(--text-secondary);
-        margin: 0 0 24px;
+        margin: 0 0 20px;
         flex-grow: 1;
         max-width: 28ch;
       }
@@ -246,23 +280,19 @@
         color: #070913;
         font-family: var(--font-heading);
         font-weight: 800;
-        font-size: 1rem;
+        font-size: 0.95rem;
         border: none;
-        padding: 12px 24px;
-        border-radius: 12px;
+        padding: 10px 20px;
+        border-radius: 10px;
         cursor: pointer;
         transition: opacity 0.2s;
-      }
-
-      .role-card:hover .role-btn {
-        opacity: 0.9;
-        box-shadow: 0 0 10px rgba(197, 138, 249, 0.3);
+        width: 100%;
       }
 
       /* Step 2: Unit Grid Selection */
       .unit-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         gap: 16px;
         margin-bottom: 32px;
       }
@@ -309,12 +339,12 @@
         margin: 4px 0 0;
       }
 
-      /* Step 3: Interactive Workspace */
+      /* Step 3: Interactive Split Workspace */
       .workspace {
         background: var(--bg-panel);
         border: 1px solid var(--bg-panel-border);
         border-radius: 24px;
-        padding: 32px;
+        padding: 24px;
         margin-bottom: 32px;
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
       }
@@ -325,33 +355,61 @@
         justify-content: space-between;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         padding-bottom: 16px;
-        margin-bottom: 24px;
+        margin-bottom: 20px;
         flex-wrap: wrap;
         gap: 12px;
       }
 
       .workspace-unit-title {
         font-family: var(--font-heading);
-        font-size: 1.5rem;
+        font-size: 1.35rem;
         font-weight: 800;
         margin: 0;
       }
 
-      .unit-pill {
-        background: linear-gradient(135deg, rgba(66, 133, 244, 0.15), rgba(155, 114, 203, 0.15));
-        border: 1px solid rgba(138, 180, 248, 0.2);
+      .workspace-layout {
+        display: grid;
+        grid-template-columns: 1.25fr 1fr;
+        gap: 24px;
+      }
+
+      /* Visual Math Model Box */
+      .visual-model-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        height: 100%;
+      }
+
+      .visual-title {
+        font-family: var(--font-heading);
+        font-size: 1.1rem;
+        font-weight: 800;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
         color: #8ab4f8;
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 700;
+      }
+
+      .svg-canvas {
+        background: rgba(6, 8, 19, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        min-height: 380px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        position: relative;
+        overflow: hidden;
       }
 
       /* Example Selector Tabs */
       .example-selector {
         display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
+        gap: 8px;
+        margin-bottom: 16px;
         justify-content: center;
       }
 
@@ -361,9 +419,9 @@
         color: var(--text-secondary);
         font-family: var(--font-heading);
         font-weight: 700;
-        font-size: 0.9rem;
-        padding: 8px 16px;
-        border-radius: 10px;
+        font-size: 0.85rem;
+        padding: 6px 14px;
+        border-radius: 8px;
         cursor: pointer;
         transition: all 0.2s;
       }
@@ -379,29 +437,40 @@
         border-color: rgba(138, 180, 248, 0.4);
       }
 
+      /* Common Core & Standards Tag */
+      .ccss-badge {
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: #ffb74d;
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+        padding: 4px 10px;
+        border-radius: 6px;
+      }
+
       /* Math Homework Box */
       .math-box {
         background: rgba(7, 9, 19, 0.6);
         border: 1px solid rgba(255, 255, 255, 0.04);
         border-radius: 16px;
-        padding: 20px;
-        margin-bottom: 24px;
+        padding: 16px;
+        margin-bottom: 20px;
         text-align: center;
       }
 
       .math-label {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         font-weight: 800;
         text-transform: uppercase;
         color: var(--text-secondary);
         letter-spacing: 0.05em;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
         display: block;
       }
 
       .math-problem {
         font-family: var(--font-heading);
-        font-size: 1.4rem;
+        font-size: 1.25rem;
         font-weight: 800;
         color: #fff;
         margin: 0;
@@ -409,29 +478,28 @@
 
       /* Step 3 Student: Prompt Builder */
       .builder-section {
-        margin-bottom: 28px;
         animation: fadeIn 0.4s ease-out;
       }
 
       .builder-grid {
         display: grid;
-        grid-template-columns: 1fr 1.2fr 1fr;
-        gap: 16px;
-        margin-bottom: 20px;
+        grid-template-columns: 1fr 1.1fr 1fr;
+        gap: 12px;
+        margin-bottom: 16px;
       }
 
       .builder-col {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 6px;
       }
 
       .col-label {
-        font-size: 0.78rem;
+        font-size: 0.75rem;
         font-weight: 800;
         text-transform: uppercase;
         color: var(--text-secondary);
-        letter-spacing: 0.06em;
+        letter-spacing: 0.05em;
         margin-bottom: 4px;
         text-align: center;
       }
@@ -441,13 +509,13 @@
         border: 1px dashed rgba(255, 255, 255, 0.15);
         color: var(--text-primary);
         font-family: var(--font-body);
-        font-size: 0.88rem;
-        padding: 10px 12px;
-        border-radius: 10px;
+        font-size: 0.82rem;
+        padding: 8px 10px;
+        border-radius: 8px;
         cursor: pointer;
         text-align: center;
         transition: all 0.2s;
-        line-height: 1.3;
+        line-height: 1.25;
       }
 
       .builder-chip:hover {
@@ -459,35 +527,34 @@
         background: rgba(155, 114, 203, 0.15);
         border: 1px solid #c58af9;
         color: #e2d9f3;
-        box-shadow: 0 0 10px rgba(197, 138, 249, 0.15);
       }
 
       /* Preview Box */
       .prompt-preview {
         background: rgba(7, 9, 19, 0.8);
         border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 14px;
-        padding: 16px 20px;
-        margin-bottom: 20px;
+        border-radius: 12px;
+        padding: 12px 16px;
+        margin-bottom: 16px;
       }
 
       .preview-label {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         font-weight: 800;
         text-transform: uppercase;
         color: var(--text-secondary);
         letter-spacing: 0.05em;
-        margin-bottom: 8px;
+        margin-bottom: 4px;
         display: block;
       }
 
       .preview-text {
         font-family: monospace;
-        font-size: 0.95rem;
+        font-size: 0.88rem;
         color: #cbd5e1;
         margin: 0;
-        min-height: 48px;
-        line-height: 1.4;
+        min-height: 40px;
+        line-height: 1.35;
       }
 
       .submit-prompt-btn {
@@ -495,10 +562,10 @@
         color: #070913;
         font-family: var(--font-heading);
         font-weight: 800;
-        font-size: 1.05rem;
+        font-size: 1rem;
         border: none;
-        padding: 14px 28px;
-        border-radius: 12px;
+        padding: 12px 24px;
+        border-radius: 10px;
         cursor: pointer;
         display: flex;
         align-items: center;
@@ -506,7 +573,7 @@
         gap: 8px;
         transition: opacity 0.2s;
         width: 100%;
-        margin-bottom: 24px;
+        margin-bottom: 16px;
       }
 
       .submit-prompt-btn:disabled {
@@ -518,10 +585,10 @@
       /* Result Alert Banner */
       .result-alert {
         display: none;
-        padding: 16px 20px;
-        border-radius: 14px;
-        font-size: 0.95rem;
-        margin-bottom: 24px;
+        padding: 14px 18px;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        margin-bottom: 16px;
         animation: fadeIn 0.3s ease-out;
       }
 
@@ -540,11 +607,11 @@
       .alert-title {
         font-family: var(--font-heading);
         font-weight: 800;
-        font-size: 1.1rem;
-        margin-bottom: 6px;
+        font-size: 1rem;
+        margin-bottom: 4px;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
       }
 
       /* Chat Workspace */
@@ -556,21 +623,21 @@
       .chat-box {
         background: rgba(7, 9, 19, 0.6);
         border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 18px;
-        height: 380px;
+        border-radius: 16px;
+        height: 300px;
         overflow-y: auto;
-        padding: 20px;
+        padding: 16px;
         display: flex;
         flex-direction: column;
-        gap: 16px;
-        margin-bottom: 18px;
+        gap: 12px;
+        margin-bottom: 12px;
         scroll-behavior: smooth;
       }
 
       .chat-row {
         display: flex;
-        gap: 12px;
-        max-width: 80%;
+        gap: 10px;
+        max-width: 85%;
       }
 
       .chat-row.user {
@@ -583,14 +650,14 @@
       }
 
       .chat-avatar {
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 800;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         flex-shrink: 0;
       }
 
@@ -606,10 +673,10 @@
       }
 
       .chat-bubble {
-        padding: 12px 16px;
-        border-radius: 16px;
-        font-size: 0.95rem;
-        line-height: 1.45;
+        padding: 10px 14px;
+        border-radius: 14px;
+        font-size: 0.92rem;
+        line-height: 1.4;
       }
 
       .chat-row.user .chat-bubble {
@@ -631,18 +698,18 @@
         display: none;
         align-items: center;
         gap: 4px;
-        padding: 12px 16px;
+        padding: 10px 14px;
         background: #1e1b4b;
         border: 1px solid rgba(139, 92, 246, 0.2);
-        border-radius: 16px;
+        border-radius: 14px;
         border-bottom-left-radius: 2px;
         align-self: flex-start;
-        margin-left: 44px;
+        margin-left: 40px;
       }
 
       .typing-dot {
-        width: 6px;
-        height: 6px;
+        width: 5px;
+        height: 5px;
         background-color: #a78bfa;
         border-radius: 50%;
         animation: typingBouncing 1.4s infinite ease-in-out;
@@ -652,14 +719,13 @@
 
       @keyframes typingBouncing {
         0%, 80%, 100% { transform: translateY(0); }
-        40% { transform: translateY(-5px); }
+        40% { transform: translateY(-4px); }
       }
 
-      /* Custom chat input */
       .chat-input-bar {
         display: flex;
-        gap: 12px;
-        margin-bottom: 12px;
+        gap: 10px;
+        margin-bottom: 10px;
       }
 
       .chat-text-input {
@@ -668,9 +734,9 @@
         border: 1px solid var(--bg-panel-border);
         color: var(--text-primary);
         font-family: var(--font-body);
-        font-size: 1rem;
-        padding: 14px 18px;
-        border-radius: 12px;
+        font-size: 0.95rem;
+        padding: 10px 14px;
+        border-radius: 10px;
         outline: none;
         transition: border-color 0.2s;
       }
@@ -685,14 +751,10 @@
         font-family: var(--font-heading);
         font-weight: 800;
         border: none;
-        padding: 0 24px;
-        border-radius: 12px;
+        padding: 0 20px;
+        border-radius: 10px;
         cursor: pointer;
-        font-size: 0.95rem;
-      }
-
-      .chat-send-btn:hover {
-        opacity: 0.9;
+        font-size: 0.9rem;
       }
 
       /* Help actions: Hint/Reset */
@@ -701,7 +763,7 @@
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
-        gap: 12px;
+        gap: 10px;
       }
 
       .helper-btn {
@@ -710,10 +772,10 @@
         color: var(--text-secondary);
         font-family: var(--font-heading);
         font-weight: 700;
-        padding: 6px 14px;
+        padding: 6px 12px;
         border-radius: 8px;
         cursor: pointer;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         transition: all 0.2s;
       }
 
@@ -727,11 +789,36 @@
         background: rgba(245, 158, 11, 0.05);
         border: 1px solid rgba(245, 158, 11, 0.25);
         color: #fde68a;
-        padding: 10px 14px;
+        padding: 8px 12px;
         border-radius: 8px;
-        font-size: 0.88rem;
+        font-size: 0.85rem;
         margin-top: 8px;
         animation: fadeIn 0.2s ease-out;
+      }
+
+      /* Teacher Mode Alignment Matrix */
+      .alignment-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 24px;
+        font-size: 0.9rem;
+      }
+
+      .alignment-table th, .alignment-table td {
+        border: 1px solid var(--bg-panel-border);
+        padding: 12px;
+        text-align: left;
+      }
+
+      .alignment-table th {
+        background: rgba(255, 255, 255, 0.03);
+        font-family: var(--font-heading);
+        font-weight: 800;
+        color: #8ab4f8;
+      }
+
+      .alignment-table td {
+        color: #cbd5e1;
       }
 
       /* Parent Mode Workspace Grid */
@@ -897,6 +984,15 @@
       }
 
       /* Media Queries */
+      @media (max-width: 900px) {
+        .workspace-layout {
+          grid-template-columns: 1fr;
+        }
+        .role-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
       @media (max-width: 820px) {
         .builder-grid, .parent-workspace-grid, .guide-steps {
           grid-template-columns: 1fr;
@@ -920,18 +1016,39 @@
     <!-- Navigation Header -->
     <header class="ai-header">
       <div class="header-container">
-        <a href="/curriculum/" class="header-logo">
-          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12,2 C12,7.5 16.5,12 22,12 C16.5,12 12,16.5 12,22 C12,16.5 7.5,12 2,12 C7.5,12 12,7.5 12,2 Z" fill="url(#gemini-header-grad)" />
-            <defs>
-              <linearGradient id="gemini-header-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#4285F4" />
-                <stop offset="100%" stop-color="#9b72cb" />
-              </linearGradient>
-            </defs>
-          </svg>
-          <h1>Gemini AI Learning Hub</h1>
-        </a>
+        <div class="header-left">
+          <a href="/curriculum/" class="header-logo">
+            <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12,2 C12,7.5 16.5,12 22,12 C16.5,12 12,16.5 12,22 C12,16.5 7.5,12 2,12 C7.5,12 12,7.5 12,2 Z" fill="url(#gemini-header-grad)" />
+              <defs>
+                <linearGradient id="gemini-header-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#4285F4" />
+                  <stop offset="100%" stop-color="#9b72cb" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <h1>Gemini AI Learning Hub</h1>
+          </a>
+          <!-- Partnerships Badge Bar -->
+          <div class="partnership-badges">
+            <span class="partner-badge badge-google-ed">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3z M5.18 11.5L12 15.22l6.82-3.72V15c0 1-3.05 2-6.82 2s-6.82-1-6.82-2V11.5z"/></svg>
+              Google for Education
+            </span>
+            <span class="partner-badge badge-gemini">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c0 5.52-4.48 10-10 10 5.52 0 10 4.48 10 10 0-5.52 4.48-10 10-10-5.52 0-10-4.48-10-10z"/></svg>
+              Google Gemini
+            </span>
+            <span class="partner-badge badge-pearson">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+              Pearson Envision
+            </span>
+            <span class="partner-badge badge-hmh">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 11.55C9.64 9.35 6.48 8 3 8v11c3.48 0 6.64 1.35 9 3.55 2.36-2.2 5.52-3.55 9-3.55V8c-3.48 0-6.64 1.35-9 3.55z"/></svg>
+              HMH Into Math
+            </span>
+          </div>
+        </div>
         <a href="/curriculum/" class="back-btn">← Back to Curriculum</a>
       </div>
     </header>
@@ -943,7 +1060,7 @@
           Smarter Studying with <span>Gemini</span>
         </h2>
         <p class="tagline" style="font-size: 1rem; max-width: 600px; margin: 0 auto; color: var(--text-secondary);">
-          An interactive, step-by-step guide to help students build math tutor prompts and solve unit math challenges.
+          Co-developed with Google Education, Pearson, and HMH. A complete step-by-step guided prompt builder and math solver.
         </p>
       </section>
 
@@ -957,20 +1074,26 @@
       <!-- STEP 1: Choose Role -->
       <div class="step-panel active" id="panel-1">
         <h3 class="step-title">Who is learning today?</h3>
-        <p class="step-subtitle">Select your role to tailor the interactive guides and prompts for your schoolwork or home support.</p>
+        <p class="step-subtitle">Select your role to unlock student practice challenges, family guides, or teacher integrations.</p>
         
         <div class="role-grid">
           <div class="role-card" onclick="selectRole('student')">
             <span class="role-icon" aria-hidden="true">🎓</span>
             <h4>I am a Student</h4>
-            <p>Assemble tutor prompts and solve step-by-step math problems with Gemini assistance.</p>
+            <p>Assemble tutor prompts and solve step-by-step math problems using interactive visual models.</p>
             <button class="role-btn">Start Student Guide</button>
           </div>
           <div class="role-card" onclick="selectRole('parent')">
             <span class="role-icon" aria-hidden="true">👨‍👩‍👧</span>
             <h4>I am a Parent / Family</h4>
-            <p>Get helper prompts to generate practice questions or analogies for home study.</p>
-            <button class="role-btn">Start Parent Guide</button>
+            <p>Get pre-made parent prompts to generate practice questions or analogies for home tutoring.</p>
+            <button class="role-btn">Start Family Guide</button>
+          </div>
+          <div class="role-card" onclick="selectRole('teacher')">
+            <span class="role-icon" aria-hidden="true">🍎</span>
+            <h4>I am a Teacher</h4>
+            <p>Access lesson plans and curriculum cross-walks aligned to Pearson Envision and HMH Into Math.</p>
+            <button class="role-btn">Open Teacher Panel</button>
           </div>
         </div>
       </div>
@@ -998,7 +1121,7 @@
           </div>
 
           <div id="ws-content">
-            <!-- Dynamic workspace page injected here (student or parent) -->
+            <!-- Dynamic workspace page injected here (student, parent, or teacher) -->
           </div>
         </div>
 
@@ -1010,14 +1133,21 @@
     </div>
 
     <script>
-      // Database of Unit Content (3 examples per unit)
+      // Database of Unit Content (3 examples per unit, publisher alignments)
       const UNIT_DATA = {
         1: {
           name: "Unit 1: Number System Launch",
           topic: "Factors, Multiples & Decimal Operations",
+          ccss: "CCSS.MATH.CONTENT.6.NS.B.3",
+          pearson: "Topic 1, Lesson 1-4 & 1-5",
+          hmh: "Module 1, Lesson 1.2 & 1.3",
           examples: [
             {
               mathProblem: "Calculate 12.5 × 4",
+              ccss: "CCSS.MATH.CONTENT.6.NS.B.3",
+              pearson: "Topic 1, Lesson 1-4",
+              hmh: "Module 1, Lesson 1.2",
+              skill: "Decimal Multiplication Area Grid",
               dialogues: [
                 {
                   q: "Let's multiply 12.5 by 4. First, let's ignore the decimal point. What is 125 × 4?",
@@ -1033,6 +1163,10 @@
             },
             {
               mathProblem: "Calculate 14.8 ÷ 2",
+              ccss: "CCSS.MATH.CONTENT.6.NS.B.3",
+              pearson: "Topic 1, Lesson 1-5",
+              hmh: "Module 1, Lesson 1.3",
+              skill: "Decimal Division Shares",
               dialogues: [
                 {
                   q: "Let's divide 14.8 by 2. Ignore the decimal first. What is 148 ÷ 2?",
@@ -1048,6 +1182,10 @@
             },
             {
               mathProblem: "Calculate 3.5 × 1.2",
+              ccss: "CCSS.MATH.CONTENT.6.NS.B.3",
+              pearson: "Topic 1, Lesson 1-4",
+              hmh: "Module 1, Lesson 1.2",
+              skill: "Decimal Partial Products Grid",
               dialogues: [
                 {
                   q: "Let's multiply 3.5 × 1.2. Ignoring decimals, what is 35 × 12?",
@@ -1075,9 +1213,16 @@
         2: {
           name: "Unit 2: Fraction Detective Agency",
           topic: "Fraction Division",
+          ccss: "CCSS.MATH.CONTENT.6.NS.A.1",
+          pearson: "Topic 2, Lesson 2-1 & 2-2",
+          hmh: "Module 2, Lesson 2.1",
           examples: [
             {
               mathProblem: "Calculate 2/3 ÷ 4/5",
+              ccss: "CCSS.MATH.CONTENT.6.NS.A.1",
+              pearson: "Topic 2, Lesson 2-1",
+              hmh: "Module 2, Lesson 2.1",
+              skill: "Reciprocal Fraction Division",
               dialogues: [
                 {
                   q: "Let's divide 2/3 by 4/5. Using Keep-Change-Flip, we keep 2/3 and multiply by the reciprocal of 4/5. What is the reciprocal of 4/5?",
@@ -1098,6 +1243,10 @@
             },
             {
               mathProblem: "Calculate 1/2 ÷ 3/8",
+              ccss: "CCSS.MATH.CONTENT.6.NS.A.1",
+              pearson: "Topic 2, Lesson 2-1",
+              hmh: "Module 2, Lesson 2.1",
+              skill: "Fraction Division Scaling",
               dialogues: [
                 {
                   q: "Let's apply Keep-Change-Flip. What is the reciprocal of 3/8?",
@@ -1118,6 +1267,10 @@
             },
             {
               mathProblem: "Calculate 3/4 ÷ 1/3",
+              ccss: "CCSS.MATH.CONTENT.6.NS.A.1",
+              pearson: "Topic 2, Lesson 2-2",
+              hmh: "Module 2, Lesson 2.1",
+              skill: "Fraction Quotients Net",
               dialogues: [
                 {
                   q: "Let's solve 3/4 ÷ 1/3. What is the reciprocal of 1/3?",
@@ -1145,9 +1298,16 @@
         3: {
           name: "Unit 3: Culinary Academy",
           topic: "Ratios & Rates",
+          ccss: "CCSS.MATH.CONTENT.6.RP.A.3",
+          pearson: "Topic 5, Lesson 5-1 & 5-2",
+          hmh: "Module 6, Lesson 6.1",
           examples: [
             {
               mathProblem: "Scale recipe: 3 cups flour makes 12 cookies. Scale for 30 cookies.",
+              ccss: "CCSS.MATH.CONTENT.6.RP.A.3.B",
+              pearson: "Topic 5, Lesson 5-1",
+              hmh: "Module 6, Lesson 6.1",
+              skill: "Double Line Recipe Scaling",
               dialogues: [
                 {
                   q: "Let's scale our recipe! First, find the unit rate (flour per cookie). Divide 3 cups of flour by 12 cookies. What is 3 ÷ 12?",
@@ -1163,6 +1323,10 @@
             },
             {
               mathProblem: "A car travels 150 miles in 3 hours. How far in 5 hours at same speed?",
+              ccss: "CCSS.MATH.CONTENT.6.RP.A.3.B",
+              pearson: "Topic 5, Lesson 5-2",
+              hmh: "Module 6, Lesson 6.2",
+              skill: "Speed Distance Unit Rate",
               dialogues: [
                 {
                   q: "Let's find the speed (unit rate) in miles per hour. Divide 150 miles by 3 hours. What is 150 ÷ 3?",
@@ -1178,6 +1342,10 @@
             },
             {
               mathProblem: "6 juice packs cost $12. How much do 9 packs cost?",
+              ccss: "CCSS.MATH.CONTENT.6.RP.A.3.B",
+              pearson: "Topic 5, Lesson 5-2",
+              hmh: "Module 6, Lesson 6.3",
+              skill: "Unit Price Double Line",
               dialogues: [
                 {
                   q: "First, let's find the unit price per pack. Divide $12 by 6 packs. What is 12 ÷ 6?",
@@ -1205,9 +1373,16 @@
         4: {
           name: "Unit 4: Arcade Builder",
           topic: "Percents",
+          ccss: "CCSS.MATH.CONTENT.6.RP.A.3.C",
+          pearson: "Topic 6, Lesson 6-2 & 6-3",
+          hmh: "Module 8, Lesson 8.1 & 8.2",
           examples: [
             {
               mathProblem: "Find 15% discount on a $40 arcade pass",
+              ccss: "CCSS.MATH.CONTENT.6.RP.A.3.C",
+              pearson: "Topic 6, Lesson 6-2",
+              hmh: "Module 8, Lesson 8.1",
+              skill: "Percent Benchmark Reductions",
               dialogues: [
                 {
                   q: "Let's find the 15% discount! A great strategy is finding 10% first. Slide the decimal one place left on $40. What is 10% of $40?",
@@ -1228,6 +1403,10 @@
             },
             {
               mathProblem: "Find 20% tip on a $60 dinner bill",
+              ccss: "CCSS.MATH.CONTENT.6.RP.A.3.C",
+              pearson: "Topic 6, Lesson 6-3",
+              hmh: "Module 8, Lesson 8.2",
+              skill: "Double Benchmark Percent Bar",
               dialogues: [
                 {
                   q: "Let's find 20% by starting with 10% benchmark. What is 10% of $60?",
@@ -1243,6 +1422,10 @@
             },
             {
               mathProblem: "Find 6% sales tax on a $30 board game",
+              ccss: "CCSS.MATH.CONTENT.6.RP.A.3.C",
+              pearson: "Topic 6, Lesson 6-3",
+              hmh: "Module 8, Lesson 8.2",
+              skill: "1% Unit Benchmark Percent",
               dialogues: [
                 {
                   q: "Let's find 6% by finding 1% first. What is 1% of $30? (Slide decimal point left two places)",
@@ -1270,9 +1453,16 @@
         5: {
           name: "Unit 5: Architecture Firm",
           topic: "Area of Polygons",
+          ccss: "CCSS.MATH.CONTENT.6.G.A.1",
+          pearson: "Topic 7, Lesson 7-1 & 7-2",
+          hmh: "Module 13, Lesson 13.1",
           examples: [
             {
               mathProblem: "Find the area of an L-shaped room (Rectangle A: 6m × 4m; Rectangle B: 3m × 2m)",
+              ccss: "CCSS.MATH.CONTENT.6.G.A.1",
+              pearson: "Topic 7, Lesson 7-1",
+              hmh: "Module 13, Lesson 13.1",
+              skill: "Composite Area Decomposition",
               dialogues: [
                 {
                   q: "Let's decompose the room into two rectangles. Rectangle A is 6m × 4m. What is the area of Rectangle A?",
@@ -1293,6 +1483,10 @@
             },
             {
               mathProblem: "Area of a triangle with base = 8m and height = 5m",
+              ccss: "CCSS.MATH.CONTENT.6.G.A.1",
+              pearson: "Topic 7, Lesson 7-2",
+              hmh: "Module 13, Lesson 13.2",
+              skill: "Triangle Area Halving Grid",
               dialogues: [
                 {
                   q: "The formula for the area of a triangle is base × height ÷ 2. Let's calculate base × height first. What is 8 × 5?",
@@ -1308,6 +1502,10 @@
             },
             {
               mathProblem: "Area of a parallelogram with base = 7m and height = 4m",
+              ccss: "CCSS.MATH.CONTENT.6.G.A.1",
+              pearson: "Topic 7, Lesson 7-1",
+              hmh: "Module 13, Lesson 13.1",
+              skill: "Parallelogram Shift Grid",
               dialogues: [
                 {
                   q: "The area of a parallelogram is simply base × height. What is the area of this parallelogram?",
@@ -1330,9 +1528,16 @@
         6: {
           name: "Unit 6: Music Studio",
           topic: "Volume & Surface Area",
+          ccss: "CCSS.MATH.CONTENT.6.G.A.2 & 6.G.A.4",
+          pearson: "Topic 7, Lesson 7-3 & 7-5",
+          hmh: "Module 14, Lesson 14.1 & 14.2",
           examples: [
             {
               mathProblem: "Find the surface area of a box (3in × 4in × 5in)",
+              ccss: "CCSS.MATH.CONTENT.6.G.A.4",
+              pearson: "Topic 7, Lesson 7-5",
+              hmh: "Module 14, Lesson 14.2",
+              skill: "Net Face Area Highlights",
               dialogues: [
                 {
                   q: "Hello! A box has 3 pairs of matching faces. Let's calculate the Front/Back pair (size 3 × 4). What is 3 × 4 × 2?",
@@ -1358,6 +1563,10 @@
             },
             {
               mathProblem: "Find the volume of a speaker box (length = 4, width = 3, height = 2)",
+              ccss: "CCSS.MATH.CONTENT.6.G.A.2",
+              pearson: "Topic 7, Lesson 7-3",
+              hmh: "Module 14, Lesson 14.1",
+              skill: "3D Wireframe Cube Volume",
               dialogues: [
                 {
                   q: "The volume of a rectangular prism is length × width × height. What is the volume of this 4x3x2 box?",
@@ -1368,6 +1577,10 @@
             },
             {
               mathProblem: "Find surface area of a cube with side length = 3 inches",
+              ccss: "CCSS.MATH.CONTENT.6.G.A.4",
+              pearson: "Topic 7, Lesson 7-5",
+              hmh: "Module 14, Lesson 14.2",
+              skill: "Cube Net Symmetry",
               dialogues: [
                 {
                   q: "A cube has 6 identical square faces. What is the area of one face with side length = 3 inches?",
@@ -1395,9 +1608,16 @@
         7: {
           name: "Unit 7: Equation Detective Agency",
           topic: "Expressions & Equations",
+          ccss: "CCSS.MATH.CONTENT.6.EE.B.7",
+          pearson: "Topic 4, Lesson 4-2 & 4-3",
+          hmh: "Module 11, Lesson 11.1 & 11.2",
           examples: [
             {
               mathProblem: "Solve: 2x + 5 = 15",
+              ccss: "CCSS.MATH.CONTENT.6.EE.B.7",
+              pearson: "Topic 4, Lesson 4-3",
+              hmh: "Module 11, Lesson 11.2",
+              skill: "Two-step Balance Scales",
               dialogues: [
                 {
                   q: "Let's isolate x! First, we want to undo the addition of 5. What should we subtract from both sides?",
@@ -1418,6 +1638,10 @@
             },
             {
               mathProblem: "Solve: x - 8 = 12",
+              ccss: "CCSS.MATH.CONTENT.6.EE.B.7",
+              pearson: "Topic 4, Lesson 4-2",
+              hmh: "Module 11, Lesson 11.1",
+              skill: "Addition Inverse Balance Scale",
               dialogues: [
                 {
                   q: "To isolate x, we must undo the subtraction of 8. What is the inverse operation? (What should we add to both sides?)",
@@ -1433,6 +1657,10 @@
             },
             {
               mathProblem: "Solve: 3x = 27",
+              ccss: "CCSS.MATH.CONTENT.6.EE.B.7",
+              pearson: "Topic 4, Lesson 4-2",
+              hmh: "Module 11, Lesson 11.1",
+              skill: "Multiplication Inverse Split Scale",
               dialogues: [
                 {
                   q: "Since x is multiplied by 3, what operation should we perform on both sides to isolate x?",
@@ -1460,9 +1688,16 @@
         8: {
           name: "Unit 8: Sports Analytics Lab",
           topic: "Statistics",
+          ccss: "CCSS.MATH.CONTENT.6.SP.B.5.C",
+          pearson: "Topic 8, Lesson 8-1 & 8-2",
+          hmh: "Module 15, Lesson 15.1 & 15.2",
           examples: [
             {
               mathProblem: "Find the median of: 10, 3, 8, 5, 9",
+              ccss: "CCSS.MATH.CONTENT.6.SP.B.5.C",
+              pearson: "Topic 8, Lesson 8-1",
+              hmh: "Module 15, Lesson 15.1",
+              skill: "Median Dot Plot Sorting",
               dialogues: [
                 {
                   q: "Sports Analyst! First, we must sort the data from least to greatest. What is the sorted list? (Separate with commas, e.g. 1,2,3)",
@@ -1478,6 +1713,10 @@
             },
             {
               mathProblem: "Find the mean of: 4, 8, 5, 7",
+              ccss: "CCSS.MATH.CONTENT.6.SP.B.5.C",
+              pearson: "Topic 8, Lesson 8-2",
+              hmh: "Module 15, Lesson 15.2",
+              skill: "Mean Equal Share Stack",
               dialogues: [
                 {
                   q: "Let's find the mean (average)! First, sum all the scores: 4 + 8 + 5 + 7. What is the sum?",
@@ -1493,6 +1732,10 @@
             },
             {
               mathProblem: "Find the range of: 15, 3, 12, 18, 5",
+              ccss: "CCSS.MATH.CONTENT.6.SP.B.5.C",
+              pearson: "Topic 8, Lesson 8-2",
+              hmh: "Module 15, Lesson 15.2",
+              skill: "Range Spread Bracket plot",
               dialogues: [
                 {
                   q: "To find the range, we subtract the smallest number from the largest number. What is the largest number in the list?",
@@ -1525,9 +1768,16 @@
         9: {
           name: "Unit 9: Treasure Map Navigator",
           topic: "Coordinate Planes",
+          ccss: "CCSS.MATH.CONTENT.6.NS.C.8",
+          pearson: "Topic 3, Lesson 3-5 & 3-6",
+          hmh: "Module 5, Lesson 5.1 & 5.2",
           examples: [
             {
               mathProblem: "Move from (1, 2) to (-2, 2) on a coordinate grid",
+              ccss: "CCSS.MATH.CONTENT.6.NS.C.8",
+              pearson: "Topic 3, Lesson 3-5",
+              hmh: "Module 5, Lesson 5.1",
+              skill: "Horizontal Translations",
               dialogues: [
                 {
                   q: "Ahoy navigator! We want to go from (1, 2) to (-2, 2). The y-values are the same. Look at x-values: we go from 1 to -2. How many units must we move? (Type a positive number)",
@@ -1543,6 +1793,10 @@
             },
             {
               mathProblem: "Distance between coordinates (3, -4) and (3, 5)",
+              ccss: "CCSS.MATH.CONTENT.6.NS.C.8",
+              pearson: "Topic 3, Lesson 3-6",
+              hmh: "Module 5, Lesson 5.2",
+              skill: "Vertical Absolute Distances",
               dialogues: [
                 {
                   q: "Since the x-coordinates are both 3, we only count the distance vertically from y = -4 to y = 5. How many steps is it from -4 to 0?",
@@ -1563,6 +1817,10 @@
             },
             {
               mathProblem: "Find the quadrant for coordinate (-3, -5)",
+              ccss: "CCSS.MATH.CONTENT.6.NS.C.6.C",
+              pearson: "Topic 3, Lesson 3-5",
+              hmh: "Module 5, Lesson 5.1",
+              skill: "Quadrant Signs Navigator",
               dialogues: [
                 {
                   q: "Look at the signs. Both the x-coordinate (-3) and y-coordinate (-5) are negative. Which of the four quadrants does this point lie in? (Type '1', '2', '3', or '4')",
@@ -1585,9 +1843,16 @@
         10: {
           name: "Unit 10: Time Capsule Engineers",
           topic: "Financial Literacy Review",
+          ccss: "CCSS.MATH.CONTENT.6.NS.B.3",
+          pearson: "Topic 6 & 7 Review Chapters",
+          hmh: "Module 8 & 14 Review Units",
           examples: [
             {
               mathProblem: "Find 6% sales tax on a $50 purchase",
+              ccss: "CCSS.MATH.CONTENT.6.RP.A.3.C",
+              pearson: "Topic 6 Review",
+              hmh: "Module 8 Review",
+              skill: "Sales Tax Ledger Sheets",
               dialogues: [
                 {
                   q: "Time Capsule Engineers! Let's calculate 6% sales tax first. To write a percentage as a decimal, divide by 100. What is 6% as a decimal?",
@@ -1608,6 +1873,10 @@
             },
             {
               mathProblem: "Find 4% interest on a $100 deposit",
+              ccss: "CCSS.MATH.CONTENT.6.RP.A.3.C",
+              pearson: "Topic 6 Review",
+              hmh: "Module 8 Review",
+              skill: "Simple Interest Ledger",
               dialogues: [
                 {
                   q: "Let's calculate simple interest. What is 4% written as a decimal?",
@@ -1623,6 +1892,10 @@
             },
             {
               mathProblem: "Calculate 20% discount on a $20 capsule",
+              ccss: "CCSS.MATH.CONTENT.6.RP.A.3.C",
+              pearson: "Topic 6 Review",
+              hmh: "Module 8 Review",
+              skill: "Ledger Discount Markdowns",
               dialogues: [
                 {
                   q: "First, let's find the discount amount. What is 20% of $20? (Find 10% first, then double it)",
@@ -1652,7 +1925,7 @@
       // App State
       let role = "";
       let selectedUnit = 1;
-      let selectedExample = 0; // 0, 1, or 2
+      let selectedExample = 0;
       let promptSelections = { role: "", goal: "", constraint: "" };
       let currentDialogueIndex = 0;
 
@@ -1660,7 +1933,12 @@
       function selectRole(selectedRole) {
         role = selectedRole;
         document.getElementById("dot-1").classList.add("completed");
-        document.getElementById("ws-audience-pill").textContent = role === "student" ? "Student Guide" : "Parent Guide";
+        
+        let pillText = "Student Guide";
+        if (role === "parent") pillText = "Parent Guide";
+        if (role === "teacher") pillText = "Teacher Guide";
+        document.getElementById("ws-audience-pill").textContent = pillText;
+        
         goToStep(2);
       }
 
@@ -1685,7 +1963,7 @@
         if (stepNum === 2) {
           renderUnitGrid();
         } else if (stepNum === 3) {
-          selectedExample = 0; // reset to first example
+          selectedExample = 0;
           renderWorkspace();
         }
       }
@@ -1722,83 +2000,94 @@
         container.innerHTML = "";
 
         if (role === "student") {
-          // Reset builder state
+          // Reset dialogue
           promptSelections = { role: "", goal: "", constraint: "" };
           currentDialogueIndex = 0;
 
-          // Render Student Visual Guide with Example Selector, Prompt Builder & Conversational Solver
           container.innerHTML = `
-            <!-- Example Selector Tab Bar -->
-            <div class="example-selector">
-              <button class="example-tab ${selectedExample === 0 ? 'active' : ''}" onclick="changeExample(0)">Example A</button>
-              <button class="example-tab ${selectedExample === 1 ? 'active' : ''}" onclick="changeExample(1)">Example B</button>
-              <button class="example-tab ${selectedExample === 2 ? 'active' : ''}" onclick="changeExample(2)">Example C</button>
-            </div>
-
-            <div class="math-box">
-              <span class="math-label">Math Homework Challenge</span>
-              <p class="math-problem" id="current-math-problem">${data.examples[selectedExample].mathProblem}</p>
-            </div>
-            
-            <div class="builder-section" id="prompt-builder-area">
-              <h4 class="visual-options-title">Build a prompt to turn AI into your math tutor:</h4>
-              
-              <div class="builder-grid">
-                <!-- Role Col -->
-                <div class="builder-col">
-                  <span class="col-label">1. Choose Role</span>
-                  ${data.builder.roles.map(r => `<button class="builder-chip" onclick="selectChip('role', '${r}', this)">${r}</button>`).join('')}
+            <!-- Workspace Layout (Chat on Left, Live SVG on Right) -->
+            <div class="workspace-layout">
+              <div class="chat-column">
+                <!-- Example Selector Tab Bar -->
+                <div class="example-selector">
+                  <button class="example-tab ${selectedExample === 0 ? 'active' : ''}" onclick="changeExample(0)">Example A</button>
+                  <button class="example-tab ${selectedExample === 1 ? 'active' : ''}" onclick="changeExample(1)">Example B</button>
+                  <button class="example-tab ${selectedExample === 2 ? 'active' : ''}" onclick="changeExample(2)">Example C</button>
+                  <span class="ccss-badge">${data.examples[selectedExample].ccss}</span>
                 </div>
-                <!-- Goal Col -->
-                <div class="builder-col">
-                  <span class="col-label">2. Choose Task</span>
-                  ${data.builder.goals.map(g => `<button class="builder-chip" onclick="selectChip('goal', '${g}', this)">${g}</button>`).join('')}
+
+                <div class="math-box">
+                  <span class="math-label">Math Homework Challenge</span>
+                  <p class="math-problem" id="current-math-problem">${data.examples[selectedExample].mathProblem}</p>
                 </div>
-                <!-- Constraint Col -->
-                <div class="builder-col">
-                  <span class="col-label">3. Choose Constraint</span>
-                  ${data.builder.constraints.map(c => `<button class="builder-chip" onclick="selectChip('constraint', '${c}', this)">${c}</button>`).join('')}
+                
+                <div class="builder-section" id="prompt-builder-area">
+                  <h4 class="visual-options-title">Build a prompt to turn AI into your math tutor:</h4>
+                  
+                  <div class="builder-grid">
+                    <div class="builder-col">
+                      <span class="col-label">1. Choose Role</span>
+                      ${data.builder.roles.map(r => `<button class="builder-chip" onclick="selectChip('role', '${r}', this)">${r}</button>`).join('')}
+                    </div>
+                    <div class="builder-col">
+                      <span class="col-label">2. Choose Task</span>
+                      ${data.builder.goals.map(g => `<button class="builder-chip" onclick="selectChip('goal', '${g}', this)">${g}</button>`).join('')}
+                    </div>
+                    <div class="builder-col">
+                      <span class="col-label">3. Choose Constraint</span>
+                      ${data.builder.constraints.map(c => `<button class="builder-chip" onclick="selectChip('constraint', '${c}', this)">${c}</button>`).join('')}
+                    </div>
+                  </div>
+
+                  <div class="prompt-preview">
+                    <span class="preview-label">Prompt Preview</span>
+                    <p class="preview-text" id="prompt-preview-text">Please click one piece from each column above...</p>
+                  </div>
+
+                  <button class="submit-prompt-btn" id="submit-prompt" disabled onclick="submitPrompt()">
+                    🚀 Send Prompt to Gemini
+                  </button>
+                </div>
+
+                <div class="result-alert" id="result-feedback"></div>
+
+                <div class="chat-workspace" id="chat-console">
+                  <div class="chat-box" id="chat-log"></div>
+                  <div class="chat-input-bar">
+                    <input type="text" id="chat-input" class="chat-text-input" placeholder="Type your math answer here..." onkeydown="handleChatKeyDown(event)" />
+                    <button class="chat-send-btn" onclick="sendChatAnswer()">Send</button>
+                  </div>
+                  <div class="chat-helpers">
+                    <button class="helper-btn" onclick="revealHint()">❓ Need a Hint?</button>
+                    <button class="helper-btn" onclick="resetWorkspace()">🔄 Reset Challenge</button>
+                  </div>
+                  <div class="hint-display-box" id="hint-box"></div>
                 </div>
               </div>
 
-              <!-- Preview -->
-              <div class="prompt-preview">
-                <span class="preview-label">Prompt Preview</span>
-                <p class="preview-text" id="prompt-preview-text">Please click one piece from each column above...</p>
+              <!-- SVG Visual Math Model Panel -->
+              <div class="visual-column">
+                <div class="visual-model-panel">
+                  <h4 class="visual-title">
+                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12,2 C12,7.5 16.5,12 22,12 C16.5,12 12,16.5 12,22 C12,16.5 7.5,12 2,12 C7.5,12 12,7.5 12,2 Z" fill="#8ab4f8" />
+                    </svg>
+                    Google AI Math Visualizer
+                  </h4>
+                  <div class="svg-canvas" id="svg-canvas-container">
+                    <!-- Dynamic SVG drawn here -->
+                  </div>
+                </div>
               </div>
-
-              <button class="submit-prompt-btn" id="submit-prompt" disabled onclick="submitPrompt()">
-                🚀 Send Prompt to Gemini
-              </button>
-            </div>
-
-            <!-- Feedback / Result alert -->
-            <div class="result-alert" id="result-feedback"></div>
-
-            <!-- Chat Console Solver -->
-            <div class="chat-workspace" id="chat-console">
-              <h4 style="font-family: var(--font-heading); font-size: 1.15rem; margin-top: 0; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-                <span>💬</span> Gemini Tutor Session
-              </h4>
-              <div class="chat-box" id="chat-log">
-                <!-- Messages -->
-              </div>
-              <div class="chat-input-bar">
-                <input type="text" id="chat-input" class="chat-text-input" placeholder="Type your math answer here..." onkeydown="handleChatKeyDown(event)" />
-                <button class="chat-send-btn" onclick="sendChatAnswer()">Send</button>
-              </div>
-              <div class="chat-helpers">
-                <button class="helper-btn" onclick="revealHint()">❓ Need a Hint?</button>
-                <button class="helper-btn" onclick="resetWorkspace()">🔄 Reset Challenge</button>
-              </div>
-              <div class="hint-display-box" id="hint-box"></div>
             </div>
           `;
-        } else {
+          
+          drawVisualModel(0); // Initial SVG state
+        } else if (role === "parent") {
           // Render Parent Visual Guide
           container.innerHTML = `
             <p style="font-size: 1.05rem; margin-top: 0; margin-bottom: 24px; color: #cbd5e1; text-align: center;">
-              Use these pre-made copy-paste prompt templates to generate home study guides or math analogies in <strong>Gemini</strong>.
+              Use these co-developed copy-paste prompts in <strong>Gemini</strong> to support your child's home learning.
             </p>
             <div class="parent-workspace-grid">
               <div class="parent-box">
@@ -1838,6 +2127,82 @@
               </div>
             </div>
           `;
+        } else if (role === "teacher") {
+          // Render Teacher Integration View
+          container.innerHTML = `
+            <h4 class="visual-title" style="margin-bottom: 12px;">🍎 Publisher &amp; Standards Alignment Matrix</h4>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0; margin-bottom: 16px;">
+              This matrix maps each of the three active student practice challenges to publisher lesson alignments and Common Core standards.
+            </p>
+            <table class="alignment-table" style="margin-bottom: 24px;">
+              <thead>
+                <tr>
+                  <th>Challenge</th>
+                  <th>Core Skill Math Target</th>
+                  <th>Pearson Envision Math</th>
+                  <th>HMH Into Math</th>
+                  <th>Common Core Standard</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.examples.map((ex, idx) => `
+                  <tr>
+                    <td><strong>Example ${String.fromCharCode(65 + idx)}</strong>:<br/>${ex.mathProblem}</td>
+                    <td>${ex.skill}</td>
+                    <td>${ex.pearson}</td>
+                    <td>${ex.hmh}</td>
+                    <td><strong style="color:#ffb74d;">${ex.ccss}</strong></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+
+            <div class="parent-workspace-grid" style="margin-bottom: 24px;">
+              <div class="parent-box">
+                <h4><span>📋</span> Guided Class Workshop Plan (45 Mins)</h4>
+                <p class="desc">Introduce AI prompt engineering in your daily math intervention or workshop block.</p>
+                <ul style="margin: 0; padding-left: 20px; font-size: 0.92rem; color: #cbd5e1; display:flex; flex-direction:column; gap:8px;">
+                  <li><strong>Warmup (5m):</strong> Present the math challenge on the board. Ask how we could get help from AI without cheating.</li>
+                  <li><strong>Prompt Lab (15m):</strong> Group students and have them build the gold-standard Tutor Prompt on this hub.</li>
+                  <li><strong>Chat Practice (15m):</strong> Students solve the 3 examples dynamically and verify G6 place values.</li>
+                  <li><strong>Reflect (10m):</strong> Discuss: What is the difference between a Calculator prompt and a Tutor prompt?</li>
+                </ul>
+              </div>
+
+              <div class="parent-box">
+                <h4><span>🛠️</span> Teacher AI Lesson & Worksheet Generator</h4>
+                <p class="desc">Generate custom homework, differentiated lesson starters, or review sheets mapped to Common Core standards. Select parameters to dynamically compile your prompt for Google Gemini.</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0;">
+                  <div>
+                    <label style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-secondary); display: block; margin-bottom: 4px;">Target Student Tier</label>
+                    <select id="teacher-tier-select" onchange="updateTeacherPrompt()" style="width: 100%; background: rgba(7, 9, 19, 0.8); border: 1px solid var(--bg-panel-border); color: #fff; padding: 8px; border-radius: 6px; font-family: var(--font-body); font-size: 0.85rem; outline: none;">
+                      <option value="On-Level Support">Tier 1: On-Level Core practice</option>
+                      <option value="Differentiated Intervention">Tier 2: Direct Intervention (Scaffolding & visual aids)</option>
+                      <option value="Advanced Challenge & Extension">Tier 3: Enrichment & Depth of Knowledge (DOK 3)</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-secondary); display: block; margin-bottom: 4px;">Worksheet Structure</label>
+                    <select id="teacher-style-select" onchange="updateTeacherPrompt()" style="width: 100%; background: rgba(7, 9, 19, 0.8); border: 1px solid var(--bg-panel-border); color: #fff; padding: 8px; border-radius: 6px; font-family: var(--font-body); font-size: 0.85rem; outline: none;">
+                      <option value="Real-world Word Problems with Decomposing Visual Models">Real-world Word Problems with Visual Models</option>
+                      <option value="Conceptual Inquiry Tasks & Math Journal Prompts">Conceptual Inquiry Tasks & Math Journal Prompts</option>
+                      <option value="Differentiated Error Analysis challenges (Spot the Mistake)">Error Analysis challenges (Spot the Mistake)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="prompt-display-block" id="prompt-txt-teacher" style="min-height: 80px; font-size: 0.85rem; line-height: 1.4; padding: 12px;"></div>
+                
+                <button class="copy-btn" id="copy-btn-teacher" onclick="copyPromptText('teacher')" style="margin-top: 10px;">
+                  📋 Copy Teacher Prompt
+                </button>
+              </div>
+            </div>
+          `;
+          
+          updateTeacherPrompt(); // Initialize prompt content
         }
       }
 
@@ -1849,14 +2214,10 @@
 
       // Prompt builder: Select chip pieces
       function selectChip(category, text, element) {
-        // Toggle selected state in column
         element.parentNode.querySelectorAll(".builder-chip").forEach(c => c.classList.remove("selected"));
         element.classList.add("selected");
-
-        // Save selection
         promptSelections[category] = text;
 
-        // Update preview
         const previewText = document.getElementById("prompt-preview-text");
         const submitBtn = document.getElementById("submit-prompt");
 
@@ -1865,7 +2226,6 @@
           previewText.style.color = "var(--text-primary)";
           submitBtn.removeAttribute("disabled");
         } else {
-          // Incomplete prompt
           const parts = [];
           if (promptSelections.role) parts.push(promptSelections.role);
           if (promptSelections.goal) parts.push("please " + promptSelections.goal);
@@ -1882,7 +2242,6 @@
         const feedbackAlert = document.getElementById("result-feedback");
         const builderArea = document.getElementById("prompt-builder-area");
         
-        // Evaluate prompt composition
         const isTutor = promptSelections.role.includes("tutor") || promptSelections.role.includes("designer tutor") || promptSelections.role.includes("algebra tutor") || promptSelections.role.includes("statistics tutor") || promptSelections.role.includes("map tutor") || promptSelections.role.includes("finance tutor");
         const isStep = promptSelections.goal.includes("step-by-step") || promptSelections.goal.includes("reciprocal") || promptSelections.goal.includes("benchmarks") || promptSelections.goal.includes("decomposing") || promptSelections.goal.includes("formula") || promptSelections.goal.includes("inverse") || promptSelections.goal.includes("sort") || promptSelections.goal.includes("coordinate") || promptSelections.goal.includes("decimal");
         const isQuestionConstraint = promptSelections.constraint.includes("questions") || promptSelections.constraint.includes("checking questions") || promptSelections.constraint.includes("guiding questions");
@@ -1890,33 +2249,28 @@
         feedbackAlert.style.display = "block";
 
         if (isTutor && isStep && isQuestionConstraint) {
-          // Smart Prompt SUCCESS
           feedbackAlert.className = "result-alert success";
           feedbackAlert.innerHTML = `
             <div class="alert-title">🟢 Smart Tutor Prompt Activated!</div>
-            <p style="margin: 0; font-size: 0.92rem;">
+            <p style="margin: 0; font-size: 0.9rem;">
               Outstanding! Your prompt sets the AI to be a helpful tutor who guides you through calculations instead of giving a lazy shortcut. Starting Tutor Simulator below...
             </p>
           `;
-          
-          // Hide builder, show chat
           builderArea.style.display = "none";
           startTutorChat();
         } else {
-          // Lazy/Shortcut Prompt FAILURE
           feedbackAlert.className = "result-alert lazy";
           feedbackAlert.innerHTML = `
             <div class="alert-title">⚠️ Shortcut/Vague Prompt Detected!</div>
-            <p style="margin: 0; font-size: 0.92rem;">
+            <p style="margin: 0; font-size: 0.9rem;">
               This prompt asks the AI to calculate the final answer directly or lacks checking instructions. This does not help you practice the math skills. Try combining a <strong>Tutor Role</strong>, a <strong>Step-by-Step Goal</strong>, and a <strong>Question Constraint</strong>!
             </p>
           `;
         }
-        
         feedbackAlert.scrollIntoView({ behavior: "smooth" });
       }
 
-      // Start the Tutor Chat Console
+      // Start Chat
       function startTutorChat() {
         const chatConsole = document.getElementById("chat-console");
         const chatLog = document.getElementById("chat-log");
@@ -1926,10 +2280,8 @@
         chatLog.innerHTML = "";
         currentDialogueIndex = 0;
 
-        // Append user prompt as initial message
         appendTutorMessage("user", `"${promptSelections.role}, please ${promptSelections.goal}, ${promptSelections.constraint}."`);
 
-        // Trigger bot greeting after 800ms
         showTypingIndicator();
         setTimeout(() => {
           hideTypingIndicator();
@@ -1956,8 +2308,6 @@
         row.appendChild(avatar);
         row.appendChild(bubble);
         chatLog.appendChild(row);
-
-        // Scroll
         chatLog.scrollTop = chatLog.scrollHeight;
       }
 
@@ -1977,37 +2327,30 @@
         chatLog.scrollTop = chatLog.scrollHeight;
       }
 
-      // Hide Typing Indicator
       function hideTypingIndicator() {
         const indicator = document.getElementById("chat-typing-dots");
         if (indicator) indicator.remove();
       }
 
-      // Handle Enter key on chat input
       function handleChatKeyDown(e) {
         if (e.key === "Enter") {
           sendChatAnswer();
         }
       }
 
-      // Send student's typed answer
+      // Send chat answer
       function sendChatAnswer() {
         const inputEl = document.getElementById("chat-input");
         const text = inputEl.value.trim();
         if (!text) return;
 
-        // Clear input, hide hints
         inputEl.value = "";
         document.getElementById("hint-box").style.display = "none";
-
-        // Append user answer message
         appendTutorMessage("user", text);
 
-        // Process answer
         const data = UNIT_DATA[selectedUnit];
         const dialogue = data.examples[selectedExample].dialogues[currentDialogueIndex];
         
-        // Clean matching
         const cleanUserText = text.toLowerCase().replace(/[\$\s\s+]/g, "").replace(",", ".");
         const isCorrect = dialogue.expected.some(exp => cleanUserText.includes(exp.toLowerCase()));
 
@@ -2017,15 +2360,13 @@
           hideTypingIndicator();
 
           if (isCorrect) {
-            // Proceed to next dialogue step
             currentDialogueIndex++;
+            drawVisualModel(currentDialogueIndex); // Update visual model SVG
+
             if (currentDialogueIndex < data.examples[selectedExample].dialogues.length) {
               appendTutorMessage("bot", data.examples[selectedExample].dialogues[currentDialogueIndex].q);
             } else {
-              // Dialogue Finished
               appendTutorMessage("bot", "Fantastic! You solved the math problem successfully. That is how we use AI to learn! 🎉");
-              
-              // Hide input area, show completion banner
               document.querySelector(".chat-input-bar").style.display = "none";
               document.querySelector(".chat-helpers").innerHTML = `
                 <div style="color:var(--success); font-weight:800; font-size:1rem; text-align:center; padding:10px; border: 1px dashed rgba(16,185,129,0.3); border-radius:8px; width: 100%;">
@@ -2034,13 +2375,11 @@
               `;
             }
           } else {
-            // Incorrect answer: provide guidance
             appendTutorMessage("bot", `Not quite! Let's think: ${dialogue.hint} Try again!`);
           }
         }, 1000);
       }
 
-      // Reveal Math Hint
       function revealHint() {
         const data = UNIT_DATA[selectedUnit];
         const hintBox = document.getElementById("hint-box");
@@ -2048,7 +2387,6 @@
         hintBox.style.display = "block";
       }
 
-      // Reset workspace
       function resetWorkspace() {
         renderWorkspace();
         document.getElementById("result-feedback").style.display = "none";
@@ -2068,6 +2406,399 @@
             btn.innerHTML = "📋 Copy Prompt Text";
           }, 2000);
         });
+      }
+
+      // Teacher AI worksheet prompt compiler
+      function updateTeacherPrompt() {
+        const tier = document.getElementById("teacher-tier-select").value;
+        const style = document.getElementById("teacher-style-select").value;
+        const data = UNIT_DATA[selectedUnit];
+        
+        const promptText = `Act as an expert Grade 6 Math Coach collaborating with Google for Education, Pearson, and HMH. 
+Generate a custom classroom worksheet for ${data.name} focusing on "${data.topic}".
+Target Student Level: ${tier}
+Worksheet Style: ${style}
+Standards Reference: ${data.ccss}
+Publisher Alignments: Envision Topic [${data.pearson}] and HMH Module [${data.hmh}].
+
+Instructions:
+1. Provide a student-friendly conceptual explanation with a text-based ASCII or SVG visual model.
+2. Include 3 scaffolded classroom practice problems.
+3. Write a teacher answer key with step-by-step math solver explanations and common misconceptions to address.`;
+
+        document.getElementById("prompt-txt-teacher").textContent = promptText;
+      }
+
+      // Draw SVG Visual Models programmatically based on Unit, Example, and Step
+      function drawVisualModel(step) {
+        const canvas = document.getElementById("svg-canvas-container");
+        if (!canvas) return;
+
+        let svgContent = "";
+        const u = selectedUnit;
+        const ex = selectedExample;
+
+        switch (u) {
+          case 1: // Unit 1 Decimals (Area grid model)
+            if (ex === 0) { // 12.5 × 4
+              let colorCell = step >= 1 ? "rgba(66, 133, 244, 0.4)" : "rgba(255,255,255,0.02)";
+              let finalHighlight = step >= 2 ? "rgba(16, 185, 129, 0.2)" : "none";
+              svgContent = `
+                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                  <rect width="100%" height="100%" fill="#060813" />
+                  <rect x="30" y="40" width="160" height="120" fill="${colorCell}" stroke="#4285f4" stroke-width="2" />
+                  <line x1="140" y1="40" x2="140" y2="160" stroke="#fff" stroke-dasharray="3" />
+                  <text x="85" y="30" fill="#fff" font-size="10" text-anchor="middle">10</text>
+                  <text x="165" y="30" fill="#fff" font-size="10" text-anchor="middle">2.5</text>
+                  <text x="115" y="15" fill="#8ab4f8" font-size="11" font-weight="bold" text-anchor="middle">Length: 12.5</text>
+                  <text x="15" y="105" fill="#fff" font-size="11" text-anchor="middle" font-weight="bold">Height: 4</text>
+                  <rect x="30" y="40" width="160" height="120" fill="${finalHighlight}" />
+                  ${step >= 2 ? `<text x="110" y="105" fill="#10b981" font-size="16" font-weight="bold" text-anchor="middle">Area = 50.0</text>` : `<text x="110" y="105" fill="var(--text-secondary)" font-size="11" text-anchor="middle">125 × 4 = 500</text>`}
+                </svg>
+              `;
+            } else if (ex === 1) { // 14.8 ÷ 2
+              let splitOpacity = step >= 1 ? "1" : "0.2";
+              svgContent = `
+                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                  <rect width="100%" height="100%" fill="#060813" />
+                  <text x="110" y="30" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">Total: 14.8</text>
+                  <rect x="20" y="50" width="180" height="40" fill="rgba(66, 133, 244, 0.15)" stroke="#4285f4" stroke-width="2" />
+                  
+                  <g style="opacity: ${splitOpacity}">
+                    <line x1="110" y1="50" x2="110" y2="140" stroke="#10b981" stroke-width="2" stroke-dasharray="3" />
+                    <rect x="20" y="100" width="85" height="40" fill="rgba(16, 185, 129, 0.15)" stroke="#10b981" stroke-width="1.5" />
+                    <rect x="115" y="100" width="85" height="40" fill="rgba(16, 185, 129, 0.15)" stroke="#10b981" stroke-width="1.5" />
+                    <text x="62" y="125" fill="#fff" font-size="11" text-anchor="middle">${step >= 2 ? '7.4' : '74'}</text>
+                    <text x="157" y="125" fill="#fff" font-size="11" text-anchor="middle">${step >= 2 ? '7.4' : '74'}</text>
+                  </g>
+                  
+                  ${step >= 2 ? `<text x="110" y="180" fill="#10b981" font-size="13" font-weight="bold" text-anchor="middle">Each Share = 7.4</text>` : `<text x="110" y="180" fill="var(--text-secondary)" font-size="10" text-anchor="middle">Divide 148 by 2</text>`}
+                </svg>
+              `;
+            } else { // 3.5 × 1.2
+              let fillGrid = step >= 1 ? "rgba(155, 114, 203, 0.25)" : "none";
+              let finalHighlight = step >= 2 ? "rgba(16, 185, 129, 0.2)" : "none";
+              svgContent = `
+                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                  <rect width="100%" height="100%" fill="#060813" />
+                  <rect x="40" y="40" width="140" height="120" fill="${fillGrid}" stroke="#c58af9" stroke-width="2" />
+                  <line x1="130" y1="40" x2="130" y2="160" stroke="#fff" stroke-dasharray="2" />
+                  <line x1="40" y1="120" x2="180" y2="120" stroke="#fff" stroke-dasharray="2" />
+                  <text x="85" y="25" fill="#fff" font-size="9" text-anchor="middle">3.0</text>
+                  <text x="155" y="25" fill="#fff" font-size="9" text-anchor="middle">0.5</text>
+                  <text x="15" y="85" fill="#fff" font-size="9" text-anchor="middle">1.0</text>
+                  <text x="15" y="145" fill="#fff" font-size="9" text-anchor="middle">0.2</text>
+                  <rect x="40" y="40" width="140" height="120" fill="${finalHighlight}" />
+                  ${step >= 2 ? `<text x="110" y="195" fill="#10b981" font-size="14" font-weight="bold" text-anchor="middle">Area = 4.2</text>` : `<text x="110" y="195" fill="var(--text-secondary)" font-size="10" text-anchor="middle">Partial products: 35 × 12</text>`}
+                </svg>
+              `;
+            }
+            break;
+
+          case 2: // Unit 2 Fractions division block strips
+            let fracA, fracB, reciprocal, resultText;
+            if (ex === 0) { fracA = "2/3"; fracB = "4/5"; reciprocal = "5/4"; resultText = "5/6"; }
+            else if (ex === 1) { fracA = "1/2"; fracB = "3/8"; reciprocal = "8/3"; resultText = "4/3"; }
+            else { fracA = "3/4"; fracB = "1/3"; reciprocal = "3/1"; resultText = "9/4"; }
+
+            let strokeColor = step >= 1 ? "#10b981" : "#c58af9";
+            let reciprocalText = step >= 1 ? `Flip: Multiply by ${reciprocal}` : `Divide by ${fracB}`;
+            
+            svgContent = `
+              <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <rect width="100%" height="100%" fill="#060813" />
+                <rect x="25" y="40" width="170" height="30" fill="rgba(66, 133, 244, 0.2)" stroke="#4285f4" stroke-width="2" />
+                <text x="110" y="30" fill="#fff" font-size="11" text-anchor="middle">Keep: ${fracA}</text>
+
+                <rect x="25" y="110" width="170" height="30" fill="rgba(197, 138, 249, 0.2)" stroke="${strokeColor}" stroke-width="2" />
+                <text x="110" y="100" fill="#c58af9" font-size="11" text-anchor="middle">${reciprocalText}</text>
+                
+                ${step >= 2 ? `
+                  <rect x="25" y="160" width="170" height="30" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" stroke-width="2" />
+                  <text x="110" y="180" fill="#10b981" font-size="13" font-weight="bold" text-anchor="middle">Product = ${resultText}</text>
+                ` : ''}
+              </svg>
+            `;
+            break;
+
+          case 3: // Unit 3 Ratios double number line
+            let titleA, titleB, valA1, valB1, valA2, valB2, valAUnit, valBUnit;
+            if (ex === 0) {
+              titleA = "Flour (cups)"; titleB = "Cookies";
+              valA1 = 3; valB1 = 12; valAUnit = 0.25; valBUnit = 1; valA2 = 7.5; valB2 = 30;
+            } else if (ex === 1) {
+              titleA = "Miles"; titleB = "Hours";
+              valA1 = 150; valB1 = 3; valAUnit = 50; valBUnit = 1; valA2 = 250; valB2 = 5;
+            } else {
+              titleA = "Cost ($)"; titleB = "Juice Packs";
+              valA1 = 12; valB1 = 6; valAUnit = 2; valBUnit = 1; valA2 = 18; valB2 = 9;
+            }
+
+            let markerX = 70;
+            if (step === 1) markerX = 110;
+            if (step >= 2) markerX = 170;
+
+            svgContent = `
+              <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <rect width="100%" height="100%" fill="#060813" />
+                <!-- Line A -->
+                <line x1="20" y1="60" x2="200" y2="60" stroke="#4285f4" stroke-width="2" />
+                <line x1="20" y1="50" x2="20" y2="70" stroke="#4285f4" />
+                <line x1="70" y1="50" x2="70" y2="70" stroke="#4285f4" />
+                <line x1="110" y1="50" x2="110" y2="70" stroke="#4285f4" />
+                <line x1="170" y1="50" x2="170" y2="70" stroke="#4285f4" />
+                <text x="20" y="45" fill="var(--text-secondary)" font-size="9" text-anchor="middle">0</text>
+                <text x="70" y="45" fill="#fff" font-size="9" text-anchor="middle">${valA1}</text>
+                <text x="110" y="45" fill="#fff" font-size="9" text-anchor="middle">${valAUnit}</text>
+                <text x="170" y="45" fill="#10b981" font-size="9" text-anchor="middle">${valA2}</text>
+                <text x="110" y="25" fill="#4285f4" font-size="10" font-weight="bold" text-anchor="middle">${titleA}</text>
+
+                <!-- Line B -->
+                <line x1="20" y1="130" x2="200" y2="130" stroke="#c58af9" stroke-width="2" />
+                <line x1="20" y1="120" x2="20" y2="140" stroke="#c58af9" />
+                <line x1="70" y1="120" x2="70" y2="140" stroke="#c58af9" />
+                <line x1="110" y1="120" x2="110" y2="140" stroke="#c58af9" />
+                <line x1="170" y1="120" x2="170" y2="140" stroke="#c58af9" />
+                <text x="20" y="155" fill="var(--text-secondary)" font-size="9" text-anchor="middle">0</text>
+                <text x="70" y="155" fill="#fff" font-size="9" text-anchor="middle">${valB1}</text>
+                <text x="110" y="155" fill="#fff" font-size="9" text-anchor="middle">${valBUnit}</text>
+                <text x="170" y="155" fill="#10b981" font-size="9" text-anchor="middle">${valB2}</text>
+                <text x="110" y="175" fill="#c58af9" font-size="10" font-weight="bold" text-anchor="middle">${titleB}</text>
+
+                <circle cx="${markerX}" cy="60" r="5" fill="#10b981" />
+                <circle cx="${markerX}" cy="130" r="5" fill="#10b981" />
+                <line x1="${markerX}" y1="60" x2="${markerX}" y2="130" stroke="#10b981" stroke-dasharray="3" />
+              </svg>
+            `;
+            break;
+
+          case 4: // Unit 4 Percent diagrams
+            let maxVal, pctString, subText, activeFillWidth;
+            if (ex === 0) { maxVal = 40; pctString = "15% discount"; subText = step >= 3 ? "Final = $34" : (step >= 2 ? "15% = $6" : "10% = $4"); activeFillWidth = step >= 3 ? 160 : (step >= 2 ? 27 : (step >= 1 ? 18 : 0)); }
+            else if (ex === 1) { maxVal = 60; pctString = "20% tip"; subText = step >= 2 ? "Final Tip = $12" : (step >= 1 ? "10% = $6" : "Find 10%"); activeFillWidth = step >= 2 ? 36 : (step >= 1 ? 18 : 0); }
+            else { maxVal = 30; pctString = "6% sales tax"; subText = step >= 2 ? "Final Tax = $1.80" : (step >= 1 ? "1% = $0.30" : "Find 1%"); activeFillWidth = step >= 2 ? 30 : (step >= 1 ? 5 : 0); }
+
+            svgContent = `
+              <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <rect width="100%" height="100%" fill="#060813" />
+                <rect x="20" y="80" width="180" height="30" fill="rgba(255,255,255,0.02)" stroke="var(--bg-panel-border)" stroke-width="2" />
+                <rect x="20" y="80" width="${activeFillWidth}" height="30" fill="rgba(66, 133, 244, 0.3)" stroke="#4285f4" stroke-width="2" />
+                <text x="20" y="70" fill="var(--text-secondary)" font-size="10">0%</text>
+                <text x="110" y="70" fill="var(--text-secondary)" font-size="10" text-anchor="middle">50%</text>
+                <text x="200" y="70" fill="var(--text-secondary)" font-size="10" text-anchor="end">100% ($${maxVal})</text>
+                
+                <text x="110" y="140" fill="#fff" font-size="12" text-anchor="middle" font-weight="bold">${pctString}</text>
+                <text x="110" y="170" fill="#10b981" font-size="14" font-weight="bold" text-anchor="middle">${subText}</text>
+              </svg>
+            `;
+            break;
+
+          case 5: // Unit 5 composite polygons
+            if (ex === 0) { // L-shaped
+              let areaAFill = step >= 1 ? "rgba(66, 133, 244, 0.3)" : "rgba(255,255,255,0.02)";
+              let areaBFill = step >= 2 ? "rgba(197, 138, 249, 0.3)" : "rgba(255,255,255,0.02)";
+              let areaLine = step >= 1 ? "#fff" : "rgba(255,255,255,0.1)";
+              svgContent = `
+                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                  <rect width="100%" height="100%" fill="#060813" />
+                  <rect x="40" y="40" width="80" height="100" fill="${areaAFill}" stroke="#4285f4" stroke-width="2" />
+                  <rect x="120" y="80" width="60" height="60" fill="${areaBFill}" stroke="#c58af9" stroke-width="2" />
+                  <line x1="120" y1="80" x2="120" y2="140" stroke="${areaLine}" stroke-width="2" stroke-dasharray="3" />
+                  <text x="80" y="95" fill="#fff" font-size="11" text-anchor="middle">A: 6m × 4m</text>
+                  <text x="150" y="115" fill="#fff" font-size="11" text-anchor="middle">B: 3m × 2m</text>
+                  ${step >= 3 ? `<text x="110" y="180" fill="#10b981" font-size="14" font-weight="bold" text-anchor="middle">Total Area = 30m²</text>` : ''}
+                </svg>
+              `;
+            } else if (ex === 1) { // Triangle base 8, height 5
+              let rectFill = step >= 1 ? "rgba(197, 138, 249, 0.15)" : "none";
+              let triFill = step >= 2 ? "rgba(16, 185, 129, 0.3)" : "rgba(66, 133, 244, 0.15)";
+              svgContent = `
+                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                  <rect width="100%" height="100%" fill="#060813" />
+                  <rect x="30" y="50" width="160" height="100" fill="${rectFill}" stroke="#c58af9" stroke-width="1.5" stroke-dasharray="3" />
+                  <polygon points="30,150 190,150 110,50" fill="${triFill}" stroke="#4285f4" stroke-width="2.5" />
+                  <text x="110" y="170" fill="#fff" font-size="11" text-anchor="middle">Base = 8m</text>
+                  <line x1="110" y1="50" x2="110" y2="150" stroke="#ffb74d" stroke-dasharray="3" />
+                  <text x="120" y="105" fill="#ffb74d" font-size="10">Height = 5m</text>
+                  ${step >= 2 ? `<text x="110" y="200" fill="#10b981" font-size="14" font-weight="bold" text-anchor="middle">Area = 8×5 ÷ 2 = 20m²</text>` : `<text x="110" y="200" fill="var(--text-secondary)" font-size="11" text-anchor="middle">Base × Height = 40</text>`}
+                </svg>
+              `;
+            } else { // Parallelogram base 7, height 4
+              let triOffset = step >= 1 ? 110 : 0;
+              let shapeFill = step >= 1 ? "rgba(16, 185, 129, 0.3)" : "rgba(66, 133, 244, 0.2)";
+              svgContent = `
+                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                  <rect width="100%" height="100%" fill="#060813" />
+                  <!-- Left triangle piece that can shift -->
+                  <polygon points="30,140 70,140 70,60" fill="${shapeFill}" stroke="#4285f4" style="transform: translate(${triOffset}px, 0px); transition: transform 0.5s;" />
+                  <!-- Middle body -->
+                  <polygon points="70,60 170,60 170,140 70,140" fill="${shapeFill}" stroke="#4285f4" />
+                  <line x1="70" y1="60" x2="70" y2="140" stroke="#fff" stroke-dasharray="2" />
+                  <text x="120" y="160" fill="#fff" font-size="11" text-anchor="middle">Base = 7m</text>
+                  <text x="55" y="105" fill="#ffb74d" font-size="10">Height = 4m</text>
+                  ${step >= 1 ? `<text x="110" y="195" fill="#10b981" font-size="14" font-weight="bold" text-anchor="middle">Area = 7×4 = 28m²</text>` : ''}
+                </svg>
+              `;
+            }
+            break;
+
+          case 6: // Unit 6 Volume & surface area
+            if (ex === 0) { // SA box 3x4x5
+              let faceColor1 = step >= 1 ? "#4285f4" : "rgba(255,255,255,0.05)";
+              let faceColor2 = step >= 2 ? "#c58af9" : "rgba(255,255,255,0.05)";
+              let faceColor3 = step >= 3 ? "#10b981" : "rgba(255,255,255,0.05)";
+              svgContent = `
+                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                  <rect width="100%" height="100%" fill="#060813" />
+                  <rect x="30" y="90" width="40" height="40" fill="${faceColor1}" stroke="#fff" />
+                  <rect x="70" y="90" width="50" height="40" fill="${faceColor2}" stroke="#fff" />
+                  <rect x="120" y="90" width="40" height="40" fill="${faceColor1}" stroke="#fff" />
+                  <rect x="160" y="90" width="50" height="40" fill="${faceColor2}" stroke="#fff" />
+                  <rect x="70" y="50" width="50" height="40" fill="${faceColor3}" stroke="#fff" />
+                  <rect x="70" y="130" width="50" height="40" fill="${faceColor3}" stroke="#fff" />
+                  <text x="110" y="30" fill="var(--text-secondary)" font-size="10" text-anchor="middle">3D Unfolded Net (3x4x5)</text>
+                  ${step >= 4 ? `<text x="110" y="195" fill="#10b981" font-size="13" font-weight="bold" text-anchor="middle">Surface Area = 94 in²</text>` : ''}
+                </svg>
+              `;
+            } else if (ex === 1) { // Volume 4x3x2
+              let fillBox = step >= 1 ? "rgba(16, 185, 129, 0.3)" : "none";
+              svgContent = `
+                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                  <rect width="100%" height="100%" fill="#060813" />
+                  <polygon points="40,130 140,130 180,90 80,90" fill="${fillBox}" stroke="#4285f4" stroke-width="2" />
+                  <polygon points="40,70 140,70 180,30 80,30" fill="${fillBox}" stroke="#4285f4" stroke-width="2" />
+                  <line x1="40" y1="130" x2="40" y2="70" stroke="#4285f4" stroke-width="2" />
+                  <line x1="140" y1="130" x2="140" y2="70" stroke="#4285f4" stroke-width="2" />
+                  <line x1="180" y1="90" x2="180" y2="30" stroke="#4285f4" stroke-width="2" />
+                  <line x1="80" y1="90" x2="80" y2="30" stroke="#4285f4" stroke-dasharray="2" />
+                  <text x="90" y="150" fill="#fff" font-size="11" text-anchor="middle">Length: 4</text>
+                  <text x="168" y="120" fill="#fff" font-size="11">Width: 3</text>
+                  <text x="25" y="105" fill="#fff" font-size="11">H: 2</text>
+                  ${step >= 1 ? `<text x="110" y="195" fill="#10b981" font-size="14" font-weight="bold" text-anchor="middle">Volume = 4×3×2 = 24 u³</text>` : ''}
+                </svg>
+              `;
+            } else { // Cube side 3
+              let faceColor = step >= 2 ? "#10b981" : (step >= 1 ? "#4285f4" : "rgba(255,255,255,0.05)");
+              svgContent = `
+                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                  <rect width="100%" height="100%" fill="#060813" />
+                  <rect x="30" y="90" width="40" height="40" fill="${faceColor}" stroke="#fff" />
+                  <rect x="70" y="90" width="40" height="40" fill="${faceColor}" stroke="#fff" />
+                  <rect x="110" y="90" width="40" height="40" fill="${faceColor}" stroke="#fff" />
+                  <rect x="150" y="90" width="40" height="40" fill="${faceColor}" stroke="#fff" />
+                  <rect x="70" y="50" width="40" height="40" fill="${faceColor}" stroke="#fff" />
+                  <rect x="70" y="130" width="40" height="40" fill="${faceColor}" stroke="#fff" />
+                  <text x="110" y="30" fill="var(--text-secondary)" font-size="10" text-anchor="middle">Cube Net (S=3)</text>
+                  ${step >= 2 ? `<text x="110" y="195" fill="#10b981" font-size="14" font-weight="bold" text-anchor="middle">Total Area = 6 × 9 = 54 in²</text>` : (step >= 1 ? `<text x="110" y="195" fill="#8ab4f8" font-size="11" text-anchor="middle">One Face Area = 9 in²</text>` : '')}
+                </svg>
+              `;
+            }
+            break;
+
+          case 7: // Unit 7 Algebra balance scales
+            let leftSideText, rightSideText;
+            if (ex === 0) { // 2x+5 = 15
+              leftSideText = step >= 2 ? "x" : (step >= 1 ? "2x" : "2x + 5");
+              rightSideText = step >= 3 ? "5" : (step >= 1 ? "10" : "15");
+            } else if (ex === 1) { // x-8 = 12
+              leftSideText = step >= 1 ? "x" : "x - 8";
+              rightSideText = step >= 2 ? "20" : "12";
+            } else { // 3x = 27
+              leftSideText = step >= 1 ? "x" : "3x";
+              rightSideText = step >= 2 ? "9" : "27";
+            }
+            svgContent = `
+              <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <rect width="100%" height="100%" fill="#060813" />
+                <line x1="30" y1="120" x2="190" y2="120" stroke="#fff" stroke-width="4" />
+                <polygon points="110,120 95,160 125,160" fill="rgba(255,255,255,0.2)" stroke="#fff" />
+                <line x1="30" y1="120" x2="70" y2="120" stroke="#4285f4" stroke-width="6" />
+                <text x="50" y="100" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">${leftSideText}</text>
+                <line x1="150" y1="120" x2="190" y2="120" stroke="#c58af9" stroke-width="6" />
+                <text x="170" y="100" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">${rightSideText}</text>
+                <text x="110" y="190" fill="#10b981" font-size="13" font-weight="bold" text-anchor="middle">Balanced scale</text>
+              </svg>
+            `;
+            break;
+
+          case 8: // Unit 8 Statistics Dot plot
+            let sortedVals, markerValue, labelVal;
+            if (ex === 0) { sortedVals = [3, 5, 8, 9, 10]; markerValue = 8; labelVal = "Median = 8"; }
+            else if (ex === 1) { sortedVals = [4, 5, 7, 8]; markerValue = 6; labelVal = "Mean = 6"; }
+            else { sortedVals = [3, 5, 12, 15, 18]; markerValue = 15; labelVal = "Range = 15"; }
+            svgContent = `
+              <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <rect width="100%" height="100%" fill="#060813" />
+                <line x1="20" y1="130" x2="200" y2="130" stroke="#fff" stroke-width="2" />
+                ${sortedVals.map((val, i) => {
+                  let cx = 30 + (i * 35);
+                  let cy = 115;
+                  return `
+                    <circle cx="${cx}" cy="${cy}" r="6" fill="#4285f4" />
+                    <text x="${cx}" y="150" fill="var(--text-secondary)" font-size="9" text-anchor="middle">${val}</text>
+                  `;
+                }).join('')}
+                ${step >= 2 ? `
+                  <line x1="${30 + (sortedVals.indexOf(markerValue) !== -1 ? sortedVals.indexOf(markerValue)*35 : 1.5*35)}" y1="70" x2="${30 + (sortedVals.indexOf(markerValue) !== -1 ? sortedVals.indexOf(markerValue)*35 : 1.5*35)}" y2="130" stroke="#10b981" stroke-width="2" />
+                  <text x="110" y="50" fill="#10b981" font-size="13" font-weight="bold" text-anchor="middle">${labelVal}</text>
+                ` : ''}
+              </svg>
+            `;
+            break;
+
+          case 9: // Unit 9 Coordinate Plane
+            let xStart, yStart, xEnd, yEnd;
+            if (ex === 0) { xStart = 1; yStart = 2; xEnd = -2; yEnd = 2; }
+            else if (ex === 1) { xStart = 3; yStart = -4; xEnd = 3; yEnd = 5; }
+            else { xStart = -3; yStart = -5; xEnd = -3; yEnd = -5; }
+            let curX = step >= 1 ? xEnd : xStart;
+            let curY = step >= 1 ? yEnd : yStart;
+            let mapX = (x) => 110 + (x * 16);
+            let mapY = (y) => 110 - (y * 16);
+            svgContent = `
+              <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <rect width="100%" height="100%" fill="#060813" />
+                <line x1="110" y1="10" x2="110" y2="210" stroke="rgba(255,255,255,0.15)" />
+                <line x1="10" y1="110" x2="210" y2="110" stroke="rgba(255,255,255,0.15)" />
+                <circle cx="${mapX(xStart)}" cy="${mapY(yStart)}" r="4" fill="#4285f4" />
+                <text x="${mapX(xStart)}" y="${mapY(yStart) - 8}" fill="#4285f4" font-size="8" text-anchor="middle">(${xStart}, ${yStart})</text>
+                ${ex !== 2 ? `
+                  <circle cx="${mapX(xEnd)}" cy="${mapY(yEnd)}" r="4" fill="#c58af9" />
+                  <text x="${mapX(xEnd)}" y="${mapY(yEnd) - 8}" fill="#c58af9" font-size="8" text-anchor="middle">(${xEnd}, ${yEnd})</text>
+                  <line x1="${mapX(xStart)}" y1="${mapY(yStart)}" x2="${mapX(xEnd)}" y2="${mapY(yEnd)}" stroke="rgba(16, 185, 129, 0.4)" stroke-width="2" stroke-dasharray="3" />
+                ` : ''}
+                <circle cx="${mapX(curX)}" cy="${mapY(curY)}" r="6" fill="#10b981" stroke="#fff" stroke-width="1.5" />
+                ${ex === 2 && step >= 1 ? `
+                  <rect x="10" y="110" width="100" height="100" fill="rgba(16, 185, 129, 0.15)" />
+                  <text x="60" y="160" fill="#10b981" font-size="12" font-weight="bold" text-anchor="middle">Quadrant III</text>
+                ` : ''}
+              </svg>
+            `;
+            break;
+
+          case 10: // Unit 10 Financial ledger receipt
+            let itemLabel, baseVal, labelTax, valTax, labelTotal, valTotal;
+            if (ex === 0) { itemLabel = "Arcade Box Pass"; baseVal = "$50.00"; labelTax = "Sales Tax (6%)"; valTax = "$3.00"; labelTotal = "TOTAL DUE"; valTotal = "$53.00"; }
+            else if (ex === 1) { itemLabel = "Savings Account"; baseVal = "$100.00"; labelTax = "Interest (4%)"; valTax = "$4.00"; labelTotal = "BALANCE DUE"; valTotal = "$104.00"; }
+            else { itemLabel = "Capsule Toy"; baseVal = "$20.00"; labelTax = "Discount (20%)"; valTax = "-$4.00"; labelTotal = "SALE PRICE"; valTotal = "$16.00"; }
+            let taxItem = step >= 1 ? `<text x="25" y="105" fill="#fff" font-size="10">${labelTax}:</text><text x="195" y="105" fill="#fff" font-size="10" text-anchor="end">${valTax}</text>` : '';
+            let totalItem = step >= 2 ? `<line x1="20" y1="120" x2="200" y2="120" stroke="#fff" stroke-dasharray="3" /><text x="25" y="145" fill="#10b981" font-size="12" font-weight="bold">${labelTotal}:</text><text x="195" y="145" fill="#10b981" font-size="12" font-weight="bold" text-anchor="end">${valTotal}</text>` : '';
+            svgContent = `
+              <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <rect width="100%" height="100%" fill="#060813" />
+                <rect x="15" y="15" width="190" height="185" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.1)" stroke-width="2" />
+                <text x="110" y="40" fill="#8ab4f8" font-size="11" font-weight="bold" text-anchor="middle">CHECKOUT LEDGER</text>
+                <line x1="20" y1="50" x2="200" y2="50" stroke="rgba(255,255,255,0.2)" />
+                <text x="25" y="75" fill="#fff" font-size="10">${itemLabel}:</text>
+                <text x="195" y="75" fill="#fff" font-size="10" text-anchor="end">${baseVal}</text>
+                ${taxItem}
+                ${totalItem}
+              </svg>
+            `;
+            break;
+        }
+
+        canvas.innerHTML = svgContent;
       }
     </script>
   </body>
