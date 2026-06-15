@@ -91,17 +91,16 @@
     // ---- search + filter ----
     const search = $("#topic-search");
     const chips = $$(".filter-chip");
-    let activeSkill = "all";
+    let activeDomain = "all";
     function apply() {
       const q = (search ? search.value : "").trim().toLowerCase();
       let shown = 0;
       cards.forEach((card) => {
         const text = card.textContent.toLowerCase();
-        const skills = (card.dataset.skills || "").toLowerCase();
+        const domain = (card.dataset.domain || "").toLowerCase();
         const matchQ = !q || text.includes(q);
-        const matchSkill =
-          activeSkill === "all" || skills.includes(activeSkill);
-        const ok = matchQ && matchSkill;
+        const matchDomain = activeDomain === "all" || domain === activeDomain;
+        const ok = matchQ && matchDomain;
         card.style.display = ok ? "" : "none";
         if (ok) shown++;
       });
@@ -113,7 +112,7 @@
       chip.addEventListener("click", () => {
         chips.forEach((c) => c.setAttribute("aria-pressed", "false"));
         chip.setAttribute("aria-pressed", "true");
-        activeSkill = chip.dataset.skill;
+        activeDomain = (chip.dataset.domain || "all").toLowerCase();
         apply();
       }),
     );
@@ -127,5 +126,65 @@
           location.reload();
         }
       });
+
+    // ---- progress dashboard + certificate ----
+    const section = $("#progress-section");
+    const dash = $("#prog-dash");
+    if (section && started > 0) {
+      section.hidden = false;
+      const masteredTopics = [];
+      dash.innerHTML = cards
+        .map((card) => {
+          const slug = card.dataset.slug;
+          const st = statusFor(prog[slug]);
+          if (st.cls === "ps-mastered")
+            masteredTopics.push($("h3", card).textContent);
+          return (
+            '<div class="pd-row"><span class="pd-name">' +
+            $(".icon", card).textContent +
+            " " +
+            $("h3", card).textContent +
+            '</span><span class="pd-bar"><i style="width:' +
+            st.pct +
+            '%"></i></span><span class="pd-pct ' +
+            st.cls +
+            '">' +
+            st.label +
+            "</span></div>"
+          );
+        })
+        .join("");
+
+      const printCert = $("#print-cert");
+      if (printCert)
+        printCert.addEventListener("click", () => {
+          const name = ($("#cert-name").value || "").trim() || "Student Name";
+          const masteredNow = [];
+          cards.forEach((card) => {
+            const st = statusFor(prog[card.dataset.slug]);
+            if (st.cls === "ps-mastered")
+              masteredNow.push($("h3", card).textContent);
+          });
+          if (!masteredNow.length) {
+            alert(
+              "Master at least one topic (80%+) to earn a certificate. Keep practicing!",
+            );
+            return;
+          }
+          $("#cert-name-out").textContent = name;
+          $("#cert-count").textContent = masteredNow.length;
+          $("#cert-list").innerHTML = masteredNow
+            .map((m) => "<li>" + m + "</li>")
+            .join("");
+          const d = $("#cert-date");
+          if (d) d.textContent = new Date().toLocaleDateString();
+          document.body.classList.add("printing-cert");
+          window.print();
+          setTimeout(
+            () => document.body.classList.remove("printing-cert"),
+            500,
+          );
+        });
+    }
   });
 })();

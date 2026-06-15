@@ -97,7 +97,9 @@
           <div class="qcard">
             <div class="qmeta"><span>Question ${i + 1} / ${total}</span><span>Score ${correct}</span></div>
             <div class="qbar"><i style="width:${(i / total) * 100}%"></i></div>
-            <div class="prompt">${q.prompt}</div>
+            <div class="prompt">${q.prompt}
+              <button class="speak-btn" type="button" data-speak="${esc(q.prompt)}" aria-label="Read question aloud" title="Read aloud">🔊</button>
+            </div>
             <div class="opts">${opts
               .map(
                 (o) =>
@@ -376,10 +378,134 @@
     );
   }
 
+  /* --------------------- Read-aloud (TTS) ------------------------- */
+  function speak(text) {
+    try {
+      const synth = window.speechSynthesis;
+      if (!synth) return;
+      synth.cancel();
+      const u = new SpeechSynthesisUtterance(
+        String(text).replace(/[★🔢🍕💯⚖️🧭🧮🧱🌡️📊➗📐📈]/g, ""),
+      );
+      u.rate = 0.9;
+      u.lang = "en-US";
+      synth.speak(u);
+    } catch (e) {}
+  }
+  function initReadAloud() {
+    document.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-speak]");
+      if (!b) return;
+      e.preventDefault();
+      speak(b.getAttribute("data-speak") || b.textContent);
+    });
+  }
+
+  /* --------------------- Flashcards (flip) ------------------------ */
+  function initFlashcards() {
+    document.addEventListener("click", (e) => {
+      const card = e.target.closest(".flashcard");
+      if (!card || e.target.closest("[data-speak]")) return;
+      card.classList.toggle("flipped");
+    });
+  }
+
+  /* --------------------- Fluency drill (timed) ------------------- */
+  function fluencyDrill(mountId, items, seconds) {
+    const mount = document.getElementById(mountId);
+    if (!mount) return;
+    const total = seconds || 60;
+
+    function start() {
+      let left = total,
+        correct = 0,
+        attempts = 0,
+        locked = false,
+        timer = null,
+        q = null;
+
+      function next() {
+        q = pickN(items, 1)[0];
+        const opts = shuffle(
+          q.options && q.options.length
+            ? q.options
+            : [q.answer].concat(q.distractors || []),
+        );
+        mount.querySelector(".fd-prompt").innerHTML = q.prompt;
+        mount.querySelector(".fd-opts").innerHTML = opts
+          .map(
+            (o) =>
+              `<button class="opt" type="button" data-v="${esc(o)}">${o}</button>`,
+          )
+          .join("");
+        locked = false;
+      }
+      function tick() {
+        left--;
+        const bar = mount.querySelector(".fd-bar > i");
+        if (bar) bar.style.width = (left / total) * 100 + "%";
+        const tEl = mount.querySelector(".fd-time");
+        if (tEl) tEl.textContent = left + "s";
+        if (left <= 0) finish();
+      }
+      function choose(b) {
+        if (locked) return;
+        locked = true;
+        attempts++;
+        if (b.dataset.v === String(q.answer)) {
+          correct++;
+          b.classList.add("correct");
+        } else {
+          b.classList.add("wrong");
+        }
+        mount.querySelector(".fd-score").textContent = correct;
+        setTimeout(next, 180);
+      }
+      function finish() {
+        clearInterval(timer);
+        if (window.TOPIC && window.TOPIC.slug)
+          Progress.save(window.TOPIC.slug, { fluency: correct });
+        mount.innerHTML = `<div class="result">
+            <div class="score">${correct}</div>
+            <p><strong>${correct} correct</strong> in ${total} seconds (${attempts} attempted).</p>
+            <p style="color:var(--muted)">Speed + accuracy build fluency. Beat your score!</p>
+            <button class="btn btn-primary" type="button" id="${mountId}-again">↻ Try again</button>
+          </div>`;
+        mount
+          .querySelector("#" + mountId + "-again")
+          .addEventListener("click", start);
+      }
+
+      mount.innerHTML = `<div class="qcard">
+          <div class="qmeta"><span>⏱ <span class="fd-time">${total}s</span></span><span>Correct <span class="fd-score">0</span></span></div>
+          <div class="qbar fd-bar"><i style="width:100%"></i></div>
+          <div class="prompt fd-prompt"></div>
+          <div class="opts fd-opts"></div>
+        </div>`;
+      mount.querySelector(".fd-opts").addEventListener("click", (e) => {
+        const b = e.target.closest(".opt");
+        if (b) choose(b);
+      });
+      next();
+      timer = setInterval(tick, 1000);
+    }
+
+    mount.innerHTML = `<div class="qcard" style="padding:34px">
+        <p style="font-size:1.1rem;font-weight:700;color:var(--navy)">⚡ 60-Second Fluency Drill</p>
+        <p style="color:var(--muted)">Answer as many as you can before time runs out.</p>
+        <button class="btn btn-primary" type="button" id="${mountId}-start">▶ Start drill</button>
+      </div>`;
+    mount
+      .querySelector("#" + mountId + "-start")
+      .addEventListener("click", start);
+  }
+
   /* --------------------------- Boot ------------------------------- */
   document.addEventListener("DOMContentLoaded", function () {
     initTabs();
     initPrint();
+    initReadAloud();
+    initFlashcards();
     const T = window.TOPIC;
     if (!T || !T.bank) return;
     if (T.slug) Progress.save(T.slug, {}); // mark visited
@@ -387,8 +513,10 @@
       quizWidget("diagnostic-widget", T.diagnostic || T.bank, "diagnostic", 6);
     if (document.getElementById("practice-widget"))
       quizWidget("practice-widget", T.bank, "practice", 10);
+    if (document.getElementById("fluency-widget"))
+      fluencyDrill("fluency-widget", T.bank, 60);
     if (document.getElementById("game-stage")) answerDrop("game-stage", T.bank);
   });
 
-  window.INT = { quizWidget, answerDrop };
+  window.INT = { quizWidget, answerDrop, fluencyDrill, speak };
 })();
