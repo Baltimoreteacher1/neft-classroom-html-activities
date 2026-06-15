@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Rates and Unit Rates — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+</style>
+</head>
+<body>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.RP.2</span>
+      <span class="ws-ver">Version A</span>
+    </div>
+    <h1 class="ws-title">Rates and Unit Rates</h1>
+    <p class="ws-sub">Practice — Version A</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h3 class="ws-bank-h">📕 Word Bank</h3>
+    <div class="ws-bankwords"><span class="ws-bankword">Rate</span><span class="ws-bankword">Unit Rate</span><span class="ws-bankword">Per</span><span class="ws-bankword">Ratio</span><span class="ws-bankword">Better Buy</span><span class="ws-bankword">Divide</span></div>
+  </section><section class="ws-example">
+    <h3 class="ws-example-h">✏️ Worked Example</h3>
+    <ol class="ws-example-steps"><li><b>Find the unit rate: 12 tickets for $8:</b> 12 tickets for $8</li><li><b>Set up the division:</b> 12 ÷ 8 = 1.5</li><li><b>Write the unit rate:</b> The unit rate is $1.50 per ticket</li></ol>
+  </section>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A booth charges $4.50 for 9 games. What is the unit rate?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>$0.50 per game</li><li class="ws-opt"><span class="ws-bub">B</span>$0.45 per game</li><li class="ws-opt"><span class="ws-bub">C</span>$2.00 per game</li><li class="ws-opt"><span class="ws-bub">D</span>$4.50 per game</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A car travels 180 miles using 6 gallons of gas. What is the unit rate in miles per gallon?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>30 miles per gallon</li><li class="ws-opt"><span class="ws-bub">B</span>6 miles per gallon</li><li class="ws-opt"><span class="ws-bub">C</span>180 miles per gallon</li><li class="ws-opt"><span class="ws-bub">D</span>36 miles per gallon</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A pack of 8 markers costs $6.00. What is the cost per marker?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>$0.75</li><li class="ws-opt"><span class="ws-bub">B</span>$0.80</li><li class="ws-opt"><span class="ws-bub">C</span>$1.33</li><li class="ws-opt"><span class="ws-bub">D</span>$0.60</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Which is a unit rate?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>12 miles per 1 hour</li><li class="ws-opt"><span class="ws-bub">B</span>24 miles in 2 hours</li><li class="ws-opt"><span class="ws-bub">C</span>36 miles for 3 gallons</li><li class="ws-opt"><span class="ws-bub">D</span>100 points in 5 games</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Deal A</td><td></td><td></td><td></td></tr><tr><td>Deal B</td><td></td><td></td><td></td></tr><tr><td>Deal C</td><td></td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Rates and Unit Rates.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: To find a unit rate, divide the total cost by the number of items. The lower cost per item is the better buy.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.RP.2</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">Rates and Unit Rates</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Tokens Pack A</td><td></td><td></td><td></td></tr><tr><td>Tokens Pack B</td><td></td><td></td><td></td></tr><tr><td>Tokens Pack C</td><td></td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Which token pack from the table above is the best deal?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Pack A</li><li class="ws-opt"><span class="ws-bub">B</span>Pack B</li><li class="ws-opt"><span class="ws-bub">C</span>Pack C</li><li class="ws-opt"><span class="ws-bub">D</span>They are all the same</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Sort each situation by whether the unit rate is 'per item' or 'per time'.</p>
+  <p class="ws-prompt">Categories: <b>per-item · per-time</b></p>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span>$3 per pound of apples</li><li><span class="ws-blank ws-blank-sm"></span>60 miles per hour</li><li><span class="ws-blank ws-blank-sm"></span>$0.25 per token</li><li><span class="ws-blank ws-blank-sm"></span>15 pages per minute</li><li><span class="ws-blank ws-blank-sm"></span>$1.50 per bottle</li><li><span class="ws-blank ws-blank-sm"></span>8 laps per hour</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Runner A completes 4 laps in 12 minutes. Runner B completes 5 laps in 14 minutes. Who runs more laps per minute?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Runner B</li><li class="ws-opt"><span class="ws-bub">B</span>Runner A</li><li class="ws-opt"><span class="ws-bub">C</span>Same rate</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Rates and Unit Rates.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: To find a unit rate, divide the total cost by the number of items. The lower cost per item is the better buy.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.RP.2</span>
+      <span class="ws-ver">Version A — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Rates and Unit Rates</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A booth charges $4.50 for 9 games. What is the unit rate?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>$0.50 per game</li><li class="ws-opt"><span class="ws-bub">B</span>$0.45 per game</li><li class="ws-opt"><span class="ws-bub">C</span>$2.00 per game</li><li class="ws-opt"><span class="ws-bub">D</span>$4.50 per game</li></ol><p class="ws-keynote">$4.50 ÷ 9 = $0.50 per game.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A car travels 180 miles using 6 gallons of gas. What is the unit rate in miles per gallon?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>30 miles per gallon</li><li class="ws-opt"><span class="ws-bub">B</span>6 miles per gallon</li><li class="ws-opt"><span class="ws-bub">C</span>180 miles per gallon</li><li class="ws-opt"><span class="ws-bub">D</span>36 miles per gallon</li></ol><p class="ws-keynote">180 miles ÷ 6 gallons = 30 miles per gallon.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A pack of 8 markers costs $6.00. What is the cost per marker?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>$0.75</li><li class="ws-opt"><span class="ws-bub">B</span>$0.80</li><li class="ws-opt"><span class="ws-bub">C</span>$1.33</li><li class="ws-opt"><span class="ws-bub">D</span>$0.60</li></ol><p class="ws-keynote">$6.00 ÷ 8 = $0.75 per marker.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Which is a unit rate?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12 miles per 1 hour</li><li class="ws-opt"><span class="ws-bub">B</span>24 miles in 2 hours</li><li class="ws-opt"><span class="ws-bub">C</span>36 miles for 3 gallons</li><li class="ws-opt"><span class="ws-bub">D</span>100 points in 5 games</li></ol><p class="ws-keynote">A unit rate has 1 in the second quantity. '12 miles per 1 hour' is the only choice where the second quantity is 1.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Deal A</td><td>$6.00</td><td>12 games</td><td>$0.50 per game</td></tr><tr><td>Deal B</td><td>$7.50</td><td>10 games</td><td></td></tr><tr><td>Deal C</td><td>$4.80</td><td>8 games</td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Rates and Unit Rates.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: To find a unit rate, divide the total cost by the number of items. The lower cost per item is the better buy.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.RP.2</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Rates and Unit Rates</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Tokens Pack A</td><td>20 tokens</td><td>$5.00</td><td></td></tr><tr><td>Tokens Pack B</td><td>35 tokens</td><td>$7.00</td><td></td></tr><tr><td>Tokens Pack C</td><td>50 tokens</td><td>$12.50</td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Which token pack from the table above is the best deal?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Pack A</li><li class="ws-opt ws-correct"><span class="ws-bub">B</span>Pack B</li><li class="ws-opt"><span class="ws-bub">C</span>Pack C</li><li class="ws-opt"><span class="ws-bub">D</span>They are all the same</li></ol><p class="ws-keynote">Pack B has a unit rate of $0.20 per token, which is the lowest cost per token.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Sort each situation by whether the unit rate is 'per item' or 'per time'.</p>
+  <p class="ws-prompt">Categories: <b>per-item · per-time</b></p>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm">per-item</span>$3 per pound of apples</li><li><span class="ws-blank ws-blank-sm">per-time</span>60 miles per hour</li><li><span class="ws-blank ws-blank-sm">per-item</span>$0.25 per token</li><li><span class="ws-blank ws-blank-sm">per-time</span>15 pages per minute</li><li><span class="ws-blank ws-blank-sm">per-item</span>$1.50 per bottle</li><li><span class="ws-blank ws-blank-sm">per-time</span>8 laps per hour</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Runner A completes 4 laps in 12 minutes. Runner B completes 5 laps in 14 minutes. Who runs more laps per minute?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Runner B</li><li class="ws-opt"><span class="ws-bub">B</span>Runner A</li><li class="ws-opt"><span class="ws-bub">C</span>Same rate</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol><p class="ws-keynote">Runner A: 4÷12 ≈ 0.33 laps/min. Runner B: 5÷14 ≈ 0.36 laps/min. Runner B runs slightly more laps per minute.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Rates and Unit Rates.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: To find a unit rate, divide the total cost by the number of items. The lower cost per item is the better buy.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  </section>
+</body>
+</html>
