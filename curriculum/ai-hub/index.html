@@ -1,0 +1,2155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Gemini AI Learning Hub for EduWonderLab. Learn to use AI responsibly as a personal math tutor with interactive prompt challenges and parent guides."
+    />
+    <title>Gemini AI Learning Hub — EduWonderLab</title>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Nunito:wght@600;700;800;900&display=swap"
+    />
+    <style>
+      :root {
+        --bg-dark: #070913;
+        --bg-panel: rgba(18, 22, 41, 0.7);
+        --bg-panel-border: rgba(255, 255, 255, 0.08);
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --gemini-blue: #4285f4;
+        --gemini-purple: #9b72cb;
+        --gemini-pink: #d96a8f;
+        --gemini-gradient: linear-gradient(135deg, #4285F4 0%, #9b72cb 50%, #ea4335 100%);
+        --gemini-glow: rgba(155, 114, 203, 0.15);
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --button-solid: linear-gradient(90deg, #8ab4f8, #c58af9);
+        --font-heading: 'Nunito', system-ui, sans-serif;
+        --font-body: 'Atkinson Hyperlegible', system-ui, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: var(--bg-dark);
+        color: var(--text-primary);
+        font-family: var(--font-body);
+        font-size: 16px;
+        line-height: 1.6;
+        min-height: 100vh;
+        background-image: 
+          radial-gradient(circle at 10% 20%, rgba(66, 133, 244, 0.15), transparent 40%),
+          radial-gradient(circle at 90% 80%, rgba(155, 114, 203, 0.12), transparent 45%);
+        background-attachment: fixed;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Navigation Header */
+      header.ai-header {
+        border-bottom: 1px solid var(--bg-panel-border);
+        padding: 16px 24px;
+        backdrop-filter: blur(12px);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(7, 9, 19, 0.8);
+      }
+
+      .header-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .header-logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        color: var(--text-primary);
+      }
+
+      .logo-icon {
+        width: 32px;
+        height: 32px;
+      }
+
+      .header-logo h1 {
+        font-family: var(--font-heading);
+        font-size: 1.35rem;
+        font-weight: 800;
+        margin: 0;
+        letter-spacing: -0.01em;
+        background: var(--gemini-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-secondary);
+        font-family: var(--font-heading);
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 0.95rem;
+        padding: 8px 16px;
+        border-radius: 10px;
+        border: 1px solid var(--bg-panel-border);
+        transition: all 0.2s;
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .back-btn:hover {
+        color: var(--text-primary);
+        border-color: rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      /* Main Page Wrapper */
+      .hub-wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 32px 24px 64px;
+      }
+
+      /* Hero Section */
+      .hero {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(155, 114, 203, 0.1);
+        border: 1px solid rgba(155, 114, 203, 0.3);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #c58af9;
+        margin-bottom: 16px;
+      }
+
+      .hero h2 {
+        font-family: var(--font-heading);
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 900;
+        margin: 0 0 12px;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+      }
+
+      .hero h2 span {
+        background: var(--gemini-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .hero p.tagline {
+        font-size: 1.15rem;
+        color: var(--text-secondary);
+        max-width: 700px;
+        margin: 0 auto;
+      }
+
+      /* Control Bar (Dropdown & Audience Switcher) */
+      .control-bar {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: 24px;
+        background: var(--bg-panel);
+        border: 1px solid var(--bg-panel-border);
+        border-radius: 18px;
+        padding: 20px 24px;
+        margin-bottom: 32px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      }
+
+      .control-bar-select-label {
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+        display: block;
+      }
+
+      .control-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .control-label {
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-secondary);
+      }
+
+      .unit-selector-wrapper {
+        position: relative;
+      }
+
+      .unit-select {
+        width: 100%;
+        background: rgba(7, 9, 19, 0.8);
+        border: 1px solid var(--bg-panel-border);
+        color: var(--text-primary);
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 1rem;
+        padding: 14px 18px;
+        border-radius: 12px;
+        appearance: none;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .unit-select:hover, .unit-select:focus {
+        border-color: rgba(138, 180, 248, 0.5);
+        outline: none;
+        box-shadow: 0 0 10px rgba(66, 133, 244, 0.15);
+      }
+
+      .unit-selector-wrapper::after {
+        content: '▼';
+        font-size: 0.75rem;
+        position: absolute;
+        right: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        color: var(--text-secondary);
+      }
+
+      /* Tabs (Audience Selector) */
+      .tabs {
+        display: flex;
+        background: rgba(7, 9, 19, 0.6);
+        padding: 4px;
+        border-radius: 12px;
+        border: 1px solid var(--bg-panel-border);
+      }
+
+      .tab-btn {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: var(--text-secondary);
+        font-family: var(--font-heading);
+        font-weight: 800;
+        font-size: 0.95rem;
+        padding: 12px;
+        border-radius: 9px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .tab-btn:hover {
+        color: var(--text-primary);
+      }
+
+      .tab-btn.active {
+        background: linear-gradient(135deg, rgba(66, 133, 244, 0.15) 0%, rgba(155, 114, 203, 0.15) 100%);
+        color: #8ab4f8;
+        border: 1px solid rgba(138, 180, 248, 0.2);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Grid Layout for Hub Content */
+      .hub-grid {
+        display: grid;
+        grid-template-columns: 1.8fr 1.2fr;
+        gap: 32px;
+      }
+
+      /* Panel Base Styles */
+      .panel {
+        background: var(--bg-panel);
+        border: 1px solid var(--bg-panel-border);
+        border-radius: 20px;
+        padding: 28px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      }
+
+      .panel-title {
+        font-family: var(--font-heading);
+        font-size: 1.4rem;
+        font-weight: 800;
+        margin-top: 0;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding-bottom: 12px;
+      }
+
+      /* Interactive Chat Simulator */
+      .chat-simulator {
+        display: flex;
+        flex-direction: column;
+        height: 540px;
+        background: rgba(7, 9, 19, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        overflow: hidden;
+      }
+
+      .chat-header {
+        background: rgba(255, 255, 255, 0.02);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 12px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .chat-header-identity {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        background-color: var(--success);
+        border-radius: 50%;
+        box-shadow: 0 0 8px var(--success);
+      }
+
+      .chat-agent-name {
+        font-family: var(--font-heading);
+        font-weight: 800;
+        font-size: 0.95rem;
+      }
+
+      .chat-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        scroll-behavior: smooth;
+      }
+
+      .chat-msg {
+        display: flex;
+        gap: 12px;
+        max-width: 80%;
+      }
+
+      .chat-msg.student {
+        align-self: flex-end;
+        flex-direction: row-reverse;
+      }
+
+      .chat-msg.tutor {
+        align-self: flex-start;
+      }
+
+      .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+      }
+
+      .avatar.student {
+        background: #1e293b;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: var(--text-primary);
+      }
+
+      .avatar.tutor {
+        background: var(--bg-dark);
+        border: 1px solid rgba(138, 180, 248, 0.3);
+      }
+
+      .bubble {
+        padding: 12px 16px;
+        border-radius: 18px;
+        font-size: 0.98rem;
+        line-height: 1.5;
+      }
+
+      .chat-msg.student .bubble {
+        background: #1e3a8a;
+        color: #eff6ff;
+        border-bottom-right-radius: 4px;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+      }
+
+      .chat-msg.tutor .bubble {
+        background: #1e1b4b;
+        color: #f5f3ff;
+        border-bottom-left-radius: 4px;
+        border: 1px solid rgba(139, 92, 246, 0.2);
+      }
+
+      /* Typing Indicator */
+      .typing-indicator {
+        display: none;
+        align-items: center;
+        gap: 4px;
+        padding: 14px 18px;
+        background: #1e1b4b;
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: 18px;
+        border-bottom-left-radius: 4px;
+        align-self: flex-start;
+        margin-left: 48px;
+      }
+
+      .typing-dot {
+        width: 7px;
+        height: 7px;
+        background-color: #a78bfa;
+        border-radius: 50%;
+        animation: typingBouncing 1.4s infinite ease-in-out;
+      }
+
+      .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+      .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+      @keyframes typingBouncing {
+        0%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-6px); }
+      }
+
+      /* Chat Choices Panel */
+      .chat-input-area {
+        background: rgba(255, 255, 255, 0.01);
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 16px;
+      }
+
+      .choices-box {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .choices-heading {
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: var(--text-secondary);
+        letter-spacing: 0.06em;
+        margin-bottom: 4px;
+      }
+
+      .choice-btn {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--bg-panel-border);
+        color: var(--text-primary);
+        font-family: var(--font-body);
+        font-size: 0.95rem;
+        padding: 12px 16px;
+        border-radius: 10px;
+        text-align: left;
+        cursor: pointer;
+        transition: all 0.2s;
+        line-height: 1.4;
+      }
+
+      .choice-btn:hover {
+        background: rgba(138, 180, 248, 0.06);
+        border-color: rgba(138, 180, 248, 0.3);
+      }
+
+      /* Feedback overlay card */
+      .feedback-card {
+        margin: 0 16px 16px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        display: none;
+        animation: fadeIn 0.3s ease-out;
+      }
+
+      .feedback-card.correct {
+        background: rgba(16, 185, 129, 0.12);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        color: #a7f3d0;
+      }
+
+      .feedback-card.lazy {
+        background: rgba(239, 68, 68, 0.12);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #fca5a5;
+      }
+
+      /* Parent Prompt Library */
+      .parent-prompt-library {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .prompt-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--bg-panel-border);
+        border-radius: 14px;
+        padding: 20px;
+        transition: all 0.2s;
+      }
+
+      .prompt-card:hover {
+        border-color: rgba(197, 138, 249, 0.3);
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .prompt-tag {
+        display: inline-block;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 4px 10px;
+        border-radius: 6px;
+        margin-bottom: 12px;
+      }
+
+      .tag-practice {
+        background: rgba(66, 133, 244, 0.1);
+        color: #8ab4f8;
+        border: 1px solid rgba(66, 133, 244, 0.2);
+      }
+
+      .tag-analogy {
+        background: rgba(161, 66, 244, 0.1);
+        color: #c58af9;
+        border: 1px solid rgba(161, 66, 244, 0.2);
+      }
+
+      .tag-review {
+        background: rgba(16, 185, 129, 0.1);
+        color: #a7f3d0;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+      }
+
+      .prompt-card h4 {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin: 0 0 10px;
+      }
+
+      .prompt-card p.description {
+        font-size: 0.92rem;
+        color: var(--text-secondary);
+        margin: 0 0 14px;
+      }
+
+      .prompt-box {
+        background: rgba(7, 9, 19, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 8px;
+        padding: 12px 14px;
+        font-family: monospace;
+        font-size: 0.9rem;
+        color: #e2e8f0;
+        margin-bottom: 14px;
+        position: relative;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .copy-btn {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--bg-panel-border);
+        color: var(--text-primary);
+        font-family: var(--font-heading);
+        font-weight: 700;
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s;
+      }
+
+      .copy-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .copy-btn.copied {
+        background: rgba(16, 185, 129, 0.2);
+        color: #34d399;
+        border-color: rgba(16, 185, 129, 0.3);
+      }
+
+      /* Sidebar Panels */
+      .sidebar-column {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+      }
+
+      /* Trust Meter Widget */
+      .trust-widget {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .meter-outer {
+        height: 14px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .meter-inner {
+        height: 100%;
+        width: 70%;
+        background: var(--button-solid);
+        border-radius: 10px;
+        transition: width 0.5s ease;
+      }
+
+      .trust-stats {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+      }
+
+      .trust-verdict {
+        font-size: 0.95rem;
+        background: rgba(255, 255, 255, 0.02);
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid var(--bg-panel-border);
+      }
+
+      /* Appropriate vs Inappropriate Usage Card */
+      .usage-table {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .usage-row {
+        padding: 14px;
+        border-radius: 12px;
+        font-size: 0.92rem;
+      }
+
+      .usage-row.good {
+        background: rgba(16, 185, 129, 0.05);
+        border: 1px solid rgba(16, 185, 129, 0.15);
+      }
+
+      .usage-row.bad {
+        background: rgba(239, 68, 68, 0.05);
+        border: 1px solid rgba(239, 68, 68, 0.15);
+      }
+
+      .usage-title {
+        font-weight: 800;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .usage-row.good .usage-title {
+        color: #34d399;
+      }
+
+      .usage-row.bad .usage-title {
+        color: #f87171;
+      }
+
+      .usage-list {
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      .usage-list li {
+        margin-bottom: 6px;
+      }
+
+      .usage-list li:last-child {
+        margin-bottom: 0;
+      }
+
+      /* Pledge Card & Digital Sign */
+      .pledge-widget {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .pledge-checkboxes {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .pledge-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        cursor: pointer;
+        font-size: 0.92rem;
+      }
+
+      .pledge-item input {
+        margin-top: 4px;
+        cursor: pointer;
+      }
+
+      .signature-area {
+        margin-top: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        padding-top: 16px;
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        animation: fadeIn 0.4s ease-out;
+      }
+
+      .sig-input {
+        width: 100%;
+        background: rgba(7, 9, 19, 0.8);
+        border: 1px solid var(--bg-panel-border);
+        color: var(--text-primary);
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 1rem;
+        padding: 12px;
+        border-radius: 8px;
+        outline: none;
+      }
+
+      .sig-input:focus {
+        border-color: #c58af9;
+      }
+
+      .sig-submit {
+        background: var(--button-solid);
+        color: #070913;
+        font-family: var(--font-heading);
+        font-weight: 800;
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+
+      .sig-submit:hover {
+        opacity: 0.9;
+      }
+
+      /* Certificate Modal Overlay */
+      .cert-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(7, 9, 19, 0.95);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        backdrop-filter: blur(15px);
+        padding: 20px;
+      }
+
+      .cert-card {
+        background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #0c0a25 100%);
+        border: 4px double rgba(197, 138, 249, 0.4);
+        padding: 40px;
+        border-radius: 24px;
+        max-width: 600px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(155, 114, 203, 0.2);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .cert-card::before {
+        content: '';
+        position: absolute;
+        inset: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        pointer-events: none;
+        border-radius: 16px;
+      }
+
+      .cert-ribbon {
+        font-size: 3rem;
+        margin-bottom: 16px;
+      }
+
+      .cert-title {
+        font-family: var(--font-heading);
+        font-size: 1.8rem;
+        font-weight: 900;
+        margin: 0 0 10px;
+        background: var(--gemini-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .cert-body {
+        font-size: 1.05rem;
+        color: #cbd5e1;
+        margin: 0 0 24px;
+        line-height: 1.6;
+      }
+
+      .cert-name {
+        font-family: 'Georgia', serif;
+        font-style: italic;
+        font-size: 2rem;
+        color: #fff;
+        margin: 20px 0;
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+        display: inline-block;
+        padding-bottom: 6px;
+        min-width: 250px;
+      }
+
+      .cert-footer {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        margin-top: 20px;
+      }
+
+      .cert-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 24px;
+      }
+
+      .cert-btn {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--bg-panel-border);
+        color: var(--text-primary);
+        font-family: var(--font-heading);
+        font-weight: 700;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .cert-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .cert-btn.primary {
+        background: var(--button-solid);
+        color: #070913;
+        border: none;
+      }
+
+      .cert-btn.primary:hover {
+        opacity: 0.9;
+      }
+
+      /* Animations & Utilities */
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .unit-badge {
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 4px 8px;
+        border-radius: 6px;
+      }
+
+      /* Media Queries */
+      @media (max-width: 960px) {
+        .hub-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .control-bar {
+          grid-template-columns: 1fr;
+        }
+        .cert-card {
+          padding: 24px;
+        }
+      }
+
+      @media (max-width: 485px) {
+        .header-container {
+          flex-direction: column;
+          gap: 12px;
+          align-items: stretch;
+        }
+        .back-btn {
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body class="ai-hub-page">
+    <!-- Navigation Header -->
+    <header class="ai-header">
+      <div class="header-container">
+        <a href="/curriculum/" class="header-logo">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12,2 C12,7.5 16.5,12 22,12 C16.5,12 12,16.5 12,22 C12,16.5 7.5,12 2,12 C7.5,12 12,7.5 12,2 Z" fill="url(#gemini-header-grad)" />
+            <defs>
+              <linearGradient id="gemini-header-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#4285F4" />
+                <stop offset="100%" stop-color="#9b72cb" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <h1>Gemini AI Learning Hub</h1>
+        </a>
+        <a href="/curriculum/" class="back-btn">← Back to Curriculum</a>
+      </div>
+    </header>
+
+    <div class="hub-wrap">
+      <!-- Hero Header -->
+      <section class="hero">
+        <div class="hero-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="vertical-align: middle; margin-right: 4px;">
+            <path d="M12,2 C12,7.5 16.5,12 22,12 C16.5,12 12,16.5 12,22 C12,16.5 7.5,12 2,12 C7.5,12 12,7.5 12,2 Z" fill="#c58af9" />
+          </svg>
+          AI Literacy &amp; Safety
+        </div>
+        <h2>Smarter Studying with <span>Gemini</span></h2>
+        <p class="tagline">
+          Learn how to turn AI into a personal math tutor. Explore appropriate usage tips, interactive practice scenarios, and copy-paste parent helper prompts tailored to each unit.
+        </p>
+      </section>
+
+      <!-- Interactive Controls -->
+      <section class="control-bar">
+        <div class="control-group">
+          <span class="control-bar-select-label">Select Curriculum Unit</span>
+          <div class="unit-selector-wrapper">
+            <select id="unit-selector" class="unit-select" aria-label="Select Curriculum Unit">
+              <option value="1">Unit 1: Number System Launch (Factors, multiples &amp; decimals)</option>
+              <option value="2">Unit 2: Fraction Detective Agency (Fraction division)</option>
+              <option value="3">Unit 3: Culinary Academy (Ratios &amp; rates)</option>
+              <option value="4">Unit 4: Arcade Builder (Percents)</option>
+              <option value="5">Unit 5: Architecture Firm (Area &amp; composite figures)</option>
+              <option value="6">Unit 6: Music Studio (Volume &amp; surface area)</option>
+              <option value="7">Unit 7: Equation Detective Agency (Expressions &amp; equations)</option>
+              <option value="8">Unit 8: Sports Analytics Lab (Statistics, mean, median, mode)</option>
+              <option value="9">Unit 9: Treasure Map Navigator (Rational numbers &amp; coordinate planes)</option>
+              <option value="10">Unit 10: Time Capsule Engineers (Review, budgeting &amp; finance)</option>
+            </select>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label">I am a...</label>
+          <div class="tabs">
+            <button class="tab-btn active" id="tab-student" onclick="setAudience('student')">
+              <span>🎓</span> Student
+            </button>
+            <button class="tab-btn" id="tab-parent" onclick="setAudience('parent')">
+              <span>👨‍👩‍👧</span> Parent
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Main Layout Panels -->
+      <div class="hub-grid">
+        <!-- Main Panel: Student Tutor Chat Simulator / Parent Prompt Hub -->
+        <main class="panel" id="main-panel">
+          <!-- Dynamically populated via JS -->
+        </main>
+
+        <!-- Sidebar: Trust Meter, Usage Guidelines, Honor Pledge -->
+        <div class="sidebar-column">
+          <!-- Trust Meter / Usage Rating -->
+          <section class="panel" id="trust-panel">
+            <h3 class="panel-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="vertical-align: middle;">
+                <path d="M12,2 L2,22 L22,22 Z" fill="#f59e0b" />
+              </svg>
+              AI Reliability Check
+            </h3>
+            <div class="trust-widget">
+              <div class="trust-stats">
+                <span>AI Confidence Rating</span>
+                <span id="trust-pct">85%</span>
+              </div>
+              <div class="meter-outer">
+                <div class="meter-inner" id="trust-bar" style="width: 85%;"></div>
+              </div>
+              <p class="trust-verdict" id="trust-description">
+                AI is excellent for explaining concepts and step-by-step tutoring. Always verify the final math calculations as AIs can occasionally make arithmetic errors!
+              </p>
+            </div>
+          </section>
+
+          <!-- Appropriate vs Inappropriate list -->
+          <section class="panel">
+            <h3 class="panel-title">
+              <span>🛡️</span> Honor Code Boundaries
+            </h3>
+            <div class="usage-table">
+              <div class="usage-row good">
+                <div class="usage-title">🟢 Smart Tutor Use</div>
+                <ul class="usage-list">
+                  <li>"Explain how to divide fractions using a diagram."</li>
+                  <li>"Give me a practice problem similar to x + 4 = 10."</li>
+                  <li>"Explain what I did wrong in my homework step."</li>
+                </ul>
+              </div>
+              <div class="usage-row bad">
+                <div class="usage-title">🔴 Avoid Short-Circuits</div>
+                <ul class="usage-list">
+                  <li>"Do my homework math for me."</li>
+                  <li>"Give me the final answer to question 4."</li>
+                  <li>Copy-pasting an entire test into the chat.</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <!-- Safety Pledge -->
+          <section class="panel" id="pledge-panel">
+            <h3 class="panel-title">
+              <span>✍️</span> Honor Code Pledge
+            </h3>
+            <div class="pledge-widget">
+              <p style="font-size: 0.92rem; color: var(--text-secondary); margin: 0 0 10px;">
+                Complete all three checks to sign your personal AI Learning Pledge!
+              </p>
+              <div class="pledge-checkboxes">
+                <label class="pledge-item">
+                  <input type="checkbox" id="pledge-1" onchange="checkPledge()" />
+                  <span>I will use AI as a tutor to explain math steps, not to copy final answers.</span>
+                </label>
+                <label class="pledge-item">
+                  <input type="checkbox" id="pledge-2" onchange="checkPledge()" />
+                  <span>I will double-check the AI's math arithmetic to watch out for hallucinations.</span>
+                </label>
+                <label class="pledge-item">
+                  <input type="checkbox" id="pledge-3" onchange="checkPledge()" />
+                  <span>I will tell my teacher or parents when I get help from AI on my schoolwork.</span>
+                </label>
+              </div>
+              <div class="signature-area" id="sig-section">
+                <label class="control-label" for="sig-name">Digital Signature Name</label>
+                <input type="text" id="sig-name" placeholder="Enter your name" class="sig-input" />
+                <button class="sig-submit" onclick="generateCertificate()">Sign &amp; Generate Pledge Certificate</button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <!-- Certificate Modal -->
+    <div class="cert-overlay" id="cert-modal">
+      <div class="cert-card">
+        <div class="cert-ribbon">🏆</div>
+        <h3 class="cert-title">AI Learning Champion</h3>
+        <p class="cert-body">
+          This certificate is proudly awarded to
+        </p>
+        <div class="cert-name" id="cert-winner">Student Name</div>
+        <p class="cert-body" style="font-size: 0.95rem; margin-top: 10px;">
+          for committing to use artificial intelligence responsibly, seeking conceptual step-by-step understanding, verifying AI math calculations, and maintaining academic honesty.
+        </p>
+        <p class="cert-footer">
+          EduWonderLab Math Academy • Grade 6 Curriculum Hub
+        </p>
+        <div class="cert-actions">
+          <button class="cert-btn" onclick="closeCert()">Close</button>
+          <button class="cert-btn primary" onclick="window.print()">Print Pledge</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Core App Logic & Scenarios Database -->
+    <script>
+      const UNIT_DATA = {
+        1: {
+          title: "Unit 1: Number System Launch",
+          subtitle: "Factors, Multiples & Decimals",
+          math: "Evaluate 12.5 × 4.",
+          trustLevel: 90,
+          trustDesc: "AI is extremely reliable at decimal multiplication procedures and explanation. The risk of errors is low, but still review standard algorithms.",
+          studentMode: {
+            challenge: "Learn how to multiply decimals with a tutor prompt.",
+            chat: [
+              {
+                sender: "tutor",
+                text: "Hi there! I am Gemini, your math study buddy. Let's practice multiplying decimals. We want to calculate 12.5 × 4. How would you like to start?"
+              }
+            ],
+            choices: [
+              {
+                id: "u1_lazy",
+                text: "What is 12.5 × 4? Just give me the answer.",
+                feedback: "Lazy prompt! The AI will just give you the answer without showing you how to do it. You don't build skills that way.",
+                type: "lazy",
+                reply: {
+                  sender: "tutor",
+                  text: "12.5 × 4 = 50. (Try asking me to act as a step-by-step tutor next time to learn how I got this!)"
+                }
+              },
+              {
+                id: "u1_smart",
+                text: "Act as a math tutor. Explain how to multiply 12.5 by 4 step-by-step. Ask me questions to check my understanding, but don't give the final answer.",
+                feedback: "Smart prompt! This turns the AI into a tutor that guides you and helps you think.",
+                type: "correct",
+                reply: {
+                  sender: "tutor",
+                  text: "I'd love to! A great strategy is to multiply as if there were no decimals, and then place the decimal back in. What is 125 × 4?",
+                  nextChoices: [
+                    {
+                      text: "125 × 4 = 500",
+                      replyText: "Excellent! 125 × 4 = 500. Now, since our original number 12.5 had one decimal place (one number to the right of the dot), where should the decimal point go in 500?",
+                      nextChoices: [
+                        {
+                          text: "Between the 5 and the 0 (50.0)",
+                          replyText: "Fantastic! Yes, we move the decimal point one place to the left, which gives us 50.0 (or just 50). You've mastered decimal multiplication! 🎉"
+                        },
+                        {
+                          text: "Before the 5 (.500)",
+                          replyText: "Not quite! Since 12.5 has only 1 decimal place, we only slide the decimal point 1 place left in 500, not 3. Try placing it after the 50."
+                        }
+                      ]
+                    },
+                    {
+                      text: "125 × 4 = 450",
+                      replyText: "Incorrect. Think of it as 100 × 4 = 400, and 25 × 4 = 100. Add those two together. What do you get?"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          parentMode: {
+            concept: "Factors, Multiples & Decimal Algorithms",
+            prompts: [
+              {
+                tag: "practice",
+                title: "Generate Real-world Decimal Problems",
+                desc: "Ask Gemini to create practice decimal problems related to shopping or launch scenarios.",
+                promptText: "Act as a Grade 6 math teacher. Write 3 real-world word problems involving multiplying and dividing decimals (e.g., buying multiple school items). Provide step-by-step solutions separately for me to review."
+              },
+              {
+                tag: "analogy",
+                title: "Explain Factors & Multiples Simply",
+                desc: "Get a fun analogy to explain factors and multiples to a child.",
+                promptText: "Explain the difference between factors and multiples to a 6th grader using a sports analogy (like building teams or scoring points)."
+              }
+            ]
+          }
+        },
+        2: {
+          title: "Unit 2: Fraction Detective Agency",
+          subtitle: "Fraction Division Procedures",
+          math: "Solve 2/3 ÷ 4/5.",
+          trustLevel: 80,
+          trustDesc: "AIs frequently hallucinate steps in fraction division by multiplying straight across or forgetting to flip. Watch out!",
+          studentMode: {
+            challenge: "Spot the mistake (hallucination) in Gemini's math work.",
+            chat: [
+              {
+                sender: "tutor",
+                text: "Here is my calculation for dividing fractions: 2/3 ÷ 4/5. First, I multiply the top numbers: 2 × 4 = 8. Then the bottom numbers: 3 × 5 = 15. The final answer is 8/15! What do you think?"
+              }
+            ],
+            choices: [
+              {
+                id: "u2_lazy",
+                text: "Looks good to me, thanks!",
+                feedback: "Whoops! Gemini made a big mistake (hallucination) by multiplying instead of dividing, and you accepted it without checking. Remember to verify!",
+                type: "lazy",
+                reply: {
+                  sender: "tutor",
+                  text: "Wait! Look closely. When dividing fractions, do we multiply straight across, or is there a special rule we need to use first?"
+                }
+              },
+              {
+                id: "u2_smart",
+                text: "Gemini, that is incorrect. When dividing fractions, you must multiply by the reciprocal of the second fraction (Keep, Change, Flip). It should be 2/3 × 5/4.",
+                feedback: "Awesome catch! You detected the AI hallucination and directed it to the correct procedure.",
+                type: "correct",
+                reply: {
+                  sender: "tutor",
+                  text: "Aha! You caught my mistake. Yes, I must 'Keep, Change, Flip'. So the expression becomes 2/3 × 5/4. What is the product of 2/3 and 5/4?",
+                  nextChoices: [
+                    {
+                      text: "10/12, which simplifies to 5/6",
+                      replyText: "Perfect! 2 × 5 = 10 and 3 × 4 = 12. 10/12 reduces to 5/6. You successfully debugged the AI! 🕵️‍♂️"
+                    },
+                    {
+                      text: "8/15",
+                      replyText: "No, that was my incorrect answer from earlier. Remember, now we are multiplying 2/3 × 5/4."
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          parentMode: {
+            concept: "Dividing Fractions (Keep-Change-Flip)",
+            prompts: [
+              {
+                tag: "analogy",
+                title: "Keep-Change-Flip Analogy",
+                desc: "Get an explanation of why we invert the divisor when dividing fractions.",
+                promptText: "Explain why we 'multiply by the reciprocal' (Keep-Change-Flip) when dividing fractions, using a physical analogy (like dividing pizzas or sharing parts of a chocolate bar) that a 6th grader can understand."
+              },
+              {
+                tag: "review",
+                title: "Prompt to Diagnose a Student Error",
+                desc: "Check where your child went wrong with fraction division.",
+                promptText: "I am a parent. My child got 12/10 when trying to divide 3/4 by 5/2. Act as a math tutor. Without giving the final correct answer, write a short message explaining what mistake they likely made and how to fix it."
+              }
+            ]
+          }
+        },
+        3: {
+          title: "Unit 3: Culinary Academy",
+          subtitle: "Ratios, Rates & recipe scaling",
+          math: "Scale a recipe: 3 cups of flour for 12 cookies. Scale it to 30 cookies.",
+          trustLevel: 88,
+          trustDesc: "AI excels at ratio scaling. However, if your prompt is vague, it might scale some ingredients and forget others. Use structured prompts.",
+          studentMode: {
+            challenge: "Use structured prompting to scale a recipe accurately.",
+            chat: [
+              {
+                sender: "tutor",
+                text: "Welcome to Culinary Academy! I am your AI assistant chef. We need to scale a recipe of 3 cups of flour for 12 cookies to make exactly 30 cookies. How should we write the prompt?"
+              }
+            ],
+            choices: [
+              {
+                id: "u3_lazy",
+                text: "Scale my recipe of flour for 30 cookies.",
+                feedback: "Too vague! The AI doesn't know how much flour makes how many cookies originally. It might hallucinate a random recipe.",
+                type: "lazy",
+                reply: {
+                  sender: "tutor",
+                  text: "To scale it, I need more context! What is the original ratio of flour to cookies? Tell me the numbers!"
+                }
+              },
+              {
+                id: "u3_smart",
+                text: "Use structured format [Context] + [Data] + [Format]. Context: Grade 6 culinary project. Data: 3 cups flour makes 12 cookies. Format: Solve for the unit rate first, then find the flour needed for 30 cookies.",
+                feedback: "Outstanding prompt! Giving context, exact data, and layout instructions guarantees an accurate response.",
+                type: "correct",
+                reply: {
+                  sender: "tutor",
+                  text: "Applying structured prompt... Unit rate: 3 cups ÷ 12 cookies = 0.25 cups of flour per cookie. Now, to make 30 cookies: 30 × 0.25 = 7.5 cups of flour. Does this unit rate explanation make sense?",
+                  nextChoices: [
+                    {
+                      text: "Yes, 0.25 cups per cookie makes it easy to scale any number of cookies!",
+                      replyText: "Exactly! Once you find the unit rate (flour per cookie), you can scale it up by multiplying by any number. You are now a Master Ratio Chef! 🧁"
+                    },
+                    {
+                      text: "No, shouldn't we just add 18 cups of flour since we are making 18 more cookies?",
+                      replyText: "Careful! Ratios are multiplicative relationships, not additive. Adding 18 cups would ruin the cookie recipe. We must multiply by the unit rate!"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          parentMode: {
+            concept: "Ratios, Rates, and Unit Rates",
+            prompts: [
+              {
+                tag: "practice",
+                title: "Create Ratio Practice Labs",
+                desc: "Ask Gemini to create recipe scaling or speed/rate problems.",
+                promptText: "Act as a Grade 6 math teacher. Create 3 fun ratio problems based on a cooking kitchen theme. Use simple ratios and include step-by-step solutions for scaling up and scaling down."
+              },
+              {
+                tag: "analogy",
+                title: "Unit Rate vs. Ratio Explanation",
+                desc: "Understand how to explain unit rates vs. ratios.",
+                promptText: "Explain the difference between a ratio (e.g., 3:4) and a unit rate (e.g., 0.75 per item) to a 6th grader in a simple way using grocery shopping or video game scoring."
+              }
+            ]
+          }
+        },
+        4: {
+          title: "Unit 4: Arcade Builder",
+          subtitle: "Percents & Discounts",
+          math: "Find a 15% discount on a $40 arcade season pass.",
+          trustLevel: 85,
+          trustDesc: "AIs can calculate percentages quickly, but sometimes fail to subtract the discount from the original price to find the final price. Double-check the subtraction!",
+          studentMode: {
+            challenge: "Verify percent savings and final price calculations.",
+            chat: [
+              {
+                sender: "tutor",
+                text: "Arcade Builder time! We want to buy a $40 pass, and we have a coupon for 15% off. Let's calculate how much money we save."
+              }
+            ],
+            choices: [
+              {
+                id: "u4_lazy",
+                text: "Gemini, how much is 15% off $40? Just tell me what I pay.",
+                feedback: "Lazy prompt! Asking for just the number doesn't help you learn how to calculate benchmark percentages like 10% and 5%.",
+                type: "lazy",
+                reply: {
+                  sender: "tutor",
+                  text: "You pay $34. (To learn how to calculate this yourself, ask me: 'Explain how to find 15% of $40 using 10% as a benchmark')"
+                }
+              },
+              {
+                id: "u4_smart",
+                text: "Explain how to calculate 15% of $40 by using 10% as a benchmark. Guide me through finding 10% and 5% first.",
+                feedback: "Excellent math strategy! Using 10% as a benchmark is a powerful mental math technique that Gemini can help you practice.",
+                type: "correct",
+                reply: {
+                  sender: "tutor",
+                  text: "Let's do it! Finding 10% of a number is easy—we just slide the decimal point one spot to the left. What is 10% of $40?",
+                  nextChoices: [
+                    {
+                      text: "10% of $40 is $4.00",
+                      replyText: "Correct! Now, since 5% is exactly half of 10%, how much money is 5% of $40?",
+                      nextChoices: [
+                        {
+                          text: "5% of $40 is $2.00",
+                          replyText: "Awesome! So 10% is $4, and 5% is $2. Add them together to get 15%. Your total savings is $6. Now, how much is the discounted price of the $40 ticket?",
+                          nextChoices: [
+                            {
+                              text: "$40 - $6 = $34",
+                              replyText: "Perfect! You save $6, so you pay $34. You successfully built your arcade budget! 🕹️"
+                            }
+                          ]
+                        },
+                        {
+                          text: "5% of $40 is $1.00",
+                          replyText: "Not quite. If 10% is $4, half of that (5%) must be half of $4. Try again!"
+                        }
+                      ]
+                    },
+                    {
+                      text: "10% of $40 is $40",
+                      replyText: "No, 10% means 10 out of 100, or dividing by 10. Sliding the decimal one spot left on 40 gives us 4. Try again!"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          parentMode: {
+            concept: "Percents, Fractions, and Decimals",
+            prompts: [
+              {
+                tag: "practice",
+                title: "Generate Percent Discount Scenarios",
+                desc: "Ask Gemini to generate discount and tip problems.",
+                promptText: "Act as a Grade 6 math teacher. Write 3 real-world problems about finding percent discounts on clothing or calculating tips at a restaurant. Show the benchmark method (10% and 5%) in the solutions."
+              },
+              {
+                tag: "review",
+                title: "Homework Helper: Percent Errors",
+                desc: "Understand standard student errors in percents.",
+                promptText: "Explain the common mistake students make when they find 20% of $80 and write '$16' as the final cost of the item. How can I explain to my child that they missed the final subtraction step?"
+              }
+            ]
+          }
+        },
+        5: {
+          title: "Unit 5: Architecture Firm",
+          subtitle: "Area of Polygons & Composite Shapes",
+          math: "Find the area of an L-shaped room (Rectangle A: 6m × 4m; Rectangle B: 3m × 2m).",
+          trustLevel: 82,
+          trustDesc: "AI models struggle to 'see' shapes visually. When asking about composite shapes, define the decomposition clearly, or it will calculate incorrect dimensions.",
+          studentMode: {
+            challenge: "Prompt the AI to decompose a composite shape.",
+            chat: [
+              {
+                sender: "tutor",
+                text: "Hello architect! We have an L-shaped floor plan. It can be split (decomposed) into two rectangles: Rectangle A (6 meters by 4 meters) and Rectangle B (3 meters by 2 meters). How should we prompt our AI to help us find the total area?"
+              }
+            ],
+            choices: [
+              {
+                id: "u5_lazy",
+                text: "What is the area of a room with sides 6, 4, 3, 2?",
+                feedback: "Vague geometry! AI cannot guess how these numbers fit together to form the L-shape. It will likely guess a simple rectangle and make a mistake.",
+                type: "lazy",
+                reply: {
+                  sender: "tutor",
+                  text: "I cannot tell how the sides are arranged. Is this a single rectangle, or is it made of multiple shapes joined together?"
+                }
+              },
+              {
+                id: "u5_smart",
+                text: "Guide me to find the total area of an L-shaped room by finding the areas of Rectangle A (6x4) and Rectangle B (3x2) and adding them together.",
+                feedback: "Spot on! You told the AI exactly how to decompose the shape, which keeps the calculations correct and visual.",
+                type: "correct",
+                reply: {
+                  sender: "tutor",
+                  text: "Great plan! Let's find the area of Rectangle A. It has dimensions 6m and 4m. What is the area of Rectangle A?",
+                  nextChoices: [
+                    {
+                      text: "Area A = 6 × 4 = 24 square meters",
+                      replyText: "Excellent! Now, Rectangle B has dimensions 3m and 2m. What is the area of Rectangle B?",
+                      nextChoices: [
+                        {
+                          text: "Area B = 3 × 2 = 6 square meters",
+                          replyText: "Perfect! Now we add the decomposed areas together. What is the total area of the L-shaped floor plan?",
+                          nextChoices: [
+                            {
+                              text: "Total Area = 24 + 6 = 30 square meters",
+                              replyText: "Brilliant! The total area is 30 square meters. Decomposing composite shapes makes complex architecture easy! 📐"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          parentMode: {
+            concept: "Area of Triangles, Polygons, and Composite Figures",
+            prompts: [
+              {
+                tag: "analogy",
+                title: "Decomposing Polygons Analogy",
+                desc: "Explain how to break down complex shapes using block play.",
+                promptText: "Explain the mathematical concept of 'decomposing composite shapes' to a 10-year-old. Use a fun analogy like playing with LEGO blocks or cutting up sandwiches."
+              },
+              {
+                tag: "practice",
+                title: "Create Area Grid Problems",
+                desc: "Generate coordinates for grid-based polygon problems.",
+                promptText: "Act as a Grade 6 math teacher. Create 3 coordinate-grid area problems. For each, list the vertices (coordinates) of a shape (like a triangle or parallelogram), and show the step-by-step method to calculate the area on a grid."
+              }
+            ]
+          }
+        },
+        6: {
+          title: "Unit 6: Music Studio",
+          subtitle: "Volume & Surface Area",
+          math: "Find the surface area of a speakers shipping box (3in × 4in × 5in).",
+          trustLevel: 85,
+          trustDesc: "AI models frequently mess up surface area calculations because they forget to multiply pairs of faces by 2. Always write out the formula to keep it honest.",
+          studentMode: {
+            challenge: "Walk through surface area formulas step-by-step.",
+            chat: [
+              {
+                sender: "tutor",
+                text: "Hey! We are shipping speakers for our music studio. The box is a rectangular prism with length = 3 inches, width = 4 inches, and height = 5 inches. How should we find the total cardboard surface area?"
+              }
+            ],
+            choices: [
+              {
+                id: "u6_lazy",
+                text: "Gemini, what is the surface area of a 3x4x5 box?",
+                feedback: "Lazy prompt! The AI might give you the correct number, but it won't show you how the 6 faces add up, leaving you unprepared for tests.",
+                type: "lazy",
+                reply: {
+                  sender: "tutor",
+                  text: "The surface area is 94 square inches. (Tip: Ask me to explain the formula using front/back, top/bottom, and side face pairs to understand why!)"
+                }
+              },
+              {
+                id: "u6_smart",
+                text: "Walk me through the surface area formula for a rectangular prism with dimensions 3, 4, and 5 inches. Show me how to calculate the area of the three pairs of faces.",
+                feedback: "Smart prompt! Breaking down the surface area into 3 pairs of matching faces ensures both you and the AI avoid math mistakes.",
+                type: "correct",
+                reply: {
+                  sender: "tutor",
+                  text: "Let's do it! A box has 3 pairs of identical faces. Pair 1 (Front/Back) are 3 × 4. What is the area of one Front face?",
+                  nextChoices: [
+                    {
+                      text: "3 × 4 = 12 square inches",
+                      replyText: "Correct! So Front + Back = 12 × 2 = 24. Pair 2 (Top/Bottom) are 4 × 5. What is the area of one Top face?",
+                      nextChoices: [
+                        {
+                          text: "4 × 5 = 20 square inches",
+                          replyText: "Excellent! So Top + Bottom = 20 × 2 = 40. Pair 3 (Sides) are 3 × 5. What is the area of one Side face?",
+                          nextChoices: [
+                            {
+                              text: "3 × 5 = 15 square inches",
+                              replyText: "Perfect! So Left + Right = 15 × 2 = 30. Now, add all three pairs together: 24 (Front/Back) + 40 (Top/Bottom) + 30 (Sides). What is the total surface area?",
+                              nextChoices: [
+                                {
+                                  text: "24 + 40 + 30 = 94 square inches",
+                                  replyText: "Spot on! The total surface area is 94 square inches. You've packaged the speakers perfectly! 📦"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          parentMode: {
+            concept: "Volume and Surface Area of Prisms",
+            prompts: [
+              {
+                tag: "practice",
+                title: "Speaker Box Design Challenge",
+                desc: "Ask Gemini to write volume and surface area challenges.",
+                promptText: "Act as a Grade 6 math teacher. Write 3 word problems where students have to calculate the volume and surface area of boxes with fractional side lengths (e.g., 2.5 inches). Include step-by-step calculations."
+              },
+              {
+                tag: "analogy",
+                title: "Volume vs. Surface Area Analogy",
+                desc: "Explain the difference between filling and wrapping.",
+                promptText: "Explain the difference between volume and surface area to a 6th grader. Use a fun comparison like filling a fish tank with water vs. wrapping the outside of the tank in paper."
+              }
+            ]
+          }
+        },
+        7: {
+          title: "Unit 7: Equation Detective Agency",
+          subtitle: "Expressions & Algebraic Equations",
+          math: "Solve the equation: 2x + 5 = 15.",
+          trustLevel: 87,
+          trustDesc: "AIs are great at solving simple equations. However, make sure you don't ask it to just do the work. Force it to ask you questions to guide you.",
+          studentMode: {
+            challenge: "Turn Gemini into an equation-solving game coach.",
+            chat: [
+              {
+                sender: "tutor",
+                text: "Welcome Agent! We have a mystery equation to solve: 2x + 5 = 15. How should we ask Gemini to guide us?"
+              }
+            ],
+            choices: [
+              {
+                id: "u7_lazy",
+                text: "Solve the equation 2x + 5 = 15 and tell me what x is.",
+                feedback: "Lazy prompt! The AI does all the algebra for you. You don't practice inverse operations.",
+                type: "lazy",
+                reply: {
+                  sender: "tutor",
+                  text: "x = 5. (To practice algebra yourself, try asking: 'Act as a tutor. Help me isolate x in 2x + 5 = 15 step-by-step by asking me guiding questions.')"
+                }
+              },
+              {
+                id: "u7_smart",
+                text: "Help me isolate x in 2x + 5 = 15 step-by-step. Ask me guiding questions at each step instead of showing me the solution.",
+                feedback: "Smart prompt! This trains you to perform inverse operations step-by-step, building muscle memory for algebra.",
+                type: "correct",
+                reply: {
+                  sender: "tutor",
+                  text: "Let's crack the case! We want to isolate the variable x. First, let's look at +5. What is the opposite (inverse) of adding 5?",
+                  nextChoices: [
+                    {
+                      text: "Subtract 5 from both sides",
+                      replyText: "Precisely! Subtracting 5 from both sides gives us: 2x = 10. Now, how do we undo the multiplication of 2 times x?",
+                      nextChoices: [
+                        {
+                          text: "Divide both sides by 2",
+                          replyText: "Excellent! Dividing 10 by 2 gives us x = 5. You solved the mystery equation step-by-step! Case closed. 🔍"
+                        },
+                        {
+                          text: "Multiply both sides by 2",
+                          replyText: "Oops! 2x means 2 multiplied by x. To undo multiplication, we must perform division, not more multiplication. Try dividing!"
+                        }
+                      ]
+                    },
+                    {
+                      text: "Divide by 5",
+                      replyText: "Wait! Before dividing, it is usually easiest to add or subtract constants first. Try subtracting the 5 first."
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          parentMode: {
+            concept: "Writing and Solving One-Step & Two-Step Equations",
+            prompts: [
+              {
+                tag: "practice",
+                title: "Algebraic Mystery Word Problems",
+                desc: "Get Gemini to write fun detective algebraic equations.",
+                promptText: "Act as a Grade 6 math teacher. Write 3 word problems where students have to translate a sentence into an equation (e.g., 'Double a mystery number of coins plus 5 equals 15') and solve it. Include answers."
+              },
+              {
+                tag: "review",
+                title: "Explaining Variables & Constants",
+                desc: "Get helper analogies to explain algebraic variables.",
+                promptText: "Explain the mathematical difference between a 'variable' (like x) and a 'constant' (like 5) using a video game character customization analogy (like parts that change vs parts that stay the same)."
+              }
+            ]
+          }
+        },
+        8: {
+          title: "Unit 8: Sports Analytics Lab",
+          subtitle: "Statistics & Measures of Center",
+          math: "Find the median of the statistics dataset: 10, 3, 8, 5, 9.",
+          trustLevel: 75,
+          trustDesc: "AI models are notoriously bad at finding medians because they often forget to sort the list first! Always force the AI to sort the numbers before calculating.",
+          studentMode: {
+            challenge: "Spot the median calculation error.",
+            chat: [
+              {
+                sender: "tutor",
+                text: "Let's analyze the player scores: 10, 3, 8, 5, 9. To find the middle (median) number, I look at the list: the number in the exact middle is 8! So the median is 8. What do you think?"
+              }
+            ],
+            choices: [
+              {
+                id: "u8_lazy",
+                text: "Nice job, 8 is in the middle!",
+                feedback: "Oh no! Even though 8 happened to be correct here by luck, you didn't check if the list was sorted. What if the dataset was 10, 8, 3, 5, 9? Always sort first!",
+                type: "lazy",
+                reply: {
+                  sender: "tutor",
+                  text: "Actually, we got lucky, but in statistics, what is the mandatory first step before finding the median number of a list?"
+                }
+              },
+              {
+                id: "u8_smart",
+                text: "Remember, before finding the median, you MUST sort the dataset from least to greatest. Let's write down the sorted list: 3, 5, 8, 9, 10, and then select the middle number.",
+                feedback: "Smart statistician move! Forcing the data to be ordered first prevents major calculation errors.",
+                type: "correct",
+                reply: {
+                  sender: "tutor",
+                  text: "You are absolutely right. I must sort it first: 3, 5, 8, 9, 10. The middle value is indeed 8. Now, what is the mean (average) of these scores? (Hint: add them up and divide by the count of 5)",
+                  nextChoices: [
+                    {
+                      text: "Mean = (3+5+8+9+10)/5 = 35/5 = 7",
+                      replyText: "Outstanding! The mean is 7. You have verified the statistics like a pro sports analyst! 📊"
+                    },
+                    {
+                      text: "Mean = 8",
+                      replyText: "Not quite. 8 is the median (middle). To find the mean, sum all values (35) and divide by the total number of items (5)."
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          parentMode: {
+            concept: "Mean, Median, Mode, Range, and Data Visuals",
+            prompts: [
+              {
+                tag: "practice",
+                title: "Sports Analytics Practice Sets",
+                desc: "Ask Gemini to make basketball/soccer statistic worksheets.",
+                promptText: "Act as a Grade 6 math teacher. Create a statistics worksheet with a table of points scored by a basketball player in 7 games. Show how to calculate the Mean, Median, Mode, and Range step-by-step."
+              },
+              {
+                tag: "analogy",
+                title: "Mean vs. Median Explainer",
+                desc: "Analogy for understanding measures of center.",
+                promptText: "Explain the difference between 'Mean' and 'Median' to a child, using a salary or housing analogy (why one billionaire walking into a room changes the mean but not the median)."
+              }
+            ]
+          }
+        },
+        9: {
+          title: "Unit 9: Treasure Map Navigator",
+          subtitle: "Rational Numbers & Coordinate Planes",
+          math: "Move a character from (1, 2) to (-2, 2) on a coordinate plane grid.",
+          trustLevel: 80,
+          trustDesc: "AI coordinate translations can be tricky. It is easy for AIs to mix up x-axis (horizontal) and y-axis (vertical) directions. Visualize or sketch to confirm!",
+          studentMode: {
+            challenge: "Write coordinate translation prompts.",
+            chat: [
+              {
+                sender: "tutor",
+                text: "Ahoy navigator! Your player is at coordinates (1, 2). We want to sail them to the hidden chest at (-2, 2). How should we explain the movement to Gemini?"
+              }
+            ],
+            choices: [
+              {
+                id: "u9_lazy",
+                text: "Move me to (-2, 2).",
+                feedback: "Vague directions! The AI will just teleport you. You don't practice counting unit steps or understanding axis movements.",
+                type: "lazy",
+                reply: {
+                  sender: "tutor",
+                  text: "You have teleported to (-2, 2). (Next time, try asking me: 'Describe the direction and unit distance to move from (1,2) to (-2,2)')"
+                }
+              },
+              {
+                id: "u9_smart",
+                text: "Explain the coordinate movement from (1, 2) to (-2, 2). Break it down into how many units we move horizontally along the x-axis, and if the y-coordinate changes.",
+                feedback: "Perfect description! Specifying x-axis horizontal movement trains you in coordinate plane geometry.",
+                type: "correct",
+                reply: {
+                  sender: "tutor",
+                  text: "Let's map it out! The y-coordinate is 2 for both points, so there is no vertical movement. For the x-coordinates, we go from 1 to -2. How many units, and in which direction, do we move?",
+                  nextChoices: [
+                    {
+                      text: "Move 3 units to the left",
+                      replyText: "Excellent! Moving from positive 1, past 0, to negative 2 is exactly 3 units left. You successfully navigated the coordinate treasure map! 🗺️"
+                    },
+                    {
+                      text: "Move 3 units to the right",
+                      replyText: "Careful! Moving right would increase x from 1 to 4. We want to go to negative 2, so we must head left."
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          parentMode: {
+            concept: "Coordinate Planes and Four Quadrants",
+            prompts: [
+              {
+                tag: "practice",
+                title: "Coordinate Battleship Generator",
+                desc: "Ask Gemini to generate grid coordinates for coordinate geometry games.",
+                promptText: "Act as a Grade 6 math teacher. Create 3 coordinate plane geometry tasks. The student must identify which quadrants points lie in, calculate the distance between points with the same x or y coordinates, and draw shapes."
+              },
+              {
+                tag: "analogy",
+                title: "Explain Negative Coordinates",
+                desc: "Explain below-zero and negative axes using an elevator analogy.",
+                promptText: "Explain how positive and negative coordinates work on a four-quadrant map to a 6th grader. Use a fun analogy like an elevator going to basement levels or a submarine diving below sea level."
+              }
+            ]
+          }
+        },
+        10: {
+          title: "Unit 10: Time Capsule Engineers",
+          subtitle: "Review & Budgeting Financial Literacy",
+          math: "Calculate 6% sales tax on a $50 time capsule purchase.",
+          trustLevel: 88,
+          trustDesc: "AIs are great at financial formulas, but make sure to tell them to convert percent taxes to decimals (e.g. 6% = 0.06) first, or they may calculate decimal places wrong.",
+          studentMode: {
+            challenge: "Verify budget sales tax calculations.",
+            chat: [
+              {
+                sender: "tutor",
+                text: "Time capsule engineers! We have a $50 budget to purchase items. At checkout, we are charged a 6% sales tax. How should we ask Gemini to guide us in calculating the tax?"
+              }
+            ],
+            choices: [
+              {
+                id: "u10_lazy",
+                text: "Gemini, what is the tax on $50 with 6%?",
+                feedback: "Lazy math! The AI does the calculation without showing you how to convert percents to decimals (6% = 0.06).",
+                type: "lazy",
+                reply: {
+                  sender: "tutor",
+                  text: "The tax is $3. (To learn how to calculate this, ask: 'Show me how to convert 6% to a decimal and multiply by $50 step-by-step')"
+                }
+              },
+              {
+                id: "u10_smart",
+                text: "Explain how to convert 6% to a decimal and multiply it by $50 to find the sales tax. Ask me guiding questions along the way.",
+                feedback: "Excellent! Converting percents to decimals is a core financial math skill. Prompting step-by-step secures this concept.",
+                type: "correct",
+                reply: {
+                  sender: "tutor",
+                  text: "Great! First, to turn a percentage into a decimal, we divide by 100 (move decimal 2 spots left). What is 6% written as a decimal?",
+                  nextChoices: [
+                    {
+                      text: "0.06",
+                      replyText: "Perfect! 6% = 0.06. Now, we multiply 0.06 by $50 to find the tax. What is 0.06 × 50?",
+                      nextChoices: [
+                        {
+                          text: "$3.00",
+                          replyText: "Correct! The sales tax is $3.00. So the total cost of the capsule is $53.00. You've budgeted like a professional engineer! 💼"
+                        },
+                        {
+                          text: "$30.00",
+                          replyText: "Oops! Watch your decimal points. 0.06 × 50 is 3, not 30. Check the place value again!"
+                        }
+                      ]
+                    },
+                    {
+                      text: "0.6",
+                      replyText: "Careful! 0.6 is 60%. 6% must have a zero placeholder in the tenths place: 0.06. Try again!"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          parentMode: {
+            concept: "Financial Literacy, Interest & Budgeting",
+            prompts: [
+              {
+                tag: "practice",
+                title: "Class Project Budget worksheets",
+                desc: "Ask Gemini to create school classroom budgets.",
+                promptText: "Act as a Grade 6 math teacher. Create a budgeting math task where a student has $100 to spend on 4 items, applying a 5% discount on one item and adding a 6% sales tax at the end. Provide step-by-step solutions."
+              },
+              {
+                tag: "analogy",
+                title: "Explain Sales Tax & Interest",
+                desc: "Explain math of taxes and bank interests.",
+                promptText: "Explain what sales tax is and why it exists to a 6th grader. Provide a simple analogy of sharing a small slice of a cookie with the community."
+              }
+            ]
+          }
+        }
+      };
+
+      // Current App State
+      let currentUnit = 1;
+      let currentAudience = "student";
+      let chatHistory = [];
+
+      // Initialize App
+      window.onload = function() {
+        document.getElementById("unit-selector").addEventListener("change", function(e) {
+          currentUnit = parseInt(e.target.value);
+          updateAppView();
+        });
+        updateAppView();
+      };
+
+      // Switch Audience (Student vs Parent)
+      function setAudience(role) {
+        currentAudience = role;
+        document.getElementById("tab-student").classList.toggle("active", role === "student");
+        document.getElementById("tab-parent").classList.toggle("active", role === "parent");
+        updateAppView();
+      }
+
+      // Update UI based on selected Unit and Audience
+      function updateAppView() {
+        const data = UNIT_DATA[currentUnit];
+        
+        // Update Trust Meter Panel
+        document.getElementById("trust-pct").textContent = data.trustLevel + "%";
+        document.getElementById("trust-bar").style.width = data.trustLevel + "%";
+        document.getElementById("trust-description").textContent = data.trustDesc;
+        
+        // Render Main Panel content
+        const mainPanel = document.getElementById("main-panel");
+        
+        if (currentAudience === "student") {
+          chatHistory = [...data.studentMode.chat];
+          renderStudentView(data);
+        } else {
+          renderParentView(data);
+        }
+      }
+
+      // Render Student Chat Simulator Mode
+      function renderStudentView(data) {
+        const mainPanel = document.getElementById("main-panel");
+        mainPanel.innerHTML = `
+          <h3 class="panel-title">
+            <span class="unit-badge">Unit ${currentUnit}</span> 
+            ${data.subtitle} Practice
+          </h3>
+          <p style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 20px;">
+            <strong>Math Scenario:</strong> ${data.math} <br/>
+            <em>${data.studentMode.challenge}</em>
+          </p>
+          
+          <div class="chat-simulator">
+            <div class="chat-header">
+              <div class="chat-header-identity">
+                <div class="status-dot"></div>
+                <span class="chat-agent-name">Gemini Tutor Sim</span>
+              </div>
+              <span style="font-size: 0.75rem; color: var(--text-secondary);">Simulated Bot</span>
+            </div>
+            
+            <div class="chat-body" id="chat-messages">
+              <!-- Messages go here -->
+            </div>
+            
+            <div class="feedback-card" id="chat-feedback"></div>
+            
+            <div class="chat-input-area">
+              <div class="choices-box" id="chat-choices">
+                <!-- Choice buttons go here -->
+              </div>
+            </div>
+          </div>
+        `;
+        
+        displayChatHistory(data.studentMode.choices);
+      }
+
+      // Display Chat History and choices
+      function displayChatHistory(choices) {
+        const chatContainer = document.getElementById("chat-messages");
+        chatContainer.innerHTML = "";
+        
+        chatHistory.forEach(msg => {
+          const msgDiv = document.createElement("div");
+          msgDiv.className = `chat-msg ${msg.sender}`;
+          
+          const avatarDiv = document.createElement("div");
+          avatarDiv.className = `avatar ${msg.sender}`;
+          avatarDiv.innerHTML = msg.sender === "student" ? "S" : `
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12,2 C12,7.5 16.5,12 22,12 C16.5,12 12,16.5 12,22 C12,16.5 7.5,12 2,12 C7.5,12 12,7.5 12,2 Z" fill="#8ab4f8" />
+            </svg>
+          `;
+          
+          const bubbleDiv = document.createElement("div");
+          bubbleDiv.className = "bubble";
+          bubbleDiv.textContent = msg.text;
+          
+          msgDiv.appendChild(avatarDiv);
+          msgDiv.appendChild(bubbleDiv);
+          chatContainer.appendChild(msgDiv);
+        });
+        
+        // Add Typing Indicator
+        const typingIndicator = document.createElement("div");
+        typingIndicator.className = "typing-indicator";
+        typingIndicator.id = "typing-dots";
+        typingIndicator.innerHTML = `
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        `;
+        chatContainer.appendChild(typingIndicator);
+        
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        
+        renderChoices(choices);
+      }
+
+      // Render Prompt Choices
+      function renderChoices(choices) {
+        const choicesContainer = document.getElementById("chat-choices");
+        choicesContainer.innerHTML = `<div class="choices-heading">Select your prompt response:</div>`;
+        
+        choices.forEach(choice => {
+          const btn = document.createElement("button");
+          btn.className = "choice-btn";
+          btn.textContent = choice.text;
+          btn.onclick = () => selectPrompt(choice);
+          choicesContainer.appendChild(btn);
+        });
+      }
+
+      // Student Selects a Prompt Option
+      function selectPrompt(choice) {
+        // 1. Add student message to chat
+        chatHistory.push({
+          sender: "student",
+          text: choice.text
+        });
+        
+        const data = UNIT_DATA[currentUnit];
+        displayChatHistory([]); // Redraw chat with empty choices and show typing
+        
+        // Show feedback card
+        const feedbackCard = document.getElementById("chat-feedback");
+        feedbackCard.style.display = "block";
+        feedbackCard.className = `feedback-card ${choice.type}`;
+        feedbackCard.textContent = choice.feedback;
+        
+        // 2. Trigger typing animation
+        const typingDots = document.getElementById("typing-dots");
+        typingDots.style.display = "flex";
+        
+        setTimeout(() => {
+          typingDots.style.display = "none";
+          
+          // 3. Add AI reply
+          chatHistory.push({
+            sender: "tutor",
+            text: choice.reply.text
+          });
+          
+          displayChatHistory([]); // Redraw chat
+          
+          // 4. Render branching follow-up replies if correct prompt selected
+          if (choice.type === "correct" && choice.reply.nextChoices) {
+            renderSubChoices(choice.reply.nextChoices);
+          } else {
+            // Provide reset button if lazy selected
+            const choicesContainer = document.getElementById("chat-choices");
+            choicesContainer.innerHTML = `
+              <div class="choices-heading">Review the feedback above.</div>
+              <button class="choice-btn" onclick="updateAppView()" style="border-color: #a78bfa; font-weight: 700; text-align: center;">
+                🔄 Try Again with a Smarter Prompt
+              </button>
+            `;
+          }
+        }, 1200);
+      }
+
+      // Render follow-up sub choices for the branch Math dialogue
+      function renderSubChoices(nextChoices) {
+        const choicesContainer = document.getElementById("chat-choices");
+        choicesContainer.innerHTML = `<div class="choices-heading">Calculate and respond:</div>`;
+        
+        nextChoices.forEach(choice => {
+          const btn = document.createElement("button");
+          btn.className = "choice-btn";
+          btn.textContent = choice.text;
+          btn.onclick = () => {
+            chatHistory.push({ sender: "student", text: choice.text });
+            displayChatHistory([]);
+            
+            const typingDots = document.getElementById("typing-dots");
+            typingDots.style.display = "flex";
+            
+            setTimeout(() => {
+              typingDots.style.display = "none";
+              chatHistory.push({ sender: "tutor", text: choice.replyText });
+              displayChatHistory([]);
+              
+              if (choice.nextChoices) {
+                renderSubChoices(choice.nextChoices);
+              } else {
+                // Done! Show success card
+                const choicesContainer = document.getElementById("chat-choices");
+                choicesContainer.innerHTML = `
+                  <div class="choices-heading">Activity Completed!</div>
+                  <button class="choice-btn" onclick="updateAppView()" style="border-color: var(--success); color: #a7f3d0; text-align: center; font-weight: 800;">
+                    ✨ Great Job! Reset Activity
+                  </button>
+                `;
+              }
+            }, 1000);
+          };
+          choicesContainer.appendChild(btn);
+        });
+      }
+
+      // Render Parent View Mode
+      function renderParentView(data) {
+        const mainPanel = document.getElementById("main-panel");
+        mainPanel.innerHTML = `
+          <h3 class="panel-title">
+            <span>👨‍👩‍👧</span> Parent AI Support Hub
+          </h3>
+          <p style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 24px;">
+            Copy and paste these helpful prompts directly into <strong>Gemini</strong> (or any AI tool) to support your child's studying at home.
+          </p>
+          
+          <div class="parent-prompt-library" id="parent-library">
+            <!-- Dynamically populated prompts -->
+          </div>
+        `;
+        
+        const libraryContainer = document.getElementById("parent-library");
+        
+        data.parentMode.prompts.forEach((prompt, index) => {
+          const card = document.createElement("div");
+          card.className = "prompt-card";
+          
+          card.innerHTML = `
+            <span class="prompt-tag tag-${prompt.tag}">${prompt.tag} tool</span>
+            <h4>${prompt.title}</h4>
+            <p class="description">${prompt.desc}</p>
+            <div class="prompt-box" id="prompt-text-${index}">${prompt.promptText}</div>
+            <button class="copy-btn" id="copy-btn-${index}" onclick="copyPrompt(${index})">
+              <span>📋</span> Copy Prompt Text
+            </button>
+          `;
+          libraryContainer.appendChild(card);
+        });
+      }
+
+      // Copy prompt text to clipboard
+      function copyPrompt(index) {
+        const textElement = document.getElementById(`prompt-text-${index}`);
+        const button = document.getElementById(`copy-btn-${index}`);
+        
+        navigator.clipboard.writeText(textElement.textContent).then(() => {
+          button.classList.add("copied");
+          button.innerHTML = "<span>✅</span> Prompt Copied! Paste into Gemini";
+          
+          setTimeout(() => {
+            button.classList.remove("copied");
+            button.innerHTML = "<span>📋</span> Copy Prompt Text";
+          }, 2000);
+        });
+      }
+
+      // Check Pledge Checkboxes
+      function checkPledge() {
+        const p1 = document.getElementById("pledge-1").checked;
+        const p2 = document.getElementById("pledge-2").checked;
+        const p3 = document.getElementById("pledge-3").checked;
+        
+        const sigSection = document.getElementById("sig-section");
+        
+        if (p1 && p2 && p3) {
+          sigSection.style.display = "flex";
+          // Scroll signature section into view
+          sigSection.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          sigSection.style.display = "none";
+        }
+      }
+
+      // Generate Digital Certificate
+      function generateCertificate() {
+        const nameInput = document.getElementById("sig-name").value.trim();
+        if (!nameInput) {
+          alert("Please enter your name to sign the pledge certificate.");
+          return;
+        }
+        
+        document.getElementById("cert-winner").textContent = nameInput;
+        document.getElementById("cert-modal").style.display = "flex";
+      }
+
+      function closeCert() {
+        document.getElementById("cert-modal").style.display = "none";
+      }
+    </script>
+  </body>
+</html>
