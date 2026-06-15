@@ -7650,7 +7650,12 @@
     <script src="/assets/curriculum-progress-bridge.js" defer></script>
     <script>
       window.CURRICULUM_SYNC = {
-        useApiContent: true,
+        // Content is served from this page's complete static curriculum (the
+        // source of truth: full unit names, topics, lessons, and resources).
+        // The D1 content API currently holds only a sparse stub (placeholder
+        // unit names, empty blurbs, partial lessons), so hydrating from it
+        // overrode the real content. Keep off until the D1 content is complete.
+        useApiContent: false,
         apiBase:
           window.location.hostname === "localhost" ||
           window.location.hostname === "127.0.0.1"
