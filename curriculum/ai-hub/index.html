@@ -483,7 +483,7 @@
 
       .builder-grid {
         display: grid;
-        grid-template-columns: 1fr 1.1fr 1fr;
+        grid-template-columns: repeat(4, 1fr);
         gap: 12px;
         margin-bottom: 16px;
       }
@@ -2398,9 +2398,17 @@
       let role = "";
       let selectedUnit = 1;
       let selectedExample = 0;
-      let promptSelections = { role: "", goal: "", constraint: "" };
+      let promptSelections = { role: "", goal: "", constraint: "", persona: "" };
       let currentDialogueIndex = 0;
       let parentLang = "en";
+      let completedChallenges = {};
+
+      const PERSONAS = {
+        robot: { name: "Robot 🤖", prefix: "Beep boop! ", suffix: " [System online]" },
+        pirate: { name: "Pirate 🏴", prefix: "Ahoy matey! ", suffix: " Arrr!" },
+        coach: { name: "Coach 🏆", prefix: "Let's do this! ", suffix: " Keep it up!" },
+        professor: { name: "Professor 🎓", prefix: "Let us examine: ", suffix: " Focus." }
+      };
 
       function setParentLang(lang) {
         parentLang = lang;
@@ -2478,20 +2486,50 @@
         container.innerHTML = "";
 
         if (role === "student") {
+          if (!completedChallenges[selectedUnit]) {
+            completedChallenges[selectedUnit] = [false, false, false, false, false];
+          }
+          const isUnitComplete = completedChallenges[selectedUnit].every(val => val === true);
+
           // Reset dialogue
-          promptSelections = { role: "", goal: "", constraint: "" };
+          promptSelections = { role: "", goal: "", constraint: "", persona: "" };
           currentDialogueIndex = 0;
 
           container.innerHTML = `
+            ${isUnitComplete ? `
+              <div class="certificate-banner" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(66, 133, 244, 0.15) 100%); border: 2px solid rgba(16, 185, 129, 0.4); border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 24px; box-shadow: 0 8px 32px rgba(16, 185, 129, 0.1);">
+                <span style="font-size: 2.5rem; display: block; margin-bottom: 8px;">🏆</span>
+                <h4 style="margin: 0 0 8px; font-family: var(--font-heading); font-weight: 900; color: #10b981; font-size: 1.3rem;">Gemini AI Math Explorer Badge Earned!</h4>
+                <p style="margin: 0 auto; max-width: 600px; font-size: 0.9rem; color: #cbd5e1; line-height: 1.5;">
+                  Fantastic achievement! You have successfully engineered prompts and worked through all 5 step-by-step math challenges in <strong>${data.name}</strong>. You have unlocked the elite Google Education & Gemini AI Math Explorer certification!
+                </p>
+              </div>
+            ` : ''}
+
             <!-- Workspace Layout (Chat on Left, Live SVG on Right) -->
             <div class="workspace-layout">
               <div class="chat-column">
                 <!-- Example Selector Tab Bar -->
-                <div class="example-selector" style="flex-wrap: wrap; gap: 8px;">
+                <div class="example-selector" style="flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
                   ${data.examples.map((ex, idx) => `
                     <button class="example-tab ${selectedExample === idx ? 'active' : ''}" onclick="changeExample(${idx})">Example ${String.fromCharCode(65 + idx)}</button>
                   `).join('')}
                   <span class="ccss-badge">${data.examples[selectedExample].ccss}</span>
+                </div>
+
+                <!-- Unit Progress Tracker -->
+                <div class="progress-tracker-panel" style="background: rgba(255,255,255,0.01); border: 1px dashed var(--bg-panel-border); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+                  <span style="font-size: 0.78rem; font-weight: 800; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px;">Unit Progress Tracker</span>
+                  <div style="display: flex; gap: 8px;">
+                    ${data.examples.map((ex, idx) => {
+                      let isDone = completedChallenges[selectedUnit][idx];
+                      return `
+                        <div class="progress-star" style="width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid ${isDone ? '#10b981' : 'var(--bg-panel-border)'}; background: ${isDone ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.02)'}; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; color: ${isDone ? '#10b981' : 'var(--text-secondary)'}; cursor: default;" title="${ex.mathProblem}">
+                          ${isDone ? '★' : String.fromCharCode(65 + idx)}
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
                 </div>
 
                 <div class="math-box">
@@ -2515,6 +2553,13 @@
                       <span class="col-label">3. Choose Constraint</span>
                       ${data.builder.constraints.map(c => `<button class="builder-chip" onclick="selectChip('constraint', '${c}', this)">${c}</button>`).join('')}
                     </div>
+                    <div class="builder-col">
+                      <span class="col-label">4. Choose Tone</span>
+                      <button class="builder-chip" onclick="selectChip('persona', 'robot', this)">Robot Companion 🤖</button>
+                      <button class="builder-chip" onclick="selectChip('persona', 'pirate', this)">Pirate Captain 🏴‍☠️</button>
+                      <button class="builder-chip" onclick="selectChip('persona', 'coach', this)">Encouraging Coach 🏆</button>
+                      <button class="builder-chip" onclick="selectChip('persona', 'professor', this)">Strict Professor 🎓</button>
+                    </div>
                   </div>
 
                   <div class="prompt-preview">
@@ -2522,9 +2567,14 @@
                     <p class="preview-text" id="prompt-preview-text">Please click one piece from each column above...</p>
                   </div>
 
-                  <button class="submit-prompt-btn" id="submit-prompt" disabled onclick="submitPrompt()">
-                    🚀 Send Prompt to Gemini
-                  </button>
+                  <div style="display: flex; gap: 10px; margin-top: 12px;">
+                    <button class="submit-prompt-btn" id="submit-prompt" disabled onclick="submitPrompt()" style="flex: 2; margin: 0;">
+                      🚀 Send Prompt to Gemini
+                    </button>
+                    <button class="submit-prompt-btn" id="copy-prompt-student" disabled onclick="copyPromptStudent()" style="flex: 1; margin: 0; background: rgba(255,255,255,0.05); border: 1px solid var(--bg-panel-border); color: var(--text-primary);">
+                      📋 Copy Prompt
+                    </button>
+                  </div>
                 </div>
 
                 <div class="result-alert" id="result-feedback"></div>
@@ -2559,8 +2609,7 @@
               </div>
             </div>
           `;
-          
-          drawVisualModel(0); // Initial SVG state
+          drawVisualModel(0);
         } else if (role === "parent") {
           // Render Parent Visual Guide
           const lang = PARENT_LANG[parentLang];
@@ -2705,21 +2754,38 @@
 
         const previewText = document.getElementById("prompt-preview-text");
         const submitBtn = document.getElementById("submit-prompt");
+        const copyBtn = document.getElementById("copy-prompt-student");
 
-        if (promptSelections.role && promptSelections.goal && promptSelections.constraint) {
-          previewText.innerHTML = `"${promptSelections.role}, please ${promptSelections.goal}, ${promptSelections.constraint}."`;
+        if (promptSelections.role && promptSelections.goal && promptSelections.constraint && promptSelections.persona) {
+          const personaName = PERSONAS[promptSelections.persona].name;
+          previewText.innerHTML = `"${promptSelections.role}, please ${promptSelections.goal}, ${promptSelections.constraint}. Tone: ${personaName}."`;
           previewText.style.color = "var(--text-primary)";
           submitBtn.removeAttribute("disabled");
+          copyBtn.removeAttribute("disabled");
         } else {
           const parts = [];
           if (promptSelections.role) parts.push(promptSelections.role);
           if (promptSelections.goal) parts.push("please " + promptSelections.goal);
           if (promptSelections.constraint) parts.push(promptSelections.constraint);
+          if (promptSelections.persona) parts.push("Tone: " + PERSONAS[promptSelections.persona].name);
           
           previewText.textContent = parts.length > 0 ? `"${parts.join(', ')}..."` : "Please click one piece from each column above...";
           previewText.style.color = "var(--text-secondary)";
           submitBtn.setAttribute("disabled", "true");
+          copyBtn.setAttribute("disabled", "true");
         }
+      }
+
+      function copyPromptStudent() {
+        const previewText = document.getElementById("prompt-preview-text").textContent;
+        const btn = document.getElementById("copy-prompt-student");
+        
+        navigator.clipboard.writeText(previewText).then(() => {
+          btn.textContent = "✅ Copied!";
+          setTimeout(() => {
+            btn.textContent = "📋 Copy Prompt";
+          }, 2000);
+        });
       }
 
       // Submit prompt to trigger simulated AI evaluation
@@ -2752,7 +2818,9 @@
             </p>
           `;
         }
-        feedbackAlert.scrollIntoView({ behavior: "smooth" });
+        if (feedbackAlert.scrollIntoView) {
+          feedbackAlert.scrollIntoView({ behavior: "smooth" });
+        }
       }
 
       // Start Chat
@@ -2765,12 +2833,15 @@
         chatLog.innerHTML = "";
         currentDialogueIndex = 0;
 
-        appendTutorMessage("user", `"${promptSelections.role}, please ${promptSelections.goal}, ${promptSelections.constraint}."`);
+        const personaName = PERSONAS[promptSelections.persona].name;
+        appendTutorMessage("user", `"${promptSelections.role}, please ${promptSelections.goal}, ${promptSelections.constraint}. Tone: ${personaName}."`);
 
         showTypingIndicator();
         setTimeout(() => {
           hideTypingIndicator();
-          appendTutorMessage("bot", data.examples[selectedExample].dialogues[0].q);
+          const rawQ = data.examples[selectedExample].dialogues[0].q;
+          const persona = PERSONAS[promptSelections.persona] || { prefix: "", suffix: "" };
+          appendTutorMessage("bot", persona.prefix + rawQ + persona.suffix);
         }, 1200);
       }
 
@@ -2812,6 +2883,7 @@
         chatLog.scrollTop = chatLog.scrollHeight;
       }
 
+      // Hide typing
       function hideTypingIndicator() {
         const indicator = document.getElementById("chat-typing-dots");
         if (indicator) indicator.remove();
@@ -2846,11 +2918,18 @@
 
           if (isCorrect) {
             currentDialogueIndex++;
-            drawVisualModel(currentDialogueIndex); // Update visual model SVG
+            drawVisualModel(currentDialogueIndex);
 
             if (currentDialogueIndex < data.examples[selectedExample].dialogues.length) {
-              appendTutorMessage("bot", data.examples[selectedExample].dialogues[currentDialogueIndex].q);
+              const rawQ = data.examples[selectedExample].dialogues[currentDialogueIndex].q;
+              const persona = PERSONAS[promptSelections.persona] || { prefix: "", suffix: "" };
+              appendTutorMessage("bot", persona.prefix + rawQ + persona.suffix);
             } else {
+              if (!completedChallenges[selectedUnit]) {
+                completedChallenges[selectedUnit] = [false, false, false, false, false];
+              }
+              completedChallenges[selectedUnit][selectedExample] = true;
+
               appendTutorMessage("bot", "Fantastic! You solved the math problem successfully. That is how we use AI to learn! 🎉");
               document.querySelector(".chat-input-bar").style.display = "none";
               document.querySelector(".chat-helpers").innerHTML = `
@@ -2858,9 +2937,15 @@
                   🌟 Challenge Completed! You worked through the math problem step-by-step.
                 </div>
               `;
+              
+              setTimeout(() => {
+                renderWorkspace();
+              }, 1500);
             }
           } else {
-            appendTutorMessage("bot", `Not quite! Let's think: ${dialogue.hint} Try again!`);
+            const rawHint = `Not quite! Let's think: ${dialogue.hint} Try again!`;
+            const persona = PERSONAS[promptSelections.persona] || { prefix: "", suffix: "" };
+            appendTutorMessage("bot", persona.prefix + rawHint + persona.suffix);
           }
         }, 1000);
       }
@@ -3598,6 +3683,24 @@ Instructions:
         }
 
         canvas.innerHTML = svgContent;
+      }
+
+      // Check for deep links on load
+      function handleDeepLink() {
+        const hash = window.location.hash;
+        if (hash === "#parents" || hash === "#parent") {
+          selectRole("parent");
+        } else if (hash === "#teachers" || hash === "#teacher") {
+          selectRole("teacher");
+        } else if (hash === "#students" || hash === "#student") {
+          selectRole("student");
+        }
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", handleDeepLink);
+      } else {
+        handleDeepLink();
       }
     </script>
   </body>
