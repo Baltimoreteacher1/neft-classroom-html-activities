@@ -620,3 +620,64 @@ body.light-theme .lesson-real-world {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* --- Browse by standard (CCSS domain) --- */
+.hub-standards {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+.hub-standards-lead {
+  font-size: 13px;
+  font-weight: 800;
+  color: #56627a;
+  margin-right: 2px;
+}
+.hub-standard-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid #dbe5ef;
+  background: #fff;
+  border-radius: 999px;
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+.hub-standard-chip .hsc-code {
+  font-weight: 800;
+  color: #15487f;
+}
+.hub-standard-chip .hsc-label {
+  color: #56627a;
+  font-weight: 600;
+}
+.hub-standard-chip:hover,
+.hub-standard-chip:focus-visible {
+  border-color: #2c7d6b;
+  outline: none;
+}
+.hub-standard-chip[aria-pressed="true"] {
+  background: #e8f7f4;
+  border-color: #2c7d6b;
+}
+.hub-standard-chip[aria-pressed="true"] .hsc-code,
+.hub-standard-chip[aria-pressed="true"] .hsc-label {
+  color: #176153;
+}
+.hub-standard-chip:focus-visible {
+  outline: 3px solid #2c7d6b;
+  outline-offset: 2px;
+}
+@media (max-width: 520px) {
+  .hub-standard-chip .hsc-label {
+    display: none;
+  }
+}

@@ -1264,6 +1264,92 @@
     onScroll();
   }
 
+  var STANDARD_DOMAINS = [
+    { token: "", code: "All", label: "All standards" },
+    {
+      token: "6.rp",
+      code: "6.RP",
+      label: "Ratios & Proportional Relationships",
+    },
+    { token: "6.ns", code: "6.NS", label: "The Number System" },
+    { token: "6.ee", code: "6.EE", label: "Expressions & Equations" },
+    { token: "6.g", code: "6.G", label: "Geometry" },
+    { token: "6.sp", code: "6.SP", label: "Statistics & Probability" },
+  ];
+
+  function buildStandardFilter() {
+    if (!hubApi || !hubApi.searchBox) return;
+    if (document.getElementById("hub-standards")) return;
+    var anchor = document.querySelector(".hub-filter-chips");
+    if (!anchor) return;
+
+    var box = hubApi.searchBox;
+    var wrap = document.createElement("div");
+    wrap.id = "hub-standards";
+    wrap.className = "hub-standards";
+    wrap.setAttribute("role", "group");
+    wrap.setAttribute("aria-label", "Browse lessons by Common Core standard");
+
+    var lead = document.createElement("span");
+    lead.className = "hub-standards-lead";
+    lead.textContent = "By standard:";
+    wrap.appendChild(lead);
+
+    STANDARD_DOMAINS.forEach(function (d) {
+      var chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "hub-standard-chip";
+      chip.dataset.token = d.token;
+      chip.setAttribute("aria-pressed", d.token === "" ? "true" : "false");
+      chip.title = d.label;
+      chip.innerHTML = d.token
+        ? '<span class="hsc-code">' +
+          d.code +
+          '</span><span class="hsc-label">' +
+          d.label +
+          "</span>"
+        : '<span class="hsc-code">' + d.code + "</span>";
+      chip.addEventListener("click", function () {
+        box.value = d.token;
+        box.dispatchEvent(new Event("input", { bubbles: true }));
+        syncStandardChips();
+        if (d.token) {
+          window.scrollTo({
+            top: 0,
+            behavior:
+              window.matchMedia &&
+              window.matchMedia("(prefers-reduced-motion: reduce)").matches
+                ? "auto"
+                : "smooth",
+          });
+        }
+      });
+      wrap.appendChild(chip);
+    });
+
+    anchor.parentNode.insertBefore(wrap, anchor.nextSibling);
+
+    // Keep chip state in sync with whatever is in the search box.
+    box.addEventListener("input", syncStandardChips);
+    syncStandardChips();
+  }
+
+  function syncStandardChips() {
+    var wrap = document.getElementById("hub-standards");
+    if (!wrap || !hubApi || !hubApi.searchBox) return;
+    var val = (hubApi.searchBox.value || "").trim().toLowerCase();
+    var matched = false;
+    wrap.querySelectorAll(".hub-standard-chip").forEach(function (chip) {
+      var tok = chip.dataset.token;
+      var on = tok !== "" && val === tok;
+      if (on) matched = true;
+      chip.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    var allChip = wrap.querySelector('.hub-standard-chip[data-token=""]');
+    if (allChip)
+      allChip.setAttribute("aria-pressed", matched ? "false" : "true");
+  }
+
   var RECENT_KEY = "nt-curriculum-recent";
 
   function loadRecent() {
@@ -1457,6 +1543,7 @@
     teacherMode = loadTeacherMode();
     loadProgress();
     buildControls();
+    buildStandardFilter();
     buildSearchUX();
     buildBackToTop();
     buildRecent();
