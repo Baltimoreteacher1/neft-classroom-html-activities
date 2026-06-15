@@ -723,3 +723,20 @@ body.light-theme .lesson-real-world {
     display: none !important;
   }
 }
+
+/* --- Per-unit "Print unit" button --- */
+.unit-print-btn {
+  font-family: "Nunito", system-ui, sans-serif;
+  cursor: pointer;
+  line-height: 1.2;
+}
+.unit-print-btn:focus-visible {
+  outline: 3px solid #2c7d6b;
+  outline-offset: 2px;
+}
+/* Print only the chosen unit when triggered from its card */
+@media print {
+  body.print-single-unit details.unit:not(.print-this-unit) {
+    display: none !important;
+  }
+}

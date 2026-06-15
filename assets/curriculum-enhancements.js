@@ -811,6 +811,61 @@
     }
   }
 
+  function printSingleUnit(idx, unitName) {
+    var statics = document.querySelectorAll("details.unit");
+    var target = statics[idx];
+    if (!target) {
+      window.print();
+      return;
+    }
+    target.classList.add("print-this-unit");
+    document.body.classList.add("print-single-unit");
+    var header = document.getElementById("hub-print-header");
+    var prevHeader = header ? header.innerHTML : null;
+    if (header) {
+      header.innerHTML =
+        "<h2>" +
+        escapeHtml(unitName) +
+        "</h2><p>Neft Teacher · Grade 6 Math · eduwonderlab.com/curriculum</p>";
+    }
+    var cleaned = false;
+    function cleanup() {
+      if (cleaned) return;
+      cleaned = true;
+      target.classList.remove("print-this-unit");
+      document.body.classList.remove("print-single-unit");
+      if (header && prevHeader != null) header.innerHTML = prevHeader;
+      window.removeEventListener("afterprint", cleanup);
+    }
+    window.addEventListener("afterprint", cleanup);
+    setTimeout(cleanup, 8000);
+    window.print();
+  }
+
+  function injectPrintUnit(card, unit, idx) {
+    var row = card.querySelector(".unit-resources-row");
+    if (!row) {
+      var header = card.querySelector(".unit-card-header");
+      row = document.createElement("div");
+      row.className = "unit-resources-row";
+      if (header && header.nextSibling) {
+        header.parentNode.insertBefore(row, header.nextSibling);
+      } else {
+        card.appendChild(row);
+      }
+    }
+    if (row.querySelector(".unit-print-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "unit-resource-btn unit-print-btn";
+    btn.innerHTML = "🖨 Print unit";
+    btn.title = "Print just this unit";
+    btn.addEventListener("click", function () {
+      printSingleUnit(idx, unit.num + " · " + unit.name);
+    });
+    row.appendChild(btn);
+  }
+
   function enhanceUnitCards() {
     if (!hubApi || !hubApi.hubEl) return;
     var cards = hubApi.hubEl.querySelectorAll(".unit-card");
@@ -819,6 +874,8 @@
     hubApi.unitsData.forEach(function (u, idx) {
       var card = cards[idx];
       if (!card) return;
+
+      injectPrintUnit(card, u, idx);
 
       var meta = card.querySelector(".unit-card-meta");
       if (meta && !meta.querySelector(".unit-progress-wrap")) {
