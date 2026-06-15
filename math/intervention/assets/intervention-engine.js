@@ -55,6 +55,20 @@
     const tabs = $$(".tab");
     if (!tabs.length) return;
     const panels = $$(".panel");
+    const tablist = tabs[0].closest(".tabs") || tabs[0].parentNode;
+
+    // Shareable "open this activity in its own tab" link. The active tab is
+    // encoded in the URL hash, so every activity has a direct, sendable link
+    // a teacher can hand to students (it opens straight to that activity).
+    const share = document.createElement("a");
+    share.className = "tab-open";
+    share.target = "_blank";
+    share.rel = "noopener";
+    share.textContent = "Open this activity in a new tab ↗";
+    if (tablist && tablist.parentNode) {
+      tablist.parentNode.insertBefore(share, tablist.nextSibling);
+    }
+
     function select(id) {
       tabs.forEach((t) =>
         t.setAttribute("aria-selected", String(t.dataset.tab === id)),
@@ -63,6 +77,13 @@
         p.classList.toggle("active", p.id === "panel-" + id),
       );
       if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
+      const active = tabs.filter((t) => t.dataset.tab === id)[0];
+      const label = active ? active.textContent.trim() : "activity";
+      share.href = location.origin + location.pathname + "#" + id;
+      share.setAttribute(
+        "aria-label",
+        "Open " + label + " in a new browser tab",
+      );
     }
     tabs.forEach((t) =>
       t.addEventListener("click", () => select(t.dataset.tab)),
@@ -213,11 +234,11 @@
     let running = false,
       raf = 0,
       score = 0,
-      lives = 3,
+      lives = 5,
       level = 1,
       q = null,
       tiles = [],
-      speed = 0.6,
+      speed = 0.42,
       spawnT = 0;
 
     function newQuestion() {
@@ -241,9 +262,9 @@
 
     function reset() {
       score = 0;
-      lives = 3;
+      lives = 5;
       level = 1;
-      speed = 0.6;
+      speed = 0.42;
       newQuestion();
     }
 
@@ -263,7 +284,7 @@
       tiles.forEach((t) => {
         if (t.dead) return;
         allGone = false;
-        t.y += speed * (1 + level * 0.12) * 1.6;
+        t.y += speed * (1 + level * 0.08) * 1.25;
         const correct = t.val === String(q.answer);
         ctx.fillStyle = "#1d3b5c";
         roundRect(ctx, t.x, t.y, t.w, t.h, 9);
@@ -313,9 +334,9 @@
         if (px >= t.x && px <= t.x + t.w && py >= t.y && py <= t.y + t.h) {
           if (t.val === String(q.answer)) {
             score += 10;
-            if (score % 50 === 0) {
+            if (score % 80 === 0) {
               level++;
-              speed += 0.18;
+              speed += 0.1;
             }
             flash("#2c7d6b");
             newQuestion();

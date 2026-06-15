@@ -89,6 +89,8 @@ function hub() {
           class="topic-card"
           style="--accent:${t.accent}"
           href="/math/intervention/${t.slug}/"
+          target="_blank"
+          rel="noopener"
           data-slug="${t.slug}"
           data-domain="${esc(t.domain || "")}"
           data-skills="${esc(t.skills.join(" "))}"
@@ -119,12 +121,12 @@ function hub() {
   const sosRows = TOPICS.map(
     (t) => `
             <tr>
-              <td><a class="sos-topic" href="/math/intervention/${t.slug}/"><span>${t.icon}</span>${esc(t.title)}</a></td>
+              <td><a class="sos-topic" href="/math/intervention/${t.slug}/" target="_blank" rel="noopener"><span>${t.icon}</span>${esc(t.title)}</a></td>
               <td><span class="sos-std">${esc(t.standard.replace("Builds ", ""))}</span></td>
               <td>${esc(t.objective.replace(/^I can /, "").replace(/\.$/, ""))}</td>
               <td>${t.lessons}</td>
               <td>${t.estMin} min</td>
-              <td><a class="sos-go" href="/math/intervention/${t.slug}/">Open →</a></td>
+              <td><a class="sos-go" href="/math/intervention/${t.slug}/" target="_blank" rel="noopener">Open →</a></td>
             </tr>`,
   ).join("");
 
@@ -436,7 +438,7 @@ function topicPage(t) {
 
           <div class="panel" id="panel-game">
             <h3>Answer Drop</h3>
-            <p>Tap the falling tile that matches the problem. Three lives — how high can you climb?</p>
+            <p>Tap the falling tile that matches the problem. Five lives — how high can you climb?</p>
             <div class="game-stage" id="game-stage">
               <div class="game-hud"></div>
               <canvas></canvas>
@@ -534,7 +536,7 @@ function teacherGuide() {
     (t, i) => `
             <tr>
               <td>${i + 1}</td>
-              <td><a class="sos-topic" href="/math/intervention/${t.slug}/"><span>${t.icon}</span>${esc(t.title)}</a></td>
+              <td><a class="sos-topic" href="/math/intervention/${t.slug}/" target="_blank" rel="noopener"><span>${t.icon}</span>${esc(t.title)}</a></td>
               <td><span class="sos-std">${esc(t.standard.replace("Builds ", ""))}</span></td>
               <td>${esc(t.objective.replace(/^I can /, ""))}</td>
               <td>${t.lessons} × ${t.estMin}m</td>
