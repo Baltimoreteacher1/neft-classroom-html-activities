@@ -491,6 +491,31 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
 </style>
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
+<style>
+  /* Fill-in-the-blank guided notes */
+  .gn-directions{margin:14px 0 6px;font-weight:700;color:var(--navy);font-size:15px;}
+  .gn-fill{margin:6px 0 4px;}
+  .gn-bank{border:2px dashed var(--teal);border-radius:12px;background:#f0faf8;padding:12px 14px;margin-bottom:14px;}
+  .gn-bank-label{display:block;font-weight:800;color:var(--teal);font-size:13px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:8px;}
+  .gn-bank-words{display:flex;flex-wrap:wrap;gap:8px;}
+  .gn-bank-word{background:#fff;border:1.5px solid var(--teal);color:var(--navy);border-radius:999px;padding:5px 14px;font-weight:700;font-size:14px;}
+  .gn-bank-hint{margin:8px 0 0;font-size:12px;color:#5a6b78;font-style:italic;}
+  .gn-lines{list-style:none;margin:0;padding:0;counter-reset:none;}
+  .gn-line{display:flex;align-items:flex-start;gap:12px;padding:11px 12px;border:1px solid #e3e8ec;border-radius:10px;margin-bottom:10px;background:#fff;break-inside:avoid;page-break-inside:avoid;}
+  .gn-num{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .gn-sentence{flex:1;font-size:16px;line-height:1.9;color:#1c2b36;}
+  .gn-blank{display:inline-block;min-width:120px;border-bottom:2px solid var(--navy);height:1.25em;margin:0 4px;vertical-align:bottom;}
+  .gn-subhead{margin:20px 0 8px;color:var(--navy);font-size:16px;font-weight:800;}
+  @media print{
+    .gn-bank{border:1.5px dashed #000;background:#fff;}
+    .gn-bank-label{color:#000;}
+    .gn-bank-word{border-color:#000;color:#000;}
+    .gn-line{border-color:#000;}
+    .gn-num{background:#000;}
+    .gn-blank{border-bottom-color:#000;}
+    .gn-subhead,.gn-directions{color:#000;}
+  }
+</style>
 <script>
   if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}
   (function() {
@@ -498,9 +523,6 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     document.documentElement.classList.add('level-' + savedLevel);
   })();
 </script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -691,7 +713,7 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   </div>
 </section>
   <section class="section notes">
-  <h2>Key Ideas &amp; Notes
+  <h2>Guided Notes
     <span class="level-tag level-1 l1-only">Level 1 Support</span>
     <span class="level-tag level-2 l2-only">Level 2 Standard</span>
     <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
@@ -703,32 +725,15 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
         <p class="notes-learning-text">I can find the mean, median, and mode of a data set.</p>
       </div>
     </div>
-  <div class="notes-steps"><div class="notes-step notes-step-1">
-      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">1️⃣</span>
-        <h4 class="notes-step-title">Notice</h4></div>
-      <div class="notes-step-body-l1"><p class="notes-step-text">You're the stats analyst for the school basketball team.</p></div>
-      <div class="notes-step-body-l2"><p class="notes-step-prompt">Record your observations:</p><div class="writeline"></div><div class="writeline"></div></div>
-      <div class="notes-step-body-l3"><p class="notes-step-prompt">State the math observation you see in the launch:</p><div class="writeline"></div><div class="writeline"></div></div>
-    </div><div class="notes-step notes-step-2">
-      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">2️⃣</span>
-        <h4 class="notes-step-title">Key idea</h4></div>
-      <div class="notes-step-body-l1"><p class="notes-step-text">I can find the mean, median, and mode of a data set.</p></div>
-      <div class="notes-step-body-l2"><p class="notes-step-prompt">Record the key idea:</p><div class="writeline"></div><div class="writeline"></div></div>
-      <div class="notes-step-body-l3"><p class="notes-step-prompt">Summarize the key mathematical relationship in full sentences:</p><div class="writeline"></div><div class="writeline"></div></div>
-    </div><div class="notes-step notes-step-3">
-      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">3️⃣</span>
-        <h4 class="notes-step-title">Words I'll use</h4></div>
-      <div class="notes-step-body-l1"><div class="notes-word-chips"><span class="notes-word-chip">Mean</span><span class="notes-word-chip">Median</span><span class="notes-word-chip">Mode</span><span class="notes-word-chip">Outlier</span><span class="notes-word-chip">Data distribution</span><span class="notes-word-chip">Variability</span></div></div>
-      <div class="notes-step-body-l2"><div class="notes-word-chips"><span class="notes-word-chip">Mean</span><span class="notes-word-chip">Median</span><span class="notes-word-chip">Mode</span><span class="notes-word-chip">Outlier</span><span class="notes-word-chip">Data distribution</span><span class="notes-word-chip">Variability</span></div></div>
-      <div class="notes-step-body-l3"><div class="notes-word-chips"><span class="notes-word-chip">Mean</span><span class="notes-word-chip">Median</span><span class="notes-word-chip">Mode</span><span class="notes-word-chip">Outlier</span><span class="notes-word-chip">Data distribution</span><span class="notes-word-chip">Variability</span></div>
-         <p class="notes-step-prompt" style="margin-top: 8px;">Write a mathematical explanation using at least two of these terms:</p>
-         <div class="writeline"></div><div class="writeline"></div></div>
-    </div></div>
-  <div class="think-block">
-    <h3>🤔 Think About It</h3>
-    <ul class="prompt-list"><li>What are the highest and lowest scores?</li><li>Do any scores repeat?</li><li>Which score seems like a typical game for this team?</li></ul>
+  <p class="gn-directions">✏️ Fill in each blank as we go. Use the Word Bank to help you.</p><div class="gn-fill">
+    <div class="gn-bank">
+      <span class="gn-bank-label">📚 Word Bank — fill each blank with the best word</span>
+      <div class="gn-bank-words"><span class="gn-bank-word">Mean</span><span class="gn-bank-word">Median</span><span class="gn-bank-word">Mode</span><span class="gn-bank-word">Outlier</span><span class="gn-bank-word">Data distribution</span><span class="gn-bank-word">Variability</span></div>
+      <p class="gn-bank-hint l3-only">Level 3: try the blanks from memory first, then check the bank.</p>
+    </div>
+    <ol class="gn-lines"><li class="gn-line"><span class="gn-num">1</span><span class="gn-sentence">The average found by adding all values and dividing by how many there are is the <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">2</span><span class="gn-sentence">The middle value of a data set when the numbers are in order is the <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">3</span><span class="gn-sentence">The value that appears most often in a data set is the <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">4</span><span class="gn-sentence">A value that is much larger or smaller than the rest of the data is an <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">5</span><span class="gn-sentence">The way data values are spread out is the <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">6</span><span class="gn-sentence">How spread out the data values are is the <span class="gn-blank"></span>.</span></li></ol>
   </div>
-  <div class="notes-gradual">
+  <h3 class="gn-subhead">🧮 Watch &amp; Try — Worked Examples</h3><div class="notes-gradual">
     <div class="l1-only">
     <p class="notes-gr-intro">Watch the teacher model, fill in We Do together, and check your choice on You Do.</p>
     <div class="notes-gr-step notes-gr-watch">
@@ -821,248 +826,17 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   </div>
   </div>
 </section>
-  <section class="section turn-and-talk">
-  <h2>Turn &amp; Talk — Discussion Points
-    <span class="level-tag level-1 l1-only">Level 1 Support</span>
-    <span class="level-tag level-2 l2-only">Level 2 Standard</span>
-    <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
-  </h2>
-  <p class="level-note">Talk with a partner about each prompt. If you need help getting started, use the Level 1 sentence stems. Ready for more? Try the Level 2 question.</p>
-  <div class="tt-card">
-  <span class="tt-phase">Launch</span>
-  <p class="tt-question">The team scored 42, 38, 55, 41, 38, 44, 40 points over 7 games. Which 'average' would best tell the coach the team's typical scoring: mean, median, or mode?</p>
-  <div class="tt-support">
-    <span class="level-tag level-1">Level 1 support</span>
-    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Mean, median, and mode each describe the center of the data in a different way.</p>
-    <details class="tt-hint-toggle">
-      <summary>💡 Need a hint?</summary>
-      <p class="tt-hint-text">Try starting with the word &quot;mean&quot; or &quot;median&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
-    </details>
-    <div class="tt-stems">
-      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
-      <p class="twr-frame"><span class="twr-en">I would use the ___ because it best shows the typical score.</span><span class="twr-es">Usaría la ___ porque muestra mejor el puntaje típico.</span></p><p class="twr-frame"><span class="twr-en">The ___ is the most common score, which is ___.</span><span class="twr-es">La ___ es el puntaje más común, que es ___.</span></p>
-    </div>
-    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">mean</span><span class="tt-word">median</span><span class="tt-word">mode</span><span class="tt-word">average</span><span class="tt-word">data set</span></div>
-    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students distinguish the three measures and justify a choice, noting the mode (38) is the most repeated and the mean/median sit near the center.</p>
-  </div>
-  <div class="tt-extend">
-    <span class="level-tag level-2">Level 2</span>
-    <p class="tt-extend-q">Justify: which measure would change the most if one game's 55 were actually 100? Explain why.</p>
-    <ul class="tt-extend-stems"><li>The ___ would change most because it uses ___.</li><li>The mode and median would stay the same because ___.</li></ul>
-  </div>
-</div>
-<div class="tt-card">
-  <span class="tt-phase">Explore</span>
-  <p class="tt-question">After ordering the scores on the number line, how do you find the median, and how is it different from the mean you calculated?</p>
-  <div class="tt-support">
-    <span class="level-tag level-1">Level 1 support</span>
-    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> The median is the middle of ordered data; the mean is the equal-share total.</p>
-    <details class="tt-hint-toggle">
-      <summary>💡 Need a hint?</summary>
-      <p class="tt-hint-text">Try starting with the word &quot;mean&quot; or &quot;median&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
-    </details>
-    <div class="tt-stems">
-      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
-      <p class="twr-frame"><span class="twr-en">To find the median, I first ___ the scores, then pick the ___.</span><span class="twr-es">Para hallar la mediana, primero ___ los puntajes y luego elijo el ___.</span></p><p class="twr-frame"><span class="twr-en">The mean is different because I have to ___ and ___.</span><span class="twr-es">La media es diferente porque tengo que ___ y ___.</span></p>
-    </div>
-    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">mean</span><span class="tt-word">median</span><span class="tt-word">mode</span><span class="tt-word">order</span><span class="tt-word">data set</span></div>
-    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> A strong answer orders the data, finds the middle value as the median, and explains the mean is found by summing all values and dividing.</p>
-  </div>
-  <div class="tt-extend">
-    <span class="level-tag level-2">Level 2</span>
-    <p class="tt-extend-q">Compute and compare: find the mean and median of 42, 38, 55, 41, 38, 44, 40. Are they close? What does that tell you?</p>
-    <ul class="tt-extend-stems"><li>The mean is ___ and the median is ___.</li><li>They are close/far apart, which tells me the data is ___.</li></ul>
-  </div>
-</div>
-<div class="tt-card">
-  <span class="tt-phase">Connect</span>
-  <p class="tt-question">Quiz scores were 85, 92, 78, 88, 92, 95, 72, 88, 92, 84. The teacher says 'most scored around 87'; a student says 'the most common score was 92.' Who used the mean, and who used the mode?</p>
-  <div class="tt-support">
-    <span class="level-tag level-1">Level 1 support</span>
-    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Different people pick different measures of center to make their point.</p>
-    <details class="tt-hint-toggle">
-      <summary>💡 Need a hint?</summary>
-      <p class="tt-hint-text">Try starting with the word &quot;mean&quot; or &quot;median&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
-    </details>
-    <div class="tt-stems">
-      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
-      <p class="twr-frame"><span class="twr-en">The teacher used the ___, and the student used the ___.</span><span class="twr-es">El maestro usó la ___, y el estudiante usó la ___.</span></p><p class="twr-frame"><span class="twr-en">The ___ is more useful here because ___.</span><span class="twr-es">La ___ es más útil aquí porque ___.</span></p>
-    </div>
-    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">mean</span><span class="tt-word">median</span><span class="tt-word">mode</span><span class="tt-word">average</span><span class="tt-word">data set</span></div>
-    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students identify 87 as the mean and 92 as the mode, and argue which is more useful for describing the class's typical performance.</p>
-  </div>
-  <div class="tt-extend">
-    <span class="level-tag level-2">Level 2</span>
-    <p class="tt-extend-q">Critique: is the student technically right that 92 was 'the most common,' yet possibly misleading about how the class did? Defend.</p>
-    <ul class="tt-extend-stems"><li>The student is right that the mode is ___, but it can mislead because ___.</li><li>A fairer summary of the whole class is the ___ since ___.</li></ul>
-  </div>
-</div>
-<div class="tt-card">
-  <span class="tt-phase">Reflect</span>
-  <p class="tt-question">For the data set 4, 7, 10, 7, 12, talk through how you find the median.</p>
-  <div class="tt-support">
-    <span class="level-tag level-1">Level 1 support</span>
-    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Order the values, then find the middle one.</p>
-    <details class="tt-hint-toggle">
-      <summary>💡 Need a hint?</summary>
-      <p class="tt-hint-text">Try starting with the word &quot;median&quot; or &quot;mean&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
-    </details>
-    <div class="tt-stems">
-      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
-      <p class="twr-frame"><span class="twr-en">First I order the values: ___.</span><span class="twr-es">Primero ordeno los valores: ___.</span></p><p class="twr-frame"><span class="twr-en">The median is ___ because it is in the ___.</span><span class="twr-es">La mediana es ___ porque está en el ___.</span></p>
-    </div>
-    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">median</span><span class="tt-word">mean</span><span class="tt-word">mode</span><span class="tt-word">order</span><span class="tt-word">middle</span></div>
-    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students order to 4, 7, 7, 10, 12 and identify 7 as the median (middle value).</p>
-  </div>
-  <div class="tt-extend">
-    <span class="level-tag level-2">Level 2</span>
-    <p class="tt-extend-q">Generalize: explain how to find the median when a data set has an EVEN number of values.</p>
-    <ul class="tt-extend-stems"><li>With an even number of values, I ___ the two middle numbers.</li><li>For example, with 4, 6, 8, 10 the median is ___ because ___.</li></ul>
-  </div>
-</div>
-</section>
-  <section class="section projects no-print">
-  <h2>Interactive Unit Projects</h2>
-  <p class="level-note">Apply your math skills in these interactive dashboard games and coding labs.</p>
-  <div class="projects-grid">
-    <div class="project-card">
-      <div class="project-header">
-        <span class="project-emoji" aria-hidden="true">🏆</span>
-        <h3 class="project-title">Unit 8 Project — Statistics in Action</h3>
-      </div>
-      <p class="project-desc">Capstone: collect data and summarize it with measures of center for your investigation.</p>
-      <div class="project-links">
-        <a href="/math/statistics/projects/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
-      </div>
-    </div>
-<div class="project-card">
-      <div class="project-header">
-        <span class="project-emoji" aria-hidden="true">📐</span>
-        <h3 class="project-title">Mean, Median &amp; Mode Intro</h3>
-      </div>
-      <p class="project-desc">Build the idea of measures of center — mean, median, and mode (6.SP.3).</p>
-      <div class="project-links">
-        <a href="/math/statistics/mean-median-mode-intro/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
-      </div>
-    </div>
-<div class="project-card">
-      <div class="project-header">
-        <span class="project-emoji" aria-hidden="true">🎮</span>
-        <h3 class="project-title">Mean, Median &amp; Mode Game</h3>
-      </div>
-      <p class="project-desc">Practice finding center in a quick interactive game.</p>
-      <div class="project-links">
-        <a href="/math/statistics/mean-median-mode-game/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
-      </div>
-    </div>
-<div class="project-card">
-      <div class="project-header">
-        <span class="project-emoji" aria-hidden="true">⚽</span>
-        <h3 class="project-title">Soccer &amp; Bracelets Center Lab</h3>
-      </div>
-      <p class="project-desc">Compute mean, median, and mode using real sports and shop data.</p>
-      <div class="project-links">
-        <a href="/math/statistics/meanmedianmodesoccerandbracelets/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
-      </div>
-    </div>
-  </div>
-</section>
-  <section class="section twr">
-  <h2>Write About the Math
-    <span class="twr-method l1-only">Level 1 Support</span>
-    <span class="twr-method l2-only">Level 2 Standard</span>
-    <span class="twr-method l3-only">Level 3 Enrichment</span>
-  </h2>
-  <p class="level-note l1-only l2-only-block">I can explain my reasoning using the words mean, median, mode, and outlier.</p>
-  <div class="l1-only l2-only-block">
-    <div class="twr-block">
-    <h3>1. Kernel Sentence <span class="twr-tag">subject + verb</span></h3>
-    <p class="twr-model"><span class="twr-label">Model:</span> Mean is the average. Add all the numbers, then divide by how many there are.<span class="twr-es">Media es el promedio. Suma todos los números y divide entre cuántos hay.</span></p>
-    <p class="twr-frame"><span class="twr-en">Write a kernel sentence about mean. Use a subject and a verb.</span><span class="twr-es">Escribe una oración base sobre media. Usa un sujeto y un verbo.</span></p>
-    <div class="writeline"></div><div class="writeline"></div>
-  </div>
-    <div class="twr-block">
-    <h3>2. Sentence Expansion <span class="twr-tag">because · but · so</span></h3>
-    <p class="twr-model"><span class="twr-label">Kernel:</span> Mean matters in math<span class="twr-es">Media importa en matemáticas</span></p>
-    <p class="muted">Expand the kernel three ways. Add a reason, a contrast, and a result.</p>
-    <div class="twr-exp-row">
-      <span class="twr-conj">because<span class="twr-conj-es">porque</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-frame"><span class="twr-en">Mean matters in math because ___.</span><span class="twr-es">Media importa en matemáticas porque ___.</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div><div class="twr-exp-row">
-      <span class="twr-conj">but<span class="twr-conj-es">pero</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-frame"><span class="twr-en">Mean matters in math, but ___.</span><span class="twr-es">Media importa en matemáticas, pero ___.</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div><div class="twr-exp-row">
-      <span class="twr-conj">so<span class="twr-conj-es">entonces</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-frame"><span class="twr-en">Mean matters in math, so ___.</span><span class="twr-es">Media importa en matemáticas, entonces ___.</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div>
-  </div>
-    <div class="twr-block">
-    <h3>3. Sentence Types <span class="twr-tag">4 ways to write a math idea</span></h3>
-    <div class="twr-type-row">
-      <span class="twr-type-name">Statement<span class="twr-conj-es">Afirmación</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-hint">Tell one true fact about mean.<span class="twr-es">Di un hecho verdadero sobre mean.</span></p>
-        <p class="twr-frame"><span class="twr-en">Mean ___.</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div><div class="twr-type-row">
-      <span class="twr-type-name">Question<span class="twr-conj-es">Pregunta</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-hint">Ask a question about mean.<span class="twr-es">Haz una pregunta sobre mean.</span></p>
-        <p class="twr-frame"><span class="twr-en">How does ___ ?</span><span class="twr-es">¿Cómo ___ ?</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div><div class="twr-type-row">
-      <span class="twr-type-name">Exclamation<span class="twr-conj-es">Exclamación</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-hint">Show excitement about mean.<span class="twr-es">Muestra entusiasmo sobre mean.</span></p>
-        <p class="twr-frame"><span class="twr-en">Wow, ___ !</span><span class="twr-es">¡Guau, ___ !</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div><div class="twr-type-row">
-      <span class="twr-type-name">Command<span class="twr-conj-es">Mandato</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-hint">Tell a partner what to do with mean.<span class="twr-es">Dile a un compañero qué hacer con mean.</span></p>
-        <p class="twr-frame"><span class="twr-en">First, ___ .</span><span class="twr-es">Primero, ___ .</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div>
-  </div>
-    <div class="twr-block">
-    <h3>4. Explain Your Reasoning <span class="twr-tag">use a sentence starter</span></h3>
-    <div class="twr-stems"><p class="twr-frame"><span class="twr-en">I would use the ___ because it best shows the typical score.</span><span class="twr-es">Usaría la ___ porque muestra mejor el puntaje típico.</span></p><p class="twr-frame"><span class="twr-en">The ___ is the most common score, which is ___.</span><span class="twr-es">La ___ es el puntaje más común, que es ___.</span></p><p class="twr-frame"><span class="twr-en">To find the median, I first ___ the scores, then pick the ___.</span><span class="twr-es">Para hallar la mediana, primero ___ los puntajes y luego elijo el ___.</span></p></div>
-    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
-  </div>
-  </div>
-  <div class="l3-only">
-    <div class="twr-block" style="border-left-color: var(--amber);">
-      <h3>Advanced Mathematical Explanation</h3>
-      <p class="sentence-frame"><strong>Writing Prompt:</strong> Write an explanatory paragraph summarizing today's key mathematical concept. Your explanation must include at least one complex sentence using a conjunction (because, since, although, or unless) to justify your mathematical reasoning. Draw models or sketch graphs to support your argument.</p>
-      <div class="scratchpad"><span class="scratchpad-label">Doodle / Diagram / Sketch Area</span></div>
-      <div class="work-space"><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
-    </div>
-  </div>
-</section>
   <section class="section tryit-section">
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
   <div class="tryit">
-  <p class="tryit-num">1. What is the mode of 2, 5, 5, 7, 9, 5?</p>
-  <ol class="try-choices" type="A"><li>5</li><li>7</li><li>2</li><li>9</li></ol>
+  <p class="tryit-num">1. A team scored 4, 4, 7, and 9 goals in four matches. What is the MODE?</p>
+  <ol class="try-choices" type="A"><li>4</li><li>7</li><li>9</li><li>6</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
 <div class="tryit">
-  <p class="tryit-num">2. What is the median of 4, 8, 10, 14?</p>
-  <ol class="try-choices" type="A"><li>9</li><li>10</li><li>8</li><li>12</li></ol>
+  <p class="tryit-num">2. Level 2 Extension — A coach says one number sums up the team's scoring even though they had a 55-point blowout game. To best show a TYPICAL game when there is a high outlier, which measure should the coach trust most?</p>
+  <ol class="try-choices" type="A"><li>The median, because the outlier barely moves the middle value</li><li>The mean, because it uses every score</li><li>The mode, because it is always the typical value</li><li>The range, because it shows the spread</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
   <div class="enrich-block">
@@ -1082,13 +856,9 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. 5 <span class="ak-why">— Ordered: 2, 3, 5, 7, 9. The middle value is 5.</span></li><li><strong>You Try (notes):</strong> A. 4 <span class="ak-why">— 4 appears three times — more than any other value. Mode = 4.</span></li><li><strong>Try It 1:</strong> A. 5 <span class="ak-why">— 5 appears most often (three times).</span></li><li><strong>Try It 2:</strong> A. 9 <span class="ak-why">— With four values, average the middle two: (8 + 10) ÷ 2 = 9.</span></li><li><strong>Exit Ticket:</strong> A. 7 <span class="ak-why">— Ordered: 4, 7, 7, 10, 12. The middle (3rd) value is 7.</span></li></ol>
-  <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Mean is the average. Add all the numbers, then divide by how many there are.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
+  <ol class="ak-list"><li><strong>Notes 1:</strong> Mean</li><li><strong>Notes 2:</strong> Median</li><li><strong>Notes 3:</strong> Mode</li><li><strong>Notes 4:</strong> Outlier</li><li><strong>Notes 5:</strong> Data distribution</li><li><strong>Notes 6:</strong> Variability</li><li><strong>We Try (notes):</strong> A. 5 <span class="ak-why">— Ordered: 2, 3, 5, 7, 9. The middle value is 5.</span></li><li><strong>You Try (notes):</strong> A. 4 <span class="ak-why">— 4 appears three times — more than any other value. Mode = 4.</span></li><li><strong>Try It 1:</strong> A. 4 <span class="ak-why">— The mode is the value that appears most often. 4 shows up twice; every other value appears once. So the mode is 4.</span></li><li><strong>Try It 2:</strong> A. The median, because the outlier barely moves the middle value <span class="ak-why">— A high outlier pulls the mean upward, making it larger than most games. The median is the middle of the ordered data, so one unusual game barely changes it — it best describes a typical game.</span></li><li><strong>Exit Ticket:</strong> A. 7 <span class="ak-why">— Ordered: 4, 7, 7, 10, 12. The middle (3rd) value is 7.</span></li></ol>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 8-2 · Standard 6.SP.3</footer>
 </main>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>

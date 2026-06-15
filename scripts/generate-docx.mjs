@@ -1,8 +1,8 @@
 // ── DOCX generation for notes packets ────────────────────────────────────────
 // Builds an editable, branded Microsoft Word version of each lesson's notes
 // packet using the `docx` npm package. Content is derived from config.json
-// (objectives + vocab + launch/explore + connect + practice + reflect) plus the
-// shared TWR core module, so it stays in lock-step with the HTML/PDF packets.
+// (objectives + vocab + fill-in-the-blank guided notes + worked examples +
+// practice + reflect), so it stays in lock-step with the HTML/PDF packets.
 //
 // The packet is laid out as a clean, printable, TPT-quality student workbook
 // with real heading styles, a cover/header block, a shaded objectives box,
@@ -47,7 +47,6 @@ import {
   TabStopPosition,
 } from "docx";
 import { Resvg } from "@resvg/resvg-js";
-import { deriveTWR } from "../engine/core/twr.js";
 import { deriveWorkedSteps } from "../engine/core/worked-steps.js";
 import { resolveVocabImage } from "../engine/core/vocab-images.js";
 
@@ -784,66 +783,6 @@ function independentPracticeBlock(cfg, excludeStems = new Set()) {
   return out;
 }
 
-// ── WRITE ABOUT THE MATH (TWR) ───────────────────────────────────────────────
-function writingBlock(cfg) {
-  const twr = deriveTWR(cfg);
-  const out = [sectionHeading("Write About the Math", { pageBreak: true })];
-  out.push(
-    subHeading("Build Strong Sentences", "The Writing Revolution", AMBER),
-  );
-  out.push(
-    muted(
-      twr.languageObjective ||
-        "Write a clear math sentence, then say it out loud.",
-    ),
-  );
-
-  // 1. Kernel
-  out.push(subHeading("1. Kernel Sentence", "subject + verb"));
-  out.push(
-    calloutBox(
-      [
-        para([
-          new TextRun({ text: "Model:  ", bold: true, color: TEAL, size: 20 }),
-          new TextRun({ text: twr.kernel.en, size: 20 }),
-        ], { spacing: { after: 0 } }),
-      ],
-      { fill: AMBER_BG, border: AMBER },
-    ),
-  );
-  out.push(spacer(40));
-  out.push(bilingual(twr.kernel.promptEn, twr.kernel.promptEs));
-  out.push(...writeline(2));
-
-  // 2. Expansion
-  out.push(subHeading("2. Sentence Expansion", "because · but · so"));
-  out.push(
-    para([
-      new TextRun({ text: "Kernel:  ", bold: true, color: TEAL, size: 20 }),
-      new TextRun({ text: twr.expansion.kernelEn, size: 20 }),
-    ]),
-  );
-  for (const c of twr.expansion.conjunctions) {
-    out.push(
-      para([
-        new TextRun({ text: `${c.word}  `, bold: true, color: NAVY, size: 21 }),
-        new TextRun({ text: c.frameEn, size: 21 }),
-        c.frameEs
-          ? new TextRun({ text: c.frameEs, italics: true, color: MUTED, size: 19, break: 1 })
-          : new TextRun(""),
-      ]),
-    );
-    out.push(...writeline(1));
-  }
-
-  // 3. Explain reasoning (kept concise; sentence types live in HTML packet)
-  out.push(subHeading("3. Explain Your Reasoning", "use a sentence starter"));
-  for (const s of twr.reasoningStems) out.push(bilingual(s.en, s.es));
-  out.push(...writeline(2));
-
-  return out;
-}
-
 // ── REFLECT / EXIT TICKET ─────────────────────────────────────────────────────
 function reflectBlock(cfg) {
   const et = (cfg.reflect || {}).exitTicket || {};
@@ -885,6 +824,21 @@ function answerKeyBlock(cfg, worked, excludeStems = new Set()) {
   out.push(
     muted("Teacher reference — remove or fold back before distributing to students."),
   );
+
+  // Fill-in-the-blank guided notes answers, listed first so a teacher can check
+  // the notes line by line.
+  const gnRows = guidedNotesAnswerRows(cfg);
+  if (gnRows.length) {
+    out.push(subHeading("Guided Notes (Fill-in)"));
+    gnRows.forEach((r) => {
+      out.push(
+        para([
+          new TextRun({ text: `${r.label}:  `, bold: true, size: 21 }),
+          new TextRun({ text: r.answer, size: 21 }),
+        ]),
+      );
+    });
+  }
 
   // Guided-notes worked frame answers (I Do is shown in the packet; We Do is
   // blank for the class). List them first so teachers can check the model.
@@ -948,38 +902,58 @@ function answerKeyBlock(cfg, worked, excludeStems = new Set()) {
     );
   }
 
-  // TWR teacher guide
-  out.push(subHeading("Writing (TWR) — what to look for"));
-  const twr = deriveTWR(cfg);
-  out.push(
-    para(new TextRun({
-      text: `Kernel sentence: a complete sentence needs a subject and a verb. Example: ${twr.kernel.en}`,
-      size: 20,
-    })),
-  );
-  out.push(
-    para(new TextRun({
-      text: "Expansion: because = reason, but = contrast/exception, so = result. Answers vary; each must keep the kernel idea.",
-      size: 20,
-    })),
-  );
-
-  // Turn & Talk look-fors (teacher only).
-  const tt = Array.isArray(cfg.turnAndTalk) ? cfg.turnAndTalk : [];
-  const lookFors = tt.filter((it) => it.listenFor);
-  if (lookFors.length) {
-    out.push(subHeading("Turn & Talk — listen for"));
-    lookFors.forEach((it, i) => {
-      out.push(
-        para([
-          new TextRun({ text: `${i + 1}.  `, bold: true, size: 19 }),
-          new TextRun({ text: it.listenFor, italics: true, color: MUTED, size: 19 }),
-        ]),
-      );
-    });
-  }
-
   return out;
+}
+
+// ── GUIDED NOTES (FILL-IN-THE-BLANK) ──────────────────────────────────────────
+// Mirrors the HTML packet: each vocab item ships a `cloze` sentence whose blank
+// is the term. Rendered as a numbered fill-in list with a Word Bank, exactly
+// like a TPT-style guided-notes page.
+function guidedNotesBlock(cfg) {
+  const vocab = Array.isArray(cfg.vocabulary)
+    ? cfg.vocabulary.filter((v) => v && v.term)
+    : [];
+  if (!vocab.length) return [];
+  const out = [sectionHeading("Guided Notes")];
+  out.push(muted("Fill in each blank as we go. Use the Word Bank to help you."));
+  out.push(
+    calloutBox([
+      para([new TextRun({ text: "WORD BANK", bold: true, color: TEAL, size: 18 })], {
+        spacing: { after: 40 },
+      }),
+      para([
+        new TextRun({
+          text: vocab.map((v) => v.term).join("      •      "),
+          bold: true,
+          size: 21,
+        }),
+      ]),
+    ]),
+  );
+  out.push(spacer(80));
+  vocab.forEach((v, i) => {
+    const sentence =
+      v.cloze && /_{2,}/.test(v.cloze)
+        ? v.cloze
+        : `__________  —  ${v.definition || "Write what this word means."}`;
+    out.push(
+      para(
+        [
+          new TextRun({ text: `${i + 1}.  `, bold: true, color: NAVY, size: 22 }),
+          new TextRun({ text: sentence, size: 22 }),
+        ],
+        { spacing: { before: 80, after: 120 } },
+      ),
+    );
+  });
+  return out;
+}
+
+function guidedNotesAnswerRows(cfg) {
+  const vocab = Array.isArray(cfg.vocabulary)
+    ? cfg.vocabulary.filter((v) => v && v.term)
+    : [];
+  return vocab.map((v, i) => ({ label: `Notes ${i + 1}`, answer: v.term }));
 }
 
 // ── DOCUMENT ASSEMBLY ─────────────────────────────────────────────────────────
@@ -997,10 +971,10 @@ function buildDoc(id, cfg) {
     ...coverBlock(id, cfg),
     ...objectivesBlock(cfg),
     ...vocabBlock(cfg.vocabulary),
+    ...guidedNotesBlock(cfg),
     ...workedExampleBlock(cfg, worked),
     ...guidedPracticeBlock(cfg, worked),
     ...independentPracticeBlock(cfg, excludeStems),
-    ...writingBlock(cfg),
     ...reflectBlock(cfg),
     ...answerKeyBlock(cfg, worked, excludeStems),
   ];

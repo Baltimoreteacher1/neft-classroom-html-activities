@@ -491,6 +491,31 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
 </style>
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
+<style>
+  /* Fill-in-the-blank guided notes */
+  .gn-directions{margin:14px 0 6px;font-weight:700;color:var(--navy);font-size:15px;}
+  .gn-fill{margin:6px 0 4px;}
+  .gn-bank{border:2px dashed var(--teal);border-radius:12px;background:#f0faf8;padding:12px 14px;margin-bottom:14px;}
+  .gn-bank-label{display:block;font-weight:800;color:var(--teal);font-size:13px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:8px;}
+  .gn-bank-words{display:flex;flex-wrap:wrap;gap:8px;}
+  .gn-bank-word{background:#fff;border:1.5px solid var(--teal);color:var(--navy);border-radius:999px;padding:5px 14px;font-weight:700;font-size:14px;}
+  .gn-bank-hint{margin:8px 0 0;font-size:12px;color:#5a6b78;font-style:italic;}
+  .gn-lines{list-style:none;margin:0;padding:0;counter-reset:none;}
+  .gn-line{display:flex;align-items:flex-start;gap:12px;padding:11px 12px;border:1px solid #e3e8ec;border-radius:10px;margin-bottom:10px;background:#fff;break-inside:avoid;page-break-inside:avoid;}
+  .gn-num{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .gn-sentence{flex:1;font-size:16px;line-height:1.9;color:#1c2b36;}
+  .gn-blank{display:inline-block;min-width:120px;border-bottom:2px solid var(--navy);height:1.25em;margin:0 4px;vertical-align:bottom;}
+  .gn-subhead{margin:20px 0 8px;color:var(--navy);font-size:16px;font-weight:800;}
+  @media print{
+    .gn-bank{border:1.5px dashed #000;background:#fff;}
+    .gn-bank-label{color:#000;}
+    .gn-bank-word{border-color:#000;color:#000;}
+    .gn-line{border-color:#000;}
+    .gn-num{background:#000;}
+    .gn-blank{border-bottom-color:#000;}
+    .gn-subhead,.gn-directions{color:#000;}
+  }
+</style>
 <script>
   if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}
   (function() {
@@ -498,9 +523,6 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     document.documentElement.classList.add('level-' + savedLevel);
   })();
 </script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -671,7 +693,7 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   </div>
 </section>
   <section class="section notes">
-  <h2>Key Ideas &amp; Notes
+  <h2>Guided Notes
     <span class="level-tag level-1 l1-only">Level 1 Support</span>
     <span class="level-tag level-2 l2-only">Level 2 Standard</span>
     <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
@@ -683,32 +705,15 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
         <p class="notes-learning-text">I can find the area of a trapezoid using the formula A = ½(b1 + b2) × h.</p>
       </div>
     </div>
-  <div class="notes-steps"><div class="notes-step notes-step-1">
-      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">1️⃣</span>
-        <h4 class="notes-step-title">Notice</h4></div>
-      <div class="notes-step-body-l1"><p class="notes-step-text">Your architecture firm is designing a trapezoidal window for a modern building.</p></div>
-      <div class="notes-step-body-l2"><p class="notes-step-prompt">Record your observations:</p><div class="writeline"></div><div class="writeline"></div></div>
-      <div class="notes-step-body-l3"><p class="notes-step-prompt">State the math observation you see in the launch:</p><div class="writeline"></div><div class="writeline"></div></div>
-    </div><div class="notes-step notes-step-2">
-      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">2️⃣</span>
-        <h4 class="notes-step-title">Key idea</h4></div>
-      <div class="notes-step-body-l1"><p class="notes-step-text">I can find the area of a trapezoid using the formula A = ½(b1 + b2) × h.</p></div>
-      <div class="notes-step-body-l2"><p class="notes-step-prompt">Record the key idea:</p><div class="writeline"></div><div class="writeline"></div></div>
-      <div class="notes-step-body-l3"><p class="notes-step-prompt">Summarize the key mathematical relationship in full sentences:</p><div class="writeline"></div><div class="writeline"></div></div>
-    </div><div class="notes-step notes-step-3">
-      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">3️⃣</span>
-        <h4 class="notes-step-title">Words I'll use</h4></div>
-      <div class="notes-step-body-l1"><div class="notes-word-chips"><span class="notes-word-chip">Trapezoid</span><span class="notes-word-chip">Base 1 (b1)</span><span class="notes-word-chip">Base 2 (b2)</span><span class="notes-word-chip">Height</span><span class="notes-word-chip">Area</span></div></div>
-      <div class="notes-step-body-l2"><div class="notes-word-chips"><span class="notes-word-chip">Trapezoid</span><span class="notes-word-chip">Base 1 (b1)</span><span class="notes-word-chip">Base 2 (b2)</span><span class="notes-word-chip">Height</span><span class="notes-word-chip">Area</span></div></div>
-      <div class="notes-step-body-l3"><div class="notes-word-chips"><span class="notes-word-chip">Trapezoid</span><span class="notes-word-chip">Base 1 (b1)</span><span class="notes-word-chip">Base 2 (b2)</span><span class="notes-word-chip">Height</span><span class="notes-word-chip">Area</span></div>
-         <p class="notes-step-prompt" style="margin-top: 8px;">Write a mathematical explanation using at least two of these terms:</p>
-         <div class="writeline"></div><div class="writeline"></div></div>
-    </div></div>
-  <div class="think-block">
-    <h3>🤔 Think About It</h3>
-    <ul class="prompt-list"><li>What shape is the window?</li><li>How many parallel sides does it have?</li><li>What measurements are given?</li></ul>
+  <p class="gn-directions">✏️ Fill in each blank as we go. Use the Word Bank to help you.</p><div class="gn-fill">
+    <div class="gn-bank">
+      <span class="gn-bank-label">📚 Word Bank — fill each blank with the best word</span>
+      <div class="gn-bank-words"><span class="gn-bank-word">Trapezoid</span><span class="gn-bank-word">Base 1 (b1)</span><span class="gn-bank-word">Base 2 (b2)</span><span class="gn-bank-word">Height</span><span class="gn-bank-word">Area</span></div>
+      <p class="gn-bank-hint l3-only">Level 3: try the blanks from memory first, then check the bank.</p>
+    </div>
+    <ol class="gn-lines"><li class="gn-line"><span class="gn-num">1</span><span class="gn-sentence">A quadrilateral with exactly one pair of parallel sides is a <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">2</span><span class="gn-sentence">One of the two parallel sides of a trapezoid is <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">3</span><span class="gn-sentence">The other parallel side of a trapezoid is <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">4</span><span class="gn-sentence">The perpendicular distance between the two parallel bases is the <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">5</span><span class="gn-sentence">The amount of flat space inside the trapezoid is its <span class="gn-blank"></span>.</span></li></ol>
   </div>
-  <div class="notes-gradual">
+  <h3 class="gn-subhead">🧮 Watch &amp; Try — Worked Examples</h3><div class="notes-gradual">
     <div class="l1-only">
     <p class="notes-gr-intro">Watch the teacher model, fill in We Do together, and check your choice on You Do.</p>
     <div class="notes-gr-step notes-gr-watch">
@@ -801,215 +806,17 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   </div>
   </div>
 </section>
-  <section class="section turn-and-talk">
-  <h2>Turn &amp; Talk — Discussion Points
-    <span class="level-tag level-1 l1-only">Level 1 Support</span>
-    <span class="level-tag level-2 l2-only">Level 2 Standard</span>
-    <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
-  </h2>
-  <p class="level-note">Talk with a partner about each prompt. If you need help getting started, use the Level 1 sentence stems. Ready for more? Try the Level 2 question.</p>
-  <div class="tt-card">
-  <span class="tt-phase">Launch</span>
-  <p class="tt-question">The trapezoidal window has a top edge of 4 feet and a bottom edge of 8 feet. Why does the area formula use BOTH bases instead of just one?</p>
-  <div class="tt-support">
-    <span class="level-tag level-1">Level 1 support</span>
-    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> We use both bases because the top and bottom are different lengths.</p>
-    <details class="tt-hint-toggle">
-      <summary>💡 Need a hint?</summary>
-      <p class="tt-hint-text">Try starting with the word &quot;trapezoid&quot; or &quot;base 1 (b1)&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
-    </details>
-    <div class="tt-stems">
-      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
-      <p class="twr-frame"><span class="twr-en">We use both bases because the top and bottom are ___.</span><span class="twr-es">Usamos las dos bases porque la parte de arriba y la de abajo son ___.</span></p><p class="twr-frame"><span class="twr-en">If I used only one base, the area would be ___.</span><span class="twr-es">Si usara solo una base, el área sería ___.</span></p>
-    </div>
-    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">trapezoid</span><span class="tt-word">base 1 (b1)</span><span class="tt-word">base 2 (b2)</span><span class="tt-word">height</span><span class="tt-word">area</span></div>
-    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students explain a trapezoid has two parallel sides of different lengths, so using only one would over- or under-count the area; strong answers mention averaging the bases.</p>
-  </div>
-  <div class="tt-extend">
-    <span class="level-tag level-2">Level 2</span>
-    <p class="tt-extend-q">The wonder prompt asks what happens if both bases are equal. Predict the shape and explain how the trapezoid formula would simplify in that case.</p>
-    <ul class="tt-extend-stems"><li>If b1 equals b2, the shape becomes a ___ because ___.</li><li>The formula simplifies to ___, since ___.</li></ul>
-  </div>
-</div>
-<div class="tt-card">
-  <span class="tt-phase">Explore</span>
-  <p class="tt-question">On the grid you copied the trapezoid (bases 8 and 4, height 5), flipped it, and joined it to the original. What shape formed, and how does that explain the 1/2 in the formula?</p>
-  <div class="tt-support">
-    <span class="level-tag level-1">Level 1 support</span>
-    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Two trapezoids make a parallelogram, so one trapezoid is half of it.</p>
-    <details class="tt-hint-toggle">
-      <summary>💡 Need a hint?</summary>
-      <p class="tt-hint-text">Try starting with the word &quot;trapezoid&quot; or &quot;parallelogram&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
-    </details>
-    <div class="tt-stems">
-      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
-      <p class="twr-frame"><span class="twr-en">When I flip and join the trapezoid, I make a ___.</span><span class="twr-es">Cuando volteo y uno el trapecio, formo un ___.</span></p><p class="twr-frame"><span class="twr-en">I added the two bases first because ___.</span><span class="twr-es">Primero sumé las dos bases porque ___.</span></p><p class="twr-frame"><span class="twr-en">The area is 1/2 times (8 plus 4) times 5, which equals ___.</span><span class="twr-es">El área es 1/2 por (8 más 4) por 5, que es ___.</span></p>
-    </div>
-    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">trapezoid</span><span class="tt-word">parallelogram</span><span class="tt-word">base 1 (b1)</span><span class="tt-word">base 2 (b2)</span><span class="tt-word">height</span></div>
-    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> A strong answer names a parallelogram, links the 1/2 to taking half of two combined trapezoids, and computes area = 1/2 x 12 x 5 = 30 sq ft.</p>
-  </div>
-  <div class="tt-extend">
-    <span class="level-tag level-2">Level 2</span>
-    <p class="tt-extend-q">Compare finding a trapezoid's area to averaging the two bases and multiplying by the height. Are these the same method? Justify with the window numbers.</p>
-    <ul class="tt-extend-stems"><li>Averaging the bases gives ___, and multiplying by the height gives ___, which ___ the formula answer.</li><li>These methods are ___ because ___.</li></ul>
-  </div>
-</div>
-<div class="tt-card">
-  <span class="tt-phase">Connect</span>
-  <p class="tt-question">The builder pours concrete for a trapezoidal driveway with edges of 20 ft and 12 ft and a height of 15 ft; one bag covers 6 sq ft. Walk through finding the number of bags.</p>
-  <div class="tt-support">
-    <span class="level-tag level-1">Level 1 support</span>
-    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Find the trapezoid area first, then divide by what one bag covers.</p>
-    <details class="tt-hint-toggle">
-      <summary>💡 Need a hint?</summary>
-      <p class="tt-hint-text">Try starting with the word &quot;trapezoid&quot; or &quot;base 1 (b1)&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
-    </details>
-    <div class="tt-stems">
-      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
-      <p class="twr-frame"><span class="twr-en">The driveway area is 1/2 times (20 plus 12) times 15, which equals ___ square feet.</span><span class="twr-es">El área de la entrada es 1/2 por (20 más 12) por 15, que es ___ pies cuadrados.</span></p><p class="twr-frame"><span class="twr-en">He needs ___ bags because ___ divided by 6 equals ___.</span><span class="twr-es">Necesita ___ bolsas porque ___ entre 6 es ___.</span></p>
-    </div>
-    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">trapezoid</span><span class="tt-word">base 1 (b1)</span><span class="tt-word">base 2 (b2)</span><span class="tt-word">height</span><span class="tt-word">area</span></div>
-    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students compute area = 240 sq ft, then 240 / 6 = 40 bags, and explain why dividing by coverage gives the bag count.</p>
-  </div>
-  <div class="tt-extend">
-    <span class="level-tag level-2">Level 2</span>
-    <p class="tt-extend-q">If the builder doubled only the height of the driveway, would the number of bags double? Justify using the formula.</p>
-    <ul class="tt-extend-stems"><li>Doubling the height ___ the area because ___.</li><li>So the number of bags would ___, since ___.</li></ul>
-  </div>
-</div>
-</section>
-  <section class="section projects no-print">
-  <h2>Interactive Unit Projects</h2>
-  <p class="level-note">Apply your math skills in these interactive dashboard games and coding labs.</p>
-  <div class="projects-grid">
-    <div class="project-card">
-      <div class="project-header">
-        <span class="project-emoji" aria-hidden="true">🏆</span>
-        <h3 class="project-title">Unit 5 Project — Area in Action</h3>
-      </div>
-      <p class="project-desc">Capstone: apply area of polygons and composite figures to a real design challenge.</p>
-      <div class="project-links">
-        <a href="/math/unit-5/projects/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
-      </div>
-    </div>
-<div class="project-card">
-      <div class="project-header">
-        <span class="project-emoji" aria-hidden="true">🏙️</span>
-        <h3 class="project-title">Area Architect — City Builder</h3>
-      </div>
-      <p class="project-desc">Build a city by calculating areas of parallelograms, triangles, trapezoids, and composite figures.</p>
-      <div class="project-links">
-        <a href="/math/unit-5/games/unit5-area-architect.html" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
-      </div>
-    </div>
-<div class="project-card">
-      <div class="project-header">
-        <span class="project-emoji" aria-hidden="true">🎢</span>
-        <h3 class="project-title">Graphic Novel #1 — Theme Park Engineer</h3>
-      </div>
-      <p class="project-desc">Story-driven area mission across parallelograms, triangles, and trapezoids.</p>
-      <div class="project-links">
-        <a href="/graphic-novels/unit5/graphic-novel-1.html" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
-      </div>
-    </div>
-  </div>
-</section>
-  <section class="section twr">
-  <h2>Write About the Math
-    <span class="twr-method l1-only">Level 1 Support</span>
-    <span class="twr-method l2-only">Level 2 Standard</span>
-    <span class="twr-method l3-only">Level 3 Enrichment</span>
-  </h2>
-  <p class="level-note l1-only l2-only-block">I can explain my steps using the words trapezoid, base, height, and area.</p>
-  <div class="l1-only l2-only-block">
-    <div class="twr-block">
-    <h3>1. Kernel Sentence <span class="twr-tag">subject + verb</span></h3>
-    <p class="twr-model"><span class="twr-label">Model:</span> Trapezoid is a four-sided shape with just one pair of parallel sides.<span class="twr-es">Trapecio es una figura de cuatro lados con solo un par de lados paralelos.</span></p>
-    <p class="twr-frame"><span class="twr-en">Write a kernel sentence about trapezoid. Use a subject and a verb.</span><span class="twr-es">Escribe una oración base sobre trapecio. Usa un sujeto y un verbo.</span></p>
-    <div class="writeline"></div><div class="writeline"></div>
-  </div>
-    <div class="twr-block">
-    <h3>2. Sentence Expansion <span class="twr-tag">because · but · so</span></h3>
-    <p class="twr-model"><span class="twr-label">Kernel:</span> Trapezoid matters in math<span class="twr-es">Trapecio importa en matemáticas</span></p>
-    <p class="muted">Expand the kernel three ways. Add a reason, a contrast, and a result.</p>
-    <div class="twr-exp-row">
-      <span class="twr-conj">because<span class="twr-conj-es">porque</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-frame"><span class="twr-en">Trapezoid matters in math because ___.</span><span class="twr-es">Trapecio importa en matemáticas porque ___.</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div><div class="twr-exp-row">
-      <span class="twr-conj">but<span class="twr-conj-es">pero</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-frame"><span class="twr-en">Trapezoid matters in math, but ___.</span><span class="twr-es">Trapecio importa en matemáticas, pero ___.</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div><div class="twr-exp-row">
-      <span class="twr-conj">so<span class="twr-conj-es">entonces</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-frame"><span class="twr-en">Trapezoid matters in math, so ___.</span><span class="twr-es">Trapecio importa en matemáticas, entonces ___.</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div>
-  </div>
-    <div class="twr-block">
-    <h3>3. Sentence Types <span class="twr-tag">4 ways to write a math idea</span></h3>
-    <div class="twr-type-row">
-      <span class="twr-type-name">Statement<span class="twr-conj-es">Afirmación</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-hint">Tell one true fact about trapezoid.<span class="twr-es">Di un hecho verdadero sobre trapezoid.</span></p>
-        <p class="twr-frame"><span class="twr-en">Trapezoid ___.</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div><div class="twr-type-row">
-      <span class="twr-type-name">Question<span class="twr-conj-es">Pregunta</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-hint">Ask a question about trapezoid.<span class="twr-es">Haz una pregunta sobre trapezoid.</span></p>
-        <p class="twr-frame"><span class="twr-en">How does ___ ?</span><span class="twr-es">¿Cómo ___ ?</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div><div class="twr-type-row">
-      <span class="twr-type-name">Exclamation<span class="twr-conj-es">Exclamación</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-hint">Show excitement about trapezoid.<span class="twr-es">Muestra entusiasmo sobre trapezoid.</span></p>
-        <p class="twr-frame"><span class="twr-en">Wow, ___ !</span><span class="twr-es">¡Guau, ___ !</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div><div class="twr-type-row">
-      <span class="twr-type-name">Command<span class="twr-conj-es">Mandato</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-hint">Tell a partner what to do with trapezoid.<span class="twr-es">Dile a un compañero qué hacer con trapezoid.</span></p>
-        <p class="twr-frame"><span class="twr-en">First, ___ .</span><span class="twr-es">Primero, ___ .</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div>
-  </div>
-    <div class="twr-block">
-    <h3>4. Explain Your Reasoning <span class="twr-tag">use a sentence starter</span></h3>
-    <div class="twr-stems"><p class="twr-frame"><span class="twr-en">We use both bases because the top and bottom are ___.</span><span class="twr-es">Usamos las dos bases porque la parte de arriba y la de abajo son ___.</span></p><p class="twr-frame"><span class="twr-en">If I used only one base, the area would be ___.</span><span class="twr-es">Si usara solo una base, el área sería ___.</span></p><p class="twr-frame"><span class="twr-en">When I flip and join the trapezoid, I make a ___.</span><span class="twr-es">Cuando volteo y uno el trapecio, formo un ___.</span></p></div>
-    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
-  </div>
-  </div>
-  <div class="l3-only">
-    <div class="twr-block" style="border-left-color: var(--amber);">
-      <h3>Advanced Mathematical Explanation</h3>
-      <p class="sentence-frame"><strong>Writing Prompt:</strong> Write an explanatory paragraph summarizing today's key mathematical concept. Your explanation must include at least one complex sentence using a conjunction (because, since, although, or unless) to justify your mathematical reasoning. Draw models or sketch graphs to support your argument.</p>
-      <div class="scratchpad"><span class="scratchpad-label">Doodle / Diagram / Sketch Area</span></div>
-      <div class="work-space"><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
-    </div>
-  </div>
-</section>
   <section class="section tryit-section">
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
   <div class="tryit">
-  <p class="tryit-num">1. A trapezoid has area 36 in² and bases 5 in and 7 in. What is its height?</p>
-  <ol class="try-choices" type="A"><li>6 in</li><li>3 in</li><li>12 in</li><li>18 in</li></ol>
+  <p class="tryit-num">1. Blueprint 2: A trapezoidal skylight has bases of 9 ft and 7 ft and a height of 6 ft. What is its area?</p>
+  <ol class="try-choices" type="A"><li>48 sq ft</li><li>96 sq ft</li><li>63 sq ft</li><li>44 sq ft</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
 <div class="tryit">
-  <p class="tryit-num">2. Why is the trapezoid area formula ½(b1 + b2)h?</p>
-  <ol class="try-choices" type="A"><li>It averages the two bases, then multiplies by the height</li><li>It adds all four sides</li><li>It uses only the longer base</li><li>Trapezoids have no height</li></ol>
+  <p class="tryit-num">2. Level 2 Extension: Two copies of a trapezoidal window (bases 5 ft and 11 ft) are flipped and joined to make a parallelogram with height 6 ft. The parallelogram's base is 5 + 11 = 16 ft, so its area is 96 sq ft. What is the area of ONE trapezoid window?</p>
+  <ol class="try-choices" type="A"><li>48 sq ft</li><li>96 sq ft</li><li>16 sq ft</li><li>192 sq ft</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
   <div class="enrich-block">
@@ -1029,13 +836,9 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. 5 ft <span class="ak-why">— A = ½ × (b₁ + b₂) × h → 45 = ½ × 18 × h → 45 = 9h → h = 5 ft.</span></li><li><strong>You Try (notes):</strong> A. Add the two bases together <span class="ak-why">— The formula is A = ½ × (b₁ + b₂) × h. The first step is to add the two parallel bases.</span></li><li><strong>Try It 1:</strong> A. 6 in <span class="ak-why">— 36 = ½(5 + 7)h = 6h, so h = 6 in.</span></li><li><strong>Try It 2:</strong> A. It averages the two bases, then multiplies by the height <span class="ak-why">— ½(b1 + b2) is the average of the two parallel sides, multiplied by the height.</span></li><li><strong>Exit Ticket:</strong> A. 42 sq in <span class="ak-why">— A = 1/2 x (b1 + b2) x h = 1/2 x (9 + 5) x 6 = 1/2 x 14 x 6 = 42 square inches.</span></li></ol>
-  <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Trapezoid is a four-sided shape with just one pair of parallel sides.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
+  <ol class="ak-list"><li><strong>Notes 1:</strong> Trapezoid</li><li><strong>Notes 2:</strong> Base 1 (b1)</li><li><strong>Notes 3:</strong> Base 2 (b2)</li><li><strong>Notes 4:</strong> Height</li><li><strong>Notes 5:</strong> Area</li><li><strong>We Try (notes):</strong> A. 5 ft <span class="ak-why">— A = ½ × (b₁ + b₂) × h → 45 = ½ × 18 × h → 45 = 9h → h = 5 ft.</span></li><li><strong>You Try (notes):</strong> A. Add the two bases together <span class="ak-why">— The formula is A = ½ × (b₁ + b₂) × h. The first step is to add the two parallel bases.</span></li><li><strong>Try It 1:</strong> A. 48 sq ft <span class="ak-why">— A = ½ × (9 + 7) × 6 = ½ × 16 × 6 = ½ × 96 = 48 sq ft.</span></li><li><strong>Try It 2:</strong> A. 48 sq ft <span class="ak-why">— One trapezoid is half the parallelogram: 96 ÷ 2 = 48 sq ft. This matches A = ½ × (5 + 11) × 6 = ½ × 16 × 6 = 48 sq ft — the ½ comes from the trapezoid being half of the parallelogram.</span></li><li><strong>Exit Ticket:</strong> A. 42 sq in <span class="ak-why">— A = 1/2 x (b1 + b2) x h = 1/2 x (9 + 5) x 6 = 1/2 x 14 x 6 = 42 square inches.</span></li></ol>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 5-2 · Standard 6.G.1</footer>
 </main>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>

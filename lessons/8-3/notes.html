@@ -491,6 +491,31 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
 </style>
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
+<style>
+  /* Fill-in-the-blank guided notes */
+  .gn-directions{margin:14px 0 6px;font-weight:700;color:var(--navy);font-size:15px;}
+  .gn-fill{margin:6px 0 4px;}
+  .gn-bank{border:2px dashed var(--teal);border-radius:12px;background:#f0faf8;padding:12px 14px;margin-bottom:14px;}
+  .gn-bank-label{display:block;font-weight:800;color:var(--teal);font-size:13px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:8px;}
+  .gn-bank-words{display:flex;flex-wrap:wrap;gap:8px;}
+  .gn-bank-word{background:#fff;border:1.5px solid var(--teal);color:var(--navy);border-radius:999px;padding:5px 14px;font-weight:700;font-size:14px;}
+  .gn-bank-hint{margin:8px 0 0;font-size:12px;color:#5a6b78;font-style:italic;}
+  .gn-lines{list-style:none;margin:0;padding:0;counter-reset:none;}
+  .gn-line{display:flex;align-items:flex-start;gap:12px;padding:11px 12px;border:1px solid #e3e8ec;border-radius:10px;margin-bottom:10px;background:#fff;break-inside:avoid;page-break-inside:avoid;}
+  .gn-num{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .gn-sentence{flex:1;font-size:16px;line-height:1.9;color:#1c2b36;}
+  .gn-blank{display:inline-block;min-width:120px;border-bottom:2px solid var(--navy);height:1.25em;margin:0 4px;vertical-align:bottom;}
+  .gn-subhead{margin:20px 0 8px;color:var(--navy);font-size:16px;font-weight:800;}
+  @media print{
+    .gn-bank{border:1.5px dashed #000;background:#fff;}
+    .gn-bank-label{color:#000;}
+    .gn-bank-word{border-color:#000;color:#000;}
+    .gn-line{border-color:#000;}
+    .gn-num{background:#000;}
+    .gn-blank{border-bottom-color:#000;}
+    .gn-subhead,.gn-directions{color:#000;}
+  }
+</style>
 <script>
   if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}
   (function() {
@@ -498,9 +523,6 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     document.documentElement.classList.add('level-' + savedLevel);
   })();
 </script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -691,7 +713,7 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   </div>
 </section>
   <section class="section notes">
-  <h2>Key Ideas &amp; Notes
+  <h2>Guided Notes
     <span class="level-tag level-1 l1-only">Level 1 Support</span>
     <span class="level-tag level-2 l2-only">Level 2 Standard</span>
     <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
@@ -703,32 +725,15 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
         <p class="notes-learning-text">I can find the mean absolute deviation (MAD) to describe how spread out data is.</p>
       </div>
     </div>
-  <div class="notes-steps"><div class="notes-step notes-step-1">
-      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">1️⃣</span>
-        <h4 class="notes-step-title">Notice</h4></div>
-      <div class="notes-step-body-l1"><p class="notes-step-text">Coach wants to know which basketball player is more consistent: Player A scored 18, 22, 20, 24, 16 points in the last 5 games.</p></div>
-      <div class="notes-step-body-l2"><p class="notes-step-prompt">Record your observations:</p><div class="writeline"></div><div class="writeline"></div></div>
-      <div class="notes-step-body-l3"><p class="notes-step-prompt">State the math observation you see in the launch:</p><div class="writeline"></div><div class="writeline"></div></div>
-    </div><div class="notes-step notes-step-2">
-      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">2️⃣</span>
-        <h4 class="notes-step-title">Key idea</h4></div>
-      <div class="notes-step-body-l1"><p class="notes-step-text">I can find the mean absolute deviation (MAD) to describe how spread out data is.</p></div>
-      <div class="notes-step-body-l2"><p class="notes-step-prompt">Record the key idea:</p><div class="writeline"></div><div class="writeline"></div></div>
-      <div class="notes-step-body-l3"><p class="notes-step-prompt">Summarize the key mathematical relationship in full sentences:</p><div class="writeline"></div><div class="writeline"></div></div>
-    </div><div class="notes-step notes-step-3">
-      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">3️⃣</span>
-        <h4 class="notes-step-title">Words I'll use</h4></div>
-      <div class="notes-step-body-l1"><div class="notes-word-chips"><span class="notes-word-chip">Mean Absolute Deviation</span><span class="notes-word-chip">Deviation</span><span class="notes-word-chip">Absolute Value</span><span class="notes-word-chip">Spread</span><span class="notes-word-chip">Data distribution</span><span class="notes-word-chip">Variability</span></div></div>
-      <div class="notes-step-body-l2"><div class="notes-word-chips"><span class="notes-word-chip">Mean Absolute Deviation</span><span class="notes-word-chip">Deviation</span><span class="notes-word-chip">Absolute Value</span><span class="notes-word-chip">Spread</span><span class="notes-word-chip">Data distribution</span><span class="notes-word-chip">Variability</span></div></div>
-      <div class="notes-step-body-l3"><div class="notes-word-chips"><span class="notes-word-chip">Mean Absolute Deviation</span><span class="notes-word-chip">Deviation</span><span class="notes-word-chip">Absolute Value</span><span class="notes-word-chip">Spread</span><span class="notes-word-chip">Data distribution</span><span class="notes-word-chip">Variability</span></div>
-         <p class="notes-step-prompt" style="margin-top: 8px;">Write a mathematical explanation using at least two of these terms:</p>
-         <div class="writeline"></div><div class="writeline"></div></div>
-    </div></div>
-  <div class="think-block">
-    <h3>🤔 Think About It</h3>
-    <ul class="prompt-list"><li>Both players have the same mean. What is different about their scores?</li><li>Which player's scores stay closer to 20?</li><li>Which player has the biggest single-game difference from 20?</li></ul>
+  <p class="gn-directions">✏️ Fill in each blank as we go. Use the Word Bank to help you.</p><div class="gn-fill">
+    <div class="gn-bank">
+      <span class="gn-bank-label">📚 Word Bank — fill each blank with the best word</span>
+      <div class="gn-bank-words"><span class="gn-bank-word">Mean Absolute Deviation</span><span class="gn-bank-word">Deviation</span><span class="gn-bank-word">Absolute Value</span><span class="gn-bank-word">Spread</span><span class="gn-bank-word">Data distribution</span><span class="gn-bank-word">Variability</span></div>
+      <p class="gn-bank-hint l3-only">Level 3: try the blanks from memory first, then check the bank.</p>
+    </div>
+    <ol class="gn-lines"><li class="gn-line"><span class="gn-num">1</span><span class="gn-sentence">The average distance of each value from the mean is the <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">2</span><span class="gn-sentence">How far a single value is from the mean is its <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">3</span><span class="gn-sentence">The distance of a number from zero, always positive, is its <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">4</span><span class="gn-sentence">How far apart the data values are from each other is the <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">5</span><span class="gn-sentence">The way data values are spread out is the <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">6</span><span class="gn-sentence">How much the data values differ is the <span class="gn-blank"></span>.</span></li></ol>
   </div>
-  <div class="notes-gradual">
+  <h3 class="gn-subhead">🧮 Watch &amp; Try — Worked Examples</h3><div class="notes-gradual">
     <div class="l1-only">
     <p class="notes-gr-intro">Watch the teacher model, fill in We Do together, and check your choice on You Do.</p>
     <div class="notes-gr-step notes-gr-watch">
@@ -821,238 +826,17 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   </div>
   </div>
 </section>
-  <section class="section turn-and-talk">
-  <h2>Turn &amp; Talk — Discussion Points
-    <span class="level-tag level-1 l1-only">Level 1 Support</span>
-    <span class="level-tag level-2 l2-only">Level 2 Standard</span>
-    <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
-  </h2>
-  <p class="level-note">Talk with a partner about each prompt. If you need help getting started, use the Level 1 sentence stems. Ready for more? Try the Level 2 question.</p>
-  <div class="tt-card">
-  <span class="tt-phase">Launch</span>
-  <p class="tt-question">Player A scored 18, 22, 20, 24, 16 and Player B scored 10, 30, 25, 12, 23. Both average 20. Which player would you count on to score close to 20 every night, and why?</p>
-  <div class="tt-support">
-    <span class="level-tag level-1">Level 1 support</span>
-    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Two data sets can share a mean but differ in how spread out they are.</p>
-    <details class="tt-hint-toggle">
-      <summary>💡 Need a hint?</summary>
-      <p class="tt-hint-text">Try starting with the word &quot;mean absolute deviation&quot; or &quot;deviation&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
-    </details>
-    <div class="tt-stems">
-      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
-      <p class="twr-frame"><span class="twr-en">I would count on Player ___ because their scores are ___.</span><span class="twr-es">Contaría con el Jugador ___ porque sus puntajes están ___.</span></p><p class="twr-frame"><span class="twr-en">Even with the same mean, the players differ in ___.</span><span class="twr-es">Aunque tengan la misma media, los jugadores difieren en ___.</span></p>
-    </div>
-    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">mean absolute deviation</span><span class="tt-word">deviation</span><span class="tt-word">spread</span><span class="tt-word">consistent</span><span class="tt-word">mean</span></div>
-    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students choose Player A as more consistent and recognize that equal means hide different spreads.</p>
-  </div>
-  <div class="tt-extend">
-    <span class="level-tag level-2">Level 2</span>
-    <p class="tt-extend-q">Predict: which player will have the larger MAD, and what does a larger MAD say about consistency?</p>
-    <ul class="tt-extend-stems"><li>Player ___ will have the larger MAD because ___.</li><li>A larger MAD means the scores are ___, so the player is ___.</li></ul>
-  </div>
-</div>
-<div class="tt-card">
-  <span class="tt-phase">Explore</span>
-  <p class="tt-question">To find the MAD for Player A (18, 22, 20, 24, 16, mean 20), why do we take the ABSOLUTE VALUE of each deviation before averaging?</p>
-  <div class="tt-support">
-    <span class="level-tag level-1">Level 1 support</span>
-    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Absolute value makes every distance from the mean positive so they don't cancel out.</p>
-    <details class="tt-hint-toggle">
-      <summary>💡 Need a hint?</summary>
-      <p class="tt-hint-text">Try starting with the word &quot;mean absolute deviation&quot; or &quot;deviation&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
-    </details>
-    <div class="tt-stems">
-      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
-      <p class="twr-frame"><span class="twr-en">We use absolute value so the deviations are all ___.</span><span class="twr-es">Usamos el valor absoluto para que las desviaciones sean todas ___.</span></p><p class="twr-frame"><span class="twr-en">Without absolute value, the deviations would add up to ___.</span><span class="twr-es">Sin valor absoluto, las desviaciones sumarían ___.</span></p>
-    </div>
-    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">mean absolute deviation</span><span class="tt-word">deviation</span><span class="tt-word">absolute value</span><span class="tt-word">spread</span><span class="tt-word">mean</span></div>
-    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> A strong answer explains deviations above and below the mean would cancel to zero, so absolute value keeps each as a positive distance.</p>
-  </div>
-  <div class="tt-extend">
-    <span class="level-tag level-2">Level 2</span>
-    <p class="tt-extend-q">Compute and justify: find the MAD of 18, 22, 20, 24, 16. Show the deviations, take absolute values, and average them.</p>
-    <ul class="tt-extend-stems"><li>The absolute deviations are ___, which sum to ___.</li><li>Dividing by 5 gives a MAD of ___, meaning ___.</li></ul>
-  </div>
-</div>
-<div class="tt-card">
-  <span class="tt-phase">Connect</span>
-  <p class="tt-question">Two keepers both allow a mean of 1.67 goals, but Keeper A's MAD is 0.56 and Keeper B's is 1.22. Which keeper should the coach start in the championship, and why?</p>
-  <div class="tt-support">
-    <span class="level-tag level-1">Level 1 support</span>
-    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> A smaller MAD means more consistent, predictable performance.</p>
-    <details class="tt-hint-toggle">
-      <summary>💡 Need a hint?</summary>
-      <p class="tt-hint-text">Try starting with the word &quot;mean absolute deviation&quot; or &quot;deviation&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
-    </details>
-    <div class="tt-stems">
-      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
-      <p class="twr-frame"><span class="twr-en">The coach should pick Keeper ___ because their MAD is ___.</span><span class="twr-es">El entrenador debe elegir al Portero ___ porque su DAM es ___.</span></p><p class="twr-frame"><span class="twr-en">A smaller MAD means the keeper is more ___.</span><span class="twr-es">Una DAM más pequeña significa que el portero es más ___.</span></p>
-    </div>
-    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">mean absolute deviation</span><span class="tt-word">deviation</span><span class="tt-word">spread</span><span class="tt-word">consistent</span><span class="tt-word">mean</span></div>
-    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students pick Keeper A and explain a smaller MAD (0.56) means goals allowed stay close to the mean, so performance is more reliable.</p>
-  </div>
-  <div class="tt-extend">
-    <span class="level-tag level-2">Level 2</span>
-    <p class="tt-extend-q">Critique: when might a coach actually prefer the LESS consistent keeper (higher MAD)? Defend with a scenario.</p>
-    <ul class="tt-extend-stems"><li>A coach might prefer the higher-MAD keeper when ___.</li><li>Higher spread could be acceptable if ___ because ___.</li></ul>
-  </div>
-</div>
-<div class="tt-card">
-  <span class="tt-phase">Reflect</span>
-  <p class="tt-question">For the data set 4, 8, 6, 10, 2 with a mean of 6, talk through the steps to find the MAD.</p>
-  <div class="tt-support">
-    <span class="level-tag level-1">Level 1 support</span>
-    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Find each deviation from the mean, take absolute values, then average them.</p>
-    <details class="tt-hint-toggle">
-      <summary>💡 Need a hint?</summary>
-      <p class="tt-hint-text">Try starting with the word &quot;mean absolute deviation&quot; or &quot;deviation&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
-    </details>
-    <div class="tt-stems">
-      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
-      <p class="twr-frame"><span class="twr-en">First I find each deviation from 6, then take the ___.</span><span class="twr-es">Primero hallo cada desviación de 6, luego tomo el ___.</span></p><p class="twr-frame"><span class="twr-en">I average the absolute deviations to get a MAD of ___.</span><span class="twr-es">Promedio las desviaciones absolutas para obtener una DAM de ___.</span></p>
-    </div>
-    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">mean absolute deviation</span><span class="tt-word">deviation</span><span class="tt-word">absolute value</span><span class="tt-word">spread</span><span class="tt-word">average</span></div>
-    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students compute absolute deviations 2, 2, 0, 4, 4 (sum 12), divide by 5, and report MAD = 2.4.</p>
-  </div>
-  <div class="tt-extend">
-    <span class="level-tag level-2">Level 2</span>
-    <p class="tt-extend-q">Generalize: what does it mean about a data set if its MAD is exactly 0?</p>
-    <ul class="tt-extend-stems"><li>A MAD of 0 means every value is ___.</li><li>That happens because each deviation from the mean is ___.</li></ul>
-  </div>
-</div>
-</section>
-  <section class="section projects no-print">
-  <h2>Interactive Unit Projects</h2>
-  <p class="level-note">Apply your math skills in these interactive dashboard games and coding labs.</p>
-  <div class="projects-grid">
-    <div class="project-card">
-      <div class="project-header">
-        <span class="project-emoji" aria-hidden="true">🏆</span>
-        <h3 class="project-title">Unit 8 Project — Statistics in Action</h3>
-      </div>
-      <p class="project-desc">Capstone: describe how your data varies using measures of spread like MAD.</p>
-      <div class="project-links">
-        <a href="/math/statistics/projects/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
-      </div>
-    </div>
-<div class="project-card">
-      <div class="project-header">
-        <span class="project-emoji" aria-hidden="true">📈</span>
-        <h3 class="project-title">Data Studio Master</h3>
-      </div>
-      <p class="project-desc">Analytics studio that computes spread and mean absolute deviation (MAD) for your data (6.SP.5c).</p>
-      <div class="project-links">
-        <a href="/neft-data-studio/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
-      </div>
-    </div>
-<div class="project-card">
-      <div class="project-header">
-        <span class="project-emoji" aria-hidden="true">🕵️</span>
-        <h3 class="project-title">Distribution Detective</h3>
-      </div>
-      <p class="project-desc">Investigate how data spreads out around the center.</p>
-      <div class="project-links">
-        <a href="/math/statistics/distribution-detective/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
-      </div>
-    </div>
-  </div>
-</section>
-  <section class="section twr">
-  <h2>Write About the Math
-    <span class="twr-method l1-only">Level 1 Support</span>
-    <span class="twr-method l2-only">Level 2 Standard</span>
-    <span class="twr-method l3-only">Level 3 Enrichment</span>
-  </h2>
-  <p class="level-note l1-only l2-only-block">I can explain my work using the words mean absolute deviation, deviation, absolute value, and spread.</p>
-  <div class="l1-only l2-only-block">
-    <div class="twr-block">
-    <h3>1. Kernel Sentence <span class="twr-tag">subject + verb</span></h3>
-    <p class="twr-model"><span class="twr-label">Model:</span> Mean Absolute Deviation is the average distance of each number from the mean.<span class="twr-es">Desviación media absoluta es la distancia promedio de cada número a la media.</span></p>
-    <p class="twr-frame"><span class="twr-en">Write a kernel sentence about mean absolute deviation. Use a subject and a verb.</span><span class="twr-es">Escribe una oración base sobre desviación media absoluta. Usa un sujeto y un verbo.</span></p>
-    <div class="writeline"></div><div class="writeline"></div>
-  </div>
-    <div class="twr-block">
-    <h3>2. Sentence Expansion <span class="twr-tag">because · but · so</span></h3>
-    <p class="twr-model"><span class="twr-label">Kernel:</span> Mean Absolute Deviation matters in math<span class="twr-es">Desviación media absoluta importa en matemáticas</span></p>
-    <p class="muted">Expand the kernel three ways. Add a reason, a contrast, and a result.</p>
-    <div class="twr-exp-row">
-      <span class="twr-conj">because<span class="twr-conj-es">porque</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-frame"><span class="twr-en">Mean Absolute Deviation matters in math because ___.</span><span class="twr-es">Desviación media absoluta importa en matemáticas porque ___.</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div><div class="twr-exp-row">
-      <span class="twr-conj">but<span class="twr-conj-es">pero</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-frame"><span class="twr-en">Mean Absolute Deviation matters in math, but ___.</span><span class="twr-es">Desviación media absoluta importa en matemáticas, pero ___.</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div><div class="twr-exp-row">
-      <span class="twr-conj">so<span class="twr-conj-es">entonces</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-frame"><span class="twr-en">Mean Absolute Deviation matters in math, so ___.</span><span class="twr-es">Desviación media absoluta importa en matemáticas, entonces ___.</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div>
-  </div>
-    <div class="twr-block">
-    <h3>3. Sentence Types <span class="twr-tag">4 ways to write a math idea</span></h3>
-    <div class="twr-type-row">
-      <span class="twr-type-name">Statement<span class="twr-conj-es">Afirmación</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-hint">Tell one true fact about mean absolute deviation.<span class="twr-es">Di un hecho verdadero sobre mean absolute deviation.</span></p>
-        <p class="twr-frame"><span class="twr-en">Mean absolute deviation ___.</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div><div class="twr-type-row">
-      <span class="twr-type-name">Question<span class="twr-conj-es">Pregunta</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-hint">Ask a question about mean absolute deviation.<span class="twr-es">Haz una pregunta sobre mean absolute deviation.</span></p>
-        <p class="twr-frame"><span class="twr-en">How does ___ ?</span><span class="twr-es">¿Cómo ___ ?</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div><div class="twr-type-row">
-      <span class="twr-type-name">Exclamation<span class="twr-conj-es">Exclamación</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-hint">Show excitement about mean absolute deviation.<span class="twr-es">Muestra entusiasmo sobre mean absolute deviation.</span></p>
-        <p class="twr-frame"><span class="twr-en">Wow, ___ !</span><span class="twr-es">¡Guau, ___ !</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div><div class="twr-type-row">
-      <span class="twr-type-name">Command<span class="twr-conj-es">Mandato</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-hint">Tell a partner what to do with mean absolute deviation.<span class="twr-es">Dile a un compañero qué hacer con mean absolute deviation.</span></p>
-        <p class="twr-frame"><span class="twr-en">First, ___ .</span><span class="twr-es">Primero, ___ .</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div>
-  </div>
-    <div class="twr-block">
-    <h3>4. Explain Your Reasoning <span class="twr-tag">use a sentence starter</span></h3>
-    <div class="twr-stems"><p class="twr-frame"><span class="twr-en">I would count on Player ___ because their scores are ___.</span><span class="twr-es">Contaría con el Jugador ___ porque sus puntajes están ___.</span></p><p class="twr-frame"><span class="twr-en">Even with the same mean, the players differ in ___.</span><span class="twr-es">Aunque tengan la misma media, los jugadores difieren en ___.</span></p><p class="twr-frame"><span class="twr-en">We use absolute value so the deviations are all ___.</span><span class="twr-es">Usamos el valor absoluto para que las desviaciones sean todas ___.</span></p></div>
-    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
-  </div>
-  </div>
-  <div class="l3-only">
-    <div class="twr-block" style="border-left-color: var(--amber);">
-      <h3>Advanced Mathematical Explanation</h3>
-      <p class="sentence-frame"><strong>Writing Prompt:</strong> Write an explanatory paragraph summarizing today's key mathematical concept. Your explanation must include at least one complex sentence using a conjunction (because, since, although, or unless) to justify your mathematical reasoning. Draw models or sketch graphs to support your argument.</p>
-      <div class="scratchpad"><span class="scratchpad-label">Doodle / Diagram / Sketch Area</span></div>
-      <div class="work-space"><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
-    </div>
-  </div>
-</section>
   <section class="section tryit-section">
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
   <div class="tryit">
-  <p class="tryit-num">1. The data 10, 10, 10, 10 has what MAD?</p>
-  <ol class="try-choices" type="A"><li>0</li><li>10</li><li>2.5</li><li>40</li></ol>
+  <p class="tryit-num">1. A guard scored 2, 4, 6, 8 points in four scrimmages, so the mean is 5 points. The distances from the mean are 3, 1, 1, 3. What is the mean absolute deviation (MAD)?</p>
+  <ol class="try-choices" type="A"><li>1</li><li>2</li><li>5</li><li>8</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
 <div class="tryit">
-  <p class="tryit-num">2. For the data 2, 4, 6 (mean 4), what is the MAD?</p>
-  <ol class="try-choices" type="A"><li>1.33</li><li>2</li><li>4</li><li>12</li></ol>
+  <p class="tryit-num">2. Two shooters average 11 points a game. Shooter A's MAD is 2 points and Shooter B's MAD is 6 points. Which shooter is MORE consistent?</p>
+  <ol class="try-choices" type="A"><li>Shooter A, because a smaller MAD means scores stay closer to the average</li><li>Shooter B, because a bigger MAD means a bigger average</li><li>They are equally consistent because they have the same mean</li><li>You cannot tell consistency from MAD</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
   <div class="enrich-block">
@@ -1072,13 +856,9 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. 3 <span class="ak-why">— Sum of absolute deviations = 3 + 1 + 5 + 2 + 4 = 15. MAD = 15 ÷ 5 = 3.</span></li><li><strong>You Try (notes):</strong> A. 6 <span class="ak-why">— Deviation = 26 − 20 = 6. Absolute deviation = |6| = 6.</span></li><li><strong>Try It 1:</strong> A. 0 <span class="ak-why">— Every value equals the mean, so each distance is 0 and MAD = 0.</span></li><li><strong>Try It 2:</strong> A. 1.33 <span class="ak-why">— Distances are 2, 0, 2; mean = 4 ÷ 3 ≈ 1.33.</span></li><li><strong>Exit Ticket:</strong> A. 2.4 <span class="ak-why">— Deviations: −2, 2, 0, 4, −4. Absolute deviations: 2, 2, 0, 4, 4. Sum = 12. MAD = 12 ÷ 5 = 2.4.</span></li></ol>
-  <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Mean Absolute Deviation is the average distance of each number from the mean.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
+  <ol class="ak-list"><li><strong>Notes 1:</strong> Mean Absolute Deviation</li><li><strong>Notes 2:</strong> Deviation</li><li><strong>Notes 3:</strong> Absolute Value</li><li><strong>Notes 4:</strong> Spread</li><li><strong>Notes 5:</strong> Data distribution</li><li><strong>Notes 6:</strong> Variability</li><li><strong>We Try (notes):</strong> A. 3 <span class="ak-why">— Sum of absolute deviations = 3 + 1 + 5 + 2 + 4 = 15. MAD = 15 ÷ 5 = 3.</span></li><li><strong>You Try (notes):</strong> A. 6 <span class="ak-why">— Deviation = 26 − 20 = 6. Absolute deviation = |6| = 6.</span></li><li><strong>Try It 1:</strong> B. 2 <span class="ak-why">— Add the distances: 3 + 1 + 1 + 3 = 8. Divide by the 4 games: 8 ÷ 4 = 2. The MAD is 2 points.</span></li><li><strong>Try It 2:</strong> A. Shooter A, because a smaller MAD means scores stay closer to the average <span class="ak-why">— A smaller MAD means the scores hug the mean. Shooter A's MAD of 2 is smaller than Shooter B's 6, so Shooter A is more consistent.</span></li><li><strong>Exit Ticket:</strong> A. 2.4 <span class="ak-why">— Deviations: −2, 2, 0, 4, −4. Absolute deviations: 2, 2, 0, 4, 4. Sum = 12. MAD = 12 ÷ 5 = 2.4.</span></li></ol>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 8-3 · Standard 6.SP.5c</footer>
 </main>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>
