@@ -1711,6 +1711,75 @@ function renderCommonMistakeCallout(host, config) {
   host.append(box);
 }
 
+// Real skill practice: a few of the lesson's own problems presented as "solve
+// it" — show your steps, write the answer, then self-check the reveal. Genuinely
+// practices the skill (not only matching/sorting games), and saves work to the
+// Practice phase responses. No-op when the lesson has no solvable problems.
+function renderSkillPractice(host, config, state) {
+  const p = config.practice || {};
+  const pool = []
+    .concat(p.approaching || [], p.onLevel || [], p.extending || [])
+    .filter(
+      (it) =>
+        it &&
+        it.stem &&
+        (Array.isArray(it.choices) || it.sampleAnswer || it.answer) &&
+        (it.type === "multiple-choice" ||
+          it.type === "open-response" ||
+          !it.type),
+    )
+    .slice(0, 3);
+  if (!pool.length) return;
+
+  const card = document.createElement("div");
+  card.className = "card skill-practice";
+  card.style.cssText = "border-left:4px solid var(--navy,#264653);";
+  card.innerHTML = `
+    <h4 style="color:var(--navy,#264653); margin:0 0 var(--sp-2,8px);">✏️ Practice the skill — solve these</h4>
+    <p style="margin:0 0 var(--sp-3,12px);">Work each problem. Show your steps, write your answer, then tap <strong>Check answer</strong>.</p>`;
+
+  pool.forEach((it, i) => {
+    const answer =
+      Array.isArray(it.choices) && typeof it.correctIndex === "number"
+        ? it.choices[it.correctIndex]
+        : it.sampleAnswer || it.answer || "";
+    const wrap = document.createElement("div");
+    wrap.style.cssText =
+      "background:#fff; border:1px solid var(--line,#e4ddc9); border-radius:var(--radius-md,12px); padding:var(--sp-3,14px) var(--sp-4,16px); margin-bottom:var(--sp-3,12px);";
+    wrap.innerHTML = `
+      <p style="font-size:1.15rem; font-weight:600; color:var(--navy,#264653); margin:0 0 var(--sp-2,8px);"><strong>Problem ${i + 1}.</strong> ${esc(it.stem)}</p>
+      <textarea class="sp-work" rows="3" placeholder="Show your steps here…" style="width:100%; box-sizing:border-box; border:1.5px solid var(--line,#e4ddc9); border-radius:8px; padding:8px 10px; font:inherit; font-size:1rem; resize:vertical;"></textarea>
+      <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:var(--sp-2,8px);">
+        <label style="font-weight:700; color:var(--navy,#264653);">My answer: <input class="sp-answer" type="text" style="border:0; border-bottom:2px solid var(--teal,#2a9d8f); font:inherit; font-size:1rem; padding:4px 6px;" /></label>
+        <button type="button" class="btn btn-secondary sp-check">Check answer</button>
+      </div>
+      <div class="sp-reveal" hidden style="margin-top:var(--sp-2,8px); padding:var(--sp-2,8px) var(--sp-3,12px); background:rgba(42,157,143,0.08); border:1px solid var(--teal,#2a9d8f); border-radius:8px;"></div>`;
+
+    const workEl = wrap.querySelector(".sp-work");
+    const ansEl = wrap.querySelector(".sp-answer");
+    const reveal = wrap.querySelector(".sp-reveal");
+    workEl.value = state.getResponse(3, `sp-work-${i}`) || "";
+    ansEl.value = state.getResponse(3, `sp-ans-${i}`) || "";
+    workEl.addEventListener("input", () =>
+      state.saveResponse(3, `sp-work-${i}`, workEl.value),
+    );
+    ansEl.addEventListener("input", () =>
+      state.saveResponse(3, `sp-ans-${i}`, ansEl.value),
+    );
+    wrap.querySelector(".sp-check").addEventListener("click", () => {
+      reveal.hidden = false;
+      reveal.innerHTML = `<strong>✅ Answer:</strong> ${esc(answer)}${
+        it.explanation
+          ? `<br><span style="color:var(--muted,#5f6f80);">${esc(it.explanation)}</span>`
+          : ""
+      }`;
+    });
+    card.append(wrap);
+  });
+
+  host.append(card);
+}
+
 function renderPracticePhase(el, state, ctx, config) {
   phaseHeader(
     el,
@@ -1728,6 +1797,10 @@ function renderPracticePhase(el, state, ctx, config) {
 
   renderWorkedExamplePanel(el, config);
   renderCommonMistakeCallout(el, config);
+
+  // Lead with real skill practice — solve problems, show steps — before the
+  // interactive games/sorts below.
+  renderSkillPractice(el, config, state);
 
   // Non-stigmatizing Level 1 / Level 2 / Adaptive selector.
   const selectorSlot = document.createElement("div");
