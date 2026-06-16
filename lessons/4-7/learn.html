@@ -148,6 +148,17 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .li-input-answer{flex:1;min-width:160px;margin-top:0;}
 .li-list{margin:0 0 14px;padding-left:22px;}
 .li-list>li{font-size:17px;line-height:1.65;margin:0 0 6px;color:var(--ink);}
+.li-problem-q{font-size:18px;line-height:1.6;font-weight:600;color:var(--navy);margin:6px 0 12px;
+  padding:12px 16px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:0 10px 10px 0;}
+.li-check{margin-top:12px;}
+.li-check>summary{cursor:pointer;display:inline-block;font-weight:800;color:var(--teal);font-size:15px;
+  list-style:none;padding:6px 0;}
+.li-check>summary::-webkit-details-marker{display:none;}
+.li-check>summary::before{content:"👁️ ";}
+.li-check-body{margin-top:8px;padding:12px 14px;background:var(--teal-light);border:1px solid var(--teal);
+  border-radius:10px;font-size:16px;line-height:1.6;color:var(--navy);}
+.li-check-why{color:var(--muted);font-size:14.5px;}
+@media print{.li-check>summary{color:#000;}.li-check-body{background:#fff;border-color:#000;}}
 .li-ready{margin:8px 0 0;padding:14px 18px;background:var(--teal-light);border-radius:10px;
   font-size:15px;font-weight:600;color:var(--navy);}
 @media print{
@@ -793,7 +804,7 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   (function(){
     var btn=null, speaking=false, hi=null;
     function collect(){
-      var sel='.li-intro, .li-keyidea p, .li-block .li-eyebrow, .li-steps li, .li-lead, .li-list li';
+      var sel='.li-intro, .li-keyidea p, .li-block .li-eyebrow, .li-steps li, .li-lead, .li-list li, .li-problem-q';
       return Array.prototype.slice.call(document.querySelectorAll(sel)).filter(function(el){
         return el.offsetParent!==null && el.textContent.trim();
       });
@@ -867,8 +878,11 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
       </section>
     <section class="li-block">
         <p class="li-eyebrow">On your own</p>
-        <ul class="li-list"><li>In the table, find the unit rate for each supplier by dividing price by quantity.</li><li>Mark the option with the lower unit rate as the better buy.</li></ul>
+        <ul class="li-list"><li>In the table, find the <button type="button" class="li-pop" data-popover data-term="Unit Rate" data-def="A rate for just 1 of something, like cost for 1 item." data-img="../../assets/vocab-images/unit-rate.svg" aria-label="What does Unit Rate mean?">unit rate<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> for each supplier by dividing price by quantity.</li><li>Mark the option with the lower <button type="button" class="li-pop" data-popover data-term="Unit Rate" data-def="A rate for just 1 of something, like cost for 1 item." data-img="../../assets/vocab-images/unit-rate.svg" aria-label="What does Unit Rate mean?">unit rate<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> as the <button type="button" class="li-pop" data-popover data-term="Better Buy" data-def="The choice that costs less for each item." data-img="../../assets/vocab-images/unit-rate.svg" aria-label="What does Better Buy mean?">better buy<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>.</li></ul>
+        <p class="li-problem-q"><strong>Solve:</strong> A machine dispenses 24 tokens in 3 minutes. At this <button type="button" class="li-pop" data-popover data-term="Rate" data-def="A ratio comparing two amounts with different units, like miles per hour." data-img="../../assets/vocab-images/rate.svg" aria-label="What does Rate mean?">rate<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>, how many tokens does it dispense in 10 minutes?</p>
+        <div class="li-work"><span class="li-work-label">Show your work</span></div>
         <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
+        <details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Answer:</strong> 80 tokens<br><span class="li-check-why">Unit rate: 24 ÷ 3 = 8 tokens per minute. In 10 minutes: 8 × 10 = 80 tokens.</span></div></details>
       </section>
     <p class="li-ready">When you can finish <strong>Try it with me</strong> on your own, you're ready for the lesson.</p>
   </article>

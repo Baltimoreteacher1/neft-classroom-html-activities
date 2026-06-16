@@ -122,7 +122,7 @@ function readAloudScript() {
   (function(){
     var btn=null, speaking=false, hi=null;
     function collect(){
-      var sel='.li-intro, .li-keyidea p, .li-block .li-eyebrow, .li-steps li, .li-lead, .li-list li';
+      var sel='.li-intro, .li-keyidea p, .li-block .li-eyebrow, .li-steps li, .li-lead, .li-list li, .li-problem-q';
       return Array.prototype.slice.call(document.querySelectorAll(sel)).filter(function(el){
         return el.offsetParent!==null && el.textContent.trim();
       });
@@ -791,14 +791,46 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
       </section>`
     : "";
 
-  // On your own (You do) — short independent check.
-  const onOwn = youLines.length
-    ? `<section class="li-block">
-        <p class="li-eyebrow">On your own</p>
-        <ul class="li-list">${youLines.map((l) => `<li>${esc(l)}</li>`).join("")}</ul>
-        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
-      </section>`
+  // On your own (You do) — a REAL problem to solve independently, drawn from the
+  // lesson's own practice items, so the gradual-release ladder has a final rung
+  // (not just a "next you will…" preview). Work box + answer + a no-JS reveal.
+  const p = cfg.practice || {};
+  const ownProblem = []
+    .concat(p.onLevel || [], p.approaching || [], p.extending || [])
+    .find(
+      (it) =>
+        it &&
+        it.stem &&
+        (Array.isArray(it.choices) || it.sampleAnswer || it.answer) &&
+        (it.type === "multiple-choice" ||
+          it.type === "open-response" ||
+          !it.type),
+    );
+  const ownGuidance = youLines.length
+    ? `<ul class="li-list">${youLines.map((l) => `<li>${popoverize(l, vocab)}</li>`).join("")}</ul>`
     : "";
+  let onOwn = "";
+  if (ownProblem) {
+    const ownAns =
+      Array.isArray(ownProblem.choices) &&
+      typeof ownProblem.correctIndex === "number"
+        ? ownProblem.choices[ownProblem.correctIndex]
+        : ownProblem.sampleAnswer || ownProblem.answer || "";
+    onOwn = `<section class="li-block">
+        <p class="li-eyebrow">On your own</p>
+        ${ownGuidance}
+        <p class="li-problem-q"><strong>Solve:</strong> ${popoverize(ownProblem.stem, vocab)}</p>
+        <div class="li-work"><span class="li-work-label">Show your work</span></div>
+        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
+        ${ownAns ? `<details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Answer:</strong> ${esc(ownAns)}${ownProblem.explanation ? `<br><span class="li-check-why">${esc(ownProblem.explanation)}</span>` : ""}</div></details>` : ""}
+      </section>`;
+  } else if (youLines.length) {
+    onOwn = `<section class="li-block">
+        <p class="li-eyebrow">On your own</p>
+        ${ownGuidance}
+        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
+      </section>`;
+  }
 
   if (!example && !guided && !onOwn && !introP) return "";
 
@@ -1169,6 +1201,17 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .li-input-answer{flex:1;min-width:160px;margin-top:0;}
 .li-list{margin:0 0 14px;padding-left:22px;}
 .li-list>li{font-size:17px;line-height:1.65;margin:0 0 6px;color:var(--ink);}
+.li-problem-q{font-size:18px;line-height:1.6;font-weight:600;color:var(--navy);margin:6px 0 12px;
+  padding:12px 16px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:0 10px 10px 0;}
+.li-check{margin-top:12px;}
+.li-check>summary{cursor:pointer;display:inline-block;font-weight:800;color:var(--teal);font-size:15px;
+  list-style:none;padding:6px 0;}
+.li-check>summary::-webkit-details-marker{display:none;}
+.li-check>summary::before{content:"👁️ ";}
+.li-check-body{margin-top:8px;padding:12px 14px;background:var(--teal-light);border:1px solid var(--teal);
+  border-radius:10px;font-size:16px;line-height:1.6;color:var(--navy);}
+.li-check-why{color:var(--muted);font-size:14.5px;}
+@media print{.li-check>summary{color:#000;}.li-check-body{background:#fff;border-color:#000;}}
 .li-ready{margin:8px 0 0;padding:14px 18px;background:var(--teal-light);border-radius:10px;
   font-size:15px;font-weight:600;color:var(--navy);}
 @media print{
