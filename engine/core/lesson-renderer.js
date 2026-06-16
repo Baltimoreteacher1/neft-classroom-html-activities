@@ -1,4 +1,4 @@
-import { createApp, UNIT_CULMINATING_PROJECT } from "./app.js";
+import { createApp } from "./app.js";
 import { createAdaptiveSequence } from "./adaptive.js";
 import { levelOverride, mountLevelSelector } from "./levels.js";
 import {
@@ -1323,16 +1323,6 @@ export function resolveLanguageObjective(config) {
 function renderLaunchHeader(el, state, config) {
   const s = state.get();
   const homeworkHref = `/lessons/${encodeURIComponent(config.lessonId)}/homework.docx`;
-  // Projects link shown next to Homework on the launch screen so it's visible
-  // the moment a lesson opens (the sidebar Projects tab only appears once the
-  // activity starts). Points at any lesson-specific project, else this unit's
-  // culminating-project page. Omitted only when neither exists (e.g. Unit 8).
-  const projectsHref =
-    (Array.isArray(config.projects) &&
-      config.projects[0] &&
-      config.projects[0].href) ||
-    UNIT_CULMINATING_PROJECT[config.unit] ||
-    "";
 
   const block = document.createElement("div");
   block.className = "card launch-intro";
@@ -1360,12 +1350,6 @@ function renderLaunchHeader(el, state, config) {
       </div>
       <a class="btn btn-secondary launch-homework-link" href="${homeworkHref}"
         download>📄 Homework (Word doc)</a>
-      ${
-        projectsHref
-          ? `<a class="btn btn-secondary launch-projects-link" href="${projectsHref}"
-        target="_blank" rel="noopener">🛠️ Projects</a>`
-          : ""
-      }
     </div>
     <div class="launch-objectives grid-2">
       <div class="card card-teal launch-objective">

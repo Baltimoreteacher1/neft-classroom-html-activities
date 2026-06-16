@@ -954,12 +954,6 @@ function buildSidebar(config, state, phaseConfigs) {
 
     ${bonusNavHtml(config)}
 
-    ${graphicNovelNavHtml(config)}
-
-    ${printablesNavHtml(config)}
-
-    ${projectsNavHtml(config)}
-
     <div style="margin-top:auto; opacity:0.5; font-size:0.7rem; text-align:center;">
       Neft Teacher · ${escHtml(config.standard)}
     </div>
@@ -1023,40 +1017,6 @@ function bonusNavHtml(config) {
     </div>`;
 }
 
-// "Graphic Novel" group: a single non-graded tab linking this lesson's matched
-// Axiom City episode (config.graphicNovel — an interactive, story-driven comic
-// where students solve the lesson's math to turn the page). Opens inline via
-// app.openExtra("graphicnovel"); hidden when the lesson has no matched episode.
-function graphicNovelNavHtml(config) {
-  const gn = config.graphicNovel;
-  if (!gn || !gn.href) return "";
-  return `
-    <div class="graphicnovel-nav" data-bind="graphicnovel">
-      <div class="prelesson-label" style="font-size:0.68rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; opacity:0.55; padding:0 var(--sp-2, 8px); margin:var(--sp-3, 12px) 0 var(--sp-1, 4px);">Graphic Novel</div>
-      <button class="phase-btn extra-btn" data-extra="graphicnovel">
-        <span class="phase-num">📖</span>
-        <span>${escHtml(gn.menuTitle || gn.title || "Graphic Novel")}</span>
-      </button>
-    </div>`;
-}
-
-// "Printables" group: a single non-graded tab when the lesson ships print-ready
-// paper resources (config.printables — paper game, color-by-number, vocabulary
-// word search, MCAP practice). Opens inline via app.openPrintables(). Hidden
-// when the lesson has none.
-function printablesNavHtml(config) {
-  const items = Array.isArray(config.printables) ? config.printables : [];
-  if (!items.length) return "";
-  return `
-    <div class="printables-nav" data-bind="printables">
-      <div class="prelesson-label" style="font-size:0.68rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; opacity:0.55; padding:0 var(--sp-2, 8px); margin:var(--sp-3, 12px) 0 var(--sp-1, 4px);">Printables</div>
-      <button class="phase-btn extra-btn" data-extra="printables">
-        <span class="phase-num">🖨️</span>
-        <span>Printables (${items.length})</span>
-      </button>
-    </div>`;
-}
-
 // Each Reveal lesson unit's culminating-project page. Mapped by VERIFIED SUBJECT
 // (standard family), not raw number, because the classroom /math/unit-N folders
 // are reordered vs Reveal lesson units for 7/8/9: Reveal 7 (equations) ->
@@ -1074,21 +1034,6 @@ export const UNIT_CULMINATING_PROJECT = {
   9: "/math/unit-7/projects/",
   10: "/math/unit-10/projects/",
 };
-
-// "Extend" group: a non-graded Projects tab shown on every lesson. It opens
-// inline (see app.openProjects) and lists config.projects, or a "coming soon"
-// empty state when a lesson has none yet. Always present so projects can be
-// wired in per-lesson as they get built.
-function projectsNavHtml(_config) {
-  return `
-    <div class="projects-nav" data-bind="projects">
-      <div class="prelesson-label" style="font-size:0.68rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; opacity:0.55; padding:0 var(--sp-2, 8px); margin:var(--sp-3, 12px) 0 var(--sp-1, 4px);">Extend</div>
-      <button class="phase-btn extra-btn" data-extra="projects">
-        <span class="phase-num">🛠️</span>
-        <span>Projects</span>
-      </button>
-    </div>`;
-}
 
 function buildLessonHero(config, state, phaseConfigs) {
   const hero = document.createElement("header");
