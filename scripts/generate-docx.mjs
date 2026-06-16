@@ -957,7 +957,7 @@ function guidedNotesAnswerRows(cfg) {
 }
 
 // ── DOCUMENT ASSEMBLY ─────────────────────────────────────────────────────────
-function buildDoc(id, cfg) {
+function buildDoc(id, cfg, teacher = false) {
   const worked = deriveWorkedSteps(cfg);
   // I-Do and We-Do problems are worked in the notes frame; exclude them from
   // the independent "On Your Own" set so answers are not duplicated or leaked.
@@ -976,7 +976,8 @@ function buildDoc(id, cfg) {
     ...guidedPracticeBlock(cfg, worked),
     ...independentPracticeBlock(cfg, excludeStems),
     ...reflectBlock(cfg),
-    ...answerKeyBlock(cfg, worked, excludeStems),
+    // Answer Key & Teacher Guide only on the teacher copy.
+    ...(teacher ? answerKeyBlock(cfg, worked, excludeStems) : []),
   ];
 
   const headerLabel = [
@@ -1089,11 +1090,15 @@ async function main() {
     const cfg = JSON.parse(readFileSync(join(lessonsDir, id, "config.json"), "utf8"));
     const outDir = join(lessonsDir, id, "downloads");
     if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
-    const buffer = await Packer.toBuffer(buildDoc(id, cfg));
-    writeFileSync(join(outDir, `${id}-notes.docx`), buffer);
+    // Student copy — no answer key.
+    const studentBuf = await Packer.toBuffer(buildDoc(id, cfg, false));
+    writeFileSync(join(outDir, `${id}-notes.docx`), studentBuf);
+    // Teacher copy — includes the Answer Key & Teacher Guide.
+    const teacherBuf = await Packer.toBuffer(buildDoc(id, cfg, true));
+    writeFileSync(join(outDir, `${id}-notes-teacher.docx`), teacherBuf);
     ok++;
   }
-  console.log(`Generated ${ok}/${ids.length} notes DOCX files`);
+  console.log(`Generated ${ok}/${ids.length} notes DOCX files (student + teacher)`);
 }
 
 main();

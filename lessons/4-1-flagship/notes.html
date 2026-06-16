@@ -25,7 +25,12 @@ header.packet h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
   margin:6px 0 4px;font-size:26px;}
 header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .name-line{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;font-size:14px;}
-.name-line span{flex:1;border-bottom:1px solid var(--ink);padding:4px 0;min-width:140px;}
+.nl-field{display:flex;align-items:center;gap:8px;flex:1;min-width:180px;}
+.nl-label{font-weight:700;color:var(--navy);white-space:nowrap;}
+.nl-input{flex:1;min-width:80px;border:none;border-bottom:1.5px solid var(--ink);background:transparent;
+  font:inherit;font-size:15px;color:var(--navy);padding:4px 4px;border-radius:4px 4px 0 0;}
+.nl-input:focus{outline:none;background:#fff7e6;}
+@media print{.nl-input{border-bottom:1px solid #000;color:#000;}}
 .section{margin:0 0 22px;page-break-inside:avoid;}
 .section>h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;
   border-left:5px solid var(--teal);padding-left:10px;margin:0 0 12px;}
@@ -122,6 +127,8 @@ input.writeline:focus,input.gn-blank:focus{outline:none;background-color:#fff7e6
 .try-choices li{margin:3px 0;}
 .work-space{margin-top:6px;}
 .muted{color:var(--muted);font-size:14px;}
+.teacher-banner{background:#fff3cd;border:1.5px solid #e0a800;color:#7a5b00;border-radius:10px;
+  padding:10px 14px;margin:0 0 14px;font-weight:800;font-size:14px;text-align:center;}
 .answer-key{page-break-before:always;border-top:3px solid var(--navy);margin-top:24px;padding-top:14px;}
 .answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
 .ak-list{padding-left:22px;}
@@ -528,14 +535,74 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   .gn-sentence{flex:1;font-size:16px;line-height:1.9;color:#1c2b36;}
   .gn-blank{display:inline-block;min-width:120px;border-bottom:2px solid var(--navy);height:1.25em;margin:0 4px;vertical-align:bottom;}
   .gn-subhead{margin:20px 0 8px;color:var(--navy);font-size:16px;font-weight:800;}
+  /* Tap-to-define word-bank pop-ups (with picture) */
+  .gn-bank-word{cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+  .gn-info{font-size:12px;color:var(--teal);font-weight:700;}
+  .nt-popover{position:fixed;z-index:9999;max-width:280px;background:#fff;border:2px solid var(--teal);
+    border-radius:14px;box-shadow:0 12px 32px rgba(18,53,91,.22);padding:14px 16px;display:none;}
+  .nt-popover.open{display:block;}
+  .nt-popover img{display:block;width:100%;max-height:150px;object-fit:contain;border-radius:8px;
+    background:#f0faf8;margin-bottom:10px;}
+  .nt-popover h4{margin:0 0 6px;color:var(--navy);font-size:17px;font-family:Outfit,system-ui,sans-serif;}
+  .nt-popover p{margin:0;font-size:14.5px;line-height:1.5;color:var(--ink);}
+  .nt-popover .nt-pop-close{position:absolute;top:6px;right:8px;border:none;background:transparent;
+    font-size:20px;line-height:1;color:var(--muted);cursor:pointer;}
+  /* Larger, clearer Watch & Try worked visuals */
+  .notes-gr-step .wk-problem{font-size:15.5px;line-height:1.6;background:#f7fafc;border-radius:8px;padding:8px 12px;}
+  .notes-gr-step .wk-steps .wk-step{font-size:15px;line-height:1.7;margin:7px 0;}
+  .notes-gr-step .wk-steplabel{font-size:13px;padding:2px 10px;}
+  /* Drag-and-drop "put the steps in order" */
+  .ss-step{border-left-color:var(--teal)!important;}
+  .step-sorter{margin-top:8px;}
+  .ss-list{list-style:none;margin:0;padding:0;counter-reset:ss;}
+  .ss-item{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--line);
+    border-left:5px solid var(--teal);border-radius:10px;padding:10px 12px;margin:8px 0;font-size:15px;
+    line-height:1.5;cursor:grab;transition:box-shadow .12s,border-color .12s;}
+  .ss-item:focus-visible{outline:3px solid var(--amber);outline-offset:2px;}
+  .ss-item.ss-dragging{opacity:.5;cursor:grabbing;}
+  .ss-item.ss-over{border-color:var(--teal);box-shadow:0 4px 14px rgba(31,166,162,.25);}
+  .ss-item.ss-right{border-left-color:#2e9e5b;background:#f1faf2;}
+  .ss-item.ss-wrong{border-left-color:#d9534f;background:#fdf2f1;}
+  .ss-grip{color:var(--muted);font-size:18px;cursor:grab;flex:0 0 auto;}
+  .ss-text{flex:1;}
+  .ss-move{display:inline-flex;flex-direction:column;gap:2px;flex:0 0 auto;}
+  .ss-move button{border:1px solid var(--line);background:#f7fafc;border-radius:6px;width:30px;height:22px;
+    font-size:11px;line-height:1;color:var(--navy);cursor:pointer;padding:0;}
+  .ss-move button:hover{border-color:var(--teal);}
+  .ss-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .ss-check,.ss-shuffle{border:none;border-radius:999px;padding:8px 16px;font-size:14px;font-weight:700;cursor:pointer;}
+  .ss-check{background:var(--teal);color:#fff;}
+  .ss-shuffle{background:#fff;color:var(--navy);border:1.5px solid var(--line);}
+  .ss-feedback{font-size:14px;font-weight:700;}
+  .ss-feedback.ok{color:#2e9e5b;}
+  .ss-feedback.no{color:#d9534f;}
+  /* Tap-to-pair vocabulary match-up */
+  .match-up{margin:12px 0 6px;background:#f0faf8;border:1.5px dashed var(--teal);border-radius:12px;padding:12px 14px;}
+  .mu-head{margin:0 0 10px;font-size:14px;color:var(--navy);}
+  .mu-cols{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;}
+  .mu-col{display:flex;flex-direction:column;gap:8px;}
+  .mu-term,.mu-def{text-align:left;border:2px solid var(--line);background:#fff;border-radius:10px;
+    padding:9px 12px;font:inherit;font-size:14.5px;color:var(--ink);cursor:pointer;transition:border-color .12s,background .12s;}
+  .mu-term{font-weight:700;color:var(--navy);}
+  .mu-term:hover,.mu-def:hover{border-color:var(--teal);}
+  .mu-term.sel,.mu-def.sel{border-color:var(--teal);background:#e6f7f4;}
+  .mu-term.done,.mu-def.done{border-color:#2e9e5b;background:#f1faf2;color:#2e7d46;cursor:default;}
+  .mu-term.miss,.mu-def.miss{border-color:#d9534f;background:#fdf2f1;}
+  .mu-feedback{margin:10px 0 0;font-size:14px;font-weight:700;}
+  .mu-feedback.ok{color:#2e9e5b;}
+  @media (prefers-reduced-motion:reduce){.ss-item,.mu-term,.mu-def{transition:none;}}
   @media print{
     .gn-bank{border:1.5px dashed #000;background:#fff;}
     .gn-bank-label{color:#000;}
     .gn-bank-word{border-color:#000;color:#000;}
+    .gn-info{display:none;}
     .gn-line{border-color:#000;}
     .gn-num{background:#000;}
     .gn-blank{border-bottom-color:#000;}
     .gn-subhead,.gn-directions{color:#000;}
+    .nt-popover{display:none!important;}
+    .ss-item{border-color:#000;border-left-color:#000;break-inside:avoid;}
+    .ss-grip,.ss-move{display:none;}
   }
 </style>
 <script>
@@ -675,13 +742,180 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     });
   })();
 </script>
+<script>
+  // Tap-to-define word-bank pop-ups (term + plain meaning + picture).
+  (function () {
+    var pop = null;
+    function ensurePop() {
+      if (pop) return pop;
+      pop = document.createElement('div');
+      pop.className = 'nt-popover';
+      pop.innerHTML = '<button type="button" class="nt-pop-close" aria-label="Close">×</button>' +
+        '<img alt="" /><h4></h4><p></p>';
+      document.body.appendChild(pop);
+      pop.querySelector('.nt-pop-close').addEventListener('click', hidePop);
+      return pop;
+    }
+    function hidePop() { if (pop) pop.classList.remove('open'); }
+    function showPop(btn) {
+      var p = ensurePop();
+      var img = p.querySelector('img');
+      var src = btn.getAttribute('data-img') || '';
+      if (src) { img.src = src; img.style.display = ''; img.onerror = function () { img.style.display = 'none'; }; }
+      else { img.style.display = 'none'; }
+      p.querySelector('h4').textContent = btn.getAttribute('data-term') || '';
+      p.querySelector('p').textContent = btn.getAttribute('data-def') || '';
+      p.classList.add('open');
+      var r = btn.getBoundingClientRect();
+      var top = r.bottom + 8, left = r.left;
+      var pw = p.offsetWidth, ph = p.offsetHeight;
+      if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
+      if (left < 8) left = 8;
+      if (top + ph > window.innerHeight - 8) top = r.top - ph - 8;
+      if (top < 8) top = 8;
+      p.style.left = left + 'px';
+      p.style.top = top + 'px';
+    }
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('[data-popover]') : null;
+      if (btn) { e.preventDefault(); showPop(btn); return; }
+      if (pop && !e.target.closest('.nt-popover')) hidePop();
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hidePop(); });
+  })();
+
+  // Interactive "put the steps in order" — drag, ▲▼ buttons, or keyboard.
+  (function () {
+    function shuffle(arr) {
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+      }
+      return arr;
+    }
+    function items(list) { return Array.prototype.slice.call(list.children); }
+    function clearMarks(list) {
+      items(list).forEach(function (li) { li.classList.remove('ss-right', 'ss-wrong'); });
+    }
+    function init(sorter) {
+      var list = sorter.querySelector('.ss-list');
+      var order = shuffle(items(list));
+      // Avoid starting already-solved.
+      var solved = order.every(function (li, i) { return +li.getAttribute('data-correct') === i; });
+      if (solved && order.length > 1) { order.push(order.shift()); }
+      order.forEach(function (li) { list.appendChild(li); });
+
+      var dragEl = null;
+      list.addEventListener('dragstart', function (e) {
+        dragEl = e.target.closest('.ss-item');
+        if (dragEl) dragEl.classList.add('ss-dragging');
+      });
+      list.addEventListener('dragend', function () {
+        if (dragEl) dragEl.classList.remove('ss-dragging');
+        items(list).forEach(function (li) { li.classList.remove('ss-over'); });
+        dragEl = null;
+      });
+      list.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        var over = e.target.closest('.ss-item');
+        if (!over || over === dragEl) return;
+        items(list).forEach(function (li) { li.classList.remove('ss-over'); });
+        over.classList.add('ss-over');
+        var r = over.getBoundingClientRect();
+        var after = (e.clientY - r.top) > r.height / 2;
+        list.insertBefore(dragEl, after ? over.nextSibling : over);
+      });
+      list.addEventListener('click', function (e) {
+        var li = e.target.closest('.ss-item'); if (!li) return;
+        if (e.target.classList.contains('ss-up') && li.previousElementSibling) {
+          list.insertBefore(li, li.previousElementSibling); clearMarks(list); li.focus();
+        } else if (e.target.classList.contains('ss-down') && li.nextElementSibling) {
+          list.insertBefore(li.nextElementSibling, li); clearMarks(list); li.focus();
+        }
+      });
+
+      var fb = sorter.querySelector('.ss-feedback');
+      sorter.querySelector('.ss-check').addEventListener('click', function () {
+        var ok = true;
+        items(list).forEach(function (li, i) {
+          var right = +li.getAttribute('data-correct') === i;
+          li.classList.toggle('ss-right', right);
+          li.classList.toggle('ss-wrong', !right);
+          if (!right) ok = false;
+        });
+        fb.textContent = ok ? '✅ Perfect — that is the right order!' : '❌ Not yet — move the red cards and check again.';
+        fb.className = 'ss-feedback ' + (ok ? 'ok' : 'no');
+      });
+      sorter.querySelector('.ss-shuffle').addEventListener('click', function () {
+        clearMarks(list);
+        shuffle(items(list)).forEach(function (li) { list.appendChild(li); });
+        fb.textContent = ''; fb.className = 'ss-feedback';
+      });
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      var sorters = document.querySelectorAll('[data-step-sorter]');
+      for (var i = 0; i < sorters.length; i++) init(sorters[i]);
+    });
+  })();
+
+  // Tap-to-pair vocabulary match-up.
+  (function () {
+    function shuffleChildren(col) {
+      var nodes = Array.prototype.slice.call(col.children);
+      for (var i = nodes.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        col.insertBefore(nodes[j], nodes[i]);
+        var t = nodes[i]; nodes[i] = nodes[j]; nodes[j] = t;
+      }
+    }
+    function init(mu) {
+      var cols = mu.querySelectorAll('.mu-col');
+      if (cols.length === 2) shuffleChildren(cols[1]);
+      var fb = mu.querySelector('.mu-feedback');
+      var total = mu.querySelectorAll('.mu-term').length;
+      var done = 0, selTerm = null;
+      function clearSel() {
+        var s = mu.querySelectorAll('.sel');
+        for (var i = 0; i < s.length; i++) s[i].classList.remove('sel', 'miss');
+      }
+      mu.addEventListener('click', function (e) {
+        var term = e.target.closest('.mu-term');
+        var def = e.target.closest('.mu-def');
+        if (term && !term.classList.contains('done')) {
+          clearSel(); selTerm = term; term.classList.add('sel'); return;
+        }
+        if (def && !def.classList.contains('done') && selTerm) {
+          if (def.getAttribute('data-mu') === selTerm.getAttribute('data-mu')) {
+            def.classList.add('done'); selTerm.classList.add('done');
+            selTerm.classList.remove('sel'); selTerm = null; done++;
+            if (done === total) { fb.textContent = '✅ All matched — great job!'; fb.className = 'mu-feedback ok'; }
+          } else {
+            def.classList.add('miss');
+            var bad = selTerm;
+            setTimeout(function () {
+              def.classList.remove('miss'); if (bad) bad.classList.remove('sel', 'miss');
+            }, 600);
+            selTerm = null;
+          }
+        }
+      });
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      var mus = document.querySelectorAll('[data-match-up]');
+      for (var i = 0; i < mus.length; i++) init(mus[i]);
+    });
+  })();
+</script>
 <main class="sheet">
+  
   <header class="packet">
     <p class="eyebrow">Unit 4 · Standard 6.RP.2</p>
     <h1>Rates and Unit Rates <span class="flagship-badge">Flagship</span></h1>
     <p class="meta">Lesson 4-1-flagship</p>
     <div class="name-line">
-      <span>Name:</span><span>Date:</span><span>Class:</span>
+      <label class="nl-field"><span class="nl-label">Name:</span><input class="nl-input" type="text" data-nt-field placeholder="Type your name" aria-label="Your name" /></label>
+      <label class="nl-field"><span class="nl-label">Date:</span><input class="nl-input" type="text" data-nt-field placeholder="Today's date" aria-label="Date" /></label>
+      <label class="nl-field"><span class="nl-label">Class:</span><input class="nl-input" type="text" data-nt-field placeholder="Class period" aria-label="Class" /></label>
     </div>
   </header>
   <section class="section mission">
@@ -823,10 +1057,19 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   <p class="gn-directions">✏️ Fill in each blank as we go. Use the Word Bank to help you.</p><div class="gn-fill">
     <div class="gn-bank">
       <span class="gn-bank-label">📚 Word Bank — fill each blank with the best word</span>
-      <div class="gn-bank-words"><span class="gn-bank-word">Rate</span><span class="gn-bank-word">Unit Rate</span><span class="gn-bank-word">Per</span><span class="gn-bank-word">Ratio</span><span class="gn-bank-word">Better Buy</span><span class="gn-bank-word">Divide</span></div>
+      <div class="gn-bank-words"><button type="button" class="gn-bank-word" data-popover data-term="Rate" data-def="A ratio comparing two amounts with different units, like miles per hour." data-img="../../assets/vocab-images/rate.svg" aria-label="Show the meaning and picture for Rate">Rate<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Unit Rate" data-def="A rate for just 1 of something, like cost for 1 item." data-img="../../assets/vocab-images/unit-rate.svg" aria-label="Show the meaning and picture for Unit Rate">Unit Rate<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Per" data-def="For each one. Example: 5 dollars per book." data-img="../../assets/vocab-images/unit-rate.svg" aria-label="Show the meaning and picture for Per">Per<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Ratio" data-def="A way to compare two amounts." data-img="../../assets/vocab-images/ratio.svg" aria-label="Show the meaning and picture for Ratio">Ratio<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Better Buy" data-def="The choice that costs less for each item." data-img="../../assets/vocab-images/unit-rate.svg" aria-label="Show the meaning and picture for Better Buy">Better Buy<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Divide" data-def="Splitting a total into equal groups." data-img="../../assets/vocab-images/divide.svg" aria-label="Show the meaning and picture for Divide">Divide<span class="gn-info" aria-hidden="true">ⓘ</span></button></div>
+      <p class="gn-bank-hint">👆 Tap any word to see what it means and a picture.</p>
       <p class="gn-bank-hint l3-only">Level 3: try the blanks from memory first, then check the bank.</p>
     </div>
     <ol class="gn-lines"><li class="gn-line"><span class="gn-num">1</span><span class="gn-sentence">A ratio that compares two quantities with different units is a <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">2</span><span class="gn-sentence">A rate that tells the cost or amount for one unit is a <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">3</span><span class="gn-sentence">The word that means 'for each one' is <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">4</span><span class="gn-sentence">A comparison of two quantities is a <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">5</span><span class="gn-sentence">The option with the lower unit rate, costing less per item, is the <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">6</span><span class="gn-sentence">To find a unit rate, I <input class="gn-blank" type="text" data-nt-field /> the price by the number of units.</span></li></ol>
+    <div class="match-up no-print" data-match-up>
+    <p class="mu-head"><strong>🔗 Match-up:</strong> Tap a word, then tap its meaning.</p>
+    <div class="mu-cols">
+      <div class="mu-col"><button type="button" class="mu-term" data-mu="0">Rate</button><button type="button" class="mu-term" data-mu="1">Unit Rate</button><button type="button" class="mu-term" data-mu="2">Per</button><button type="button" class="mu-term" data-mu="3">Ratio</button></div>
+      <div class="mu-col"><button type="button" class="mu-def" data-mu="0">A ratio comparing two amounts with different units, like miles per hour.</button><button type="button" class="mu-def" data-mu="1">A rate for just 1 of something, like cost for 1 item.</button><button type="button" class="mu-def" data-mu="2">For each one. Example: 5 dollars per book.</button><button type="button" class="mu-def" data-mu="3">A way to compare two amounts.</button></div>
+    </div>
+    <p class="mu-feedback" role="status" aria-live="polite"></p>
+  </div>
   </div>
   <h3 class="gn-subhead">🧮 Watch &amp; Try — Worked Examples</h3><div class="notes-gradual">
     <div class="l1-only">
@@ -839,6 +1082,7 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
       <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> $4.50 ÷ 9 = $0.50 per game.</li></ol>
       <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. $0.50 per game</p>
     </div>
+    
     <div class="notes-gr-step notes-gr-we">
       <span class="notes-gr-tag">🤝 We do — together (Scaffolded)</span>
       <p class="notes-gr-cue">Solve this with your class by filling in the missing words or values.</p>
@@ -876,6 +1120,7 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
       <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> $4.50 ÷ 9 = $0.50 per game.</li></ol>
       <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. $0.50 per game</p>
     </div>
+    
     <div class="notes-gr-step notes-gr-we">
       <span class="notes-gr-tag">🤝 We do — together</span>
       <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
@@ -949,10 +1194,7 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   <ol class="try-choices" type="A"><li>6 for $1.50 — $0.25 each</li><li>10 for $2.80 — $0.28 each</li><li>They cost the same per pencil</li><li>Not enough information</li></ol>
   <div class="work-space"><span class="ws-label">Your answer:</span><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
 </section>
-  <section class="answer-key">
-  <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>Notes 1:</strong> Rate</li><li><strong>Notes 2:</strong> Unit Rate</li><li><strong>Notes 3:</strong> Per</li><li><strong>Notes 4:</strong> Ratio</li><li><strong>Notes 5:</strong> Better Buy</li><li><strong>Notes 6:</strong> Divide</li><li><strong>We Try (notes):</strong> A. 30 miles per gallon <span class="ak-why">— 180 miles ÷ 6 gallons = 30 miles per gallon.</span></li><li><strong>You Try (notes):</strong> A. $0.75 <span class="ak-why">— $6.00 ÷ 8 = $0.75 per marker.</span></li><li><strong>Try It 1:</strong> A. Pixel Racer (50 points per minute) <span class="ak-why">— Pixel Racer: 250 ÷ 5 = 50 points per minute. Turbo Drift: 180 ÷ 4 = 45 points per minute. 50 &gt; 45, so Pixel Racer is faster.</span></li><li><strong>Try It 2:</strong> A. $5.00 for 10 plays <span class="ak-why">— $5.00 ÷ 10 = $0.50 per play; $6.00 ÷ 8 = $0.75 per play; $9.00 ÷ 12 = $0.75 per play; $7.00 ÷ 10 = $0.70 per play. The lowest unit rate, $0.50 per play, is the best value.</span></li><li><strong>Exit Ticket:</strong> A. 6 for $1.50 — $0.25 each <span class="ak-why">— $1.50 ÷ 6 = $0.25 per pencil. $2.80 ÷ 10 = $0.28 per pencil. $0.25 &lt; $0.28, so 6 for $1.50 is the better buy.</span></li></ol>
-</section>
+  
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 4-1-flagship · Standard 6.RP.2</footer>
 </main>
 </body>

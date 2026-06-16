@@ -160,20 +160,31 @@ async function main() {
   }
 
   let ok = 0;
+  // Student copy (notes.html, no answer key) + teacher copy
+  // (notes-teacher.html, with answer key) when present.
+  const variants = [
+    { suffix: "", src: "notes.html" },
+    { suffix: "-teacher", src: "notes-teacher.html" },
+  ];
+  let total = 0;
   for (const id of ids) {
-    const htmlPath = join(lessonsDir, id, "notes.html");
     const outDir = join(lessonsDir, id, "downloads");
     if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
-    const outPath = join(outDir, `${id}-notes.pdf`);
-    try {
-      const wrote = await renderPdf(chrome, htmlPath, outPath);
-      if (wrote) ok++;
-      else console.warn(`generate-pdf: no output for ${id}`);
-    } catch (e) {
-      console.warn(`generate-pdf: failed for ${id}: ${e.message}`);
+    for (const v of variants) {
+      const htmlPath = join(lessonsDir, id, v.src);
+      if (!existsSync(htmlPath)) continue;
+      total++;
+      const outPath = join(outDir, `${id}-notes${v.suffix}.pdf`);
+      try {
+        const wrote = await renderPdf(chrome, htmlPath, outPath);
+        if (wrote) ok++;
+        else console.warn(`generate-pdf: no output for ${id}${v.suffix}`);
+      } catch (e) {
+        console.warn(`generate-pdf: failed for ${id}${v.suffix}: ${e.message}`);
+      }
     }
   }
-  console.log(`Generated ${ok}/${ids.length} notes PDFs using ${chrome}`);
+  console.log(`Generated ${ok}/${total} notes PDFs using ${chrome}`);
 }
 
 main();

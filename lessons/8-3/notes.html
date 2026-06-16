@@ -25,7 +25,12 @@ header.packet h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
   margin:6px 0 4px;font-size:26px;}
 header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .name-line{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;font-size:14px;}
-.name-line span{flex:1;border-bottom:1px solid var(--ink);padding:4px 0;min-width:140px;}
+.nl-field{display:flex;align-items:center;gap:8px;flex:1;min-width:180px;}
+.nl-label{font-weight:700;color:var(--navy);white-space:nowrap;}
+.nl-input{flex:1;min-width:80px;border:none;border-bottom:1.5px solid var(--ink);background:transparent;
+  font:inherit;font-size:15px;color:var(--navy);padding:4px 4px;border-radius:4px 4px 0 0;}
+.nl-input:focus{outline:none;background:#fff7e6;}
+@media print{.nl-input{border-bottom:1px solid #000;color:#000;}}
 .section{margin:0 0 22px;page-break-inside:avoid;}
 .section>h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;
   border-left:5px solid var(--teal);padding-left:10px;margin:0 0 12px;}
@@ -122,6 +127,8 @@ input.writeline:focus,input.gn-blank:focus{outline:none;background-color:#fff7e6
 .try-choices li{margin:3px 0;}
 .work-space{margin-top:6px;}
 .muted{color:var(--muted);font-size:14px;}
+.teacher-banner{background:#fff3cd;border:1.5px solid #e0a800;color:#7a5b00;border-radius:10px;
+  padding:10px 14px;margin:0 0 14px;font-weight:800;font-size:14px;text-align:center;}
 .answer-key{page-break-before:always;border-top:3px solid var(--navy);margin-top:24px;padding-top:14px;}
 .answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
 .ak-list{padding-left:22px;}
@@ -528,14 +535,74 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   .gn-sentence{flex:1;font-size:16px;line-height:1.9;color:#1c2b36;}
   .gn-blank{display:inline-block;min-width:120px;border-bottom:2px solid var(--navy);height:1.25em;margin:0 4px;vertical-align:bottom;}
   .gn-subhead{margin:20px 0 8px;color:var(--navy);font-size:16px;font-weight:800;}
+  /* Tap-to-define word-bank pop-ups (with picture) */
+  .gn-bank-word{cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+  .gn-info{font-size:12px;color:var(--teal);font-weight:700;}
+  .nt-popover{position:fixed;z-index:9999;max-width:280px;background:#fff;border:2px solid var(--teal);
+    border-radius:14px;box-shadow:0 12px 32px rgba(18,53,91,.22);padding:14px 16px;display:none;}
+  .nt-popover.open{display:block;}
+  .nt-popover img{display:block;width:100%;max-height:150px;object-fit:contain;border-radius:8px;
+    background:#f0faf8;margin-bottom:10px;}
+  .nt-popover h4{margin:0 0 6px;color:var(--navy);font-size:17px;font-family:Outfit,system-ui,sans-serif;}
+  .nt-popover p{margin:0;font-size:14.5px;line-height:1.5;color:var(--ink);}
+  .nt-popover .nt-pop-close{position:absolute;top:6px;right:8px;border:none;background:transparent;
+    font-size:20px;line-height:1;color:var(--muted);cursor:pointer;}
+  /* Larger, clearer Watch & Try worked visuals */
+  .notes-gr-step .wk-problem{font-size:15.5px;line-height:1.6;background:#f7fafc;border-radius:8px;padding:8px 12px;}
+  .notes-gr-step .wk-steps .wk-step{font-size:15px;line-height:1.7;margin:7px 0;}
+  .notes-gr-step .wk-steplabel{font-size:13px;padding:2px 10px;}
+  /* Drag-and-drop "put the steps in order" */
+  .ss-step{border-left-color:var(--teal)!important;}
+  .step-sorter{margin-top:8px;}
+  .ss-list{list-style:none;margin:0;padding:0;counter-reset:ss;}
+  .ss-item{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--line);
+    border-left:5px solid var(--teal);border-radius:10px;padding:10px 12px;margin:8px 0;font-size:15px;
+    line-height:1.5;cursor:grab;transition:box-shadow .12s,border-color .12s;}
+  .ss-item:focus-visible{outline:3px solid var(--amber);outline-offset:2px;}
+  .ss-item.ss-dragging{opacity:.5;cursor:grabbing;}
+  .ss-item.ss-over{border-color:var(--teal);box-shadow:0 4px 14px rgba(31,166,162,.25);}
+  .ss-item.ss-right{border-left-color:#2e9e5b;background:#f1faf2;}
+  .ss-item.ss-wrong{border-left-color:#d9534f;background:#fdf2f1;}
+  .ss-grip{color:var(--muted);font-size:18px;cursor:grab;flex:0 0 auto;}
+  .ss-text{flex:1;}
+  .ss-move{display:inline-flex;flex-direction:column;gap:2px;flex:0 0 auto;}
+  .ss-move button{border:1px solid var(--line);background:#f7fafc;border-radius:6px;width:30px;height:22px;
+    font-size:11px;line-height:1;color:var(--navy);cursor:pointer;padding:0;}
+  .ss-move button:hover{border-color:var(--teal);}
+  .ss-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .ss-check,.ss-shuffle{border:none;border-radius:999px;padding:8px 16px;font-size:14px;font-weight:700;cursor:pointer;}
+  .ss-check{background:var(--teal);color:#fff;}
+  .ss-shuffle{background:#fff;color:var(--navy);border:1.5px solid var(--line);}
+  .ss-feedback{font-size:14px;font-weight:700;}
+  .ss-feedback.ok{color:#2e9e5b;}
+  .ss-feedback.no{color:#d9534f;}
+  /* Tap-to-pair vocabulary match-up */
+  .match-up{margin:12px 0 6px;background:#f0faf8;border:1.5px dashed var(--teal);border-radius:12px;padding:12px 14px;}
+  .mu-head{margin:0 0 10px;font-size:14px;color:var(--navy);}
+  .mu-cols{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;}
+  .mu-col{display:flex;flex-direction:column;gap:8px;}
+  .mu-term,.mu-def{text-align:left;border:2px solid var(--line);background:#fff;border-radius:10px;
+    padding:9px 12px;font:inherit;font-size:14.5px;color:var(--ink);cursor:pointer;transition:border-color .12s,background .12s;}
+  .mu-term{font-weight:700;color:var(--navy);}
+  .mu-term:hover,.mu-def:hover{border-color:var(--teal);}
+  .mu-term.sel,.mu-def.sel{border-color:var(--teal);background:#e6f7f4;}
+  .mu-term.done,.mu-def.done{border-color:#2e9e5b;background:#f1faf2;color:#2e7d46;cursor:default;}
+  .mu-term.miss,.mu-def.miss{border-color:#d9534f;background:#fdf2f1;}
+  .mu-feedback{margin:10px 0 0;font-size:14px;font-weight:700;}
+  .mu-feedback.ok{color:#2e9e5b;}
+  @media (prefers-reduced-motion:reduce){.ss-item,.mu-term,.mu-def{transition:none;}}
   @media print{
     .gn-bank{border:1.5px dashed #000;background:#fff;}
     .gn-bank-label{color:#000;}
     .gn-bank-word{border-color:#000;color:#000;}
+    .gn-info{display:none;}
     .gn-line{border-color:#000;}
     .gn-num{background:#000;}
     .gn-blank{border-bottom-color:#000;}
     .gn-subhead,.gn-directions{color:#000;}
+    .nt-popover{display:none!important;}
+    .ss-item{border-color:#000;border-left-color:#000;break-inside:avoid;}
+    .ss-grip,.ss-move{display:none;}
   }
 </style>
 <script>
@@ -675,13 +742,180 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     });
   })();
 </script>
+<script>
+  // Tap-to-define word-bank pop-ups (term + plain meaning + picture).
+  (function () {
+    var pop = null;
+    function ensurePop() {
+      if (pop) return pop;
+      pop = document.createElement('div');
+      pop.className = 'nt-popover';
+      pop.innerHTML = '<button type="button" class="nt-pop-close" aria-label="Close">×</button>' +
+        '<img alt="" /><h4></h4><p></p>';
+      document.body.appendChild(pop);
+      pop.querySelector('.nt-pop-close').addEventListener('click', hidePop);
+      return pop;
+    }
+    function hidePop() { if (pop) pop.classList.remove('open'); }
+    function showPop(btn) {
+      var p = ensurePop();
+      var img = p.querySelector('img');
+      var src = btn.getAttribute('data-img') || '';
+      if (src) { img.src = src; img.style.display = ''; img.onerror = function () { img.style.display = 'none'; }; }
+      else { img.style.display = 'none'; }
+      p.querySelector('h4').textContent = btn.getAttribute('data-term') || '';
+      p.querySelector('p').textContent = btn.getAttribute('data-def') || '';
+      p.classList.add('open');
+      var r = btn.getBoundingClientRect();
+      var top = r.bottom + 8, left = r.left;
+      var pw = p.offsetWidth, ph = p.offsetHeight;
+      if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
+      if (left < 8) left = 8;
+      if (top + ph > window.innerHeight - 8) top = r.top - ph - 8;
+      if (top < 8) top = 8;
+      p.style.left = left + 'px';
+      p.style.top = top + 'px';
+    }
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('[data-popover]') : null;
+      if (btn) { e.preventDefault(); showPop(btn); return; }
+      if (pop && !e.target.closest('.nt-popover')) hidePop();
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hidePop(); });
+  })();
+
+  // Interactive "put the steps in order" — drag, ▲▼ buttons, or keyboard.
+  (function () {
+    function shuffle(arr) {
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+      }
+      return arr;
+    }
+    function items(list) { return Array.prototype.slice.call(list.children); }
+    function clearMarks(list) {
+      items(list).forEach(function (li) { li.classList.remove('ss-right', 'ss-wrong'); });
+    }
+    function init(sorter) {
+      var list = sorter.querySelector('.ss-list');
+      var order = shuffle(items(list));
+      // Avoid starting already-solved.
+      var solved = order.every(function (li, i) { return +li.getAttribute('data-correct') === i; });
+      if (solved && order.length > 1) { order.push(order.shift()); }
+      order.forEach(function (li) { list.appendChild(li); });
+
+      var dragEl = null;
+      list.addEventListener('dragstart', function (e) {
+        dragEl = e.target.closest('.ss-item');
+        if (dragEl) dragEl.classList.add('ss-dragging');
+      });
+      list.addEventListener('dragend', function () {
+        if (dragEl) dragEl.classList.remove('ss-dragging');
+        items(list).forEach(function (li) { li.classList.remove('ss-over'); });
+        dragEl = null;
+      });
+      list.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        var over = e.target.closest('.ss-item');
+        if (!over || over === dragEl) return;
+        items(list).forEach(function (li) { li.classList.remove('ss-over'); });
+        over.classList.add('ss-over');
+        var r = over.getBoundingClientRect();
+        var after = (e.clientY - r.top) > r.height / 2;
+        list.insertBefore(dragEl, after ? over.nextSibling : over);
+      });
+      list.addEventListener('click', function (e) {
+        var li = e.target.closest('.ss-item'); if (!li) return;
+        if (e.target.classList.contains('ss-up') && li.previousElementSibling) {
+          list.insertBefore(li, li.previousElementSibling); clearMarks(list); li.focus();
+        } else if (e.target.classList.contains('ss-down') && li.nextElementSibling) {
+          list.insertBefore(li.nextElementSibling, li); clearMarks(list); li.focus();
+        }
+      });
+
+      var fb = sorter.querySelector('.ss-feedback');
+      sorter.querySelector('.ss-check').addEventListener('click', function () {
+        var ok = true;
+        items(list).forEach(function (li, i) {
+          var right = +li.getAttribute('data-correct') === i;
+          li.classList.toggle('ss-right', right);
+          li.classList.toggle('ss-wrong', !right);
+          if (!right) ok = false;
+        });
+        fb.textContent = ok ? '✅ Perfect — that is the right order!' : '❌ Not yet — move the red cards and check again.';
+        fb.className = 'ss-feedback ' + (ok ? 'ok' : 'no');
+      });
+      sorter.querySelector('.ss-shuffle').addEventListener('click', function () {
+        clearMarks(list);
+        shuffle(items(list)).forEach(function (li) { list.appendChild(li); });
+        fb.textContent = ''; fb.className = 'ss-feedback';
+      });
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      var sorters = document.querySelectorAll('[data-step-sorter]');
+      for (var i = 0; i < sorters.length; i++) init(sorters[i]);
+    });
+  })();
+
+  // Tap-to-pair vocabulary match-up.
+  (function () {
+    function shuffleChildren(col) {
+      var nodes = Array.prototype.slice.call(col.children);
+      for (var i = nodes.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        col.insertBefore(nodes[j], nodes[i]);
+        var t = nodes[i]; nodes[i] = nodes[j]; nodes[j] = t;
+      }
+    }
+    function init(mu) {
+      var cols = mu.querySelectorAll('.mu-col');
+      if (cols.length === 2) shuffleChildren(cols[1]);
+      var fb = mu.querySelector('.mu-feedback');
+      var total = mu.querySelectorAll('.mu-term').length;
+      var done = 0, selTerm = null;
+      function clearSel() {
+        var s = mu.querySelectorAll('.sel');
+        for (var i = 0; i < s.length; i++) s[i].classList.remove('sel', 'miss');
+      }
+      mu.addEventListener('click', function (e) {
+        var term = e.target.closest('.mu-term');
+        var def = e.target.closest('.mu-def');
+        if (term && !term.classList.contains('done')) {
+          clearSel(); selTerm = term; term.classList.add('sel'); return;
+        }
+        if (def && !def.classList.contains('done') && selTerm) {
+          if (def.getAttribute('data-mu') === selTerm.getAttribute('data-mu')) {
+            def.classList.add('done'); selTerm.classList.add('done');
+            selTerm.classList.remove('sel'); selTerm = null; done++;
+            if (done === total) { fb.textContent = '✅ All matched — great job!'; fb.className = 'mu-feedback ok'; }
+          } else {
+            def.classList.add('miss');
+            var bad = selTerm;
+            setTimeout(function () {
+              def.classList.remove('miss'); if (bad) bad.classList.remove('sel', 'miss');
+            }, 600);
+            selTerm = null;
+          }
+        }
+      });
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      var mus = document.querySelectorAll('[data-match-up]');
+      for (var i = 0; i < mus.length; i++) init(mus[i]);
+    });
+  })();
+</script>
 <main class="sheet">
+  
   <header class="packet">
     <p class="eyebrow">Unit 8 · Standard 6.SP.5c</p>
     <h1>Mean Absolute Deviation </h1>
     <p class="meta">Lesson 8-3</p>
     <div class="name-line">
-      <span>Name:</span><span>Date:</span><span>Class:</span>
+      <label class="nl-field"><span class="nl-label">Name:</span><input class="nl-input" type="text" data-nt-field placeholder="Type your name" aria-label="Your name" /></label>
+      <label class="nl-field"><span class="nl-label">Date:</span><input class="nl-input" type="text" data-nt-field placeholder="Today's date" aria-label="Date" /></label>
+      <label class="nl-field"><span class="nl-label">Class:</span><input class="nl-input" type="text" data-nt-field placeholder="Class period" aria-label="Class" /></label>
     </div>
   </header>
   
@@ -819,10 +1053,19 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   <p class="gn-directions">✏️ Fill in each blank as we go. Use the Word Bank to help you.</p><div class="gn-fill">
     <div class="gn-bank">
       <span class="gn-bank-label">📚 Word Bank — fill each blank with the best word</span>
-      <div class="gn-bank-words"><span class="gn-bank-word">Mean Absolute Deviation</span><span class="gn-bank-word">Deviation</span><span class="gn-bank-word">Absolute Value</span><span class="gn-bank-word">Spread</span><span class="gn-bank-word">Data distribution</span><span class="gn-bank-word">Variability</span></div>
+      <div class="gn-bank-words"><button type="button" class="gn-bank-word" data-popover data-term="Mean Absolute Deviation" data-def="The average distance of each number from the mean." data-img="../../assets/vocab-images/mean-absolute-deviation.svg" aria-label="Show the meaning and picture for Mean Absolute Deviation">Mean Absolute Deviation<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Deviation" data-def="How far a number is from the mean." data-img="../../assets/vocab-images/mean-absolute-deviation.svg" aria-label="Show the meaning and picture for Deviation">Deviation<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Absolute Value" data-def="How far a number is from zero. It is always positive." data-img="../../assets/vocab-images/absolute-value.svg" aria-label="Show the meaning and picture for Absolute Value">Absolute Value<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Spread" data-def="How far apart the numbers are." data-img="../../assets/vocab-images/spread.svg" aria-label="Show the meaning and picture for Spread">Spread<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Data distribution" data-def="How the data looks: where it sits and how spread out it is." data-img="../../assets/vocab-images/distribution.svg" aria-label="Show the meaning and picture for Data distribution">Data distribution<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Variability" data-def="How spread out the numbers are." data-img="../../assets/vocab-images/spread.svg" aria-label="Show the meaning and picture for Variability">Variability<span class="gn-info" aria-hidden="true">ⓘ</span></button></div>
+      <p class="gn-bank-hint">👆 Tap any word to see what it means and a picture.</p>
       <p class="gn-bank-hint l3-only">Level 3: try the blanks from memory first, then check the bank.</p>
     </div>
     <ol class="gn-lines"><li class="gn-line"><span class="gn-num">1</span><span class="gn-sentence">The average distance of each value from the mean is the <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">2</span><span class="gn-sentence">How far a single value is from the mean is its <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">3</span><span class="gn-sentence">The distance of a number from zero, always positive, is its <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">4</span><span class="gn-sentence">How far apart the data values are from each other is the <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">5</span><span class="gn-sentence">The way data values are spread out is the <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">6</span><span class="gn-sentence">How much the data values differ is the <input class="gn-blank" type="text" data-nt-field />.</span></li></ol>
+    <div class="match-up no-print" data-match-up>
+    <p class="mu-head"><strong>🔗 Match-up:</strong> Tap a word, then tap its meaning.</p>
+    <div class="mu-cols">
+      <div class="mu-col"><button type="button" class="mu-term" data-mu="0">Mean Absolute Deviation</button><button type="button" class="mu-term" data-mu="1">Deviation</button><button type="button" class="mu-term" data-mu="2">Absolute Value</button><button type="button" class="mu-term" data-mu="3">Spread</button></div>
+      <div class="mu-col"><button type="button" class="mu-def" data-mu="0">The average distance of each number from the mean.</button><button type="button" class="mu-def" data-mu="1">How far a number is from the mean.</button><button type="button" class="mu-def" data-mu="2">How far a number is from zero. It is always positive.</button><button type="button" class="mu-def" data-mu="3">How far apart the numbers are.</button></div>
+    </div>
+    <p class="mu-feedback" role="status" aria-live="polite"></p>
+  </div>
   </div>
   <h3 class="gn-subhead">🧮 Watch &amp; Try — Worked Examples</h3><div class="notes-gradual">
     <div class="l1-only">
@@ -835,6 +1078,32 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
       <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> Deviation = 11 − 15 = −4.</li><li class="wk-step"><span class="wk-steplabel">Step 2</span> Absolute deviation = |−4| = 4.</li></ol>
       <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. 4</p>
     </div>
+    <div class="notes-gr-step ss-step">
+    <span class="notes-gr-tag">🧩 Try — put the steps in order</span>
+    <p class="notes-gr-cue">Drag the cards (or use the ▲▼ buttons) to put the solution steps in the right order, then press <strong>Check</strong>.</p>
+    <div class="step-sorter" data-step-sorter>
+      <ol class="ss-list"><li class="ss-item" draggable="true" data-correct="0" tabindex="0">
+          <span class="ss-grip" aria-hidden="true">⠿</span>
+          <span class="ss-text">Deviation = 11 − 15 = −4.</span>
+          <span class="ss-move no-print">
+            <button type="button" class="ss-up" aria-label="Move step up">▲</button>
+            <button type="button" class="ss-down" aria-label="Move step down">▼</button>
+          </span>
+        </li><li class="ss-item" draggable="true" data-correct="1" tabindex="0">
+          <span class="ss-grip" aria-hidden="true">⠿</span>
+          <span class="ss-text">Absolute deviation = |−4| = 4.</span>
+          <span class="ss-move no-print">
+            <button type="button" class="ss-up" aria-label="Move step up">▲</button>
+            <button type="button" class="ss-down" aria-label="Move step down">▼</button>
+          </span>
+        </li></ol>
+      <div class="ss-actions no-print">
+        <button type="button" class="ss-check">✓ Check my order</button>
+        <button type="button" class="ss-shuffle">↺ Shuffle</button>
+        <span class="ss-feedback" role="status" aria-live="polite"></span>
+      </div>
+    </div>
+  </div>
     <div class="notes-gr-step notes-gr-we">
       <span class="notes-gr-tag">🤝 We do — together (Scaffolded)</span>
       <p class="notes-gr-cue">Solve this with your class by filling in the missing words or values.</p>
@@ -872,6 +1141,32 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
       <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> Deviation = 11 − 15 = −4.</li><li class="wk-step"><span class="wk-steplabel">Step 2</span> Absolute deviation = |−4| = 4.</li></ol>
       <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. 4</p>
     </div>
+    <div class="notes-gr-step ss-step">
+    <span class="notes-gr-tag">🧩 Try — put the steps in order</span>
+    <p class="notes-gr-cue">Drag the cards (or use the ▲▼ buttons) to put the solution steps in the right order, then press <strong>Check</strong>.</p>
+    <div class="step-sorter" data-step-sorter>
+      <ol class="ss-list"><li class="ss-item" draggable="true" data-correct="0" tabindex="0">
+          <span class="ss-grip" aria-hidden="true">⠿</span>
+          <span class="ss-text">Deviation = 11 − 15 = −4.</span>
+          <span class="ss-move no-print">
+            <button type="button" class="ss-up" aria-label="Move step up">▲</button>
+            <button type="button" class="ss-down" aria-label="Move step down">▼</button>
+          </span>
+        </li><li class="ss-item" draggable="true" data-correct="1" tabindex="0">
+          <span class="ss-grip" aria-hidden="true">⠿</span>
+          <span class="ss-text">Absolute deviation = |−4| = 4.</span>
+          <span class="ss-move no-print">
+            <button type="button" class="ss-up" aria-label="Move step up">▲</button>
+            <button type="button" class="ss-down" aria-label="Move step down">▼</button>
+          </span>
+        </li></ol>
+      <div class="ss-actions no-print">
+        <button type="button" class="ss-check">✓ Check my order</button>
+        <button type="button" class="ss-shuffle">↺ Shuffle</button>
+        <span class="ss-feedback" role="status" aria-live="polite"></span>
+      </div>
+    </div>
+  </div>
     <div class="notes-gr-step notes-gr-we">
       <span class="notes-gr-tag">🤝 We do — together</span>
       <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
@@ -945,10 +1240,7 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   <ol class="try-choices" type="A"><li>2.4</li><li>6</li><li>0</li><li>12</li></ol>
   <div class="work-space"><span class="ws-label">Your answer:</span><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
 </section>
-  <section class="answer-key">
-  <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>Notes 1:</strong> Mean Absolute Deviation</li><li><strong>Notes 2:</strong> Deviation</li><li><strong>Notes 3:</strong> Absolute Value</li><li><strong>Notes 4:</strong> Spread</li><li><strong>Notes 5:</strong> Data distribution</li><li><strong>Notes 6:</strong> Variability</li><li><strong>We Try (notes):</strong> A. 3 <span class="ak-why">— Sum of absolute deviations = 3 + 1 + 5 + 2 + 4 = 15. MAD = 15 ÷ 5 = 3.</span></li><li><strong>You Try (notes):</strong> A. 6 <span class="ak-why">— Deviation = 26 − 20 = 6. Absolute deviation = |6| = 6.</span></li><li><strong>Try It 1:</strong> B. 2 <span class="ak-why">— Add the distances: 3 + 1 + 1 + 3 = 8. Divide by the 4 games: 8 ÷ 4 = 2. The MAD is 2 points.</span></li><li><strong>Try It 2:</strong> A. Shooter A, because a smaller MAD means scores stay closer to the average <span class="ak-why">— A smaller MAD means the scores hug the mean. Shooter A's MAD of 2 is smaller than Shooter B's 6, so Shooter A is more consistent.</span></li><li><strong>Exit Ticket:</strong> A. 2.4 <span class="ak-why">— Deviations: −2, 2, 0, 4, −4. Absolute deviations: 2, 2, 0, 4, 4. Sum = 12. MAD = 12 ÷ 5 = 2.4.</span></li></ol>
-</section>
+  
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 8-3 · Standard 6.SP.5c</footer>
 </main>
 </body>

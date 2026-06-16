@@ -83,6 +83,19 @@ function copyStandaloneHtml() {
             mkdirSync(destDir, { recursive: true });
             cpSync(notes, resolve(destDir, "notes.html"));
           }
+          // Teacher copy of the guided notes (includes the Answer Key &
+          // Teacher Guide). Linked from the teacher notes index, not the
+          // student-facing curriculum hub.
+          const notesTeacher = resolve(
+            lessonsDir,
+            dir.name,
+            "notes-teacher.html",
+          );
+          if (existsSync(notesTeacher)) {
+            const destDir = resolve(__dirname, "dist", "lessons", dir.name);
+            mkdirSync(destDir, { recursive: true });
+            cpSync(notesTeacher, resolve(destDir, "notes-teacher.html"));
+          }
           const slides = resolve(lessonsDir, dir.name, "slides.html");
           if (existsSync(slides)) {
             const destDir = resolve(__dirname, "dist", "lessons", dir.name);

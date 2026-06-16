@@ -1,0 +1,1250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mean Absolute Deviation — Notes Packet (Teacher Copy — Answer Key)</title>
+<style>
+:root{
+  --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
+  --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Calibri,"Segoe UI",system-ui,sans-serif;line-height:1.5;}
+.sheet{max-width:8.5in;margin:0 auto;background:var(--card);padding:0.6in;}
+.topbar{position:sticky;top:0;background:var(--navy);color:#fff;display:flex;
+  justify-content:space-between;align-items:center;padding:12px 18px;}
+.topbar .brand{font-weight:700;font-family:Outfit,system-ui,sans-serif;}
+.print-btn{background:var(--amber);color:var(--navy);border:0;border-radius:8px;
+  padding:9px 16px;font-weight:700;cursor:pointer;font-size:15px;}
+header.packet{border-bottom:3px solid var(--teal);padding-bottom:14px;margin-bottom:18px;}
+header.packet .eyebrow{color:var(--teal);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:13px;margin:0;}
+header.packet h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
+  margin:6px 0 4px;font-size:26px;}
+header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
+.name-line{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;font-size:14px;}
+.nl-field{display:flex;align-items:center;gap:8px;flex:1;min-width:180px;}
+.nl-label{font-weight:700;color:var(--navy);white-space:nowrap;}
+.nl-input{flex:1;min-width:80px;border:none;border-bottom:1.5px solid var(--ink);background:transparent;
+  font:inherit;font-size:15px;color:var(--navy);padding:4px 4px;border-radius:4px 4px 0 0;}
+.nl-input:focus{outline:none;background:#fff7e6;}
+@media print{.nl-input{border-bottom:1px solid #000;color:#000;}}
+.section{margin:0 0 22px;page-break-inside:avoid;}
+.section>h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;
+  border-left:5px solid var(--teal);padding-left:10px;margin:0 0 12px;}
+.vocab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.vocab-card{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  page-break-inside:avoid;}
+.vocab-term{margin:0 0 4px;color:var(--navy);font-size:16px;}
+.vocab-def{margin:0 0 8px;font-size:14px;}
+.vocab-figure{text-align:center;background:var(--teal-light);border-radius:8px;padding:8px;}
+.vocab-figure img{max-width:100%;max-height:120px;}
+.vocab-caption{margin:6px 0 0;font-size:12.5px;color:var(--muted);font-style:italic;}
+.notes-bullets,.prompt-list{margin:0 0 10px;padding-left:20px;}
+.notes-bullets li,.prompt-list li{margin:5px 0;}
+.think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
+.think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+/* Guided notes — learning line, visual steps, gradual-release frame */
+.notes-learning{display:flex;gap:12px;align-items:flex-start;background:var(--teal-light);
+  border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:0 0 14px;page-break-inside:avoid;}
+.notes-learning-icon{font-size:22px;line-height:1;flex:0 0 auto;}
+.notes-learning-label{margin:0 0 2px;font-size:11.5px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--teal);}
+.notes-learning-text{margin:0;font-size:15px;font-weight:600;color:var(--navy);}
+.notes-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 14px;}
+.notes-step{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  border-top:5px solid var(--teal);page-break-inside:avoid;}
+.notes-step-2{border-top-color:var(--amber);}
+.notes-step-3{border-top-color:var(--navy);}
+.notes-step-head{display:flex;align-items:center;gap:8px;margin:0 0 6px;}
+.notes-step-num{font-size:18px;line-height:1;}
+.notes-step-title{margin:0;font-size:14.5px;color:var(--navy);}
+.notes-step-text{margin:0;font-size:13.5px;line-height:1.4;}
+.notes-word-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.notes-word-chip{display:inline-block;font-size:12.5px;font-weight:600;color:var(--navy);
+  background:var(--teal-light);border:1px solid var(--teal);border-radius:999px;padding:2px 10px;}
+.notes-gradual{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0 0;}
+.notes-gr-step{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:10px 12px;background:#fff;page-break-inside:avoid;}
+.notes-gr-we{border-left-color:var(--amber);}
+.notes-gr-you{border-left-color:var(--navy);}
+.notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
+  background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
+.notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+/* Turn & Talk — optional hint + optional starters label */
+.tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
+  padding:6px 10px;}
+.tt-hint-toggle>summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--teal);list-style:none;}
+.tt-hint-toggle>summary::-webkit-details-marker{display:none;}
+.tt-hint-text{margin:6px 0 0;font-size:13.5px;color:var(--ink);}
+.tt-stems-label{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--navy);
+  text-transform:none;letter-spacing:0;}
+.my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
+.writeline{border-bottom:1px solid #b9c6d3;height:26px;}
+/* Typeable, auto-saved guided-notes fields (replace the print-only blank lines) */
+textarea.writeline-area{display:block;width:100%;box-sizing:border-box;border:none;resize:vertical;
+  font:inherit;color:var(--navy);line-height:26px;padding:0 2px;background-color:transparent;
+  background-image:repeating-linear-gradient(transparent,transparent 25px,#b9c6d3 25px,#b9c6d3 26px);
+  min-height:26px;border-radius:4px;}
+textarea.writeline-area:focus{outline:none;background-color:#fff7e6;}
+input.writeline{border:none;border-bottom:1px solid #b9c6d3;background:transparent;font:inherit;
+  color:var(--navy);padding:1px 4px;min-width:60px;border-radius:3px 3px 0 0;}
+.wk-step-blank input.writeline,.wk-answer-blank input.writeline{height:24px;}
+input.gn-blank{background:transparent;font:inherit;font-weight:700;color:var(--navy);text-align:center;
+  padding:1px 6px;border-radius:4px;}
+input.writeline:focus,input.gn-blank:focus{outline:none;background-color:#fff7e6;}
+.nt-save{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--teal);
+  background:var(--teal-light);border:1px solid var(--teal);border-radius:999px;padding:5px 12px;white-space:nowrap;}
+.nt-clear{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;
+  font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;}
+.nt-clear:hover{border-color:var(--navy);color:var(--navy);}
+.example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
+.example-head{margin:0 0 6px;color:var(--navy);font-size:16px;}
+.ex-problem{margin:0 0 8px;font-weight:600;}
+.ex-steps{margin:0 0 8px;padding-left:20px;}
+.step-label{color:var(--teal);font-weight:700;}
+.ex-solution,.ex-answer{margin:6px 0 0;font-size:14.5px;}
+.tryit{margin:0 0 14px;page-break-inside:avoid;}
+.tryit-num,.reflect-stem{font-weight:600;margin:0 0 6px;}
+.try-choices{margin:0 0 8px;padding-left:24px;}
+.try-choices li{margin:3px 0;}
+.work-space{margin-top:6px;}
+.muted{color:var(--muted);font-size:14px;}
+.teacher-banner{background:#fff3cd;border:1.5px solid #e0a800;color:#7a5b00;border-radius:10px;
+  padding:10px 14px;margin:0 0 14px;font-weight:800;font-size:14px;text-align:center;}
+.answer-key{page-break-before:always;border-top:3px solid var(--navy);margin-top:24px;padding-top:14px;}
+.answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
+.ak-list{padding-left:22px;}
+.ak-list li{margin:8px 0;}
+.ak-twr-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:16px;margin:14px 0 6px;}
+.ak-why{color:var(--muted);font-style:italic;}
+footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
+  color:var(--muted);font-size:12px;text-align:center;}
+.level-tag{display:inline-block;font-family:Calibri,system-ui,sans-serif;font-size:11.5px;
+  font-weight:700;letter-spacing:.02em;padding:2px 9px;border-radius:999px;vertical-align:middle;
+  margin-left:8px;text-transform:none;}
+.level-1{background:var(--teal-light);color:var(--teal);border:1px solid var(--teal);}
+.level-2{background:#fef0d8;color:#9a6b12;border:1px solid var(--amber);}
+.level-note{margin:-4px 0 12px;font-size:13.5px;color:var(--muted);}
+.flagship-badge{display:inline-block;font-size:13px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:3px 12px;vertical-align:middle;font-family:Calibri,system-ui,sans-serif;}
+.mission{background:linear-gradient(135deg,var(--navy),#1b4a7a);color:#fff;border-radius:12px;
+  padding:16px 20px;margin:0 0 22px;}
+.mission-eyebrow{margin:0 0 4px;color:var(--amber);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:12px;}
+.mission-title{font-family:Outfit,system-ui,sans-serif;margin:0 0 8px;font-size:20px;border:0;padding:0;color:#fff;}
+.mission-story{margin:0;font-size:14px;line-height:1.55;}
+.enrich-block{border:1px dashed var(--amber);background:#fffaf0;border-radius:10px;
+  padding:12px 14px;margin:14px 0 0;page-break-inside:avoid;}
+.enrich-block h3{margin:0 0 4px;font-size:15px;color:var(--navy);}
+.sentence-frame{font-size:13.5px;color:var(--muted);font-style:italic;margin:4px 0 8px;}
+/* The Writing Revolution (TWR) */
+.section.twr>h2{border-left-color:var(--amber);}
+.twr-method{display:inline-block;font-size:11.5px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:2px 10px;vertical-align:middle;margin-left:8px;}
+.twr-block{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.twr-block h3{margin:0 0 8px;color:var(--navy);font-size:15.5px;}
+.twr-tag{display:inline-block;font-size:11px;font-weight:600;color:var(--teal);
+  background:var(--teal-light);border-radius:999px;padding:1px 9px;margin-left:6px;vertical-align:middle;}
+.twr-model{background:var(--teal-light);border-radius:6px;padding:8px 10px;margin:0 0 8px;font-size:14px;}
+.twr-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.twr-frame{margin:4px 0 4px;font-size:14px;}
+.twr-en{font-weight:600;}
+.twr-es{display:block;color:var(--muted);font-style:italic;font-size:13px;}
+.twr-exp-row,.twr-type-row{display:grid;grid-template-columns:96px 1fr;gap:10px;
+  align-items:start;margin:8px 0;}
+.twr-conj,.twr-type-name{font-weight:700;color:var(--navy);background:#fef0d8;
+  border-radius:6px;padding:4px 8px;font-size:13.5px;text-align:center;}
+.twr-conj-es{display:block;font-weight:600;color:var(--muted);font-style:italic;font-size:11.5px;}
+.twr-exp-lines{min-width:0;}
+.twr-hint{margin:0 0 4px;font-size:13px;color:var(--muted);}
+.twr-stems{margin:0 0 8px;}
+/* Turn & Talk — Discussion Points */
+.section.turn-and-talk>h2{border-left-color:var(--teal);}
+.tt-card{border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.tt-phase{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:#fff;background:var(--navy);border-radius:999px;
+  padding:2px 10px;margin:0 0 8px;}
+.tt-question{font-weight:600;color:var(--navy);font-size:15px;margin:6px 0 10px;}
+.tt-support{background:var(--teal-light);border:1px solid var(--teal);border-radius:8px;
+  padding:10px 12px;margin:0 0 10px;}
+.tt-extend{background:#fffaf0;border:1px dashed var(--amber);border-radius:8px;
+  padding:10px 12px;margin:0;}
+.tt-support .level-tag,.tt-extend .level-tag{margin:0 0 6px;}
+.tt-kernel{margin:6px 0;font-size:14px;}
+.tt-kernel-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.tt-stems{margin:6px 0;}
+.tt-mini-label{font-weight:700;color:var(--navy);margin-right:4px;}
+.tt-wordbank{margin:6px 0;font-size:13.5px;}
+.tt-word{display:inline-block;font-weight:600;color:var(--teal);background:#fff;
+  border:1px solid var(--teal);border-radius:999px;padding:1px 9px;margin:2px 4px 2px 0;font-size:12.5px;}
+.tt-listen{margin:6px 0 0;font-size:13px;color:var(--muted);font-style:italic;}
+.tt-extend-q{font-weight:600;color:#9a6b12;margin:4px 0 6px;font-size:14px;}
+.tt-extend-stems{margin:4px 0 0;padding-left:20px;font-size:13.5px;}
+.tt-extend-stems li{margin:3px 0;}
+/* Projects Section */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+.project-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--card);
+  box-shadow: 0 4px 12px rgba(18, 53, 91, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  page-break-inside: avoid;
+}
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(18, 53, 91, 0.08);
+}
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.project-emoji {
+  font-size: 24px;
+}
+.project-title {
+  margin: 0;
+  color: var(--navy);
+  font-size: 16.5px;
+  font-family: Outfit, system-ui, sans-serif;
+}
+.project-desc {
+  margin: 0 0 14px 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  flex-grow: 1;
+}
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.project-link-btn {
+  display: block;
+  text-align: center;
+  background: var(--cream);
+  color: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.project-link-btn:hover {
+  background: var(--teal-light);
+  color: var(--teal);
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main:hover {
+  background: #198e8a;
+  border-color: #198e8a;
+}
+/* Download menu */
+.dl-wrap{position:relative;display:inline-block;margin-left:10px;}
+.dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
+  border-radius:8px;box-shadow:0 8px 24px rgba(18,53,91,.18);padding:6px;min-width:210px;z-index:20;}
+.dl-menu[hidden]{display:none;}
+.dl-menu a{display:block;padding:9px 12px;color:var(--ink);text-decoration:none;border-radius:6px;
+  font-size:14px;font-weight:600;}
+.dl-menu a:hover,.dl-menu a:focus{background:var(--teal-light);}
+.dl-menu .dl-sub{display:block;font-weight:400;color:var(--muted);font-size:12px;}
+
+/* Leveled display settings */
+.l1-only, .l2-only, .l3-only { display: none !important; }
+.l2-only-block { display: block !important; }
+
+html.level-l1 .l1-only { display: block !important; }
+html.level-l1 span.l1-only { display: inline !important; }
+html.level-l1 div.l1-only-flex { display: flex !important; }
+html.level-l1 .l2-only, html.level-l1 .l3-only, html.level-l1 .l2-only-block { display: none !important; }
+
+html.level-l2 .l2-only { display: block !important; }
+html.level-l2 .l2-only-block { display: block !important; }
+html.level-l2 span.l2-only { display: inline !important; }
+html.level-l2 div.l2-only-flex { display: flex !important; }
+html.level-l2 .l1-only, html.level-l2 .l3-only { display: none !important; }
+
+html.level-l3 .l3-only { display: block !important; }
+html.level-l3 span.l3-only { display: inline !important; }
+html.level-l3 div.l3-only-flex { display: flex !important; }
+html.level-l3 .l1-only, html.level-l3 .l2-only, html.level-l3 .l2-only-block { display: none !important; }
+
+/* Level Selector Styling */
+.level-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 10px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.selector-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.pill-group {
+  display: flex;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  padding: 2px;
+  gap: 2px;
+}
+.pill-btn {
+  position: relative;
+  cursor: pointer;
+}
+.pill-btn input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.pill-btn span {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 18px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.65);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.pill-btn input[type="radio"]:checked + span {
+  background: var(--amber);
+  color: var(--navy);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.pill-btn:hover span {
+  color: #fff;
+}
+.pill-btn input[type="radio"]:checked:hover span {
+  color: var(--navy);
+}
+
+/* Leveled component details */
+.vocab-def-prompt, .notes-step-prompt {
+  font-size: 13.5px;
+  color: var(--muted);
+  font-weight: 600;
+  margin: 4px 0 6px;
+}
+.scratchpad {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background-color: #fafbfc;
+  background-image: radial-gradient(var(--line) 1px, transparent 0);
+  background-size: 16px 16px;
+  height: 110px;
+  margin: 10px 0;
+  position: relative;
+}
+.scratchpad-label {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.85);
+  border: 1px solid var(--line);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.wk-checkboxes {
+  background: rgba(31, 166, 162, 0.05);
+  border: 1px dashed var(--teal);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 8px 0;
+}
+.wk-checkbox-label {
+  font-size: 13.5px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.wk-checkbox-label input {
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+/* Turn & Talk Leveling */
+html.level-l1 .tt-support { display: block !important; }
+html.level-l1 .tt-extend { display: none !important; }
+html.level-l2 .tt-support { display: block !important; }
+html.level-l2 .tt-extend { display: block !important; }
+html.level-l3 .tt-support { display: none !important; }
+html.level-l3 .tt-extend { display: block !important; }
+
+/* Vocab def leveling styling */
+html.level-l1 .vocab-def-l1 { display: block !important; }
+html.level-l1 .vocab-def-l2, html.level-l1 .vocab-def-l3 { display: none !important; }
+html.level-l2 .vocab-def-l2 { display: block !important; }
+html.level-l2 .vocab-def-l1, html.level-l2 .vocab-def-l3 { display: none !important; }
+html.level-l3 .vocab-def-l3 { display: block !important; }
+html.level-l3 .vocab-def-l1, html.level-l3 .vocab-def-l2 { display: none !important; }
+
+/* Notes step body leveling */
+html.level-l1 .notes-step-body-l1 { display: block !important; }
+html.level-l1 .notes-step-body-l2, html.level-l1 .notes-step-body-l3 { display: none !important; }
+html.level-l2 .notes-step-body-l2 { display: block !important; }
+html.level-l2 .notes-step-body-l1, html.level-l2 .notes-step-body-l3 { display: none !important; }
+html.level-l3 .notes-step-body-l3 { display: block !important; }
+html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: none !important; }
+
+@media print{
+  @page{
+    size:letter;margin:0.7in 0.7in 0.85in;
+    @bottom-left{content:"Neft Teacher";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-center{content:"Mean Absolute Deviation · Standard 6.SP.5c";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-right{content:"Page " counter(page) " of " counter(pages);font-family:Georgia,serif;font-size:9pt;color:#444;}
+  }
+  @page:first{
+    @top-center{content:"";}
+  }
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:11.5pt;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .topbar,.print-btn,.no-print,.dl-wrap,.level-selector{display:none !important;}
+  .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section{margin-bottom:16px;}
+  .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
+  .answer-key h2,.vocab-term,.twr-block h3{color:#000;}
+  .vocab-figure{background:#fff;border:1px solid #000;}
+  .think-block{background:#fff;border:1px solid #000;}
+  .notes-learning{background:#fff;border:1px solid #000;}
+  .notes-learning-label,.notes-learning-text,.notes-step-title{color:#000;}
+  .notes-step{background:#fff;border:1px solid #000;border-top:2px solid #000;}
+  .notes-step-2,.notes-step-3{border-top:2px solid #000;}
+  .notes-word-chip{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-step{background:#fff;border:1px solid #000;border-left:2px solid #000;}
+  .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
+  .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
+  .tt-hint-toggle{background:#fff;border:1px solid #000;}
+  .tt-hint-toggle>summary{color:#000;}
+  .tt-hint-toggle[open]>summary{margin-bottom:2px;}
+  .tt-hint-toggle>summary{list-style:none;}
+  .tt-hint-toggle>.tt-hint-text{display:block !important;}
+  .tt-hint-text{color:#000;}
+  .tt-stems-label{color:#000;}
+  header.packet{border-bottom:2px solid #000;}
+  .section>h2{border-left:4px solid #000;}
+  .example{border-left:3px solid #000;}
+  .answer-key{border-top:2px solid #000;}
+  .vocab-card{border:1px solid #000;}
+  .writeline{border-bottom:1px solid #000;}
+  textarea.writeline-area{color:#000;background-image:repeating-linear-gradient(transparent,transparent 25px,#000 25px,#000 26px);}
+  input.writeline{border-bottom:1px solid #000;color:#000;}
+  input.gn-blank{color:#000;}
+  textarea.writeline-area:focus,input.writeline:focus,input.gn-blank:focus{background-color:transparent;}
+  .nt-save,.nt-clear{display:none !important;}
+  .mission{background:#fff;color:#000;border:1px solid #000;}
+  .mission-title,.mission-eyebrow{color:#000;}
+  .level-tag,.flagship-badge,.twr-method,.twr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .enrich-block{background:#fff;border:1px dashed #000;}
+  .twr-block{border:1px solid #000;border-left:3px solid #000;}
+  .twr-model{background:#fff;border:1px solid #000;}
+  .twr-conj,.twr-type-name{background:#fff;border:1px solid #000;color:#000;}
+  .twr-es,.twr-conj-es{color:#222;}
+  .tt-card{border:1px solid #000;border-left:3px solid #000;}
+  .tt-question,.section.turn-and-talk>h2{color:#000;}
+  .tt-phase{background:#fff;color:#000;border:1px solid #000;}
+  .tt-support{background:#fff;border:1px solid #000;}
+  .tt-extend{background:#fff;border:1px dashed #000;}
+  .tt-kernel-label,.tt-mini-label,.tt-extend-q{color:#000;}
+  .tt-word{background:#fff;color:#000;border:1px solid #000;}
+  .tt-listen{color:#222;}
+  footer.packet{display:none;}
+  .scratchpad {
+    border: 1px solid #000 !important;
+    background-color: #fff !important;
+    background-image: radial-gradient(#000 1px, transparent 0) !important;
+  }
+  .scratchpad-label {
+    background: #fff !important;
+    color: #000 !important;
+    border: 1px solid #000 !important;
+  }
+  .wk-checkboxes {
+    background: #fff !important;
+    border: 1px dashed #000 !important;
+  }
+}
+</style>
+</style>
+<style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
+<style>
+  /* Fill-in-the-blank guided notes */
+  .gn-directions{margin:14px 0 6px;font-weight:700;color:var(--navy);font-size:15px;}
+  .gn-fill{margin:6px 0 4px;}
+  .gn-bank{border:2px dashed var(--teal);border-radius:12px;background:#f0faf8;padding:12px 14px;margin-bottom:14px;}
+  .gn-bank-label{display:block;font-weight:800;color:var(--teal);font-size:13px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:8px;}
+  .gn-bank-words{display:flex;flex-wrap:wrap;gap:8px;}
+  .gn-bank-word{background:#fff;border:1.5px solid var(--teal);color:var(--navy);border-radius:999px;padding:5px 14px;font-weight:700;font-size:14px;}
+  .gn-bank-hint{margin:8px 0 0;font-size:12px;color:#5a6b78;font-style:italic;}
+  .gn-lines{list-style:none;margin:0;padding:0;counter-reset:none;}
+  .gn-line{display:flex;align-items:flex-start;gap:12px;padding:11px 12px;border:1px solid #e3e8ec;border-radius:10px;margin-bottom:10px;background:#fff;break-inside:avoid;page-break-inside:avoid;}
+  .gn-num{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .gn-sentence{flex:1;font-size:16px;line-height:1.9;color:#1c2b36;}
+  .gn-blank{display:inline-block;min-width:120px;border-bottom:2px solid var(--navy);height:1.25em;margin:0 4px;vertical-align:bottom;}
+  .gn-subhead{margin:20px 0 8px;color:var(--navy);font-size:16px;font-weight:800;}
+  /* Tap-to-define word-bank pop-ups (with picture) */
+  .gn-bank-word{cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+  .gn-info{font-size:12px;color:var(--teal);font-weight:700;}
+  .nt-popover{position:fixed;z-index:9999;max-width:280px;background:#fff;border:2px solid var(--teal);
+    border-radius:14px;box-shadow:0 12px 32px rgba(18,53,91,.22);padding:14px 16px;display:none;}
+  .nt-popover.open{display:block;}
+  .nt-popover img{display:block;width:100%;max-height:150px;object-fit:contain;border-radius:8px;
+    background:#f0faf8;margin-bottom:10px;}
+  .nt-popover h4{margin:0 0 6px;color:var(--navy);font-size:17px;font-family:Outfit,system-ui,sans-serif;}
+  .nt-popover p{margin:0;font-size:14.5px;line-height:1.5;color:var(--ink);}
+  .nt-popover .nt-pop-close{position:absolute;top:6px;right:8px;border:none;background:transparent;
+    font-size:20px;line-height:1;color:var(--muted);cursor:pointer;}
+  /* Larger, clearer Watch & Try worked visuals */
+  .notes-gr-step .wk-problem{font-size:15.5px;line-height:1.6;background:#f7fafc;border-radius:8px;padding:8px 12px;}
+  .notes-gr-step .wk-steps .wk-step{font-size:15px;line-height:1.7;margin:7px 0;}
+  .notes-gr-step .wk-steplabel{font-size:13px;padding:2px 10px;}
+  /* Drag-and-drop "put the steps in order" */
+  .ss-step{border-left-color:var(--teal)!important;}
+  .step-sorter{margin-top:8px;}
+  .ss-list{list-style:none;margin:0;padding:0;counter-reset:ss;}
+  .ss-item{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--line);
+    border-left:5px solid var(--teal);border-radius:10px;padding:10px 12px;margin:8px 0;font-size:15px;
+    line-height:1.5;cursor:grab;transition:box-shadow .12s,border-color .12s;}
+  .ss-item:focus-visible{outline:3px solid var(--amber);outline-offset:2px;}
+  .ss-item.ss-dragging{opacity:.5;cursor:grabbing;}
+  .ss-item.ss-over{border-color:var(--teal);box-shadow:0 4px 14px rgba(31,166,162,.25);}
+  .ss-item.ss-right{border-left-color:#2e9e5b;background:#f1faf2;}
+  .ss-item.ss-wrong{border-left-color:#d9534f;background:#fdf2f1;}
+  .ss-grip{color:var(--muted);font-size:18px;cursor:grab;flex:0 0 auto;}
+  .ss-text{flex:1;}
+  .ss-move{display:inline-flex;flex-direction:column;gap:2px;flex:0 0 auto;}
+  .ss-move button{border:1px solid var(--line);background:#f7fafc;border-radius:6px;width:30px;height:22px;
+    font-size:11px;line-height:1;color:var(--navy);cursor:pointer;padding:0;}
+  .ss-move button:hover{border-color:var(--teal);}
+  .ss-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .ss-check,.ss-shuffle{border:none;border-radius:999px;padding:8px 16px;font-size:14px;font-weight:700;cursor:pointer;}
+  .ss-check{background:var(--teal);color:#fff;}
+  .ss-shuffle{background:#fff;color:var(--navy);border:1.5px solid var(--line);}
+  .ss-feedback{font-size:14px;font-weight:700;}
+  .ss-feedback.ok{color:#2e9e5b;}
+  .ss-feedback.no{color:#d9534f;}
+  /* Tap-to-pair vocabulary match-up */
+  .match-up{margin:12px 0 6px;background:#f0faf8;border:1.5px dashed var(--teal);border-radius:12px;padding:12px 14px;}
+  .mu-head{margin:0 0 10px;font-size:14px;color:var(--navy);}
+  .mu-cols{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;}
+  .mu-col{display:flex;flex-direction:column;gap:8px;}
+  .mu-term,.mu-def{text-align:left;border:2px solid var(--line);background:#fff;border-radius:10px;
+    padding:9px 12px;font:inherit;font-size:14.5px;color:var(--ink);cursor:pointer;transition:border-color .12s,background .12s;}
+  .mu-term{font-weight:700;color:var(--navy);}
+  .mu-term:hover,.mu-def:hover{border-color:var(--teal);}
+  .mu-term.sel,.mu-def.sel{border-color:var(--teal);background:#e6f7f4;}
+  .mu-term.done,.mu-def.done{border-color:#2e9e5b;background:#f1faf2;color:#2e7d46;cursor:default;}
+  .mu-term.miss,.mu-def.miss{border-color:#d9534f;background:#fdf2f1;}
+  .mu-feedback{margin:10px 0 0;font-size:14px;font-weight:700;}
+  .mu-feedback.ok{color:#2e9e5b;}
+  @media (prefers-reduced-motion:reduce){.ss-item,.mu-term,.mu-def{transition:none;}}
+  @media print{
+    .gn-bank{border:1.5px dashed #000;background:#fff;}
+    .gn-bank-label{color:#000;}
+    .gn-bank-word{border-color:#000;color:#000;}
+    .gn-info{display:none;}
+    .gn-line{border-color:#000;}
+    .gn-num{background:#000;}
+    .gn-blank{border-bottom-color:#000;}
+    .gn-subhead,.gn-directions{color:#000;}
+    .nt-popover{display:none!important;}
+    .ss-item{border-color:#000;border-left-color:#000;break-inside:avoid;}
+    .ss-grip,.ss-move{display:none;}
+  }
+</style>
+<script>
+  if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}
+  (function() {
+    const savedLevel = localStorage.getItem('notes-level') || 'l2';
+    document.documentElement.classList.add('level-' + savedLevel);
+  })();
+</script>
+</head>
+<body>
+<div class="topbar no-print">
+  <span class="brand">Neft Teacher · Notes Packet · Teacher Copy</span>
+  <div class="level-selector no-print">
+    <span class="selector-label">Leveled Mode:</span>
+    <div class="pill-group">
+      <label class="pill-btn">
+        <input type="radio" name="notes-level" value="l1" onclick="setLevel('l1')" />
+        <span>L1 Support</span>
+      </label>
+      <label class="pill-btn">
+        <input type="radio" name="notes-level" value="l2" onclick="setLevel('l2')" />
+        <span>L2 Standard</span>
+      </label>
+      <label class="pill-btn">
+        <input type="radio" name="notes-level" value="l3" onclick="setLevel('l3')" />
+        <span>L3 Enrichment</span>
+      </label>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <span class="nt-save no-print" id="nt-save-status" title="Your typing is saved on this device automatically.">💾 Saves automatically</span>
+    <button class="nt-clear no-print" type="button" id="nt-clear-btn">Clear my work</button>
+    <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+    <div class="dl-wrap">
+      <button class="print-btn" type="button" aria-haspopup="true" aria-expanded="false"
+        onclick="(function(b){var m=b.parentNode.querySelector('.dl-menu');var o=m.hasAttribute('hidden');if(o){m.removeAttribute('hidden');}else{m.setAttribute('hidden','');}b.setAttribute('aria-expanded',String(o));})(this)">Download ▾</button>
+      <div class="dl-menu" hidden role="menu">
+        <a href="./notes-teacher.html" download="8-3-notes-teacher.html" role="menuitem">Self-contained HTML<span class="dl-sub">Open or save the full packet</span></a>
+        <a href="./downloads/8-3-notes-teacher.pdf" role="menuitem">PDF<span class="dl-sub">Print-ready, branded</span></a>
+        <a href="./downloads/8-3-notes-teacher.docx" role="menuitem">Word (DOCX)<span class="dl-sub">Editable document</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  function setLevel(lvl) {
+    document.documentElement.classList.remove('level-l1', 'level-l2', 'level-l3');
+    document.documentElement.classList.add('level-' + lvl);
+    localStorage.setItem('notes-level', lvl);
+    const radios = document.querySelectorAll('input[name="notes-level"]');
+    radios.forEach(r => {
+      r.checked = (r.value === lvl);
+    });
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedLevel = localStorage.getItem('notes-level') || 'l2';
+    setLevel(savedLevel);
+  });
+</script>
+<script>
+  // Auto-save guided-notes typing to this device (localStorage), per lesson.
+  (function () {
+    var KEY = 'nt-notes:8-3';
+    var statusEl, clearBtn, fields = [], saveTimer = null;
+
+    function collectFields() {
+      var list = [];
+      var typed = document.querySelectorAll('[data-nt-field]');
+      for (var i = 0; i < typed.length; i++) list.push(typed[i]);
+      var boxes = document.querySelectorAll('main input[type=checkbox]');
+      for (var j = 0; j < boxes.length; j++) list.push(boxes[j]);
+      return list;
+    }
+
+    function fieldKey(el, i) { return (el.type === 'checkbox' ? 'c' : 'f') + i; }
+
+    function setStatus(text) { if (statusEl) statusEl.textContent = text; }
+
+    function readStore() {
+      try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; }
+      catch (e) { return {}; }
+    }
+
+    function save() {
+      var data = {};
+      for (var i = 0; i < fields.length; i++) {
+        var el = fields[i], k = fieldKey(el, i);
+        if (el.type === 'checkbox') { if (el.checked) data[k] = 1; }
+        else if (el.value && el.value.trim() !== '') { data[k] = el.value; }
+      }
+      try {
+        localStorage.setItem(KEY, JSON.stringify(data));
+        setStatus('Saved ✓');
+      } catch (e) { setStatus('Could not save (storage off)'); }
+    }
+
+    function queueSave() {
+      setStatus('Saving…');
+      if (saveTimer) clearTimeout(saveTimer);
+      saveTimer = setTimeout(save, 400);
+    }
+
+    function restore() {
+      var data = readStore();
+      for (var i = 0; i < fields.length; i++) {
+        var el = fields[i], k = fieldKey(el, i);
+        if (!(k in data)) continue;
+        if (el.type === 'checkbox') el.checked = !!data[k];
+        else el.value = data[k];
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      statusEl = document.getElementById('nt-save-status');
+      clearBtn = document.getElementById('nt-clear-btn');
+      fields = collectFields();
+      if (!fields.length) {
+        if (statusEl) statusEl.style.display = 'none';
+        if (clearBtn) clearBtn.style.display = 'none';
+        return;
+      }
+      restore();
+      for (var i = 0; i < fields.length; i++) {
+        fields[i].addEventListener('input', queueSave);
+        fields[i].addEventListener('change', queueSave);
+      }
+      if (clearBtn) clearBtn.addEventListener('click', function () {
+        if (!confirm('Clear all of your typing on this lesson? This cannot be undone.')) return;
+        try { localStorage.removeItem(KEY); } catch (e) {}
+        for (var j = 0; j < fields.length; j++) {
+          if (fields[j].type === 'checkbox') fields[j].checked = false;
+          else fields[j].value = '';
+        }
+        setStatus('Cleared');
+      });
+    });
+  })();
+</script>
+<script>
+  // Tap-to-define word-bank pop-ups (term + plain meaning + picture).
+  (function () {
+    var pop = null;
+    function ensurePop() {
+      if (pop) return pop;
+      pop = document.createElement('div');
+      pop.className = 'nt-popover';
+      pop.innerHTML = '<button type="button" class="nt-pop-close" aria-label="Close">×</button>' +
+        '<img alt="" /><h4></h4><p></p>';
+      document.body.appendChild(pop);
+      pop.querySelector('.nt-pop-close').addEventListener('click', hidePop);
+      return pop;
+    }
+    function hidePop() { if (pop) pop.classList.remove('open'); }
+    function showPop(btn) {
+      var p = ensurePop();
+      var img = p.querySelector('img');
+      var src = btn.getAttribute('data-img') || '';
+      if (src) { img.src = src; img.style.display = ''; img.onerror = function () { img.style.display = 'none'; }; }
+      else { img.style.display = 'none'; }
+      p.querySelector('h4').textContent = btn.getAttribute('data-term') || '';
+      p.querySelector('p').textContent = btn.getAttribute('data-def') || '';
+      p.classList.add('open');
+      var r = btn.getBoundingClientRect();
+      var top = r.bottom + 8, left = r.left;
+      var pw = p.offsetWidth, ph = p.offsetHeight;
+      if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
+      if (left < 8) left = 8;
+      if (top + ph > window.innerHeight - 8) top = r.top - ph - 8;
+      if (top < 8) top = 8;
+      p.style.left = left + 'px';
+      p.style.top = top + 'px';
+    }
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('[data-popover]') : null;
+      if (btn) { e.preventDefault(); showPop(btn); return; }
+      if (pop && !e.target.closest('.nt-popover')) hidePop();
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hidePop(); });
+  })();
+
+  // Interactive "put the steps in order" — drag, ▲▼ buttons, or keyboard.
+  (function () {
+    function shuffle(arr) {
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+      }
+      return arr;
+    }
+    function items(list) { return Array.prototype.slice.call(list.children); }
+    function clearMarks(list) {
+      items(list).forEach(function (li) { li.classList.remove('ss-right', 'ss-wrong'); });
+    }
+    function init(sorter) {
+      var list = sorter.querySelector('.ss-list');
+      var order = shuffle(items(list));
+      // Avoid starting already-solved.
+      var solved = order.every(function (li, i) { return +li.getAttribute('data-correct') === i; });
+      if (solved && order.length > 1) { order.push(order.shift()); }
+      order.forEach(function (li) { list.appendChild(li); });
+
+      var dragEl = null;
+      list.addEventListener('dragstart', function (e) {
+        dragEl = e.target.closest('.ss-item');
+        if (dragEl) dragEl.classList.add('ss-dragging');
+      });
+      list.addEventListener('dragend', function () {
+        if (dragEl) dragEl.classList.remove('ss-dragging');
+        items(list).forEach(function (li) { li.classList.remove('ss-over'); });
+        dragEl = null;
+      });
+      list.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        var over = e.target.closest('.ss-item');
+        if (!over || over === dragEl) return;
+        items(list).forEach(function (li) { li.classList.remove('ss-over'); });
+        over.classList.add('ss-over');
+        var r = over.getBoundingClientRect();
+        var after = (e.clientY - r.top) > r.height / 2;
+        list.insertBefore(dragEl, after ? over.nextSibling : over);
+      });
+      list.addEventListener('click', function (e) {
+        var li = e.target.closest('.ss-item'); if (!li) return;
+        if (e.target.classList.contains('ss-up') && li.previousElementSibling) {
+          list.insertBefore(li, li.previousElementSibling); clearMarks(list); li.focus();
+        } else if (e.target.classList.contains('ss-down') && li.nextElementSibling) {
+          list.insertBefore(li.nextElementSibling, li); clearMarks(list); li.focus();
+        }
+      });
+
+      var fb = sorter.querySelector('.ss-feedback');
+      sorter.querySelector('.ss-check').addEventListener('click', function () {
+        var ok = true;
+        items(list).forEach(function (li, i) {
+          var right = +li.getAttribute('data-correct') === i;
+          li.classList.toggle('ss-right', right);
+          li.classList.toggle('ss-wrong', !right);
+          if (!right) ok = false;
+        });
+        fb.textContent = ok ? '✅ Perfect — that is the right order!' : '❌ Not yet — move the red cards and check again.';
+        fb.className = 'ss-feedback ' + (ok ? 'ok' : 'no');
+      });
+      sorter.querySelector('.ss-shuffle').addEventListener('click', function () {
+        clearMarks(list);
+        shuffle(items(list)).forEach(function (li) { list.appendChild(li); });
+        fb.textContent = ''; fb.className = 'ss-feedback';
+      });
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      var sorters = document.querySelectorAll('[data-step-sorter]');
+      for (var i = 0; i < sorters.length; i++) init(sorters[i]);
+    });
+  })();
+
+  // Tap-to-pair vocabulary match-up.
+  (function () {
+    function shuffleChildren(col) {
+      var nodes = Array.prototype.slice.call(col.children);
+      for (var i = nodes.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        col.insertBefore(nodes[j], nodes[i]);
+        var t = nodes[i]; nodes[i] = nodes[j]; nodes[j] = t;
+      }
+    }
+    function init(mu) {
+      var cols = mu.querySelectorAll('.mu-col');
+      if (cols.length === 2) shuffleChildren(cols[1]);
+      var fb = mu.querySelector('.mu-feedback');
+      var total = mu.querySelectorAll('.mu-term').length;
+      var done = 0, selTerm = null;
+      function clearSel() {
+        var s = mu.querySelectorAll('.sel');
+        for (var i = 0; i < s.length; i++) s[i].classList.remove('sel', 'miss');
+      }
+      mu.addEventListener('click', function (e) {
+        var term = e.target.closest('.mu-term');
+        var def = e.target.closest('.mu-def');
+        if (term && !term.classList.contains('done')) {
+          clearSel(); selTerm = term; term.classList.add('sel'); return;
+        }
+        if (def && !def.classList.contains('done') && selTerm) {
+          if (def.getAttribute('data-mu') === selTerm.getAttribute('data-mu')) {
+            def.classList.add('done'); selTerm.classList.add('done');
+            selTerm.classList.remove('sel'); selTerm = null; done++;
+            if (done === total) { fb.textContent = '✅ All matched — great job!'; fb.className = 'mu-feedback ok'; }
+          } else {
+            def.classList.add('miss');
+            var bad = selTerm;
+            setTimeout(function () {
+              def.classList.remove('miss'); if (bad) bad.classList.remove('sel', 'miss');
+            }, 600);
+            selTerm = null;
+          }
+        }
+      });
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      var mus = document.querySelectorAll('[data-match-up]');
+      for (var i = 0; i < mus.length; i++) init(mus[i]);
+    });
+  })();
+</script>
+<main class="sheet">
+  <div class="teacher-banner">👩‍🏫 Teacher Copy — includes the Answer Key &amp; Teacher Guide. Do not distribute to students.</div>
+  <header class="packet">
+    <p class="eyebrow">Unit 8 · Standard 6.SP.5c</p>
+    <h1>Mean Absolute Deviation </h1>
+    <p class="meta">Lesson 8-3 · Teacher Copy</p>
+    <div class="name-line">
+      <label class="nl-field"><span class="nl-label">Name:</span><input class="nl-input" type="text" data-nt-field placeholder="Type your name" aria-label="Your name" /></label>
+      <label class="nl-field"><span class="nl-label">Date:</span><input class="nl-input" type="text" data-nt-field placeholder="Today's date" aria-label="Date" /></label>
+      <label class="nl-field"><span class="nl-label">Class:</span><input class="nl-input" type="text" data-nt-field placeholder="Class period" aria-label="Class" /></label>
+    </div>
+  </header>
+  
+  <section class="section vocab">
+  <h2>Key Vocabulary 
+    <span class="level-tag level-1 l1-only">Level 1 Support</span>
+    <span class="level-tag level-2 l2-only">Level 2 Standard</span>
+    <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
+  </h2>
+  <p class="level-note">Picture first, then the word, then a plain-language meaning. Say each word out loud.</p>
+  <div class="vocab-grid">
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/mean-absolute-deviation.svg" alt="Illustration of Mean Absolute Deviation: The average distance of each number from the mean." onerror="this.style.display='none'" />
+    <p class="vocab-caption">Data: 8, 10, 12. Mean = 10. Distances from mean: 2, 0, 2. MAD = (2+0+2) ÷ 3 = 1.33</p>
+  </div>
+  <h3 class="vocab-term">Mean Absolute Deviation</h3>
+  <div class="vocab-def-l1">
+    <p class="vocab-def">The average distance of each number from the mean.</p>
+  </div>
+  <div class="vocab-def-l2">
+    <p class="vocab-def-prompt">Write the definition:</p>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
+  </div>
+  <div class="vocab-def-l3">
+    <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
+  </div>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/mean-absolute-deviation.svg" alt="Illustration of Deviation: How far a number is from the mean." onerror="this.style.display='none'" />
+    <p class="vocab-caption">If mean = 20 and value = 17, deviation = 17 − 20 = −3 (3 below the mean)</p>
+  </div>
+  <h3 class="vocab-term">Deviation</h3>
+  <div class="vocab-def-l1">
+    <p class="vocab-def">How far a number is from the mean.</p>
+  </div>
+  <div class="vocab-def-l2">
+    <p class="vocab-def-prompt">Write the definition:</p>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
+  </div>
+  <div class="vocab-def-l3">
+    <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
+  </div>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/absolute-value.svg" alt="Illustration of Absolute Value: How far a number is from zero. It is always positive." onerror="this.style.display='none'" />
+    <p class="vocab-caption">|−3| = 3 and |3| = 3 — both are 3 units from zero</p>
+  </div>
+  <h3 class="vocab-term">Absolute Value</h3>
+  <div class="vocab-def-l1">
+    <p class="vocab-def">How far a number is from zero. It is always positive.</p>
+  </div>
+  <div class="vocab-def-l2">
+    <p class="vocab-def-prompt">Write the definition:</p>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
+  </div>
+  <div class="vocab-def-l3">
+    <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
+  </div>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/spread.svg" alt="Illustration of Spread: How far apart the numbers are." onerror="this.style.display='none'" />
+    <p class="vocab-caption">Low spread: 8, 9, 10, 11 (close together). High spread: 2, 9, 10, 25 (far apart)</p>
+  </div>
+  <h3 class="vocab-term">Spread</h3>
+  <div class="vocab-def-l1">
+    <p class="vocab-def">How far apart the numbers are.</p>
+  </div>
+  <div class="vocab-def-l2">
+    <p class="vocab-def-prompt">Write the definition:</p>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
+  </div>
+  <div class="vocab-def-l3">
+    <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
+  </div>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/distribution.svg" alt="Illustration of Data distribution: How the data looks: where it sits and how spread out it is." onerror="this.style.display='none'" />
+    <p class="vocab-caption">A set clustered tightly around the mean has low MAD; a set spread far from the mean has high MAD</p>
+  </div>
+  <h3 class="vocab-term">Data distribution</h3>
+  <div class="vocab-def-l1">
+    <p class="vocab-def">How the data looks: where it sits and how spread out it is.</p>
+  </div>
+  <div class="vocab-def-l2">
+    <p class="vocab-def-prompt">Write the definition:</p>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
+  </div>
+  <div class="vocab-def-l3">
+    <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
+  </div>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/spread.svg" alt="Illustration of Variability: How spread out the numbers are." onerror="this.style.display='none'" />
+    <p class="vocab-caption">Low variability (MAD = 1): very consistent. High variability (MAD = 8): very spread out</p>
+  </div>
+  <h3 class="vocab-term">Variability</h3>
+  <div class="vocab-def-l1">
+    <p class="vocab-def">How spread out the numbers are.</p>
+  </div>
+  <div class="vocab-def-l2">
+    <p class="vocab-def-prompt">Write the definition:</p>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
+  </div>
+  <div class="vocab-def-l3">
+    <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
+  </div>
+</div>
+  </div>
+</section>
+  <section class="section notes">
+  <h2>Guided Notes
+    <span class="level-tag level-1 l1-only">Level 1 Support</span>
+    <span class="level-tag level-2 l2-only">Level 2 Standard</span>
+    <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
+  </h2>
+  <div class="notes-learning">
+      <span class="notes-learning-icon" aria-hidden="true">🎯</span>
+      <div>
+        <p class="notes-learning-label">What we're learning today</p>
+        <p class="notes-learning-text">I can find the mean absolute deviation (MAD) to describe how spread out data is.</p>
+      </div>
+    </div>
+  <p class="gn-directions">✏️ Fill in each blank as we go. Use the Word Bank to help you.</p><div class="gn-fill">
+    <div class="gn-bank">
+      <span class="gn-bank-label">📚 Word Bank — fill each blank with the best word</span>
+      <div class="gn-bank-words"><button type="button" class="gn-bank-word" data-popover data-term="Mean Absolute Deviation" data-def="The average distance of each number from the mean." data-img="../../assets/vocab-images/mean-absolute-deviation.svg" aria-label="Show the meaning and picture for Mean Absolute Deviation">Mean Absolute Deviation<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Deviation" data-def="How far a number is from the mean." data-img="../../assets/vocab-images/mean-absolute-deviation.svg" aria-label="Show the meaning and picture for Deviation">Deviation<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Absolute Value" data-def="How far a number is from zero. It is always positive." data-img="../../assets/vocab-images/absolute-value.svg" aria-label="Show the meaning and picture for Absolute Value">Absolute Value<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Spread" data-def="How far apart the numbers are." data-img="../../assets/vocab-images/spread.svg" aria-label="Show the meaning and picture for Spread">Spread<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Data distribution" data-def="How the data looks: where it sits and how spread out it is." data-img="../../assets/vocab-images/distribution.svg" aria-label="Show the meaning and picture for Data distribution">Data distribution<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Variability" data-def="How spread out the numbers are." data-img="../../assets/vocab-images/spread.svg" aria-label="Show the meaning and picture for Variability">Variability<span class="gn-info" aria-hidden="true">ⓘ</span></button></div>
+      <p class="gn-bank-hint">👆 Tap any word to see what it means and a picture.</p>
+      <p class="gn-bank-hint l3-only">Level 3: try the blanks from memory first, then check the bank.</p>
+    </div>
+    <ol class="gn-lines"><li class="gn-line"><span class="gn-num">1</span><span class="gn-sentence">The average distance of each value from the mean is the <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">2</span><span class="gn-sentence">How far a single value is from the mean is its <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">3</span><span class="gn-sentence">The distance of a number from zero, always positive, is its <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">4</span><span class="gn-sentence">How far apart the data values are from each other is the <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">5</span><span class="gn-sentence">The way data values are spread out is the <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">6</span><span class="gn-sentence">How much the data values differ is the <input class="gn-blank" type="text" data-nt-field />.</span></li></ol>
+    <div class="match-up no-print" data-match-up>
+    <p class="mu-head"><strong>🔗 Match-up:</strong> Tap a word, then tap its meaning.</p>
+    <div class="mu-cols">
+      <div class="mu-col"><button type="button" class="mu-term" data-mu="0">Mean Absolute Deviation</button><button type="button" class="mu-term" data-mu="1">Deviation</button><button type="button" class="mu-term" data-mu="2">Absolute Value</button><button type="button" class="mu-term" data-mu="3">Spread</button></div>
+      <div class="mu-col"><button type="button" class="mu-def" data-mu="0">The average distance of each number from the mean.</button><button type="button" class="mu-def" data-mu="1">How far a number is from the mean.</button><button type="button" class="mu-def" data-mu="2">How far a number is from zero. It is always positive.</button><button type="button" class="mu-def" data-mu="3">How far apart the numbers are.</button></div>
+    </div>
+    <p class="mu-feedback" role="status" aria-live="polite"></p>
+  </div>
+  </div>
+  <h3 class="gn-subhead">🧮 Watch &amp; Try — Worked Examples</h3><div class="notes-gradual">
+    <div class="l1-only">
+    <p class="notes-gr-intro">Watch the teacher model, fill in We Do together, and check your choice on You Do.</p>
+    <div class="notes-gr-step notes-gr-watch">
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> The mean of a data set is 15. One value is 11. What is the absolute deviation of that value from the mean?</p>
+      <ol class="try-choices" type="A"><li>4</li><li>−4</li><li>26</li><li>11</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> Deviation = 11 − 15 = −4.</li><li class="wk-step"><span class="wk-steplabel">Step 2</span> Absolute deviation = |−4| = 4.</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. 4</p>
+    </div>
+    <div class="notes-gr-step ss-step">
+    <span class="notes-gr-tag">🧩 Try — put the steps in order</span>
+    <p class="notes-gr-cue">Drag the cards (or use the ▲▼ buttons) to put the solution steps in the right order, then press <strong>Check</strong>.</p>
+    <div class="step-sorter" data-step-sorter>
+      <ol class="ss-list"><li class="ss-item" draggable="true" data-correct="0" tabindex="0">
+          <span class="ss-grip" aria-hidden="true">⠿</span>
+          <span class="ss-text">Deviation = 11 − 15 = −4.</span>
+          <span class="ss-move no-print">
+            <button type="button" class="ss-up" aria-label="Move step up">▲</button>
+            <button type="button" class="ss-down" aria-label="Move step down">▼</button>
+          </span>
+        </li><li class="ss-item" draggable="true" data-correct="1" tabindex="0">
+          <span class="ss-grip" aria-hidden="true">⠿</span>
+          <span class="ss-text">Absolute deviation = |−4| = 4.</span>
+          <span class="ss-move no-print">
+            <button type="button" class="ss-up" aria-label="Move step up">▲</button>
+            <button type="button" class="ss-down" aria-label="Move step down">▼</button>
+          </span>
+        </li></ol>
+      <div class="ss-actions no-print">
+        <button type="button" class="ss-check">✓ Check my order</button>
+        <button type="button" class="ss-shuffle">↺ Shuffle</button>
+        <span class="ss-feedback" role="status" aria-live="polite"></span>
+      </div>
+    </div>
+  </div>
+    <div class="notes-gr-step notes-gr-we">
+      <span class="notes-gr-tag">🤝 We do — together (Scaffolded)</span>
+      <p class="notes-gr-cue">Solve this with your class by filling in the missing words or values.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A data set has absolute deviations of 3, 1, 5, 2, 4. What is the MAD?</p>
+      <ol class="try-choices" type="A"><li>3</li><li>5</li><li>15</li><li>1</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> Deviation = _____ − _____ = −_____.</li><li class="wk-step"><span class="wk-steplabel">Step 2</span> Absolute deviation = |−_____| = _____.</li></ol>
+      <div class="wk-checkboxes" style="margin-top: 8px;">
+          <span class="wk-anslabel">Check the correct choice:</span>
+          <label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> 3</label><label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> 5</label><label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> 15</label><label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> 1</label>
+        </div>
+    </div>
+    <div class="notes-gr-step notes-gr-you">
+      <span class="notes-gr-tag">✏️ You do — your turn (Scaffolded)</span>
+      <p class="notes-gr-cue">Try it on your own. Fill in the steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> The mean of a data set is 20. A value is 26. What is the absolute deviation?</p>
+      <ol class="try-choices" type="A"><li>6</li><li>−6</li><li>46</li><li>26</li></ol>
+      <div class="wk-checkboxes" style="margin-top: 8px; margin-bottom: 8px;">
+          <span class="wk-anslabel">Check the correct choice:</span>
+          <label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> 6</label><label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> −6</label><label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> 46</label><label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> 26</label>
+        </div>
+      <div class="work-space">
+        <span class="ws-label">Fill in your solution path:</span>
+        <div class="wk-step-blank" style="margin: 4px 0;"><span class="wk-steplabel" style="font-size: 11px; padding: 1px 4px;">Step 1</span> <input class="writeline" style="flex:1; height:20px;" type="text" data-nt-field /></div>
+        <div class="wk-step-blank" style="margin: 4px 0;"><span class="wk-steplabel" style="font-size: 11px; padding: 1px 4px;">Step 2</span> <input class="writeline" style="flex:1; height:20px;" type="text" data-nt-field /></div>
+      </div>
+    </div>
+  </div>
+    <div class="l2-only">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
+    <div class="notes-gr-step notes-gr-watch">
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> The mean of a data set is 15. One value is 11. What is the absolute deviation of that value from the mean?</p>
+      <ol class="try-choices" type="A"><li>4</li><li>−4</li><li>26</li><li>11</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> Deviation = 11 − 15 = −4.</li><li class="wk-step"><span class="wk-steplabel">Step 2</span> Absolute deviation = |−4| = 4.</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. 4</p>
+    </div>
+    <div class="notes-gr-step ss-step">
+    <span class="notes-gr-tag">🧩 Try — put the steps in order</span>
+    <p class="notes-gr-cue">Drag the cards (or use the ▲▼ buttons) to put the solution steps in the right order, then press <strong>Check</strong>.</p>
+    <div class="step-sorter" data-step-sorter>
+      <ol class="ss-list"><li class="ss-item" draggable="true" data-correct="0" tabindex="0">
+          <span class="ss-grip" aria-hidden="true">⠿</span>
+          <span class="ss-text">Deviation = 11 − 15 = −4.</span>
+          <span class="ss-move no-print">
+            <button type="button" class="ss-up" aria-label="Move step up">▲</button>
+            <button type="button" class="ss-down" aria-label="Move step down">▼</button>
+          </span>
+        </li><li class="ss-item" draggable="true" data-correct="1" tabindex="0">
+          <span class="ss-grip" aria-hidden="true">⠿</span>
+          <span class="ss-text">Absolute deviation = |−4| = 4.</span>
+          <span class="ss-move no-print">
+            <button type="button" class="ss-up" aria-label="Move step up">▲</button>
+            <button type="button" class="ss-down" aria-label="Move step down">▼</button>
+          </span>
+        </li></ol>
+      <div class="ss-actions no-print">
+        <button type="button" class="ss-check">✓ Check my order</button>
+        <button type="button" class="ss-shuffle">↺ Shuffle</button>
+        <span class="ss-feedback" role="status" aria-live="polite"></span>
+      </div>
+    </div>
+  </div>
+    <div class="notes-gr-step notes-gr-we">
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A data set has absolute deviations of 3, 1, 5, 2, 4. What is the MAD?</p>
+      <ol class="try-choices" type="A"><li>3</li><li>5</li><li>15</li><li>1</li></ol>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><input class="writeline" type="text" data-nt-field /></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><input class="writeline" type="text" data-nt-field /></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <input class="writeline" type="text" data-nt-field /></p>
+    </div>
+    <div class="notes-gr-step notes-gr-you">
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> The mean of a data set is 20. A value is 26. What is the absolute deviation?</p>
+      <ol class="try-choices" type="A"><li>6</li><li>−6</li><li>46</li><li>26</li></ol>
+      <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
+    </div>
+  </div>
+    <div class="l3-only">
+    <p class="notes-gr-intro">No worked examples. Solve the problems independently, draw visual models, and write justifications.</p>
+    <div class="notes-gr-step notes-gr-you" style="border-left-color: var(--teal);">
+      <span class="notes-gr-tag">🧠 Challenge 1 — Mathematical Modeling</span>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> The mean of a data set is 15. One value is 11. What is the absolute deviation of that value from the mean?</p>
+      <ol class="try-choices" type="A"><li>4</li><li>−4</li><li>26</li><li>11</li></ol>
+      <p class="sentence-frame"><span class="ws-label">Writing Prompt:</span> Formulate a mathematical representation or model for this situation. Explain why your model is appropriate.</p>
+      <div class="scratchpad"><span class="scratchpad-label">Workspace / Visual Model</span></div>
+      <div class="work-space"><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
+    </div>
+    <div class="notes-gr-step notes-gr-you" style="border-left-color: var(--amber);">
+      <span class="notes-gr-tag">🧠 Challenge 2 — Error Analysis & Generalization</span>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A data set has absolute deviations of 3, 1, 5, 2, 4. What is the MAD?</p>
+      <ol class="try-choices" type="A"><li>3</li><li>5</li><li>15</li><li>1</li></ol>
+      <p class="sentence-frame"><span class="ws-label">Writing Prompt:</span> Solve the problem. Then, write a rule or generalization that someone could use to solve any problem like this.</p>
+      <div class="scratchpad"><span class="scratchpad-label">Workspace / Visual Model</span></div>
+      <div class="work-space"><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
+    </div>
+    <div class="notes-gr-step notes-gr-you" style="border-left-color: var(--navy);">
+      <span class="notes-gr-tag">🧠 Challenge 3 — Synthesis & Extension</span>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> The mean of a data set is 20. A value is 26. What is the absolute deviation?</p>
+      <ol class="try-choices" type="A"><li>6</li><li>−6</li><li>46</li><li>26</li></ol>
+      <p class="sentence-frame"><span class="ws-label">Writing Prompt:</span> Solve the problem. Create a real-world scenario that matches the operations or logic you used to solve this.</p>
+      <div class="scratchpad"><span class="scratchpad-label">Workspace / Visual Model</span></div>
+      <div class="work-space"><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
+    </div>
+  </div>
+  </div>
+</section>
+  <section class="section tryit-section">
+  <h2>Try It</h2>
+  <p class="muted">Solve on your own. Check the answer key when you are done.</p>
+  <div class="tryit">
+  <p class="tryit-num">1. A guard scored 2, 4, 6, 8 points in four scrimmages, so the mean is 5 points. The distances from the mean are 3, 1, 1, 3. What is the mean absolute deviation (MAD)?</p>
+  <ol class="try-choices" type="A"><li>1</li><li>2</li><li>5</li><li>8</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
+</div>
+<div class="tryit">
+  <p class="tryit-num">2. Two shooters average 11 points a game. Shooter A's MAD is 2 points and Shooter B's MAD is 6 points. Which shooter is MORE consistent?</p>
+  <ol class="try-choices" type="A"><li>Shooter A, because a smaller MAD means scores stay closer to the average</li><li>Shooter B, because a bigger MAD means a bigger average</li><li>They are equally consistent because they have the same mean</li><li>You cannot tell consistency from MAD</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
+</div>
+  <div class="enrich-block">
+    <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
+    <p class="muted">Challenge task — explain your reasoning in full sentences.</p>
+    <p class="tryit-num">Two basketball teams both average 75 points per game. Team A's last 5 scores: 73, 76, 74, 77, 75. Team B's last 5 scores: 60, 90, 65, 85, 75. Calculate the MAD for each team and explain which team a coach would prefer if they need predictable scoring.</p>
+    
+    <p class="sentence-frame"><span class="ws-label">Sentence starter:</span> Team A's MAD = ___. Team B's MAD = ___. Team A is ___ because ___. A coach would prefer Team ___ for predictable scoring because ___.</p>
+    <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline-area" rows="4" data-nt-field aria-label="Write your response here"></textarea></div>
+  </div>
+</section>
+  <section class="section reflect">
+  <h2>Reflect — Exit Ticket</h2>
+  <p class="reflect-stem">Data set: 4, 8, 6, 10, 2. The mean is 6. What is the MAD?</p>
+  <ol class="try-choices" type="A"><li>2.4</li><li>6</li><li>0</li><li>12</li></ol>
+  <div class="work-space"><span class="ws-label">Your answer:</span><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
+</section>
+  <section class="answer-key">
+  <h2>Answer Key &amp; Teacher Guide</h2>
+  <ol class="ak-list"><li><strong>Notes 1:</strong> Mean Absolute Deviation</li><li><strong>Notes 2:</strong> Deviation</li><li><strong>Notes 3:</strong> Absolute Value</li><li><strong>Notes 4:</strong> Spread</li><li><strong>Notes 5:</strong> Data distribution</li><li><strong>Notes 6:</strong> Variability</li><li><strong>We Try (notes):</strong> A. 3 <span class="ak-why">— Sum of absolute deviations = 3 + 1 + 5 + 2 + 4 = 15. MAD = 15 ÷ 5 = 3.</span></li><li><strong>You Try (notes):</strong> A. 6 <span class="ak-why">— Deviation = 26 − 20 = 6. Absolute deviation = |6| = 6.</span></li><li><strong>Try It 1:</strong> B. 2 <span class="ak-why">— Add the distances: 3 + 1 + 1 + 3 = 8. Divide by the 4 games: 8 ÷ 4 = 2. The MAD is 2 points.</span></li><li><strong>Try It 2:</strong> A. Shooter A, because a smaller MAD means scores stay closer to the average <span class="ak-why">— A smaller MAD means the scores hug the mean. Shooter A's MAD of 2 is smaller than Shooter B's 6, so Shooter A is more consistent.</span></li><li><strong>Exit Ticket:</strong> A. 2.4 <span class="ak-why">— Deviations: −2, 2, 0, 4, −4. Absolute deviations: 2, 2, 0, 4, 4. Sum = 12. MAD = 12 ÷ 5 = 2.4.</span></li></ol>
+</section>
+  <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 8-3 · Standard 6.SP.5c · Teacher Copy</footer>
+</main>
+</body>
+</html>

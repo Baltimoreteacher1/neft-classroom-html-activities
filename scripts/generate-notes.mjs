@@ -35,6 +35,41 @@ const clozeText = (text) => {
 
 const choiceLetter = (i) => String.fromCharCode(65 + i);
 
+// Interactive "put the steps in order" manipulative built from a worked
+// example's solution steps. Students drag the cards (or use the ▲▼ buttons /
+// keyboard) to sequence them, then press Check for instant feedback. Touch- and
+// keyboard-accessible; the ▲▼ buttons are the reliable path on tablets, drag is
+// a progressive enhancement. State is ephemeral (a learn-by-doing check).
+function stepSorter(steps) {
+  const usable = (Array.isArray(steps) ? steps : []).filter(Boolean).slice(0, 5);
+  if (usable.length < 2) return "";
+  const items = usable
+    .map(
+      (s, i) =>
+        `<li class="ss-item" draggable="true" data-correct="${i}" tabindex="0">
+          <span class="ss-grip" aria-hidden="true">⠿</span>
+          <span class="ss-text">${esc(s)}</span>
+          <span class="ss-move no-print">
+            <button type="button" class="ss-up" aria-label="Move step up">▲</button>
+            <button type="button" class="ss-down" aria-label="Move step down">▼</button>
+          </span>
+        </li>`,
+    )
+    .join("");
+  return `<div class="notes-gr-step ss-step">
+    <span class="notes-gr-tag">🧩 Try — put the steps in order</span>
+    <p class="notes-gr-cue">Drag the cards (or use the ▲▼ buttons) to put the solution steps in the right order, then press <strong>Check</strong>.</p>
+    <div class="step-sorter" data-step-sorter>
+      <ol class="ss-list">${items}</ol>
+      <div class="ss-actions no-print">
+        <button type="button" class="ss-check">✓ Check my order</button>
+        <button type="button" class="ss-shuffle">↺ Shuffle</button>
+        <span class="ss-feedback" role="status" aria-live="polite"></span>
+      </div>
+    </div>
+  </div>`;
+}
+
 // Matches core lessons ("3-2") and flagship lessons ("3-2-flagship").
 const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
 
@@ -246,6 +281,7 @@ function workedFrame(worked) {
   const l1Html = `<div class="l1-only">
     <p class="notes-gr-intro">Watch the teacher model, fill in We Do together, and check your choice on You Do.</p>
     ${iDoHtmlL1}
+    ${stepSorter(iDo.steps)}
     ${weDoHtmlL1}
     ${youDoHtmlL1}
   </div>`;
@@ -298,6 +334,7 @@ function workedFrame(worked) {
   const l2Html = `<div class="l2-only">
     <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
     ${iDoHtmlL2}
+    ${stepSorter(iDo.steps)}
     ${weDoHtmlL2}
     ${youDoHtmlL2}
   </div>`;
@@ -358,13 +395,47 @@ function workedFrame(worked) {
 // we render those as numbered fill-in lines with a Word Bank, exactly like a
 // TPT-style guided-notes page. Returns { html, keyRows } so the teacher answer
 // key can list every blank's answer.
+// Universal interactive every lesson gets: a tap-to-pair "match the word to its
+// meaning" built from the vocabulary. Touch/keyboard friendly (tap a term, then
+// tap its meaning). Reinforces the guided-notes vocab.
+function matchUp(vocab = []) {
+  const pairs = (Array.isArray(vocab) ? vocab : [])
+    .filter((v) => v && v.term && v.definition)
+    .slice(0, 4);
+  if (pairs.length < 2) return "";
+  const terms = pairs
+    .map(
+      (v, i) =>
+        `<button type="button" class="mu-term" data-mu="${i}">${esc(v.term)}</button>`,
+    )
+    .join("");
+  const defs = pairs
+    .map(
+      (v, i) =>
+        `<button type="button" class="mu-def" data-mu="${i}">${esc(v.definition)}</button>`,
+    )
+    .join("");
+  return `<div class="match-up no-print" data-match-up>
+    <p class="mu-head"><strong>🔗 Match-up:</strong> Tap a word, then tap its meaning.</p>
+    <div class="mu-cols">
+      <div class="mu-col">${terms}</div>
+      <div class="mu-col">${defs}</div>
+    </div>
+    <p class="mu-feedback" role="status" aria-live="polite"></p>
+  </div>`;
+}
+
 function guidedNotesFill(cfg = {}) {
   const vocab = Array.isArray(cfg.vocabulary) ? cfg.vocabulary : [];
   const items = vocab.filter((v) => v && v.term);
   if (!items.length) return { html: "", keyRows: [] };
 
   const bank = items
-    .map((v) => `<span class="gn-bank-word">${esc(v.term)}</span>`)
+    .map((v) => {
+      const imgSrc = resolveVocabImage(v.term, v.image).replace(/^\//, "../../");
+      const def = esc(v.definition || "Tap to learn this word.");
+      return `<button type="button" class="gn-bank-word" data-popover data-term="${esc(v.term)}" data-def="${def}" data-img="${esc(imgSrc)}" aria-label="Show the meaning and picture for ${esc(v.term)}">${esc(v.term)}<span class="gn-info" aria-hidden="true">ⓘ</span></button>`;
+    })
     .join("");
 
   const keyRows = [];
@@ -391,9 +462,11 @@ function guidedNotesFill(cfg = {}) {
     <div class="gn-bank">
       <span class="gn-bank-label">📚 Word Bank — fill each blank with the best word</span>
       <div class="gn-bank-words">${bank}</div>
+      <p class="gn-bank-hint">👆 Tap any word to see what it means and a picture.</p>
       <p class="gn-bank-hint l3-only">Level 3: try the blanks from memory first, then check the bank.</p>
     </div>
     <ol class="gn-lines">${lines.join("")}</ol>
+    ${matchUp(items)}
   </div>`,
   };
 }
@@ -635,7 +708,12 @@ header.packet h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
   margin:6px 0 4px;font-size:26px;}
 header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .name-line{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;font-size:14px;}
-.name-line span{flex:1;border-bottom:1px solid var(--ink);padding:4px 0;min-width:140px;}
+.nl-field{display:flex;align-items:center;gap:8px;flex:1;min-width:180px;}
+.nl-label{font-weight:700;color:var(--navy);white-space:nowrap;}
+.nl-input{flex:1;min-width:80px;border:none;border-bottom:1.5px solid var(--ink);background:transparent;
+  font:inherit;font-size:15px;color:var(--navy);padding:4px 4px;border-radius:4px 4px 0 0;}
+.nl-input:focus{outline:none;background:#fff7e6;}
+@media print{.nl-input{border-bottom:1px solid #000;color:#000;}}
 .section{margin:0 0 22px;page-break-inside:avoid;}
 .section>h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;
   border-left:5px solid var(--teal);padding-left:10px;margin:0 0 12px;}
@@ -732,6 +810,8 @@ input.writeline:focus,input.gn-blank:focus{outline:none;background-color:#fff7e6
 .try-choices li{margin:3px 0;}
 .work-space{margin-top:6px;}
 .muted{color:var(--muted);font-size:14px;}
+.teacher-banner{background:#fff3cd;border:1.5px solid #e0a800;color:#7a5b00;border-radius:10px;
+  padding:10px 14px;margin:0 0 14px;font-weight:800;font-size:14px;text-align:center;}
 .answer-key{page-break-before:always;border-top:3px solid var(--navy);margin-top:24px;padding-top:14px;}
 .answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
 .ak-list{padding-left:22px;}
@@ -1134,7 +1214,7 @@ function missionBanner(cfg) {
 </section>`;
 }
 
-function buildPacket(id, cfg, isFlagship) {
+function buildPacket(id, cfg, isFlagship, teacher = false) {
   const worked = deriveWorkedSteps(cfg);
   const usedStems = new Set(worked.usedStems || []);
   const gn = guidedNotesFill(cfg);
@@ -1149,7 +1229,7 @@ function buildPacket(id, cfg, isFlagship) {
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>${esc(cfg.title)} — Notes Packet</title>
+<title>${esc(cfg.title)} — Notes Packet${teacher ? " (Teacher Copy — Answer Key)" : ""}</title>
 ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
 <style>
@@ -1167,14 +1247,74 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
   .gn-sentence{flex:1;font-size:16px;line-height:1.9;color:#1c2b36;}
   .gn-blank{display:inline-block;min-width:120px;border-bottom:2px solid var(--navy);height:1.25em;margin:0 4px;vertical-align:bottom;}
   .gn-subhead{margin:20px 0 8px;color:var(--navy);font-size:16px;font-weight:800;}
+  /* Tap-to-define word-bank pop-ups (with picture) */
+  .gn-bank-word{cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+  .gn-info{font-size:12px;color:var(--teal);font-weight:700;}
+  .nt-popover{position:fixed;z-index:9999;max-width:280px;background:#fff;border:2px solid var(--teal);
+    border-radius:14px;box-shadow:0 12px 32px rgba(18,53,91,.22);padding:14px 16px;display:none;}
+  .nt-popover.open{display:block;}
+  .nt-popover img{display:block;width:100%;max-height:150px;object-fit:contain;border-radius:8px;
+    background:#f0faf8;margin-bottom:10px;}
+  .nt-popover h4{margin:0 0 6px;color:var(--navy);font-size:17px;font-family:Outfit,system-ui,sans-serif;}
+  .nt-popover p{margin:0;font-size:14.5px;line-height:1.5;color:var(--ink);}
+  .nt-popover .nt-pop-close{position:absolute;top:6px;right:8px;border:none;background:transparent;
+    font-size:20px;line-height:1;color:var(--muted);cursor:pointer;}
+  /* Larger, clearer Watch & Try worked visuals */
+  .notes-gr-step .wk-problem{font-size:15.5px;line-height:1.6;background:#f7fafc;border-radius:8px;padding:8px 12px;}
+  .notes-gr-step .wk-steps .wk-step{font-size:15px;line-height:1.7;margin:7px 0;}
+  .notes-gr-step .wk-steplabel{font-size:13px;padding:2px 10px;}
+  /* Drag-and-drop "put the steps in order" */
+  .ss-step{border-left-color:var(--teal)!important;}
+  .step-sorter{margin-top:8px;}
+  .ss-list{list-style:none;margin:0;padding:0;counter-reset:ss;}
+  .ss-item{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--line);
+    border-left:5px solid var(--teal);border-radius:10px;padding:10px 12px;margin:8px 0;font-size:15px;
+    line-height:1.5;cursor:grab;transition:box-shadow .12s,border-color .12s;}
+  .ss-item:focus-visible{outline:3px solid var(--amber);outline-offset:2px;}
+  .ss-item.ss-dragging{opacity:.5;cursor:grabbing;}
+  .ss-item.ss-over{border-color:var(--teal);box-shadow:0 4px 14px rgba(31,166,162,.25);}
+  .ss-item.ss-right{border-left-color:#2e9e5b;background:#f1faf2;}
+  .ss-item.ss-wrong{border-left-color:#d9534f;background:#fdf2f1;}
+  .ss-grip{color:var(--muted);font-size:18px;cursor:grab;flex:0 0 auto;}
+  .ss-text{flex:1;}
+  .ss-move{display:inline-flex;flex-direction:column;gap:2px;flex:0 0 auto;}
+  .ss-move button{border:1px solid var(--line);background:#f7fafc;border-radius:6px;width:30px;height:22px;
+    font-size:11px;line-height:1;color:var(--navy);cursor:pointer;padding:0;}
+  .ss-move button:hover{border-color:var(--teal);}
+  .ss-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .ss-check,.ss-shuffle{border:none;border-radius:999px;padding:8px 16px;font-size:14px;font-weight:700;cursor:pointer;}
+  .ss-check{background:var(--teal);color:#fff;}
+  .ss-shuffle{background:#fff;color:var(--navy);border:1.5px solid var(--line);}
+  .ss-feedback{font-size:14px;font-weight:700;}
+  .ss-feedback.ok{color:#2e9e5b;}
+  .ss-feedback.no{color:#d9534f;}
+  /* Tap-to-pair vocabulary match-up */
+  .match-up{margin:12px 0 6px;background:#f0faf8;border:1.5px dashed var(--teal);border-radius:12px;padding:12px 14px;}
+  .mu-head{margin:0 0 10px;font-size:14px;color:var(--navy);}
+  .mu-cols{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;}
+  .mu-col{display:flex;flex-direction:column;gap:8px;}
+  .mu-term,.mu-def{text-align:left;border:2px solid var(--line);background:#fff;border-radius:10px;
+    padding:9px 12px;font:inherit;font-size:14.5px;color:var(--ink);cursor:pointer;transition:border-color .12s,background .12s;}
+  .mu-term{font-weight:700;color:var(--navy);}
+  .mu-term:hover,.mu-def:hover{border-color:var(--teal);}
+  .mu-term.sel,.mu-def.sel{border-color:var(--teal);background:#e6f7f4;}
+  .mu-term.done,.mu-def.done{border-color:#2e9e5b;background:#f1faf2;color:#2e7d46;cursor:default;}
+  .mu-term.miss,.mu-def.miss{border-color:#d9534f;background:#fdf2f1;}
+  .mu-feedback{margin:10px 0 0;font-size:14px;font-weight:700;}
+  .mu-feedback.ok{color:#2e9e5b;}
+  @media (prefers-reduced-motion:reduce){.ss-item,.mu-term,.mu-def{transition:none;}}
   @media print{
     .gn-bank{border:1.5px dashed #000;background:#fff;}
     .gn-bank-label{color:#000;}
     .gn-bank-word{border-color:#000;color:#000;}
+    .gn-info{display:none;}
     .gn-line{border-color:#000;}
     .gn-num{background:#000;}
     .gn-blank{border-bottom-color:#000;}
     .gn-subhead,.gn-directions{color:#000;}
+    .nt-popover{display:none!important;}
+    .ss-item{border-color:#000;border-left-color:#000;break-inside:avoid;}
+    .ss-grip,.ss-move{display:none;}
   }
 </style>
 <script>
@@ -1187,7 +1327,7 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
 </head>
 <body>
 <div class="topbar no-print">
-  <span class="brand">Neft Teacher · Notes Packet</span>
+  <span class="brand">Neft Teacher · Notes Packet${teacher ? " · Teacher Copy" : ""}</span>
   <div class="level-selector no-print">
     <span class="selector-label">Leveled Mode:</span>
     <div class="pill-group">
@@ -1213,9 +1353,9 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
       <button class="print-btn" type="button" aria-haspopup="true" aria-expanded="false"
         onclick="(function(b){var m=b.parentNode.querySelector('.dl-menu');var o=m.hasAttribute('hidden');if(o){m.removeAttribute('hidden');}else{m.setAttribute('hidden','');}b.setAttribute('aria-expanded',String(o));})(this)">Download ▾</button>
       <div class="dl-menu" hidden role="menu">
-        <a href="./notes.html" download="${esc(id)}-notes.html" role="menuitem">Self-contained HTML<span class="dl-sub">Open or save the full packet</span></a>
-        <a href="./downloads/${esc(id)}-notes.pdf" role="menuitem">PDF<span class="dl-sub">Print-ready, branded</span></a>
-        <a href="./downloads/${esc(id)}-notes.docx" role="menuitem">Word (DOCX)<span class="dl-sub">Editable document</span></a>
+        <a href="./${teacher ? "notes-teacher" : "notes"}.html" download="${esc(id)}-notes${teacher ? "-teacher" : ""}.html" role="menuitem">Self-contained HTML<span class="dl-sub">Open or save the full packet</span></a>
+        <a href="./downloads/${esc(id)}-notes${teacher ? "-teacher" : ""}.pdf" role="menuitem">PDF<span class="dl-sub">Print-ready, branded</span></a>
+        <a href="./downloads/${esc(id)}-notes${teacher ? "-teacher" : ""}.docx" role="menuitem">Word (DOCX)<span class="dl-sub">Editable document</span></a>
       </div>
     </div>
   </div>
@@ -1314,13 +1454,180 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
     });
   })();
 </script>
+<script>
+  // Tap-to-define word-bank pop-ups (term + plain meaning + picture).
+  (function () {
+    var pop = null;
+    function ensurePop() {
+      if (pop) return pop;
+      pop = document.createElement('div');
+      pop.className = 'nt-popover';
+      pop.innerHTML = '<button type="button" class="nt-pop-close" aria-label="Close">×</button>' +
+        '<img alt="" /><h4></h4><p></p>';
+      document.body.appendChild(pop);
+      pop.querySelector('.nt-pop-close').addEventListener('click', hidePop);
+      return pop;
+    }
+    function hidePop() { if (pop) pop.classList.remove('open'); }
+    function showPop(btn) {
+      var p = ensurePop();
+      var img = p.querySelector('img');
+      var src = btn.getAttribute('data-img') || '';
+      if (src) { img.src = src; img.style.display = ''; img.onerror = function () { img.style.display = 'none'; }; }
+      else { img.style.display = 'none'; }
+      p.querySelector('h4').textContent = btn.getAttribute('data-term') || '';
+      p.querySelector('p').textContent = btn.getAttribute('data-def') || '';
+      p.classList.add('open');
+      var r = btn.getBoundingClientRect();
+      var top = r.bottom + 8, left = r.left;
+      var pw = p.offsetWidth, ph = p.offsetHeight;
+      if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
+      if (left < 8) left = 8;
+      if (top + ph > window.innerHeight - 8) top = r.top - ph - 8;
+      if (top < 8) top = 8;
+      p.style.left = left + 'px';
+      p.style.top = top + 'px';
+    }
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('[data-popover]') : null;
+      if (btn) { e.preventDefault(); showPop(btn); return; }
+      if (pop && !e.target.closest('.nt-popover')) hidePop();
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hidePop(); });
+  })();
+
+  // Interactive "put the steps in order" — drag, ▲▼ buttons, or keyboard.
+  (function () {
+    function shuffle(arr) {
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+      }
+      return arr;
+    }
+    function items(list) { return Array.prototype.slice.call(list.children); }
+    function clearMarks(list) {
+      items(list).forEach(function (li) { li.classList.remove('ss-right', 'ss-wrong'); });
+    }
+    function init(sorter) {
+      var list = sorter.querySelector('.ss-list');
+      var order = shuffle(items(list));
+      // Avoid starting already-solved.
+      var solved = order.every(function (li, i) { return +li.getAttribute('data-correct') === i; });
+      if (solved && order.length > 1) { order.push(order.shift()); }
+      order.forEach(function (li) { list.appendChild(li); });
+
+      var dragEl = null;
+      list.addEventListener('dragstart', function (e) {
+        dragEl = e.target.closest('.ss-item');
+        if (dragEl) dragEl.classList.add('ss-dragging');
+      });
+      list.addEventListener('dragend', function () {
+        if (dragEl) dragEl.classList.remove('ss-dragging');
+        items(list).forEach(function (li) { li.classList.remove('ss-over'); });
+        dragEl = null;
+      });
+      list.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        var over = e.target.closest('.ss-item');
+        if (!over || over === dragEl) return;
+        items(list).forEach(function (li) { li.classList.remove('ss-over'); });
+        over.classList.add('ss-over');
+        var r = over.getBoundingClientRect();
+        var after = (e.clientY - r.top) > r.height / 2;
+        list.insertBefore(dragEl, after ? over.nextSibling : over);
+      });
+      list.addEventListener('click', function (e) {
+        var li = e.target.closest('.ss-item'); if (!li) return;
+        if (e.target.classList.contains('ss-up') && li.previousElementSibling) {
+          list.insertBefore(li, li.previousElementSibling); clearMarks(list); li.focus();
+        } else if (e.target.classList.contains('ss-down') && li.nextElementSibling) {
+          list.insertBefore(li.nextElementSibling, li); clearMarks(list); li.focus();
+        }
+      });
+
+      var fb = sorter.querySelector('.ss-feedback');
+      sorter.querySelector('.ss-check').addEventListener('click', function () {
+        var ok = true;
+        items(list).forEach(function (li, i) {
+          var right = +li.getAttribute('data-correct') === i;
+          li.classList.toggle('ss-right', right);
+          li.classList.toggle('ss-wrong', !right);
+          if (!right) ok = false;
+        });
+        fb.textContent = ok ? '✅ Perfect — that is the right order!' : '❌ Not yet — move the red cards and check again.';
+        fb.className = 'ss-feedback ' + (ok ? 'ok' : 'no');
+      });
+      sorter.querySelector('.ss-shuffle').addEventListener('click', function () {
+        clearMarks(list);
+        shuffle(items(list)).forEach(function (li) { list.appendChild(li); });
+        fb.textContent = ''; fb.className = 'ss-feedback';
+      });
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      var sorters = document.querySelectorAll('[data-step-sorter]');
+      for (var i = 0; i < sorters.length; i++) init(sorters[i]);
+    });
+  })();
+
+  // Tap-to-pair vocabulary match-up.
+  (function () {
+    function shuffleChildren(col) {
+      var nodes = Array.prototype.slice.call(col.children);
+      for (var i = nodes.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        col.insertBefore(nodes[j], nodes[i]);
+        var t = nodes[i]; nodes[i] = nodes[j]; nodes[j] = t;
+      }
+    }
+    function init(mu) {
+      var cols = mu.querySelectorAll('.mu-col');
+      if (cols.length === 2) shuffleChildren(cols[1]);
+      var fb = mu.querySelector('.mu-feedback');
+      var total = mu.querySelectorAll('.mu-term').length;
+      var done = 0, selTerm = null;
+      function clearSel() {
+        var s = mu.querySelectorAll('.sel');
+        for (var i = 0; i < s.length; i++) s[i].classList.remove('sel', 'miss');
+      }
+      mu.addEventListener('click', function (e) {
+        var term = e.target.closest('.mu-term');
+        var def = e.target.closest('.mu-def');
+        if (term && !term.classList.contains('done')) {
+          clearSel(); selTerm = term; term.classList.add('sel'); return;
+        }
+        if (def && !def.classList.contains('done') && selTerm) {
+          if (def.getAttribute('data-mu') === selTerm.getAttribute('data-mu')) {
+            def.classList.add('done'); selTerm.classList.add('done');
+            selTerm.classList.remove('sel'); selTerm = null; done++;
+            if (done === total) { fb.textContent = '✅ All matched — great job!'; fb.className = 'mu-feedback ok'; }
+          } else {
+            def.classList.add('miss');
+            var bad = selTerm;
+            setTimeout(function () {
+              def.classList.remove('miss'); if (bad) bad.classList.remove('sel', 'miss');
+            }, 600);
+            selTerm = null;
+          }
+        }
+      });
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      var mus = document.querySelectorAll('[data-match-up]');
+      for (var i = 0; i < mus.length; i++) init(mus[i]);
+    });
+  })();
+</script>
 <main class="sheet">
+  ${teacher ? `<div class="teacher-banner">👩‍🏫 Teacher Copy — includes the Answer Key &amp; Teacher Guide. Do not distribute to students.</div>` : ""}
   <header class="packet">
     <p class="eyebrow">${[unit, standard].filter(Boolean).join(" · ")}</p>
     <h1>${esc(cfg.title)} ${flagBadge}</h1>
-    <p class="meta">Lesson ${esc(id)}</p>
+    <p class="meta">Lesson ${esc(id)}${teacher ? " · Teacher Copy" : ""}</p>
     <div class="name-line">
-      <span>Name:</span><span>Date:</span><span>Class:</span>
+      <label class="nl-field"><span class="nl-label">Name:</span><input class="nl-input" type="text" data-nt-field placeholder="Type your name" aria-label="Your name" /></label>
+      <label class="nl-field"><span class="nl-label">Date:</span><input class="nl-input" type="text" data-nt-field placeholder="Today's date" aria-label="Date" /></label>
+      <label class="nl-field"><span class="nl-label">Class:</span><input class="nl-input" type="text" data-nt-field placeholder="Class period" aria-label="Class" /></label>
     </div>
   </header>
   ${missionBanner(cfg)}
@@ -1328,8 +1635,8 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
   ${notesSection(cfg, worked, gn.html)}
   ${tryItSection(cfg.practice, usedStems)}
   ${reflectSection(cfg.reflect)}
-  ${answerKeySection(cfg.practice, cfg.reflect, cfg, worked, usedStems, gn.keyRows)}
-  <footer class="packet">Neft Teacher · Grade 6 Math · Lesson ${esc(id)}${standard ? " · " + standard : ""}</footer>
+  ${teacher ? answerKeySection(cfg.practice, cfg.reflect, cfg, worked, usedStems, gn.keyRows) : ""}
+  <footer class="packet">Neft Teacher · Grade 6 Math · Lesson ${esc(id)}${standard ? " · " + standard : ""}${teacher ? " · Teacher Copy" : ""}</footer>
 </main>
 </body>
 </html>`;
@@ -1357,7 +1664,7 @@ function buildIndex(lessons) {
                 : ` <span class="tag tag-core">Core</span>`
             }${
               cfg.standard ? ` <span class="std">${esc(cfg.standard)}</span>` : ""
-            }</li>`
+            } <a class="teacher-link" href="/lessons/${id}/notes-teacher.html">Teacher copy (Answer Key)</a></li>`
         )
         .join("");
       return `<section class="unit-group">
@@ -1380,6 +1687,7 @@ h1{font-family:Outfit,system-ui,sans-serif;color:#12355b;}
 .unit-group h2{color:#1fa6a2;margin:0 0 10px;font-family:Outfit,system-ui,sans-serif;}
 .unit-group ul{list-style:none;margin:0;padding:0;}
 .unit-group li{padding:6px 0;border-bottom:1px solid #eef3f8;}
+.teacher-link{margin-left:8px;font-size:12px;font-weight:700;color:#7a5b00;background:#fff3cd;border:1px solid #e0a800;border-radius:999px;padding:2px 10px;text-decoration:none;}
 .unit-group li:last-child{border-bottom:0;}
 a{color:#12355b;text-decoration:none;font-weight:600;}
 a:hover{text-decoration:underline;}
@@ -1409,8 +1717,16 @@ function main() {
   let count = 0;
   let flagshipCount = 0;
   for (const { id, cfg, isFlagship } of lessons) {
-    const out = join(lessonsDir, id, "notes.html");
-    writeFileSync(out, buildPacket(id, cfg, isFlagship));
+    // Student copy — no answer key.
+    writeFileSync(
+      join(lessonsDir, id, "notes.html"),
+      buildPacket(id, cfg, isFlagship, false)
+    );
+    // Teacher copy — same packet + Answer Key & Teacher Guide.
+    writeFileSync(
+      join(lessonsDir, id, "notes-teacher.html"),
+      buildPacket(id, cfg, isFlagship, true)
+    );
     count++;
     if (isFlagship) flagshipCount++;
   }
