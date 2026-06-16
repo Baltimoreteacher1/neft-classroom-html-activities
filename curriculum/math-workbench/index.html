@@ -455,6 +455,171 @@
         );
         background-size: 28px 28px;
       }
+      .workspace.bg-lined {
+        background-image: linear-gradient(
+          rgba(32, 95, 166, 0.14) 1px,
+          transparent 1px
+        );
+        background-size: 100% 32px;
+      }
+      .workspace.bg-graphfine {
+        background-image:
+          linear-gradient(rgba(32, 95, 166, 0.06) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(32, 95, 166, 0.06) 1px, transparent 1px),
+          linear-gradient(rgba(32, 95, 166, 0.14) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(32, 95, 166, 0.14) 1px, transparent 1px);
+        background-size:
+          14px 14px,
+          14px 14px,
+          70px 70px,
+          70px 70px;
+      }
+
+      /* Background side dock */
+      .bg-dock {
+        position: absolute;
+        top: 16px;
+        right: 0;
+        z-index: 18;
+        display: flex;
+        align-items: flex-start;
+      }
+      .bg-tab {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-right: none;
+        border-radius: 12px 0 0 12px;
+        box-shadow: var(--shadow);
+        padding: 11px 9px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        font-weight: 800;
+        font-size: 0.62rem;
+        letter-spacing: 0.03em;
+        color: var(--muted);
+        cursor: pointer;
+      }
+      .bg-tab .ic {
+        font-size: 1.25rem;
+      }
+      .bg-tab:hover {
+        color: var(--teal);
+        border-color: var(--teal);
+      }
+      .bg-panel {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px 0 0 14px;
+        box-shadow: var(--shadow-lg);
+        padding: 12px;
+        width: 168px;
+        display: none;
+      }
+      .bg-panel.open {
+        display: block;
+      }
+      .bg-panel h4 {
+        margin: 0 0 9px;
+        font-size: 0.82rem;
+        font-weight: 900;
+        color: var(--ink);
+      }
+      .bg-opt {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        border: 1.5px solid var(--line);
+        background: #fff;
+        border-radius: 10px;
+        padding: 7px 9px;
+        margin-bottom: 7px;
+        font-weight: 800;
+        font-size: 0.82rem;
+        color: var(--ink);
+        cursor: pointer;
+        transition:
+          border-color 0.12s,
+          background 0.12s;
+      }
+      .bg-opt:last-child {
+        margin-bottom: 0;
+      }
+      .bg-opt:hover {
+        border-color: var(--teal);
+      }
+      .bg-opt.active {
+        border-color: var(--teal);
+        background: var(--teal-light);
+        color: var(--teal);
+      }
+      .bg-opt .sw {
+        width: 30px;
+        height: 30px;
+        border-radius: 7px;
+        border: 1px solid var(--line);
+        flex: none;
+        background-color: #fff;
+        background-position: center;
+      }
+      .bg-opt .sw.grid {
+        background-image:
+          linear-gradient(rgba(32, 95, 166, 0.5) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(32, 95, 166, 0.5) 1px, transparent 1px);
+        background-size: 8px 8px;
+      }
+      .bg-opt .sw.dot {
+        background-image: radial-gradient(
+          rgba(32, 95, 166, 0.7) 1.3px,
+          transparent 1.4px
+        );
+        background-size: 8px 8px;
+      }
+      .bg-opt .sw.lined {
+        background-image: linear-gradient(
+          rgba(32, 95, 166, 0.55) 1px,
+          transparent 1px
+        );
+        background-size: 100% 8px;
+      }
+      .bg-opt .sw.graphfine {
+        background-image:
+          linear-gradient(rgba(32, 95, 166, 0.6) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(32, 95, 166, 0.6) 1px, transparent 1px);
+        background-size: 5px 5px;
+      }
+      .bg-opt .sw.coord {
+        background-image:
+          linear-gradient(rgba(32, 95, 166, 0.25) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(32, 95, 166, 0.25) 1px, transparent 1px),
+          linear-gradient(#14223a 1.6px, transparent 1.6px),
+          linear-gradient(90deg, #14223a 1.6px, transparent 1.6px);
+        background-size:
+          7px 7px,
+          7px 7px,
+          100% 50%,
+          50% 100%;
+        background-position:
+          0 0,
+          0 0,
+          0 center,
+          center 0;
+        background-repeat: repeat, repeat, no-repeat, no-repeat;
+      }
+      #bgLayer {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+      }
+      #bgLayer svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
       #board {
         position: absolute;
         inset: 0;
@@ -501,13 +666,58 @@
         transform-origin: top left;
         will-change: transform;
       }
-      .obj.sel > .obj-inner {
+      .obj.sel .obj-inner {
         outline: 2px dashed var(--teal);
         outline-offset: 4px;
         border-radius: 8px;
       }
       .obj-inner {
         position: relative;
+      }
+      .obj-scale {
+        transform-origin: top left;
+      }
+      /* resize handles (bigger / smaller / wider / taller) */
+      .rs {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #fff;
+        border: 2px solid var(--teal);
+        box-shadow: var(--shadow-sm);
+        display: none;
+        z-index: 7;
+        touch-action: none;
+      }
+      .obj.sel .rs {
+        display: block;
+      }
+      .rs.e {
+        right: -9px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: ew-resize;
+      }
+      .rs.s {
+        left: 50%;
+        bottom: -9px;
+        transform: translateX(-50%);
+        cursor: ns-resize;
+      }
+      .rs.se {
+        right: -9px;
+        bottom: -9px;
+        cursor: nwse-resize;
+        background: var(--teal);
+      }
+      .rs.se::after {
+        content: "";
+        position: absolute;
+        inset: 3px;
+        border-right: 2px solid #fff;
+        border-bottom: 2px solid #fff;
+        border-radius: 0 0 3px 0;
       }
       body[data-draw="0"] .obj {
         cursor: grab;
@@ -699,6 +909,87 @@
       .ifr > span:first-child {
         border-bottom: 2px solid currentColor;
         padding: 0 3px;
+      }
+
+      /* number line object */
+      .numlineobj {
+        background: rgba(255, 255, 255, 0.72);
+        border-radius: 12px;
+        padding: 6px 10px 8px;
+      }
+      .numline-head {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 4px;
+        font-size: 0.74rem;
+        font-weight: 800;
+        color: var(--muted);
+      }
+      .numline-head input {
+        width: 52px;
+        font-family: inherit;
+        font-weight: 800;
+        font-size: 0.82rem;
+        color: var(--ink);
+        border: 1.5px solid var(--line);
+        border-radius: 7px;
+        padding: 3px 5px;
+        text-align: center;
+      }
+      .numline-head input:focus {
+        outline: none;
+        border-color: var(--teal);
+      }
+      .numlineobj svg {
+        display: block;
+        overflow: visible;
+      }
+
+      /* symbol palette group labels */
+      .pal-group {
+        margin-top: 12px;
+      }
+      .pal-group:first-of-type {
+        margin-top: 0;
+      }
+      .pal-group > p {
+        margin: 0 0 6px;
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #9aa9bd;
+      }
+      .nl-presets {
+        display: grid;
+        gap: 7px;
+        grid-template-columns: 1fr 1fr;
+      }
+      .nl-btn {
+        border: 1.5px solid var(--line);
+        background: #fff;
+        border-radius: 10px;
+        padding: 9px 8px;
+        font-weight: 800;
+        font-size: 0.82rem;
+        color: var(--ink);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        transition:
+          border-color 0.12s,
+          background 0.12s;
+      }
+      .nl-btn small {
+        font-size: 0.66rem;
+        font-weight: 700;
+        color: var(--muted);
+      }
+      .nl-btn:hover {
+        border-color: var(--teal);
+        background: var(--teal-light);
       }
 
       /* object mini toolbar */
@@ -1025,14 +1316,16 @@
         .dock,
         .flyout,
         .obj-tools,
-        .empty-hint,
-        .obj.sel > .obj-inner {
+        .rs,
+        .bg-dock,
+        .numline-head,
+        .empty-hint {
           display: none !important;
         }
         .app {
           height: auto;
         }
-        .obj.sel > .obj-inner {
+        .obj.sel .obj-inner {
           outline: none !important;
         }
         .stage,
@@ -1064,9 +1357,6 @@
             title="Your work saves automatically on this device"
             >Saved</span
           >
-          <button class="tbtn" id="bgBtn" title="Change the background">
-            <span class="i">▦</span><span class="txt">Paper</span>
-          </button>
           <button class="tbtn" id="undoBtn" title="Undo (Ctrl+Z)" disabled>
             <span class="i">↶</span><span class="txt">Undo</span>
           </button>
@@ -1199,7 +1489,8 @@
         <section class="flyout" id="flyout" aria-live="polite"></section>
 
         <!-- Workspace -->
-        <div class="workspace bg-grid" id="workspace">
+        <div class="workspace" id="workspace">
+          <div id="bgLayer" aria-hidden="true"></div>
           <canvas id="board"></canvas>
           <div id="overlay"></div>
           <div class="empty-hint" id="emptyHint">
@@ -1210,6 +1501,39 @@
               and drop in shapes. Tap <b>Help</b> any time. Open a formula topic
               below.
             </p>
+          </div>
+        </div>
+
+        <!-- Background side dock -->
+        <div class="bg-dock" id="bgDock">
+          <button
+            class="bg-tab"
+            id="bgTab"
+            title="Change the background"
+            aria-expanded="false"
+          >
+            <span class="ic" aria-hidden="true">🎨</span><span>Paper</span>
+          </button>
+          <div class="bg-panel" id="bgPanel" role="menu">
+            <h4>Background</h4>
+            <button class="bg-opt" data-bg="blank" role="menuitem">
+              <span class="sw"></span> White
+            </button>
+            <button class="bg-opt" data-bg="grid" role="menuitem">
+              <span class="sw grid"></span> Graph grid
+            </button>
+            <button class="bg-opt" data-bg="graphfine" role="menuitem">
+              <span class="sw graphfine"></span> Fine graph
+            </button>
+            <button class="bg-opt" data-bg="dot" role="menuitem">
+              <span class="sw dot"></span> Dot grid
+            </button>
+            <button class="bg-opt" data-bg="lined" role="menuitem">
+              <span class="sw lined"></span> Lined paper
+            </button>
+            <button class="bg-opt" data-bg="coord" role="menuitem">
+              <span class="sw coord"></span> Coordinate plane
+            </button>
           </div>
         </div>
       </div>
@@ -1339,7 +1663,7 @@
       const state = {
         strokes: [], // { tool, color, size, pts:[{x,y}] }
         objects: [], // see makeObject
-        bg: "grid", // grid | dot | blank
+        bg: "blank", // blank | grid | graphfine | dot | lined
       };
       let tool = "move";
       let penColor = PEN_COLORS[0];
@@ -1372,7 +1696,7 @@
         const d = JSON.parse(snap);
         state.strokes = d.strokes || [];
         state.objects = d.objects || [];
-        state.bg = d.bg || "grid";
+        state.bg = d.bg || "blank";
         renderAll();
       }
       function undo() {
@@ -1431,6 +1755,7 @@
         canvas.style.height = r.height + "px";
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         renderCanvas();
+        if (state.bg === "coord") buildCoordBg();
       }
       function renderCanvas() {
         const r = workspace.getBoundingClientRect();
@@ -1553,12 +1878,12 @@
       /* ----------------------- Rendering objects ----------------------- */
       function renderAll() {
         document.body.classList.toggle("paper", true);
-        workspace.classList.remove("bg-grid", "bg-dot");
-        if (state.bg === "grid") workspace.classList.add("bg-grid");
-        else if (state.bg === "dot") workspace.classList.add("bg-dot");
+        applyBg();
         // objects
         overlay.innerHTML = "";
         for (const o of state.objects) overlay.appendChild(buildObjEl(o));
+        // now in DOM: size each object's box to its scaled visual bounds
+        for (const o of state.objects) updateObjEl(o);
         if (selectedId && objById(selectedId)) {
           const el = overlay.querySelector('[data-id="' + selectedId + '"]');
           if (el) el.classList.add("sel");
@@ -1569,20 +1894,237 @@
         updateEmpty();
       }
 
+      function applyBg() {
+        workspace.classList.remove(
+          "bg-grid",
+          "bg-dot",
+          "bg-lined",
+          "bg-graphfine",
+        );
+        const bgLayer = $("#bgLayer");
+        if (state.bg === "coord") {
+          buildCoordBg();
+        } else {
+          bgLayer.innerHTML = "";
+          if (state.bg && state.bg !== "blank")
+            workspace.classList.add("bg-" + state.bg);
+        }
+        $$(".bg-opt").forEach((b) =>
+          b.classList.toggle("active", b.dataset.bg === (state.bg || "blank")),
+        );
+      }
+
+      // Full-workspace Cartesian coordinate plane as a background.
+      function buildCoordBg() {
+        const bgLayer = $("#bgLayer");
+        const r = workspace.getBoundingClientRect();
+        const w = Math.max(100, Math.round(r.width));
+        const h = Math.max(100, Math.round(r.height));
+        const u = 32; // pixels per unit
+        const cx = Math.round(w / 2);
+        const cy = Math.round(h / 2);
+        const minor = "rgba(32,95,166,0.16)";
+        let g = "";
+        // minor gridlines
+        for (let x = cx % u; x <= w; x += u)
+          g +=
+            '<line x1="' +
+            x +
+            '" y1="0" x2="' +
+            x +
+            '" y2="' +
+            h +
+            '" stroke="' +
+            minor +
+            '" stroke-width="1"/>';
+        for (let y = cy % u; y <= h; y += u)
+          g +=
+            '<line x1="0" y1="' +
+            y +
+            '" x2="' +
+            w +
+            '" y2="' +
+            y +
+            '" stroke="' +
+            minor +
+            '" stroke-width="1"/>';
+        // axes
+        g +=
+          '<line x1="0" y1="' +
+          cy +
+          '" x2="' +
+          w +
+          '" y2="' +
+          cy +
+          '" stroke="#14223a" stroke-width="2.5"/>' +
+          '<line x1="' +
+          cx +
+          '" y1="0" x2="' +
+          cx +
+          '" y2="' +
+          h +
+          '" stroke="#14223a" stroke-width="2.5"/>';
+        // arrowheads
+        g +=
+          '<polygon points="' +
+          w +
+          "," +
+          cy +
+          " " +
+          (w - 11) +
+          "," +
+          (cy - 7) +
+          " " +
+          (w - 11) +
+          "," +
+          (cy + 7) +
+          '" fill="#14223a"/>' +
+          '<polygon points="0,' +
+          cy +
+          " 11," +
+          (cy - 7) +
+          " 11," +
+          (cy + 7) +
+          '" fill="#14223a"/>' +
+          '<polygon points="' +
+          cx +
+          ",0 " +
+          (cx - 7) +
+          ",11 " +
+          (cx + 7) +
+          ',11" fill="#14223a"/>' +
+          '<polygon points="' +
+          cx +
+          "," +
+          h +
+          " " +
+          (cx - 7) +
+          "," +
+          (h - 11) +
+          " " +
+          (cx + 7) +
+          "," +
+          (h - 11) +
+          '" fill="#14223a"/>';
+        // integer labels along axes (skip 0 spot label handled once)
+        const lab = (x, y, t) =>
+          '<text x="' +
+          x +
+          '" y="' +
+          y +
+          '" font-family="Atkinson Hyperlegible, Nunito, sans-serif" font-size="11" font-weight="700" fill="#33485f">' +
+          t +
+          "</text>";
+        const maxX = Math.floor((w - cx) / u);
+        const minX = -Math.floor(cx / u);
+        for (let n = minX; n <= maxX; n++) {
+          if (n === 0) continue;
+          g += lab(cx + n * u - 3, cy + 15, n);
+        }
+        const maxY = Math.floor(cy / u);
+        const minY = -Math.floor((h - cy) / u);
+        for (let n = minY; n <= maxY; n++) {
+          if (n === 0) continue;
+          g += lab(cx + 6, cy - n * u + 4, n);
+        }
+        g += lab(cx + 6, cy + 15, "0");
+        bgLayer.innerHTML =
+          '<svg viewBox="0 0 ' +
+          w +
+          " " +
+          h +
+          '" preserveAspectRatio="none">' +
+          g +
+          "</svg>";
+      }
+
       function updateEmpty() {
         emptyHint.style.display =
           state.objects.length || state.strokes.length ? "none" : "block";
       }
 
+      function normScale(o) {
+        if (o.sx == null) o.sx = o.scale || 1;
+        if (o.sy == null) o.sy = o.scale || 1;
+      }
+
       function applyTransform(el, o) {
-        el.style.transform =
-          "translate(" +
-          o.x +
-          "px," +
-          o.y +
-          "px) scale(" +
-          (o.scale || 1) +
-          ")";
+        normScale(o);
+        if (o.type === "line") {
+          el.style.transform =
+            "translate(" +
+            o.x +
+            "px," +
+            o.y +
+            "px) rotate(" +
+            (o.angle || 0) +
+            "deg)";
+          return;
+        }
+        el.style.transform = "translate(" + o.x + "px," + o.y + "px)";
+        const sc = el.querySelector(".obj-scale");
+        if (sc) {
+          sc.style.transform = "scale(" + o.sx + "," + o.sy + ")";
+          sizeObjBox(el, o, sc);
+        }
+      }
+
+      // Size the .obj box to the SCALED visual size so edge handles align.
+      function sizeObjBox(el, o, sc) {
+        sc = sc || el.querySelector(".obj-scale");
+        if (!sc || o.type === "line") return;
+        const bw = sc.offsetWidth,
+          bh = sc.offsetHeight;
+        if (!bw && !bh) return; // not in DOM yet
+        el.style.width = Math.max(1, bw * (o.sx || 1)) + "px";
+        el.style.height = Math.max(1, bh * (o.sy || 1)) + "px";
+      }
+
+      function updateObjEl(o) {
+        const el = overlay.querySelector('[data-id="' + o.id + '"]');
+        if (el) applyTransform(el, o);
+      }
+
+      // Drag-resize handles: e = wider/narrower, s = taller/shorter, se = bigger/smaller.
+      function bindResizeHandles(el, o) {
+        el.querySelectorAll(".rs").forEach((h) => {
+          h.addEventListener("pointerdown", (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            try {
+              h.setPointerCapture(e.pointerId);
+            } catch (err) {}
+            normScale(o);
+            const sc = el.querySelector(".obj-scale");
+            const baseW = Math.max(1, sc.offsetWidth);
+            const baseH = Math.max(1, sc.offsetHeight);
+            const dir = h.dataset.dir;
+            const s = { mx: e.clientX, my: e.clientY, sx: o.sx, sy: o.sy };
+            const move = (ev) => {
+              const dx = ev.clientX - s.mx,
+                dy = ev.clientY - s.my;
+              if (dir === "e") o.sx = Math.max(0.3, s.sx + dx / baseW);
+              else if (dir === "s") o.sy = Math.max(0.3, s.sy + dy / baseH);
+              else {
+                const ratio = Math.max(
+                  0.3 / s.sx,
+                  (s.sx * baseW + dx) / (s.sx * baseW),
+                );
+                o.sx = s.sx * ratio;
+                o.sy = s.sy * ratio;
+              }
+              sc.style.transform = "scale(" + o.sx + "," + o.sy + ")";
+              sizeObjBox(el, o, sc);
+            };
+            const fin = (ev) => {
+              window.removeEventListener("pointermove", move);
+              window.removeEventListener("pointerup", fin);
+              pushHistory();
+            };
+            window.addEventListener("pointermove", move);
+            window.addEventListener("pointerup", fin);
+          });
+        });
       }
 
       function miniTools(o, opts = {}) {
@@ -1605,15 +2147,17 @@
         };
         if (opts.resize !== false) {
           mk("－", "Smaller", "", () => {
-            o.scale = Math.max(0.4, (o.scale || 1) - 0.15);
-            const el = overlay.querySelector('[data-id="' + o.id + '"]');
-            applyTransform(el, o);
+            normScale(o);
+            o.sx = Math.max(0.3, o.sx * 0.85);
+            o.sy = Math.max(0.3, o.sy * 0.85);
+            updateObjEl(o);
             pushHistory();
           });
           mk("＋", "Bigger", "", () => {
-            o.scale = Math.min(4, (o.scale || 1) + 0.15);
-            const el = overlay.querySelector('[data-id="' + o.id + '"]');
-            applyTransform(el, o);
+            normScale(o);
+            o.sx = Math.min(6, o.sx * 1.18);
+            o.sy = Math.min(6, o.sy * 1.18);
+            updateObjEl(o);
             pushHistory();
           });
         }
@@ -1649,13 +2193,20 @@
       }
 
       function buildObjEl(o) {
+        normScale(o);
         const el = document.createElement("div");
         el.className = "obj";
         el.dataset.id = o.id;
-        applyTransform(el, o);
         const inner = document.createElement("div");
         inner.className = "obj-inner";
-        el.appendChild(inner);
+        if (o.type === "line") {
+          el.appendChild(inner);
+        } else {
+          const scaleWrap = document.createElement("div");
+          scaleWrap.className = "obj-scale";
+          scaleWrap.appendChild(inner);
+          el.appendChild(scaleWrap);
+        }
 
         let toolOpts = {};
         if (o.type === "tile") {
@@ -1768,11 +2319,177 @@
           f.innerHTML = o.html;
           inner.appendChild(f);
           toolOpts = { resize: true };
+        } else if (o.type === "numline") {
+          inner.appendChild(buildNumLine(o));
+          toolOpts = { resize: true, color: "#205fa6" };
         }
 
         el.appendChild(miniTools(o, toolOpts));
+        // resize handles for everything except free-rotating lines
+        if (o.type !== "line") {
+          ["e", "s", "se"].forEach((d) => {
+            const h = document.createElement("div");
+            h.className = "rs " + d;
+            h.dataset.dir = d;
+            const tip =
+              d === "e"
+                ? "Wider / narrower"
+                : d === "s"
+                  ? "Taller / shorter"
+                  : "Bigger / smaller";
+            h.title = tip;
+            el.appendChild(h);
+          });
+          bindResizeHandles(el, o);
+        }
+        applyTransform(el, o);
         bindObjectDrag(el, o);
         return el;
+      }
+
+      /* ----------------------- Number line builder ----------------------- */
+      function buildNumLine(o) {
+        const wrap = document.createElement("div");
+        wrap.className = "numlineobj";
+
+        // editable range header
+        const head = document.createElement("div");
+        head.className = "numline-head";
+        const fromIn = document.createElement("input");
+        fromIn.type = "number";
+        fromIn.value = o.min;
+        fromIn.setAttribute("aria-label", "Number line start");
+        const toIn = document.createElement("input");
+        toIn.type = "number";
+        toIn.value = o.max;
+        toIn.setAttribute("aria-label", "Number line end");
+        const lab1 = document.createElement("span");
+        lab1.textContent = "From";
+        const lab2 = document.createElement("span");
+        lab2.textContent = "to";
+        head.append(lab1, fromIn, lab2, toIn);
+
+        const svgHost = document.createElement("div");
+        svgHost.innerHTML = numLineSVG(o.min, o.max);
+
+        function commit(push) {
+          let mn = Math.round(parseFloat(fromIn.value));
+          let mx = Math.round(parseFloat(toIn.value));
+          if (!isFinite(mn)) mn = -10;
+          if (!isFinite(mx)) mx = 10;
+          if (mx <= mn) mx = mn + 1;
+          // cap total ticks for performance/legibility
+          if (mx - mn > 60) mx = mn + 60;
+          o.min = mn;
+          o.max = mx;
+          fromIn.value = mn;
+          toIn.value = mx;
+          svgHost.innerHTML = numLineSVG(mn, mx);
+          updateObjEl(o);
+          if (push) pushHistory();
+          else persist();
+        }
+        [fromIn, toIn].forEach((inp) => {
+          inp.addEventListener("pointerdown", (e) => e.stopPropagation());
+          inp.addEventListener("keydown", (e) => {
+            e.stopPropagation();
+            if (e.key === "Enter") {
+              commit(true);
+              inp.blur();
+            }
+          });
+          inp.addEventListener("change", () => commit(true));
+        });
+
+        wrap.append(head, svgHost);
+        return wrap;
+      }
+
+      function numLineSVG(min, max) {
+        const range = max - min;
+        // choose a step so labels stay legible (<= ~25 labels)
+        let step = 1;
+        if (range > 25) step = Math.ceil(range / 25);
+        const spacing = 36;
+        const pad = 26;
+        const ticks = [];
+        for (let v = min; v <= max; v += step) ticks.push(v);
+        if (ticks[ticks.length - 1] !== max) ticks.push(max);
+        const w = pad * 2 + (ticks.length - 1) * spacing;
+        const axisY = 34;
+        let parts =
+          '<line data-stroke x1="' +
+          (pad - 14) +
+          '" y1="' +
+          axisY +
+          '" x2="' +
+          (w - pad + 14) +
+          '" y2="' +
+          axisY +
+          '" stroke="#205fa6" stroke-width="3"/>' +
+          '<polygon points="' +
+          (w - pad + 14) +
+          "," +
+          axisY +
+          " " +
+          (w - pad + 4) +
+          "," +
+          (axisY - 6) +
+          " " +
+          (w - pad + 4) +
+          "," +
+          (axisY + 6) +
+          '" fill="#205fa6"/>' +
+          '<polygon points="' +
+          (pad - 14) +
+          "," +
+          axisY +
+          " " +
+          (pad - 4) +
+          "," +
+          (axisY - 6) +
+          " " +
+          (pad - 4) +
+          "," +
+          (axisY + 6) +
+          '" fill="#205fa6"/>';
+        ticks.forEach((v, i) => {
+          const x = pad + i * spacing;
+          const zero = v === 0;
+          parts +=
+            '<line x1="' +
+            x +
+            '" y1="' +
+            (axisY - 9) +
+            '" x2="' +
+            x +
+            '" y2="' +
+            (axisY + 9) +
+            '" stroke="' +
+            (zero ? "#14223a" : "#205fa6") +
+            '" stroke-width="' +
+            (zero ? 3.5 : 2) +
+            '"/>';
+          parts +=
+            '<text x="' +
+            x +
+            '" y="' +
+            (axisY + 26) +
+            '" text-anchor="middle" font-family="Atkinson Hyperlegible, Nunito, sans-serif" font-size="14" font-weight="800" fill="' +
+            (zero ? "#14223a" : "#33485f") +
+            '">' +
+            v +
+            "</text>";
+        });
+        return (
+          '<svg viewBox="0 0 ' +
+          w +
+          ' 60" width="' +
+          w +
+          '" height="60">' +
+          parts +
+          "</svg>"
+        );
       }
 
       /* ----------------------- Editable helpers ----------------------- */
@@ -1783,6 +2500,11 @@
         });
         node.addEventListener("input", () => {
           onChange(node.textContent);
+          const host = node.closest(".obj");
+          if (host) {
+            const ob = objById(host.dataset.id);
+            if (ob) updateObjEl(ob);
+          }
           persist();
         });
         node.addEventListener("blur", () => {
@@ -1803,7 +2525,9 @@
           }
           if (
             e.target.closest(".obj-tools") ||
-            e.target.classList.contains("endpt")
+            e.target.classList.contains("endpt") ||
+            e.target.classList.contains("rs") ||
+            e.target.tagName === "INPUT"
           )
             return;
           selectObject(o.id);
@@ -2011,39 +2735,89 @@
           });
         } else if (kind === "operation") {
           flyout.innerHTML =
-            '<h3>Symbols &amp; operations</h3><p class="hint">Tap a symbol to drop a draggable tile.</p>' +
-            '<div class="pal-grid n5" id="opGrid"></div>';
-          const grid = $("#opGrid");
-          [
-            "+",
-            "−",
-            "×",
-            "÷",
-            "=",
-            "≠",
-            "<",
-            ">",
-            "≤",
-            "≥",
-            "±",
-            "√",
-            "%",
-            "π",
-            "°",
-            ":",
-            "≈",
+            '<h3>Symbols &amp; tools</h3><p class="hint">Tap a symbol to drop a draggable tile, or add a number line.</p>' +
+            '<div id="opGroups"></div>';
+          const host = $("#opGroups");
+          const addGroup = (label, syms) => {
+            const g = document.createElement("div");
+            g.className = "pal-group";
+            const p = document.createElement("p");
+            p.textContent = label;
+            const grid = document.createElement("div");
+            grid.className = "pal-grid n5";
+            syms.forEach((v) => {
+              const b = document.createElement("button");
+              b.className = "pal-item";
+              b.textContent = v;
+              b.addEventListener("click", () =>
+                makeObject("tile", { value: v, kind: "op" }),
+              );
+              grid.appendChild(b);
+            });
+            g.append(p, grid);
+            host.appendChild(g);
+          };
+          addGroup("Operations", ["+", "−", "×", "÷", "·", "="]);
+          addGroup("Compare", ["≠", "<", ">", "≤", "≥", "≈", "≅", "~"]);
+          addGroup("Number sense", ["−", "±", "√", "%", "π", "°", "|", "…"]);
+          addGroup("Fractions", ["½", "⅓", "⅔", "¼", "¾", "⅕", "⅛", "/"]);
+          addGroup("Variables", [
+            "x",
+            "y",
+            "z",
+            "a",
+            "b",
+            "n",
+            "m",
+            "t",
+            "p",
+            "k",
+          ]);
+          addGroup("Exponents", [
             "²",
             "³",
-            "|",
-          ].forEach((v) => {
+            "⁴",
+            "⁵",
+            "ⁿ",
+            "^",
+            "x²",
+            "x³",
+            "xⁿ",
+            "10ⁿ",
+          ]);
+          addGroup("Grouping", ["(", ")", "[", "]", "{", "}", "|", "⟨", "⟩"]);
+          addGroup("Geometry", ["∠", "⊥", "∥", "△", "→", "↔", "≅", "·"]);
+          addGroup("Money & more", ["$", "¢", ".", ",", "®", "✓", "✗", "★"]);
+
+          // Number line section
+          const nlGroup = document.createElement("div");
+          nlGroup.className = "pal-group";
+          nlGroup.innerHTML =
+            "<p>Number line</p>" +
+            '<div class="nl-presets" id="nlPresets"></div>';
+          host.appendChild(nlGroup);
+          const nlHost = $("#nlPresets");
+          const NL_PRESETS = [
+            { label: "−10 to 10", min: -10, max: 10 },
+            { label: "0 to 20", min: 0, max: 20 },
+            { label: "−5 to 5", min: -5, max: 5 },
+            { label: "−20 to 20", min: -20, max: 20 },
+          ];
+          NL_PRESETS.forEach((p) => {
             const b = document.createElement("button");
-            b.className = "pal-item";
-            b.textContent = v;
+            b.className = "nl-btn";
+            b.innerHTML = "📏 Number line<small>" + p.label + "</small>";
             b.addEventListener("click", () =>
-              makeObject("tile", { value: v, kind: "op" }),
+              makeObject("numline", { min: p.min, max: p.max }),
             );
-            grid.appendChild(b);
+            nlHost.appendChild(b);
           });
+          const tipP = document.createElement("p");
+          tipP.className = "hint";
+          tipP.style.margin = "10px 0 0";
+          tipP.textContent =
+            "After it drops in, type any From / to numbers to make your own range.";
+          nlGroup.appendChild(tipP);
         } else if (kind === "shape2d") {
           flyout.innerHTML =
             '<h3>2-D shapes</h3><p class="hint">Tap a shape to drop it. Then label it and write the measurements.</p>' +
@@ -2729,11 +3503,21 @@
       /* ----------------------- Top-bar actions ----------------------- */
       $("#undoBtn").addEventListener("click", undo);
       $("#redoBtn").addEventListener("click", redo);
-      $("#bgBtn").addEventListener("click", () => {
-        state.bg =
-          state.bg === "grid" ? "dot" : state.bg === "dot" ? "blank" : "grid";
-        renderAll();
-        pushHistory();
+      // Background side dock
+      const bgPanel = $("#bgPanel");
+      $("#bgTab").addEventListener("click", () => {
+        const open = bgPanel.classList.toggle("open");
+        $("#bgTab").setAttribute("aria-expanded", open ? "true" : "false");
+      });
+      $$(".bg-opt").forEach((b) => {
+        b.addEventListener("click", () => {
+          state.bg = b.dataset.bg;
+          applyBg();
+          pushHistory();
+        });
+      });
+      document.addEventListener("pointerdown", (e) => {
+        if (!e.target.closest("#bgDock")) bgPanel.classList.remove("open");
       });
       $("#clearBtn").addEventListener("click", () => {
         if (!state.objects.length && !state.strokes.length) return;
