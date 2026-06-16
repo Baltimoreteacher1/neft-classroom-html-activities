@@ -574,21 +574,37 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
                 title: "Learn It",
                 desc: "How the math works — read this and see it solved step by step before you practice.",
               }
-            : kind === "readiness"
+            : kind === "vocab"
               ? {
-                  src: `/lessons/${id}/readiness/?embed=1`,
-                  full: `/lessons/${id}/readiness/`,
-                  icon: "📚",
-                  title: "Get Ready",
-                  desc: "A quick check of the skills you need first — not graded.",
+                  src: `/lessons/${id}/vocab.html?embed=1`,
+                  full: `/lessons/${id}/vocab.html`,
+                  icon: "🔑",
+                  title: "Vocab",
+                  desc: "The key words for this lesson — word, plain-language meaning, and a picture.",
                 }
-              : {
-                  src: `/lessons/${id}/notes.html?embed=1`,
-                  full: `/lessons/${id}/notes.html`,
-                  icon: "📝",
-                  title: "Guided Notes",
-                  desc: "Read along and fill these in. Use Print for a paper copy.",
-                };
+              : kind === "builder"
+                ? {
+                    src: `/curriculum/math-workbench/`,
+                    full: `/curriculum/math-workbench/`,
+                    icon: "🛠️",
+                    title: "Builder",
+                    desc: "Open the Math Workbench — a whiteboard to draw, model, and work out the math.",
+                  }
+                : kind === "readiness"
+                  ? {
+                      src: `/lessons/${id}/readiness/?embed=1`,
+                      full: `/lessons/${id}/readiness/`,
+                      icon: "📚",
+                      title: "Get Ready",
+                      desc: "A quick check of the skills you need first — not graded.",
+                    }
+                  : {
+                      src: `/lessons/${id}/notes.html?embed=1`,
+                      full: `/lessons/${id}/notes.html`,
+                      icon: "📝",
+                      title: "Guided Notes",
+                      desc: "Read along and fill these in. Use Print for a paper copy.",
+                    };
 
       this.setExtraActive(kind);
       phaseContainer.innerHTML = "";
@@ -603,7 +619,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
             <div class="section-desc">${escHtml(meta.desc)}</div>
           </div>
           <div class="extra-actions" style="display:flex; gap:var(--sp-2, 8px); flex-wrap:wrap;">
-            ${kind === "notes" || kind === "learn" ? `<button class="btn btn-secondary" data-act="print">🖨️ Print</button>` : ""}
+            ${kind === "notes" || kind === "learn" || kind === "vocab" ? `<button class="btn btn-secondary" data-act="print">🖨️ Print</button>` : ""}
             <a class="btn btn-secondary" href="${meta.full}" target="_blank" rel="noopener">Open full page ↗</a>
           </div>
         </div>
@@ -986,15 +1002,27 @@ function preLessonNavHtml(config) {
     );
   }
   items.push(
-    `<button class="phase-btn extra-btn" data-extra="learn">
-      <span class="phase-num">📖</span>
-      <span>Learn It</span>
-    </button>`,
-  );
-  items.push(
     `<button class="phase-btn extra-btn" data-extra="objectives">
       <span class="phase-num">🎯</span>
       <span>Objectives</span>
+    </button>`,
+  );
+  items.push(
+    `<button class="phase-btn extra-btn" data-extra="vocab">
+      <span class="phase-num">🔑</span>
+      <span>Vocab</span>
+    </button>`,
+  );
+  items.push(
+    `<button class="phase-btn extra-btn" data-extra="builder">
+      <span class="phase-num">🛠️</span>
+      <span>Builder</span>
+    </button>`,
+  );
+  items.push(
+    `<button class="phase-btn extra-btn" data-extra="learn">
+      <span class="phase-num">📖</span>
+      <span>Learn It</span>
     </button>`,
   );
   items.push(

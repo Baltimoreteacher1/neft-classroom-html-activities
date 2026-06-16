@@ -87,8 +87,63 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .learnit-step-text{flex:1;}
 .learnit-point{position:relative;padding-left:22px;margin:0 0 8px;font-size:16px;line-height:1.6;}
 .learnit-point::before{content:"→";position:absolute;left:0;color:var(--teal);font-weight:800;}
-.learnit-bridge{margin:8px 0 0;font-size:14.5px;font-weight:700;color:var(--navy);}
+.learnit-bridge{margin:8px 0 0;font-size:14.5px;font-weight:700;color:var(--navy);background:var(--teal-light);border-radius:10px;padding:10px 14px;}
 .gn-subhead-note{margin:-4px 0 12px;font-size:14px;color:var(--muted);}
+/* Learn It — expanded teaching page (examples, typing boxes, visuals) */
+.learnit-expanded{padding:20px 22px;}
+.learnit-visual{background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:0 0 16px;}
+.learnit-visual-title{font-weight:800;color:var(--navy);margin:0 0 8px;font-size:15px;}
+.learnit-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.learnit-chip{display:inline-flex;align-items:center;justify-content:center;min-width:38px;padding:6px 12px;
+  background:#fff;border:1.5px solid var(--teal);border-radius:8px;font-weight:800;color:var(--navy);font-size:16px;}
+.learnit-visual-unit{font-size:13.5px;color:var(--muted);margin-top:8px;font-weight:600;}
+.learnit-ex{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:0 0 16px;}
+.learnit-ex-watch{background:var(--teal-light);border-color:var(--teal);}
+.learnit-ex-we{background:#fff7e6;border-color:var(--amber);}
+.learnit-ex-you{background:#eef3fb;border-color:var(--navy);}
+.learnit-ex-head{margin:0 0 6px;}
+.learnit-cue{margin:0 0 12px;font-size:14.5px;color:var(--muted);font-weight:600;}
+.learnit-tag-watch{background:var(--teal);}
+.learnit-tag-we{background:var(--amber);color:var(--navy);}
+.learnit-tag-you{background:var(--navy);}
+/* Numbered step flow with vertical connectors */
+.learnit-flow{list-style:none;margin:0;padding:0;}
+.learnit-flow-step{position:relative;display:flex;gap:12px;align-items:flex-start;padding:0 0 16px 0;}
+.learnit-flow-step:not(:last-child)::before{content:"";position:absolute;left:15px;top:30px;bottom:0;width:2px;background:var(--line);}
+.learnit-flow-num{position:relative;z-index:1;flex:0 0 auto;width:30px;height:30px;border-radius:50%;
+  background:var(--navy);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;}
+.learnit-ex-watch .learnit-flow-num{background:var(--teal);}
+.learnit-ex-we .learnit-flow-num{background:var(--amber);color:var(--navy);}
+.learnit-flow-text{flex:1;font-size:16px;line-height:1.6;color:var(--ink);padding-top:3px;}
+.learnit-input{display:block;width:100%;margin-top:8px;border:1.5px solid var(--teal);border-radius:8px;
+  padding:8px 10px;font:inherit;font-size:15px;color:var(--navy);background:#fff;}
+.learnit-input:focus{outline:none;background:#fffdf5;border-color:var(--amber);}
+.learnit-input-inline{margin-top:6px;}
+.learnit-area{display:block;width:100%;margin-top:8px;border:1.5px solid var(--teal);border-radius:8px;
+  padding:8px 10px;font:inherit;font-size:15px;color:var(--navy);background:#fff;resize:vertical;}
+.learnit-area:focus{outline:none;background:#fffdf5;border-color:var(--amber);}
+.learnit-think{display:block;margin-top:12px;}
+.learnit-think-q{display:block;font-weight:700;color:var(--navy);font-size:14.5px;margin-bottom:2px;}
+.learnit-draw{margin-top:12px;min-height:96px;border:2px dashed var(--teal);border-radius:12px;background:#fff;
+  background-image:radial-gradient(var(--line) 1px,transparent 0);background-size:18px 18px;position:relative;}
+.learnit-draw-label{position:absolute;top:8px;left:12px;font-size:12.5px;font-weight:700;color:var(--teal);
+  background:#fff;padding:0 6px;}
+.learnit-notes{border:1px solid var(--navy);border-left:5px solid var(--navy);border-radius:12px;
+  padding:14px 16px;margin:0 0 16px;background:#fff;}
+.learnit-notes-head{margin:0 0 10px;font-weight:800;color:var(--navy);font-size:16px;}
+.learnit-vocab{margin:10px 0 0;}
+.learnit-vocab-head{margin:0 0 6px;font-weight:700;color:var(--navy);font-size:13.5px;}
+.learnit-vocab-list{list-style:none;margin:0;padding:0;display:grid;gap:6px;}
+.learnit-vocab-item{display:flex;gap:8px;align-items:baseline;font-size:14px;line-height:1.5;}
+.learnit-vocab-term{flex:0 0 auto;font-weight:800;color:var(--teal);}
+.learnit-vocab-def{color:var(--ink);}
+@media print{
+  .learnit-ex-watch,.learnit-ex-we,.learnit-ex-you,.learnit-visual,.learnit-bridge{background:#fff;border-color:#000;}
+  .learnit-flow-num{background:#000!important;color:#fff;}
+  .learnit-input,.learnit-area,.learnit-draw{border-color:#000;}
+  .learnit-draw{min-height:120px;}
+  .learnit-chip{border-color:#000;}
+}
 @media print{
   .learnit{border-color:#000;box-shadow:none;}
   .learnit-watch,.learnit-we,.learnit-you,.learnit-key{background:#fff;}
@@ -704,11 +759,9 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   });
 </script>
 <script>
-  // Auto-save guided-notes typing to this device (localStorage), per lesson.
   (function () {
     var KEY = 'nt-notes:9-5';
     var statusEl, clearBtn, fields = [], saveTimer = null;
-
     function collectFields() {
       var list = [];
       var typed = document.querySelectorAll('[data-nt-field]');
@@ -717,16 +770,12 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
       for (var j = 0; j < boxes.length; j++) list.push(boxes[j]);
       return list;
     }
-
     function fieldKey(el, i) { return (el.type === 'checkbox' ? 'c' : 'f') + i; }
-
     function setStatus(text) { if (statusEl) statusEl.textContent = text; }
-
     function readStore() {
       try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; }
       catch (e) { return {}; }
     }
-
     function save() {
       var data = {};
       for (var i = 0; i < fields.length; i++) {
@@ -734,18 +783,14 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
         if (el.type === 'checkbox') { if (el.checked) data[k] = 1; }
         else if (el.value && el.value.trim() !== '') { data[k] = el.value; }
       }
-      try {
-        localStorage.setItem(KEY, JSON.stringify(data));
-        setStatus('Saved ✓');
-      } catch (e) { setStatus('Could not save (storage off)'); }
+      try { localStorage.setItem(KEY, JSON.stringify(data)); setStatus('Saved ✓'); }
+      catch (e) { setStatus('Could not save (storage off)'); }
     }
-
     function queueSave() {
       setStatus('Saving…');
       if (saveTimer) clearTimeout(saveTimer);
       saveTimer = setTimeout(save, 400);
     }
-
     function restore() {
       var data = readStore();
       for (var i = 0; i < fields.length; i++) {
@@ -755,7 +800,6 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
         else el.value = data[k];
       }
     }
-
     document.addEventListener('DOMContentLoaded', function () {
       statusEl = document.getElementById('nt-save-status');
       clearBtn = document.getElementById('nt-clear-btn');
@@ -1073,24 +1117,24 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
       </div>
     </div>
   <div class="learnit" role="group" aria-label="Learn It — how the math works">
-    <p class="learnit-eyebrow">📖 Learn It — read this first</p>
-    <h3 class="learnit-head">How do you plot points in all four quadrants?</h3>
-    <p class="learnit-intro">The coordinate plane has four parts called quadrants. A negative coordinate means you move left (for x) or down (for y) from the origin instead of right or up.</p>
-    <div class="learnit-key"><span class="learnit-key-label">💡 Key idea</span><span class="learnit-key-text">The signs of (x, y) tell you the quadrant: (+,+) is I, (-,+) is II, (-,-) is III, (+,-) is IV.</span></div>
-    <div class="learnit-stage learnit-watch">
-      <p class="learnit-stage-head"><span class="learnit-tag">👀 Watch — see it solved</span><span class="learnit-stage-title">Watch me</span></p>
-      <ol class="learnit-lines"><li class="learnit-step"><span class="learnit-steplabel">Step 1</span><span class="learnit-step-text">I will plot (-3, -4). I start at the origin (0, 0).</span></li><li class="learnit-step"><span class="learnit-steplabel">Step 2</span><span class="learnit-step-text">The x is -3, which is negative, so I move 3 units to the LEFT.</span></li><li class="learnit-step"><span class="learnit-steplabel">Step 3</span><span class="learnit-step-text">The y is -4, which is negative, so I move 4 units DOWN. I place my dot.</span></li><li class="learnit-step"><span class="learnit-steplabel">Step 4</span><span class="learnit-step-text">Both coordinates are negative, so the point is in Quadrant III.</span></li></ol>
+      <p class="learnit-eyebrow">📖 Learn It — read this first</p>
+      <h3 class="learnit-head">How do you plot points in all four quadrants?</h3>
+      <p class="learnit-intro">The coordinate plane has four parts called quadrants. A negative coordinate means you move left (for x) or down (for y) from the origin instead of right or up.</p>
+      <div class="learnit-key"><span class="learnit-key-label">💡 Key idea</span><span class="learnit-key-text">The signs of (x, y) tell you the quadrant: (+,+) is I, (-,+) is II, (-,-) is III, (+,-) is IV.</span></div>
+      <div class="learnit-stage learnit-watch">
+        <p class="learnit-stage-head"><span class="learnit-tag">👀 Watch — see it solved</span><span class="learnit-stage-title">Watch me</span></p>
+        <ol class="learnit-lines"><li class="learnit-step"><span class="learnit-steplabel">Step 1</span><span class="learnit-step-text">I will plot (-3, -4). I start at the origin (0, 0).</span></li><li class="learnit-step"><span class="learnit-steplabel">Step 2</span><span class="learnit-step-text">The x is -3, which is negative, so I move 3 units to the LEFT.</span></li><li class="learnit-step"><span class="learnit-steplabel">Step 3</span><span class="learnit-step-text">The y is -4, which is negative, so I move 4 units DOWN. I place my dot.</span></li><li class="learnit-step"><span class="learnit-steplabel">Step 4</span><span class="learnit-step-text">Both coordinates are negative, so the point is in Quadrant III.</span></li></ol>
+      </div>
+      <div class="learnit-stage learnit-we">
+        <p class="learnit-stage-head"><span class="learnit-tag">🤝 We try it together</span><span class="learnit-stage-title">Let's try together</span></p>
+        <ul class="learnit-lines"><li class="learnit-point">Now let's plot (-5, 2). The x is -5, so which way do we move? Left 5 units.</li><li class="learnit-point">The y is 2, which is positive, so which way? Up 2 units.</li><li class="learnit-point">Left and up lands us in which quadrant? Quadrant II.</li></ul>
+      </div>
+      <div class="learnit-stage learnit-you">
+        <p class="learnit-stage-head"><span class="learnit-tag">✏️ Now you try</span><span class="learnit-stage-title">Now it's your turn</span></p>
+        <ul class="learnit-lines"><li class="learnit-point">In the explore, plot each treasure clue like (4, 3) and (-5, 2) and name the quadrant it lands in.</li></ul>
+      </div>
+      <p class="learnit-bridge">✅ Got it? You're ready to practice — use these same steps on the problems.</p>
     </div>
-    <div class="learnit-stage learnit-we">
-      <p class="learnit-stage-head"><span class="learnit-tag">🤝 We try it together</span><span class="learnit-stage-title">Let's try together</span></p>
-      <ul class="learnit-lines"><li class="learnit-point">Now let's plot (-5, 2). The x is -5, so which way do we move? Left 5 units.</li><li class="learnit-point">The y is 2, which is positive, so which way? Up 2 units.</li><li class="learnit-point">Left and up lands us in which quadrant? Quadrant II.</li></ul>
-    </div>
-    <div class="learnit-stage learnit-you">
-      <p class="learnit-stage-head"><span class="learnit-tag">✏️ Now you try</span><span class="learnit-stage-title">Now it's your turn</span></p>
-      <ul class="learnit-lines"><li class="learnit-point">In the explore, plot each treasure clue like (4, 3) and (-5, 2) and name the quadrant it lands in.</li></ul>
-    </div>
-    <p class="learnit-bridge">✅ Got it? You're ready to practice — use these same steps on the problems.</p>
-  </div>
   <p class="gn-directions">✏️ Fill in each blank as we go. Use the Word Bank to help you.</p><div class="gn-fill">
     <div class="gn-bank">
       <span class="gn-bank-label">📚 Word Bank — fill each blank with the best word</span>

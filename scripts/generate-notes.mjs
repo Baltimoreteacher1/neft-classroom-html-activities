@@ -35,6 +35,82 @@ const clozeText = (text) => {
 
 const choiceLetter = (i) => String.fromCharCode(65 + i);
 
+// Reusable per-device auto-save for typeable [data-nt-field] inputs and
+// checkboxes, keyed by `storeKey` in localStorage. Shared by the guided-notes
+// packet (nt-notes:<id>) and the Learn It page (nt-learn:<id>) so a student's
+// typing persists on their device. Expects a #nt-save-status indicator and an
+// optional #nt-clear-btn in the page.
+function autoSaveScript(storeKey) {
+  return `<script>
+  (function () {
+    var KEY = '${storeKey}';
+    var statusEl, clearBtn, fields = [], saveTimer = null;
+    function collectFields() {
+      var list = [];
+      var typed = document.querySelectorAll('[data-nt-field]');
+      for (var i = 0; i < typed.length; i++) list.push(typed[i]);
+      var boxes = document.querySelectorAll('main input[type=checkbox]');
+      for (var j = 0; j < boxes.length; j++) list.push(boxes[j]);
+      return list;
+    }
+    function fieldKey(el, i) { return (el.type === 'checkbox' ? 'c' : 'f') + i; }
+    function setStatus(text) { if (statusEl) statusEl.textContent = text; }
+    function readStore() {
+      try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; }
+      catch (e) { return {}; }
+    }
+    function save() {
+      var data = {};
+      for (var i = 0; i < fields.length; i++) {
+        var el = fields[i], k = fieldKey(el, i);
+        if (el.type === 'checkbox') { if (el.checked) data[k] = 1; }
+        else if (el.value && el.value.trim() !== '') { data[k] = el.value; }
+      }
+      try { localStorage.setItem(KEY, JSON.stringify(data)); setStatus('Saved ✓'); }
+      catch (e) { setStatus('Could not save (storage off)'); }
+    }
+    function queueSave() {
+      setStatus('Saving…');
+      if (saveTimer) clearTimeout(saveTimer);
+      saveTimer = setTimeout(save, 400);
+    }
+    function restore() {
+      var data = readStore();
+      for (var i = 0; i < fields.length; i++) {
+        var el = fields[i], k = fieldKey(el, i);
+        if (!(k in data)) continue;
+        if (el.type === 'checkbox') el.checked = !!data[k];
+        else el.value = data[k];
+      }
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      statusEl = document.getElementById('nt-save-status');
+      clearBtn = document.getElementById('nt-clear-btn');
+      fields = collectFields();
+      if (!fields.length) {
+        if (statusEl) statusEl.style.display = 'none';
+        if (clearBtn) clearBtn.style.display = 'none';
+        return;
+      }
+      restore();
+      for (var i = 0; i < fields.length; i++) {
+        fields[i].addEventListener('input', queueSave);
+        fields[i].addEventListener('change', queueSave);
+      }
+      if (clearBtn) clearBtn.addEventListener('click', function () {
+        if (!confirm('Clear all of your typing on this lesson? This cannot be undone.')) return;
+        try { localStorage.removeItem(KEY); } catch (e) {}
+        for (var j = 0; j < fields.length; j++) {
+          if (fields[j].type === 'checkbox') fields[j].checked = false;
+          else fields[j].value = '';
+        }
+        setStatus('Cleared');
+      });
+    });
+  })();
+</script>`;
+}
+
 // Interactive "put the steps in order" manipulative built from a worked
 // example's solution steps. Students drag the cards (or use the ▲▼ buttons /
 // keyboard) to sequence them, then press Check for instant feedback. Touch- and
@@ -478,57 +554,184 @@ function guidedNotesFill(cfg = {}) {
 // type with clear numbered steps, BEFORE students fill in notes or practice. It
 // is designed for Level 1 and Level 2 students: short sentences, one idea per
 // line, a worked example shown all the way through.
-function conceptLearnBlock(cfg = {}) {
+// Pull the clean list of lines from a conceptIntro stage (iDo/weDo/youDo).
+function introLines(data) {
+  if (!data) return [];
+  const raw = Array.isArray(data.lines) ? data.lines : data.lines ? [data.lines] : [];
+  return raw.filter(Boolean);
+}
+
+// A small, draggable-free "model space" so students can sketch the math
+// (factor tree, number line, picture). Universal visual affordance — every
+// example gets one, even when the lesson ships no authored chart.
+function drawBox(label) {
+  return `<div class="learnit-draw"><span class="learnit-draw-label">${esc(label)}</span></div>`;
+}
+
+// Authored, per-lesson visual from launch.visual. data-chips render as a chip
+// strip (shared shape with the Launch phase, tying the two together); other
+// chart kinds show a labeled summary callout (the SVG builders are DOM-coupled
+// and not importable here). Returns "" when the lesson has no authored visual.
+function learnVisual(cfg) {
+  const v = (cfg.launch && cfg.launch.visual) || cfg.visual;
+  if (!v || typeof v !== "object") return "";
+  const title = v.title ? `<div class="learnit-visual-title">📊 ${esc(v.title)}</div>` : "";
+  const unit = v.unit ? `<div class="learnit-visual-unit">${esc(v.unit)}</div>` : "";
+  if (v.kind === "data-chips" && Array.isArray(v.values)) {
+    const chips = v.values
+      .map((x) => `<span class="learnit-chip">${esc(x)}</span>`)
+      .join("");
+    return `<div class="learnit-visual">${title}<div class="learnit-chips">${chips}</div>${unit}</div>`;
+  }
+  // Non-chip chart: surface the authored title/unit so the data is still seen.
+  if (title || unit) {
+    return `<div class="learnit-visual">${title}${unit || `<div class="learnit-visual-unit">See this picture in the Launch.</div>`}</div>`;
+  }
+  return "";
+}
+
+// Compact key vocabulary strip (term — meaning) for the "Notes to remember"
+// block. Keeps it short: the first few terms the lesson actually teaches.
+function learnVocabChips(cfg) {
+  const vocab = (Array.isArray(cfg.vocabulary) ? cfg.vocabulary : [])
+    .filter((x) => x && x.term && x.definition)
+    .slice(0, 4);
+  if (!vocab.length) return "";
+  const items = vocab
+    .map(
+      (x) =>
+        `<li class="learnit-vocab-item"><span class="learnit-vocab-term">${esc(x.term)}</span><span class="learnit-vocab-def">${esc(x.definition)}</span></li>`,
+    )
+    .join("");
+  return `<div class="learnit-vocab"><p class="learnit-vocab-head">🔑 Words to use</p><ul class="learnit-vocab-list">${items}</ul></div>`;
+}
+
+// Textbook-style "Learn It" teaching block. Built from the lesson's authored
+// `launch.conceptIntro`. Two variants:
+//   • compact (default) — used inside the guided-notes packet: concept +
+//     worked frame headings, no duplicate typing boxes.
+//   • expanded (opts.expanded) — used on the standalone Learn It page/tab:
+//     a full gradual-release lesson with TYPEABLE boxes, a worked Example 1
+//     (Watch me), a "Notes to remember" recap, a guided "Work with me"
+//     Example 2 (fill-in each step), a "Your turn", visuals and sketch spaces.
+function conceptLearnBlock(cfg = {}, opts = {}) {
   const intro = (cfg.launch && cfg.launch.conceptIntro) || cfg.conceptIntro;
   if (!intro || typeof intro !== "object") return "";
 
   const heading = esc(intro.heading || "How the math works");
-  const introP = intro.intro
-    ? `<p class="learnit-intro">${esc(intro.intro)}</p>`
-    : "";
+  const introP = intro.intro ? `<p class="learnit-intro">${esc(intro.intro)}</p>` : "";
   const keyIdea = intro.keyIdea
     ? `<div class="learnit-key"><span class="learnit-key-label">💡 Key idea</span><span class="learnit-key-text">${esc(intro.keyIdea)}</span></div>`
     : "";
 
-  // One gradual-release stage. `numbered` controls whether the lines render as
-  // "Step 1 / Step 2 …" (used for the worked "Watch" model) or plain points.
-  const stage = (data, tag, klass, numbered) => {
-    if (!data) return "";
-    const raw = Array.isArray(data.lines)
-      ? data.lines
-      : data.lines
-        ? [data.lines]
-        : [];
-    const lines = raw.filter(Boolean);
-    if (!lines.length) return "";
-    const items = lines
-      .map((l, i) =>
-        numbered
-          ? `<li class="learnit-step"><span class="learnit-steplabel">Step ${i + 1}</span><span class="learnit-step-text">${esc(l)}</span></li>`
-          : `<li class="learnit-point">${esc(l)}</li>`,
-      )
-      .join("");
-    const title = data.title ? `<span class="learnit-stage-title">${esc(data.title)}</span>` : "";
-    return `<div class="learnit-stage ${klass}">
-      <p class="learnit-stage-head"><span class="learnit-tag">${tag}</span>${title}</p>
-      <${numbered ? "ol" : "ul"} class="learnit-lines">${items}</${numbered ? "ol" : "ul"}>
+  const iLines = introLines(intro.iDo);
+  const weLines = introLines(intro.weDo);
+  const youLines = introLines(intro.youDo);
+
+  // ── Compact variant (guided-notes packet) ──
+  if (!opts.expanded) {
+    const stage = (lines, tag, klass, numbered, title) => {
+      if (!lines.length) return "";
+      const items = lines
+        .map((l, i) =>
+          numbered
+            ? `<li class="learnit-step"><span class="learnit-steplabel">Step ${i + 1}</span><span class="learnit-step-text">${esc(l)}</span></li>`
+            : `<li class="learnit-point">${esc(l)}</li>`,
+        )
+        .join("");
+      const t = title ? `<span class="learnit-stage-title">${esc(title)}</span>` : "";
+      return `<div class="learnit-stage ${klass}">
+        <p class="learnit-stage-head"><span class="learnit-tag">${tag}</span>${t}</p>
+        <${numbered ? "ol" : "ul"} class="learnit-lines">${items}</${numbered ? "ol" : "ul"}>
+      </div>`;
+    };
+    const watch = stage(iLines, "👀 Watch — see it solved", "learnit-watch", true, intro.iDo && intro.iDo.title);
+    const we = stage(weLines, "🤝 We try it together", "learnit-we", false, intro.weDo && intro.weDo.title);
+    const you = stage(youLines, "✏️ Now you try", "learnit-you", false, intro.youDo && intro.youDo.title);
+    if (!watch && !we && !you && !introP && !keyIdea) return "";
+    return `<div class="learnit" role="group" aria-label="Learn It — how the math works">
+      <p class="learnit-eyebrow">📖 Learn It — read this first</p>
+      <h3 class="learnit-head">${heading}</h3>
+      ${introP}
+      ${keyIdea}
+      ${watch}
+      ${we}
+      ${you}
+      <p class="learnit-bridge">✅ Got it? You're ready to practice — use these same steps on the problems.</p>
     </div>`;
-  };
+  }
 
-  const watch = stage(intro.iDo, "👀 Watch — see it solved", "learnit-watch", true);
-  const we = stage(intro.weDo, "🤝 We try it together", "learnit-we", false);
-  const you = stage(intro.youDo, "✏️ Now you try", "learnit-you", false);
-  if (!watch && !we && !you && !introP && !keyIdea) return "";
+  // ── Expanded variant (Learn It page/tab) ──
+  // Example 1 — Watch me (read-only model, numbered flow + sketch + reflect).
+  const ex1Steps = iLines
+    .map(
+      (l, i) =>
+        `<li class="learnit-flow-step"><span class="learnit-flow-num">${i + 1}</span><span class="learnit-flow-text">${esc(l)}</span></li>`,
+    )
+    .join("");
+  const example1 = iLines.length
+    ? `<section class="learnit-ex learnit-ex-watch">
+        <p class="learnit-ex-head"><span class="learnit-tag learnit-tag-watch">👀 Example 1 — Watch me solve it</span></p>
+        <p class="learnit-cue">Read each step. This is the teacher thinking out loud.</p>
+        <ol class="learnit-flow">${ex1Steps}</ol>
+        ${drawBox("✏️ Draw the model or show the math here")}
+        <label class="learnit-think"><span class="learnit-think-q">What do you notice about how this was solved?</span>
+          <input class="learnit-input" type="text" data-nt-field placeholder="Type what you notice…" /></label>
+      </section>`
+    : "";
 
-  return `<div class="learnit" role="group" aria-label="Learn It — how the math works">
-    <p class="learnit-eyebrow">📖 Learn It — read this first</p>
+  // Notes to remember — key idea + words + write-it-yourself.
+  const notesBlock = `<section class="learnit-notes">
+      <p class="learnit-notes-head">📝 Notes to remember</p>
+      ${keyIdea || (introP ? `<div class="learnit-key"><span class="learnit-key-label">💡 Remember</span><span class="learnit-key-text">${esc(intro.intro)}</span></div>` : "")}
+      ${learnVocabChips(cfg)}
+      <label class="learnit-think"><span class="learnit-think-q">Write the steps in your own words, so you can use them again:</span>
+        <textarea class="learnit-area" rows="3" data-nt-field placeholder="First I… Then I… Last I…"></textarea></label>
+    </section>`;
+
+  // Example 2 — Work with me (each guided line gets a fill-in box).
+  const ex2Steps = weLines
+    .map(
+      (l, i) =>
+        `<li class="learnit-flow-step learnit-flow-fill"><span class="learnit-flow-num">${i + 1}</span>
+          <span class="learnit-flow-text">${esc(l)}<input class="learnit-input learnit-input-inline" type="text" data-nt-field placeholder="Fill in this step…" /></span></li>`,
+    )
+    .join("");
+  const example2 = weLines.length
+    ? `<section class="learnit-ex learnit-ex-we">
+        <p class="learnit-ex-head"><span class="learnit-tag learnit-tag-we">🤝 Example 2 — Work with me</span></p>
+        <p class="learnit-cue">We solve this one together. Fill in each step as we go.</p>
+        <ol class="learnit-flow">${ex2Steps}</ol>
+        ${drawBox("✏️ Draw the model or show the math here")}
+        <label class="learnit-think"><span class="learnit-think-q">Our answer:</span>
+          <input class="learnit-input" type="text" data-nt-field placeholder="Type our answer…" /></label>
+      </section>`
+    : "";
+
+  // Your turn — independent.
+  const youItems = youLines.map((l) => `<li class="learnit-point">${esc(l)}</li>`).join("");
+  const yourTurn = youLines.length
+    ? `<section class="learnit-ex learnit-ex-you">
+        <p class="learnit-ex-head"><span class="learnit-tag learnit-tag-you">✏️ Your turn — try one on your own</span></p>
+        <ul class="learnit-lines">${youItems}</ul>
+        ${drawBox("✏️ Show your work here")}
+        <label class="learnit-think"><span class="learnit-think-q">My answer:</span>
+          <input class="learnit-input" type="text" data-nt-field placeholder="Type your answer…" /></label>
+      </section>`
+    : "";
+
+  if (!example1 && !example2 && !yourTurn && !introP) return "";
+
+  return `<div class="learnit learnit-expanded" role="group" aria-label="Learn It — how the math works">
+    <p class="learnit-eyebrow">📖 Learn It</p>
     <h3 class="learnit-head">${heading}</h3>
     ${introP}
-    ${keyIdea}
-    ${watch}
-    ${we}
-    ${you}
-    <p class="learnit-bridge">✅ Got it? You're ready to practice — use these same steps on the problems.</p>
+    ${learnVisual(cfg)}
+    ${example1}
+    ${notesBlock}
+    ${example2}
+    ${yourTurn}
+    <p class="learnit-bridge">✅ Got it? You're ready to practice — use these same steps on the lesson problems.</p>
   </div>`;
 }
 
@@ -840,8 +1043,63 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .learnit-step-text{flex:1;}
 .learnit-point{position:relative;padding-left:22px;margin:0 0 8px;font-size:16px;line-height:1.6;}
 .learnit-point::before{content:"→";position:absolute;left:0;color:var(--teal);font-weight:800;}
-.learnit-bridge{margin:8px 0 0;font-size:14.5px;font-weight:700;color:var(--navy);}
+.learnit-bridge{margin:8px 0 0;font-size:14.5px;font-weight:700;color:var(--navy);background:var(--teal-light);border-radius:10px;padding:10px 14px;}
 .gn-subhead-note{margin:-4px 0 12px;font-size:14px;color:var(--muted);}
+/* Learn It — expanded teaching page (examples, typing boxes, visuals) */
+.learnit-expanded{padding:20px 22px;}
+.learnit-visual{background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:0 0 16px;}
+.learnit-visual-title{font-weight:800;color:var(--navy);margin:0 0 8px;font-size:15px;}
+.learnit-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.learnit-chip{display:inline-flex;align-items:center;justify-content:center;min-width:38px;padding:6px 12px;
+  background:#fff;border:1.5px solid var(--teal);border-radius:8px;font-weight:800;color:var(--navy);font-size:16px;}
+.learnit-visual-unit{font-size:13.5px;color:var(--muted);margin-top:8px;font-weight:600;}
+.learnit-ex{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:0 0 16px;}
+.learnit-ex-watch{background:var(--teal-light);border-color:var(--teal);}
+.learnit-ex-we{background:#fff7e6;border-color:var(--amber);}
+.learnit-ex-you{background:#eef3fb;border-color:var(--navy);}
+.learnit-ex-head{margin:0 0 6px;}
+.learnit-cue{margin:0 0 12px;font-size:14.5px;color:var(--muted);font-weight:600;}
+.learnit-tag-watch{background:var(--teal);}
+.learnit-tag-we{background:var(--amber);color:var(--navy);}
+.learnit-tag-you{background:var(--navy);}
+/* Numbered step flow with vertical connectors */
+.learnit-flow{list-style:none;margin:0;padding:0;}
+.learnit-flow-step{position:relative;display:flex;gap:12px;align-items:flex-start;padding:0 0 16px 0;}
+.learnit-flow-step:not(:last-child)::before{content:"";position:absolute;left:15px;top:30px;bottom:0;width:2px;background:var(--line);}
+.learnit-flow-num{position:relative;z-index:1;flex:0 0 auto;width:30px;height:30px;border-radius:50%;
+  background:var(--navy);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;}
+.learnit-ex-watch .learnit-flow-num{background:var(--teal);}
+.learnit-ex-we .learnit-flow-num{background:var(--amber);color:var(--navy);}
+.learnit-flow-text{flex:1;font-size:16px;line-height:1.6;color:var(--ink);padding-top:3px;}
+.learnit-input{display:block;width:100%;margin-top:8px;border:1.5px solid var(--teal);border-radius:8px;
+  padding:8px 10px;font:inherit;font-size:15px;color:var(--navy);background:#fff;}
+.learnit-input:focus{outline:none;background:#fffdf5;border-color:var(--amber);}
+.learnit-input-inline{margin-top:6px;}
+.learnit-area{display:block;width:100%;margin-top:8px;border:1.5px solid var(--teal);border-radius:8px;
+  padding:8px 10px;font:inherit;font-size:15px;color:var(--navy);background:#fff;resize:vertical;}
+.learnit-area:focus{outline:none;background:#fffdf5;border-color:var(--amber);}
+.learnit-think{display:block;margin-top:12px;}
+.learnit-think-q{display:block;font-weight:700;color:var(--navy);font-size:14.5px;margin-bottom:2px;}
+.learnit-draw{margin-top:12px;min-height:96px;border:2px dashed var(--teal);border-radius:12px;background:#fff;
+  background-image:radial-gradient(var(--line) 1px,transparent 0);background-size:18px 18px;position:relative;}
+.learnit-draw-label{position:absolute;top:8px;left:12px;font-size:12.5px;font-weight:700;color:var(--teal);
+  background:#fff;padding:0 6px;}
+.learnit-notes{border:1px solid var(--navy);border-left:5px solid var(--navy);border-radius:12px;
+  padding:14px 16px;margin:0 0 16px;background:#fff;}
+.learnit-notes-head{margin:0 0 10px;font-weight:800;color:var(--navy);font-size:16px;}
+.learnit-vocab{margin:10px 0 0;}
+.learnit-vocab-head{margin:0 0 6px;font-weight:700;color:var(--navy);font-size:13.5px;}
+.learnit-vocab-list{list-style:none;margin:0;padding:0;display:grid;gap:6px;}
+.learnit-vocab-item{display:flex;gap:8px;align-items:baseline;font-size:14px;line-height:1.5;}
+.learnit-vocab-term{flex:0 0 auto;font-weight:800;color:var(--teal);}
+.learnit-vocab-def{color:var(--ink);}
+@media print{
+  .learnit-ex-watch,.learnit-ex-we,.learnit-ex-you,.learnit-visual,.learnit-bridge{background:#fff;border-color:#000;}
+  .learnit-flow-num{background:#000!important;color:#fff;}
+  .learnit-input,.learnit-area,.learnit-draw{border-color:#000;}
+  .learnit-draw{min-height:120px;}
+  .learnit-chip{border-color:#000;}
+}
 @media print{
   .learnit{border-color:#000;box-shadow:none;}
   .learnit-watch,.learnit-we,.learnit-you,.learnit-key{background:#fff;}
@@ -1485,85 +1743,7 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
     setLevel(savedLevel);
   });
 </script>
-<script>
-  // Auto-save guided-notes typing to this device (localStorage), per lesson.
-  (function () {
-    var KEY = 'nt-notes:${esc(id)}';
-    var statusEl, clearBtn, fields = [], saveTimer = null;
-
-    function collectFields() {
-      var list = [];
-      var typed = document.querySelectorAll('[data-nt-field]');
-      for (var i = 0; i < typed.length; i++) list.push(typed[i]);
-      var boxes = document.querySelectorAll('main input[type=checkbox]');
-      for (var j = 0; j < boxes.length; j++) list.push(boxes[j]);
-      return list;
-    }
-
-    function fieldKey(el, i) { return (el.type === 'checkbox' ? 'c' : 'f') + i; }
-
-    function setStatus(text) { if (statusEl) statusEl.textContent = text; }
-
-    function readStore() {
-      try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; }
-      catch (e) { return {}; }
-    }
-
-    function save() {
-      var data = {};
-      for (var i = 0; i < fields.length; i++) {
-        var el = fields[i], k = fieldKey(el, i);
-        if (el.type === 'checkbox') { if (el.checked) data[k] = 1; }
-        else if (el.value && el.value.trim() !== '') { data[k] = el.value; }
-      }
-      try {
-        localStorage.setItem(KEY, JSON.stringify(data));
-        setStatus('Saved ✓');
-      } catch (e) { setStatus('Could not save (storage off)'); }
-    }
-
-    function queueSave() {
-      setStatus('Saving…');
-      if (saveTimer) clearTimeout(saveTimer);
-      saveTimer = setTimeout(save, 400);
-    }
-
-    function restore() {
-      var data = readStore();
-      for (var i = 0; i < fields.length; i++) {
-        var el = fields[i], k = fieldKey(el, i);
-        if (!(k in data)) continue;
-        if (el.type === 'checkbox') el.checked = !!data[k];
-        else el.value = data[k];
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-      statusEl = document.getElementById('nt-save-status');
-      clearBtn = document.getElementById('nt-clear-btn');
-      fields = collectFields();
-      if (!fields.length) {
-        if (statusEl) statusEl.style.display = 'none';
-        if (clearBtn) clearBtn.style.display = 'none';
-        return;
-      }
-      restore();
-      for (var i = 0; i < fields.length; i++) {
-        fields[i].addEventListener('input', queueSave);
-        fields[i].addEventListener('change', queueSave);
-      }
-      if (clearBtn) clearBtn.addEventListener('click', function () {
-        if (!confirm('Clear all of your typing on this lesson? This cannot be undone.')) return;
-        try { localStorage.removeItem(KEY); } catch (e) {}
-        for (var j = 0; j < fields.length; j++) {
-          if (fields[j].type === 'checkbox') fields[j].checked = false;
-          else fields[j].value = '';
-        }
-        setStatus('Cleared');
-      });
-    });
-  })();
-</script>
+${autoSaveScript(`nt-notes:${esc(id)}`)}
 <script>
   // Tap-to-define word-bank pop-ups (term + plain meaning + picture).
   (function () {
@@ -1766,7 +1946,7 @@ function buildLearnPage(id, cfg, isFlagship) {
     ? `<span class="flagship-badge">Flagship</span>`
     : "";
 
-  const learnBlock = conceptLearnBlock(cfg);
+  const learnBlock = conceptLearnBlock(cfg, { expanded: true });
   const objective = cfg.contentObjective || cfg.languageObjective || "";
   const body =
     learnBlock ||
@@ -1792,11 +1972,16 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
 <script>
   if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}
 </script>
+${autoSaveScript(`nt-learn:${esc(id)}`)}
 </head>
 <body>
 <div class="topbar no-print">
   <span class="brand">Neft Teacher · Learn It</span>
-  <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <span class="nt-save no-print" id="nt-save-status" title="Your typing is saved on this device automatically.">💾 Saves automatically</span>
+    <button class="nt-clear no-print" type="button" id="nt-clear-btn">Clear my work</button>
+    <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+  </div>
 </div>
 <main class="sheet">
   <header class="packet">
@@ -1808,6 +1993,50 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
     <span class="lin-icon" aria-hidden="true">🧭</span>
     <p>Read this first. It explains what we are learning and shows you exactly how to solve it — step by step. Then head to the lesson activities and practice.</p>
   </div>
+  ${body}
+  <footer class="packet">Neft Teacher · Grade 6 Math · Lesson ${esc(id)}${standard ? " · " + standard : ""}</footer>
+</main>
+</body>
+</html>`;
+}
+
+// Standalone "Vocab" page — word + plain-language (ESOL) meaning + picture for
+// every key term, shown BEFORE activities. Surfaced as the Vocab sidebar tab.
+// Locked to the Level 1 view so the definition is always visible (a reference,
+// not a fill-in); the leveled write-your-own practice lives in the Notes packet.
+function buildVocabPage(id, cfg, isFlagship) {
+  const standard = cfg.standard ? `Standard ${esc(cfg.standard)}` : "";
+  const standardPlain = cfg.standard ? `Standard ${cfg.standard}` : "";
+  const unit = cfg.unit != null ? `Unit ${esc(cfg.unit)}` : "";
+  const flagBadge = isFlagship ? `<span class="flagship-badge">Flagship</span>` : "";
+  const vocab = Array.isArray(cfg.vocabulary) ? cfg.vocabulary : [];
+  const body =
+    vocabSection(vocab) ||
+    `<section class="section vocab"><p class="level-note">No vocabulary is listed for this lesson yet.</p></section>`;
+
+  return `<!doctype html>
+<html lang="en" class="level-l1">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>${esc(cfg.title)} — Vocab</title>
+${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
+<style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
+<script>
+  if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}
+</script>
+</head>
+<body>
+<div class="topbar no-print">
+  <span class="brand">Neft Teacher · Vocab</span>
+  <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+</div>
+<main class="sheet">
+  <header class="packet">
+    <p class="eyebrow">${[unit, standard].filter(Boolean).join(" · ")}</p>
+    <h1>${esc(cfg.title)} ${flagBadge}</h1>
+    <p class="meta">Lesson ${esc(id)} · Key words for this lesson</p>
+  </header>
   ${body}
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson ${esc(id)}${standard ? " · " + standard : ""}</footer>
 </main>
@@ -1904,6 +2133,11 @@ function main() {
     writeFileSync(
       join(lessonsDir, id, "learn.html"),
       buildLearnPage(id, cfg, isFlagship)
+    );
+    // Standalone "Vocab" page (surfaced as the 🔑 Vocab tab).
+    writeFileSync(
+      join(lessonsDir, id, "vocab.html"),
+      buildVocabPage(id, cfg, isFlagship)
     );
     count++;
     if (isFlagship) flagshipCount++;
