@@ -25,7 +25,7 @@ const slug = (term) =>
     .replace(/[^a-z0-9-]/g, "");
 
 const blankLines = (n) =>
-  Array.from({ length: n }, () => `<div class="writeline"></div>`).join("");
+  `<textarea class="writeline-area" rows="${n}" data-nt-field aria-label="Write your response here"></textarea>`;
 
 const clozeText = (text) => {
   return esc(text)
@@ -86,13 +86,11 @@ function vocabSection(vocab = []) {
   </div>
   <div class="vocab-def-l2">
     <p class="vocab-def-prompt">Write the definition:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    ${blankLines(2)}
   </div>
   <div class="vocab-def-l3">
     <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    ${blankLines(2)}
   </div>
 </div>`;
     })
@@ -211,7 +209,7 @@ function workedFrame(worked) {
           <span class="wk-anslabel">Check the correct choice:</span>
           ${weDo.choices.map((c) => `<label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> ${esc(c)}</label>`).join("")}
         </div>`
-      : `<p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline" style="flex: 1;"></span></p>`;
+      : `<p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <input class="writeline" style="flex: 1;" type="text" data-nt-field /></p>`;
 
     weDoHtmlL1 = `<div class="notes-gr-step notes-gr-we">
       <span class="notes-gr-tag">🤝 We do — together (Scaffolded)</span>
@@ -239,8 +237,8 @@ function workedFrame(worked) {
       ${checkboxHtml}
       <div class="work-space">
         <span class="ws-label">Fill in your solution path:</span>
-        <div class="wk-step-blank" style="margin: 4px 0;"><span class="wk-steplabel" style="font-size: 11px; padding: 1px 4px;">Step 1</span> <span class="writeline" style="flex:1; height:20px;"></span></div>
-        <div class="wk-step-blank" style="margin: 4px 0;"><span class="wk-steplabel" style="font-size: 11px; padding: 1px 4px;">Step 2</span> <span class="writeline" style="flex:1; height:20px;"></span></div>
+        <div class="wk-step-blank" style="margin: 4px 0;"><span class="wk-steplabel" style="font-size: 11px; padding: 1px 4px;">Step 1</span> <input class="writeline" style="flex:1; height:20px;" type="text" data-nt-field /></div>
+        <div class="wk-step-blank" style="margin: 4px 0;"><span class="wk-steplabel" style="font-size: 11px; padding: 1px 4px;">Step 2</span> <input class="writeline" style="flex:1; height:20px;" type="text" data-nt-field /></div>
       </div>
     </div>`;
   }
@@ -274,7 +272,7 @@ function workedFrame(worked) {
     const blankSteps = Array.from(
       { length: stepCount },
       (_, i) =>
-        `<li class="wk-step wk-step-blank"><span class="wk-steplabel">Step ${i + 1}</span><span class="writeline"></span></li>`,
+        `<li class="wk-step wk-step-blank"><span class="wk-steplabel">Step ${i + 1}</span><input class="writeline" type="text" data-nt-field /></li>`,
     ).join("");
     weDoHtmlL2 = `<div class="notes-gr-step notes-gr-we">
       <span class="notes-gr-tag">🤝 We do — together</span>
@@ -282,7 +280,7 @@ function workedFrame(worked) {
       <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(weDo.problem)}</p>
       ${choiceOl(weDo.choices)}
       <ol class="wk-steps wk-steps-blank">${blankSteps}</ol>
-      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <input class="writeline" type="text" data-nt-field /></p>
     </div>`;
   }
 
@@ -377,11 +375,11 @@ function guidedNotesFill(cfg = {}) {
       // Drop a styled write-on blank where the term goes.
       sentence = esc(v.cloze).replace(
         /_{2,}/g,
-        `<span class="gn-blank"></span>`,
+        `<input class="gn-blank" type="text" data-nt-field />`,
       );
     } else {
       // No prepared cloze — fall back to "____ : plain-language meaning".
-      sentence = `<span class="gn-blank"></span> &mdash; ${esc(v.definition || "Write what this word means.")}`;
+      sentence = `<input class="gn-blank" type="text" data-nt-field /> &mdash; ${esc(v.definition || "Write what this word means.")}`;
     }
     keyRows.push({ label: `Notes ${num}`, answer: v.term });
     return `<li class="gn-line"><span class="gn-num">${num}</span><span class="gn-sentence">${sentence}</span></li>`;
@@ -704,6 +702,23 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
   text-transform:none;letter-spacing:0;}
 .my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
 .writeline{border-bottom:1px solid #b9c6d3;height:26px;}
+/* Typeable, auto-saved guided-notes fields (replace the print-only blank lines) */
+textarea.writeline-area{display:block;width:100%;box-sizing:border-box;border:none;resize:vertical;
+  font:inherit;color:var(--navy);line-height:26px;padding:0 2px;background-color:transparent;
+  background-image:repeating-linear-gradient(transparent,transparent 25px,#b9c6d3 25px,#b9c6d3 26px);
+  min-height:26px;border-radius:4px;}
+textarea.writeline-area:focus{outline:none;background-color:#fff7e6;}
+input.writeline{border:none;border-bottom:1px solid #b9c6d3;background:transparent;font:inherit;
+  color:var(--navy);padding:1px 4px;min-width:60px;border-radius:3px 3px 0 0;}
+.wk-step-blank input.writeline,.wk-answer-blank input.writeline{height:24px;}
+input.gn-blank{background:transparent;font:inherit;font-weight:700;color:var(--navy);text-align:center;
+  padding:1px 6px;border-radius:4px;}
+input.writeline:focus,input.gn-blank:focus{outline:none;background-color:#fff7e6;}
+.nt-save{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--teal);
+  background:var(--teal-light);border:1px solid var(--teal);border-radius:999px;padding:5px 12px;white-space:nowrap;}
+.nt-clear{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;
+  font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;}
+.nt-clear:hover{border-color:var(--navy);color:var(--navy);}
 .example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
   padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
 .example-head{margin:0 0 6px;color:var(--navy);font-size:16px;}
@@ -1068,6 +1083,11 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   .answer-key{border-top:2px solid #000;}
   .vocab-card{border:1px solid #000;}
   .writeline{border-bottom:1px solid #000;}
+  textarea.writeline-area{color:#000;background-image:repeating-linear-gradient(transparent,transparent 25px,#000 25px,#000 26px);}
+  input.writeline{border-bottom:1px solid #000;color:#000;}
+  input.gn-blank{color:#000;}
+  textarea.writeline-area:focus,input.writeline:focus,input.gn-blank:focus{background-color:transparent;}
+  .nt-save,.nt-clear{display:none !important;}
   .mission{background:#fff;color:#000;border:1px solid #000;}
   .mission-title,.mission-eyebrow{color:#000;}
   .level-tag,.flagship-badge,.twr-method,.twr-tag{background:#fff;color:#000;border:1px solid #000;}
@@ -1185,7 +1205,9 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
       </label>
     </div>
   </div>
-  <div style="display:flex;align-items:center;gap:8px;">
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <span class="nt-save no-print" id="nt-save-status" title="Your typing is saved on this device automatically.">💾 Saves automatically</span>
+    <button class="nt-clear no-print" type="button" id="nt-clear-btn">Clear my work</button>
     <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
     <div class="dl-wrap">
       <button class="print-btn" type="button" aria-haspopup="true" aria-expanded="false"
@@ -1212,6 +1234,85 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
     const savedLevel = localStorage.getItem('notes-level') || 'l2';
     setLevel(savedLevel);
   });
+</script>
+<script>
+  // Auto-save guided-notes typing to this device (localStorage), per lesson.
+  (function () {
+    var KEY = 'nt-notes:${esc(id)}';
+    var statusEl, clearBtn, fields = [], saveTimer = null;
+
+    function collectFields() {
+      var list = [];
+      var typed = document.querySelectorAll('[data-nt-field]');
+      for (var i = 0; i < typed.length; i++) list.push(typed[i]);
+      var boxes = document.querySelectorAll('main input[type=checkbox]');
+      for (var j = 0; j < boxes.length; j++) list.push(boxes[j]);
+      return list;
+    }
+
+    function fieldKey(el, i) { return (el.type === 'checkbox' ? 'c' : 'f') + i; }
+
+    function setStatus(text) { if (statusEl) statusEl.textContent = text; }
+
+    function readStore() {
+      try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; }
+      catch (e) { return {}; }
+    }
+
+    function save() {
+      var data = {};
+      for (var i = 0; i < fields.length; i++) {
+        var el = fields[i], k = fieldKey(el, i);
+        if (el.type === 'checkbox') { if (el.checked) data[k] = 1; }
+        else if (el.value && el.value.trim() !== '') { data[k] = el.value; }
+      }
+      try {
+        localStorage.setItem(KEY, JSON.stringify(data));
+        setStatus('Saved ✓');
+      } catch (e) { setStatus('Could not save (storage off)'); }
+    }
+
+    function queueSave() {
+      setStatus('Saving…');
+      if (saveTimer) clearTimeout(saveTimer);
+      saveTimer = setTimeout(save, 400);
+    }
+
+    function restore() {
+      var data = readStore();
+      for (var i = 0; i < fields.length; i++) {
+        var el = fields[i], k = fieldKey(el, i);
+        if (!(k in data)) continue;
+        if (el.type === 'checkbox') el.checked = !!data[k];
+        else el.value = data[k];
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      statusEl = document.getElementById('nt-save-status');
+      clearBtn = document.getElementById('nt-clear-btn');
+      fields = collectFields();
+      if (!fields.length) {
+        if (statusEl) statusEl.style.display = 'none';
+        if (clearBtn) clearBtn.style.display = 'none';
+        return;
+      }
+      restore();
+      for (var i = 0; i < fields.length; i++) {
+        fields[i].addEventListener('input', queueSave);
+        fields[i].addEventListener('change', queueSave);
+      }
+      if (clearBtn) clearBtn.addEventListener('click', function () {
+        if (!confirm('Clear all of your typing on this lesson? This cannot be undone.')) return;
+        try { localStorage.removeItem(KEY); } catch (e) {}
+        for (var j = 0; j < fields.length; j++) {
+          if (fields[j].type === 'checkbox') fields[j].checked = false;
+          else fields[j].value = '';
+        }
+        setStatus('Cleared');
+      });
+    });
+  })();
 </script>
 <main class="sheet">
   <header class="packet">

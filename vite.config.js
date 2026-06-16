@@ -126,6 +126,14 @@ function copyStandaloneHtml() {
             mkdirSync(destDir, { recursive: true });
             cpSync(handout, resolve(destDir, "handout.html"));
           }
+          // Per-lesson 2-version practice worksheet (Version A support /
+          // Version B on-level + answer keys), linked from the curriculum hub.
+          const worksheet = resolve(lessonsDir, dir.name, "worksheet.html");
+          if (existsSync(worksheet)) {
+            const destDir = resolve(__dirname, "dist", "lessons", dir.name);
+            mkdirSync(destDir, { recursive: true });
+            cpSync(worksheet, resolve(destDir, "worksheet.html"));
+          }
           const configJson = resolve(lessonsDir, dir.name, "config.json");
           if (existsSync(configJson)) {
             const destDir = resolve(__dirname, "dist", "lessons", dir.name);

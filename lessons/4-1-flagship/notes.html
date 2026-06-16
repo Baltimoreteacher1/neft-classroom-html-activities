@@ -92,6 +92,23 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
   text-transform:none;letter-spacing:0;}
 .my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
 .writeline{border-bottom:1px solid #b9c6d3;height:26px;}
+/* Typeable, auto-saved guided-notes fields (replace the print-only blank lines) */
+textarea.writeline-area{display:block;width:100%;box-sizing:border-box;border:none;resize:vertical;
+  font:inherit;color:var(--navy);line-height:26px;padding:0 2px;background-color:transparent;
+  background-image:repeating-linear-gradient(transparent,transparent 25px,#b9c6d3 25px,#b9c6d3 26px);
+  min-height:26px;border-radius:4px;}
+textarea.writeline-area:focus{outline:none;background-color:#fff7e6;}
+input.writeline{border:none;border-bottom:1px solid #b9c6d3;background:transparent;font:inherit;
+  color:var(--navy);padding:1px 4px;min-width:60px;border-radius:3px 3px 0 0;}
+.wk-step-blank input.writeline,.wk-answer-blank input.writeline{height:24px;}
+input.gn-blank{background:transparent;font:inherit;font-weight:700;color:var(--navy);text-align:center;
+  padding:1px 6px;border-radius:4px;}
+input.writeline:focus,input.gn-blank:focus{outline:none;background-color:#fff7e6;}
+.nt-save{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--teal);
+  background:var(--teal-light);border:1px solid var(--teal);border-radius:999px;padding:5px 12px;white-space:nowrap;}
+.nt-clear{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;
+  font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;}
+.nt-clear:hover{border-color:var(--navy);color:var(--navy);}
 .example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
   padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
 .example-head{margin:0 0 6px;color:var(--navy);font-size:16px;}
@@ -456,6 +473,11 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   .answer-key{border-top:2px solid #000;}
   .vocab-card{border:1px solid #000;}
   .writeline{border-bottom:1px solid #000;}
+  textarea.writeline-area{color:#000;background-image:repeating-linear-gradient(transparent,transparent 25px,#000 25px,#000 26px);}
+  input.writeline{border-bottom:1px solid #000;color:#000;}
+  input.gn-blank{color:#000;}
+  textarea.writeline-area:focus,input.writeline:focus,input.gn-blank:focus{background-color:transparent;}
+  .nt-save,.nt-clear{display:none !important;}
   .mission{background:#fff;color:#000;border:1px solid #000;}
   .mission-title,.mission-eyebrow{color:#000;}
   .level-tag,.flagship-badge,.twr-method,.twr-tag{background:#fff;color:#000;border:1px solid #000;}
@@ -544,7 +566,9 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
       </label>
     </div>
   </div>
-  <div style="display:flex;align-items:center;gap:8px;">
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <span class="nt-save no-print" id="nt-save-status" title="Your typing is saved on this device automatically.">💾 Saves automatically</span>
+    <button class="nt-clear no-print" type="button" id="nt-clear-btn">Clear my work</button>
     <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
     <div class="dl-wrap">
       <button class="print-btn" type="button" aria-haspopup="true" aria-expanded="false"
@@ -571,6 +595,85 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     const savedLevel = localStorage.getItem('notes-level') || 'l2';
     setLevel(savedLevel);
   });
+</script>
+<script>
+  // Auto-save guided-notes typing to this device (localStorage), per lesson.
+  (function () {
+    var KEY = 'nt-notes:4-1-flagship';
+    var statusEl, clearBtn, fields = [], saveTimer = null;
+
+    function collectFields() {
+      var list = [];
+      var typed = document.querySelectorAll('[data-nt-field]');
+      for (var i = 0; i < typed.length; i++) list.push(typed[i]);
+      var boxes = document.querySelectorAll('main input[type=checkbox]');
+      for (var j = 0; j < boxes.length; j++) list.push(boxes[j]);
+      return list;
+    }
+
+    function fieldKey(el, i) { return (el.type === 'checkbox' ? 'c' : 'f') + i; }
+
+    function setStatus(text) { if (statusEl) statusEl.textContent = text; }
+
+    function readStore() {
+      try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; }
+      catch (e) { return {}; }
+    }
+
+    function save() {
+      var data = {};
+      for (var i = 0; i < fields.length; i++) {
+        var el = fields[i], k = fieldKey(el, i);
+        if (el.type === 'checkbox') { if (el.checked) data[k] = 1; }
+        else if (el.value && el.value.trim() !== '') { data[k] = el.value; }
+      }
+      try {
+        localStorage.setItem(KEY, JSON.stringify(data));
+        setStatus('Saved ✓');
+      } catch (e) { setStatus('Could not save (storage off)'); }
+    }
+
+    function queueSave() {
+      setStatus('Saving…');
+      if (saveTimer) clearTimeout(saveTimer);
+      saveTimer = setTimeout(save, 400);
+    }
+
+    function restore() {
+      var data = readStore();
+      for (var i = 0; i < fields.length; i++) {
+        var el = fields[i], k = fieldKey(el, i);
+        if (!(k in data)) continue;
+        if (el.type === 'checkbox') el.checked = !!data[k];
+        else el.value = data[k];
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      statusEl = document.getElementById('nt-save-status');
+      clearBtn = document.getElementById('nt-clear-btn');
+      fields = collectFields();
+      if (!fields.length) {
+        if (statusEl) statusEl.style.display = 'none';
+        if (clearBtn) clearBtn.style.display = 'none';
+        return;
+      }
+      restore();
+      for (var i = 0; i < fields.length; i++) {
+        fields[i].addEventListener('input', queueSave);
+        fields[i].addEventListener('change', queueSave);
+      }
+      if (clearBtn) clearBtn.addEventListener('click', function () {
+        if (!confirm('Clear all of your typing on this lesson? This cannot be undone.')) return;
+        try { localStorage.removeItem(KEY); } catch (e) {}
+        for (var j = 0; j < fields.length; j++) {
+          if (fields[j].type === 'checkbox') fields[j].checked = false;
+          else fields[j].value = '';
+        }
+        setStatus('Cleared');
+      });
+    });
+  })();
 </script>
 <main class="sheet">
   <header class="packet">
@@ -605,13 +708,11 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   </div>
   <div class="vocab-def-l2">
     <p class="vocab-def-prompt">Write the definition:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
   </div>
   <div class="vocab-def-l3">
     <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
   </div>
 </div>
 <div class="vocab-card">
@@ -625,13 +726,11 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   </div>
   <div class="vocab-def-l2">
     <p class="vocab-def-prompt">Write the definition:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
   </div>
   <div class="vocab-def-l3">
     <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
   </div>
 </div>
 <div class="vocab-card">
@@ -645,13 +744,11 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   </div>
   <div class="vocab-def-l2">
     <p class="vocab-def-prompt">Write the definition:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
   </div>
   <div class="vocab-def-l3">
     <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
   </div>
 </div>
 <div class="vocab-card">
@@ -665,13 +762,11 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   </div>
   <div class="vocab-def-l2">
     <p class="vocab-def-prompt">Write the definition:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
   </div>
   <div class="vocab-def-l3">
     <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
   </div>
 </div>
 <div class="vocab-card">
@@ -685,13 +780,11 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   </div>
   <div class="vocab-def-l2">
     <p class="vocab-def-prompt">Write the definition:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
   </div>
   <div class="vocab-def-l3">
     <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
   </div>
 </div>
 <div class="vocab-card">
@@ -705,13 +798,11 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   </div>
   <div class="vocab-def-l2">
     <p class="vocab-def-prompt">Write the definition:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
   </div>
   <div class="vocab-def-l3">
     <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
   </div>
 </div>
   </div>
@@ -735,7 +826,7 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
       <div class="gn-bank-words"><span class="gn-bank-word">Rate</span><span class="gn-bank-word">Unit Rate</span><span class="gn-bank-word">Per</span><span class="gn-bank-word">Ratio</span><span class="gn-bank-word">Better Buy</span><span class="gn-bank-word">Divide</span></div>
       <p class="gn-bank-hint l3-only">Level 3: try the blanks from memory first, then check the bank.</p>
     </div>
-    <ol class="gn-lines"><li class="gn-line"><span class="gn-num">1</span><span class="gn-sentence">A ratio that compares two quantities with different units is a <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">2</span><span class="gn-sentence">A rate that tells the cost or amount for one unit is a <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">3</span><span class="gn-sentence">The word that means 'for each one' is <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">4</span><span class="gn-sentence">A comparison of two quantities is a <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">5</span><span class="gn-sentence">The option with the lower unit rate, costing less per item, is the <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">6</span><span class="gn-sentence">To find a unit rate, I <span class="gn-blank"></span> the price by the number of units.</span></li></ol>
+    <ol class="gn-lines"><li class="gn-line"><span class="gn-num">1</span><span class="gn-sentence">A ratio that compares two quantities with different units is a <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">2</span><span class="gn-sentence">A rate that tells the cost or amount for one unit is a <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">3</span><span class="gn-sentence">The word that means 'for each one' is <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">4</span><span class="gn-sentence">A comparison of two quantities is a <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">5</span><span class="gn-sentence">The option with the lower unit rate, costing less per item, is the <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">6</span><span class="gn-sentence">To find a unit rate, I <input class="gn-blank" type="text" data-nt-field /> the price by the number of units.</span></li></ol>
   </div>
   <h3 class="gn-subhead">🧮 Watch &amp; Try — Worked Examples</h3><div class="notes-gradual">
     <div class="l1-only">
@@ -770,8 +861,8 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
         </div>
       <div class="work-space">
         <span class="ws-label">Fill in your solution path:</span>
-        <div class="wk-step-blank" style="margin: 4px 0;"><span class="wk-steplabel" style="font-size: 11px; padding: 1px 4px;">Step 1</span> <span class="writeline" style="flex:1; height:20px;"></span></div>
-        <div class="wk-step-blank" style="margin: 4px 0;"><span class="wk-steplabel" style="font-size: 11px; padding: 1px 4px;">Step 2</span> <span class="writeline" style="flex:1; height:20px;"></span></div>
+        <div class="wk-step-blank" style="margin: 4px 0;"><span class="wk-steplabel" style="font-size: 11px; padding: 1px 4px;">Step 1</span> <input class="writeline" style="flex:1; height:20px;" type="text" data-nt-field /></div>
+        <div class="wk-step-blank" style="margin: 4px 0;"><span class="wk-steplabel" style="font-size: 11px; padding: 1px 4px;">Step 2</span> <input class="writeline" style="flex:1; height:20px;" type="text" data-nt-field /></div>
       </div>
     </div>
   </div>
@@ -790,15 +881,15 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
       <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
       <p class="wk-problem"><span class="wk-plabel">Problem:</span> A car travels 180 miles using 6 gallons of gas. What is the unit rate in miles per gallon?</p>
       <ol class="try-choices" type="A"><li>30 miles per gallon</li><li>6 miles per gallon</li><li>180 miles per gallon</li><li>36 miles per gallon</li></ol>
-      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
-      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><input class="writeline" type="text" data-nt-field /></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><input class="writeline" type="text" data-nt-field /></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <input class="writeline" type="text" data-nt-field /></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
       <span class="notes-gr-tag">✏️ You do — your turn</span>
       <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
       <p class="wk-problem"><span class="wk-plabel">Problem:</span> A pack of 8 markers costs $6.00. What is the cost per marker?</p>
       <ol class="try-choices" type="A"><li>$0.75</li><li>$0.80</li><li>$1.33</li><li>$0.60</li></ol>
-      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+      <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
     </div>
   </div>
     <div class="l3-only">
@@ -809,7 +900,7 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
       <ol class="try-choices" type="A"><li>$0.50 per game</li><li>$0.45 per game</li><li>$2.00 per game</li><li>$4.50 per game</li></ol>
       <p class="sentence-frame"><span class="ws-label">Writing Prompt:</span> Formulate a mathematical representation or model for this situation. Explain why your model is appropriate.</p>
       <div class="scratchpad"><span class="scratchpad-label">Workspace / Visual Model</span></div>
-      <div class="work-space"><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+      <div class="work-space"><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
     </div>
     <div class="notes-gr-step notes-gr-you" style="border-left-color: var(--amber);">
       <span class="notes-gr-tag">🧠 Challenge 2 — Error Analysis & Generalization</span>
@@ -817,7 +908,7 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
       <ol class="try-choices" type="A"><li>30 miles per gallon</li><li>6 miles per gallon</li><li>180 miles per gallon</li><li>36 miles per gallon</li></ol>
       <p class="sentence-frame"><span class="ws-label">Writing Prompt:</span> Solve the problem. Then, write a rule or generalization that someone could use to solve any problem like this.</p>
       <div class="scratchpad"><span class="scratchpad-label">Workspace / Visual Model</span></div>
-      <div class="work-space"><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+      <div class="work-space"><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
     </div>
     <div class="notes-gr-step notes-gr-you" style="border-left-color: var(--navy);">
       <span class="notes-gr-tag">🧠 Challenge 3 — Synthesis & Extension</span>
@@ -825,7 +916,7 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
       <ol class="try-choices" type="A"><li>$0.75</li><li>$0.80</li><li>$1.33</li><li>$0.60</li></ol>
       <p class="sentence-frame"><span class="ws-label">Writing Prompt:</span> Solve the problem. Create a real-world scenario that matches the operations or logic you used to solve this.</p>
       <div class="scratchpad"><span class="scratchpad-label">Workspace / Visual Model</span></div>
-      <div class="work-space"><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+      <div class="work-space"><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
     </div>
   </div>
   </div>
@@ -836,12 +927,12 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   <div class="tryit">
   <p class="tryit-num">1. Lock 2 — Speed Door: Two racing games unlock the door. Pixel Racer scores 250 points in 5 minutes. Turbo Drift scores 180 points in 4 minutes. Which game earns points at the faster rate?</p>
   <ol class="try-choices" type="A"><li>Pixel Racer (50 points per minute)</li><li>Turbo Drift (50 points per minute)</li><li>Pixel Racer (45 points per minute)</li><li>They earn points at the same rate</li></ol>
-  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
 </div>
 <div class="tryit">
   <p class="tryit-num">2. Lock 3 — Claw Machine Vault: Three coin deals glow on the screen. Which deal is the best value (lowest cost per play)?</p>
   <ol class="try-choices" type="A"><li>$5.00 for 10 plays</li><li>$6.00 for 8 plays</li><li>$9.00 for 12 plays</li><li>$7.00 for 10 plays</li></ol>
-  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
 </div>
   <div class="enrich-block">
     <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
@@ -849,14 +940,14 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     <p class="tryit-num">An arcade sells tokens in three packs: 25 tokens for $5, 60 tokens for $10.80, and 100 tokens for $19. A student says the 100-token pack is always the best deal because you get the most tokens. Is the student correct? Find all three unit rates and explain.</p>
     
     <p class="sentence-frame"><span class="ws-label">Sentence starter:</span> The student is ___ because the best deal is the ___ pack with a unit rate of $___ per token.</p>
-    <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+    <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline-area" rows="4" data-nt-field aria-label="Write your response here"></textarea></div>
   </div>
 </section>
   <section class="section reflect">
   <h2>Reflect — Exit Ticket</h2>
   <p class="reflect-stem">A store sells 6 pencils for $1.50 and 10 pencils for $2.80. Which is the better buy?</p>
   <ol class="try-choices" type="A"><li>6 for $1.50 — $0.25 each</li><li>10 for $2.80 — $0.28 each</li><li>They cost the same per pencil</li><li>Not enough information</li></ol>
-  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  <div class="work-space"><span class="ws-label">Your answer:</span><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>

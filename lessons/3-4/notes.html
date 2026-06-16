@@ -92,6 +92,23 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
   text-transform:none;letter-spacing:0;}
 .my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
 .writeline{border-bottom:1px solid #b9c6d3;height:26px;}
+/* Typeable, auto-saved guided-notes fields (replace the print-only blank lines) */
+textarea.writeline-area{display:block;width:100%;box-sizing:border-box;border:none;resize:vertical;
+  font:inherit;color:var(--navy);line-height:26px;padding:0 2px;background-color:transparent;
+  background-image:repeating-linear-gradient(transparent,transparent 25px,#b9c6d3 25px,#b9c6d3 26px);
+  min-height:26px;border-radius:4px;}
+textarea.writeline-area:focus{outline:none;background-color:#fff7e6;}
+input.writeline{border:none;border-bottom:1px solid #b9c6d3;background:transparent;font:inherit;
+  color:var(--navy);padding:1px 4px;min-width:60px;border-radius:3px 3px 0 0;}
+.wk-step-blank input.writeline,.wk-answer-blank input.writeline{height:24px;}
+input.gn-blank{background:transparent;font:inherit;font-weight:700;color:var(--navy);text-align:center;
+  padding:1px 6px;border-radius:4px;}
+input.writeline:focus,input.gn-blank:focus{outline:none;background-color:#fff7e6;}
+.nt-save{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--teal);
+  background:var(--teal-light);border:1px solid var(--teal);border-radius:999px;padding:5px 12px;white-space:nowrap;}
+.nt-clear{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;
+  font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;}
+.nt-clear:hover{border-color:var(--navy);color:var(--navy);}
 .example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
   padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
 .example-head{margin:0 0 6px;color:var(--navy);font-size:16px;}
@@ -456,6 +473,11 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   .answer-key{border-top:2px solid #000;}
   .vocab-card{border:1px solid #000;}
   .writeline{border-bottom:1px solid #000;}
+  textarea.writeline-area{color:#000;background-image:repeating-linear-gradient(transparent,transparent 25px,#000 25px,#000 26px);}
+  input.writeline{border-bottom:1px solid #000;color:#000;}
+  input.gn-blank{color:#000;}
+  textarea.writeline-area:focus,input.writeline:focus,input.gn-blank:focus{background-color:transparent;}
+  .nt-save,.nt-clear{display:none !important;}
   .mission{background:#fff;color:#000;border:1px solid #000;}
   .mission-title,.mission-eyebrow{color:#000;}
   .level-tag,.flagship-badge,.twr-method,.twr-tag{background:#fff;color:#000;border:1px solid #000;}
@@ -544,7 +566,9 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
       </label>
     </div>
   </div>
-  <div style="display:flex;align-items:center;gap:8px;">
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <span class="nt-save no-print" id="nt-save-status" title="Your typing is saved on this device automatically.">💾 Saves automatically</span>
+    <button class="nt-clear no-print" type="button" id="nt-clear-btn">Clear my work</button>
     <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
     <div class="dl-wrap">
       <button class="print-btn" type="button" aria-haspopup="true" aria-expanded="false"
@@ -571,6 +595,85 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     const savedLevel = localStorage.getItem('notes-level') || 'l2';
     setLevel(savedLevel);
   });
+</script>
+<script>
+  // Auto-save guided-notes typing to this device (localStorage), per lesson.
+  (function () {
+    var KEY = 'nt-notes:3-4';
+    var statusEl, clearBtn, fields = [], saveTimer = null;
+
+    function collectFields() {
+      var list = [];
+      var typed = document.querySelectorAll('[data-nt-field]');
+      for (var i = 0; i < typed.length; i++) list.push(typed[i]);
+      var boxes = document.querySelectorAll('main input[type=checkbox]');
+      for (var j = 0; j < boxes.length; j++) list.push(boxes[j]);
+      return list;
+    }
+
+    function fieldKey(el, i) { return (el.type === 'checkbox' ? 'c' : 'f') + i; }
+
+    function setStatus(text) { if (statusEl) statusEl.textContent = text; }
+
+    function readStore() {
+      try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; }
+      catch (e) { return {}; }
+    }
+
+    function save() {
+      var data = {};
+      for (var i = 0; i < fields.length; i++) {
+        var el = fields[i], k = fieldKey(el, i);
+        if (el.type === 'checkbox') { if (el.checked) data[k] = 1; }
+        else if (el.value && el.value.trim() !== '') { data[k] = el.value; }
+      }
+      try {
+        localStorage.setItem(KEY, JSON.stringify(data));
+        setStatus('Saved ✓');
+      } catch (e) { setStatus('Could not save (storage off)'); }
+    }
+
+    function queueSave() {
+      setStatus('Saving…');
+      if (saveTimer) clearTimeout(saveTimer);
+      saveTimer = setTimeout(save, 400);
+    }
+
+    function restore() {
+      var data = readStore();
+      for (var i = 0; i < fields.length; i++) {
+        var el = fields[i], k = fieldKey(el, i);
+        if (!(k in data)) continue;
+        if (el.type === 'checkbox') el.checked = !!data[k];
+        else el.value = data[k];
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      statusEl = document.getElementById('nt-save-status');
+      clearBtn = document.getElementById('nt-clear-btn');
+      fields = collectFields();
+      if (!fields.length) {
+        if (statusEl) statusEl.style.display = 'none';
+        if (clearBtn) clearBtn.style.display = 'none';
+        return;
+      }
+      restore();
+      for (var i = 0; i < fields.length; i++) {
+        fields[i].addEventListener('input', queueSave);
+        fields[i].addEventListener('change', queueSave);
+      }
+      if (clearBtn) clearBtn.addEventListener('click', function () {
+        if (!confirm('Clear all of your typing on this lesson? This cannot be undone.')) return;
+        try { localStorage.removeItem(KEY); } catch (e) {}
+        for (var j = 0; j < fields.length; j++) {
+          if (fields[j].type === 'checkbox') fields[j].checked = false;
+          else fields[j].value = '';
+        }
+        setStatus('Cleared');
+      });
+    });
+  })();
 </script>
 <main class="sheet">
   <header class="packet">
@@ -601,13 +704,11 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   </div>
   <div class="vocab-def-l2">
     <p class="vocab-def-prompt">Write the definition:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
   </div>
   <div class="vocab-def-l3">
     <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
   </div>
 </div>
 <div class="vocab-card">
@@ -621,13 +722,11 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   </div>
   <div class="vocab-def-l2">
     <p class="vocab-def-prompt">Write the definition:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
   </div>
   <div class="vocab-def-l3">
     <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
   </div>
 </div>
 <div class="vocab-card">
@@ -641,13 +740,11 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   </div>
   <div class="vocab-def-l2">
     <p class="vocab-def-prompt">Write the definition:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
   </div>
   <div class="vocab-def-l3">
     <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
   </div>
 </div>
 <div class="vocab-card">
@@ -661,13 +758,11 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   </div>
   <div class="vocab-def-l2">
     <p class="vocab-def-prompt">Write the definition:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
   </div>
   <div class="vocab-def-l3">
     <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
   </div>
 </div>
 <div class="vocab-card">
@@ -681,13 +776,11 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   </div>
   <div class="vocab-def-l2">
     <p class="vocab-def-prompt">Write the definition:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
   </div>
   <div class="vocab-def-l3">
     <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
-    <div class="writeline"></div>
-    <div class="writeline"></div>
+    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
   </div>
 </div>
   </div>
@@ -711,7 +804,7 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
       <div class="gn-bank-words"><span class="gn-bank-word">Ratio</span><span class="gn-bank-word">Equivalent ratios</span><span class="gn-bank-word">Rate</span><span class="gn-bank-word">Proportion</span><span class="gn-bank-word">Simplify</span></div>
       <p class="gn-bank-hint l3-only">Level 3: try the blanks from memory first, then check the bank.</p>
     </div>
-    <ol class="gn-lines"><li class="gn-line"><span class="gn-num">1</span><span class="gn-sentence">A comparison of two quantities is a <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">2</span><span class="gn-sentence"><span class="gn-blank"></span> &mdash; Two ratios that mean the same thing.</span></li><li class="gn-line"><span class="gn-num">3</span><span class="gn-sentence">A ratio that compares two quantities with different units, like miles per hour, is a <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">4</span><span class="gn-sentence">An equation showing that two ratios are equal is a <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">5</span><span class="gn-sentence">Writing a ratio in its smallest equal form, like 6:9 = 2:3, is to <span class="gn-blank"></span> it.</span></li></ol>
+    <ol class="gn-lines"><li class="gn-line"><span class="gn-num">1</span><span class="gn-sentence">A comparison of two quantities is a <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">2</span><span class="gn-sentence"><input class="gn-blank" type="text" data-nt-field /> &mdash; Two ratios that mean the same thing.</span></li><li class="gn-line"><span class="gn-num">3</span><span class="gn-sentence">A ratio that compares two quantities with different units, like miles per hour, is a <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">4</span><span class="gn-sentence">An equation showing that two ratios are equal is a <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">5</span><span class="gn-sentence">Writing a ratio in its smallest equal form, like 6:9 = 2:3, is to <input class="gn-blank" type="text" data-nt-field /> it.</span></li></ol>
   </div>
   <h3 class="gn-subhead">🧮 Watch &amp; Try — Worked Examples</h3><div class="notes-gradual">
     <div class="l1-only">
@@ -746,8 +839,8 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
         </div>
       <div class="work-space">
         <span class="ws-label">Fill in your solution path:</span>
-        <div class="wk-step-blank" style="margin: 4px 0;"><span class="wk-steplabel" style="font-size: 11px; padding: 1px 4px;">Step 1</span> <span class="writeline" style="flex:1; height:20px;"></span></div>
-        <div class="wk-step-blank" style="margin: 4px 0;"><span class="wk-steplabel" style="font-size: 11px; padding: 1px 4px;">Step 2</span> <span class="writeline" style="flex:1; height:20px;"></span></div>
+        <div class="wk-step-blank" style="margin: 4px 0;"><span class="wk-steplabel" style="font-size: 11px; padding: 1px 4px;">Step 1</span> <input class="writeline" style="flex:1; height:20px;" type="text" data-nt-field /></div>
+        <div class="wk-step-blank" style="margin: 4px 0;"><span class="wk-steplabel" style="font-size: 11px; padding: 1px 4px;">Step 2</span> <input class="writeline" style="flex:1; height:20px;" type="text" data-nt-field /></div>
       </div>
     </div>
   </div>
@@ -766,15 +859,15 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
       <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
       <p class="wk-problem"><span class="wk-plabel">Problem:</span> A recipe uses 4 eggs for every 6 cups of flour. Which ratio is equivalent?</p>
       <ol class="try-choices" type="A"><li>2:3</li><li>8:10</li><li>4:3</li><li>6:4</li></ol>
-      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
-      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><input class="writeline" type="text" data-nt-field /></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><input class="writeline" type="text" data-nt-field /></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <input class="writeline" type="text" data-nt-field /></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
       <span class="notes-gr-tag">✏️ You do — your turn</span>
       <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
       <p class="wk-problem"><span class="wk-plabel">Problem:</span> Which ratio is NOT equivalent to 6:9?</p>
       <ol class="try-choices" type="A"><li>3:5</li><li>2:3</li><li>12:18</li><li>18:27</li></ol>
-      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+      <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
     </div>
   </div>
     <div class="l3-only">
@@ -785,7 +878,7 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
       <ol class="try-choices" type="A"><li>4:10</li><li>3:6</li><li>2:10</li><li>5:2</li></ol>
       <p class="sentence-frame"><span class="ws-label">Writing Prompt:</span> Formulate a mathematical representation or model for this situation. Explain why your model is appropriate.</p>
       <div class="scratchpad"><span class="scratchpad-label">Workspace / Visual Model</span></div>
-      <div class="work-space"><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+      <div class="work-space"><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
     </div>
     <div class="notes-gr-step notes-gr-you" style="border-left-color: var(--amber);">
       <span class="notes-gr-tag">🧠 Challenge 2 — Error Analysis & Generalization</span>
@@ -793,7 +886,7 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
       <ol class="try-choices" type="A"><li>2:3</li><li>8:10</li><li>4:3</li><li>6:4</li></ol>
       <p class="sentence-frame"><span class="ws-label">Writing Prompt:</span> Solve the problem. Then, write a rule or generalization that someone could use to solve any problem like this.</p>
       <div class="scratchpad"><span class="scratchpad-label">Workspace / Visual Model</span></div>
-      <div class="work-space"><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+      <div class="work-space"><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
     </div>
     <div class="notes-gr-step notes-gr-you" style="border-left-color: var(--navy);">
       <span class="notes-gr-tag">🧠 Challenge 3 — Synthesis & Extension</span>
@@ -801,7 +894,7 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
       <ol class="try-choices" type="A"><li>3:5</li><li>2:3</li><li>12:18</li><li>18:27</li></ol>
       <p class="sentence-frame"><span class="ws-label">Writing Prompt:</span> Solve the problem. Create a real-world scenario that matches the operations or logic you used to solve this.</p>
       <div class="scratchpad"><span class="scratchpad-label">Workspace / Visual Model</span></div>
-      <div class="work-space"><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+      <div class="work-space"><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
     </div>
   </div>
   </div>
@@ -812,12 +905,12 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   <div class="tryit">
   <p class="tryit-num">1. Chef Montoya's dressing uses 3 spoons of oil to 4 spoons of vinegar (3:4). Which recipe card shows an EQUIVALENT ratio?</p>
   <ol class="try-choices" type="A"><li>9:12</li><li>4:3</li><li>3:8</li><li>6:7</li></ol>
-  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
 </div>
 <div class="tryit">
   <p class="tryit-num">2. The lemonade station mixes 5 cups of lemon juice to 2 cups of sugar (5:2). Which batch keeps the SAME taste?</p>
   <ol class="try-choices" type="A"><li>15:6</li><li>10:6</li><li>5:4</li><li>7:4</li></ol>
-  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
 </div>
   <div class="enrich-block">
     <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
@@ -825,14 +918,14 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     <p class="tryit-num">A store sells 3 pens for $2. Another store sells 9 pens for $6. Are these equivalent ratios? If so, prove it using at least two different methods (simplifying, scaling, or cross-multiplying).</p>
     
     
-    <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+    <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline-area" rows="4" data-nt-field aria-label="Write your response here"></textarea></div>
   </div>
 </section>
   <section class="section reflect">
   <h2>Reflect — Exit Ticket</h2>
   <p class="reflect-stem">A store sells 5 notebooks for $8. At this rate, how much would 15 notebooks cost?</p>
   <ol class="try-choices" type="A"><li>$24</li><li>$18</li><li>$20</li><li>$40</li></ol>
-  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  <div class="work-space"><span class="ws-label">Your answer:</span><textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea></div>
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
