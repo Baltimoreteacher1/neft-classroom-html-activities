@@ -946,6 +946,79 @@
         overflow: visible;
       }
 
+      /* interactive math-tool objects (coord grid, charts, etc.) */
+      .toolobj {
+        background: rgba(255, 255, 255, 0.78);
+        border-radius: 12px;
+        padding: 6px 10px 8px;
+      }
+      .tool-head {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 4px;
+        font-size: 0.74rem;
+        font-weight: 800;
+        color: var(--muted);
+        flex-wrap: wrap;
+      }
+      .tool-head input {
+        width: 50px;
+        font-family: inherit;
+        font-weight: 800;
+        font-size: 0.82rem;
+        color: var(--ink);
+        border: 1.5px solid var(--line);
+        border-radius: 7px;
+        padding: 3px 5px;
+        text-align: center;
+      }
+      .tool-head input:focus {
+        outline: none;
+        border-color: var(--teal);
+      }
+      .toolobj svg {
+        display: block;
+        overflow: visible;
+      }
+      /* place-value chart */
+      .pvchart {
+        border-collapse: collapse;
+        font-family: "Atkinson Hyperlegible", "Nunito", sans-serif;
+      }
+      .pvchart th {
+        font-size: 0.62rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        color: var(--muted);
+        padding: 2px 4px;
+        text-align: center;
+      }
+      .pvchart td {
+        border: 2px solid var(--teal);
+        width: 46px;
+        height: 54px;
+        text-align: center;
+        font-size: 1.9rem;
+        font-weight: 800;
+        color: var(--ink);
+        outline: none;
+      }
+      .pvchart td.dot {
+        border: none;
+        width: 16px;
+        font-size: 2.2rem;
+        vertical-align: bottom;
+      }
+      .pvchart th.dot {
+        border: none;
+        width: 16px;
+      }
+      .fracbar-seg {
+        cursor: pointer;
+      }
+
       /* symbol palette group labels */
       .pal-group {
         margin-top: 12px;
@@ -1319,6 +1392,7 @@
         .rs,
         .bg-dock,
         .numline-head,
+        .tool-head,
         .empty-hint {
           display: none !important;
         }
@@ -1357,6 +1431,13 @@
             title="Your work saves automatically on this device"
             >Saved</span
           >
+          <button
+            class="tbtn"
+            id="bgTopBtn"
+            title="Change the background (graph, dots, coordinate plane…)"
+          >
+            <span class="i">🎨</span><span class="txt">Background</span>
+          </button>
           <button class="tbtn" id="undoBtn" title="Undo (Ctrl+Z)" disabled>
             <span class="i">↶</span><span class="txt">Undo</span>
           </button>
@@ -1482,6 +1563,16 @@
             title="3-D figures"
           >
             <span class="glyph">🧊</span><span class="lbl">3-D</span>
+          </button>
+          <div class="rail-sep"></div>
+          <span class="rail-cap">Math Tools</span>
+          <button
+            class="tool has-flyout"
+            data-tool="tools"
+            data-flyout="tools"
+            title="Coordinate plane, number line, protractor, angle, ruler, charts &amp; more"
+          >
+            <span class="glyph">📐</span><span class="lbl">Tools</span>
           </button>
         </nav>
 
@@ -2322,6 +2413,21 @@
         } else if (o.type === "numline") {
           inner.appendChild(buildNumLine(o));
           toolOpts = { resize: true, color: "#205fa6" };
+        } else if (o.type === "coordgrid") {
+          inner.appendChild(buildCoordGrid(o));
+          toolOpts = { resize: true };
+        } else if (o.type === "angle") {
+          inner.appendChild(buildAngle(o));
+          toolOpts = { resize: true };
+        } else if (o.type === "placevalue") {
+          inner.appendChild(buildPlaceValue(o));
+          toolOpts = { resize: true };
+        } else if (o.type === "arraymodel") {
+          inner.appendChild(buildArrayModel(o));
+          toolOpts = { resize: true };
+        } else if (o.type === "fracbar") {
+          inner.appendChild(buildFracBar(o));
+          toolOpts = { resize: true };
         }
 
         el.appendChild(miniTools(o, toolOpts));
@@ -2490,6 +2596,504 @@
           parts +
           "</svg>"
         );
+      }
+
+      /* ----------------------- Coordinate-grid object ----------------------- */
+      function buildCoordGrid(o) {
+        const wrap = document.createElement("div");
+        wrap.className = "toolobj";
+        const head = document.createElement("div");
+        head.className = "tool-head";
+        const fromIn = document.createElement("input");
+        fromIn.type = "number";
+        fromIn.value = o.min;
+        const toIn = document.createElement("input");
+        toIn.type = "number";
+        toIn.value = o.max;
+        const l1 = document.createElement("span");
+        l1.textContent = "Axes from";
+        const l2 = document.createElement("span");
+        l2.textContent = "to";
+        head.append(l1, fromIn, l2, toIn);
+        const host = document.createElement("div");
+        host.innerHTML = coordGridSVG(o.min, o.max);
+        function commit() {
+          let mn = Math.round(parseFloat(fromIn.value));
+          let mx = Math.round(parseFloat(toIn.value));
+          if (!isFinite(mn)) mn = -5;
+          if (!isFinite(mx)) mx = 5;
+          if (mx <= mn) mx = mn + 1;
+          if (mx - mn > 30) mx = mn + 30;
+          o.min = mn;
+          o.max = mx;
+          fromIn.value = mn;
+          toIn.value = mx;
+          host.innerHTML = coordGridSVG(mn, mx);
+          updateObjEl(o);
+          pushHistory();
+        }
+        [fromIn, toIn].forEach((inp) => {
+          inp.addEventListener("pointerdown", (e) => e.stopPropagation());
+          inp.addEventListener("keydown", (e) => {
+            e.stopPropagation();
+            if (e.key === "Enter") {
+              commit();
+              inp.blur();
+            }
+          });
+          inp.addEventListener("change", commit);
+        });
+        wrap.append(head, host);
+        return wrap;
+      }
+      function coordGridSVG(min, max) {
+        const u = 26,
+          pad = 22;
+        const n = max - min;
+        const size = n * u;
+        const w = size + pad * 2,
+          h = size + pad * 2;
+        const ox = pad + -min * u; // x of value 0
+        const oy = pad + max * u; // y of value 0
+        let g = "";
+        for (let i = 0; i <= n; i++) {
+          const p = pad + i * u;
+          g +=
+            '<line x1="' +
+            p +
+            '" y1="' +
+            pad +
+            '" x2="' +
+            p +
+            '" y2="' +
+            (h - pad) +
+            '" stroke="rgba(32,95,166,.16)" stroke-width="1"/>' +
+            '<line x1="' +
+            pad +
+            '" y1="' +
+            p +
+            '" x2="' +
+            (w - pad) +
+            '" y2="' +
+            p +
+            '" stroke="rgba(32,95,166,.16)" stroke-width="1"/>';
+        }
+        // axes
+        g +=
+          '<line x1="' +
+          pad +
+          '" y1="' +
+          oy +
+          '" x2="' +
+          (w - pad) +
+          '" y2="' +
+          oy +
+          '" stroke="#14223a" stroke-width="2.5"/>' +
+          '<line x1="' +
+          ox +
+          '" y1="' +
+          pad +
+          '" x2="' +
+          ox +
+          '" y2="' +
+          (h - pad) +
+          '" stroke="#14223a" stroke-width="2.5"/>';
+        // arrowheads
+        g +=
+          '<polygon points="' +
+          (w - pad + 9) +
+          "," +
+          oy +
+          " " +
+          (w - pad - 1) +
+          "," +
+          (oy - 5) +
+          " " +
+          (w - pad - 1) +
+          "," +
+          (oy + 5) +
+          '" fill="#14223a"/>' +
+          '<polygon points="' +
+          (pad - 9) +
+          "," +
+          oy +
+          " " +
+          (pad + 1) +
+          "," +
+          (oy - 5) +
+          " " +
+          (pad + 1) +
+          "," +
+          (oy + 5) +
+          '" fill="#14223a"/>' +
+          '<polygon points="' +
+          ox +
+          "," +
+          (pad - 9) +
+          " " +
+          (ox - 5) +
+          "," +
+          (pad + 1) +
+          " " +
+          (ox + 5) +
+          "," +
+          (pad + 1) +
+          '" fill="#14223a"/>' +
+          '<polygon points="' +
+          ox +
+          "," +
+          (h - pad + 9) +
+          " " +
+          (ox - 5) +
+          "," +
+          (h - pad - 1) +
+          " " +
+          (ox + 5) +
+          "," +
+          (h - pad - 1) +
+          '" fill="#14223a"/>';
+        const lab = (x, y, t) =>
+          '<text x="' +
+          x +
+          '" y="' +
+          y +
+          '" font-family="Nunito,sans-serif" font-size="10" font-weight="700" fill="#33485f">' +
+          t +
+          "</text>";
+        for (let v = min; v <= max; v++) {
+          if (v === 0) continue;
+          g += lab(ox + v * u - 3, oy + 13, v);
+          g += lab(ox + 5, oy - v * u + 4, v);
+        }
+        g += lab(ox + 5, oy + 13, "0");
+        return (
+          '<svg viewBox="0 0 ' +
+          w +
+          " " +
+          h +
+          '" width="' +
+          w +
+          '" height="' +
+          h +
+          '">' +
+          g +
+          "</svg>"
+        );
+      }
+
+      /* ----------------------- Angle (measurable) object ----------------------- */
+      function buildAngle(o) {
+        const wrap = document.createElement("div");
+        wrap.className = "toolobj";
+        const head = document.createElement("div");
+        head.className = "tool-head";
+        const lbl = document.createElement("span");
+        const host = document.createElement("div");
+        const vx = 24,
+          vy = 150,
+          R = 150;
+        function render() {
+          const a = (o.deg * Math.PI) / 180;
+          const ex = vx + R * Math.cos(a),
+            ey = vy - R * Math.sin(a);
+          const arcR = 46;
+          const ax = vx + arcR,
+            ay = vy;
+          const bx = vx + arcR * Math.cos(a),
+            by = vy - arcR * Math.sin(a);
+          const large = o.deg > 180 ? 1 : 0;
+          lbl.textContent = "∠ = " + Math.round(o.deg) + "°";
+          host.innerHTML =
+            '<svg viewBox="0 0 200 170" width="200" height="170">' +
+            '<path d="M' +
+            ax +
+            " " +
+            ay +
+            " A" +
+            arcR +
+            " " +
+            arcR +
+            " 0 " +
+            large +
+            " 0 " +
+            bx.toFixed(1) +
+            " " +
+            by.toFixed(1) +
+            '" fill="none" stroke="#d97706" stroke-width="2.5"/>' +
+            '<line x1="' +
+            vx +
+            '" y1="' +
+            vy +
+            '" x2="' +
+            (vx + R) +
+            '" y2="' +
+            vy +
+            '" stroke="#205fa6" stroke-width="3"/>' +
+            '<line x1="' +
+            vx +
+            '" y1="' +
+            vy +
+            '" x2="' +
+            ex.toFixed(1) +
+            '" y2="' +
+            ey.toFixed(1) +
+            '" stroke="#205fa6" stroke-width="3"/>' +
+            '<circle cx="' +
+            vx +
+            '" cy="' +
+            vy +
+            '" r="4" fill="#14223a"/>' +
+            '<circle class="angle-handle" cx="' +
+            ex.toFixed(1) +
+            '" cy="' +
+            ey.toFixed(1) +
+            '" r="9" fill="#fff" stroke="#205fa6" stroke-width="2.5"/>' +
+            "</svg>";
+          const handle = host.querySelector(".angle-handle");
+          handle.style.cursor = "grab";
+          handle.addEventListener("pointerdown", (e) => {
+            e.stopPropagation();
+            const svg = host.querySelector("svg");
+            const move = (ev) => {
+              const r = svg.getBoundingClientRect();
+              const sx = (200 / r.width) * (ev.clientX - r.left);
+              const sy = (170 / r.height) * (ev.clientY - r.top);
+              let deg = (Math.atan2(vy - sy, sx - vx) * 180) / Math.PI;
+              if (deg < 0) deg += 360;
+              o.deg = Math.max(1, Math.min(359, Math.round(deg)));
+              render();
+              persist();
+            };
+            const fin = () => {
+              window.removeEventListener("pointermove", move);
+              window.removeEventListener("pointerup", fin);
+              pushHistory();
+            };
+            window.addEventListener("pointermove", move);
+            window.addEventListener("pointerup", fin);
+          });
+        }
+        head.append(lbl);
+        wrap.append(head, host);
+        render();
+        return wrap;
+      }
+
+      /* ----------------------- Place-value chart ----------------------- */
+      function buildPlaceValue(o) {
+        const wrap = document.createElement("div");
+        wrap.className = "toolobj";
+        if (!o.cells) o.cells = ["", "", "", "", ""];
+        const cols = [
+          { lbl: "Hundreds" },
+          { lbl: "Tens" },
+          { lbl: "Ones" },
+          { dot: true },
+          { lbl: "Tenths" },
+          { lbl: "Hundredths" },
+        ];
+        let html = '<table class="pvchart"><tr>';
+        cols.forEach((c) => {
+          html += c.dot ? '<th class="dot"></th>' : "<th>" + c.lbl + "</th>";
+        });
+        html += "</tr><tr>";
+        let ci = 0;
+        cols.forEach((c) => {
+          if (c.dot) {
+            html += '<td class="dot">.</td>';
+          } else {
+            html +=
+              '<td contenteditable="true" data-ci="' +
+              ci +
+              '">' +
+              (o.cells[ci] || "") +
+              "</td>";
+            ci++;
+          }
+        });
+        html += "</tr></table>";
+        wrap.innerHTML = html;
+        wrap.querySelectorAll("td[contenteditable]").forEach((td) => {
+          bindEditable(td, (v) => {
+            o.cells[+td.dataset.ci] = v;
+          });
+        });
+        return wrap;
+      }
+
+      /* ----------------------- Array / area model ----------------------- */
+      function buildArrayModel(o) {
+        const wrap = document.createElement("div");
+        wrap.className = "toolobj";
+        const head = document.createElement("div");
+        head.className = "tool-head";
+        const rIn = document.createElement("input");
+        rIn.type = "number";
+        rIn.value = o.rows;
+        const cIn = document.createElement("input");
+        cIn.type = "number";
+        cIn.value = o.cols;
+        const lx = document.createElement("span");
+        lx.textContent = "rows";
+        const lc = document.createElement("span");
+        lc.textContent = "× cols";
+        head.append(rIn, lx, cIn, lc);
+        const host = document.createElement("div");
+        function render() {
+          host.innerHTML = arraySVG(o.rows, o.cols);
+        }
+        function commit() {
+          o.rows = Math.max(
+            1,
+            Math.min(20, Math.round(parseFloat(rIn.value) || 1)),
+          );
+          o.cols = Math.max(
+            1,
+            Math.min(20, Math.round(parseFloat(cIn.value) || 1)),
+          );
+          rIn.value = o.rows;
+          cIn.value = o.cols;
+          render();
+          updateObjEl(o);
+          pushHistory();
+        }
+        [rIn, cIn].forEach((inp) => {
+          inp.addEventListener("pointerdown", (e) => e.stopPropagation());
+          inp.addEventListener("keydown", (e) => {
+            e.stopPropagation();
+            if (e.key === "Enter") {
+              commit();
+              inp.blur();
+            }
+          });
+          inp.addEventListener("change", commit);
+        });
+        head.append();
+        wrap.append(head, host);
+        render();
+        return wrap;
+      }
+      function arraySVG(rows, cols) {
+        const u = 30,
+          pad = 3;
+        const w = cols * u + pad * 2,
+          h = rows * u + pad * 2;
+        let g = "";
+        for (let r = 0; r < rows; r++)
+          for (let c = 0; c < cols; c++)
+            g +=
+              '<rect x="' +
+              (pad + c * u) +
+              '" y="' +
+              (pad + r * u) +
+              '" width="' +
+              u +
+              '" height="' +
+              u +
+              '" fill="rgba(32,95,166,.1)" stroke="#205fa6" stroke-width="1.5"/>';
+        return (
+          '<svg viewBox="0 0 ' +
+          w +
+          " " +
+          h +
+          '" width="' +
+          w +
+          '" height="' +
+          h +
+          '">' +
+          g +
+          "</svg>"
+        );
+      }
+
+      /* ----------------------- Fraction bar (click to shade) ----------------------- */
+      function buildFracBar(o) {
+        const wrap = document.createElement("div");
+        wrap.className = "toolobj";
+        const head = document.createElement("div");
+        head.className = "tool-head";
+        const pIn = document.createElement("input");
+        pIn.type = "number";
+        pIn.value = o.parts;
+        const lp = document.createElement("span");
+        lp.textContent = "equal parts";
+        const frac = document.createElement("span");
+        head.append(pIn, lp, frac);
+        const host = document.createElement("div");
+        if (!Array.isArray(o.shaded)) o.shaded = [];
+        function render() {
+          const n = o.parts,
+            u = 46,
+            h = 56,
+            pad = 3;
+          const w = n * u + pad * 2;
+          let g = "";
+          for (let i = 0; i < n; i++) {
+            const on = o.shaded.includes(i);
+            g +=
+              '<rect class="fracbar-seg" data-i="' +
+              i +
+              '" x="' +
+              (pad + i * u) +
+              '" y="' +
+              pad +
+              '" width="' +
+              u +
+              '" height="' +
+              (h - pad * 2) +
+              '" fill="' +
+              (on ? "rgba(32,95,166,.5)" : "#fff") +
+              '" stroke="#205fa6" stroke-width="2"/>';
+          }
+          host.innerHTML =
+            '<svg viewBox="0 0 ' +
+            w +
+            " " +
+            h +
+            '" width="' +
+            w +
+            '" height="' +
+            h +
+            '">' +
+            g +
+            "</svg>";
+          frac.textContent = o.shaded.length + "/" + n;
+          host.querySelectorAll(".fracbar-seg").forEach((seg) => {
+            seg.addEventListener("pointerdown", (e) => e.stopPropagation());
+            seg.addEventListener("click", (e) => {
+              e.stopPropagation();
+              const i = +seg.dataset.i;
+              const k = o.shaded.indexOf(i);
+              if (k >= 0) o.shaded.splice(k, 1);
+              else o.shaded.push(i);
+              render();
+              pushHistory();
+            });
+          });
+        }
+        function commit() {
+          o.parts = Math.max(
+            1,
+            Math.min(20, Math.round(parseFloat(pIn.value) || 1)),
+          );
+          pIn.value = o.parts;
+          o.shaded = o.shaded.filter((i) => i < o.parts);
+          render();
+          updateObjEl(o);
+          pushHistory();
+        }
+        pIn.addEventListener("pointerdown", (e) => e.stopPropagation());
+        pIn.addEventListener("keydown", (e) => {
+          e.stopPropagation();
+          if (e.key === "Enter") {
+            commit();
+            pIn.blur();
+          }
+        });
+        pIn.addEventListener("change", commit);
+        wrap.append(head, host);
+        render();
+        return wrap;
       }
 
       /* ----------------------- Editable helpers ----------------------- */
@@ -2846,8 +3450,111 @@
             );
             grid.appendChild(b);
           });
+        } else if (kind === "tools") {
+          flyout.innerHTML =
+            '<h3>Math tools</h3><p class="hint">Tap to drop a tool on the board. Each one drags, resizes, and many can be typed into.</p>' +
+            '<div class="pal-grid n3" id="toolGrid"></div>';
+          const grid = $("#toolGrid");
+          const TOOLS = [
+            {
+              key: "coordgrid",
+              name: "Coordinate plane",
+              svg: SHAPE_SVG.coordplane,
+              go: () => makeObject("coordgrid", { min: -5, max: 5 }),
+            },
+            {
+              key: "numline",
+              name: "Number line",
+              svg: SHAPE_SVG.numberline,
+              go: () => makeObject("numline", { min: -10, max: 10 }),
+            },
+            {
+              key: "protractor",
+              name: "Protractor",
+              svg: SHAPE_SVG.protractor,
+              go: () =>
+                makeObject("shape2d", { shape: "protractor", label: "" }),
+            },
+            {
+              key: "angle",
+              name: "Angle (measurable)",
+              svg: ANGLE_ICON,
+              go: () => makeObject("angle", { deg: 60 }),
+            },
+            {
+              key: "ruler",
+              name: "Ruler",
+              svg: SHAPE_SVG.ruler,
+              go: () => makeObject("shape2d", { shape: "ruler", label: "" }),
+            },
+            {
+              key: "placevalue",
+              name: "Place-value chart",
+              svg: PV_ICON,
+              go: () => makeObject("placevalue", {}),
+            },
+            {
+              key: "tenframe",
+              name: "Ten-frame",
+              svg: SHAPE_SVG.tenframe,
+              go: () => makeObject("shape2d", { shape: "tenframe", label: "" }),
+            },
+            {
+              key: "array",
+              name: "Array / area model",
+              svg: ARRAY_ICON,
+              go: () => makeObject("arraymodel", { rows: 3, cols: 4 }),
+            },
+            {
+              key: "fracbar",
+              name: "Fraction bar",
+              svg: FRACBAR_ICON,
+              go: () => makeObject("fracbar", { parts: 4, shaded: [] }),
+            },
+          ];
+          TOOLS.forEach((t) => {
+            const b = document.createElement("button");
+            b.className = "pal-item tall";
+            b.innerHTML = t.svg + "<small>" + t.name + "</small>";
+            b.addEventListener("click", t.go);
+            grid.appendChild(b);
+          });
         }
       }
+      const ANGLE_ICON =
+        '<svg viewBox="0 0 90 70" width="84" height="64"><path d="M14 56 A40 40 0 0 1 40 24" fill="none" stroke="#d97706" stroke-width="2.5"/><line x1="14" y1="56" x2="82" y2="56" stroke="#205fa6" stroke-width="3"/><line x1="14" y1="56" x2="74" y2="22" stroke="#205fa6" stroke-width="3"/><circle cx="14" cy="56" r="3" fill="#14223a"/></svg>';
+      const PV_ICON =
+        '<svg viewBox="0 0 90 60" width="84" height="56"><g fill="none" stroke="#205fa6" stroke-width="2.5"><rect x="8" y="14" width="22" height="30"/><rect x="32" y="14" width="22" height="30"/><rect x="60" y="14" width="22" height="30"/></g><circle cx="57" cy="42" r="2.5" fill="#14223a"/></svg>';
+      const ARRAY_ICON =
+        '<svg viewBox="0 0 80 60" width="76" height="56"><g fill="rgba(32,95,166,.1)" stroke="#205fa6" stroke-width="2">' +
+        [0, 1, 2]
+          .map((r) =>
+            [0, 1, 2, 3]
+              .map(
+                (c) =>
+                  '<rect x="' +
+                  (6 + c * 17) +
+                  '" y="' +
+                  (6 + r * 16) +
+                  '" width="17" height="16"/>',
+              )
+              .join(""),
+          )
+          .join("") +
+        "</g></svg>";
+      const FRACBAR_ICON =
+        '<svg viewBox="0 0 90 40" width="84" height="38"><g stroke="#205fa6" stroke-width="2">' +
+        [0, 1, 2, 3]
+          .map(
+            (i) =>
+              '<rect x="' +
+              (6 + i * 19) +
+              '" y="10" width="19" height="22" fill="' +
+              (i < 2 ? "rgba(32,95,166,.35)" : "none") +
+              '"/>',
+          )
+          .join("") +
+        "</g></svg>";
       function penFlyoutHTML(t) {
         const title = t === "highlighter" ? "Highlighter" : "Pen";
         return (
@@ -2965,7 +3672,102 @@
           '<svg viewBox="0 0 120 110" width="110" height="100"><g data-stroke fill="rgba(32,95,166,.10)" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"><polygon points="60,14 104,86 16,86"/><polygon points="16,86 60,98 104,86" fill="rgba(32,95,166,.05)"/><line x1="60" y1="14" x2="60" y2="98" stroke-width="2" stroke-dasharray="4 4"/></g></svg>',
         triprism:
           '<svg viewBox="0 0 130 100" width="118" height="92"><g data-stroke fill="rgba(44,125,107,.10)" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"><polygon points="20,30 50,18 50,78 20,90"/><polygon points="20,30 50,18 110,18 80,30"/><polygon points="20,90 50,78 110,78 80,90"/><line x1="80" y1="30" x2="80" y2="90"/></g></svg>',
+        // --- measurement / number-sense tools ---
+        protractor: protractorSVG(),
+        ruler: rulerSVG(),
+        tenframe:
+          '<svg viewBox="0 0 230 96" width="222" height="92"><g data-stroke fill="none" stroke="#205fa6" stroke-width="2.5">' +
+          [0, 1, 2, 3, 4]
+            .map(
+              (c) =>
+                '<rect x="' +
+                (5 + c * 44) +
+                '" y="5" width="44" height="43"/><rect x="' +
+                (5 + c * 44) +
+                '" y="48" width="44" height="43"/>',
+            )
+            .join("") +
+          "</g></svg>",
       };
+
+      function protractorSVG() {
+        let marks = "";
+        for (let d = 0; d <= 180; d += 5) {
+          const a = (d * Math.PI) / 180;
+          const long = d % 10 === 0;
+          const r1 = 96,
+            r2 = long ? 80 : 86;
+          const x1 = 110 - r1 * Math.cos(a),
+            y1 = 104 - r1 * Math.sin(a);
+          const x2 = 110 - r2 * Math.cos(a),
+            y2 = 104 - r2 * Math.sin(a);
+          marks +=
+            '<line x1="' +
+            x1.toFixed(1) +
+            '" y1="' +
+            y1.toFixed(1) +
+            '" x2="' +
+            x2.toFixed(1) +
+            '" y2="' +
+            y2.toFixed(1) +
+            '" stroke="#205fa6" stroke-width="' +
+            (long ? 1.6 : 0.8) +
+            '"/>';
+          if (d % 10 === 0) {
+            const rt = 70;
+            const tx = 110 - rt * Math.cos(a),
+              ty = 104 - rt * Math.sin(a);
+            marks +=
+              '<text x="' +
+              tx.toFixed(1) +
+              '" y="' +
+              (ty + 4).toFixed(1) +
+              '" text-anchor="middle" font-size="8" font-weight="700" font-family="Nunito,sans-serif" fill="#33485f">' +
+              d +
+              "</text>";
+          }
+        }
+        return (
+          '<svg viewBox="0 0 220 116" width="220" height="116"><path d="M6 104 A104 104 0 0 1 214 104 Z" fill="rgba(32,95,166,.07)" stroke="#205fa6" stroke-width="2.5"/>' +
+          marks +
+          '<circle cx="110" cy="104" r="3.5" fill="#14223a"/><line x1="6" y1="104" x2="214" y2="104" stroke="#14223a" stroke-width="1.5"/></svg>'
+        );
+      }
+      function rulerSVG() {
+        let t = "";
+        for (let i = 0; i <= 12; i++) {
+          const x = 14 + i * 20;
+          t +=
+            '<line x1="' +
+            x +
+            '" y1="6" x2="' +
+            x +
+            '" y2="' +
+            (i % 1 === 0 ? 24 : 16) +
+            '" stroke="#14223a" stroke-width="1.4"/>';
+          t +=
+            '<text x="' +
+            x +
+            '" y="36" text-anchor="middle" font-size="9" font-weight="700" font-family="Nunito,sans-serif" fill="#33485f">' +
+            i +
+            "</text>";
+          if (i < 12)
+            for (let h = 1; h < 4; h++)
+              t +=
+                '<line x1="' +
+                (x + h * 5) +
+                '" y1="6" x2="' +
+                (x + h * 5) +
+                '" y2="' +
+                (h === 2 ? 18 : 13) +
+                '" stroke="#33485f" stroke-width="0.8"/>';
+        }
+        return (
+          '<svg viewBox="0 0 268 70" width="268" height="70"><rect x="2" y="2" width="264" height="48" rx="5" fill="rgba(217,119,6,.08)" stroke="#205fa6" stroke-width="2"/><text x="246" y="46" font-size="8" font-weight="800" fill="#33485f">in</text>' +
+          t +
+          "</svg>"
+        );
+      }
       const SHAPES_2D = [
         { id: "square", name: "Square" },
         { id: "rectangle", name: "Rectangle" },
@@ -3505,9 +4307,17 @@
       $("#redoBtn").addEventListener("click", redo);
       // Background side dock
       const bgPanel = $("#bgPanel");
-      $("#bgTab").addEventListener("click", () => {
-        const open = bgPanel.classList.toggle("open");
+      function toggleBgPanel(force) {
+        const open =
+          force === undefined
+            ? bgPanel.classList.toggle("open")
+            : (bgPanel.classList.toggle("open", force), force);
         $("#bgTab").setAttribute("aria-expanded", open ? "true" : "false");
+      }
+      $("#bgTab").addEventListener("click", () => toggleBgPanel());
+      $("#bgTopBtn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleBgPanel();
       });
       $$(".bg-opt").forEach((b) => {
         b.addEventListener("click", () => {
@@ -3517,7 +4327,8 @@
         });
       });
       document.addEventListener("pointerdown", (e) => {
-        if (!e.target.closest("#bgDock")) bgPanel.classList.remove("open");
+        if (!e.target.closest("#bgDock") && !e.target.closest("#bgTopBtn"))
+          bgPanel.classList.remove("open");
       });
       $("#clearBtn").addEventListener("click", () => {
         if (!state.objects.length && !state.strokes.length) return;
