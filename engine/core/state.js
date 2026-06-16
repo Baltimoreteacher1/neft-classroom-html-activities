@@ -11,18 +11,15 @@ export async function loadFromServer(_lessonId, _studentName) {
 }
 
 export function syncToServer(lessonId, state, studentName, studentPeriod) {
-  if (typeof globalThis === "undefined" || !globalThis.CurriculumProgressBridge) return;
+  if (typeof globalThis === "undefined" || !globalThis.CurriculumProgressBridge)
+    return;
   const bridge = globalThis.CurriculumProgressBridge;
   if (!bridge.canSync || !bridge.canSync()) return;
   const phases = state.phases || [];
   const done = phases.filter((p) => p.status === "completed").length;
   const total = phases.length || 1;
   const allDone = done === total && total > 0;
-  bridge.syncToggle(
-    lessonId,
-    `/lessons/${lessonId}/`,
-    allDone,
-  );
+  bridge.syncToggle(lessonId, `/lessons/${lessonId}/`, allDone);
   if (allDone) {
     bridge.syncToggle(lessonId, `lesson:${lessonId}:complete`, true);
   }
@@ -112,12 +109,40 @@ export function createState(lessonId, studentId) {
       const raw = localStorage.getItem(key);
       if (raw) {
         const saved = JSON.parse(raw);
-        return { ...defaults, ...saved };
+        return migrateVocabPhaseRemoval({ ...defaults, ...saved });
       }
     } catch (_) {
       /* ignore corrupt storage */
     }
     return { ...defaults, startedAt: Date.now() };
+  }
+
+  // One-time migration: the graded "Vocabulary" phase (old index 1) was removed
+  // (vocabulary now lives only in the Vocab tab). For students with saved work
+  // under the old 6-phase layout, drop that phase + its responses and shift the
+  // rest down by one so their completion, stars, and typed answers stay aligned.
+  function migrateVocabPhaseRemoval(s) {
+    if (!Array.isArray(s.phases) || s.phases.length !== 6) return s;
+    s.phases = s.phases
+      .filter((_, i) => i !== 1)
+      .map((p, i) => ({ ...p, id: i }));
+    const remapped = {};
+    for (const k in s.responses || {}) {
+      const m = /^(\d+)_([\s\S]*)$/.exec(k);
+      if (!m) {
+        remapped[k] = s.responses[k];
+        continue;
+      }
+      let p = Number(m[1]);
+      if (p === 1) continue; // drop the removed vocab phase's responses
+      if (p > 1) p -= 1; // shift Explore/Practice/Connect/Reflect down one
+      remapped[`${p}_${m[2]}`] = s.responses[k];
+    }
+    s.responses = remapped;
+    if (typeof s.currentPhase === "number" && s.currentPhase > 1) {
+      s.currentPhase -= 1;
+    }
+    return s;
   }
 
   function save() {
@@ -250,7 +275,8 @@ export function createState(lessonId, studentId) {
     awardPhaseParticipation(phaseIndex, amount = 2) {
       state.coins = (state.coins || 0) + amount;
       const phase = state.phases[phaseIndex];
-      if (phase) phase.participationCoins = (phase.participationCoins || 0) + amount;
+      if (phase)
+        phase.participationCoins = (phase.participationCoins || 0) + amount;
       save();
       notify();
     },

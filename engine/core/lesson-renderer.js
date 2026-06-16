@@ -48,9 +48,11 @@ import { mountCertificateDownload } from "./certificate-export.js";
 export function bootLesson(config) {
   createApp({
     ...config,
+    // Vocabulary lives only in the Vocab tab now (the Vocab Explorer), so it is
+    // no longer a graded phase. Phases: Launch, Explore, Practice, Connect,
+    // Reflect (indices 0–4). See migrateVocabPhaseRemoval in state.js.
     phases: [
       (el, state, ctx) => renderLaunchPhase(el, state, ctx, config),
-      (el, state, ctx) => renderVocabPhase(el, state, ctx, config),
       (el, state, ctx) => renderExplorePhase(el, state, ctx, config),
       (el, state, ctx) => renderPracticePhase(el, state, ctx, config),
       (el, state, ctx) => renderConnectPhase(el, state, ctx, config),
