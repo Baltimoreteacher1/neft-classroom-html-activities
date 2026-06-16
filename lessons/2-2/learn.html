@@ -689,6 +689,10 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:0 0 16px;}
   .learn-intro-note .lin-icon{font-size:22px;line-height:1;flex:0 0 auto;}
   .learn-intro-note p{margin:0;font-size:14.5px;color:var(--navy);font-weight:600;}
+  .learn-listen{margin:0 0 18px;}
+  .li-listen-btn{background:var(--teal);color:#fff;border:0;border-radius:999px;padding:11px 20px;font-weight:800;font-size:15px;cursor:pointer;}
+  .li-listen-btn:hover{background:var(--navy);}
+  .li-reading{background:#fff3cd;box-shadow:0 0 0 3px #fff3cd, 0 0 0 5px var(--amber);border-radius:6px;}
 </style>
 <script>
   if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}
@@ -785,6 +789,38 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     document.addEventListener('keydown', function(e){ if(e.key==='Escape') hide(); });
   })();
 </script>
+<script>
+  (function(){
+    var btn=null, speaking=false, hi=null;
+    function collect(){
+      var sel='.li-intro, .li-keyidea p, .li-block .li-eyebrow, .li-steps li, .li-lead, .li-list li';
+      return Array.prototype.slice.call(document.querySelectorAll(sel)).filter(function(el){
+        return el.offsetParent!==null && el.textContent.trim();
+      });
+    }
+    function clearHi(){ if(hi){ hi.classList.remove('li-reading'); hi=null; } }
+    function stop(){ speaking=false; try{window.speechSynthesis.cancel();}catch(e){} clearHi(); if(btn) btn.textContent='🔊 Listen to this page'; }
+    function speakAll(){
+      var els=collect(), i=0; speaking=true; if(btn) btn.textContent='⏹ Stop';
+      function next(){
+        clearHi();
+        if(!speaking || i>=els.length){ stop(); return; }
+        var el=els[i++]; hi=el; el.classList.add('li-reading');
+        try{ el.scrollIntoView({block:'center', behavior:'smooth'}); }catch(e){}
+        var u=new SpeechSynthesisUtterance(el.textContent.replace(/\s+/g,' ').trim());
+        u.rate=0.9; u.lang='en-US'; u.onend=next; u.onerror=next;
+        window.speechSynthesis.speak(u);
+      }
+      next();
+    }
+    document.addEventListener('DOMContentLoaded', function(){
+      btn=document.getElementById('li-listen');
+      if(!btn) return;
+      if(!('speechSynthesis' in window)){ btn.style.display='none'; return; }
+      btn.addEventListener('click', function(){ if(speaking) stop(); else speakAll(); });
+    });
+  })();
+</script>
 </head>
 <body>
 <div class="topbar no-print">
@@ -805,6 +841,7 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     <span class="lin-icon" aria-hidden="true">🧭</span>
     <p>Read this first. It explains what we are learning and shows you exactly how to solve it — step by step. Then head to the lesson activities and practice.</p>
   </div>
+  <div class="learn-listen no-print"><button type="button" id="li-listen" class="li-listen-btn">🔊 Listen to this page</button></div>
   <article class="li" aria-label="Learn It — how the math works">
     <p class="li-kicker">Learn It</p>
     <h2 class="li-title">How do I divide a whole number by a fraction?</h2>
