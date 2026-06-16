@@ -564,46 +564,26 @@ function introLines(data) {
 // A small, draggable-free "model space" so students can sketch the math
 // (factor tree, number line, picture). Universal visual affordance — every
 // example gets one, even when the lesson ships no authored chart.
-function drawBox(label) {
-  return `<div class="learnit-draw"><span class="learnit-draw-label">${esc(label)}</span></div>`;
-}
-
-// Authored, per-lesson visual from launch.visual. data-chips render as a chip
-// strip (shared shape with the Launch phase, tying the two together); other
-// chart kinds show a labeled summary callout (the SVG builders are DOM-coupled
+// Authored, per-lesson visual from launch.visual. data-chips render as a clean
+// chip strip (shared shape with the Launch phase, tying the two together);
+// other chart kinds show a labeled caption (the SVG builders are DOM-coupled
 // and not importable here). Returns "" when the lesson has no authored visual.
 function learnVisual(cfg) {
   const v = (cfg.launch && cfg.launch.visual) || cfg.visual;
   if (!v || typeof v !== "object") return "";
-  const title = v.title ? `<div class="learnit-visual-title">📊 ${esc(v.title)}</div>` : "";
-  const unit = v.unit ? `<div class="learnit-visual-unit">${esc(v.unit)}</div>` : "";
+  const title = v.title ? `<div class="li-visual-title">${esc(v.title)}</div>` : "";
+  const unit = v.unit ? `<div class="li-visual-unit">${esc(v.unit)}</div>` : "";
   if (v.kind === "data-chips" && Array.isArray(v.values)) {
     const chips = v.values
-      .map((x) => `<span class="learnit-chip">${esc(x)}</span>`)
+      .map((x) => `<span class="li-chip">${esc(x)}</span>`)
       .join("");
-    return `<div class="learnit-visual">${title}<div class="learnit-chips">${chips}</div>${unit}</div>`;
+    return `${title}<div class="li-chips">${chips}</div>${unit}`;
   }
   // Non-chip chart: surface the authored title/unit so the data is still seen.
   if (title || unit) {
-    return `<div class="learnit-visual">${title}${unit || `<div class="learnit-visual-unit">See this picture in the Launch.</div>`}</div>`;
+    return `${title}${unit || `<div class="li-visual-unit">See this picture in the Launch.</div>`}`;
   }
   return "";
-}
-
-// Compact key vocabulary strip (term — meaning) for the "Notes to remember"
-// block. Keeps it short: the first few terms the lesson actually teaches.
-function learnVocabChips(cfg) {
-  const vocab = (Array.isArray(cfg.vocabulary) ? cfg.vocabulary : [])
-    .filter((x) => x && x.term && x.definition)
-    .slice(0, 4);
-  if (!vocab.length) return "";
-  const items = vocab
-    .map(
-      (x) =>
-        `<li class="learnit-vocab-item"><span class="learnit-vocab-term">${esc(x.term)}</span><span class="learnit-vocab-def">${esc(x.definition)}</span></li>`,
-    )
-    .join("");
-  return `<div class="learnit-vocab"><p class="learnit-vocab-head">🔑 Words to use</p><ul class="learnit-vocab-list">${items}</ul></div>`;
 }
 
 // Textbook-style "Learn It" teaching block. Built from the lesson's authored
@@ -661,78 +641,64 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
     </div>`;
   }
 
-  // ── Expanded variant (Learn It page/tab) ──
-  // Example 1 — Watch me (read-only model, numbered flow + sketch + reflect).
-  const ex1Steps = iLines
-    .map(
-      (l, i) =>
-        `<li class="learnit-flow-step"><span class="learnit-flow-num">${i + 1}</span><span class="learnit-flow-text">${esc(l)}</span></li>`,
-    )
-    .join("");
-  const example1 = iLines.length
-    ? `<section class="learnit-ex learnit-ex-watch">
-        <p class="learnit-ex-head"><span class="learnit-tag learnit-tag-watch">👀 Example 1 — Watch me solve it</span></p>
-        <p class="learnit-cue">Read each step. This is the teacher thinking out loud.</p>
-        <ol class="learnit-flow">${ex1Steps}</ol>
-        ${drawBox("✏️ Draw the model or show the math here")}
-        <label class="learnit-think"><span class="learnit-think-q">What do you notice about how this was solved?</span>
-          <input class="learnit-input" type="text" data-nt-field placeholder="Type what you notice…" /></label>
+  // ── Expanded variant (Learn It page) — clean, publisher-style ──
+  // One concept statement, one Key Idea, one fully worked example, then one
+  // guided "Try it with me" the student completes. Calm single-accent layout
+  // with generous whitespace — no stacked colored panels, no redundant vocab
+  // (that lives in its own Vocab tab) and minimal, purposeful typing.
+  const keyIdeaClean = intro.keyIdea
+    ? `<aside class="li-keyidea"><span class="li-keyidea-label">Key idea</span><p>${esc(intro.keyIdea)}</p></aside>`
+    : "";
+
+  const visual = learnVisual(cfg);
+  const visualBlock = visual ? `<div class="li-figure">${visual}</div>` : "";
+
+  // Worked example (I do) — read-only model, clean numbered steps.
+  const example = iLines.length
+    ? `<section class="li-block">
+        <p class="li-eyebrow">Worked example</p>
+        <ol class="li-steps">${iLines.map((l) => `<li>${esc(l)}</li>`).join("")}</ol>
       </section>`
     : "";
 
-  // Notes to remember — key idea + words + write-it-yourself.
-  const notesBlock = `<section class="learnit-notes">
-      <p class="learnit-notes-head">📝 Notes to remember</p>
-      ${keyIdea || (introP ? `<div class="learnit-key"><span class="learnit-key-label">💡 Remember</span><span class="learnit-key-text">${esc(intro.intro)}</span></div>` : "")}
-      ${learnVocabChips(cfg)}
-      <label class="learnit-think"><span class="learnit-think-q">Write the steps in your own words, so you can use them again:</span>
-        <textarea class="learnit-area" rows="3" data-nt-field placeholder="First I… Then I… Last I…"></textarea></label>
-    </section>`;
-
-  // Example 2 — Work with me (each guided line gets a fill-in box).
-  const ex2Steps = weLines
-    .map(
-      (l, i) =>
-        `<li class="learnit-flow-step learnit-flow-fill"><span class="learnit-flow-num">${i + 1}</span>
-          <span class="learnit-flow-text">${esc(l)}<input class="learnit-input learnit-input-inline" type="text" data-nt-field placeholder="Fill in this step…" /></span></li>`,
-    )
-    .join("");
-  const example2 = weLines.length
-    ? `<section class="learnit-ex learnit-ex-we">
-        <p class="learnit-ex-head"><span class="learnit-tag learnit-tag-we">🤝 Example 2 — Work with me</span></p>
-        <p class="learnit-cue">We solve this one together. Fill in each step as we go.</p>
-        <ol class="learnit-flow">${ex2Steps}</ol>
-        ${drawBox("✏️ Draw the model or show the math here")}
-        <label class="learnit-think"><span class="learnit-think-q">Our answer:</span>
-          <input class="learnit-input" type="text" data-nt-field placeholder="Type our answer…" /></label>
+  // Guided practice (We do) — student fills in each step, then the answer.
+  const guided = weLines.length
+    ? `<section class="li-block li-block-practice">
+        <p class="li-eyebrow">Try it with me</p>
+        <p class="li-lead">Work through the same steps on this one. Fill in each blank as we go.</p>
+        <ol class="li-steps li-steps-fill">${weLines
+          .map(
+            (l) =>
+              `<li>${esc(l)}<input class="li-input" type="text" data-nt-field placeholder="your work…" /></li>`,
+          )
+          .join("")}</ol>
+        <div class="li-work"><span class="li-work-label">Show your work</span></div>
+        <p class="li-answer"><span class="li-answer-label">Answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type the answer" /></p>
       </section>`
     : "";
 
-  // Your turn — independent.
-  const youItems = youLines.map((l) => `<li class="learnit-point">${esc(l)}</li>`).join("");
-  const yourTurn = youLines.length
-    ? `<section class="learnit-ex learnit-ex-you">
-        <p class="learnit-ex-head"><span class="learnit-tag learnit-tag-you">✏️ Your turn — try one on your own</span></p>
-        <ul class="learnit-lines">${youItems}</ul>
-        ${drawBox("✏️ Show your work here")}
-        <label class="learnit-think"><span class="learnit-think-q">My answer:</span>
-          <input class="learnit-input" type="text" data-nt-field placeholder="Type your answer…" /></label>
+  // On your own (You do) — short independent check.
+  const onOwn = youLines.length
+    ? `<section class="li-block">
+        <p class="li-eyebrow">On your own</p>
+        <ul class="li-list">${youLines.map((l) => `<li>${esc(l)}</li>`).join("")}</ul>
+        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
       </section>`
     : "";
 
-  if (!example1 && !example2 && !yourTurn && !introP) return "";
+  if (!example && !guided && !onOwn && !introP) return "";
 
-  return `<div class="learnit learnit-expanded" role="group" aria-label="Learn It — how the math works">
-    <p class="learnit-eyebrow">📖 Learn It</p>
-    <h3 class="learnit-head">${heading}</h3>
-    ${introP}
-    ${learnVisual(cfg)}
-    ${example1}
-    ${notesBlock}
-    ${example2}
-    ${yourTurn}
-    <p class="learnit-bridge">✅ Got it? You're ready to practice — use these same steps on the lesson problems.</p>
-  </div>`;
+  return `<article class="li" aria-label="Learn It — how the math works">
+    <p class="li-kicker">Learn It</p>
+    <h2 class="li-title">${heading}</h2>
+    ${introP ? `<p class="li-intro">${esc(intro.intro)}</p>` : ""}
+    ${keyIdeaClean}
+    ${visualBlock}
+    ${example}
+    ${guided}
+    ${onOwn}
+    <p class="li-ready">When you can finish <strong>Try it with me</strong> on your own, you're ready for the lesson.</p>
+  </article>`;
 }
 
 function notesSection(cfg = {}, worked = null, fillHtml = "") {
@@ -1045,60 +1011,53 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .learnit-point::before{content:"→";position:absolute;left:0;color:var(--teal);font-weight:800;}
 .learnit-bridge{margin:8px 0 0;font-size:14.5px;font-weight:700;color:var(--navy);background:var(--teal-light);border-radius:10px;padding:10px 14px;}
 .gn-subhead-note{margin:-4px 0 12px;font-size:14px;color:var(--muted);}
-/* Learn It — expanded teaching page (examples, typing boxes, visuals) */
-.learnit-expanded{padding:20px 22px;}
-.learnit-visual{background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:0 0 16px;}
-.learnit-visual-title{font-weight:800;color:var(--navy);margin:0 0 8px;font-size:15px;}
-.learnit-chips{display:flex;flex-wrap:wrap;gap:8px;}
-.learnit-chip{display:inline-flex;align-items:center;justify-content:center;min-width:38px;padding:6px 12px;
-  background:#fff;border:1.5px solid var(--teal);border-radius:8px;font-weight:800;color:var(--navy);font-size:16px;}
-.learnit-visual-unit{font-size:13.5px;color:var(--muted);margin-top:8px;font-weight:600;}
-.learnit-ex{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:0 0 16px;}
-.learnit-ex-watch{background:var(--teal-light);border-color:var(--teal);}
-.learnit-ex-we{background:#fff7e6;border-color:var(--amber);}
-.learnit-ex-you{background:#eef3fb;border-color:var(--navy);}
-.learnit-ex-head{margin:0 0 6px;}
-.learnit-cue{margin:0 0 12px;font-size:14.5px;color:var(--muted);font-weight:600;}
-.learnit-tag-watch{background:var(--teal);}
-.learnit-tag-we{background:var(--amber);color:var(--navy);}
-.learnit-tag-you{background:var(--navy);}
-/* Numbered step flow with vertical connectors */
-.learnit-flow{list-style:none;margin:0;padding:0;}
-.learnit-flow-step{position:relative;display:flex;gap:12px;align-items:flex-start;padding:0 0 16px 0;}
-.learnit-flow-step:not(:last-child)::before{content:"";position:absolute;left:15px;top:30px;bottom:0;width:2px;background:var(--line);}
-.learnit-flow-num{position:relative;z-index:1;flex:0 0 auto;width:30px;height:30px;border-radius:50%;
-  background:var(--navy);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;}
-.learnit-ex-watch .learnit-flow-num{background:var(--teal);}
-.learnit-ex-we .learnit-flow-num{background:var(--amber);color:var(--navy);}
-.learnit-flow-text{flex:1;font-size:16px;line-height:1.6;color:var(--ink);padding-top:3px;}
-.learnit-input{display:block;width:100%;margin-top:8px;border:1.5px solid var(--teal);border-radius:8px;
-  padding:8px 10px;font:inherit;font-size:15px;color:var(--navy);background:#fff;}
-.learnit-input:focus{outline:none;background:#fffdf5;border-color:var(--amber);}
-.learnit-input-inline{margin-top:6px;}
-.learnit-area{display:block;width:100%;margin-top:8px;border:1.5px solid var(--teal);border-radius:8px;
-  padding:8px 10px;font:inherit;font-size:15px;color:var(--navy);background:#fff;resize:vertical;}
-.learnit-area:focus{outline:none;background:#fffdf5;border-color:var(--amber);}
-.learnit-think{display:block;margin-top:12px;}
-.learnit-think-q{display:block;font-weight:700;color:var(--navy);font-size:14.5px;margin-bottom:2px;}
-.learnit-draw{margin-top:12px;min-height:96px;border:2px dashed var(--teal);border-radius:12px;background:#fff;
-  background-image:radial-gradient(var(--line) 1px,transparent 0);background-size:18px 18px;position:relative;}
-.learnit-draw-label{position:absolute;top:8px;left:12px;font-size:12.5px;font-weight:700;color:var(--teal);
-  background:#fff;padding:0 6px;}
-.learnit-notes{border:1px solid var(--navy);border-left:5px solid var(--navy);border-radius:12px;
-  padding:14px 16px;margin:0 0 16px;background:#fff;}
-.learnit-notes-head{margin:0 0 10px;font-weight:800;color:var(--navy);font-size:16px;}
-.learnit-vocab{margin:10px 0 0;}
-.learnit-vocab-head{margin:0 0 6px;font-weight:700;color:var(--navy);font-size:13.5px;}
-.learnit-vocab-list{list-style:none;margin:0;padding:0;display:grid;gap:6px;}
-.learnit-vocab-item{display:flex;gap:8px;align-items:baseline;font-size:14px;line-height:1.5;}
-.learnit-vocab-term{flex:0 0 auto;font-weight:800;color:var(--teal);}
-.learnit-vocab-def{color:var(--ink);}
+/* Learn It — clean, publisher-style teaching page (single accent, lots of air) */
+.li{max-width:none;}
+.li-kicker{margin:0 0 4px;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);}
+.li-title{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:26px;line-height:1.2;margin:0 0 14px;}
+.li-intro{font-size:17px;line-height:1.7;color:var(--ink);margin:0 0 20px;max-width:60ch;}
+.li-keyidea{border-left:4px solid var(--teal);background:var(--teal-light);border-radius:0 10px 10px 0;
+  padding:14px 18px;margin:0 0 24px;}
+.li-keyidea-label{display:block;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:4px;}
+.li-keyidea p{margin:0;font-size:17px;line-height:1.6;color:var(--navy);font-weight:600;}
+.li-figure{margin:0 0 24px;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:#fbfdfc;}
+.li-visual-title{font-weight:700;color:var(--navy);margin:0 0 10px;font-size:14px;}
+.li-chips{display:flex;flex-wrap:wrap;gap:10px;}
+.li-chip{display:inline-flex;align-items:center;justify-content:center;min-width:42px;padding:8px 14px;
+  background:#fff;border:1.5px solid var(--teal);border-radius:10px;font-weight:800;color:var(--navy);font-size:18px;}
+.li-visual-unit{font-size:14px;color:var(--muted);margin-top:10px;font-weight:600;}
+.li-block{margin:0 0 28px;}
+.li-eyebrow{margin:0 0 10px;font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--navy);padding-bottom:6px;border-bottom:2px solid var(--line);}
+.li-lead{margin:0 0 14px;font-size:15px;color:var(--muted);}
+.li-steps{margin:0;padding:0;list-style:none;counter-reset:li-step;}
+.li-steps>li{position:relative;counter-increment:li-step;padding:0 0 16px 44px;font-size:17px;line-height:1.65;color:var(--ink);}
+.li-steps>li::before{content:counter(li-step);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--navy);color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+.li-steps>li:not(:last-child)::after{content:"";position:absolute;left:13px;top:30px;bottom:2px;width:2px;background:var(--line);}
+.li-block-practice{background:#fbfdfc;border:1px solid var(--line);border-radius:14px;padding:18px 20px;}
+.li-steps-fill>li{padding-bottom:20px;}
+.li-input{display:block;width:100%;margin-top:10px;border:0;border-bottom:2px solid var(--teal);
+  padding:7px 4px;font:inherit;font-size:16px;color:var(--navy);background:transparent;}
+.li-input::placeholder{color:#9bb0bd;font-style:italic;}
+.li-input:focus{outline:none;border-bottom-color:var(--amber);background:#fffdf5;}
+.li-work{margin:6px 0 16px;min-height:90px;border:1.5px dashed var(--line);border-radius:10px;
+  position:relative;background:#fff;}
+.li-work-label{position:absolute;top:8px;left:12px;font-size:12px;font-weight:700;color:var(--muted);}
+.li-answer{display:flex;align-items:center;gap:12px;margin:4px 0 0;flex-wrap:wrap;}
+.li-answer-label{flex:0 0 auto;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--teal);}
+.li-input-answer{flex:1;min-width:160px;margin-top:0;}
+.li-list{margin:0 0 14px;padding-left:22px;}
+.li-list>li{font-size:17px;line-height:1.65;margin:0 0 6px;color:var(--ink);}
+.li-ready{margin:8px 0 0;padding:14px 18px;background:var(--teal-light);border-radius:10px;
+  font-size:15px;font-weight:600;color:var(--navy);}
 @media print{
-  .learnit-ex-watch,.learnit-ex-we,.learnit-ex-you,.learnit-visual,.learnit-bridge{background:#fff;border-color:#000;}
-  .learnit-flow-num{background:#000!important;color:#fff;}
-  .learnit-input,.learnit-area,.learnit-draw{border-color:#000;}
-  .learnit-draw{min-height:120px;}
-  .learnit-chip{border-color:#000;}
+  .li-keyidea,.li-figure,.li-block-practice,.li-ready{background:#fff;border-color:#000;}
+  .li-steps>li::before{background:#000;}
+  .li-input{border-bottom-color:#000;}
+  .li-work{min-height:120px;border-color:#000;}
+  .li-chip{border-color:#000;}
 }
 @media print{
   .learnit{border-color:#000;box-shadow:none;}
