@@ -471,35 +471,9 @@ function workedFrame(worked) {
 // we render those as numbered fill-in lines with a Word Bank, exactly like a
 // TPT-style guided-notes page. Returns { html, keyRows } so the teacher answer
 // key can list every blank's answer.
-// Universal interactive every lesson gets: a tap-to-pair "match the word to its
-// meaning" built from the vocabulary. Touch/keyboard friendly (tap a term, then
-// tap its meaning). Reinforces the guided-notes vocab.
-function matchUp(vocab = []) {
-  const pairs = (Array.isArray(vocab) ? vocab : [])
-    .filter((v) => v && v.term && v.definition)
-    .slice(0, 4);
-  if (pairs.length < 2) return "";
-  const terms = pairs
-    .map(
-      (v, i) =>
-        `<button type="button" class="mu-term" data-mu="${i}">${esc(v.term)}</button>`,
-    )
-    .join("");
-  const defs = pairs
-    .map(
-      (v, i) =>
-        `<button type="button" class="mu-def" data-mu="${i}">${esc(v.definition)}</button>`,
-    )
-    .join("");
-  return `<div class="match-up no-print" data-match-up>
-    <p class="mu-head"><strong>🔗 Match-up:</strong> Tap a word, then tap its meaning.</p>
-    <div class="mu-cols">
-      <div class="mu-col">${terms}</div>
-      <div class="mu-col">${defs}</div>
-    </div>
-    <p class="mu-feedback" role="status" aria-live="polite"></p>
-  </div>`;
-}
+// (The tap-to-pair "match the word to its meaning" now lives in the interactive
+// Vocab Explorer — vocabExplorer() — so the guided-notes packet no longer
+// duplicates it.)
 
 function guidedNotesFill(cfg = {}) {
   const vocab = Array.isArray(cfg.vocabulary) ? cfg.vocabulary : [];
@@ -542,7 +516,6 @@ function guidedNotesFill(cfg = {}) {
       <p class="gn-bank-hint l3-only">Level 3: try the blanks from memory first, then check the bank.</p>
     </div>
     <ol class="gn-lines">${lines.join("")}</ol>
-    ${matchUp(items)}
   </div>`,
   };
 }
@@ -1058,6 +1031,58 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
   .li-input{border-bottom-color:#000;}
   .li-work{min-height:120px;border-color:#000;}
   .li-chip{border-color:#000;}
+}
+/* Vocab Explorer — interactive vocab home (Word Wall, Match, Fill-in, Use it) */
+.vx-section{margin:0 0 30px;}
+.vx-eyebrow{margin:0 0 6px;font-size:14px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--navy);padding-bottom:6px;border-bottom:2px solid var(--line);}
+.vx-lead{margin:0 0 14px;font-size:15px;color:var(--muted);}
+.vx-wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
+.vx-card{border:1px solid var(--line);border-radius:14px;background:#fff;padding:14px;page-break-inside:avoid;}
+.vx-figure{background:var(--teal-light);border-radius:10px;text-align:center;padding:10px;margin-bottom:10px;}
+.vx-figure img{max-width:100%;max-height:120px;}
+.vx-termline{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.vx-term{font-family:Outfit,system-ui,sans-serif;font-weight:800;color:var(--navy);font-size:18px;}
+.vx-say{border:1.5px solid var(--teal);background:#fff;border-radius:999px;width:32px;height:32px;cursor:pointer;
+  font-size:15px;line-height:1;flex:0 0 auto;}
+.vx-say:hover{background:var(--teal-light);}
+.vx-def{margin:0;font-size:15px;line-height:1.55;color:var(--ink);}
+.vx-match{margin-top:6px;}
+.vx-mcols{display:grid;grid-template-columns:1fr 1.5fr;gap:12px;}
+.vx-mcol{display:flex;flex-direction:column;gap:10px;}
+.vx-mterm,.vx-mdef{text-align:left;border:2px solid var(--line);background:#fff;border-radius:10px;
+  padding:11px 14px;font:inherit;font-size:15px;color:var(--ink);cursor:pointer;transition:border-color .12s,background .12s;}
+.vx-mterm{font-weight:800;color:var(--navy);}
+.vx-mterm:hover,.vx-mdef:hover{border-color:var(--teal);}
+.vx-sel{border-color:var(--teal)!important;background:var(--teal-light)!important;}
+.vx-done{border-color:#2e9e5b!important;background:#f1faf2!important;color:#2e7d46!important;cursor:default;}
+.vx-wrong{border-color:#d9534f!important;background:#fdf2f1!important;}
+.vx-mfeedback{margin:12px 0 0;font-size:15px;font-weight:700;}
+.vx-mfeedback.vx-ok{color:#2e9e5b;}
+.vx-bank{border:2px dashed var(--teal);border-radius:12px;background:#f0faf8;padding:12px 14px;margin-bottom:16px;}
+.vx-bank-label{display:block;font-weight:800;color:var(--teal);font-size:12px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;}
+.vx-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.vx-bankword{background:#fff;border:1.5px solid var(--teal);color:var(--navy);border-radius:999px;padding:5px 14px;font-weight:700;font-size:14px;}
+.vx-clozelist{list-style:none;margin:0;padding:0;}
+.vx-clozeline{display:flex;gap:12px;align-items:flex-start;padding:11px 12px;border:1px solid var(--line);
+  border-radius:10px;margin-bottom:10px;background:#fff;page-break-inside:avoid;}
+.vx-num{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:800;
+  font-size:13px;display:flex;align-items:center;justify-content:center;}
+.vx-clozetext{flex:1;font-size:16px;line-height:1.9;color:var(--ink);}
+.vx-blank{border:0;border-bottom:2px solid var(--teal);min-width:90px;font:inherit;font-size:15px;
+  color:var(--navy);background:transparent;padding:2px 4px;margin:0 2px;}
+.vx-blank:focus{outline:none;border-bottom-color:var(--amber);background:#fffdf5;}
+.vx-stem{font-size:17px;line-height:2;color:var(--ink);margin:0 0 12px;}
+.vx-blank-word{min-width:120px;}
+.vx-blank-wide{min-width:220px;}
+.vx-area{display:block;width:100%;border:1.5px solid var(--teal);border-radius:10px;padding:10px;
+  font:inherit;font-size:15px;color:var(--navy);background:#fff;resize:vertical;}
+.vx-area:focus{outline:none;border-color:var(--amber);background:#fffdf5;}
+@media print{
+  .vx-say,.vx-mfeedback{display:none;}
+  .vx-card,.vx-figure,.vx-bank,.vx-clozeline,.vx-mterm,.vx-mdef,.vx-area{background:#fff;border-color:#000;}
+  .vx-num{background:#000;}
+  .vx-blank{border-bottom-color:#000;}
 }
 @media print{
   .learnit{border-color:#000;box-shadow:none;}
@@ -1963,40 +1988,155 @@ ${autoSaveScript(`nt-learn:${esc(id)}`)}
 // every key term, shown BEFORE activities. Surfaced as the Vocab sidebar tab.
 // Locked to the Level 1 view so the definition is always visible (a reference,
 // not a fill-in); the leveled write-your-own practice lives in the Notes packet.
+// The interactive "Vocab Explorer" body: the single home for vocabulary. Moves
+// from receptive to productive (WIDA-aligned): Word Wall (picture + word +
+// say-it audio + plain meaning) → Match (word ↔ meaning) → Fill-in (cloze in a
+// real sentence) → Use it (productive sentence). All authored from the lesson's
+// single source of truth, config.vocabulary [{term, definition, image, cloze}].
+function vocabExplorer(cfg = {}) {
+  const items = (Array.isArray(cfg.vocabulary) ? cfg.vocabulary : []).filter(
+    (v) => v && v.term,
+  );
+  if (!items.length)
+    return `<p class="level-note">No vocabulary is listed for this lesson yet.</p>`;
+
+  // ① Word Wall — receptive (picture + word + say-it + plain meaning).
+  const wall = items
+    .map((v) => {
+      const imgSrc = resolveVocabImage(v.term, v.image).replace(/^\//, "../../");
+      const say = esc(`${v.term}. ${v.definition || ""}`);
+      return `<div class="vx-card">
+        <div class="vx-figure"><img src="${esc(imgSrc)}" alt="${esc(vocabImageAlt(v.term, v.definition))}" onerror="this.style.display='none'" /></div>
+        <div class="vx-termline"><span class="vx-term">${esc(v.term)}</span>
+          <button type="button" class="vx-say" data-say="${say}" aria-label="Hear ${esc(v.term)} read aloud">🔊</button></div>
+        <p class="vx-def">${esc(v.definition || "")}</p>
+      </div>`;
+    })
+    .join("");
+
+  // ② Match — word ↔ meaning (tap a word, then tap its meaning).
+  const matchItems = items.filter((v) => v.definition).slice(0, 6);
+  const match =
+    matchItems.length >= 2
+      ? `<div class="vx-match" data-vx-match>
+        <div class="vx-mcols">
+          <div class="vx-mcol">${matchItems.map((v, i) => `<button type="button" class="vx-mterm" data-vx="${i}">${esc(v.term)}</button>`).join("")}</div>
+          <div class="vx-mcol">${matchItems.map((v, i) => `<button type="button" class="vx-mdef" data-vx="${i}">${esc(v.definition)}</button>`).join("")}</div>
+        </div>
+        <p class="vx-mfeedback" role="status" aria-live="polite"></p>
+      </div>`
+      : "";
+
+  // ③ Fill-in — cloze in a real sentence (controlled production).
+  const clozeItems = items.filter((v) => v.cloze && /_{2,}/.test(v.cloze));
+  const cloze = clozeItems.length
+    ? `<div class="vx-bank"><span class="vx-bank-label">Word bank</span><div class="vx-bankwords">${items
+        .map((v) => `<span class="vx-bankword">${esc(v.term)}</span>`)
+        .join("")}</div></div>
+      <ol class="vx-clozelist">${clozeItems
+        .map(
+          (v, i) =>
+            `<li class="vx-clozeline"><span class="vx-num">${i + 1}</span><span class="vx-clozetext">${esc(
+              v.cloze,
+            ).replace(/_{2,}/g, `<input class="vx-blank" type="text" data-nt-field aria-label="fill in the blank" />`)}</span></li>`,
+        )
+        .join("")}</ol>`
+    : "";
+
+  // ④ Use it — productive sentence with a frame.
+  const use = `<p class="vx-lead">Pick one word and finish the sentence in your own words.</p>
+      <p class="vx-stem">A <input class="vx-blank vx-blank-word" type="text" data-nt-field placeholder="word" /> is <input class="vx-blank vx-blank-wide" type="text" data-nt-field placeholder="what it means or an example" />.</p>
+      <textarea class="vx-area" rows="2" data-nt-field placeholder="Now write your own sentence using one of the words…"></textarea>`;
+
+  return `<div class="vx">
+    <section class="vx-section">
+      <p class="vx-eyebrow">① Word Wall</p>
+      <p class="vx-lead">Look at the picture, read the meaning, and tap 🔊 to hear each word.</p>
+      <div class="vx-wall">${wall}</div>
+    </section>
+    ${match ? `<section class="vx-section"><p class="vx-eyebrow">② Match it</p><p class="vx-lead">Tap a word, then tap its meaning.</p>${match}</section>` : ""}
+    ${cloze ? `<section class="vx-section"><p class="vx-eyebrow">③ Fill in the blank</p><p class="vx-lead">Use the word bank to finish each sentence.</p>${cloze}</section>` : ""}
+    <section class="vx-section"><p class="vx-eyebrow">④ Use it in a sentence</p>${use}</section>
+  </div>`;
+}
+
+// Self-contained JS for the Vocab Explorer: say-it audio (Web Speech) and the
+// tap-to-match game. Auto-save of the typed answers is added separately.
+function vocabExplorerScripts() {
+  return `<script>
+  (function(){
+    // Say-it audio.
+    document.addEventListener('click', function(e){
+      var b = e.target.closest ? e.target.closest('.vx-say') : null; if(!b) return;
+      var t = b.getAttribute('data-say') || ''; if(!t || !window.speechSynthesis) return;
+      try { window.speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(t); u.rate = 0.85; u.lang = 'en-US'; window.speechSynthesis.speak(u); } catch(_){}
+    });
+    // Tap-to-match game.
+    function shuffleCol(col){ if(!col) return; var n = [].slice.call(col.children); for(var i=n.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); col.insertBefore(n[j], n[i]); } }
+    function initMatch(root){
+      var fb = root.querySelector('.vx-mfeedback');
+      var total = root.querySelectorAll('.vx-mterm').length, done = 0, sel = null;
+      shuffleCol(root.querySelectorAll('.vx-mcol')[1]);
+      root.addEventListener('click', function(e){
+        var term = e.target.closest('.vx-mterm'), def = e.target.closest('.vx-mdef');
+        if(term && !term.classList.contains('vx-done')){
+          var s = root.querySelectorAll('.vx-sel'); for(var i=0;i<s.length;i++) s[i].classList.remove('vx-sel');
+          sel = term; term.classList.add('vx-sel'); return;
+        }
+        if(def && sel && !def.classList.contains('vx-done')){
+          if(def.getAttribute('data-vx') === sel.getAttribute('data-vx')){
+            def.classList.add('vx-done'); sel.classList.add('vx-done'); sel.classList.remove('vx-sel'); sel = null; done++;
+            if(done === total && fb){ fb.textContent = '✅ All matched — great job!'; fb.className = 'vx-mfeedback vx-ok'; }
+          } else {
+            def.classList.add('vx-wrong'); var bad = def, badSel = sel;
+            setTimeout(function(){ bad.classList.remove('vx-wrong'); if(badSel) badSel.classList.remove('vx-sel'); }, 600); sel = null;
+          }
+        }
+      });
+    }
+    document.addEventListener('DOMContentLoaded', function(){
+      var m = document.querySelectorAll('[data-vx-match]'); for(var i=0;i<m.length;i++) initMatch(m[i]);
+    });
+  })();
+</script>`;
+}
+
 function buildVocabPage(id, cfg, isFlagship) {
   const standard = cfg.standard ? `Standard ${esc(cfg.standard)}` : "";
   const standardPlain = cfg.standard ? `Standard ${cfg.standard}` : "";
   const unit = cfg.unit != null ? `Unit ${esc(cfg.unit)}` : "";
   const flagBadge = isFlagship ? `<span class="flagship-badge">Flagship</span>` : "";
-  const vocab = Array.isArray(cfg.vocabulary) ? cfg.vocabulary : [];
-  const body =
-    vocabSection(vocab) ||
-    `<section class="section vocab"><p class="level-note">No vocabulary is listed for this lesson yet.</p></section>`;
 
   return `<!doctype html>
-<html lang="en" class="level-l1">
+<html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>${esc(cfg.title)} — Vocab</title>
+<title>${esc(cfg.title)} — Vocab Explorer</title>
 ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
 <script>
   if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}
 </script>
+${autoSaveScript(`nt-vocab:${esc(id)}`)}
+${vocabExplorerScripts()}
 </head>
 <body>
 <div class="topbar no-print">
-  <span class="brand">Neft Teacher · Vocab</span>
-  <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+  <span class="brand">Neft Teacher · Vocab Explorer</span>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <span class="nt-save no-print" id="nt-save-status" title="Your typing is saved on this device automatically.">💾 Saves automatically</span>
+    <button class="nt-clear no-print" type="button" id="nt-clear-btn">Clear my work</button>
+    <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+  </div>
 </div>
 <main class="sheet">
   <header class="packet">
     <p class="eyebrow">${[unit, standard].filter(Boolean).join(" · ")}</p>
-    <h1>${esc(cfg.title)} ${flagBadge}</h1>
-    <p class="meta">Lesson ${esc(id)} · Key words for this lesson</p>
+    <h1>🔑 ${esc(cfg.title)} — Vocab Explorer ${flagBadge}</h1>
+    <p class="meta">Lesson ${esc(id)} · Learn the words, then practice them</p>
   </header>
-  ${body}
+  ${vocabExplorer(cfg)}
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson ${esc(id)}${standard ? " · " + standard : ""}</footer>
 </main>
 </body>

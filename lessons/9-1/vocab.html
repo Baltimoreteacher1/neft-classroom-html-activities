@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en" class="level-l1">
+<html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Graph on the Coordinate Plane — Vocab</title>
+<title>Graph on the Coordinate Plane — Vocab Explorer</title>
 <style>
 :root{
   --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
@@ -136,6 +136,58 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
   .li-input{border-bottom-color:#000;}
   .li-work{min-height:120px;border-color:#000;}
   .li-chip{border-color:#000;}
+}
+/* Vocab Explorer — interactive vocab home (Word Wall, Match, Fill-in, Use it) */
+.vx-section{margin:0 0 30px;}
+.vx-eyebrow{margin:0 0 6px;font-size:14px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--navy);padding-bottom:6px;border-bottom:2px solid var(--line);}
+.vx-lead{margin:0 0 14px;font-size:15px;color:var(--muted);}
+.vx-wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
+.vx-card{border:1px solid var(--line);border-radius:14px;background:#fff;padding:14px;page-break-inside:avoid;}
+.vx-figure{background:var(--teal-light);border-radius:10px;text-align:center;padding:10px;margin-bottom:10px;}
+.vx-figure img{max-width:100%;max-height:120px;}
+.vx-termline{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.vx-term{font-family:Outfit,system-ui,sans-serif;font-weight:800;color:var(--navy);font-size:18px;}
+.vx-say{border:1.5px solid var(--teal);background:#fff;border-radius:999px;width:32px;height:32px;cursor:pointer;
+  font-size:15px;line-height:1;flex:0 0 auto;}
+.vx-say:hover{background:var(--teal-light);}
+.vx-def{margin:0;font-size:15px;line-height:1.55;color:var(--ink);}
+.vx-match{margin-top:6px;}
+.vx-mcols{display:grid;grid-template-columns:1fr 1.5fr;gap:12px;}
+.vx-mcol{display:flex;flex-direction:column;gap:10px;}
+.vx-mterm,.vx-mdef{text-align:left;border:2px solid var(--line);background:#fff;border-radius:10px;
+  padding:11px 14px;font:inherit;font-size:15px;color:var(--ink);cursor:pointer;transition:border-color .12s,background .12s;}
+.vx-mterm{font-weight:800;color:var(--navy);}
+.vx-mterm:hover,.vx-mdef:hover{border-color:var(--teal);}
+.vx-sel{border-color:var(--teal)!important;background:var(--teal-light)!important;}
+.vx-done{border-color:#2e9e5b!important;background:#f1faf2!important;color:#2e7d46!important;cursor:default;}
+.vx-wrong{border-color:#d9534f!important;background:#fdf2f1!important;}
+.vx-mfeedback{margin:12px 0 0;font-size:15px;font-weight:700;}
+.vx-mfeedback.vx-ok{color:#2e9e5b;}
+.vx-bank{border:2px dashed var(--teal);border-radius:12px;background:#f0faf8;padding:12px 14px;margin-bottom:16px;}
+.vx-bank-label{display:block;font-weight:800;color:var(--teal);font-size:12px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;}
+.vx-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.vx-bankword{background:#fff;border:1.5px solid var(--teal);color:var(--navy);border-radius:999px;padding:5px 14px;font-weight:700;font-size:14px;}
+.vx-clozelist{list-style:none;margin:0;padding:0;}
+.vx-clozeline{display:flex;gap:12px;align-items:flex-start;padding:11px 12px;border:1px solid var(--line);
+  border-radius:10px;margin-bottom:10px;background:#fff;page-break-inside:avoid;}
+.vx-num{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:800;
+  font-size:13px;display:flex;align-items:center;justify-content:center;}
+.vx-clozetext{flex:1;font-size:16px;line-height:1.9;color:var(--ink);}
+.vx-blank{border:0;border-bottom:2px solid var(--teal);min-width:90px;font:inherit;font-size:15px;
+  color:var(--navy);background:transparent;padding:2px 4px;margin:0 2px;}
+.vx-blank:focus{outline:none;border-bottom-color:var(--amber);background:#fffdf5;}
+.vx-stem{font-size:17px;line-height:2;color:var(--ink);margin:0 0 12px;}
+.vx-blank-word{min-width:120px;}
+.vx-blank-wide{min-width:220px;}
+.vx-area{display:block;width:100%;border:1.5px solid var(--teal);border-radius:10px;padding:10px;
+  font:inherit;font-size:15px;color:var(--navy);background:#fff;resize:vertical;}
+.vx-area:focus{outline:none;border-color:var(--amber);background:#fffdf5;}
+@media print{
+  .vx-say,.vx-mfeedback{display:none;}
+  .vx-card,.vx-figure,.vx-bank,.vx-clozeline,.vx-mterm,.vx-mdef,.vx-area{background:#fff;border-color:#000;}
+  .vx-num{background:#000;}
+  .vx-blank{border-bottom-color:#000;}
 }
 @media print{
   .learnit{border-color:#000;box-shadow:none;}
@@ -611,136 +663,175 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
 <script>
   if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}
 </script>
+<script>
+  (function () {
+    var KEY = 'nt-vocab:9-1';
+    var statusEl, clearBtn, fields = [], saveTimer = null;
+    function collectFields() {
+      var list = [];
+      var typed = document.querySelectorAll('[data-nt-field]');
+      for (var i = 0; i < typed.length; i++) list.push(typed[i]);
+      var boxes = document.querySelectorAll('main input[type=checkbox]');
+      for (var j = 0; j < boxes.length; j++) list.push(boxes[j]);
+      return list;
+    }
+    function fieldKey(el, i) { return (el.type === 'checkbox' ? 'c' : 'f') + i; }
+    function setStatus(text) { if (statusEl) statusEl.textContent = text; }
+    function readStore() {
+      try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; }
+      catch (e) { return {}; }
+    }
+    function save() {
+      var data = {};
+      for (var i = 0; i < fields.length; i++) {
+        var el = fields[i], k = fieldKey(el, i);
+        if (el.type === 'checkbox') { if (el.checked) data[k] = 1; }
+        else if (el.value && el.value.trim() !== '') { data[k] = el.value; }
+      }
+      try { localStorage.setItem(KEY, JSON.stringify(data)); setStatus('Saved ✓'); }
+      catch (e) { setStatus('Could not save (storage off)'); }
+    }
+    function queueSave() {
+      setStatus('Saving…');
+      if (saveTimer) clearTimeout(saveTimer);
+      saveTimer = setTimeout(save, 400);
+    }
+    function restore() {
+      var data = readStore();
+      for (var i = 0; i < fields.length; i++) {
+        var el = fields[i], k = fieldKey(el, i);
+        if (!(k in data)) continue;
+        if (el.type === 'checkbox') el.checked = !!data[k];
+        else el.value = data[k];
+      }
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      statusEl = document.getElementById('nt-save-status');
+      clearBtn = document.getElementById('nt-clear-btn');
+      fields = collectFields();
+      if (!fields.length) {
+        if (statusEl) statusEl.style.display = 'none';
+        if (clearBtn) clearBtn.style.display = 'none';
+        return;
+      }
+      restore();
+      for (var i = 0; i < fields.length; i++) {
+        fields[i].addEventListener('input', queueSave);
+        fields[i].addEventListener('change', queueSave);
+      }
+      if (clearBtn) clearBtn.addEventListener('click', function () {
+        if (!confirm('Clear all of your typing on this lesson? This cannot be undone.')) return;
+        try { localStorage.removeItem(KEY); } catch (e) {}
+        for (var j = 0; j < fields.length; j++) {
+          if (fields[j].type === 'checkbox') fields[j].checked = false;
+          else fields[j].value = '';
+        }
+        setStatus('Cleared');
+      });
+    });
+  })();
+</script>
+<script>
+  (function(){
+    // Say-it audio.
+    document.addEventListener('click', function(e){
+      var b = e.target.closest ? e.target.closest('.vx-say') : null; if(!b) return;
+      var t = b.getAttribute('data-say') || ''; if(!t || !window.speechSynthesis) return;
+      try { window.speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(t); u.rate = 0.85; u.lang = 'en-US'; window.speechSynthesis.speak(u); } catch(_){}
+    });
+    // Tap-to-match game.
+    function shuffleCol(col){ if(!col) return; var n = [].slice.call(col.children); for(var i=n.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); col.insertBefore(n[j], n[i]); } }
+    function initMatch(root){
+      var fb = root.querySelector('.vx-mfeedback');
+      var total = root.querySelectorAll('.vx-mterm').length, done = 0, sel = null;
+      shuffleCol(root.querySelectorAll('.vx-mcol')[1]);
+      root.addEventListener('click', function(e){
+        var term = e.target.closest('.vx-mterm'), def = e.target.closest('.vx-mdef');
+        if(term && !term.classList.contains('vx-done')){
+          var s = root.querySelectorAll('.vx-sel'); for(var i=0;i<s.length;i++) s[i].classList.remove('vx-sel');
+          sel = term; term.classList.add('vx-sel'); return;
+        }
+        if(def && sel && !def.classList.contains('vx-done')){
+          if(def.getAttribute('data-vx') === sel.getAttribute('data-vx')){
+            def.classList.add('vx-done'); sel.classList.add('vx-done'); sel.classList.remove('vx-sel'); sel = null; done++;
+            if(done === total && fb){ fb.textContent = '✅ All matched — great job!'; fb.className = 'vx-mfeedback vx-ok'; }
+          } else {
+            def.classList.add('vx-wrong'); var bad = def, badSel = sel;
+            setTimeout(function(){ bad.classList.remove('vx-wrong'); if(badSel) badSel.classList.remove('vx-sel'); }, 600); sel = null;
+          }
+        }
+      });
+    }
+    document.addEventListener('DOMContentLoaded', function(){
+      var m = document.querySelectorAll('[data-vx-match]'); for(var i=0;i<m.length;i++) initMatch(m[i]);
+    });
+  })();
+</script>
 </head>
 <body>
 <div class="topbar no-print">
-  <span class="brand">Neft Teacher · Vocab</span>
-  <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+  <span class="brand">Neft Teacher · Vocab Explorer</span>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <span class="nt-save no-print" id="nt-save-status" title="Your typing is saved on this device automatically.">💾 Saves automatically</span>
+    <button class="nt-clear no-print" type="button" id="nt-clear-btn">Clear my work</button>
+    <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+  </div>
 </div>
 <main class="sheet">
   <header class="packet">
     <p class="eyebrow">Unit 9 · Standard 6.NS.6</p>
-    <h1>Graph on the Coordinate Plane </h1>
-    <p class="meta">Lesson 9-1 · Key words for this lesson</p>
+    <h1>🔑 Graph on the Coordinate Plane — Vocab Explorer </h1>
+    <p class="meta">Lesson 9-1 · Learn the words, then practice them</p>
   </header>
-  <section class="section vocab">
-  <h2>Key Vocabulary 
-    <span class="level-tag level-1 l1-only">Level 1 Support</span>
-    <span class="level-tag level-2 l2-only">Level 2 Standard</span>
-    <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
-  </h2>
-  <p class="level-note">Picture first, then the word, then a plain-language meaning. Say each word out loud.</p>
-  <div class="vocab-grid">
-<div class="vocab-card">
-  <div class="vocab-figure">
-    <img src="../../assets/vocab-images/coordinate-plane.svg" alt="Illustration of Coordinate plane: A grid with a line going across and a line going up that cross." onerror="this.style.display='none'" />
-    <p class="vocab-caption">A grid with a horizontal line (x-axis) crossing a vertical line (y-axis), making four sections</p>
+  <div class="vx">
+    <section class="vx-section">
+      <p class="vx-eyebrow">① Word Wall</p>
+      <p class="vx-lead">Look at the picture, read the meaning, and tap 🔊 to hear each word.</p>
+      <div class="vx-wall"><div class="vx-card">
+        <div class="vx-figure"><img src="../../assets/vocab-images/coordinate-plane.svg" alt="Illustration of Coordinate plane: A grid with a line going across and a line going up that cross." onerror="this.style.display='none'" /></div>
+        <div class="vx-termline"><span class="vx-term">Coordinate plane</span>
+          <button type="button" class="vx-say" data-say="Coordinate plane. A grid with a line going across and a line going up that cross." aria-label="Hear Coordinate plane read aloud">🔊</button></div>
+        <p class="vx-def">A grid with a line going across and a line going up that cross.</p>
+      </div><div class="vx-card">
+        <div class="vx-figure"><img src="../../assets/vocab-images/ordered-pair.svg" alt="Illustration of Ordered pair: Two numbers (x, y) that tell where a point is on a grid." onerror="this.style.display='none'" /></div>
+        <div class="vx-termline"><span class="vx-term">Ordered pair</span>
+          <button type="button" class="vx-say" data-say="Ordered pair. Two numbers (x, y) that tell where a point is on a grid." aria-label="Hear Ordered pair read aloud">🔊</button></div>
+        <p class="vx-def">Two numbers (x, y) that tell where a point is on a grid.</p>
+      </div><div class="vx-card">
+        <div class="vx-figure"><img src="../../assets/vocab-images/origin.svg" alt="Illustration of Origin: The point (0, 0) where the two grid lines cross." onerror="this.style.display='none'" /></div>
+        <div class="vx-termline"><span class="vx-term">Origin</span>
+          <button type="button" class="vx-say" data-say="Origin. The point (0, 0) where the two grid lines cross." aria-label="Hear Origin read aloud">🔊</button></div>
+        <p class="vx-def">The point (0, 0) where the two grid lines cross.</p>
+      </div><div class="vx-card">
+        <div class="vx-figure"><img src="../../assets/vocab-images/quadrant.svg" alt="Illustration of Quadrant: One of the four parts of a coordinate grid." onerror="this.style.display='none'" /></div>
+        <div class="vx-termline"><span class="vx-term">Quadrant</span>
+          <button type="button" class="vx-say" data-say="Quadrant. One of the four parts of a coordinate grid." aria-label="Hear Quadrant read aloud">🔊</button></div>
+        <p class="vx-def">One of the four parts of a coordinate grid.</p>
+      </div><div class="vx-card">
+        <div class="vx-figure"><img src="../../assets/vocab-images/reflection.svg" alt="Illustration of Reflection: A flipped, mirror image across a line." onerror="this.style.display='none'" /></div>
+        <div class="vx-termline"><span class="vx-term">Reflection</span>
+          <button type="button" class="vx-say" data-say="Reflection. A flipped, mirror image across a line." aria-label="Hear Reflection read aloud">🔊</button></div>
+        <p class="vx-def">A flipped, mirror image across a line.</p>
+      </div><div class="vx-card">
+        <div class="vx-figure"><img src="../../assets/vocab-images/integer.svg" alt="Illustration of Integer: Whole numbers and their opposites, like -2, -1, 0, 1, 2." onerror="this.style.display='none'" /></div>
+        <div class="vx-termline"><span class="vx-term">Integer</span>
+          <button type="button" class="vx-say" data-say="Integer. Whole numbers and their opposites, like -2, -1, 0, 1, 2." aria-label="Hear Integer read aloud">🔊</button></div>
+        <p class="vx-def">Whole numbers and their opposites, like -2, -1, 0, 1, 2.</p>
+      </div></div>
+    </section>
+    <section class="vx-section"><p class="vx-eyebrow">② Match it</p><p class="vx-lead">Tap a word, then tap its meaning.</p><div class="vx-match" data-vx-match>
+        <div class="vx-mcols">
+          <div class="vx-mcol"><button type="button" class="vx-mterm" data-vx="0">Coordinate plane</button><button type="button" class="vx-mterm" data-vx="1">Ordered pair</button><button type="button" class="vx-mterm" data-vx="2">Origin</button><button type="button" class="vx-mterm" data-vx="3">Quadrant</button><button type="button" class="vx-mterm" data-vx="4">Reflection</button><button type="button" class="vx-mterm" data-vx="5">Integer</button></div>
+          <div class="vx-mcol"><button type="button" class="vx-mdef" data-vx="0">A grid with a line going across and a line going up that cross.</button><button type="button" class="vx-mdef" data-vx="1">Two numbers (x, y) that tell where a point is on a grid.</button><button type="button" class="vx-mdef" data-vx="2">The point (0, 0) where the two grid lines cross.</button><button type="button" class="vx-mdef" data-vx="3">One of the four parts of a coordinate grid.</button><button type="button" class="vx-mdef" data-vx="4">A flipped, mirror image across a line.</button><button type="button" class="vx-mdef" data-vx="5">Whole numbers and their opposites, like -2, -1, 0, 1, 2.</button></div>
+        </div>
+        <p class="vx-mfeedback" role="status" aria-live="polite"></p>
+      </div></section>
+    <section class="vx-section"><p class="vx-eyebrow">③ Fill in the blank</p><p class="vx-lead">Use the word bank to finish each sentence.</p><div class="vx-bank"><span class="vx-bank-label">Word bank</span><div class="vx-bankwords"><span class="vx-bankword">Coordinate plane</span><span class="vx-bankword">Ordered pair</span><span class="vx-bankword">Origin</span><span class="vx-bankword">Quadrant</span><span class="vx-bankword">Reflection</span><span class="vx-bankword">Integer</span></div></div>
+      <ol class="vx-clozelist"><li class="vx-clozeline"><span class="vx-num">1</span><span class="vx-clozetext">The grid made by a horizontal and a vertical number line is the <input class="vx-blank" type="text" data-nt-field aria-label="fill in the blank" />.</span></li><li class="vx-clozeline"><span class="vx-num">2</span><span class="vx-clozetext">Two numbers (x, y) that tell the location of a point are an <input class="vx-blank" type="text" data-nt-field aria-label="fill in the blank" />.</span></li><li class="vx-clozeline"><span class="vx-num">3</span><span class="vx-clozetext">The point (0, 0) where the x-axis and y-axis cross is the <input class="vx-blank" type="text" data-nt-field aria-label="fill in the blank" />.</span></li><li class="vx-clozeline"><span class="vx-num">4</span><span class="vx-clozetext">One of the four regions of the coordinate plane is a <input class="vx-blank" type="text" data-nt-field aria-label="fill in the blank" />.</span></li><li class="vx-clozeline"><span class="vx-num">5</span><span class="vx-clozetext">A flip of a point or shape over an axis is a <input class="vx-blank" type="text" data-nt-field aria-label="fill in the blank" />.</span></li><li class="vx-clozeline"><span class="vx-num">6</span><span class="vx-clozetext">A whole number or its opposite, with no fraction part, is an <input class="vx-blank" type="text" data-nt-field aria-label="fill in the blank" />.</span></li></ol></section>
+    <section class="vx-section"><p class="vx-eyebrow">④ Use it in a sentence</p><p class="vx-lead">Pick one word and finish the sentence in your own words.</p>
+      <p class="vx-stem">A <input class="vx-blank vx-blank-word" type="text" data-nt-field placeholder="word" /> is <input class="vx-blank vx-blank-wide" type="text" data-nt-field placeholder="what it means or an example" />.</p>
+      <textarea class="vx-area" rows="2" data-nt-field placeholder="Now write your own sentence using one of the words…"></textarea></section>
   </div>
-  <h3 class="vocab-term">Coordinate plane</h3>
-  <div class="vocab-def-l1">
-    <p class="vocab-def">A grid with a line going across and a line going up that cross.</p>
-  </div>
-  <div class="vocab-def-l2">
-    <p class="vocab-def-prompt">Write the definition:</p>
-    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
-  </div>
-  <div class="vocab-def-l3">
-    <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
-    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
-  </div>
-</div>
-<div class="vocab-card">
-  <div class="vocab-figure">
-    <img src="../../assets/vocab-images/ordered-pair.svg" alt="Illustration of Ordered pair: Two numbers (x, y) that tell where a point is on a grid." onerror="this.style.display='none'" />
-    <p class="vocab-caption">(3, 5) means move right 3 from the origin, then up 5</p>
-  </div>
-  <h3 class="vocab-term">Ordered pair</h3>
-  <div class="vocab-def-l1">
-    <p class="vocab-def">Two numbers (x, y) that tell where a point is on a grid.</p>
-  </div>
-  <div class="vocab-def-l2">
-    <p class="vocab-def-prompt">Write the definition:</p>
-    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
-  </div>
-  <div class="vocab-def-l3">
-    <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
-    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
-  </div>
-</div>
-<div class="vocab-card">
-  <div class="vocab-figure">
-    <img src="../../assets/vocab-images/origin.svg" alt="Illustration of Origin: The point (0, 0) where the two grid lines cross." onerror="this.style.display='none'" />
-    <p class="vocab-caption">The starting point at the center where both axes cross — (0, 0)</p>
-  </div>
-  <h3 class="vocab-term">Origin</h3>
-  <div class="vocab-def-l1">
-    <p class="vocab-def">The point (0, 0) where the two grid lines cross.</p>
-  </div>
-  <div class="vocab-def-l2">
-    <p class="vocab-def-prompt">Write the definition:</p>
-    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
-  </div>
-  <div class="vocab-def-l3">
-    <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
-    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
-  </div>
-</div>
-<div class="vocab-card">
-  <div class="vocab-figure">
-    <img src="../../assets/vocab-images/quadrant.svg" alt="Illustration of Quadrant: One of the four parts of a coordinate grid." onerror="this.style.display='none'" />
-    <p class="vocab-caption">I (+,+) top-right, II (-,+) top-left, III (-,-) bottom-left, IV (+,-) bottom-right</p>
-  </div>
-  <h3 class="vocab-term">Quadrant</h3>
-  <div class="vocab-def-l1">
-    <p class="vocab-def">One of the four parts of a coordinate grid.</p>
-  </div>
-  <div class="vocab-def-l2">
-    <p class="vocab-def-prompt">Write the definition:</p>
-    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
-  </div>
-  <div class="vocab-def-l3">
-    <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
-    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
-  </div>
-</div>
-<div class="vocab-card">
-  <div class="vocab-figure">
-    <img src="../../assets/vocab-images/reflection.svg" alt="Illustration of Reflection: A flipped, mirror image across a line." onerror="this.style.display='none'" />
-    <p class="vocab-caption">(3, 2) reflected over the x-axis becomes (3, -2) — same x, opposite y</p>
-  </div>
-  <h3 class="vocab-term">Reflection</h3>
-  <div class="vocab-def-l1">
-    <p class="vocab-def">A flipped, mirror image across a line.</p>
-  </div>
-  <div class="vocab-def-l2">
-    <p class="vocab-def-prompt">Write the definition:</p>
-    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
-  </div>
-  <div class="vocab-def-l3">
-    <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
-    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
-  </div>
-</div>
-<div class="vocab-card">
-  <div class="vocab-figure">
-    <img src="../../assets/vocab-images/integer.svg" alt="Illustration of Integer: Whole numbers and their opposites, like -2, -1, 0, 1, 2." onerror="this.style.display='none'" />
-    <p class="vocab-caption">..., -3, -2, -1, 0, 1, 2, 3, ...</p>
-  </div>
-  <h3 class="vocab-term">Integer</h3>
-  <div class="vocab-def-l1">
-    <p class="vocab-def">Whole numbers and their opposites, like -2, -1, 0, 1, 2.</p>
-  </div>
-  <div class="vocab-def-l2">
-    <p class="vocab-def-prompt">Write the definition:</p>
-    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
-  </div>
-  <div class="vocab-def-l3">
-    <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
-    <textarea class="writeline-area" rows="2" data-nt-field aria-label="Write your response here"></textarea>
-  </div>
-</div>
-  </div>
-</section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 9-1 · Standard 6.NS.6</footer>
 </main>
 </body>

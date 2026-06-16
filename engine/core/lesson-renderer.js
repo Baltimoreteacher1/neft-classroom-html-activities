@@ -504,96 +504,10 @@ function renderLaunchVisual(host, visual) {
   }
 }
 
-// Concept teaching block for the Launch phase (opt-in via launch.conceptIntro).
-// Actually TEACHES the concept using gradual release: I do (teacher models a
-// worked example) → We do (guided practice together) → You do (student tries).
-// Shape: {
-//   heading, intro,                       // title + 1–2 sentence plain definition
-//   keyIdea?,                             // optional highlighted takeaway
-//   iDo:  { title?, lines:[...] },        // modeling — worked example, real numbers
-//   weDo: { title?, lines:[...] },        // guided — questions worked together
-//   youDo:{ title?, lines:[...] }         // independent — primes the next phase
-// }
-// Legacy fields (body[], howTo.steps[]) still render for older configs.
-function renderConceptIntro(host, intro) {
-  if (!intro) return;
-  const card = document.createElement("div");
-  card.className = "card concept-intro";
-  card.style.cssText =
-    "border-left:4px solid var(--teal,#2a9d8f); background:rgba(42,157,143,0.05);";
-
-  const introP = intro.intro
-    ? `<p style="font-size:1.1rem; line-height:1.65; margin:0 0 var(--sp-4); font-weight:500;">${esc(intro.intro)}</p>`
-    : "";
-
-  // Legacy plain paragraphs (older configs that used body[]).
-  const legacyParas = (
-    Array.isArray(intro.body) ? intro.body : intro.body ? [intro.body] : []
-  )
-    .map(
-      (p) =>
-        `<p style="font-size:1.05rem; line-height:1.65; margin:0 0 var(--sp-3);">${esc(p)}</p>`,
-    )
-    .join("");
-
-  // One gradual-release stage as a labeled, color-coded panel.
-  const stage = (data, badge, label, accent, tint) => {
-    if (!data) return "";
-    const lines = (Array.isArray(data.lines) ? data.lines : [data.lines])
-      .filter(Boolean)
-      .map(
-        (l) =>
-          `<li style="margin-bottom:var(--sp-2); line-height:1.6;">${esc(l)}</li>`,
-      )
-      .join("");
-    return `<div style="margin-top:var(--sp-3); padding:var(--sp-3) var(--sp-4); background:${tint}; border:1px solid ${accent}; border-radius:var(--radius-md,12px);">
-        <div style="margin-bottom:var(--sp-2);"><span style="display:inline-block; padding:2px 10px; border-radius:999px; background:${accent}; color:#fff; font-weight:800; font-size:0.78rem; letter-spacing:0.03em;">${badge}</span> <strong style="color:var(--navy,#264653);">${esc(data.title || label)}</strong></div>
-        <ol style="margin:0; padding-left:1.3rem;">${lines}</ol>
-      </div>`;
-  };
-
-  const iDo = stage(
-    intro.iDo,
-    "I DO",
-    "Watch me",
-    "var(--teal,#2a9d8f)",
-    "rgba(42,157,143,0.08)",
-  );
-  const weDo = stage(
-    intro.weDo,
-    "WE DO",
-    "Let's try together",
-    "var(--gold,#d4952a)",
-    "rgba(233,196,106,0.14)",
-  );
-  const youDo = stage(
-    intro.youDo,
-    "YOU DO",
-    "Your turn",
-    "var(--coral,#e07a5f)",
-    "rgba(224,122,95,0.08)",
-  );
-
-  // Legacy how-to (older configs).
-  const howTo =
-    intro.howTo && Array.isArray(intro.howTo.steps) && intro.howTo.steps.length
-      ? `<div style="margin-top:var(--sp-4);">
-          <div style="font-weight:700; color:var(--navy,#264653); margin-bottom:var(--sp-2);">🛠️ ${esc(intro.howTo.title || "How to do it")}</div>
-          <ol style="margin:0; padding-left:1.3rem; line-height:1.6;">${intro.howTo.steps
-            .map((s) => `<li style="margin-bottom:var(--sp-2);">${esc(s)}</li>`)
-            .join("")}</ol>
-        </div>`
-      : "";
-
-  const keyIdea = intro.keyIdea
-    ? `<div style="margin-top:var(--sp-3); padding:var(--sp-3); background:rgba(233,196,106,0.18); border:1px solid rgba(233,196,106,0.5); border-radius:var(--radius-md,12px);"><strong>💡 Key idea:</strong> ${esc(intro.keyIdea)}</div>`
-    : "";
-
-  card.innerHTML = `
-    <h4 style="color:var(--teal,#2a9d8f); margin:0 0 var(--sp-3);">📖 ${esc(intro.heading || "Let's learn it")}</h4>
-    ${introP}${legacyParas}${keyIdea}${iDo}${weDo}${youDo}${howTo}`;
-  host.append(card);
-}
+// (The Launch concept-teaching block was removed: the lesson's conceptIntro now
+// renders in exactly one student-facing place — the Learn It page — instead of
+// triple-rendering across Launch, Learn It, and Notes. The Launch hands off to
+// it via renderLearnItBridge.)
 
 // Bridge the Launch hook straight into the full step-by-step Learn It page.
 // Opens the Learn It view inline (ctx.openExtra), so the launch scenario and
@@ -1414,6 +1328,13 @@ function renderLaunchHeader(el, state, config) {
 function renderLaunchPhase(el, state, ctx, config) {
   const cfg = config.launch;
 
+  // When the lesson ships a richer Reveal "Notice & Wonder" card (rendered by
+  // renderNoticeAndWonder, which has its own response boxes), it owns the
+  // notice/wonder capture and we skip the generic grid below — no duplicates.
+  const hasRevealNW = !!(
+    config.noticeAndWonder && typeof config.noticeAndWonder === "object"
+  );
+
   renderLaunchHeader(el, state, config);
 
   // Notice & Wonder (Reveal data-context) — rendered immediately AFTER the
@@ -1450,45 +1371,50 @@ function renderLaunchPhase(el, state, ctx, config) {
   // Opt-in concrete data visual so "I notice / I wonder" has something to see.
   renderLaunchVisual(el, cfg.visual);
 
-  const grid = document.createElement("div");
-  grid.className = "grid-2";
+  // Generic Notice / Wonder capture — only when the lesson has no richer Reveal
+  // Notice & Wonder card (see hasRevealNW), so students never see two identical
+  // notice/wonder prompts.
+  let noticeTA = null;
+  let wonderTA = null;
+  if (!hasRevealNW) {
+    const grid = document.createElement("div");
+    grid.className = "grid-2";
 
-  const noticeCard = document.createElement("div");
-  noticeCard.className = "card card-teal";
-  noticeCard.innerHTML = `<h4 style="color:var(--teal); margin-bottom:var(--sp-3);">👀 I Notice...</h4>
-    ${(cfg.noticePrompts || []).map((p) => `<div class="sentence-frame" style="margin-bottom:var(--sp-2);"><span style="font-weight:600;">${esc(p)}</span></div>`).join("")}`;
-  const noticeTA = document.createElement("textarea");
-  noticeTA.className = "text-input";
-  noticeTA.rows = 3;
-  noticeTA.placeholder = "I notice that...";
-  noticeTA.value = state.getResponse(0, "notice") || "";
-  noticeTA.addEventListener("input", () =>
-    state.saveResponse(0, "notice", noticeTA.value),
-  );
-  noticeCard.append(noticeTA);
+    const noticeCard = document.createElement("div");
+    noticeCard.className = "card card-teal";
+    noticeCard.innerHTML = `<h4 style="color:var(--teal); margin-bottom:var(--sp-3);">👀 I Notice...</h4>
+      ${(cfg.noticePrompts || []).map((p) => `<div class="sentence-frame" style="margin-bottom:var(--sp-2);"><span style="font-weight:600;">${esc(p)}</span></div>`).join("")}`;
+    noticeTA = document.createElement("textarea");
+    noticeTA.className = "text-input";
+    noticeTA.rows = 3;
+    noticeTA.placeholder = "I notice that...";
+    noticeTA.value = state.getResponse(0, "notice") || "";
+    noticeTA.addEventListener("input", () =>
+      state.saveResponse(0, "notice", noticeTA.value),
+    );
+    noticeCard.append(noticeTA);
 
-  const wonderCard = document.createElement("div");
-  wonderCard.className = "card card-coral";
-  wonderCard.innerHTML = `<h4 style="color:var(--coral); margin-bottom:var(--sp-3);">🤔 I Wonder...</h4>
-    ${(cfg.wonderPrompts || []).map((p) => `<div class="sentence-frame" style="margin-bottom:var(--sp-2); border-color:rgba(217,121,93,0.25); background:rgba(217,121,93,0.06);"><span style="font-weight:600;">${esc(p)}</span></div>`).join("")}`;
-  const wonderTA = document.createElement("textarea");
-  wonderTA.className = "text-input";
-  wonderTA.rows = 3;
-  wonderTA.placeholder = "I wonder if...";
-  wonderTA.value = state.getResponse(0, "wonder") || "";
-  wonderTA.addEventListener("input", () =>
-    state.saveResponse(0, "wonder", wonderTA.value),
-  );
-  wonderCard.append(wonderTA);
+    const wonderCard = document.createElement("div");
+    wonderCard.className = "card card-coral";
+    wonderCard.innerHTML = `<h4 style="color:var(--coral); margin-bottom:var(--sp-3);">🤔 I Wonder...</h4>
+      ${(cfg.wonderPrompts || []).map((p) => `<div class="sentence-frame" style="margin-bottom:var(--sp-2); border-color:rgba(217,121,93,0.25); background:rgba(217,121,93,0.06);"><span style="font-weight:600;">${esc(p)}</span></div>`).join("")}`;
+    wonderTA = document.createElement("textarea");
+    wonderTA.className = "text-input";
+    wonderTA.rows = 3;
+    wonderTA.placeholder = "I wonder if...";
+    wonderTA.value = state.getResponse(0, "wonder") || "";
+    wonderTA.addEventListener("input", () =>
+      state.saveResponse(0, "wonder", wonderTA.value),
+    );
+    wonderCard.append(wonderTA);
 
-  grid.append(noticeCard, wonderCard);
-  el.append(grid);
+    grid.append(noticeCard, wonderCard);
+    el.append(grid);
+  }
 
-  // After eliciting notice/wonder, teach the concept directly (opt-in).
-  renderConceptIntro(el, cfg.conceptIntro);
-
-  // Hand off to the full step-by-step Learn It page — ties the Launch hook
-  // directly to the teaching, opened inline.
+  // Hand off to the full step-by-step Learn It page — the single place the
+  // concept is taught. (Concept teaching no longer renders inside Launch; it
+  // used to triple-render here, in Learn It, and in Notes.)
   renderLearnItBridge(el, ctx, config);
 
   // Launch Turn & Talk — speech-bubble discussion moment (non-graded).
@@ -1504,7 +1430,11 @@ function renderLaunchPhase(el, state, ctx, config) {
   btn.className = "btn btn-primary btn-lg mt-6";
   btn.textContent = "Continue to Vocabulary →";
   btn.addEventListener("click", async () => {
-    if (noticeTA.value.trim().length < 5 || wonderTA.value.trim().length < 5) {
+    if (
+      noticeTA &&
+      wonderTA &&
+      (noticeTA.value.trim().length < 5 || wonderTA.value.trim().length < 5)
+    ) {
       let fb = el.querySelector(".launch-fb");
       if (!fb) {
         fb = ctx.engagement.createFeedback(
