@@ -91,6 +91,14 @@ function copyStandaloneHtml() {
             mkdirSync(destDir, { recursive: true });
             cpSync(learn, resolve(destDir, "learn.html"));
           }
+          // Generated "Vocab" page (word + meaning + picture), surfaced as the
+          // 🔑 Vocab sidebar tab.
+          const vocab = resolve(lessonsDir, dir.name, "vocab.html");
+          if (existsSync(vocab)) {
+            const destDir = resolve(__dirname, "dist", "lessons", dir.name);
+            mkdirSync(destDir, { recursive: true });
+            cpSync(vocab, resolve(destDir, "vocab.html"));
+          }
           // Teacher copy of the guided notes (includes the Answer Key &
           // Teacher Guide). Linked from the teacher notes index, not the
           // student-facing curriculum hub.
