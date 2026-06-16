@@ -53,6 +53,46 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-learning-label{margin:0 0 2px;font-size:11.5px;font-weight:700;letter-spacing:.04em;
   text-transform:uppercase;color:var(--teal);}
 .notes-learning-text{margin:0;font-size:15px;font-weight:600;color:var(--navy);}
+/* Learn It — textbook-style concept teaching block (explains the math first) */
+.learnit{border:1.5px solid var(--teal);border-radius:14px;background:#fff;
+  padding:18px 20px;margin:0 0 18px;page-break-inside:avoid;
+  box-shadow:0 1px 0 var(--teal-light);}
+.learnit-eyebrow{margin:0 0 4px;font-size:12px;font-weight:800;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--teal);}
+.learnit-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
+  font-size:21px;margin:0 0 10px;line-height:1.25;}
+.learnit-intro{font-size:17px;line-height:1.7;color:var(--ink);margin:0 0 12px;font-weight:500;}
+.learnit-key{display:flex;gap:10px;align-items:baseline;background:#fff7e6;
+  border:1px solid var(--amber);border-radius:10px;padding:12px 14px;margin:0 0 14px;}
+.learnit-key-label{flex:0 0 auto;font-weight:800;color:var(--navy);font-size:13px;
+  white-space:nowrap;}
+.learnit-key-text{font-size:16px;line-height:1.6;color:var(--navy);font-weight:600;}
+.learnit-stage{border-radius:10px;padding:12px 14px;margin:0 0 12px;border:1px solid var(--line);}
+.learnit-watch{background:var(--teal-light);border-color:var(--teal);}
+.learnit-we{background:#fff7e6;border-color:var(--amber);}
+.learnit-you{background:#eef3fb;border-color:var(--navy);}
+.learnit-stage-head{margin:0 0 8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.learnit-tag{display:inline-block;background:var(--navy);color:#fff;font-weight:800;
+  font-size:13px;border-radius:999px;padding:4px 12px;}
+.learnit-watch .learnit-tag{background:var(--teal);}
+.learnit-we .learnit-tag{background:var(--amber);color:var(--navy);}
+.learnit-you .learnit-tag{background:var(--navy);}
+.learnit-stage-title{font-weight:700;color:var(--navy);font-size:14.5px;}
+.learnit-lines{margin:0;padding:0;list-style:none;}
+.learnit-step{display:flex;gap:10px;align-items:flex-start;margin:0 0 9px;
+  font-size:16px;line-height:1.6;}
+.learnit-steplabel{flex:0 0 auto;background:var(--navy);color:#fff;font-weight:800;
+  font-size:12px;border-radius:6px;padding:3px 9px;margin-top:1px;white-space:nowrap;}
+.learnit-watch .learnit-steplabel{background:var(--teal);}
+.learnit-step-text{flex:1;}
+.learnit-point{position:relative;padding-left:22px;margin:0 0 8px;font-size:16px;line-height:1.6;}
+.learnit-point::before{content:"→";position:absolute;left:0;color:var(--teal);font-weight:800;}
+.learnit-bridge{margin:8px 0 0;font-size:14.5px;font-weight:700;color:var(--navy);}
+.gn-subhead-note{margin:-4px 0 12px;font-size:14px;color:var(--muted);}
+@media print{
+  .learnit{border-color:#000;box-shadow:none;}
+  .learnit-watch,.learnit-we,.learnit-you,.learnit-key{background:#fff;}
+}
 .notes-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 14px;}
 .notes-step{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
   border-top:5px solid var(--teal);page-break-inside:avoid;}
@@ -1054,6 +1094,25 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
         <p class="notes-learning-text">I can find a unit rate to compare prices and decide the better buy.</p>
       </div>
     </div>
+  <div class="learnit" role="group" aria-label="Learn It — how the math works">
+    <p class="learnit-eyebrow">📖 Learn It — read this first</p>
+    <h3 class="learnit-head">What is a unit rate, and how does it help me find the better buy?</h3>
+    <p class="learnit-intro">A rate compares two amounts with different units. A unit rate tells you the amount for just 1 of something, like the cost for 1 game.</p>
+    <div class="learnit-key"><span class="learnit-key-label">💡 Key idea</span><span class="learnit-key-text">To find a unit rate, divide the total cost by the number of items. The lower cost per item is the better buy.</span></div>
+    <div class="learnit-stage learnit-watch">
+      <p class="learnit-stage-head"><span class="learnit-tag">👀 Watch — see it solved</span><span class="learnit-stage-title">Watch me</span></p>
+      <ol class="learnit-lines"><li class="learnit-step"><span class="learnit-steplabel">Step 1</span><span class="learnit-step-text">Booth A charges $3 for 5 games. I want the cost for just 1 game.</span></li><li class="learnit-step"><span class="learnit-steplabel">Step 2</span><span class="learnit-step-text">I divide the cost by the games: $3 ÷ 5 = $0.60.</span></li><li class="learnit-step"><span class="learnit-steplabel">Step 3</span><span class="learnit-step-text">So Booth A costs $0.60 per game. That is the unit rate.</span></li><li class="learnit-step"><span class="learnit-steplabel">Step 4</span><span class="learnit-step-text">Now I can compare this booth fairly with any other booth.</span></li></ol>
+    </div>
+    <div class="learnit-stage learnit-we">
+      <p class="learnit-stage-head"><span class="learnit-tag">🤝 We try it together</span><span class="learnit-stage-title">Let's try together</span></p>
+      <ul class="learnit-lines"><li class="learnit-point">A booth charges $4 for 8 games. What do we divide?</li><li class="learnit-point">We divide cost by games: $4 ÷ 8 = ?</li><li class="learnit-point">What is the cost for just 1 game? ($0.50 per game.)</li></ul>
+    </div>
+    <div class="learnit-stage learnit-you">
+      <p class="learnit-stage-head"><span class="learnit-tag">✏️ Now you try</span><span class="learnit-stage-title">Now it's your turn</span></p>
+      <ul class="learnit-lines"><li class="learnit-point">In the table, find the cost per game for each booth by dividing.</li><li class="learnit-point">Then decide which booth has the lowest unit rate — that is the better buy.</li></ul>
+    </div>
+    <p class="learnit-bridge">✅ Got it? You're ready to practice — use these same steps on the problems.</p>
+  </div>
   <p class="gn-directions">✏️ Fill in each blank as we go. Use the Word Bank to help you.</p><div class="gn-fill">
     <div class="gn-bank">
       <span class="gn-bank-label">📚 Word Bank — fill each blank with the best word</span>
@@ -1071,7 +1130,8 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     <p class="mu-feedback" role="status" aria-live="polite"></p>
   </div>
   </div>
-  <h3 class="gn-subhead">🧮 Watch &amp; Try — Worked Examples</h3><div class="notes-gradual">
+  <h3 class="gn-subhead">🧮 Practice It Together — Worked Problems</h3>
+       <p class="gn-subhead-note">Use the steps from <strong>Learn It</strong> above. Watch one, solve one together, then try one on your own.</p><div class="notes-gradual">
     <div class="l1-only">
     <p class="notes-gr-intro">Watch the teacher model, fill in We Do together, and check your choice on You Do.</p>
     <div class="notes-gr-step notes-gr-watch">

@@ -83,6 +83,14 @@ function copyStandaloneHtml() {
             mkdirSync(destDir, { recursive: true });
             cpSync(notes, resolve(destDir, "notes.html"));
           }
+          // Generated "Learn It" teaching page (concept explanation + worked
+          // example), surfaced as the 📖 Learn It tab in the lesson shell.
+          const learn = resolve(lessonsDir, dir.name, "learn.html");
+          if (existsSync(learn)) {
+            const destDir = resolve(__dirname, "dist", "lessons", dir.name);
+            mkdirSync(destDir, { recursive: true });
+            cpSync(learn, resolve(destDir, "learn.html"));
+          }
           // Teacher copy of the guided notes (includes the Answer Key &
           // Teacher Guide). Linked from the teacher notes index, not the
           // student-facing curriculum hub.
