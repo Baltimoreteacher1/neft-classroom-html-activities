@@ -2,7 +2,6 @@ import { createApp } from "./app.js";
 import { createAdaptiveSequence } from "./adaptive.js";
 import { levelOverride, mountLevelSelector } from "./levels.js";
 import {
-  renderVocabBuilder,
   renderMultipleChoice,
   renderDragSort,
   renderOpenResponse,
@@ -13,10 +12,6 @@ import {
   renderMatchingGame,
   renderBarModel,
   renderBalanceScale,
-  renderVocabDragMatch,
-  renderVocabCloze,
-  renderVocabSort,
-  renderVocabIntro,
   renderAlgebraTiles,
   renderFractionBars,
   renderNetFolder,
@@ -1454,139 +1449,6 @@ function renderLaunchPhase(el, state, ctx, config) {
   el.append(btn);
 }
 
-// ── Phase 2: Vocabulary (multi-activity sequence) ──
-function renderVocabPhase(el, state, ctx, config) {
-  const activities = resolveVocabActivities(config);
-  let actIdx = 0;
-  let totalCorrect = 0;
-  let totalPossible = 0;
-
-  function renderNextActivity() {
-    if (actIdx >= activities.length) {
-      const stars =
-        totalPossible === 0
-          ? 3
-          : totalCorrect / totalPossible >= 0.8
-            ? 3
-            : totalCorrect / totalPossible >= 0.5
-              ? 2
-              : 1;
-      setTimeout(
-        async () =>
-          await completePhase(el, ctx, state, 1, "Vocabulary", stars, 3),
-        400,
-      );
-      return;
-    }
-
-    const activity = activities[actIdx];
-    el.innerHTML = "";
-
-    if (actIdx === 0) {
-      phaseHeader(
-        el,
-        "📖",
-        "section-icon-amber",
-        "Vocabulary",
-        "Study the words, then show what you know.",
-      );
-      instructionCallout(
-        el,
-        "📚",
-        "<strong>EL tip:</strong> Say each word out loud. Match the <strong>term</strong> to its <strong>definition</strong> before you move on. Pictures and Spanish labels are there to help.",
-      );
-    }
-
-    const stepLabel = document.createElement("div");
-    stepLabel.style.cssText =
-      "font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); margin-bottom:var(--sp-3);";
-    stepLabel.textContent =
-      activity === "intro"
-        ? "Vocabulary — Study the Words"
-        : `Vocabulary — Activity ${actIdx} of ${activities.length - 1}`;
-    el.append(stepLabel);
-
-    const onDone = (correct, total) => {
-      totalCorrect += correct;
-      totalPossible += total;
-      actIdx++;
-      renderNextActivity();
-    };
-
-    switch (activity) {
-      case "intro":
-        renderVocabIntro(el, {
-          terms: config.vocabulary,
-          onComplete: onDone,
-        });
-        // Inline Reveal Math vocabulary slides surface on the study step, where
-        // students first see the words before any vocab activity.
-        renderRevealSlides(el, config, "vocabulary");
-        // Word Problem (Reveal application) — rendered immediately AFTER the
-        // Vocabulary section. No-op when config.revealWordProblem is absent.
-        renderRevealWordProblem(el, config);
-        break;
-      case "builder":
-        renderVocabBuilder(el, {
-          terms: config.vocabulary,
-          onComplete: onDone,
-        });
-        break;
-      case "matching":
-        phaseHeader(
-          el,
-          "📖",
-          "section-icon-amber",
-          "Memory Match",
-          "Flip cards to find matching pairs!",
-        );
-        renderMatchingGame(el, {
-          pairs: config.vocabulary.map((v) => ({
-            term: v.term,
-            match: v.definition,
-          })),
-          columns: Math.min(4, config.vocabulary.length),
-          onComplete(matched, attempts) {
-            const pct = matched / attempts;
-            onDone(pct >= 0.7 ? 3 : pct >= 0.4 ? 2 : 1, 3);
-          },
-        });
-        break;
-      case "drag-match":
-        renderVocabDragMatch(el, {
-          terms: config.vocabulary,
-          onComplete: onDone,
-        });
-        break;
-      case "cloze":
-        renderVocabCloze(el, { terms: config.vocabulary, onComplete: onDone });
-        break;
-      case "sort":
-        renderVocabSort(el, { terms: config.vocabulary, onComplete: onDone });
-        break;
-      default:
-        renderVocabBuilder(el, {
-          terms: config.vocabulary,
-          onComplete: onDone,
-        });
-    }
-  }
-
-  renderNextActivity();
-}
-
-function resolveVocabActivities(config) {
-  // The "builder" (Vocabulary Builder) is a term↔definition match — already the
-  // Vocab Explorer tab's "Match it". Drop it here so the two don't duplicate.
-  if (config.vocabActivities && config.vocabActivities.length) {
-    const acts = config.vocabActivities.filter((a) => a !== "builder");
-    return acts[0] === "intro" ? acts : ["intro", ...acts];
-  }
-  // The interactive Vocab Explorer tab now owns full vocab practice (Word Wall,
-  // match, cloze, use-it), so the graded phase stays lean: a quick study + one
-  // match check, rather than a multi-activity gauntlet that re-covers the words.
-  return ["intro", "drag-match"];
-}
 
 // ── Phase 3: Explore ──
 function renderExplorePhase(el, state, ctx, config) {
