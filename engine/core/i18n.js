@@ -215,7 +215,7 @@ export function badgeName(id, lang) {
 
 /** Phase name by engine index (0=Launch … 5=Reflect). */
 export function phaseName(index, lang) {
-  const keys = ["launch", "vocab", "explore", "practice", "connect", "reflect"];
+  const keys = ["launch", "explore", "practice", "connect", "reflect"];
   const key = keys[index];
   const entry = PHASE_NAMES[key];
   if (!entry) return `Phase ${index + 1}`;

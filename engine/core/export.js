@@ -40,7 +40,6 @@ function buildExportHtml(state, config) {
   // Collect responses by phase
   const phaseNames = [
     "Launch",
-    "Vocabulary",
     "Explore",
     "Practice",
     "Connect",
@@ -69,55 +68,44 @@ function buildExportHtml(state, config) {
       </table>`;
   }
 
-  // Phase 1: Vocabulary (status only)
-  const vocabPhase = s.phases[1];
-  if (vocabPhase) {
-    responseSections += `
-      <h2 style="color:#F2C15B; border-bottom:2px solid #F2C15B; padding-bottom:4px;">
-        Phase 2: Vocabulary
-      </h2>
-      <p>Status: <strong>${vocabPhase.status === "completed" ? "Completed" : "In Progress"}</strong>
-         &nbsp;|&nbsp; Stars: ${"★".repeat(vocabPhase.stars)}${"☆".repeat(3 - vocabPhase.stars)}</p>`;
-  }
-
   // Phase 2: Explore (status)
-  const explorePhase = s.phases[2];
+  const explorePhase = s.phases[1];
   if (explorePhase) {
     responseSections += `
       <h2 style="color:#1FA6A2; border-bottom:2px solid #1FA6A2; padding-bottom:4px;">
-        Phase 3: Explore
+        Phase 2: Explore
       </h2>
       <p>Status: <strong>${explorePhase.status === "completed" ? "Completed" : "In Progress"}</strong>
          &nbsp;|&nbsp; Stars: ${"★".repeat(explorePhase.stars)}${"☆".repeat(3 - explorePhase.stars)}</p>`;
   }
 
   // Phase 3: Practice
-  const practicePhase = s.phases[3];
+  const practicePhase = s.phases[2];
   if (practicePhase) {
     responseSections += `
       <h2 style="color:#12355B; border-bottom:2px solid #12355B; padding-bottom:4px;">
-        Phase 4: Practice
+        Phase 3: Practice
       </h2>
       <p>Correct: <strong>${practicePhase.correct || 0}</strong> / ${practicePhase.attempts || 0}
          &nbsp;|&nbsp; Stars: ${"★".repeat(practicePhase.stars)}${"☆".repeat(3 - practicePhase.stars)}</p>`;
   }
 
   // Phase 4: Connect
-  const connectPhase = s.phases[4];
+  const connectPhase = s.phases[3];
   if (connectPhase) {
     responseSections += `
       <h2 style="color:#1FA6A2; border-bottom:2px solid #1FA6A2; padding-bottom:4px;">
-        Phase 5: Real-World Connection
+        Phase 4: Real-World Connection
       </h2>
       <p>Status: <strong>${connectPhase.status === "completed" ? "Completed" : "In Progress"}</strong>
          &nbsp;|&nbsp; Stars: ${"★".repeat(connectPhase.stars)}${"☆".repeat(3 - connectPhase.stars)}</p>`;
   }
 
   // Phase 5: Reflect
-  const reflect3 = s.responses["5_reflect_3"] || "";
-  const reflect2 = s.responses["5_reflect_2"] || "";
-  const reflect1 = s.responses["5_reflect_1"] || "";
-  const selfAssess = s.responses["5_self-assess"] || "";
+  const reflect3 = s.responses["4_reflect_3"] || "";
+  const reflect2 = s.responses["4_reflect_2"] || "";
+  const reflect1 = s.responses["4_reflect_1"] || "";
+  const selfAssess = s.responses["4_self-assess"] || "";
   const selfAssessLabel =
     selfAssess === "3"
       ? "Got it!"
@@ -130,7 +118,7 @@ function buildExportHtml(state, config) {
   if (reflect3 || reflect2 || reflect1 || selfAssess) {
     responseSections += `
       <h2 style="color:#D9795D; border-bottom:2px solid #D9795D; padding-bottom:4px;">
-        Phase 6: Reflect
+        Phase 5: Reflect
       </h2>
       <table style="width:100%; border-collapse:collapse; margin-bottom:12px;">
         <tr>
@@ -153,10 +141,10 @@ function buildExportHtml(state, config) {
   const coveredKeys = new Set([
     "0_notice",
     "0_wonder",
-    "5_reflect_3",
-    "5_reflect_2",
-    "5_reflect_1",
-    "5_self-assess",
+    "4_reflect_3",
+    "4_reflect_2",
+    "4_reflect_1",
+    "4_self-assess",
   ]);
   const extraResponses = Object.entries(s.responses).filter(
     ([k]) => !coveredKeys.has(k),
@@ -306,9 +294,9 @@ function buildPlainText(state, config) {
     text += `\n`;
   }
 
-  const reflect3 = s.responses["5_reflect_3"];
-  const reflect2 = s.responses["5_reflect_2"];
-  const reflect1 = s.responses["5_reflect_1"];
+  const reflect3 = s.responses["4_reflect_3"];
+  const reflect2 = s.responses["4_reflect_2"];
+  const reflect1 = s.responses["4_reflect_1"];
   if (reflect3 || reflect2 || reflect1) {
     text += `--- REFLECT ---\n`;
     if (reflect3) text += `3 things I learned: ${reflect3}\n`;

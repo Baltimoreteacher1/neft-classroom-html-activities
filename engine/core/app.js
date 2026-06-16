@@ -428,12 +428,11 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   }
 
   const phaseConfigs = [
-    { name: phaseName(0), icon: "🚀" },
-    { name: phaseName(1), icon: "📖" },
-    { name: phaseName(2), icon: "🔍" },
-    { name: phaseName(3), icon: "✏️" },
-    { name: phaseName(4), icon: "🌎" },
-    { name: phaseName(5), icon: "💡" },
+    { name: phaseName(0), icon: "🚀" }, // Launch
+    { name: phaseName(1), icon: "🔍" }, // Explore
+    { name: phaseName(2), icon: "✏️" }, // Practice
+    { name: phaseName(3), icon: "🌎" }, // Connect
+    { name: phaseName(4), icon: "💡" }, // Reflect
   ];
 
   state.initPhases(phaseConfigs);
@@ -1019,7 +1018,7 @@ function buildSidebar(config, state, phaseConfigs) {
     <div class="sidebar-progress" data-bind="sidebar-progress">
       <div class="sidebar-progress-label">
         <span>Progress</span>
-        <span data-bind="phase-count">0 / 6</span>
+        <span data-bind="phase-count">0 / 5</span>
       </div>
       <div class="xp-bar-track">
         <div class="xp-bar-fill" data-bind="phase-bar"></div>

@@ -1430,7 +1430,7 @@ function renderLaunchPhase(el, state, ctx, config) {
 
   const btn = document.createElement("button");
   btn.className = "btn btn-primary btn-lg mt-6";
-  btn.textContent = "Continue to Vocabulary →";
+  btn.textContent = "Continue to Explore →";
   btn.addEventListener("click", async () => {
     if (
       noticeTA &&
@@ -1618,14 +1618,14 @@ function renderExplorePhase(el, state, ctx, config) {
   // affordance is built into the button flow so it never blocks progress.
   const showTurnTalkThenComplete = () => {
     renderTurnAndTalk(el, resolveTurnTalk("explore", config), state, 2, () => {
-      completePhase(el, ctx, state, 2, "Explore", 1, 1);
+      completePhase(el, ctx, state, 1, "Explore", 1, 1);
     });
     const cont = document.createElement("button");
     cont.type = "button";
     cont.className = "btn btn-primary btn-lg mt-4";
     cont.textContent = "Continue to Practice →";
     cont.addEventListener("click", () =>
-      completePhase(el, ctx, state, 2, "Explore", 1, 1),
+      completePhase(el, ctx, state, 1, "Explore", 1, 1),
     );
     el.append(cont);
   };
@@ -1792,13 +1792,13 @@ function renderSkillPractice(host, config, state) {
     const workEl = wrap.querySelector(".sp-work");
     const ansEl = wrap.querySelector(".sp-answer");
     const reveal = wrap.querySelector(".sp-reveal");
-    workEl.value = state.getResponse(3, `sp-work-${i}`) || "";
-    ansEl.value = state.getResponse(3, `sp-ans-${i}`) || "";
+    workEl.value = state.getResponse(2, `sp-work-${i}`) || "";
+    ansEl.value = state.getResponse(2, `sp-ans-${i}`) || "";
     workEl.addEventListener("input", () =>
-      state.saveResponse(3, `sp-work-${i}`, workEl.value),
+      state.saveResponse(2, `sp-work-${i}`, workEl.value),
     );
     ansEl.addEventListener("input", () =>
-      state.saveResponse(3, `sp-ans-${i}`, ansEl.value),
+      state.saveResponse(2, `sp-ans-${i}`, ansEl.value),
     );
     wrap.querySelector(".sp-check").addEventListener("click", () => {
       reveal.hidden = false;
@@ -1898,7 +1898,7 @@ function renderPracticePhase(el, state, ctx, config) {
 
   function finishPractice() {
     area.innerHTML = "";
-    completePhase(el, ctx, state, 3, "Practice", totalCorrect, totalAttempts);
+    completePhase(el, ctx, state, 2, "Practice", totalCorrect, totalAttempts);
   }
 
   // Run the ungraded optional items through the shared component loop, then
@@ -2054,8 +2054,8 @@ function renderConnectPhase(el, state, ctx, config) {
   // The Writing Revolution (TWR) writing step. Auto-derived from config; shows
   // on every lesson. Formative only — persisted but never gates phase scoring.
   renderTwrWriting(el, config, {
-    getResponse: (key) => state.getResponse(4, key),
-    saveResponse: (key, val) => state.saveResponse(4, key, val),
+    getResponse: (key) => state.getResponse(3, key),
+    saveResponse: (key, val) => state.saveResponse(3, key, val),
   });
 
   // Inline Reveal Math slides for the Connect section.
@@ -2094,7 +2094,7 @@ function renderConnectPhase(el, state, ctx, config) {
   textarea.rows = 4;
   textarea.placeholder = "Type your response here...";
   textarea.setAttribute("aria-label", promptText);
-  textarea.value = state.getResponse(4, "connect") || "";
+  textarea.value = state.getResponse(3, "connect") || "";
   respCard.append(textarea);
 
   const charCount = document.createElement("div");
@@ -2111,7 +2111,7 @@ function renderConnectPhase(el, state, ctx, config) {
 
   // Persist on every keystroke and restore on reload.
   textarea.addEventListener("input", () => {
-    state.saveResponse(4, "connect", textarea.value);
+    state.saveResponse(3, "connect", textarea.value);
     updateCount();
   });
 
@@ -2168,11 +2168,11 @@ function renderConnectPhase(el, state, ctx, config) {
     }
 
     submitted = true;
-    state.saveResponse(4, "connect", textarea.value);
+    state.saveResponse(3, "connect", textarea.value);
     textarea.readOnly = true;
     submitBtn.style.display = "none";
     showFeedback("success", "Great response! Your thinking is recorded.");
-    completePhase(el, ctx, state, 4, "Connect", valid ? 1 : 0, 1);
+    completePhase(el, ctx, state, 3, "Connect", valid ? 1 : 0, 1);
   });
 
   respCard.append(submitBtn);
@@ -2182,7 +2182,7 @@ function renderConnectPhase(el, state, ctx, config) {
 // ── Phase 6: Reflect ──
 function renderReflectPhase(el, state, ctx, config) {
   const cfg = config.reflect;
-  phaseHeader(el, "💡", "section-icon-coral", phaseName(5), t("reflectDesc"));
+  phaseHeader(el, "💡", "section-icon-coral", phaseName(4), t("reflectDesc"));
 
   // 3-2-1
   const rCard = document.createElement("div");
@@ -2201,9 +2201,9 @@ function renderReflectPhase(el, state, ctx, config) {
     ta.className = "text-input";
     ta.rows = r.n > 1 ? 2 : 1;
     ta.placeholder = `${r.n} ${r.label}...`;
-    ta.value = state.getResponse(5, `reflect_${r.n}`) || "";
+    ta.value = state.getResponse(4, `reflect_${r.n}`) || "";
     ta.addEventListener("input", () =>
-      state.saveResponse(5, `reflect_${r.n}`, ta.value),
+      state.saveResponse(4, `reflect_${r.n}`, ta.value),
     );
     row.append(ta);
     rCard.append(row);
@@ -2218,9 +2218,9 @@ function renderReflectPhase(el, state, ctx, config) {
   learnedTA.className = "text-input";
   learnedTA.rows = 2;
   learnedTA.placeholder = t("oneThingPlaceholder");
-  learnedTA.value = state.getResponse(5, "one_thing_learned") || "";
+  learnedTA.value = state.getResponse(4, "one_thing_learned") || "";
   learnedTA.addEventListener("input", () =>
-    state.saveResponse(5, "one_thing_learned", learnedTA.value),
+    state.saveResponse(4, "one_thing_learned", learnedTA.value),
   );
   learnedCard.append(learnedTA);
   el.append(learnedCard);
@@ -2228,7 +2228,7 @@ function renderReflectPhase(el, state, ctx, config) {
   // Confidence slider (1–5)
   const confCard = document.createElement("div");
   confCard.className = "card card-teal confidence-card";
-  const savedConf = Number(state.getResponse(5, "confidence")) || 3;
+  const savedConf = Number(state.getResponse(4, "confidence")) || 3;
   confCard.innerHTML = `
     <h4 style="color:var(--teal); margin-bottom:var(--sp-3);">${t("howConfident")} ${esc(config.title)}?</h4>
     <div class="confidence-slider-wrap">
@@ -2250,15 +2250,15 @@ function renderReflectPhase(el, state, ctx, config) {
   const output = confCard.querySelector(".confidence-output");
   slider.addEventListener("input", () => {
     output.textContent = `${slider.value}/5`;
-    state.saveResponse(5, "confidence", slider.value);
-    state.saveResponse(5, "self-assess", slider.value);
+    state.saveResponse(4, "confidence", slider.value);
+    state.saveResponse(4, "self-assess", slider.value);
   });
   confCard.querySelectorAll(".self-assess").forEach((btn) => {
     btn.addEventListener("click", () => {
       slider.value = btn.dataset.level;
       output.textContent = `${btn.dataset.level}/5`;
-      state.saveResponse(5, "confidence", btn.dataset.level);
-      state.saveResponse(5, "self-assess", btn.dataset.level);
+      state.saveResponse(4, "confidence", btn.dataset.level);
+      state.saveResponse(4, "self-assess", btn.dataset.level);
       confCard.querySelectorAll(".self-assess").forEach((b) => {
         b.classList.toggle("is-selected", b === btn);
       });
@@ -2283,11 +2283,11 @@ function renderReflectPhase(el, state, ctx, config) {
     ...cfg.exitTicket,
     onAnswer(isCorrect) {
       setTimeout(async () => {
-        const xp = ctx.engagement.awardXP(5, {
+        const xp = ctx.engagement.awardXP(4, {
           correct: isCorrect ? 1 : 0,
           total: 1,
         });
-        const stars = state.get().phases[5]?.stars ?? 0;
+        const stars = state.get().phases[4]?.stars ?? 0;
         await ctx.engagement.showPhaseComplete(el, "Reflect", xp, stars);
         showFinalSummary(el, state, config);
       }, 1000);
@@ -2323,7 +2323,7 @@ function renderObjectiveReview(state, config) {
   `;
 
   items.forEach((item) => {
-    const checked = state.getResponse(5, item.key) === "yes";
+    const checked = state.getResponse(4, item.key) === "yes";
     const row = document.createElement("label");
     row.style.cssText =
       "display:flex; align-items:flex-start; gap:var(--sp-3); padding:var(--sp-3); background:white; border-radius:var(--radius-sm); margin-bottom:var(--sp-3); cursor:pointer; border:1px solid var(--line);";
@@ -2342,7 +2342,7 @@ function renderObjectiveReview(state, config) {
     `;
 
     cb.addEventListener("change", () => {
-      state.saveResponse(5, item.key, cb.checked ? "yes" : "no");
+      state.saveResponse(4, item.key, cb.checked ? "yes" : "no");
       row.style.borderColor = cb.checked ? "var(--teal)" : "var(--line)";
       row.style.background = cb.checked ? "var(--teal-light)" : "white";
     });

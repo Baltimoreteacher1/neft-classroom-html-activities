@@ -24,7 +24,6 @@ const PHASE_ACCENTS = [
 
 const PHASE_CONFIGS = [
   { name: "Launch", icon: "🚀" },
-  { name: "Vocabulary", icon: "📖" },
   { name: "Explore", icon: "🔍" },
   { name: "Practice", icon: "✏️" },
   { name: "Connect", icon: "🌎" },
@@ -32,12 +31,36 @@ const PHASE_CONFIGS = [
 ];
 
 const BADGE_DEFS = [
-  { id: "streak_sage", emoji: "🔥", name: "Streak Sage", test: (s) => s.bestStreak >= 5 },
-  { id: "vocab_scholar", emoji: "📚", name: "Vocab Scholar", test: (s) => (s.phases[1]?.stars ?? 0) >= 3 },
-  { id: "no_hint_hero", emoji: "🦸", name: "No-Hint Hero", test: (s) => s.hintsUsed === 0 && s.totalAttempts >= 3 },
-  { id: "coin_collector", emoji: "🪙", name: "Coin Collector", test: (s) => s.coins >= 5 },
-  { id: "sharpshooter", emoji: "🎯", name: "Sharpshooter", test: (s) => s.totalAttempts > 0 && s.totalCorrect / s.totalAttempts >= 0.9 },
-  { id: "deep_thinker", emoji: "🧠", name: "Deep Thinker", test: (s) => s.totalAttempts >= 8 },
+  {
+    id: "streak_sage",
+    emoji: "🔥",
+    name: "Streak Sage",
+    test: (s) => s.bestStreak >= 5,
+  },
+  {
+    id: "no_hint_hero",
+    emoji: "🦸",
+    name: "No-Hint Hero",
+    test: (s) => s.hintsUsed === 0 && s.totalAttempts >= 3,
+  },
+  {
+    id: "coin_collector",
+    emoji: "🪙",
+    name: "Coin Collector",
+    test: (s) => s.coins >= 5,
+  },
+  {
+    id: "sharpshooter",
+    emoji: "🎯",
+    name: "Sharpshooter",
+    test: (s) => s.totalAttempts > 0 && s.totalCorrect / s.totalAttempts >= 0.9,
+  },
+  {
+    id: "deep_thinker",
+    emoji: "🧠",
+    name: "Deep Thinker",
+    test: (s) => s.totalAttempts >= 8,
+  },
 ];
 
 export function badgeDisplayName(id) {
@@ -114,7 +137,11 @@ export function buildLessonCoverExtras(config, savedProgress) {
 /** Mount animated theme art into cover slot. */
 export function mountCoverArt(slot, config) {
   if (!slot || !config.theme) return;
-  renderThemeIllustration(slot, config.theme, config.launch?.contextImage || null);
+  renderThemeIllustration(
+    slot,
+    config.theme,
+    config.launch?.contextImage || null,
+  );
   slot.querySelector(".theme-hero-svg")?.classList.add("cover-svg-animate");
 }
 
@@ -164,7 +191,13 @@ export function renderLaunchStoryBeats(host, config) {
 }
 
 /** Build enhanced phase transition context for engagement.showPhaseComplete. */
-export function buildPhaseTransitionMeta(state, phaseIdx, phaseName, xp, stars) {
+export function buildPhaseTransitionMeta(
+  state,
+  phaseIdx,
+  phaseName,
+  xp,
+  stars,
+) {
   const s = state.get();
   const next = PHASE_CONFIGS[phaseIdx + 1];
   const phase = s.phases[phaseIdx];
@@ -187,15 +220,26 @@ export function buildPhaseTransitionMeta(state, phaseIdx, phaseName, xp, stars) 
       hintsUsed: s.hintsUsed,
     },
     newBadges,
-    phaseBadge: stars >= 3 ? `⭐ ${t("perfectPhase")}` : stars >= 2 ? `✨ ${t("strongWork")}` : "",
+    phaseBadge:
+      stars >= 3
+        ? `⭐ ${t("perfectPhase")}`
+        : stars >= 2
+          ? `✨ ${t("strongWork")}`
+          : "",
   };
 }
 
 /** Printable student summary for Reflect phase. */
 export function buildPrintableSummary(state, config) {
   const s = state.get();
-  const learned = state.getResponse(5, "one_thing_learned") || state.getResponse(5, "reflect_3") || "";
-  const confidence = state.getResponse(5, "confidence") || state.getResponse(5, "self-assess") || "";
+  const learned =
+    state.getResponse(5, "one_thing_learned") ||
+    state.getResponse(5, "reflect_3") ||
+    "";
+  const confidence =
+    state.getResponse(5, "confidence") ||
+    state.getResponse(5, "self-assess") ||
+    "";
 
   const wrap = document.createElement("section");
   wrap.className = "printable-summary card";
@@ -208,11 +252,13 @@ export function buildPrintableSummary(state, config) {
     <p><strong>XP:</strong> ${s.xp} · <strong>${t("stars")}:</strong> ${s.phases.reduce((sum, p) => sum + p.stars, 0)}/18 · <strong>${t("coins")}:</strong> ${s.coins}</p>
     <button type="button" class="btn btn-secondary btn-sm printable-summary-btn">🖨️ ${stackHtml(t("printSummary", "en"), t("printSummary", "es"))}</button>`;
 
-  wrap.querySelector(".printable-summary-btn")?.addEventListener("click", () => {
-    wrap.classList.add("print-target");
-    window.print();
-    wrap.classList.remove("print-target");
-  });
+  wrap
+    .querySelector(".printable-summary-btn")
+    ?.addEventListener("click", () => {
+      wrap.classList.add("print-target");
+      window.print();
+      wrap.classList.remove("print-target");
+    });
 
   return wrap;
 }
