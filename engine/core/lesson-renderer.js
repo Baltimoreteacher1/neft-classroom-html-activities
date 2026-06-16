@@ -1711,10 +1711,42 @@ function renderCommonMistakeCallout(host, config) {
   host.append(box);
 }
 
+// Normalize a typed math answer for comparison: lowercase, strip spaces, unify
+// the many multiplication symbols, and turn unicode superscripts into ^n.
+function normalizeAnswer(s) {
+  return String(s == null ? "" : s)
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "")
+    .replace(/[×x*·•]/g, "*")
+    .replace(/²/g, "^2")
+    .replace(/³/g, "^3")
+    .replace(/⁴/g, "^4")
+    .replace(/[.,;]+$/, "");
+}
+
+// Decide whether a typed answer can be auto-graded, and if so whether it's
+// correct. Returns {graded:false} for complex expressions (formatting varies too
+// much to grade fairly) so the UI falls back to a self-check reveal.
+function gradeSkillAnswer(student, correct) {
+  const a = normalizeAnswer(student);
+  const b = normalizeAnswer(correct);
+  if (!a) return { graded: false };
+  if (a === b) return { graded: true, correct: true };
+  const isNum = (s) => /^-?\d+(?:\.\d+)?$/.test(s);
+  if (isNum(a) && isNum(b))
+    return { graded: true, correct: Number(a) === Number(b) };
+  // Short, simple answers (one word/number, no operators) are safe to mark.
+  if (b.length <= 12 && !/[*^/+]/.test(b))
+    return { graded: true, correct: false };
+  return { graded: false };
+}
+
 // Real skill practice: a few of the lesson's own problems presented as "solve
-// it" — show your steps, write the answer, then self-check the reveal. Genuinely
-// practices the skill (not only matching/sorting games), and saves work to the
-// Practice phase responses. No-op when the lesson has no solvable problems.
+// it" — show your steps, write the answer, then check. Numbers and short answers
+// are auto-graded (✅/❌); complex expressions fall back to a self-check reveal.
+// Genuinely practices the skill (not only matching/sorting games), and saves
+// work to the Practice phase responses. No-op when there are no solvable items.
 function renderSkillPractice(host, config, state) {
   const p = config.practice || {};
   const pool = []
@@ -1768,11 +1800,23 @@ function renderSkillPractice(host, config, state) {
     );
     wrap.querySelector(".sp-check").addEventListener("click", () => {
       reveal.hidden = false;
-      reveal.innerHTML = `<strong>✅ Answer:</strong> ${esc(answer)}${
-        it.explanation
-          ? `<br><span style="color:var(--muted,#5f6f80);">${esc(it.explanation)}</span>`
-          : ""
-      }`;
+      const why = it.explanation
+        ? `<br><span style="color:var(--muted,#5f6f80);">${esc(it.explanation)}</span>`
+        : "";
+      const r = gradeSkillAnswer(ansEl.value, answer);
+      if (r.graded && r.correct) {
+        reveal.style.background = "rgba(46,158,91,0.10)";
+        reveal.style.borderColor = "#2e9e5b";
+        reveal.innerHTML = `<strong>✅ Correct!</strong> ${esc(answer)}${why}`;
+      } else if (r.graded) {
+        reveal.style.background = "rgba(217,83,79,0.08)";
+        reveal.style.borderColor = "#d9534f";
+        reveal.innerHTML = `<strong>❌ Not quite.</strong> The answer is <strong>${esc(answer)}</strong>. Check your work and try again.${why}`;
+      } else {
+        reveal.style.background = "rgba(42,157,143,0.08)";
+        reveal.style.borderColor = "var(--teal,#2a9d8f)";
+        reveal.innerHTML = `<strong>✅ Answer:</strong> ${esc(answer)}${why}`;
+      }
     });
     card.append(wrap);
   });
