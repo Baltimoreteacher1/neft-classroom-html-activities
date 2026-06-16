@@ -56,6 +56,19 @@ const WHITE = "FFFFFF";
 
 const choiceLetter = (i) => String.fromCharCode(65 + i);
 
+// Human-readable, official-style label for each MCAP item type.
+const ITEM_TYPE_LABEL = {
+  "multiple-choice": "Selected Response",
+  short: "Constructed Response",
+};
+const itemTypeLabel = (type) => ITEM_TYPE_LABEL[type] || "Selected Response";
+
+// Official-style direction line per item type.
+const itemDirections = (type) =>
+  type === "multiple-choice"
+    ? "Select the correct answer."
+    : "Enter your answer in the space provided. Show your work.";
+
 // ── DOCX helpers ──────────────────────────────────────────────────────────────
 const run = (text, opts = {}) => new TextRun({ text, size: 21, color: INK, font: "Calibri", ...opts });
 
@@ -131,6 +144,97 @@ function workLines(n = 3) {
 
 function spacer(after = 80) {
   return new Paragraph({ spacing: { after }, children: [run("")] });
+}
+
+// "Item N | Selected Response · 6.RP.A.1" label row above each MCAP item card.
+function itemLabel(n, type, code, color) {
+  return new Paragraph({
+    spacing: { before: 30, after: 30 },
+    indent: { left: 120, right: 120 },
+    children: [
+      new TextRun({ text: `Item ${n}`, bold: true, color: WHITE, size: 18, font: "Calibri" }),
+      new TextRun({ text: "   |   ", color: WHITE, size: 18, font: "Calibri" }),
+      new TextRun({ text: itemTypeLabel(type).toUpperCase(), color: WHITE, size: 16, font: "Calibri", characterSpacing: 14 }),
+      new TextRun({ text: "\t", font: "Calibri" }),
+      new TextRun({ text: code, bold: true, color: WHITE, size: 17, font: "Calibri" }),
+    ],
+    tabStops: [{ type: "right", position: 9000 }],
+    shading: { type: ShadingType.CLEAR, color: "auto", fill: color },
+  });
+}
+
+// One MCAP item rendered as a bordered card (label bar + body).
+function mcapItemCard(it, n, code, color) {
+  const body = [];
+  // label bar (single-cell shaded row handled by the table shading)
+  body.push(itemLabel(n, it.type, code, color));
+  body.push(
+    new Paragraph({
+      spacing: { before: 90, after: 30 },
+      indent: { left: 140, right: 120 },
+      children: [run(it.prompt, { bold: true })],
+    })
+  );
+  body.push(
+    new Paragraph({
+      spacing: { after: 60 },
+      indent: { left: 140, right: 120 },
+      children: [new TextRun({ text: itemDirections(it.type), italics: true, color: MUTED, size: 18, font: "Calibri" })],
+    })
+  );
+  if (it.type === "multiple-choice") {
+    it.choices.forEach((c, ci) =>
+      body.push(
+        new Paragraph({
+          spacing: { after: 24 },
+          indent: { left: 380 },
+          children: [
+            new TextRun({ text: "○  ", color: color, size: 22, font: "Calibri" }),
+            new TextRun({ text: `${choiceLetter(ci)}.  `, bold: true, color: INK, size: 21, font: "Calibri" }),
+            new TextRun({ text: c, size: 21, color: INK, font: "Calibri" }),
+          ],
+        })
+      )
+    );
+  } else {
+    body.push(
+      new Paragraph({
+        spacing: { before: 30, after: 6, line: 360 },
+        indent: { left: 140, right: 120 },
+        border: { bottom: { style: BorderStyle.SINGLE, size: 4, space: 2, color: "AFBECC" } },
+        children: [run("")],
+      })
+    );
+    body.push(
+      new Paragraph({
+        spacing: { after: 0, line: 360 },
+        indent: { left: 140, right: 120 },
+        border: { bottom: { style: BorderStyle.SINGLE, size: 4, space: 2, color: "AFBECC" } },
+        children: [run("")],
+      })
+    );
+  }
+  return new Table({
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    borders: {
+      top: { style: BorderStyle.SINGLE, size: 6, color: RULE },
+      bottom: { style: BorderStyle.SINGLE, size: 6, color: RULE },
+      left: { style: BorderStyle.SINGLE, size: 6, color: RULE },
+      right: { style: BorderStyle.SINGLE, size: 6, color: RULE },
+      insideHorizontal: { style: BorderStyle.NONE },
+      insideVertical: { style: BorderStyle.NONE },
+    },
+    rows: [
+      new TableRow({
+        children: [
+          new TableCell({
+            margins: { top: 0, bottom: 120, left: 0, right: 160 },
+            children: body,
+          }),
+        ],
+      }),
+    ],
+  });
 }
 
 // vocabulary as a 2-col table of cards
@@ -282,34 +386,30 @@ function skillBody(skill, { includeWorkLines = true } = {}) {
   });
   out.push(spacer());
 
-  // MCAP-style practice
+  // MCAP-style practice — official assessment look
   out.push(sectionHeading("MCAP-Style Practice", skill.domainColor));
-  out.push(new Paragraph({ spacing: { after: 80 }, children: [new TextRun({ text: "Bubble the best answer or fill in the blank, just like on the test.", italics: true, color: MUTED, size: 19, font: "Calibri" })] }));
-  skill.mcapItems.forEach((it, i) => {
-    out.push(
-      new Paragraph({
-        spacing: { before: 120, after: 40 },
-        children: [new TextRun({ text: `${i + 1}.  `, bold: true, color: NAVY, size: 21, font: "Calibri" }), run(it.prompt)],
-      })
-    );
-    if (it.type === "multiple-choice") {
-      it.choices.forEach((c, ci) =>
-        out.push(
-          new Paragraph({
-            spacing: { after: 20 },
-            indent: { left: 360 },
-            children: [new TextRun({ text: `  ◯  ${choiceLetter(ci)}.  `, color: INK, size: 20, font: "Calibri" }), new TextRun({ text: c, size: 20, color: INK, font: "Calibri" })],
-          })
-        )
-      );
-    } else {
-      out.push(
+  out.push(
+    calloutBox(
+      [
+        new Paragraph({ spacing: { after: 30 }, children: [new TextRun({ text: "Directions", bold: true, color: NAVY, size: 19, font: "Calibri" })] }),
         new Paragraph({
-          spacing: { before: 30, after: 30 },
-          children: [new TextRun({ text: "Answer: ", bold: true, color: MUTED, size: 20, font: "Calibri" }), new TextRun({ text: "____________________________", color: MUTED, size: 20, font: "Calibri" })],
-        })
-      );
-    }
+          children: [
+            new TextRun({
+              text: `Read each item carefully and answer it the way you would on the MCAP. For selected-response items, fill in the circle (○) next to the correct answer. For constructed-response items, enter your answer and show your work. Every item below assesses standard ${skill.code}.`,
+              color: INK,
+              size: 19,
+              font: "Calibri",
+            }),
+          ],
+        }),
+      ],
+      { fill: BOX_BG, border: BOX_BORDER }
+    )
+  );
+  out.push(spacer(120));
+  skill.mcapItems.forEach((it, i) => {
+    out.push(mcapItemCard(it, i + 1, skill.code, skill.domainColor));
+    out.push(spacer(100));
   });
 
   return out;
@@ -326,15 +426,16 @@ function answerKey(skills, label) {
     skill.independent.forEach((p, i) =>
       out.push(new Paragraph({ spacing: { after: 20 }, indent: { left: 200 }, children: [new TextRun({ text: `${i + 1}. `, bold: true, size: 19, color: INK, font: "Calibri" }), new TextRun({ text: p.answer, size: 19, color: INK, font: "Calibri" })] }))
     );
-    out.push(new Paragraph({ spacing: { before: 60, after: 30 }, children: [new TextRun({ text: "MCAP-Style Practice: ", bold: true, color: NAVY, size: 20, font: "Calibri" })] }));
+    out.push(new Paragraph({ spacing: { before: 60, after: 30 }, children: [new TextRun({ text: `MCAP-Style Practice (${skill.code}): `, bold: true, color: NAVY, size: 20, font: "Calibri" })] }));
     skill.mcapItems.forEach((it, i) =>
       out.push(
         new Paragraph({
           spacing: { after: 20 },
           indent: { left: 200 },
           children: [
-            new TextRun({ text: `${i + 1}. `, bold: true, size: 19, color: INK, font: "Calibri" }),
-            new TextRun({ text: it.type === "multiple-choice" ? it.answer : it.answer, bold: true, size: 19, color: NAVY, font: "Calibri" }),
+            new TextRun({ text: `Item ${i + 1} `, bold: true, size: 19, color: INK, font: "Calibri" }),
+            new TextRun({ text: `(${itemTypeLabel(it.type)}): `, size: 17, color: MUTED, font: "Calibri" }),
+            new TextRun({ text: it.answer, bold: true, size: 19, color: NAVY, font: "Calibri" }),
             new TextRun({ text: `  — ${it.why}`, size: 19, color: MUTED, font: "Calibri" }),
           ],
         })
@@ -407,25 +508,21 @@ function htmlPacket(skill) {
     .map((it, i) => {
       const body =
         it.type === "multiple-choice"
-          ? `<div class="choices">${it.choices.map((c, ci) => `<label><span class="bub">◯</span> <b>${choiceLetter(ci)}.</b> ${esc(c)}</label>`).join("")}</div>`
-          : `<div class="fill">Answer: <span class="blank"></span></div>`;
-      return `<li><span class="qn">${i + 1}.</span> ${esc(it.prompt)}${body}</li>`;
+          ? `<div class="choices">${it.choices.map((c, ci) => `<label><span class="bub">○</span> <b>${choiceLetter(ci)}.</b> ${esc(c)}</label>`).join("")}</div>`
+          : `<div class="fill"><span class="filllabel">Enter your answer:</span><span class="blank"></span></div>`;
+      return `<div class="item">
+        <div class="itembar"><span class="itemno">Item ${i + 1}</span><span class="itemtype">${esc(itemTypeLabel(it.type))}</span><span class="itemstd">${esc(skill.code)}</span></div>
+        <div class="itembody"><p class="stem">${esc(it.prompt)}</p><p class="idir">${esc(itemDirections(it.type))}</p>${body}</div>
+      </div>`;
     })
     .join("");
   const keyRows = [
     ...skill.independent.map((p, i) => `<tr><td>Independent ${i + 1}</td><td>${esc(p.answer)}</td></tr>`),
-    ...skill.mcapItems.map((it, i) => `<tr><td>MCAP ${i + 1}</td><td><b>${esc(it.answer)}</b> — ${esc(it.why)}</td></tr>`),
-  ].join("");
-
-  // Answer-explanation layout — rendered ONLY from explanation text already in
-  // the data (it.why / it.answer). No new math content is invented here.
-  const mcapExplain = skill.mcapItems
-    .map(
+    ...skill.mcapItems.map(
       (it, i) =>
-        `<div class="nt-callout nt-selfcheck"><div class="nt-callout-title">Item ${i + 1} — Answer &amp; why</div>` +
-        `<p><b>Answer:</b> ${esc(it.answer)}</p><p>${esc(it.why)}</p></div>`
-    )
-    .join("");
+        `<tr><td>Item ${i + 1} · ${esc(skill.code)}</td><td><b>${esc(it.answer)}</b> — ${esc(it.why)}</td></tr>`
+    ),
+  ].join("");
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -438,10 +535,10 @@ function htmlPacket(skill) {
 <link rel="stylesheet" href="/assets/design-tokens.css">
 <link rel="stylesheet" href="/assets/nt-activity-kit.css">
 <style>
-  :root{ --domain:#${skill.domainColor}; --navy:#12355B; --teal:#1FA6A2; --amber:#B97A12; --purple:#6B4FA0; --ink:#1A2733; --muted:#5F6F80; }
+  :root{ --domain:#${skill.domainColor}; --navy:#12355B; --teal:#1FA6A2; --amber:#B97A12; --purple:#6B4FA0; --ink:#1A2733; --muted:#5F6F80; --rule:#C7D2DD; }
   *{box-sizing:border-box}
-  body{font-family:'Segoe UI',system-ui,sans-serif;color:var(--ink);background:#f4f7fa;margin:0;line-height:1.55}
-  .wrap{max-width:860px;margin:0 auto;padding:24px 18px 80px}
+  body{font-family:'Segoe UI',Arial,system-ui,sans-serif;color:var(--ink);background:#eef2f6;margin:0;line-height:1.55;font-size:17px}
+  .wrap{max-width:880px;margin:0 auto;padding:24px 18px 80px}
   .topbar{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-bottom:18px}
   .crumbs a{color:var(--muted);text-decoration:none;font-size:.86rem}
   .crumbs a:hover{color:var(--teal)}
@@ -449,20 +546,23 @@ function htmlPacket(skill) {
   .btn{display:inline-flex;align-items:center;gap:6px;background:var(--navy);color:#fff;border:none;border-radius:9px;padding:9px 15px;font-size:.9rem;font-weight:600;text-decoration:none;cursor:pointer}
   .btn.alt{background:var(--teal)}
   .btn.ghost{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
-  .card{background:#fff;border-radius:16px;box-shadow:0 4px 18px rgba(18,53,91,.08);padding:30px 34px;border-top:7px solid var(--domain)}
-  .eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);font-weight:800}
-  h1{margin:.2em 0 .15em;color:var(--navy);font-size:2rem;line-height:1.15}
-  .std{display:inline-block;background:var(--domain);color:#fff;font-weight:700;padding:3px 11px;border-radius:30px;font-size:.82rem;margin-bottom:6px}
-  .goal{background:#EEF4F8;border:1px solid #BBD0DE;border-radius:12px;padding:14px 18px;margin:18px 0}
+  .card{background:#fff;border:1px solid #dbe3ec;border-radius:6px;box-shadow:0 2px 10px rgba(18,53,91,.06);padding:0 0 30px;overflow:hidden}
+  .banner{background:var(--navy);color:#fff;padding:22px 34px 20px;border-top:6px solid var(--domain)}
+  .eyebrow{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:#cfe0ec;font-weight:700}
+  .banner h1{margin:.18em 0 .2em;color:#fff;font-size:1.95rem;line-height:1.15}
+  .bannermeta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:.95rem;color:#dbe7f1}
+  .std{display:inline-block;background:var(--domain);color:#fff;font-weight:700;padding:4px 12px;border-radius:4px;font-size:.85rem;letter-spacing:.02em}
+  .body{padding:6px 34px 0}
+  .goal{background:#EEF4F8;border:1px solid #BBD0DE;border-left:5px solid var(--navy);border-radius:5px;padding:14px 18px;margin:20px 0}
   .goal b{color:var(--navy)}
-  h2{color:var(--navy);border-bottom:3px solid var(--domain);padding-bottom:6px;margin-top:34px;font-size:1.3rem}
-  .cue{font-style:italic;color:var(--muted);font-size:.92rem;font-weight:400;margin-left:8px}
+  h2{color:var(--navy);border-bottom:2px solid var(--domain);padding-bottom:6px;margin-top:34px;font-size:1.28rem;letter-spacing:.01em}
+  .cue{font-style:italic;color:var(--muted);font-size:.9rem;font-weight:400;margin-left:8px}
   .vgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
-  .vcard{background:#E6F4F3;border-radius:10px;padding:12px 14px}
+  .vcard{background:#E6F4F3;border:1px solid #cde8e6;border-radius:6px;padding:12px 14px}
   .vcard strong{display:block;color:var(--navy)}
   .vcard span{font-size:.92rem}
   ul.ntk li{margin:7px 0}
-  .ido{background:#E6F4F3;border:1px solid var(--teal);border-radius:12px;padding:16px 20px;margin:12px 0}
+  .ido{background:#E6F4F3;border:1px solid var(--teal);border-radius:6px;padding:16px 20px;margin:12px 0}
   .ido .prob{font-weight:700;margin-bottom:8px}
   .ido ol{margin:0;padding-left:20px}
   .ido li{margin:5px 0}
@@ -472,20 +572,34 @@ function htmlPacket(skill) {
   .qn{font-weight:800;color:var(--domain);margin-right:6px}
   .hint{font-style:italic;color:var(--muted);font-size:.9rem;margin:5px 0}
   .rule{border-bottom:1.5px solid #cfdae6;height:26px}
-  .choices{display:flex;flex-direction:column;gap:5px;margin:8px 0 0 6px}
-  .choices label{display:block;padding:4px 8px;border-radius:7px}
-  .bub{color:var(--muted)}
-  .fill .blank{display:inline-block;border-bottom:1.5px solid #cfdae6;width:240px;height:18px}
-  details.key{margin-top:30px;background:#FBF3E2;border:1px solid #E5D2A6;border-radius:12px;padding:6px 18px}
+  /* official MCAP item cards */
+  .directions{background:#f5f8fb;border:1px solid var(--rule);border-radius:5px;padding:12px 16px;margin:12px 0 18px;font-size:.95rem}
+  .items{display:flex;flex-direction:column;gap:16px}
+  .item{border:1px solid var(--rule);border-radius:6px;overflow:hidden;background:#fff}
+  .itembar{display:flex;align-items:center;gap:12px;background:var(--domain);color:#fff;padding:8px 16px;font-size:.8rem}
+  .itembar .itemno{font-weight:800}
+  .itembar .itemtype{text-transform:uppercase;letter-spacing:.08em;font-weight:600;opacity:.95}
+  .itembar .itemstd{margin-left:auto;font-weight:800;letter-spacing:.02em;background:rgba(255,255,255,.18);padding:2px 9px;border-radius:4px}
+  .itembody{padding:14px 18px 16px}
+  .itembody .stem{margin:0 0 4px;font-weight:600}
+  .itembody .idir{margin:0 0 10px;font-style:italic;color:var(--muted);font-size:.88rem}
+  .choices{display:flex;flex-direction:column;gap:4px;margin:0}
+  .choices label{display:block;padding:7px 10px;border:1px solid #e3e9f0;border-radius:5px}
+  .bub{color:var(--domain);font-weight:700}
+  .fill{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .fill .filllabel{font-weight:600;color:var(--muted)}
+  .fill .blank{display:inline-block;border-bottom:1.5px solid #aebccb;flex:1;min-width:200px;height:22px}
+  details.key{margin:30px 0 0;background:#FBF3E2;border:1px solid #E5D2A6;border-radius:6px;padding:6px 18px}
   details.key summary{cursor:pointer;font-weight:700;color:var(--navy);padding:10px 0}
   table.key{width:100%;border-collapse:collapse;font-size:.92rem;margin:8px 0 14px}
   table.key td{border-bottom:1px solid #e7dcc0;padding:6px 8px;vertical-align:top}
-  table.key td:first-child{white-space:nowrap;font-weight:600;color:var(--muted);width:120px}
-  .foot{text-align:center;color:var(--muted);font-size:.82rem;margin-top:26px}
-  @media(max-width:620px){.vgrid{grid-template-columns:1fr}.card{padding:22px 18px}}
+  table.key td:first-child{white-space:nowrap;font-weight:600;color:var(--muted);width:150px}
+  .foot{text-align:center;color:var(--muted);font-size:.82rem;margin-top:26px;padding:0 34px}
+  @media(max-width:620px){.vgrid{grid-template-columns:1fr}.banner,.body,.foot{padding-left:18px;padding-right:18px}}
   @media print{
-    body{background:#fff}.topbar,.btns,details.key{display:none}
-    .card{box-shadow:none;border-radius:0}
+    body{background:#fff;font-size:12pt}.topbar,.btns,details.key{display:none}
+    .card{box-shadow:none;border:none}
+    .item,.directions{break-inside:avoid}
   }
 </style>
 </head>
@@ -499,11 +613,13 @@ function htmlPacket(skill) {
     </div>
   </div>
   <div class="card">
-    <div class="eyebrow">Neft Teacher · MCAP Grade 6 Review</div>
-    <span class="std">${esc(skill.code)}</span>
-    <h1>${esc(skill.title)}</h1>
-    <div style="color:var(--muted);font-weight:600">${esc(skill.domainTitle)}</div>
-    <div class="goal"><b>🎯 Learning Goal:</b> ${esc(skill.summary)}</div>
+    <div class="banner">
+      <div class="eyebrow">Neft Teacher · MCAP Grade 6 Mathematics Review</div>
+      <h1>${esc(skill.title)}</h1>
+      <div class="bannermeta"><span class="std">${esc(skill.code)}</span><span>${esc(skill.domainTitle)}</span></div>
+    </div>
+    <div class="body">
+    <div class="goal"><b>Learning Goal:</b> ${esc(skill.summary)}</div>
 
     <h2>Vocabulary</h2>
     <div class="vgrid">${vocab}</div>
@@ -521,13 +637,14 @@ function htmlPacket(skill) {
     <ol class="work">${indep}</ol>
 
     <h2>MCAP-Style Practice</h2>
-    <ol class="work">${mcap}</ol>
+    <div class="directions"><b>Directions:</b> Answer each item the way you would on the MCAP. For selected-response items, fill in the circle (○) next to the correct answer. For constructed-response items, enter your answer and show your work. Every item below assesses standard <b>${esc(skill.code)}</b>.</div>
+    <div class="items">${mcap}</div>
 
-    <details class="key"><summary>🔑 Teacher Answer Key (click to show)</summary>
+    <details class="key"><summary>Teacher Answer Key (click to show)</summary>
       <table class="key">${keyRows}</table>
     </details>
-
-    <div class="foot">Neft Teacher · Grade 6 MCAP Review Packets · Standard ${esc(skill.code)}</div>
+    </div>
+    <div class="foot">Neft Teacher · Grade 6 MCAP Mathematics Review · Standard ${esc(skill.code)}</div>
   </div>
 </div>
 </body>
@@ -543,7 +660,7 @@ function hubIndex() {
         <li>
           <div class="srow">
             <span class="scode">${esc(s.code)}</span>
-            <span class="stitle">${esc(s.icon)} ${esc(s.title)}</span>
+            <span class="stitle">${esc(s.title)}</span>
           </div>
           <div class="sdl">
             <a href="./${d.slug}/${skillFileSlug(s.code)}.html">Study&nbsp;online</a>
@@ -589,8 +706,8 @@ function hubIndex() {
   .bundle{background:var(--domain);color:#fff;text-decoration:none;font-weight:600;font-size:.84rem;padding:8px 14px;border-radius:9px}
   ul.skills{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px 18px}
   ul.skills li{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px;padding:9px 4px;border-bottom:1px solid #eef2f6}
-  .srow{display:flex;flex-direction:column}
-  .scode{font-size:.72rem;font-weight:700;color:var(--domain);letter-spacing:.02em}
+  .srow{display:flex;flex-direction:column;gap:3px}
+  .scode{align-self:flex-start;font-size:.7rem;font-weight:700;color:#fff;background:var(--domain);padding:1px 8px;border-radius:4px;letter-spacing:.02em}
   .stitle{font-size:.95rem;font-weight:600;color:#1A2733}
   .sdl{display:flex;gap:8px;align-items:center;white-space:nowrap}
   .sdl a{font-size:.82rem;text-decoration:none;color:#12355B;font-weight:600}

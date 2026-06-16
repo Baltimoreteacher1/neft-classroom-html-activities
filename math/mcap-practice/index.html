@@ -11,25 +11,28 @@
     <link rel="stylesheet" href="/assets/shared.css" />
     <style>
       :root {
-        --navy: #0f2b3c;
-        --blue: #1a6fb5;
-        --blue-light: #e8f2fc;
-        --teal: #0e8a7d;
-        --teal-light: #e4f5f3;
-        --gold: #d4952a;
-        --gold-light: #fdf3e0;
-        --coral: #c45a3c;
-        --coral-light: #fdeee9;
-        --green: #2d874b;
-        --green-light: #e6f4eb;
-        --ink: #1a2633;
-        --muted: #5e6e7e;
-        --line: #e2e7ec;
-        --bg: #f7f9fb;
+        /* Official MCAP-style palette: restrained blue accent on white */
+        --blue: #0b6cb7;
+        --blue-dark: #084e85;
+        --blue-light: #eaf3fb;
+        --blue-border: #b9d6ef;
+        --green: #2e7d46;
+        --green-light: #e8f4ec;
+        --coral: #b3261e;
+        --coral-light: #fbeceb;
+        --gold: #b07a16;
+        --gold-light: #fbf3e2;
+        --ink: #1a1a1a;
+        --muted: #5a5f66;
+        --line: #d7dbe0;
+        --bg: #ffffff;
+        --page: #f4f6f8;
         --card: #ffffff;
-        --radius: 16px;
-        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
-        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+        --radius: 8px;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        --font:
+          system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
+          sans-serif;
       }
       *,
       *::before,
@@ -40,32 +43,44 @@
         margin: 0;
         font-family: var(--font);
         color: var(--ink);
-        background: var(--bg);
+        background: var(--page);
         line-height: 1.6;
+        font-size: 18px;
+        -webkit-font-smoothing: antialiased;
       }
       .wrap {
-        max-width: 780px;
+        max-width: 820px;
         margin: 0 auto;
         padding: 0 20px 60px;
       }
 
-      /* ── HEADER ── */
+      /* ── HEADER (official assessment banner) ── */
       .phero {
-        background: linear-gradient(135deg, #0f2b3c 0%, #1a6fb5 100%);
+        background: var(--blue);
         color: #fff;
-        padding: 36px 24px 30px;
+        padding: 26px 24px 22px;
         text-align: center;
+        border-bottom: 4px solid var(--blue-dark);
+      }
+      .phero .phero-eyebrow {
+        margin: 0 0 6px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.85);
       }
       .phero h1 {
-        font-size: clamp(24px, 5vw, 38px);
+        font-size: clamp(22px, 4.5vw, 32px);
         margin: 0 0 8px;
-        letter-spacing: -0.02em;
+        letter-spacing: -0.01em;
+        font-weight: 800;
       }
       .phero p {
         margin: 0 auto;
-        max-width: 580px;
-        color: rgba(255, 255, 255, 0.85);
-        font-size: 16px;
+        max-width: 600px;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 15px;
       }
       .tags {
         margin-top: 14px;
@@ -75,12 +90,13 @@
         flex-wrap: wrap;
       }
       .tag {
-        background: rgba(255, 255, 255, 0.14);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 50px;
-        padding: 4px 12px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 4px;
+        padding: 4px 11px;
         font-size: 12px;
         font-weight: 700;
+        letter-spacing: 0.03em;
       }
 
       /* ── BREADCRUMB ── */
@@ -111,20 +127,25 @@
         background: var(--card);
         border: 1px solid var(--line);
         border-radius: var(--radius);
-        padding: 32px 28px;
+        padding: 32px 30px;
         margin: 26px 0;
         box-shadow: var(--shadow);
       }
       .start-card h2 {
-        margin: 0 0 16px;
+        margin: 0 0 14px;
         font-size: 22px;
-        color: var(--navy);
+        color: var(--ink);
+        font-weight: 800;
+      }
+      .start-card > p {
+        font-size: 16px;
+        color: var(--muted);
       }
       .overview-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 14px;
-        margin: 20px 0;
+        gap: 12px;
+        margin: 22px 0;
       }
       @media (max-width: 540px) {
         .overview-grid {
@@ -133,13 +154,15 @@
       }
       .ov-item {
         background: var(--blue-light);
-        border-radius: 12px;
+        border: 1px solid var(--blue-border);
+        border-radius: 6px;
         padding: 14px 16px;
       }
       .ov-item strong {
         display: block;
         font-size: 15px;
-        color: var(--navy);
+        color: var(--blue-dark);
+        font-weight: 800;
       }
       .ov-item span {
         font-size: 13px;
@@ -147,10 +170,11 @@
       }
       .rules {
         background: var(--gold-light);
-        border-radius: 12px;
-        padding: 16px 18px;
+        border: 1px solid #e9d5a6;
+        border-radius: 6px;
+        padding: 16px 20px;
         margin: 18px 0;
-        font-size: 14px;
+        font-size: 15px;
       }
       .rules ul {
         margin: 6px 0 0 0;
@@ -165,25 +189,26 @@
         position: sticky;
         top: 0;
         z-index: 10;
-        background: var(--bg);
-        padding: 10px 0 8px;
+        background: var(--page);
+        padding: 12px 0 10px;
+        border-bottom: 1px solid var(--line);
       }
       .progress-label {
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 700;
-        color: var(--muted);
-        margin-bottom: 5px;
+        color: var(--ink);
+        margin-bottom: 6px;
       }
       .progress-track {
-        height: 10px;
+        height: 8px;
         background: var(--line);
-        border-radius: 50px;
+        border-radius: 4px;
         overflow: hidden;
       }
       .progress-fill {
         height: 100%;
         width: 0;
-        background: linear-gradient(90deg, var(--teal), var(--green));
+        background: var(--blue);
         transition: width 0.4s;
       }
 
@@ -191,57 +216,64 @@
         background: var(--card);
         border: 1px solid var(--line);
         border-radius: var(--radius);
-        padding: 24px 26px;
+        padding: 26px 28px;
         margin: 20px 0;
         box-shadow: var(--shadow);
       }
+      /* Item header: type badge + number on the left, CCSS tag top-right */
       .q-meta {
         display: flex;
         gap: 10px;
         align-items: center;
-        margin-bottom: 14px;
+        margin-bottom: 16px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--line);
         flex-wrap: wrap;
       }
       .q-num {
-        background: var(--blue);
-        color: #fff;
-        border-radius: 8px;
-        width: 36px;
-        height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         font-weight: 800;
-        font-size: 16px;
+        font-size: 17px;
+        color: var(--ink);
         flex: 0 0 auto;
-      }
-      .q-standard {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        background: var(--line);
-        border-radius: 50px;
-        padding: 3px 10px;
       }
       .q-type {
         font-size: 12px;
         font-weight: 700;
-        color: var(--blue);
+        color: var(--blue-dark);
         background: var(--blue-light);
-        border-radius: 50px;
+        border: 1px solid var(--blue-border);
+        border-radius: 4px;
+        padding: 3px 10px;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+      }
+      .q-standard {
+        margin-left: auto;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        letter-spacing: 0.04em;
+        background: #f0f2f4;
+        border: 1px solid var(--line);
+        border-radius: 4px;
         padding: 3px 10px;
       }
       .q-stem {
-        font-size: 16px;
-        margin: 0 0 16px;
+        font-size: 18px;
+        margin: 0 0 18px;
+        color: var(--ink);
       }
       .q-stem strong {
-        color: var(--navy);
+        color: var(--ink);
+      }
+      .q-instruction {
+        font-size: 14px;
+        color: var(--muted);
+        font-weight: 600;
+        margin: 0 0 12px;
       }
 
-      /* Multiple choice */
+      /* Answer choices */
       .mc-list {
         list-style: none;
         margin: 0;
@@ -253,30 +285,38 @@
       .mc-list label {
         display: flex;
         align-items: flex-start;
-        gap: 10px;
+        gap: 12px;
         cursor: pointer;
-        background: #f7f9fb;
-        border: 2px solid var(--line);
-        border-radius: 10px;
-        padding: 11px 14px;
-        font-size: 15px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 13px 16px;
+        font-size: 17px;
         transition:
           border-color 0.15s,
-          background 0.15s;
+          background 0.15s,
+          box-shadow 0.15s;
       }
       .mc-list label:hover {
         border-color: var(--blue);
         background: var(--blue-light);
       }
-      .mc-list input[type="radio"] {
-        margin-top: 3px;
-        flex: 0 0 auto;
-        accent-color: var(--blue);
+      .mc-list label:focus-within {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 2px var(--blue-border);
       }
+      .mc-list input[type="radio"],
       .mc-list input[type="checkbox"] {
         margin-top: 3px;
         flex: 0 0 auto;
+        width: 18px;
+        height: 18px;
         accent-color: var(--blue);
+      }
+      .mc-choice-letter {
+        font-weight: 800;
+        color: var(--blue-dark);
+        margin-right: 4px;
       }
 
       /* Numeric input */
@@ -295,19 +335,23 @@
       input[type="number"],
       input[type="text"],
       select {
-        padding: 10px 12px;
-        border: 2px solid var(--line);
-        border-radius: 10px;
+        padding: 11px 13px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
         font-family: inherit;
-        font-size: 15px;
+        font-size: 17px;
+        color: var(--ink);
         background: #fff;
-        transition: border-color 0.15s;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
       }
       input[type="number"]:focus,
       input[type="text"]:focus,
       select:focus {
         outline: none;
         border-color: var(--blue);
+        box-shadow: 0 0 0 2px var(--blue-border);
       }
       input[type="number"] {
         width: 120px;
@@ -318,18 +362,24 @@
 
       /* Two-part */
       .twopart-part {
-        background: #f7f9fb;
+        background: #fafbfc;
         border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 16px 18px;
-        margin: 14px 0;
+        border-left: 4px solid var(--blue);
+        border-radius: 6px;
+        padding: 16px 20px;
+        margin: 16px 0;
       }
       .twopart-part h4 {
         margin: 0 0 10px;
-        font-size: 14px;
+        font-size: 13px;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--navy);
+        letter-spacing: 0.06em;
+        font-weight: 800;
+        color: var(--blue-dark);
+      }
+      .twopart-part p {
+        font-size: 17px;
+        margin: 0 0 12px;
       }
 
       /* Matching */
@@ -341,39 +391,23 @@
       .match-table th,
       .match-table td {
         border: 1px solid var(--line);
-        padding: 10px 13px;
+        padding: 11px 14px;
         text-align: left;
         vertical-align: middle;
+        font-size: 16px;
       }
       .match-table th {
-        background: var(--navy);
+        background: var(--blue);
         color: #fff;
         font-size: 13px;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
       }
       .match-table tr:nth-child(even) td {
-        background: #f7f9fb;
+        background: #fafbfc;
       }
-
-      /* Check button */
-      .btn-check {
-        background: var(--teal);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        padding: 11px 22px;
-        font-weight: 800;
-        font-size: 15px;
-        cursor: pointer;
-        font-family: inherit;
-        margin-top: 14px;
-        transition: filter 0.15s;
-      }
-      .btn-check:hover {
-        filter: brightness(1.08);
-      }
-      .btn-check:focus-visible {
-        outline: 3px solid var(--gold);
-        outline-offset: 2px;
+      .match-table select {
+        width: 100%;
       }
 
       .inline-fb {
@@ -409,21 +443,29 @@
       .btn-nav {
         background: var(--blue);
         color: #fff;
-        border: none;
-        border-radius: 10px;
-        padding: 10px 20px;
-        font-weight: 800;
-        font-size: 15px;
+        border: 1px solid var(--blue-dark);
+        border-radius: 6px;
+        padding: 11px 22px;
+        font-weight: 700;
+        font-size: 16px;
         cursor: pointer;
         font-family: inherit;
-        transition: filter 0.15s;
+        transition:
+          background 0.15s,
+          filter 0.15s;
       }
       .btn-nav:hover {
-        filter: brightness(1.08);
+        filter: brightness(1.06);
+      }
+      .btn-nav.back {
+        background: #fff;
+        color: var(--blue-dark);
+        border-color: var(--blue);
       }
       .btn-nav:disabled {
-        background: var(--line);
+        background: #f0f2f4;
         color: var(--muted);
+        border-color: var(--line);
         cursor: not-allowed;
       }
       .btn-nav:focus-visible {
@@ -432,9 +474,10 @@
       }
       .btn-nav.submit {
         background: var(--green);
+        border-color: #1f5d33;
       }
       .q-counter {
-        font-size: 14px;
+        font-size: 15px;
         font-weight: 700;
         color: var(--muted);
       }
@@ -456,9 +499,9 @@
         box-shadow: var(--shadow);
       }
       .score-big {
-        font-size: 64px;
+        font-size: 60px;
         font-weight: 900;
-        color: var(--navy);
+        color: var(--blue-dark);
         line-height: 1;
       }
       .score-pct {
@@ -477,7 +520,7 @@
         font-weight: 700;
       }
       .score-msg.good {
-        color: var(--blue);
+        color: var(--blue-dark);
         font-weight: 700;
       }
       .score-msg.keep {
@@ -496,6 +539,7 @@
       .breakdown h3 {
         margin: 0 0 14px;
         font-size: 18px;
+        font-weight: 800;
       }
       .strand-row {
         display: flex;
@@ -505,23 +549,23 @@
         flex-wrap: wrap;
       }
       .strand-name {
-        font-weight: 700;
-        width: 40px;
+        font-weight: 800;
+        width: 44px;
         font-size: 14px;
-        color: var(--navy);
+        color: var(--ink);
       }
       .strand-track {
         flex: 1;
         min-width: 120px;
-        height: 12px;
+        height: 10px;
         background: var(--line);
-        border-radius: 50px;
+        border-radius: 4px;
         overflow: hidden;
       }
       .strand-fill {
         height: 100%;
-        border-radius: 50px;
-        background: var(--teal);
+        border-radius: 4px;
+        background: var(--blue);
         transition: width 0.5s;
       }
       .strand-fill.full {
@@ -541,13 +585,13 @@
       }
 
       .review-toggle {
-        background: none;
-        border: 2px solid var(--blue);
-        color: var(--blue);
-        border-radius: 10px;
-        padding: 9px 18px;
-        font-weight: 800;
-        font-size: 14px;
+        background: #fff;
+        border: 1px solid var(--blue);
+        color: var(--blue-dark);
+        border-radius: 6px;
+        padding: 10px 18px;
+        font-weight: 700;
+        font-size: 15px;
         cursor: pointer;
         font-family: inherit;
         margin: 6px 0;
@@ -575,7 +619,7 @@
       .rev-item {
         background: var(--card);
         border: 1px solid var(--line);
-        border-radius: 12px;
+        border-radius: 6px;
         padding: 16px 18px;
         margin: 12px 0;
       }
@@ -589,41 +633,45 @@
       .rev-item .rev-num {
         font-weight: 900;
         font-size: 15px;
-        color: var(--navy);
+        color: var(--ink);
       }
       .rev-item .rev-std {
         font-size: 12px;
-        background: var(--line);
-        border-radius: 50px;
+        background: #f0f2f4;
+        border: 1px solid var(--line);
+        border-radius: 4px;
         padding: 2px 9px;
         color: var(--muted);
         font-weight: 700;
       }
       .rev-item .rev-icon {
         font-size: 18px;
+        margin-left: auto;
       }
       .rev-item .rev-q {
-        font-size: 14px;
+        font-size: 15px;
         color: var(--ink);
         margin: 0 0 8px;
       }
       .rev-chosen {
         background: var(--coral-light);
-        border-radius: 8px;
-        padding: 6px 10px;
-        font-size: 13px;
+        border: 1px solid #f0c4b8;
+        border-radius: 6px;
+        padding: 7px 11px;
+        font-size: 14px;
         margin: 4px 0;
       }
       .rev-correct {
         background: var(--green-light);
-        border-radius: 8px;
-        padding: 6px 10px;
-        font-size: 13px;
+        border: 1px solid #b7dfc5;
+        border-radius: 6px;
+        padding: 7px 11px;
+        font-size: 14px;
         margin: 4px 0;
         font-weight: 700;
       }
       .rev-explanation {
-        font-size: 13px;
+        font-size: 14px;
         color: var(--muted);
         margin-top: 8px;
         font-style: italic;
@@ -639,24 +687,26 @@
       .btn-main {
         background: var(--blue);
         color: #fff;
-        border: none;
-        border-radius: 10px;
+        border: 1px solid var(--blue-dark);
+        border-radius: 6px;
         padding: 12px 24px;
-        font-weight: 800;
+        font-weight: 700;
         font-size: 16px;
         cursor: pointer;
         font-family: inherit;
         transition: filter 0.15s;
       }
       .btn-main:hover {
-        filter: brightness(1.08);
+        filter: brightness(1.06);
       }
       .btn-main:focus-visible {
         outline: 3px solid var(--gold);
         outline-offset: 2px;
       }
       .btn-main.alt {
-        background: var(--teal);
+        background: #fff;
+        color: var(--blue-dark);
+        border-color: var(--blue);
       }
 
       /* ── GENERAL UTILS ── */
@@ -664,10 +714,10 @@
         display: inline-block;
         background: var(--blue);
         color: #fff;
-        border: none;
-        border-radius: 12px;
-        padding: 14px 30px;
-        font-weight: 800;
+        border: 1px solid var(--blue-dark);
+        border-radius: 6px;
+        padding: 14px 32px;
+        font-weight: 700;
         font-size: 17px;
         cursor: pointer;
         font-family: inherit;
@@ -675,7 +725,7 @@
         transition: filter 0.15s;
       }
       .btn-primary:hover {
-        filter: brightness(1.08);
+        filter: brightness(1.06);
       }
       .btn-primary:focus-visible {
         outline: 3px solid var(--gold);
@@ -692,14 +742,26 @@
       }
 
       /* Responsive tweaks */
-      @media (max-width: 500px) {
+      @media (max-width: 600px) {
+        body {
+          font-size: 17px;
+        }
         .q-card {
           padding: 18px 16px;
+        }
+        .q-stem {
+          font-size: 17px;
+        }
+        .mc-list label {
+          font-size: 16px;
+        }
+        .q-standard {
+          margin-left: 0;
         }
         .match-table th,
         .match-table td {
           padding: 8px 9px;
-          font-size: 13px;
+          font-size: 14px;
         }
       }
 
@@ -717,15 +779,16 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <header class="phero">
-      <h1>Grade 6 MCAP Practice Test</h1>
+      <p class="phero-eyebrow">Maryland Comprehensive Assessment Program</p>
+      <h1>Grade 6 Mathematics Practice Test</h1>
       <p>
-        Technology-enhanced items — multiple choice, multi-select, numeric
-        entry, two-part, and matching
+        Technology-enhanced items: selected response, multiple select, numeric
+        response, two-part, and matching.
       </p>
       <div class="tags">
         <span class="tag">6.NS</span>
@@ -733,7 +796,7 @@
         <span class="tag">6.EE</span>
         <span class="tag">6.G</span>
         <span class="tag">6.SP</span>
-        <span class="tag">Self-Grading</span>
+        <span class="tag">Self-Scoring</span>
       </div>
     </header>
 
@@ -743,52 +806,54 @@
   ══════════════════════════════════════════════════ -->
       <div id="screen-start" class="screen active">
         <div class="start-card">
-          <h2>About This Practice Test</h2>
+          <h2>Directions</h2>
           <p>
-            This test uses the same item types as the Maryland Comprehensive
-            Assessment Program (MCAP) for Grade 6 math. Questions are randomly
-            ordered each time you start.
+            This practice test uses the same item types as the Maryland
+            Comprehensive Assessment Program (MCAP) for Grade 6 mathematics. The
+            questions are presented in a new order each time you begin. Every
+            item shows its Common Core State Standard (CCSS).
           </p>
 
           <div class="overview-grid">
             <div class="ov-item">
-              <strong>14 Questions</strong>
-              <span>Randomly shuffled each attempt</span>
+              <strong>15 Questions</strong>
+              <span>Presented in a new order each attempt</span>
             </div>
             <div class="ov-item">
-              <strong>5 Standards Domains</strong>
-              <span>NS · RP · EE · G · SP</span>
+              <strong>5 Reporting Categories</strong>
+              <span>6.NS · 6.RP · 6.EE · 6.G · 6.SP</span>
             </div>
             <div class="ov-item">
               <strong>5 Item Types</strong>
               <span
-                >Multiple choice, multi-select, numeric entry, two-part,
-                matching</span
+                >Selected response, multiple select, numeric response, two-part,
+                and matching</span
               >
             </div>
             <div class="ov-item">
               <strong>Instant Score Report</strong>
-              <span>Per-standard breakdown + review</span>
+              <span>Score by standard plus full answer review</span>
             </div>
           </div>
 
           <div class="rules">
-            <strong>Test Guidelines</strong>
+            <strong>Test Directions</strong>
             <ul>
-              <li>Read each question carefully before answering.</li>
+              <li>Read each question carefully before you answer.</li>
               <li>
-                For <strong>multi-select</strong> items: choose ALL correct
-                answers — partial credit is not awarded.
+                For <strong>multiple select</strong> items, choose every correct
+                answer. Partial credit is not awarded.
               </li>
               <li>
-                For <strong>numeric entry</strong>: enter your answer as a
-                decimal or whole number.
+                For <strong>numeric response</strong> items, enter your answer
+                as a whole number or decimal.
               </li>
               <li>
-                You may navigate back to change answers before submitting.
+                Use <strong>Back</strong> and <strong>Next</strong> to move
+                between questions. You may change an answer before you submit.
               </li>
               <li>
-                Hit <strong>Submit Test</strong> on the last question to see
+                On the last question, select <strong>Submit Test</strong> to see
                 your score report.
               </li>
             </ul>
@@ -808,7 +873,7 @@
         <div class="progress-bar-wrap" aria-live="polite">
           <div class="progress-label">
             Question <span id="prog-current">1</span> of
-            <span id="prog-total">14</span>
+            <span id="prog-total">15</span>
           </div>
           <div
             class="progress-track"
@@ -824,10 +889,15 @@
         <div id="question-area"></div>
 
         <div class="q-nav">
-          <button class="btn-nav" id="btn-back" onclick="goBack()" disabled>
+          <button
+            class="btn-nav back"
+            id="btn-back"
+            onclick="goBack()"
+            disabled
+          >
             &#8592; Back
           </button>
-          <span class="q-counter" id="q-counter">1 / 14</span>
+          <span class="q-counter" id="q-counter">1 / 15</span>
           <button class="btn-nav" id="btn-next" onclick="goNext()">
             Next &#8594;
           </button>
@@ -846,7 +916,7 @@
         </div>
 
         <div class="breakdown" id="strand-breakdown">
-          <h3>Per-Standard Breakdown</h3>
+          <h3>Score by Reporting Category</h3>
           <div id="strand-rows"></div>
         </div>
 
@@ -899,7 +969,7 @@
       function buildBank() {
         const bank = [];
 
-        /* ── 1  6.RP.1  Multiple Choice ── */
+        /* ── 1  6.RP.1  Selected Response — ratio language ── */
         (function () {
           const p = rnd(3, 7),
             t = rnd(8, 15) + rnd(1, 5);
@@ -908,15 +978,15 @@
             standard: "6.RP.1",
             strand: "RP",
             type: "mc",
-            stem: `A recipe uses <strong>${p} cups</strong> of flour and <strong>${t} cups</strong> of flour total (flour + other ingredients). Which statement correctly describes a ratio in this situation?`,
+            stem: `A recipe uses <strong>${p} cups</strong> of flour. The recipe uses <strong>${t} cups</strong> of ingredients in all. Which statement correctly describes a ratio in this situation?`,
             choices: [
-              `The ratio of flour to total cups is ${p} to ${t}.`,
-              `The ratio of flour to total cups is ${t} to ${p}.`,
-              `The ratio of other ingredients to flour is ${p} to ${t - p}.`,
-              `Ratios can only compare equal quantities, so no ratio exists here.`,
+              `The ratio of flour to total ingredients is ${p} to ${t}.`,
+              `The ratio of flour to total ingredients is ${t} to ${p}.`,
+              `The ratio of flour to total ingredients is ${p} to ${t - p}.`,
+              `There is no ratio because the two amounts are not equal.`,
             ],
             correct: 0,
-            explanation: `A part-to-whole ratio compares one quantity to the total. Flour : total = ${p} : ${t}.`,
+            explanation: `A part-to-whole ratio compares one part to the total. Flour : total ingredients = ${p} : ${t}.`,
           });
         })();
 
@@ -961,16 +1031,16 @@
           });
         })();
 
-        /* ── 4  6.NS.1  Multi-select — dividing fractions ── */
+        /* ── 4  6.NS.1  Multiple Select — dividing by a fraction ── */
         bank.push({
           id: "ns1",
           standard: "6.NS.1",
           strand: "NS",
           type: "multiselect",
-          stem: `Which expressions are equal to <strong>2 ÷ (1/3)</strong>? Select ALL that apply.`,
-          choices: [`2 × 3`, `2 × (1/3)`, `6`, `2/3`, `3 × 2`],
+          stem: `Which expressions are equal to <strong>2 ÷ 1/3</strong>?`,
+          choices: [`2 × 3`, `2 × 1/3`, `6`, `2/3`, `3 × 2`],
           correct: [0, 2, 4],
-          explanation: `Dividing by a fraction means multiplying by its reciprocal: 2 ÷ (1/3) = 2 × 3 = 6. Both "2 × 3" and "3 × 2" equal 6 (commutative property), and 6 itself is correct.`,
+          explanation: `Dividing by a fraction is the same as multiplying by its reciprocal: 2 ÷ 1/3 = 2 × 3 = 6. So 2 × 3, 3 × 2 (commutative property), and 6 are all equal to it.`,
         });
 
         /* ── 5  6.NS.3  Numeric Entry — decimal operations ── */
@@ -1006,7 +1076,7 @@
             standard: "6.NS.4",
             strand: "NS",
             type: "mc",
-            stem: `What is the Greatest Common Factor (GCF) of <strong>${a}</strong> and <strong>${b}</strong>?`,
+            stem: `What is the greatest common factor (GCF) of <strong>${a}</strong> and <strong>${b}</strong>?`,
             choices: [
               `${g}`,
               `${g * 2}`,
@@ -1014,35 +1084,33 @@
               `${a * b}`,
             ],
             correct: 0,
-            explanation: `The GCF of ${a} and ${b} is ${g}. It is the largest number that divides both evenly.`,
+            explanation: `The greatest common factor of ${a} and ${b} is ${g} — the largest number that divides both ${a} and ${b} evenly.`,
           });
         })();
 
         /* ── 7  6.EE.1  Two-Part — exponents ── */
         (function () {
-          const base = rnd(2, 5),
-            exp = rnd(2, 4);
+          const base = rnd(2, 5);
+          let exp = rnd(2, 4);
+          while (exp === base) exp = rnd(2, 4); // keep choices A and D distinct
           const val = Math.pow(base, exp);
-          const wrongVals = [base * exp, base + exp, val + 1, val - 1].filter(
-            (x) => x !== val && x > 0,
-          );
           bank.push({
             id: "ee1",
             standard: "6.EE.1",
             strand: "EE",
             type: "twopart",
-            stem: `Consider the expression <strong>${base}<sup>${exp}</sup></strong>.`,
+            stem: `This question has two parts. Consider the expression <strong>${base}<sup>${exp}</sup></strong>.`,
             partA: {
               label: "Part A",
-              question: `Which statement describes what ${base}<sup>${exp}</sup> means?`,
+              question: `Which statement describes the meaning of ${base}<sup>${exp}</sup>?`,
               choices: [
-                `${base} multiplied by itself ${exp} time${exp > 1 ? "s" : ""}`,
+                `${base} used as a factor ${exp} time${exp > 1 ? "s" : ""}`,
                 `${base} multiplied by ${exp}`,
-                `${base} added to itself ${exp} time${exp > 1 ? "s" : ""}`,
-                `${exp} multiplied by itself ${base} times`,
+                `${base} added ${exp} time${exp > 1 ? "s" : ""}`,
+                `${exp} used as a factor ${base} times`,
               ],
               correct: 0,
-              explanation: `An exponent tells how many times the base is used as a factor. ${base}<sup>${exp}</sup> means ${Array(exp).fill(base).join(" × ")}.`,
+              explanation: `An exponent tells how many times the base is used as a factor, so ${base}<sup>${exp}</sup> means ${Array(exp).fill(base).join(" × ")}.`,
             },
             partB: {
               label: "Part B",
@@ -1051,37 +1119,49 @@
               answer: val,
               tolerance: 0,
               unit: "",
-              explanation: `${Array(exp).fill(base).join(" × ")} = ${val}`,
+              explanation: `${Array(exp).fill(base).join(" × ")} = ${val}.`,
             },
           });
         })();
 
-        /* ── 8  6.EE.2  Multiple Choice — evaluate expression ── */
+        /* ── 8  6.EE.2  Selected Response — evaluate expression ── */
         (function () {
           const a = rnd(2, 5),
             b = rnd(1, 4),
-            c = rnd(1, 6),
             x = rnd(2, 5);
           const val = a * x + b;
+          // Distractors for common errors, kept distinct from val and each other:
+          //  a+b → added the coefficient and constant instead of substituting
+          //  a*x → forgot to add the constant
+          //  (a+b)*x → grouped a+b before multiplying
+          const cand = [a + b, a * x, (a + b) * x];
+          const used = new Set([val]);
+          const choices = [val];
+          cand.forEach((c) => {
+            let d = c;
+            while (used.has(d)) d += 1;
+            used.add(d);
+            choices.push(d);
+          });
           bank.push({
             id: "ee2",
             standard: "6.EE.2",
             strand: "EE",
             type: "mc",
-            stem: `Evaluate <strong>${a}x + ${b}</strong> when x = <strong>${x}</strong>.`,
-            choices: [`${val}`, `${a + b}`, `${a * x}`, `${(a + b) * x}`],
+            stem: `What is the value of <strong>${a}<em>x</em> + ${b}</strong> when <em>x</em> = <strong>${x}</strong>?`,
+            choices: choices.map((c) => `${c}`),
             correct: 0,
-            explanation: `Substitute x = ${x}: ${a}(${x}) + ${b} = ${a * x} + ${b} = ${val}.`,
+            explanation: `Substitute ${x} for x: ${a}(${x}) + ${b} = ${a * x} + ${b} = ${val}.`,
           });
         })();
 
-        /* ── 9  6.EE.3  Matching / Dropdown — equivalent expressions ── */
+        /* ── 9  6.EE.3  Matching — equivalent expressions ── */
         bank.push({
           id: "ee3",
           standard: "6.EE.3",
           strand: "EE",
           type: "matching",
-          stem: `Match each expression on the left to its equivalent simplified form on the right. Use each answer once.`,
+          stem: `Match each expression to its equivalent form. Each form is used exactly once.`,
           pairs: [
             { left: "3x + 5x", right: "8x", key: "A" },
             { left: "4(2 + y)", right: "8 + 4y", key: "B" },
@@ -1089,16 +1169,16 @@
             { left: "6 · x · x", right: "6x²", key: "D" },
           ],
           options: ["8x", "8 + 4y", "3a + 3b", "6x²"],
-          explanation: `Combine like terms and apply the distributive property: 3x+5x=8x; 4(2+y)=8+4y; 2a+a+3b=3a+3b; 6·x·x=6x².`,
+          explanation: `Combine like terms and use the distributive property: 3x + 5x = 8x; 4(2 + y) = 8 + 4y; 2a + a + 3b = 3a + 3b; 6 · x · x = 6x².`,
         });
 
-        /* ── 10  6.EE.4  Multi-select — identify equivalent expressions ── */
+        /* ── 10  6.EE.4  Multiple Select — equivalent expressions ── */
         bank.push({
           id: "ee4",
           standard: "6.EE.4",
           strand: "EE",
           type: "multiselect",
-          stem: `Which expressions are equivalent to <strong>12n + 8</strong>? Select ALL that apply.`,
+          stem: `Which expressions are equivalent to <strong>12<em>n</em> + 8</strong>?`,
           choices: [
             `4(3n + 2)`,
             `2(6n + 4)`,
@@ -1107,10 +1187,10 @@
             `2(5n + 4)`,
           ],
           correct: [0, 1, 2, 3],
-          explanation: `4(3n+2)=12n+8 ✓; 2(6n+4)=12n+8 ✓; 12n+8 itself ✓; 8+12n=12n+8 (commutative) ✓; 2(5n+4)=10n+8 ✗.`,
+          explanation: `4(3n + 2) = 12n + 8; 2(6n + 4) = 12n + 8; 12n + 8 matches itself; 8 + 12n = 12n + 8 (commutative property). 2(5n + 4) = 10n + 8 is not equivalent.`,
         });
 
-        /* ── 11  6.EE.7  Numeric Entry — solve one-step equation ── */
+        /* ── 11  6.EE.7  Numeric Response — solve one-step equation ── */
         (function () {
           const sol = rnd(4, 15);
           const c = rnd(2, 6);
@@ -1120,7 +1200,7 @@
             standard: "6.EE.7",
             strand: "EE",
             type: "numeric",
-            stem: `Solve for x: <strong>x + ${c} = ${b}</strong>`,
+            stem: `What is the value of <em>x</em> in the equation <strong><em>x</em> + ${c} = ${b}</strong>?`,
             unit: "",
             answer: sol,
             tolerance: 0,
@@ -1128,7 +1208,7 @@
           });
         })();
 
-        /* ── 12  6.G.1  Multiple Choice — area of triangle ── */
+        /* ── 12  6.G.1  Selected Response — area of triangle ── */
         (function () {
           const b = rnd(6, 14),
             h = rnd(5, 12);
@@ -1138,19 +1218,21 @@
             standard: "6.G.1",
             strand: "G",
             type: "mc",
-            stem: `A triangle has a base of <strong>${b} cm</strong> and a height of <strong>${h} cm</strong>. What is the area of the triangle?`,
+            stem: `A triangle has a base of <strong>${b} cm</strong> and a height of <strong>${h} cm</strong>. What is the area of this triangle?`,
+            // Distractors: forgot to halve (b·h), added instead of multiplied
+            // (b+h), and half the base times height with no halving error guarded.
             choices: [
               `${area} cm²`,
               `${b * h} cm²`,
               `${b + h} cm²`,
-              `${2 * (b + h)} cm²`,
+              `${b * h + b} cm²`,
             ],
             correct: 0,
             explanation: `Area of a triangle = ½ × base × height = ½ × ${b} × ${h} = ${area} cm².`,
           });
         })();
 
-        /* ── 13  6.G.2  Numeric Entry — volume of rectangular prism ── */
+        /* ── 13  6.G.2  Numeric Response — volume of rectangular prism ── */
         (function () {
           const l = rnd(3, 9),
             w = rnd(2, 7),
@@ -1161,7 +1243,7 @@
             standard: "6.G.2",
             strand: "G",
             type: "numeric",
-            stem: `A rectangular prism has a length of <strong>${l} ft</strong>, a width of <strong>${w} ft</strong>, and a height of <strong>${h} ft</strong>. What is the volume of the prism in cubic feet?`,
+            stem: `A rectangular prism has a length of <strong>${l} ft</strong>, a width of <strong>${w} ft</strong>, and a height of <strong>${h} ft</strong>. What is the volume of the prism, in cubic feet?`,
             unit: "ft³",
             answer: vol,
             tolerance: 0,
@@ -1169,25 +1251,25 @@
           });
         })();
 
-        /* ── 14  6.SP.1  Multi-select — statistical questions ── */
+        /* ── 14  6.SP.1  Multiple Select — statistical questions ── */
         bank.push({
           id: "sp1",
           standard: "6.SP.1",
           strand: "SP",
           type: "multiselect",
-          stem: `Which of the following are <strong>statistical questions</strong>? Select ALL that apply.`,
+          stem: `A <strong>statistical question</strong> is one that anticipates a variety of answers. Which questions are statistical questions?`,
           choices: [
             `How many students are in Mr. Lopez's class today?`,
-            `How many hours per night do sixth graders typically sleep?`,
+            `How many hours per night do sixth graders usually sleep?`,
             `What is 7 × 8?`,
             `What are the typical high temperatures in Baltimore during July?`,
             `How tall is the Eiffel Tower?`,
           ],
           correct: [1, 3],
-          explanation: `A statistical question anticipates variability in answers. "How many hours do sixth graders sleep?" and "Typical temperatures in July?" vary across people/days — statistical. The others have one fixed answer.`,
+          explanation: `A statistical question anticipates variability in the data. Hours of sleep and July temperatures both vary from person to person or day to day, so they are statistical. The other questions each have a single fixed answer.`,
         });
 
-        /* ── 15  6.SP.4  Multiple Choice — median ── */
+        /* ── 15  6.SP.4  Selected Response — median ── */
         (function () {
           const raw = [
             rnd(60, 75),
@@ -1200,20 +1282,32 @@
           ];
           const sorted = [...raw].sort((a, b) => a - b);
           const med = sorted[3]; // index 3 of 7 items = median
+          // Build distractors that are all distinct from the median and each other.
+          const mean = Math.round(
+            sorted.reduce((a, c) => a + c, 0) / sorted.length,
+          );
+          const used = new Set([med]);
+          const distractors = [];
+          [sorted[0], sorted[6], mean].forEach((v) => {
+            let d = v;
+            while (used.has(d)) d += 1; // nudge off any collision
+            used.add(d);
+            distractors.push(d);
+          });
           bank.push({
             id: "sp4",
             standard: "6.SP.4",
             strand: "SP",
             type: "mc",
-            stem: `Seven students scored the following on a quiz: <strong>${sorted.join(", ")}</strong>. What is the median score?`,
+            stem: `The list shows the quiz scores of seven students: <strong>${sorted.join(", ")}</strong>. What is the median of these scores?`,
             choices: [
               `${med}`,
-              `${sorted[0]}`,
-              `${sorted[6]}`,
-              `${Math.round(sorted.reduce((a, c) => a + c, 0) / sorted.length)}`,
+              `${distractors[0]}`,
+              `${distractors[1]}`,
+              `${distractors[2]}`,
             ],
             correct: 0,
-            explanation: `With 7 values in order, the median is the 4th value: ${med}.`,
+            explanation: `Order the 7 scores from least to greatest. The median is the middle (4th) value, which is ${med}.`,
           });
         })();
 
@@ -1382,21 +1476,17 @@
       function buildQHTML(q) {
         let html = `<div class="q-card">
     <div class="q-meta">
-      <div class="q-num">${current + 1}</div>
-      <span class="q-standard">${q.standard}</span>
+      <span class="q-num">Question ${current + 1}</span>
       <span class="q-type">${typeLabel(q.type)}</span>
+      <span class="q-standard">CCSS ${q.standard}</span>
     </div>`;
 
-        if (q.type !== "twopart") {
-          html += `<p class="q-stem">${q.stem}</p>`;
-        } else {
-          html += `<p class="q-stem">${q.stem}</p>`;
-        }
+        html += `<p class="q-stem">${q.stem}</p>`;
 
         if (q.type === "mc") {
           html += buildMC(q);
         } else if (q.type === "multiselect") {
-          html += `<p style="font-size:13px;color:var(--muted);margin:0 0 10px;">Select ALL that apply.</p>`;
+          html += `<p class="q-instruction">Select ALL that apply.</p>`;
           html += buildMultiselect(q);
         } else if (q.type === "numeric") {
           html += buildNumeric(q);
@@ -1413,45 +1503,41 @@
       function typeLabel(t) {
         return (
           {
-            mc: "Multiple Choice",
-            multiselect: "Multi-Select",
-            numeric: "Numeric Entry",
-            twopart: "Two-Part Item",
+            mc: "Selected Response",
+            multiselect: "Multiple Select",
+            numeric: "Numeric Response",
+            twopart: "Two-Part",
             matching: "Matching",
           }[t] || t
         );
       }
 
+      function choiceRow(inputType, name, c, i) {
+        const letter = String.fromCharCode(65 + i);
+        return `<li>
+      <label>
+        <input type="${inputType}" name="${name}" value="${i}" aria-label="Choice ${letter}: ${stripTags(c)}">
+        <span><span class="mc-choice-letter">${letter}.</span>${c}</span>
+      </label>
+    </li>`;
+      }
+
       function buildMC(q) {
         return `<ul class="mc-list" role="radiogroup" aria-label="Answer choices">${q.choices
-          .map(
-            (c, i) => `<li>
-      <label>
-        <input type="radio" name="mc_${q.id}" value="${i}" aria-label="Choice ${String.fromCharCode(65 + i)}: ${c}">
-        <span><strong>${String.fromCharCode(65 + i)}.</strong> ${c}</span>
-      </label>
-    </li>`,
-          )
+          .map((c, i) => choiceRow("radio", `mc_${q.id}`, c, i))
           .join("")}</ul>`;
       }
 
       function buildMultiselect(q) {
-        return `<ul class="mc-list">${q.choices
-          .map(
-            (c, i) => `<li>
-      <label>
-        <input type="checkbox" name="ms_${q.id}" value="${i}" aria-label="Choice ${String.fromCharCode(65 + i)}: ${c}">
-        <span><strong>${String.fromCharCode(65 + i)}.</strong> ${c}</span>
-      </label>
-    </li>`,
-          )
+        return `<ul class="mc-list" aria-label="Answer choices">${q.choices
+          .map((c, i) => choiceRow("checkbox", `ms_${q.id}`, c, i))
           .join("")}</ul>`;
       }
 
       function buildNumeric(q) {
         return `<div class="num-wrap">
-    <input type="number" id="num_${q.id}" step="any" placeholder="Enter answer"
-      aria-label="Numeric answer" style="width:160px;">
+    <input type="number" id="num_${q.id}" step="any" placeholder="Enter your answer"
+      aria-label="Numeric answer" style="width:180px;">
     ${q.unit ? `<span class="num-label">${q.unit}</span>` : ""}
   </div>`;
       }
@@ -1459,24 +1545,17 @@
       function buildTwoPart(q) {
         return `
     <div class="twopart-part">
-      <h4>Part A</h4>
-      <p style="font-size:15px;margin:0 0 12px;">${q.partA.question}</p>
-      <ul class="mc-list" role="radiogroup">${q.partA.choices
-        .map(
-          (c, i) => `<li>
-          <label>
-            <input type="radio" name="tpA_${q.id}" value="${i}">
-            <span><strong>${String.fromCharCode(65 + i)}.</strong> ${c}</span>
-          </label>
-        </li>`,
-        )
+      <h4>${q.partA.label || "Part A"}</h4>
+      <p>${q.partA.question}</p>
+      <ul class="mc-list" role="radiogroup" aria-label="Part A answer choices">${q.partA.choices
+        .map((c, i) => choiceRow("radio", `tpA_${q.id}`, c, i))
         .join("")}</ul>
     </div>
     <div class="twopart-part">
-      <h4>Part B</h4>
-      <p style="font-size:15px;margin:0 0 12px;">${q.partB.question}</p>
+      <h4>${q.partB.label || "Part B"}</h4>
+      <p>${q.partB.question}</p>
       <div class="num-wrap">
-        <input type="number" id="tpB_${q.id}" step="any" placeholder="Enter answer" style="width:160px;">
+        <input type="number" id="tpB_${q.id}" step="any" placeholder="Enter your answer" aria-label="Part B numeric answer" style="width:180px;">
         ${q.partB.unit ? `<span class="num-label">${q.partB.unit}</span>` : ""}
       </div>
     </div>`;
@@ -1495,8 +1574,8 @@
       <tr>
         <td>${p.left}</td>
         <td>
-          <select id="match_${q.id}_${i}" aria-label="Match for ${p.left}">
-            <option value="">— select —</option>
+          <select id="match_${q.id}_${i}" aria-label="Equivalent form for ${stripTags(p.left)}">
+            <option value="">Select…</option>
             ${opts.map((o) => `<option value="${o}">${o}</option>`).join("")}
           </select>
         </td>
@@ -1505,6 +1584,10 @@
       .join("")}
     </tbody>
   </table>`;
+      }
+
+      function stripTags(s) {
+        return String(s).replace(/<[^>]+>/g, "");
       }
 
       /* ================================================================
@@ -1780,7 +1863,7 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
 </html>
