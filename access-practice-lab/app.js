@@ -2200,6 +2200,44 @@
     renderAll();
   }
 
+  // Voice cache + picker: u.lang alone does not switch voices on most browsers,
+  // so Spanish vocab gets read by the default English voice. Pick a real
+  // matching voice (Latin-American Spanish preferred for this ESOL audience).
+  let _voices = [];
+  function refreshVoices() {
+    try {
+      _voices = window.speechSynthesis.getVoices() || [];
+    } catch (e) {
+      _voices = [];
+    }
+  }
+  if ("speechSynthesis" in window) {
+    refreshVoices();
+    try {
+      window.speechSynthesis.addEventListener("voiceschanged", refreshVoices);
+    } catch (e) {
+      /* older browsers populate getVoices() synchronously */
+    }
+  }
+  function pickVoice(langTag) {
+    if (!_voices.length) refreshVoices();
+    if (!_voices.length || !langTag) return null;
+    const want = String(langTag).toLowerCase();
+    const base = want.split("-")[0];
+    let v = _voices.find((vo) => vo.lang && vo.lang.toLowerCase() === want);
+    if (v) return v;
+    if (base === "es") {
+      for (const tag of ["es-us", "es-mx", "es-419", "es-es"]) {
+        v = _voices.find((vo) => vo.lang && vo.lang.toLowerCase() === tag);
+        if (v) return v;
+      }
+    }
+    v = _voices.find(
+      (vo) => vo.lang && vo.lang.toLowerCase().split("-")[0] === base,
+    );
+    return v || null;
+  }
+
   function speakText(text, lang = "en-US") {
     if (!text || !("speechSynthesis" in window)) {
       showSaveStatus("Read aloud is not available in this browser.");
@@ -2209,6 +2247,8 @@
     const utter = new SpeechSynthesisUtterance(text);
     // Slower, clearer pace for multilingual learners (mirrors ACCESS audio).
     utter.lang = lang;
+    const voice = pickVoice(lang);
+    if (voice) utter.voice = voice;
     utter.rate = 0.9;
     window.speechSynthesis.speak(utter);
   }

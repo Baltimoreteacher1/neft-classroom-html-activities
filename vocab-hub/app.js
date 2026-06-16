@@ -87,15 +87,61 @@
 
   /* ---------------- speech ---------------- */
   var synth = window.speechSynthesis || null;
+  // Cache voices and pick one that actually matches the target language. Setting
+  // u.lang alone leaves Spanish/Vietnamese/Arabic read by the default English
+  // voice on most browsers; an explicit u.voice fixes pronunciation.
+  var _voices = [];
+  function refreshVoices() {
+    if (!synth) return;
+    try {
+      _voices = synth.getVoices() || [];
+    } catch (e) {
+      _voices = [];
+    }
+  }
+  if (synth) {
+    refreshVoices();
+    try {
+      synth.addEventListener("voiceschanged", refreshVoices);
+    } catch (e) {
+      /* older browsers populate getVoices() synchronously */
+    }
+  }
+  function pickVoice(langTag) {
+    if (!_voices.length) refreshVoices();
+    if (!_voices.length || !langTag) return null;
+    var want = String(langTag).toLowerCase();
+    var base = want.split("-")[0];
+    var v = _voices.find(function (vo) {
+      return vo.lang && vo.lang.toLowerCase() === want;
+    });
+    if (v) return v;
+    if (base === "es") {
+      var order = ["es-us", "es-mx", "es-419", "es-es"];
+      for (var i = 0; i < order.length; i++) {
+        var tag = order[i];
+        v = _voices.find(function (vo) {
+          return vo.lang && vo.lang.toLowerCase() === tag;
+        });
+        if (v) return v;
+      }
+    }
+    v = _voices.find(function (vo) {
+      return vo.lang && vo.lang.toLowerCase().split("-")[0] === base;
+    });
+    return v || null;
+  }
   function say(text, lang) {
     if (!synth || !text) return;
     try {
       synth.cancel();
       var u = new SpeechSynthesisUtterance(text);
-      if (lang === "es") u.lang = "es-ES";
+      if (lang === "es") u.lang = "es-US";
       else if (lang === "vi") u.lang = "vi-VN";
       else if (lang === "ar") u.lang = "ar-SA";
       else u.lang = "en-US";
+      var voice = pickVoice(u.lang);
+      if (voice) u.voice = voice;
       u.rate = 0.92;
       synth.speak(u);
     } catch (e) {
@@ -237,7 +283,7 @@
     var units = uniqueSorted(
       state.items.reduce(function (acc, i) {
         return acc.concat(i.units || []);
-      }, [])
+      }, []),
     );
     var unitSel = makeSelect(
       "Filter by unit / Unidad",
@@ -256,7 +302,7 @@
     var stds = uniqueSorted(
       state.items.reduce(function (acc, i) {
         return acc.concat(i.standards || []);
-      }, [])
+      }, []),
     );
     var stdSel = makeSelect(
       "Filter by standard / Estándar",
@@ -353,12 +399,14 @@
         card.appendChild(el("div", "def-vi", esc(it.definitionVi)));
       if (it.definitionAr)
         card.appendChild(el("div", "def-ar", esc(it.definitionAr)));
-      card.appendChild(sayButtons(
-        it.term,
-        it.termEs || it.definition,
-        it.termVi || it.definitionVi,
-        it.termAr || it.definitionAr
-      ));
+      card.appendChild(
+        sayButtons(
+          it.term,
+          it.termEs || it.definition,
+          it.termVi || it.definitionVi,
+          it.termAr || it.definitionAr,
+        ),
+      );
       var tags = el("div", "card-tags");
       it.units.forEach(function (u) {
         tags.appendChild(el("span", "tag", "Unit " + u));
@@ -449,8 +497,10 @@
     if (it) {
       if (fc.flipped) {
         if (state.lang === "es") say(it.definitionEs || it.definition, "es");
-        else if (state.lang === "vi") say(it.definitionVi || it.definition, "vi");
-        else if (state.lang === "ar") say(it.definitionAr || it.definition, "ar");
+        else if (state.lang === "vi")
+          say(it.definitionVi || it.definition, "vi");
+        else if (state.lang === "ar")
+          say(it.definitionAr || it.definition, "ar");
         else say(it.definition, "en");
       } else {
         if (state.lang === "es") say(it.termEs || it.term, "es");
@@ -987,6 +1037,7 @@
     btn.focus();
     announce(msg);
   }
+  document
     .getElementById("celebrate-close")
     .addEventListener("click", function () {
       celebrateEl.hidden = true;
@@ -1003,7 +1054,7 @@
     score: 0,
     halfHalfUsed: false,
     translateUsed: false,
-    clueUsed: false
+    clueUsed: false,
   };
 
   function getRank(xp) {
@@ -1017,46 +1068,80 @@
   function renderQuest() {
     view.innerHTML = "";
     document.body.classList.remove("print-cert"); // ensure print class is removed
-    
+
     // 1. Stats Bar
     var statsBar = el("div", "quest-stats");
-    statsBar.innerHTML = 
-      '<div class="quest-stat-item">🪙 <span id="qst-coins">' + store.coins + '</span> gold</div>' +
-      '<div class="quest-stat-item">⚡ <span id="qst-xp">' + store.xp + '</span> XP</div>' +
-      '<div class="quest-stat-item">🏆 Rank: <span id="qst-rank" style="color:var(--primary); font-weight:800;">' + getRank(store.xp) + '</span></div>';
+    statsBar.innerHTML =
+      '<div class="quest-stat-item">🪙 <span id="qst-coins">' +
+      store.coins +
+      "</span> gold</div>" +
+      '<div class="quest-stat-item">⚡ <span id="qst-xp">' +
+      store.xp +
+      "</span> XP</div>" +
+      '<div class="quest-stat-item">🏆 Rank: <span id="qst-rank" style="color:var(--primary); font-weight:800;">' +
+      getRank(store.xp) +
+      "</span></div>";
     view.appendChild(statsBar);
 
     // 2. Powerups Shop
     var shop = el("div", "quest-shop");
-    var shopTitle = el("div", "quest-shop-title", "🛍️ Adventurer's Power-up Shop");
+    var shopTitle = el(
+      "div",
+      "quest-shop-title",
+      "🛍️ Adventurer's Power-up Shop",
+    );
     var shopItems = el("div", "quest-shop-items");
-    
+
     var itemsData = [
-      { key: "halfHalf", name: "50/50 Power-up 🃏", cost: 15, desc: "Removes 2 wrong choices" },
-      { key: "translate", name: "Bilingual Clue 🗣️", cost: 10, desc: "Shows definition in Spanish" },
-      { key: "clue", name: "Visual Clue 🔍", cost: 10, desc: "Highlights clue picture" }
+      {
+        key: "halfHalf",
+        name: "50/50 Power-up 🃏",
+        cost: 15,
+        desc: "Removes 2 wrong choices",
+      },
+      {
+        key: "translate",
+        name: "Bilingual Clue 🗣️",
+        cost: 10,
+        desc: "Shows definition in Spanish",
+      },
+      {
+        key: "clue",
+        name: "Visual Clue 🔍",
+        cost: 10,
+        desc: "Highlights clue picture",
+      },
     ];
 
-    itemsData.forEach(function(item) {
+    itemsData.forEach(function (item) {
       var card = el("div", "quest-shop-card");
-      card.innerHTML = 
-        '<div class="quest-shop-name">' + item.name + '</div>' +
-        '<div class="quest-shop-qty">Owned: <span id="shop-qty-' + item.key + '">' + store.powerups[item.key] + '</span></div>' +
-        '<div style="font-size:0.75rem; color:var(--ink-soft);">' + item.desc + '</div>';
-        
+      card.innerHTML =
+        '<div class="quest-shop-name">' +
+        item.name +
+        "</div>" +
+        '<div class="quest-shop-qty">Owned: <span id="shop-qty-' +
+        item.key +
+        '">' +
+        store.powerups[item.key] +
+        "</span></div>" +
+        '<div style="font-size:0.75rem; color:var(--ink-soft);">' +
+        item.desc +
+        "</div>";
+
       var buyBtn = el("button", "btn btn-primary", "Buy for 🪙" + item.cost);
       buyBtn.style.padding = "4px 8px";
       buyBtn.style.minHeight = "36px";
       buyBtn.style.fontSize = "0.85rem";
       buyBtn.style.marginTop = "6px";
-      buyBtn.addEventListener("click", function() {
+      buyBtn.addEventListener("click", function () {
         if (store.coins >= item.cost) {
           store.coins -= item.cost;
           store.powerups[item.key]++;
           saveStore(store);
-          
+
           document.getElementById("qst-coins").textContent = store.coins;
-          document.getElementById("shop-qty-" + item.key).textContent = store.powerups[item.key];
+          document.getElementById("shop-qty-" + item.key).textContent =
+            store.powerups[item.key];
           announce("Purchased " + item.name);
         } else {
           alert("Not enough coins! / ¡No tienes suficientes monedas!");
@@ -1065,25 +1150,29 @@
       card.appendChild(buyBtn);
       shopItems.appendChild(card);
     });
-    
+
     shop.appendChild(shopTitle);
     shop.appendChild(shopItems);
     view.appendChild(shop);
 
     // 3. Adventure Map Panel
     var mapPanel = el("div", "quest-map-panel");
-    mapPanel.innerHTML = 
+    mapPanel.innerHTML =
       '<h2 style="margin:0 0 4px;">Vocabulary Adventure Quest</h2>' +
       '<p class="muted hint" style="margin-bottom:12px;">Conquer all 10 math units to earn your Achievement Certificate!</p>';
-      
+
     // Interactive SVG Winding Path
     var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 600 240");
     svg.setAttribute("class", "quest-map-svg");
-    
-    var pathStr = "M 40 180 C 60 120, 70 80, 90 80 C 110 80, 130 140, 150 160 C 170 180, 190 100, 210 80 C 230 60, 250 140, 270 160 C 290 180, 310 100, 330 80 C 350 60, 370 140, 390 160 C 410 180, 430 100, 450 80 C 470 60, 490 140, 510 160 C 530 180, 540 120, 560 100";
-    
-    var mapPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+
+    var pathStr =
+      "M 40 180 C 60 120, 70 80, 90 80 C 110 80, 130 140, 150 160 C 170 180, 190 100, 210 80 C 230 60, 250 140, 270 160 C 290 180, 310 100, 330 80 C 350 60, 370 140, 390 160 C 410 180, 430 100, 450 80 C 470 60, 490 140, 510 160 C 530 180, 540 120, 560 100";
+
+    var mapPath = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "path",
+    );
     mapPath.setAttribute("d", pathStr);
     mapPath.setAttribute("fill", "none");
     mapPath.setAttribute("stroke", "#cbd5e1");
@@ -1100,32 +1189,32 @@
       { u: 7, x: 390, y: 160, name: "Equations" },
       { u: 8, x: 450, y: 80, name: "Inequalities" },
       { u: 9, x: 510, y: 160, name: "Geometry" },
-      { u: 10, x: 560, y: 100, name: "Statistics" }
+      { u: 10, x: 560, y: 100, name: "Statistics" },
     ];
 
-    stations.forEach(function(st) {
+    stations.forEach(function (st) {
       var isCompleted = st.u < store.questLevel;
       var isActive = st.u === store.questLevel;
       var isLocked = st.u > store.questLevel;
-      
+
       var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
       g.setAttribute("class", "quest-station");
       g.style.cursor = isLocked ? "not-allowed" : "pointer";
-      
+
       var c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
       c.setAttribute("cx", st.x);
       c.setAttribute("cy", st.y);
       c.setAttribute("r", isActive ? "19" : "16");
-      
-      var fill = isLocked ? "#94a3b8" : (isCompleted ? "#10b981" : "#2563eb");
+
+      var fill = isLocked ? "#94a3b8" : isCompleted ? "#10b981" : "#2563eb";
       c.setAttribute("fill", fill);
       c.setAttribute("stroke", isActive ? "#fbbf24" : "#ffffff");
       c.setAttribute("stroke-width", isActive ? "4.5" : "2");
-      
+
       if (isActive) {
         c.setAttribute("class", "quest-station-active");
       }
-      
+
       var t = document.createElementNS("http://www.w3.org/2000/svg", "text");
       t.setAttribute("x", st.x);
       t.setAttribute("y", st.y + 4);
@@ -1135,19 +1224,29 @@
       t.setAttribute("font-weight", "900");
       t.textContent = st.u;
 
-      var title = document.createElementNS("http://www.w3.org/2000/svg", "title");
-      title.textContent = "Unit " + st.u + " Challenge: " + st.name + " (" + (isLocked ? "Locked" : (isCompleted ? "Completed" : "Active Now")) + ")";
+      var title = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "title",
+      );
+      title.textContent =
+        "Unit " +
+        st.u +
+        " Challenge: " +
+        st.name +
+        " (" +
+        (isLocked ? "Locked" : isCompleted ? "Completed" : "Active Now") +
+        ")";
       g.appendChild(title);
-      
+
       g.appendChild(c);
       g.appendChild(t);
-      
+
       if (!isLocked) {
-        g.addEventListener("click", function() {
+        g.addEventListener("click", function () {
           startQuestChallenge(st.u);
         });
       }
-      
+
       svg.appendChild(g);
     });
 
@@ -1156,13 +1255,21 @@
 
     // 4. Certificate Box
     if (store.questLevel > 10) {
-      var certBox = el("div", "quiz-card", '<h3 style="margin-top:0;">🏆 Expedition Completed! 🏆</h3><p>You have conquered all 10 Math vocabulary units! You are now a certified Grade 6 Math Vocabulary Champion.</p>');
+      var certBox = el(
+        "div",
+        "quiz-card",
+        '<h3 style="margin-top:0;">🏆 Expedition Completed! 🏆</h3><p>You have conquered all 10 Math vocabulary units! You are now a certified Grade 6 Math Vocabulary Champion.</p>',
+      );
       certBox.style.marginTop = "20px";
       certBox.style.textAlign = "center";
       certBox.style.background = "#f0fdf4";
       certBox.style.borderColor = "#bbf7d0";
-      
-      var printBtn = el("button", "btn btn-primary", "🖨️ Print Achievement Certificate");
+
+      var printBtn = el(
+        "button",
+        "btn btn-primary",
+        "🖨️ Print Achievement Certificate",
+      );
       printBtn.addEventListener("click", showCertificate);
       certBox.appendChild(printBtn);
       view.appendChild(certBox);
@@ -1170,33 +1277,47 @@
   }
 
   function startQuestChallenge(unitNum) {
-    var unitTerms = state.items.filter(function(it) {
-      return it.units.indexOf(unitNum) !== -1 || it.units.indexOf(String(unitNum)) !== -1;
+    var unitTerms = state.items.filter(function (it) {
+      return (
+        it.units.indexOf(unitNum) !== -1 ||
+        it.units.indexOf(String(unitNum)) !== -1
+      );
     });
-    
+
     if (unitTerms.length < 1) {
       unitTerms = state.items; // fallback
     }
-    
+
     // Pick 3 random terms for this Unit's quest challenge
     var chosenTerms = shuffle(unitTerms).slice(0, 3);
-    
-    qz.questions = chosenTerms.map(function(it) {
-      var distractors = sample(state.items, 3, it).map(function(x) {
+
+    qz.questions = chosenTerms.map(function (it) {
+      var distractors = sample(state.items, 3, it).map(function (x) {
         return x.term;
       });
       var defOpts = shuffle([it.term].concat(distractors));
       return {
         kind: "define",
         item: it,
-        promptEn: "Unit " + unitNum + " Challenge: Which word means \"" + it.definition + "\"?",
-        promptEs: it.definitionEs ? "Desafío de la Unidad " + unitNum + ": ¿Qué palabra significa «" + it.definitionEs + "»?" : "",
-        options: defOpts.map(function(t) {
+        promptEn:
+          "Unit " +
+          unitNum +
+          ' Challenge: Which word means "' +
+          it.definition +
+          '"?',
+        promptEs: it.definitionEs
+          ? "Desafío de la Unidad " +
+            unitNum +
+            ": ¿Qué palabra significa «" +
+            it.definitionEs +
+            "»?"
+          : "",
+        options: defOpts.map(function (t) {
           return { text: t, correct: t === it.term };
-        })
+        }),
       };
     });
-    
+
     qst.activeUnit = unitNum;
     qst.questions = qz.questions;
     qst.idx = 0;
@@ -1204,22 +1325,32 @@
     qst.halfHalfUsed = false;
     qst.translateUsed = false;
     qst.clueUsed = false;
-    
+
     drawQuestQuestion();
   }
 
   function drawQuestQuestion() {
     view.innerHTML = "";
     var q = qst.questions[qst.idx];
-    
+
     var bar = el("div", "scorebar");
-    bar.innerHTML = 
-      "<span>Unit " + qst.activeUnit + " Challenge · Q " + (qst.idx + 1) + " / " + qst.questions.length + "</span>" +
-      "<span>🪙 <span id=" + '"qst-active-coins"' + ">" + store.coins + "</span></span>";
+    bar.innerHTML =
+      "<span>Unit " +
+      qst.activeUnit +
+      " Challenge · Q " +
+      (qst.idx + 1) +
+      " / " +
+      qst.questions.length +
+      "</span>" +
+      "<span>🪙 <span id=" +
+      '"qst-active-coins"' +
+      ">" +
+      store.coins +
+      "</span></span>";
     view.appendChild(bar);
 
     var card = el("div", "quiz-card");
-    
+
     // Prompts
     var showEs = state.lang !== "en" || qst.translateUsed;
     var showEn = state.lang !== "es" || !qst.translateUsed;
@@ -1246,25 +1377,37 @@
 
     // Powerups Bar
     var pBar = el("div", "powerups-bar");
-    pBar.innerHTML = '<strong>🎒 Power-ups:</strong>';
-    
-    var halfBtn = el("button", "powerup-btn", "🃏 50/50 (" + store.powerups.halfHalf + ")");
+    pBar.innerHTML = "<strong>🎒 Power-ups:</strong>";
+
+    var halfBtn = el(
+      "button",
+      "powerup-btn",
+      "🃏 50/50 (" + store.powerups.halfHalf + ")",
+    );
     halfBtn.disabled = store.powerups.halfHalf < 1 || qst.halfHalfUsed;
-    halfBtn.addEventListener("click", function() {
+    halfBtn.addEventListener("click", function () {
       usePowerup("halfHalf", halfBtn);
     });
     pBar.appendChild(halfBtn);
 
-    var transBtn = el("button", "powerup-btn", "🗣️ Translate (" + store.powerups.translate + ")");
+    var transBtn = el(
+      "button",
+      "powerup-btn",
+      "🗣️ Translate (" + store.powerups.translate + ")",
+    );
     transBtn.disabled = store.powerups.translate < 1 || qst.translateUsed;
-    transBtn.addEventListener("click", function() {
+    transBtn.addEventListener("click", function () {
       usePowerup("translate", transBtn);
     });
     pBar.appendChild(transBtn);
 
-    var clueBtn = el("button", "powerup-btn", "🔍 Clue (" + store.powerups.clue + ")");
+    var clueBtn = el(
+      "button",
+      "powerup-btn",
+      "🔍 Clue (" + store.powerups.clue + ")",
+    );
     clueBtn.disabled = store.powerups.clue < 1 || qst.clueUsed;
-    clueBtn.addEventListener("click", function() {
+    clueBtn.addEventListener("click", function () {
       usePowerup("clue", clueBtn);
     });
     pBar.appendChild(clueBtn);
@@ -1297,29 +1440,36 @@
     if (store.powerups[kind] < 1) return;
     store.powerups[kind]--;
     saveStore(store);
-    
-    btn.textContent = (kind === 'halfHalf' ? '🃏 50/50' : (kind === 'translate' ? '🗣️ Translate' : '🔍 Clue')) + " (" + store.powerups[kind] + ")";
+
+    btn.textContent =
+      (kind === "halfHalf"
+        ? "🃏 50/50"
+        : kind === "translate"
+          ? "🗣️ Translate"
+          : "🔍 Clue") +
+      " (" +
+      store.powerups[kind] +
+      ")";
     btn.disabled = true;
-    
+
     if (kind === "halfHalf") {
       qst.halfHalfUsed = true;
       var q = qst.questions[qst.idx];
       var buttons = document.querySelectorAll(".quiz-opt");
-      
+
       var wrongIndices = [];
-      q.options.forEach(function(o, idx) {
+      q.options.forEach(function (o, idx) {
         if (!o.correct) wrongIndices.push(idx);
       });
-      
+
       var toRemove = shuffle(wrongIndices).slice(0, 2);
-      toRemove.forEach(function(idx) {
+      toRemove.forEach(function (idx) {
         buttons[idx].disabled = true;
         buttons[idx].style.opacity = "0.35";
         buttons[idx].textContent = "—";
       });
       announce("Power-up activated. Removed 2 wrong choices.");
-    }
-    else if (kind === "translate") {
+    } else if (kind === "translate") {
       qst.translateUsed = true;
       var q = qst.questions[qst.idx];
       if (q.promptEs) {
@@ -1327,22 +1477,31 @@
         say(q.promptEs, "es");
       }
       announce("Power-up activated. Translated definition to Spanish.");
-    }
-    else if (kind === "clue") {
+    } else if (kind === "clue") {
       qst.clueUsed = true;
       var img = document.getElementById("quest-clue-img");
       if (img) {
         img.classList.add("glowing-clue");
       }
-      
+
       var q = qst.questions[qst.idx];
       var firstLetter = q.item.term[0].toUpperCase();
-      var hintText = el("div", "tag got-it", 'Clue: Starts with letter "' + firstLetter + '" / Empieza con "' + firstLetter + '"');
+      var hintText = el(
+        "div",
+        "tag got-it",
+        'Clue: Starts with letter "' +
+          firstLetter +
+          '" / Empieza con "' +
+          firstLetter +
+          '"',
+      );
       hintText.style.margin = "8px auto";
       hintText.style.display = "block";
       hintText.style.width = "fit-content";
       hintText.style.fontSize = "1rem";
-      document.querySelector(".quiz-card").insertBefore(hintText, document.querySelector(".powerups-bar"));
+      document
+        .querySelector(".quiz-card")
+        .insertBefore(hintText, document.querySelector(".powerups-bar"));
       announce("Power-up activated. Visual clue illuminated.");
     }
   }
@@ -1352,7 +1511,7 @@
     buttons.forEach(function (b) {
       b.disabled = true;
     });
-    
+
     // Reset powerup usages for next question
     qst.halfHalfUsed = false;
     qst.translateUsed = false;
@@ -1362,12 +1521,12 @@
     if (opt.correct) {
       btn.classList.add("correct");
       qst.score++;
-      
+
       // Reward coins and XP immediately!
       store.coins += 5;
       store.xp += 20;
       saveStore(store);
-      
+
       document.getElementById("qst-active-coins").textContent = store.coins;
       fb.className = "quiz-feedback ok";
       fb.textContent = "Correct! +🪙5 and +⚡20 XP!";
@@ -1381,7 +1540,8 @@
     }
 
     var nextBtn = el("button", "btn btn-primary");
-    nextBtn.textContent = (qst.idx + 1 < qst.questions.length) ? "Next →" : "Finish Challenge";
+    nextBtn.textContent =
+      qst.idx + 1 < qst.questions.length ? "Next →" : "Finish Challenge";
     nextBtn.style.marginTop = "14px";
     nextBtn.addEventListener("click", function () {
       qst.idx++;
@@ -1399,38 +1559,48 @@
     view.innerHTML = "";
     var isPerfect = qst.score === qst.questions.length;
     var pct = Math.round((qst.score / qst.questions.length) * 100);
-    
+
     var card = el("div", "quiz-card");
     card.style.textAlign = "center";
-    
+
     if (isPerfect) {
-      card.innerHTML = 
+      card.innerHTML =
         "<h2>🎉 CHALLENGE PASSED! 🎉</h2>" +
         '<p style="font-size:1.8rem; font-weight:800; color:var(--good);">★ PERFECT 3 / 3! ★</p>' +
         "<p>You earned a flawless perfect score! +🪙10 Gold and +⚡50 XP Perfect Bonus!</p>";
-        
+
       store.coins += 10;
       store.xp += 50;
-      
+
       // Level up progress!
       if (qst.activeUnit === store.questLevel) {
         store.questLevel++;
       }
       saveStore(store);
     } else {
-      card.innerHTML = 
+      card.innerHTML =
         "<h2>Challenge Finished</h2>" +
-        '<p style="font-size:1.6rem; font-weight:800; color:var(--bad);">' + qst.score + " / 3 Correct</p>" +
+        '<p style="font-size:1.6rem; font-weight:800; color:var(--bad);">' +
+        qst.score +
+        " / 3 Correct</p>" +
         "<p>Try again to get a perfect 3/3 score to pass this station!</p>";
     }
 
-    var returnBtn = el("button", "btn btn-primary", "🗺️ Return to Expedition Map");
+    var returnBtn = el(
+      "button",
+      "btn btn-primary",
+      "🗺️ Return to Expedition Map",
+    );
     returnBtn.addEventListener("click", renderQuest);
     card.appendChild(returnBtn);
     view.appendChild(card);
-    
+
     if (isPerfect) {
-      celebrate("Expedition station " + qst.activeUnit + " conquered! / ¡Estación completada!");
+      celebrate(
+        "Expedition station " +
+          qst.activeUnit +
+          " conquered! / ¡Estación completada!",
+      );
     } else {
       announce("Expedition station finished. Score " + pct + " percent.");
     }
@@ -1439,38 +1609,44 @@
   function showCertificate() {
     view.innerHTML = "";
     document.body.classList.add("print-cert");
-    
+
     var container = el("div", "certificate-container");
-    container.innerHTML = 
+    container.innerHTML =
       '<div style="font-size:1.1rem; text-transform:uppercase; letter-spacing:0.15em; font-weight:800; color:var(--primary); margin-bottom:12px;">Certificate of Achievement</div>' +
       '<div style="font-size:0.95rem; font-style:italic; color:var(--ink-soft); margin-bottom:20px;">This certifies that the adventurer has completed all mathematical stations of the</div>' +
-      '<h1 style="font-size:2.4rem; color:var(--primary); font-family:\'Georgia\', serif; margin:0 0 16px;">Vocabulary Expedition Quest</h1>' +
+      "<h1 style=\"font-size:2.4rem; color:var(--primary); font-family:'Georgia', serif; margin:0 0 16px;\">Vocabulary Expedition Quest</h1>" +
       '<div style="font-size:1rem; font-weight:700; color:var(--ink); margin-bottom:8px;">And is hereby officially declared a</div>' +
       '<div style="font-size:1.6rem; font-weight:900; color:var(--star); margin-bottom:20px;">★ GRADE 6 MATH VOCABULARY CHAMPION ★</div>' +
       '<div style="width:140px; height:2px; background:var(--primary); margin:20px auto;"></div>' +
-      '<div style="font-size:1.1rem; font-weight:800; margin-bottom:20px;">Conquered Rank: <span style="color:var(--good);">' + getRank(store.xp) + '</span></div>' +
+      '<div style="font-size:1.1rem; font-weight:800; margin-bottom:20px;">Conquered Rank: <span style="color:var(--good);">' +
+      getRank(store.xp) +
+      "</span></div>" +
       '<div style="display:flex; justify-content:space-around; font-size:0.95rem; color:var(--ink-soft); border-top:1px dashed var(--border); padding-top:16px; margin-top:20px;">' +
-        "<div><strong>Total Gold Earned:</strong> 🪙" + store.coins + "</div>" +
-        "<div><strong>Total XP Accumulated:</strong> ⚡" + store.xp + "</div>" +
+      "<div><strong>Total Gold Earned:</strong> 🪙" +
+      store.coins +
+      "</div>" +
+      "<div><strong>Total XP Accumulated:</strong> ⚡" +
+      store.xp +
+      "</div>" +
       "</div>" +
       '<div style="font-size:0.8rem; color:var(--ink-soft); margin-top:30px;">Certified by Neft Classroom Study Systems • Offline local-first storage verified.</div>';
 
     var btnRow = el("div", "btn-row no-print");
     btnRow.style.marginTop = "28px";
-    
+
     var prtBtn = el("button", "btn btn-primary", "🖨️ Print Certificate");
-    prtBtn.addEventListener("click", function() {
+    prtBtn.addEventListener("click", function () {
       window.print();
     });
     btnRow.appendChild(prtBtn);
-    
+
     var retBtn = el("button", "btn", "← Back to Map");
-    retBtn.addEventListener("click", function() {
+    retBtn.addEventListener("click", function () {
       document.body.classList.remove("print-cert");
       renderQuest();
     });
     btnRow.appendChild(retBtn);
-    
+
     container.appendChild(btnRow);
     view.appendChild(container);
     announce("Bilingual classroom achievement certificate ready for printing.");

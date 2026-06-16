@@ -178,12 +178,60 @@ export function speechSupported() {
   return typeof window !== "undefined" && "speechSynthesis" in window;
 }
 
+// Voices load asynchronously; cache them and refresh on `voiceschanged`. Setting
+// `utterance.lang` alone is NOT enough on most browsers — without an explicit
+// matching `utterance.voice`, a Spanish string is read with the default English
+// voice (so "número" is mispronounced). pickVoice() finds a real voice whose
+// language matches, preferring Latin-American Spanish for a US ESOL classroom.
+let _voices = [];
+function refreshVoices() {
+  if (!speechSupported()) return;
+  try {
+    _voices = window.speechSynthesis.getVoices() || [];
+  } catch (_) {
+    _voices = [];
+  }
+}
+if (speechSupported()) {
+  refreshVoices();
+  try {
+    window.speechSynthesis.addEventListener("voiceschanged", refreshVoices);
+  } catch (_) {
+    /* older browsers: getVoices() is already populated */
+  }
+}
+
+export function pickVoice(lang) {
+  if (!_voices.length) refreshVoices();
+  if (!_voices.length || !lang) return null;
+  const want = String(lang).toLowerCase();
+  const base = want.split("-")[0];
+  // 1) exact tag match (es-US === es-US)
+  let v = _voices.find((vo) => vo.lang && vo.lang.toLowerCase() === want);
+  if (v) return v;
+  if (base === "es") {
+    // 2) preferred Latin-American → Spain → any Spanish
+    const order = ["es-us", "es-mx", "es-419", "es-es"];
+    for (const tag of order) {
+      v = _voices.find((vo) => vo.lang && vo.lang.toLowerCase() === tag);
+      if (v) return v;
+    }
+  }
+  // 3) any voice sharing the primary language subtag (es-*, en-*, …)
+  v = _voices.find(
+    (vo) => vo.lang && vo.lang.toLowerCase().split("-")[0] === base,
+  );
+  return v || null;
+}
+
 export function speak(text, lang) {
   if (!speechSupported() || !text) return;
   try {
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(String(text));
     u.lang = lang || "en-US";
+    const voice = pickVoice(u.lang);
+    if (voice) u.voice = voice;
     u.rate = 0.9;
     window.speechSynthesis.speak(u);
   } catch (_) {
@@ -193,7 +241,7 @@ export function speak(text, lang) {
 
 // Build the EN / ES "Say it" row. Spanish button only appears when a Spanish
 // string is provided. Returns the row element.
-export function buildSayItRow({ en, enLang = "en-US", es, esLang = "es-ES" }) {
+export function buildSayItRow({ en, enLang = "en-US", es, esLang = "es-US" }) {
   const row = document.createElement("div");
   row.style.cssText =
     "display:flex; gap:var(--sp-2); flex-wrap:wrap; align-items:center;";
