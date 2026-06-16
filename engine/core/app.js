@@ -582,29 +582,21 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
                   title: "Vocab",
                   desc: "The key words for this lesson — word, plain-language meaning, and a picture.",
                 }
-              : kind === "builder"
+              : kind === "readiness"
                 ? {
-                    src: `/curriculum/math-workbench/`,
-                    full: `/curriculum/math-workbench/`,
-                    icon: "🛠️",
-                    title: "Builder",
-                    desc: "Open the Math Workbench — a whiteboard to draw, model, and work out the math.",
+                    src: `/lessons/${id}/readiness/?embed=1`,
+                    full: `/lessons/${id}/readiness/`,
+                    icon: "📚",
+                    title: "Get Ready",
+                    desc: "A quick check of the skills you need first — not graded.",
                   }
-                : kind === "readiness"
-                  ? {
-                      src: `/lessons/${id}/readiness/?embed=1`,
-                      full: `/lessons/${id}/readiness/`,
-                      icon: "📚",
-                      title: "Get Ready",
-                      desc: "A quick check of the skills you need first — not graded.",
-                    }
-                  : {
-                      src: `/lessons/${id}/notes.html?embed=1`,
-                      full: `/lessons/${id}/notes.html`,
-                      icon: "📝",
-                      title: "Guided Notes",
-                      desc: "Read along and fill these in. Use Print for a paper copy.",
-                    };
+                : {
+                    src: `/lessons/${id}/notes.html?embed=1`,
+                    full: `/lessons/${id}/notes.html`,
+                    icon: "📝",
+                    title: "Guided Notes",
+                    desc: "Read along and fill these in. Use Print for a paper copy.",
+                  };
 
       this.setExtraActive(kind);
       phaseContainer.innerHTML = "";
@@ -663,29 +655,66 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       el.setAttribute("role", "region");
       el.setAttribute("aria-label", "Objectives");
 
-      const objectiveCard = ({ accent, color, label, text, prompt, starter }) =>
-        `<div class="card ${accent} launch-objective" style="margin-bottom:var(--sp-4, 18px);">
-          <h4 style="color:var(${color}); margin-bottom:var(--sp-2, 8px);">${label}</h4>
-          <p style="margin:0 0 var(--sp-3, 12px); font-weight:600; font-size:1.05rem;">${text}</p>
+      // Underline + bold the lesson's key math words wherever they appear in an
+      // objective, so English learners can spot the academic vocabulary.
+      const highlightKeyWords = (text) => {
+        const terms = (
+          Array.isArray(config.vocabulary) ? config.vocabulary : []
+        )
+          .map((v) => v && v.term)
+          .filter(Boolean)
+          .sort((a, b) => b.length - a.length);
+        let out = String(text);
+        terms.forEach((term) => {
+          const e = escHtml(term).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          out = out.replace(
+            new RegExp("\\b(" + e + ")\\b", "gi"),
+            '<u class="obj-key">$1</u>',
+          );
+        });
+        return out;
+      };
+
+      const objectiveCard = ({
+        accent,
+        color,
+        icon,
+        label,
+        text,
+        key,
+        prompt,
+        starter,
+      }) =>
+        `<div class="card ${accent} obj-card" style="margin-bottom:var(--sp-4, 18px); padding:var(--sp-5, 22px);">
+          <div style="font-size:1.15rem; font-weight:800; color:var(${color}); margin-bottom:var(--sp-2, 8px);">${icon} ${label}</div>
+          <p style="margin:0 0 var(--sp-4, 18px); font-size:1.45rem; line-height:1.6; font-weight:600; color:var(--navy, #264653);">${highlightKeyWords(text)}</p>
+          <div style="display:flex; flex-direction:column; gap:var(--sp-2, 8px); background:#fff; border:2px solid var(${color}); border-radius:var(--radius-md, 12px); padding:var(--sp-3, 14px) var(--sp-4, 18px); margin-bottom:var(--sp-3, 12px);">
+            <div style="font-weight:800; color:var(--navy, #264653); font-size:1.05rem;">Can I do this?</div>
+            <label style="display:flex; align-items:center; gap:10px; font-size:1.2rem; cursor:pointer;"><input type="checkbox" data-obj-check="${key}-before" style="width:22px; height:22px; flex:0 0 auto;" /> <span>⏱️ <strong>Before</strong> the lesson — I can do this.</span></label>
+            <label style="display:flex; align-items:center; gap:10px; font-size:1.2rem; cursor:pointer;"><input type="checkbox" data-obj-check="${key}-after" style="width:22px; height:22px; flex:0 0 auto;" /> <span>✅ <strong>After</strong> the lesson — I can do this now!</span></label>
+          </div>
           <div class="objective-talk" style="background:var(--cream, #fdf3e0); border:1px solid var(--gold, #d4952a); border-radius:var(--radius-md, 12px); padding:var(--sp-3, 12px) var(--sp-4, 16px);">
             <div style="font-weight:800; color:var(--navy, #264653); margin-bottom:var(--sp-1, 4px);">💬 Talk about it</div>
-            <p style="margin:0 0 var(--sp-2, 8px);">${prompt}</p>
-            <p style="margin:0; font-style:italic; color:var(--navy, #264653);">Sentence starter: "${starter}"</p>
+            <p style="margin:0 0 var(--sp-2, 8px); font-size:1.1rem;">${prompt}</p>
+            <p style="margin:0; font-style:italic; color:var(--navy, #264653); font-size:1.1rem;">Say: "${starter}"</p>
           </div>
         </div>`;
 
       el.innerHTML = `
-        <div class="extra-head" style="display:flex; flex-wrap:wrap; gap:var(--sp-3, 12px); align-items:center; justify-content:space-between; margin-bottom:var(--sp-3, 12px);">
+        <style>.obj-key{ text-decoration-thickness:2px; text-underline-offset:2px; font-weight:800; color:var(--navy, #264653); }</style>
+        <div class="extra-head" style="margin-bottom:var(--sp-4, 18px);">
           <div>
-            <div class="section-title" style="font-size:1.6rem;">🎯 Today's Objectives</div>
-            <div class="section-desc">What you'll learn today, and the words you'll use to talk about it. Read each one, then turn and talk about what it means.</div>
+            <div class="section-title" style="font-size:2rem;">🎯 Today's Goals</div>
+            <div class="section-desc" style="font-size:1.1rem;">Read each goal. The <u class="obj-key">underlined</u> words are important math words. Check a box before we start, and again at the end.</div>
           </div>
         </div>
         ${objectiveCard({
           accent: "card-teal",
           color: "--teal",
-          label: "Content Objective",
+          icon: "📘",
+          label: "What I will learn",
           text: content,
+          key: "content",
           prompt:
             "Turn and talk: In your own words, what will you be able to do by the end of this lesson?",
           starter: "By the end of today, I will be able to ______.",
@@ -693,8 +722,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         ${objectiveCard({
           accent: "card-coral",
           color: "--coral",
-          label: "Language Objective",
+          icon: "🗣️",
+          label: "Words I will use",
           text: language,
+          key: "language",
           prompt:
             "Turn and talk: Which math words will you use today, and what do you think they mean?",
           starter:
@@ -702,6 +733,24 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         })}
       `;
       phaseContainer.append(el);
+
+      // Persist the before/after self-check on this device.
+      const objKey = "nt-obj:" + config.lessonId;
+      let objStore = {};
+      try {
+        objStore = JSON.parse(localStorage.getItem(objKey) || "{}") || {};
+      } catch (e) {}
+      el.querySelectorAll("[data-obj-check]").forEach((cb) => {
+        const k = cb.getAttribute("data-obj-check");
+        cb.checked = !!objStore[k];
+        cb.addEventListener("change", () => {
+          objStore[k] = cb.checked;
+          try {
+            localStorage.setItem(objKey, JSON.stringify(objStore));
+          } catch (e) {}
+        });
+      });
+
       el.scrollIntoView({ block: "start" });
     },
 
@@ -920,6 +969,11 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     setTimeout(function () {
       app.openExtra(pendingExtra);
     }, 0);
+  } else if (config.readiness) {
+    // Land students on Get Ready first (the warm-up) when there's no deep-link.
+    setTimeout(function () {
+      app.openExtra("readiness");
+    }, 0);
   }
 
   return app;
@@ -998,7 +1052,6 @@ function preLessonNavHtml(config) {
   if (config.readiness) tabs.push({ extra: "readiness", label: "Get Ready" });
   tabs.push({ extra: "objectives", label: "Objectives" });
   tabs.push({ extra: "vocab", label: "Vocab" });
-  tabs.push({ extra: "builder", label: "Builder" });
   tabs.push({ extra: "notes", label: "Notes" });
   const items = tabs.map(
     (t, i) =>
