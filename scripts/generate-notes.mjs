@@ -471,6 +471,67 @@ function guidedNotesFill(cfg = {}) {
   };
 }
 
+// Textbook-style "Learn It" teaching block for the guided notes. Built from the
+// lesson's authored `launch.conceptIntro` (heading, plain-language intro, key
+// idea, and a fully-narrated I-Do / We-Do / You-Do walkthrough). This is the
+// piece that actually EXPLAINS the math and how to solve it, in big readable
+// type with clear numbered steps, BEFORE students fill in notes or practice. It
+// is designed for Level 1 and Level 2 students: short sentences, one idea per
+// line, a worked example shown all the way through.
+function conceptLearnBlock(cfg = {}) {
+  const intro = (cfg.launch && cfg.launch.conceptIntro) || cfg.conceptIntro;
+  if (!intro || typeof intro !== "object") return "";
+
+  const heading = esc(intro.heading || "How the math works");
+  const introP = intro.intro
+    ? `<p class="learnit-intro">${esc(intro.intro)}</p>`
+    : "";
+  const keyIdea = intro.keyIdea
+    ? `<div class="learnit-key"><span class="learnit-key-label">💡 Key idea</span><span class="learnit-key-text">${esc(intro.keyIdea)}</span></div>`
+    : "";
+
+  // One gradual-release stage. `numbered` controls whether the lines render as
+  // "Step 1 / Step 2 …" (used for the worked "Watch" model) or plain points.
+  const stage = (data, tag, klass, numbered) => {
+    if (!data) return "";
+    const raw = Array.isArray(data.lines)
+      ? data.lines
+      : data.lines
+        ? [data.lines]
+        : [];
+    const lines = raw.filter(Boolean);
+    if (!lines.length) return "";
+    const items = lines
+      .map((l, i) =>
+        numbered
+          ? `<li class="learnit-step"><span class="learnit-steplabel">Step ${i + 1}</span><span class="learnit-step-text">${esc(l)}</span></li>`
+          : `<li class="learnit-point">${esc(l)}</li>`,
+      )
+      .join("");
+    const title = data.title ? `<span class="learnit-stage-title">${esc(data.title)}</span>` : "";
+    return `<div class="learnit-stage ${klass}">
+      <p class="learnit-stage-head"><span class="learnit-tag">${tag}</span>${title}</p>
+      <${numbered ? "ol" : "ul"} class="learnit-lines">${items}</${numbered ? "ol" : "ul"}>
+    </div>`;
+  };
+
+  const watch = stage(intro.iDo, "👀 Watch — see it solved", "learnit-watch", true);
+  const we = stage(intro.weDo, "🤝 We try it together", "learnit-we", false);
+  const you = stage(intro.youDo, "✏️ Now you try", "learnit-you", false);
+  if (!watch && !we && !you && !introP && !keyIdea) return "";
+
+  return `<div class="learnit" role="group" aria-label="Learn It — how the math works">
+    <p class="learnit-eyebrow">📖 Learn It — read this first</p>
+    <h3 class="learnit-head">${heading}</h3>
+    ${introP}
+    ${keyIdea}
+    ${watch}
+    ${we}
+    ${you}
+    <p class="learnit-bridge">✅ Got it? You're ready to practice — use these same steps on the problems.</p>
+  </div>`;
+}
+
 function notesSection(cfg = {}, worked = null, fillHtml = "") {
   const launch = cfg.launch || {};
   const explore = cfg.explore || {};
@@ -491,16 +552,24 @@ function notesSection(cfg = {}, worked = null, fillHtml = "") {
     </div>`
     : "";
 
+  // Textbook-style teaching block — explains the concept and shows it solved,
+  // BEFORE any fill-in-the-blank or practice. This is the part that "explains
+  // the math and how to solve it" in big, clear, step-by-step type.
+  const learnBlock = conceptLearnBlock(cfg);
+
   // Fill-in-the-blank notes (the centerpiece) are built in buildPacket and
   // passed in so their answers can also flow into the teacher answer key.
   const fillBlock = fillHtml
     ? `<p class="gn-directions">✏️ Fill in each blank as we go. Use the Word Bank to help you.</p>${fillHtml}`
     : "";
 
-  // Guided "I Do → We Do → You Do" mini-frame with real worked problems.
+  // Guided "I Do → We Do → You Do" mini-frame with real worked problems. This
+  // now comes AFTER the Learn It explanation, so it reads as guided practice
+  // (applying the method just taught), not the first exposure to the math.
   const gradualHtml = workedFrame(worked);
   const workedBlock = gradualHtml
-    ? `<h3 class="gn-subhead">🧮 Watch &amp; Try — Worked Examples</h3>${gradualHtml}`
+    ? `<h3 class="gn-subhead">🧮 Practice It Together — Worked Problems</h3>
+       <p class="gn-subhead-note">Use the steps from <strong>Learn It</strong> above. Watch one, solve one together, then try one on your own.</p>${gradualHtml}`
     : "";
 
   return `<section class="section notes">
@@ -510,6 +579,7 @@ function notesSection(cfg = {}, worked = null, fillHtml = "") {
     <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
   </h2>
   ${learningHtml}
+  ${learnBlock}
   ${fillBlock}
   ${workedBlock}
 </section>`;
@@ -736,6 +806,46 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-learning-label{margin:0 0 2px;font-size:11.5px;font-weight:700;letter-spacing:.04em;
   text-transform:uppercase;color:var(--teal);}
 .notes-learning-text{margin:0;font-size:15px;font-weight:600;color:var(--navy);}
+/* Learn It — textbook-style concept teaching block (explains the math first) */
+.learnit{border:1.5px solid var(--teal);border-radius:14px;background:#fff;
+  padding:18px 20px;margin:0 0 18px;page-break-inside:avoid;
+  box-shadow:0 1px 0 var(--teal-light);}
+.learnit-eyebrow{margin:0 0 4px;font-size:12px;font-weight:800;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--teal);}
+.learnit-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
+  font-size:21px;margin:0 0 10px;line-height:1.25;}
+.learnit-intro{font-size:17px;line-height:1.7;color:var(--ink);margin:0 0 12px;font-weight:500;}
+.learnit-key{display:flex;gap:10px;align-items:baseline;background:#fff7e6;
+  border:1px solid var(--amber);border-radius:10px;padding:12px 14px;margin:0 0 14px;}
+.learnit-key-label{flex:0 0 auto;font-weight:800;color:var(--navy);font-size:13px;
+  white-space:nowrap;}
+.learnit-key-text{font-size:16px;line-height:1.6;color:var(--navy);font-weight:600;}
+.learnit-stage{border-radius:10px;padding:12px 14px;margin:0 0 12px;border:1px solid var(--line);}
+.learnit-watch{background:var(--teal-light);border-color:var(--teal);}
+.learnit-we{background:#fff7e6;border-color:var(--amber);}
+.learnit-you{background:#eef3fb;border-color:var(--navy);}
+.learnit-stage-head{margin:0 0 8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.learnit-tag{display:inline-block;background:var(--navy);color:#fff;font-weight:800;
+  font-size:13px;border-radius:999px;padding:4px 12px;}
+.learnit-watch .learnit-tag{background:var(--teal);}
+.learnit-we .learnit-tag{background:var(--amber);color:var(--navy);}
+.learnit-you .learnit-tag{background:var(--navy);}
+.learnit-stage-title{font-weight:700;color:var(--navy);font-size:14.5px;}
+.learnit-lines{margin:0;padding:0;list-style:none;}
+.learnit-step{display:flex;gap:10px;align-items:flex-start;margin:0 0 9px;
+  font-size:16px;line-height:1.6;}
+.learnit-steplabel{flex:0 0 auto;background:var(--navy);color:#fff;font-weight:800;
+  font-size:12px;border-radius:6px;padding:3px 9px;margin-top:1px;white-space:nowrap;}
+.learnit-watch .learnit-steplabel{background:var(--teal);}
+.learnit-step-text{flex:1;}
+.learnit-point{position:relative;padding-left:22px;margin:0 0 8px;font-size:16px;line-height:1.6;}
+.learnit-point::before{content:"→";position:absolute;left:0;color:var(--teal);font-weight:800;}
+.learnit-bridge{margin:8px 0 0;font-size:14.5px;font-weight:700;color:var(--navy);}
+.gn-subhead-note{margin:-4px 0 12px;font-size:14px;color:var(--muted);}
+@media print{
+  .learnit{border-color:#000;box-shadow:none;}
+  .learnit-watch,.learnit-we,.learnit-you,.learnit-key{background:#fff;}
+}
 .notes-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 14px;}
 .notes-step{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
   border-top:5px solid var(--teal);page-break-inside:avoid;}
@@ -1642,6 +1752,69 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
 </html>`;
 }
 
+// Standalone "Learn It" teaching page — a focused, publisher-style explanation
+// of the lesson's concept (definition → key idea → worked "Watch" example →
+// We-do → You-do), built from the lesson's authored `launch.conceptIntro`.
+// Surfaced as the "📖 Learn It" sidebar tab in the interactive lesson so
+// students get a real, step-by-step explanation BEFORE practice. Non-graded,
+// no save/resume coupling — it is pure instruction.
+function buildLearnPage(id, cfg, isFlagship) {
+  const standard = cfg.standard ? `Standard ${esc(cfg.standard)}` : "";
+  const standardPlain = cfg.standard ? `Standard ${cfg.standard}` : "";
+  const unit = cfg.unit != null ? `Unit ${esc(cfg.unit)}` : "";
+  const flagBadge = isFlagship
+    ? `<span class="flagship-badge">Flagship</span>`
+    : "";
+
+  const learnBlock = conceptLearnBlock(cfg);
+  const objective = cfg.contentObjective || cfg.languageObjective || "";
+  const body =
+    learnBlock ||
+    `<div class="learnit"><p class="learnit-eyebrow">📖 Learn It</p>
+      <h3 class="learnit-head">${esc(cfg.title || "Today's math")}</h3>
+      ${objective ? `<p class="learnit-intro">${esc(objective)}</p>` : ""}
+      <p class="learnit-bridge">Your teacher will walk through how to solve this together.</p>
+    </div>`;
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>${esc(cfg.title)} — Learn It</title>
+${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
+<style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}
+  .learn-intro-note{display:flex;gap:12px;align-items:flex-start;background:var(--teal-light);
+    border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:0 0 16px;}
+  .learn-intro-note .lin-icon{font-size:22px;line-height:1;flex:0 0 auto;}
+  .learn-intro-note p{margin:0;font-size:14.5px;color:var(--navy);font-weight:600;}
+</style>
+<script>
+  if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}
+</script>
+</head>
+<body>
+<div class="topbar no-print">
+  <span class="brand">Neft Teacher · Learn It</span>
+  <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+</div>
+<main class="sheet">
+  <header class="packet">
+    <p class="eyebrow">${[unit, standard].filter(Boolean).join(" · ")}</p>
+    <h1>${esc(cfg.title)} ${flagBadge}</h1>
+    <p class="meta">Lesson ${esc(id)} · Learn It — how the math works</p>
+  </header>
+  <div class="learn-intro-note">
+    <span class="lin-icon" aria-hidden="true">🧭</span>
+    <p>Read this first. It explains what we are learning and shows you exactly how to solve it — step by step. Then head to the lesson activities and practice.</p>
+  </div>
+  ${body}
+  <footer class="packet">Neft Teacher · Grade 6 Math · Lesson ${esc(id)}${standard ? " · " + standard : ""}</footer>
+</main>
+</body>
+</html>`;
+}
+
 function buildIndex(lessons) {
   const flagshipTotal = lessons.filter((l) => l.isFlagship).length;
   const coreTotal = lessons.length - flagshipTotal;
@@ -1726,6 +1899,11 @@ function main() {
     writeFileSync(
       join(lessonsDir, id, "notes-teacher.html"),
       buildPacket(id, cfg, isFlagship, true)
+    );
+    // Standalone "Learn It" teaching page (surfaced as the 📖 Learn It tab).
+    writeFileSync(
+      join(lessonsDir, id, "learn.html"),
+      buildLearnPage(id, cfg, isFlagship)
     );
     count++;
     if (isFlagship) flagshipCount++;

@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Equations and Inequalities Problem Solving — Learn It</title>
+<style>
+:root{
+  --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
+  --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Calibri,"Segoe UI",system-ui,sans-serif;line-height:1.5;}
+.sheet{max-width:8.5in;margin:0 auto;background:var(--card);padding:0.6in;}
+.topbar{position:sticky;top:0;background:var(--navy);color:#fff;display:flex;
+  justify-content:space-between;align-items:center;padding:12px 18px;}
+.topbar .brand{font-weight:700;font-family:Outfit,system-ui,sans-serif;}
+.print-btn{background:var(--amber);color:var(--navy);border:0;border-radius:8px;
+  padding:9px 16px;font-weight:700;cursor:pointer;font-size:15px;}
+header.packet{border-bottom:3px solid var(--teal);padding-bottom:14px;margin-bottom:18px;}
+header.packet .eyebrow{color:var(--teal);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:13px;margin:0;}
+header.packet h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
+  margin:6px 0 4px;font-size:26px;}
+header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
+.name-line{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;font-size:14px;}
+.nl-field{display:flex;align-items:center;gap:8px;flex:1;min-width:180px;}
+.nl-label{font-weight:700;color:var(--navy);white-space:nowrap;}
+.nl-input{flex:1;min-width:80px;border:none;border-bottom:1.5px solid var(--ink);background:transparent;
+  font:inherit;font-size:15px;color:var(--navy);padding:4px 4px;border-radius:4px 4px 0 0;}
+.nl-input:focus{outline:none;background:#fff7e6;}
+@media print{.nl-input{border-bottom:1px solid #000;color:#000;}}
+.section{margin:0 0 22px;page-break-inside:avoid;}
+.section>h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;
+  border-left:5px solid var(--teal);padding-left:10px;margin:0 0 12px;}
+.vocab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.vocab-card{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  page-break-inside:avoid;}
+.vocab-term{margin:0 0 4px;color:var(--navy);font-size:16px;}
+.vocab-def{margin:0 0 8px;font-size:14px;}
+.vocab-figure{text-align:center;background:var(--teal-light);border-radius:8px;padding:8px;}
+.vocab-figure img{max-width:100%;max-height:120px;}
+.vocab-caption{margin:6px 0 0;font-size:12.5px;color:var(--muted);font-style:italic;}
+.notes-bullets,.prompt-list{margin:0 0 10px;padding-left:20px;}
+.notes-bullets li,.prompt-list li{margin:5px 0;}
+.think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
+.think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+/* Guided notes — learning line, visual steps, gradual-release frame */
+.notes-learning{display:flex;gap:12px;align-items:flex-start;background:var(--teal-light);
+  border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:0 0 14px;page-break-inside:avoid;}
+.notes-learning-icon{font-size:22px;line-height:1;flex:0 0 auto;}
+.notes-learning-label{margin:0 0 2px;font-size:11.5px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--teal);}
+.notes-learning-text{margin:0;font-size:15px;font-weight:600;color:var(--navy);}
+/* Learn It — textbook-style concept teaching block (explains the math first) */
+.learnit{border:1.5px solid var(--teal);border-radius:14px;background:#fff;
+  padding:18px 20px;margin:0 0 18px;page-break-inside:avoid;
+  box-shadow:0 1px 0 var(--teal-light);}
+.learnit-eyebrow{margin:0 0 4px;font-size:12px;font-weight:800;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--teal);}
+.learnit-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
+  font-size:21px;margin:0 0 10px;line-height:1.25;}
+.learnit-intro{font-size:17px;line-height:1.7;color:var(--ink);margin:0 0 12px;font-weight:500;}
+.learnit-key{display:flex;gap:10px;align-items:baseline;background:#fff7e6;
+  border:1px solid var(--amber);border-radius:10px;padding:12px 14px;margin:0 0 14px;}
+.learnit-key-label{flex:0 0 auto;font-weight:800;color:var(--navy);font-size:13px;
+  white-space:nowrap;}
+.learnit-key-text{font-size:16px;line-height:1.6;color:var(--navy);font-weight:600;}
+.learnit-stage{border-radius:10px;padding:12px 14px;margin:0 0 12px;border:1px solid var(--line);}
+.learnit-watch{background:var(--teal-light);border-color:var(--teal);}
+.learnit-we{background:#fff7e6;border-color:var(--amber);}
+.learnit-you{background:#eef3fb;border-color:var(--navy);}
+.learnit-stage-head{margin:0 0 8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.learnit-tag{display:inline-block;background:var(--navy);color:#fff;font-weight:800;
+  font-size:13px;border-radius:999px;padding:4px 12px;}
+.learnit-watch .learnit-tag{background:var(--teal);}
+.learnit-we .learnit-tag{background:var(--amber);color:var(--navy);}
+.learnit-you .learnit-tag{background:var(--navy);}
+.learnit-stage-title{font-weight:700;color:var(--navy);font-size:14.5px;}
+.learnit-lines{margin:0;padding:0;list-style:none;}
+.learnit-step{display:flex;gap:10px;align-items:flex-start;margin:0 0 9px;
+  font-size:16px;line-height:1.6;}
+.learnit-steplabel{flex:0 0 auto;background:var(--navy);color:#fff;font-weight:800;
+  font-size:12px;border-radius:6px;padding:3px 9px;margin-top:1px;white-space:nowrap;}
+.learnit-watch .learnit-steplabel{background:var(--teal);}
+.learnit-step-text{flex:1;}
+.learnit-point{position:relative;padding-left:22px;margin:0 0 8px;font-size:16px;line-height:1.6;}
+.learnit-point::before{content:"→";position:absolute;left:0;color:var(--teal);font-weight:800;}
+.learnit-bridge{margin:8px 0 0;font-size:14.5px;font-weight:700;color:var(--navy);}
+.gn-subhead-note{margin:-4px 0 12px;font-size:14px;color:var(--muted);}
+@media print{
+  .learnit{border-color:#000;box-shadow:none;}
+  .learnit-watch,.learnit-we,.learnit-you,.learnit-key{background:#fff;}
+}
+.notes-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 14px;}
+.notes-step{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  border-top:5px solid var(--teal);page-break-inside:avoid;}
+.notes-step-2{border-top-color:var(--amber);}
+.notes-step-3{border-top-color:var(--navy);}
+.notes-step-head{display:flex;align-items:center;gap:8px;margin:0 0 6px;}
+.notes-step-num{font-size:18px;line-height:1;}
+.notes-step-title{margin:0;font-size:14.5px;color:var(--navy);}
+.notes-step-text{margin:0;font-size:13.5px;line-height:1.4;}
+.notes-word-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.notes-word-chip{display:inline-block;font-size:12.5px;font-weight:600;color:var(--navy);
+  background:var(--teal-light);border:1px solid var(--teal);border-radius:999px;padding:2px 10px;}
+.notes-gradual{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0 0;}
+.notes-gr-step{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:10px 12px;background:#fff;page-break-inside:avoid;}
+.notes-gr-we{border-left-color:var(--amber);}
+.notes-gr-you{border-left-color:var(--navy);}
+.notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
+  background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
+.notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+/* Turn & Talk — optional hint + optional starters label */
+.tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
+  padding:6px 10px;}
+.tt-hint-toggle>summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--teal);list-style:none;}
+.tt-hint-toggle>summary::-webkit-details-marker{display:none;}
+.tt-hint-text{margin:6px 0 0;font-size:13.5px;color:var(--ink);}
+.tt-stems-label{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--navy);
+  text-transform:none;letter-spacing:0;}
+.my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
+.writeline{border-bottom:1px solid #b9c6d3;height:26px;}
+/* Typeable, auto-saved guided-notes fields (replace the print-only blank lines) */
+textarea.writeline-area{display:block;width:100%;box-sizing:border-box;border:none;resize:vertical;
+  font:inherit;color:var(--navy);line-height:26px;padding:0 2px;background-color:transparent;
+  background-image:repeating-linear-gradient(transparent,transparent 25px,#b9c6d3 25px,#b9c6d3 26px);
+  min-height:26px;border-radius:4px;}
+textarea.writeline-area:focus{outline:none;background-color:#fff7e6;}
+input.writeline{border:none;border-bottom:1px solid #b9c6d3;background:transparent;font:inherit;
+  color:var(--navy);padding:1px 4px;min-width:60px;border-radius:3px 3px 0 0;}
+.wk-step-blank input.writeline,.wk-answer-blank input.writeline{height:24px;}
+input.gn-blank{background:transparent;font:inherit;font-weight:700;color:var(--navy);text-align:center;
+  padding:1px 6px;border-radius:4px;}
+input.writeline:focus,input.gn-blank:focus{outline:none;background-color:#fff7e6;}
+.nt-save{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--teal);
+  background:var(--teal-light);border:1px solid var(--teal);border-radius:999px;padding:5px 12px;white-space:nowrap;}
+.nt-clear{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;
+  font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;}
+.nt-clear:hover{border-color:var(--navy);color:var(--navy);}
+.example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
+.example-head{margin:0 0 6px;color:var(--navy);font-size:16px;}
+.ex-problem{margin:0 0 8px;font-weight:600;}
+.ex-steps{margin:0 0 8px;padding-left:20px;}
+.step-label{color:var(--teal);font-weight:700;}
+.ex-solution,.ex-answer{margin:6px 0 0;font-size:14.5px;}
+.tryit{margin:0 0 14px;page-break-inside:avoid;}
+.tryit-num,.reflect-stem{font-weight:600;margin:0 0 6px;}
+.try-choices{margin:0 0 8px;padding-left:24px;}
+.try-choices li{margin:3px 0;}
+.work-space{margin-top:6px;}
+.muted{color:var(--muted);font-size:14px;}
+.teacher-banner{background:#fff3cd;border:1.5px solid #e0a800;color:#7a5b00;border-radius:10px;
+  padding:10px 14px;margin:0 0 14px;font-weight:800;font-size:14px;text-align:center;}
+.answer-key{page-break-before:always;border-top:3px solid var(--navy);margin-top:24px;padding-top:14px;}
+.answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
+.ak-list{padding-left:22px;}
+.ak-list li{margin:8px 0;}
+.ak-twr-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:16px;margin:14px 0 6px;}
+.ak-why{color:var(--muted);font-style:italic;}
+footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
+  color:var(--muted);font-size:12px;text-align:center;}
+.level-tag{display:inline-block;font-family:Calibri,system-ui,sans-serif;font-size:11.5px;
+  font-weight:700;letter-spacing:.02em;padding:2px 9px;border-radius:999px;vertical-align:middle;
+  margin-left:8px;text-transform:none;}
+.level-1{background:var(--teal-light);color:var(--teal);border:1px solid var(--teal);}
+.level-2{background:#fef0d8;color:#9a6b12;border:1px solid var(--amber);}
+.level-note{margin:-4px 0 12px;font-size:13.5px;color:var(--muted);}
+.flagship-badge{display:inline-block;font-size:13px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:3px 12px;vertical-align:middle;font-family:Calibri,system-ui,sans-serif;}
+.mission{background:linear-gradient(135deg,var(--navy),#1b4a7a);color:#fff;border-radius:12px;
+  padding:16px 20px;margin:0 0 22px;}
+.mission-eyebrow{margin:0 0 4px;color:var(--amber);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:12px;}
+.mission-title{font-family:Outfit,system-ui,sans-serif;margin:0 0 8px;font-size:20px;border:0;padding:0;color:#fff;}
+.mission-story{margin:0;font-size:14px;line-height:1.55;}
+.enrich-block{border:1px dashed var(--amber);background:#fffaf0;border-radius:10px;
+  padding:12px 14px;margin:14px 0 0;page-break-inside:avoid;}
+.enrich-block h3{margin:0 0 4px;font-size:15px;color:var(--navy);}
+.sentence-frame{font-size:13.5px;color:var(--muted);font-style:italic;margin:4px 0 8px;}
+/* The Writing Revolution (TWR) */
+.section.twr>h2{border-left-color:var(--amber);}
+.twr-method{display:inline-block;font-size:11.5px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:2px 10px;vertical-align:middle;margin-left:8px;}
+.twr-block{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.twr-block h3{margin:0 0 8px;color:var(--navy);font-size:15.5px;}
+.twr-tag{display:inline-block;font-size:11px;font-weight:600;color:var(--teal);
+  background:var(--teal-light);border-radius:999px;padding:1px 9px;margin-left:6px;vertical-align:middle;}
+.twr-model{background:var(--teal-light);border-radius:6px;padding:8px 10px;margin:0 0 8px;font-size:14px;}
+.twr-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.twr-frame{margin:4px 0 4px;font-size:14px;}
+.twr-en{font-weight:600;}
+.twr-es{display:block;color:var(--muted);font-style:italic;font-size:13px;}
+.twr-exp-row,.twr-type-row{display:grid;grid-template-columns:96px 1fr;gap:10px;
+  align-items:start;margin:8px 0;}
+.twr-conj,.twr-type-name{font-weight:700;color:var(--navy);background:#fef0d8;
+  border-radius:6px;padding:4px 8px;font-size:13.5px;text-align:center;}
+.twr-conj-es{display:block;font-weight:600;color:var(--muted);font-style:italic;font-size:11.5px;}
+.twr-exp-lines{min-width:0;}
+.twr-hint{margin:0 0 4px;font-size:13px;color:var(--muted);}
+.twr-stems{margin:0 0 8px;}
+/* Turn & Talk — Discussion Points */
+.section.turn-and-talk>h2{border-left-color:var(--teal);}
+.tt-card{border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.tt-phase{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:#fff;background:var(--navy);border-radius:999px;
+  padding:2px 10px;margin:0 0 8px;}
+.tt-question{font-weight:600;color:var(--navy);font-size:15px;margin:6px 0 10px;}
+.tt-support{background:var(--teal-light);border:1px solid var(--teal);border-radius:8px;
+  padding:10px 12px;margin:0 0 10px;}
+.tt-extend{background:#fffaf0;border:1px dashed var(--amber);border-radius:8px;
+  padding:10px 12px;margin:0;}
+.tt-support .level-tag,.tt-extend .level-tag{margin:0 0 6px;}
+.tt-kernel{margin:6px 0;font-size:14px;}
+.tt-kernel-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.tt-stems{margin:6px 0;}
+.tt-mini-label{font-weight:700;color:var(--navy);margin-right:4px;}
+.tt-wordbank{margin:6px 0;font-size:13.5px;}
+.tt-word{display:inline-block;font-weight:600;color:var(--teal);background:#fff;
+  border:1px solid var(--teal);border-radius:999px;padding:1px 9px;margin:2px 4px 2px 0;font-size:12.5px;}
+.tt-listen{margin:6px 0 0;font-size:13px;color:var(--muted);font-style:italic;}
+.tt-extend-q{font-weight:600;color:#9a6b12;margin:4px 0 6px;font-size:14px;}
+.tt-extend-stems{margin:4px 0 0;padding-left:20px;font-size:13.5px;}
+.tt-extend-stems li{margin:3px 0;}
+/* Projects Section */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+.project-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--card);
+  box-shadow: 0 4px 12px rgba(18, 53, 91, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  page-break-inside: avoid;
+}
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(18, 53, 91, 0.08);
+}
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.project-emoji {
+  font-size: 24px;
+}
+.project-title {
+  margin: 0;
+  color: var(--navy);
+  font-size: 16.5px;
+  font-family: Outfit, system-ui, sans-serif;
+}
+.project-desc {
+  margin: 0 0 14px 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  flex-grow: 1;
+}
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.project-link-btn {
+  display: block;
+  text-align: center;
+  background: var(--cream);
+  color: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.project-link-btn:hover {
+  background: var(--teal-light);
+  color: var(--teal);
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main:hover {
+  background: #198e8a;
+  border-color: #198e8a;
+}
+/* Download menu */
+.dl-wrap{position:relative;display:inline-block;margin-left:10px;}
+.dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
+  border-radius:8px;box-shadow:0 8px 24px rgba(18,53,91,.18);padding:6px;min-width:210px;z-index:20;}
+.dl-menu[hidden]{display:none;}
+.dl-menu a{display:block;padding:9px 12px;color:var(--ink);text-decoration:none;border-radius:6px;
+  font-size:14px;font-weight:600;}
+.dl-menu a:hover,.dl-menu a:focus{background:var(--teal-light);}
+.dl-menu .dl-sub{display:block;font-weight:400;color:var(--muted);font-size:12px;}
+
+/* Leveled display settings */
+.l1-only, .l2-only, .l3-only { display: none !important; }
+.l2-only-block { display: block !important; }
+
+html.level-l1 .l1-only { display: block !important; }
+html.level-l1 span.l1-only { display: inline !important; }
+html.level-l1 div.l1-only-flex { display: flex !important; }
+html.level-l1 .l2-only, html.level-l1 .l3-only, html.level-l1 .l2-only-block { display: none !important; }
+
+html.level-l2 .l2-only { display: block !important; }
+html.level-l2 .l2-only-block { display: block !important; }
+html.level-l2 span.l2-only { display: inline !important; }
+html.level-l2 div.l2-only-flex { display: flex !important; }
+html.level-l2 .l1-only, html.level-l2 .l3-only { display: none !important; }
+
+html.level-l3 .l3-only { display: block !important; }
+html.level-l3 span.l3-only { display: inline !important; }
+html.level-l3 div.l3-only-flex { display: flex !important; }
+html.level-l3 .l1-only, html.level-l3 .l2-only, html.level-l3 .l2-only-block { display: none !important; }
+
+/* Level Selector Styling */
+.level-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 10px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.selector-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.pill-group {
+  display: flex;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  padding: 2px;
+  gap: 2px;
+}
+.pill-btn {
+  position: relative;
+  cursor: pointer;
+}
+.pill-btn input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.pill-btn span {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 18px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.65);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.pill-btn input[type="radio"]:checked + span {
+  background: var(--amber);
+  color: var(--navy);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.pill-btn:hover span {
+  color: #fff;
+}
+.pill-btn input[type="radio"]:checked:hover span {
+  color: var(--navy);
+}
+
+/* Leveled component details */
+.vocab-def-prompt, .notes-step-prompt {
+  font-size: 13.5px;
+  color: var(--muted);
+  font-weight: 600;
+  margin: 4px 0 6px;
+}
+.scratchpad {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background-color: #fafbfc;
+  background-image: radial-gradient(var(--line) 1px, transparent 0);
+  background-size: 16px 16px;
+  height: 110px;
+  margin: 10px 0;
+  position: relative;
+}
+.scratchpad-label {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.85);
+  border: 1px solid var(--line);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.wk-checkboxes {
+  background: rgba(31, 166, 162, 0.05);
+  border: 1px dashed var(--teal);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 8px 0;
+}
+.wk-checkbox-label {
+  font-size: 13.5px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.wk-checkbox-label input {
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+/* Turn & Talk Leveling */
+html.level-l1 .tt-support { display: block !important; }
+html.level-l1 .tt-extend { display: none !important; }
+html.level-l2 .tt-support { display: block !important; }
+html.level-l2 .tt-extend { display: block !important; }
+html.level-l3 .tt-support { display: none !important; }
+html.level-l3 .tt-extend { display: block !important; }
+
+/* Vocab def leveling styling */
+html.level-l1 .vocab-def-l1 { display: block !important; }
+html.level-l1 .vocab-def-l2, html.level-l1 .vocab-def-l3 { display: none !important; }
+html.level-l2 .vocab-def-l2 { display: block !important; }
+html.level-l2 .vocab-def-l1, html.level-l2 .vocab-def-l3 { display: none !important; }
+html.level-l3 .vocab-def-l3 { display: block !important; }
+html.level-l3 .vocab-def-l1, html.level-l3 .vocab-def-l2 { display: none !important; }
+
+/* Notes step body leveling */
+html.level-l1 .notes-step-body-l1 { display: block !important; }
+html.level-l1 .notes-step-body-l2, html.level-l1 .notes-step-body-l3 { display: none !important; }
+html.level-l2 .notes-step-body-l2 { display: block !important; }
+html.level-l2 .notes-step-body-l1, html.level-l2 .notes-step-body-l3 { display: none !important; }
+html.level-l3 .notes-step-body-l3 { display: block !important; }
+html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: none !important; }
+
+@media print{
+  @page{
+    size:letter;margin:0.7in 0.7in 0.85in;
+    @bottom-left{content:"Neft Teacher";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-center{content:"Equations and Inequalities Problem Solving · Standard 6.EE.7";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-right{content:"Page " counter(page) " of " counter(pages);font-family:Georgia,serif;font-size:9pt;color:#444;}
+  }
+  @page:first{
+    @top-center{content:"";}
+  }
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:11.5pt;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .topbar,.print-btn,.no-print,.dl-wrap,.level-selector{display:none !important;}
+  .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section{margin-bottom:16px;}
+  .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
+  .answer-key h2,.vocab-term,.twr-block h3{color:#000;}
+  .vocab-figure{background:#fff;border:1px solid #000;}
+  .think-block{background:#fff;border:1px solid #000;}
+  .notes-learning{background:#fff;border:1px solid #000;}
+  .notes-learning-label,.notes-learning-text,.notes-step-title{color:#000;}
+  .notes-step{background:#fff;border:1px solid #000;border-top:2px solid #000;}
+  .notes-step-2,.notes-step-3{border-top:2px solid #000;}
+  .notes-word-chip{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-step{background:#fff;border:1px solid #000;border-left:2px solid #000;}
+  .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
+  .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
+  .tt-hint-toggle{background:#fff;border:1px solid #000;}
+  .tt-hint-toggle>summary{color:#000;}
+  .tt-hint-toggle[open]>summary{margin-bottom:2px;}
+  .tt-hint-toggle>summary{list-style:none;}
+  .tt-hint-toggle>.tt-hint-text{display:block !important;}
+  .tt-hint-text{color:#000;}
+  .tt-stems-label{color:#000;}
+  header.packet{border-bottom:2px solid #000;}
+  .section>h2{border-left:4px solid #000;}
+  .example{border-left:3px solid #000;}
+  .answer-key{border-top:2px solid #000;}
+  .vocab-card{border:1px solid #000;}
+  .writeline{border-bottom:1px solid #000;}
+  textarea.writeline-area{color:#000;background-image:repeating-linear-gradient(transparent,transparent 25px,#000 25px,#000 26px);}
+  input.writeline{border-bottom:1px solid #000;color:#000;}
+  input.gn-blank{color:#000;}
+  textarea.writeline-area:focus,input.writeline:focus,input.gn-blank:focus{background-color:transparent;}
+  .nt-save,.nt-clear{display:none !important;}
+  .mission{background:#fff;color:#000;border:1px solid #000;}
+  .mission-title,.mission-eyebrow{color:#000;}
+  .level-tag,.flagship-badge,.twr-method,.twr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .enrich-block{background:#fff;border:1px dashed #000;}
+  .twr-block{border:1px solid #000;border-left:3px solid #000;}
+  .twr-model{background:#fff;border:1px solid #000;}
+  .twr-conj,.twr-type-name{background:#fff;border:1px solid #000;color:#000;}
+  .twr-es,.twr-conj-es{color:#222;}
+  .tt-card{border:1px solid #000;border-left:3px solid #000;}
+  .tt-question,.section.turn-and-talk>h2{color:#000;}
+  .tt-phase{background:#fff;color:#000;border:1px solid #000;}
+  .tt-support{background:#fff;border:1px solid #000;}
+  .tt-extend{background:#fff;border:1px dashed #000;}
+  .tt-kernel-label,.tt-mini-label,.tt-extend-q{color:#000;}
+  .tt-word{background:#fff;color:#000;border:1px solid #000;}
+  .tt-listen{color:#222;}
+  footer.packet{display:none;}
+  .scratchpad {
+    border: 1px solid #000 !important;
+    background-color: #fff !important;
+    background-image: radial-gradient(#000 1px, transparent 0) !important;
+  }
+  .scratchpad-label {
+    background: #fff !important;
+    color: #000 !important;
+    border: 1px solid #000 !important;
+  }
+  .wk-checkboxes {
+    background: #fff !important;
+    border: 1px dashed #000 !important;
+  }
+}
+</style>
+</style>
+<style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}
+  .learn-intro-note{display:flex;gap:12px;align-items:flex-start;background:var(--teal-light);
+    border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:0 0 16px;}
+  .learn-intro-note .lin-icon{font-size:22px;line-height:1;flex:0 0 auto;}
+  .learn-intro-note p{margin:0;font-size:14.5px;color:var(--navy);font-weight:600;}
+</style>
+<script>
+  if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}
+</script>
+</head>
+<body>
+<div class="topbar no-print">
+  <span class="brand">Neft Teacher · Learn It</span>
+  <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+</div>
+<main class="sheet">
+  <header class="packet">
+    <p class="eyebrow">Unit 7 · Standard 6.EE.7</p>
+    <h1>Equations and Inequalities Problem Solving </h1>
+    <p class="meta">Lesson 7-7 · Learn It — how the math works</p>
+  </header>
+  <div class="learn-intro-note">
+    <span class="lin-icon" aria-hidden="true">🧭</span>
+    <p>Read this first. It explains what we are learning and shows you exactly how to solve it — step by step. Then head to the lesson activities and practice.</p>
+  </div>
+  <div class="learnit" role="group" aria-label="Learn It — how the math works">
+    <p class="learnit-eyebrow">📖 Learn It — read this first</p>
+    <h3 class="learnit-head">Should I model this problem with an equation or an inequality?</h3>
+    <p class="learnit-intro">To model means to write a real situation as math. I use an equation when there is one exact total, and an inequality when there is a limit or a range of allowed values.</p>
+    <div class="learnit-key"><span class="learnit-key-label">💡 Key idea</span><span class="learnit-key-text">'Equals' or 'exactly' points to an equation (=); 'at least, at most, more than, fewer than' points to an inequality.</span></div>
+    <div class="learnit-stage learnit-watch">
+      <p class="learnit-stage-head"><span class="learnit-tag">👀 Watch — see it solved</span><span class="learnit-stage-title">Watch me</span></p>
+      <ol class="learnit-lines"><li class="learnit-step"><span class="learnit-steplabel">Step 1</span><span class="learnit-step-text">Clue: 'A total divided equally among 4 people gave each $85.'</span></li><li class="learnit-step"><span class="learnit-steplabel">Step 2</span><span class="learnit-step-text">This has an exact total, so I use an equation. Let t be the total.</span></li><li class="learnit-step"><span class="learnit-steplabel">Step 3</span><span class="learnit-step-text">Divided among 4 to get 85 means t ÷ 4 = 85, so t = 85 × 4 = 340.</span></li><li class="learnit-step"><span class="learnit-steplabel">Step 4</span><span class="learnit-step-text">Check reasonableness: $340 split 4 ways is $85 each. That makes sense!</span></li></ol>
+    </div>
+    <div class="learnit-stage learnit-we">
+      <p class="learnit-stage-head"><span class="learnit-tag">🤝 We try it together</span><span class="learnit-stage-title">Let's try together</span></p>
+      <ul class="learnit-lines"><li class="learnit-point">Clue: 'The lookout earned less than $50.' Equation or inequality?</li><li class="learnit-point">'Less than' is a limit, so it is an inequality. Let e be the earnings.</li><li class="learnit-point">'Less than 50' means e &lt; 50. Is $30 a reasonable value? Yes.</li></ul>
+    </div>
+    <div class="learnit-stage learnit-you">
+      <p class="learnit-stage-head"><span class="learnit-tag">✏️ Now you try</span><span class="learnit-stage-title">Now it's your turn</span></p>
+      <ul class="learnit-lines"><li class="learnit-point">In the table, decide equation or inequality, write the model, solve, and check it is reasonable.</li><li class="learnit-point">Then work through the practice problems on your own.</li></ul>
+    </div>
+    <p class="learnit-bridge">✅ Got it? You're ready to practice — use these same steps on the problems.</p>
+  </div>
+  <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 7-7 · Standard 6.EE.7</footer>
+</main>
+</body>
+</html>

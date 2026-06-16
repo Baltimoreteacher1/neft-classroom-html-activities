@@ -566,21 +566,29 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
                 gn.desc ||
                 "Read the Axiom City episode for this lesson — solve the math to turn the page. Open full page for the best experience.",
             }
-          : kind === "readiness"
+          : kind === "learn"
             ? {
-                src: `/lessons/${id}/readiness/?embed=1`,
-                full: `/lessons/${id}/readiness/`,
-                icon: "📚",
-                title: "Get Ready",
-                desc: "A quick check of the skills you need first — not graded.",
+                src: `/lessons/${id}/learn.html?embed=1`,
+                full: `/lessons/${id}/learn.html`,
+                icon: "📖",
+                title: "Learn It",
+                desc: "How the math works — read this and see it solved step by step before you practice.",
               }
-            : {
-                src: `/lessons/${id}/notes.html?embed=1`,
-                full: `/lessons/${id}/notes.html`,
-                icon: "📝",
-                title: "Guided Notes",
-                desc: "Read along and fill these in. Use Print for a paper copy.",
-              };
+            : kind === "readiness"
+              ? {
+                  src: `/lessons/${id}/readiness/?embed=1`,
+                  full: `/lessons/${id}/readiness/`,
+                  icon: "📚",
+                  title: "Get Ready",
+                  desc: "A quick check of the skills you need first — not graded.",
+                }
+              : {
+                  src: `/lessons/${id}/notes.html?embed=1`,
+                  full: `/lessons/${id}/notes.html`,
+                  icon: "📝",
+                  title: "Guided Notes",
+                  desc: "Read along and fill these in. Use Print for a paper copy.",
+                };
 
       this.setExtraActive(kind);
       phaseContainer.innerHTML = "";
@@ -595,7 +603,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
             <div class="section-desc">${escHtml(meta.desc)}</div>
           </div>
           <div class="extra-actions" style="display:flex; gap:var(--sp-2, 8px); flex-wrap:wrap;">
-            ${kind === "notes" ? `<button class="btn btn-secondary" data-act="print">🖨️ Print</button>` : ""}
+            ${kind === "notes" || kind === "learn" ? `<button class="btn btn-secondary" data-act="print">🖨️ Print</button>` : ""}
             <a class="btn btn-secondary" href="${meta.full}" target="_blank" rel="noopener">Open full page ↗</a>
           </div>
         </div>
@@ -977,6 +985,12 @@ function preLessonNavHtml(config) {
       </button>`,
     );
   }
+  items.push(
+    `<button class="phase-btn extra-btn" data-extra="learn">
+      <span class="phase-num">📖</span>
+      <span>Learn It</span>
+    </button>`,
+  );
   items.push(
     `<button class="phase-btn extra-btn" data-extra="objectives">
       <span class="phase-num">🎯</span>
