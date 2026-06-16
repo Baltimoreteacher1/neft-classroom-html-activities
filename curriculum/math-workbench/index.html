@@ -1,0 +1,2847 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <meta
+      name="description"
+      content="Math Workbench — an interactive whiteboard for Grade 6 math. Draggable numbers and symbols, freehand writing, separator and cross-out lines, 2D and 3D shapes, and a full formula reference for PreK–6 math."
+    />
+    <title>Math Workbench — Mr. Neft's Math Class</title>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Nunito:wght@600;700;800;900&display=swap"
+    />
+    <style>
+      /* ============================ Design tokens ============================ */
+      :root {
+        --teal: #205fa6;
+        --teal-d: #17487f;
+        --teal-light: rgba(32, 95, 166, 0.1);
+        --green: #2c7d6b;
+        --green-d: #205c4f;
+        --amber: #d97706;
+        --rose: #dc2626;
+        --ink: #14223a;
+        --muted: #5b6b82;
+        --line: #d7e0ec;
+        --line-2: #e8eef6;
+        --paper: #ffffff;
+        --bg: #eef3f9;
+        --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+        --shadow: 0 6px 20px rgba(15, 23, 42, 0.1);
+        --shadow-lg: 0 18px 50px rgba(15, 23, 42, 0.18);
+        --radius: 14px;
+        --rail-w: 76px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        font-family:
+          "Nunito",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        overflow: hidden;
+        -webkit-tap-highlight-color: transparent;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+      }
+
+      .app {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        height: 100dvh;
+        height: 100vh;
+      }
+
+      /* ============================ Top bar ============================ */
+      .topbar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 9px 16px;
+        background: linear-gradient(180deg, #ffffff, #f4f8fd);
+        border-bottom: 1px solid var(--line);
+        box-shadow: var(--shadow-sm);
+        z-index: 30;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        min-width: 0;
+      }
+      .brand .logo {
+        width: 40px;
+        height: 40px;
+        flex: none;
+        border-radius: 11px;
+        background: linear-gradient(135deg, var(--teal), var(--green));
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-size: 1.35rem;
+        box-shadow: var(--shadow-sm);
+      }
+      .brand .titles {
+        min-width: 0;
+      }
+      .brand .eyebrow {
+        font-size: 0.66rem;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--green);
+        font-weight: 800;
+        margin: 0;
+      }
+      .brand h1 {
+        font-size: 1.12rem;
+        line-height: 1.1;
+        margin: 1px 0 0;
+        font-weight: 900;
+        color: var(--ink);
+        white-space: nowrap;
+      }
+      .top-actions {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        flex-wrap: wrap;
+      }
+      .tbtn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 40px;
+        padding: 0 13px;
+        border-radius: 11px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--ink);
+        font-weight: 800;
+        font-size: 0.86rem;
+        transition:
+          transform 0.08s,
+          box-shadow 0.15s,
+          background 0.15s,
+          border-color 0.15s;
+      }
+      .tbtn .i {
+        font-size: 1.1rem;
+        line-height: 1;
+      }
+      .tbtn:hover {
+        border-color: var(--teal);
+        color: var(--teal);
+      }
+      .tbtn:active {
+        transform: translateY(1px);
+      }
+      .tbtn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: none;
+        border-color: var(--line);
+        color: var(--ink);
+      }
+      .tbtn.solid {
+        background: var(--teal);
+        border-color: var(--teal);
+        color: #fff;
+      }
+      .tbtn.solid:hover {
+        background: var(--teal-d);
+        color: #fff;
+      }
+      .tbtn.ghost {
+        border-color: transparent;
+        background: transparent;
+      }
+      .tbtn.danger:hover {
+        border-color: var(--rose);
+        color: var(--rose);
+      }
+      .save-pill {
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: var(--green);
+        background: rgba(44, 125, 107, 0.1);
+        padding: 5px 10px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+      .home-link {
+        text-decoration: none;
+      }
+
+      /* ============================ Main layout ============================ */
+      .stage {
+        position: relative;
+        display: flex;
+        min-height: 0;
+        overflow: hidden;
+      }
+
+      /* Tool rail (left) */
+      .rail {
+        width: var(--rail-w);
+        flex: none;
+        background: linear-gradient(180deg, #ffffff, #f6f9fd);
+        border-right: 1px solid var(--line);
+        padding: 9px 8px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        overflow-y: auto;
+        z-index: 20;
+      }
+      .rail::-webkit-scrollbar {
+        width: 7px;
+      }
+      .rail::-webkit-scrollbar-thumb {
+        background: #cdd9e8;
+        border-radius: 8px;
+      }
+      .tool {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        max-height: 60px;
+        border-radius: 13px;
+        border: 1.5px solid transparent;
+        background: #fff;
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        color: var(--ink);
+        transition:
+          transform 0.08s,
+          border-color 0.15s,
+          background 0.15s;
+      }
+      .tool .glyph {
+        font-size: 1.4rem;
+        line-height: 1;
+      }
+      .tool .lbl {
+        font-size: 0.6rem;
+        font-weight: 800;
+        letter-spacing: 0.01em;
+        color: var(--muted);
+      }
+      .tool:hover {
+        border-color: var(--teal);
+        transform: translateY(-1px);
+      }
+      .tool.active {
+        background: var(--teal-light);
+        border-color: var(--teal);
+      }
+      .tool.active .lbl {
+        color: var(--teal);
+      }
+      .tool.has-flyout::after {
+        content: "";
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        width: 0;
+        height: 0;
+        border: 4px solid transparent;
+        border-left-color: #b8c6d8;
+        transform: translateY(-50%);
+      }
+      .rail-sep {
+        height: 1px;
+        background: var(--line-2);
+        margin: 4px 4px;
+        flex: none;
+      }
+      .rail-cap {
+        font-size: 0.58rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #9aa9bd;
+        text-align: center;
+        margin: 2px 0 0;
+      }
+
+      /* Flyout palette panel */
+      .flyout {
+        position: absolute;
+        left: var(--rail-w);
+        top: 10px;
+        width: 280px;
+        max-height: calc(100% - 20px);
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: var(--shadow-lg);
+        padding: 14px 14px 16px;
+        z-index: 25;
+        overflow-y: auto;
+        display: none;
+        animation: pop 0.13s ease;
+      }
+      .flyout.open {
+        display: block;
+      }
+      @keyframes pop {
+        from {
+          opacity: 0;
+          transform: translateX(-6px);
+        }
+      }
+      .flyout h3 {
+        margin: 0 0 3px;
+        font-size: 0.98rem;
+        font-weight: 900;
+      }
+      .flyout p.hint {
+        margin: 0 0 11px;
+        font-size: 0.76rem;
+        color: var(--muted);
+        line-height: 1.35;
+      }
+      .pal-grid {
+        display: grid;
+        gap: 7px;
+      }
+      .pal-grid.n5 {
+        grid-template-columns: repeat(5, 1fr);
+      }
+      .pal-grid.n4 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .pal-grid.n3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .pal-item {
+        aspect-ratio: 1 / 1;
+        border-radius: 11px;
+        border: 1.5px solid var(--line);
+        background: #fff;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--ink);
+        display: grid;
+        place-items: center;
+        transition:
+          transform 0.07s,
+          border-color 0.12s,
+          background 0.12s;
+      }
+      .pal-item small {
+        font-size: 0.62rem;
+        font-weight: 800;
+        color: var(--muted);
+      }
+      .pal-item:hover {
+        border-color: var(--teal);
+        background: var(--teal-light);
+        transform: translateY(-1px);
+      }
+      .pal-item svg {
+        width: 70%;
+        height: 70%;
+      }
+      .pal-item.tall {
+        aspect-ratio: auto;
+        padding: 10px 6px;
+        flex-direction: column;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.78rem;
+      }
+
+      /* Pen options */
+      .opt-row {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin: 4px 0 13px;
+        flex-wrap: wrap;
+      }
+      .swatch {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        box-shadow: 0 0 0 1.5px var(--line);
+        cursor: pointer;
+        transition: transform 0.1s;
+      }
+      .swatch:hover {
+        transform: scale(1.12);
+      }
+      .swatch.sel {
+        box-shadow: 0 0 0 2.5px var(--teal);
+        transform: scale(1.12);
+      }
+      .size-dots {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .size-dot {
+        background: #fff;
+        border: 1.5px solid var(--line);
+        border-radius: 9px;
+        padding: 7px;
+        display: grid;
+        place-items: center;
+      }
+      .size-dot.sel {
+        border-color: var(--teal);
+        background: var(--teal-light);
+      }
+      .size-dot i {
+        display: block;
+        border-radius: 50%;
+        background: var(--ink);
+      }
+      .field-lbl {
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #9aa9bd;
+        margin: 0 0 6px;
+      }
+
+      /* ============================ Workspace ============================ */
+      .workspace {
+        position: relative;
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        background-color: var(--paper);
+        touch-action: none;
+      }
+      .workspace.bg-grid {
+        background-image:
+          linear-gradient(rgba(32, 95, 166, 0.09) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(32, 95, 166, 0.09) 1px, transparent 1px);
+        background-size: 28px 28px;
+      }
+      .workspace.bg-dot {
+        background-image: radial-gradient(
+          rgba(32, 95, 166, 0.22) 1.4px,
+          transparent 1.5px
+        );
+        background-size: 28px 28px;
+      }
+      #board {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+      }
+      #overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+      }
+      /* pointer-events flipped by tool mode via body class */
+      body[data-draw="1"] #board {
+        pointer-events: auto;
+      }
+      body[data-draw="1"] #overlay {
+        pointer-events: none;
+      }
+      body[data-draw="0"] #board {
+        pointer-events: none;
+      }
+      body[data-draw="0"] #overlay {
+        pointer-events: auto;
+      }
+      body[data-draw="0"] #overlay .obj {
+        pointer-events: auto;
+      }
+
+      .cursor-pen {
+        cursor: crosshair;
+      }
+      .cursor-text {
+        cursor: text;
+      }
+      .cursor-erase {
+        cursor: cell;
+      }
+
+      /* Floating objects */
+      .obj {
+        position: absolute;
+        left: 0;
+        top: 0;
+        user-select: none;
+        transform-origin: top left;
+        will-change: transform;
+      }
+      .obj.sel > .obj-inner {
+        outline: 2px dashed var(--teal);
+        outline-offset: 4px;
+        border-radius: 8px;
+      }
+      .obj-inner {
+        position: relative;
+      }
+      body[data-draw="0"] .obj {
+        cursor: grab;
+      }
+      body[data-draw="0"] .obj:active {
+        cursor: grabbing;
+      }
+
+      .tile {
+        min-width: 52px;
+        height: 64px;
+        padding: 0 10px;
+        background: #fff;
+        border: 2px solid var(--teal);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        display: grid;
+        place-items: center;
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--ink);
+        line-height: 1;
+      }
+      .tile.op {
+        border-color: var(--green);
+        color: var(--green-d);
+      }
+
+      .textobj {
+        min-width: 34px;
+        padding: 4px 8px;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--ink);
+        outline: none;
+        line-height: 1.2;
+        white-space: pre-wrap;
+        font-family: "Atkinson Hyperlegible", "Nunito", sans-serif;
+      }
+      .textobj:empty::before {
+        content: "Type…";
+        color: #b3c0d2;
+      }
+
+      /* fraction composite */
+      .fracobj {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: stretch;
+        padding: 6px 10px;
+        font-size: 1.9rem;
+        font-weight: 800;
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 10px;
+      }
+      .fracobj .num,
+      .fracobj .den {
+        text-align: center;
+        min-width: 40px;
+        padding: 2px 6px;
+        outline: none;
+      }
+      .fracobj .bar {
+        height: 3px;
+        background: var(--ink);
+        border-radius: 2px;
+        margin: 3px 0;
+      }
+
+      /* long division composite */
+      .divobj {
+        display: inline-flex;
+        align-items: flex-start;
+        font-size: 1.9rem;
+        font-weight: 800;
+        color: var(--ink);
+        padding: 4px;
+      }
+      .divobj .divisor {
+        padding: 6px 6px 0 4px;
+        min-width: 28px;
+        text-align: right;
+        outline: none;
+      }
+      .divobj .frame {
+        position: relative;
+        padding: 6px 10px 0 12px;
+        border-top: 3px solid var(--ink);
+        border-left: 3px solid var(--ink);
+        border-top-left-radius: 16px;
+        margin-top: 0;
+      }
+      .divobj .quotient {
+        position: absolute;
+        left: 12px;
+        top: -2.1em;
+        min-width: 40px;
+        text-align: left;
+        color: var(--teal);
+        outline: none;
+      }
+      .divobj .dividend {
+        min-width: 60px;
+        outline: none;
+      }
+
+      /* shapes */
+      .shapeobj {
+        position: relative;
+      }
+      .shapeobj svg {
+        display: block;
+        overflow: visible;
+      }
+      .shape-lbl {
+        position: absolute;
+        left: 50%;
+        bottom: -6px;
+        transform: translate(-50%, 100%);
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: var(--muted);
+        white-space: nowrap;
+        outline: none;
+        text-align: center;
+      }
+
+      /* line / cross-out object */
+      .lineobj {
+        height: 22px;
+        display: flex;
+        align-items: center;
+      }
+      .lineobj .bar {
+        height: 5px;
+        border-radius: 3px;
+        width: 140px;
+        background: var(--ink);
+      }
+      .lineobj.cross .bar {
+        background: var(--rose);
+      }
+      .lineobj .endpt {
+        position: absolute;
+        right: -9px;
+        top: 50%;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #fff;
+        border: 2px solid var(--teal);
+        transform: translateY(-50%);
+        cursor: nwse-resize;
+        display: none;
+      }
+      .obj.sel .lineobj .endpt {
+        display: block;
+      }
+
+      /* formula chip */
+      .formulaobj {
+        padding: 9px 14px;
+        background: #fff;
+        border: 1.5px solid var(--green);
+        border-left: 5px solid var(--green);
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: var(--ink);
+        white-space: nowrap;
+        font-family: "Atkinson Hyperlegible", "Nunito", sans-serif;
+      }
+      .formulaobj sup {
+        font-size: 0.62em;
+      }
+      .formulaobj sub {
+        font-size: 0.62em;
+      }
+      .ifr {
+        display: inline-flex;
+        flex-direction: column;
+        vertical-align: middle;
+        text-align: center;
+        font-size: 0.8em;
+        margin: 0 2px;
+      }
+      .ifr > span:first-child {
+        border-bottom: 2px solid currentColor;
+        padding: 0 3px;
+      }
+
+      /* object mini toolbar */
+      .obj-tools {
+        position: absolute;
+        left: 50%;
+        top: -14px;
+        transform: translate(-50%, -100%);
+        display: none;
+        gap: 4px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 4px;
+        box-shadow: var(--shadow);
+        z-index: 6;
+        white-space: nowrap;
+      }
+      .obj.sel .obj-tools {
+        display: flex;
+      }
+      .obj-tools button {
+        width: 30px;
+        height: 30px;
+        border: none;
+        border-radius: 7px;
+        background: #f3f7fc;
+        font-size: 0.95rem;
+        display: grid;
+        place-items: center;
+        color: var(--ink);
+      }
+      .obj-tools button:hover {
+        background: var(--teal-light);
+        color: var(--teal);
+      }
+      .obj-tools button.del:hover {
+        background: rgba(220, 38, 38, 0.12);
+        color: var(--rose);
+      }
+      .obj-tools .mini-sw {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        box-shadow: 0 0 0 1px var(--line);
+        align-self: center;
+        margin: 0 2px;
+      }
+
+      /* hint when empty */
+      .empty-hint {
+        position: absolute;
+        left: 50%;
+        top: 46%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: #aebccf;
+        pointer-events: none;
+        z-index: 0;
+        max-width: 420px;
+        padding: 0 20px;
+      }
+      .empty-hint .big {
+        font-size: 3rem;
+        margin-bottom: 6px;
+      }
+      .empty-hint h2 {
+        margin: 0 0 6px;
+        font-size: 1.3rem;
+        font-weight: 900;
+        color: #95a6bb;
+      }
+      .empty-hint p {
+        margin: 0;
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+
+      /* ============================ Formula dock (bottom) ============================ */
+      .dock {
+        background: linear-gradient(180deg, #f5f8fc, #ffffff);
+        border-top: 1px solid var(--line);
+        box-shadow: 0 -3px 14px rgba(15, 23, 42, 0.05);
+        z-index: 15;
+      }
+      .dock-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 7px 16px;
+      }
+      .dock-head .lab {
+        font-weight: 900;
+        font-size: 0.92rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .dock-head .lab .ic {
+        font-size: 1.1rem;
+      }
+      .dock-head .sub {
+        font-size: 0.74rem;
+        color: var(--muted);
+        font-weight: 700;
+      }
+      .dock-toggle {
+        margin-left: auto;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 9px;
+        height: 34px;
+        padding: 0 12px;
+        font-weight: 800;
+        font-size: 0.8rem;
+        color: var(--teal);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .dock-tabs {
+        display: flex;
+        gap: 7px;
+        overflow-x: auto;
+        padding: 0 16px 10px;
+        scrollbar-width: thin;
+      }
+      .dock-tabs::-webkit-scrollbar {
+        height: 6px;
+      }
+      .dock-tabs::-webkit-scrollbar-thumb {
+        background: #cdd9e8;
+        border-radius: 8px;
+      }
+      .topic-tab {
+        flex: none;
+        border: 1.5px solid var(--line);
+        background: #fff;
+        border-radius: 999px;
+        padding: 7px 14px;
+        font-weight: 800;
+        font-size: 0.82rem;
+        color: var(--ink);
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        white-space: nowrap;
+        transition:
+          border-color 0.12s,
+          background 0.12s,
+          color 0.12s;
+      }
+      .topic-tab .em {
+        font-size: 1rem;
+      }
+      .topic-tab:hover {
+        border-color: var(--teal);
+      }
+      .topic-tab.active {
+        background: var(--teal);
+        border-color: var(--teal);
+        color: #fff;
+      }
+      .formula-panel {
+        display: none;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.2s ease;
+      }
+      .dock.open .formula-panel {
+        display: block;
+        max-height: 38vh;
+        overflow-y: auto;
+      }
+      .formula-list {
+        padding: 4px 16px 16px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
+        gap: 9px;
+      }
+      .formula-card {
+        text-align: left;
+        border: 1.5px solid var(--line);
+        background: #fff;
+        border-radius: 12px;
+        padding: 11px 13px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        transition:
+          border-color 0.12s,
+          box-shadow 0.15s,
+          transform 0.08s;
+      }
+      .formula-card:hover {
+        border-color: var(--green);
+        box-shadow: var(--shadow);
+        transform: translateY(-1px);
+      }
+      .formula-card .fc-name {
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: var(--muted);
+      }
+      .formula-card .fc-eq {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: var(--ink);
+        font-family: "Atkinson Hyperlegible", "Nunito", sans-serif;
+      }
+      .formula-card .fc-eq sup {
+        font-size: 0.62em;
+      }
+      .formula-card .fc-eq sub {
+        font-size: 0.62em;
+      }
+      .formula-card .fc-note {
+        font-size: 0.74rem;
+        color: var(--muted);
+        line-height: 1.35;
+      }
+      .formula-card .fc-add {
+        margin-top: 3px;
+        align-self: flex-start;
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: var(--green);
+        opacity: 0;
+        transition: opacity 0.12s;
+      }
+      .formula-card:hover .fc-add {
+        opacity: 1;
+      }
+
+      /* ============================ Modal (help) ============================ */
+      .modal-bg {
+        position: fixed;
+        inset: 0;
+        background: rgba(20, 34, 58, 0.55);
+        display: none;
+        place-items: center;
+        z-index: 60;
+        padding: 20px;
+      }
+      .modal-bg.open {
+        display: grid;
+      }
+      .modal {
+        background: #fff;
+        border-radius: 18px;
+        max-width: 560px;
+        width: 100%;
+        max-height: 85vh;
+        overflow-y: auto;
+        box-shadow: var(--shadow-lg);
+        padding: 24px 26px 26px;
+      }
+      .modal h2 {
+        margin: 0 0 4px;
+        font-size: 1.4rem;
+        font-weight: 900;
+      }
+      .modal .lead {
+        margin: 0 0 16px;
+        color: var(--muted);
+      }
+      .modal ul {
+        margin: 0 0 14px;
+        padding-left: 0;
+        list-style: none;
+        display: grid;
+        gap: 9px;
+      }
+      .modal li {
+        display: flex;
+        gap: 11px;
+        align-items: flex-start;
+        font-size: 0.95rem;
+        line-height: 1.45;
+      }
+      .modal li .k {
+        flex: none;
+        font-size: 1.3rem;
+      }
+      .modal li b {
+        color: var(--ink);
+      }
+      .modal .close-row {
+        text-align: right;
+      }
+
+      /* ============================ Responsive ============================ */
+      @media (max-width: 720px) {
+        :root {
+          --rail-w: 64px;
+        }
+        .brand h1 {
+          font-size: 0.98rem;
+        }
+        .brand .eyebrow {
+          display: none;
+        }
+        .tbtn .txt {
+          display: none;
+        }
+        .tbtn {
+          padding: 0 11px;
+        }
+        .flyout {
+          width: min(280px, calc(100vw - var(--rail-w) - 14px));
+        }
+        .tool .lbl {
+          display: none;
+        }
+        .tool {
+          max-height: 50px;
+        }
+      }
+
+      @media print {
+        .topbar,
+        .rail,
+        .dock,
+        .flyout,
+        .obj-tools,
+        .empty-hint,
+        .obj.sel > .obj-inner {
+          display: none !important;
+        }
+        .app {
+          height: auto;
+        }
+        .obj.sel > .obj-inner {
+          outline: none !important;
+        }
+        .stage,
+        .workspace {
+          overflow: visible;
+        }
+      }
+    </style>
+  </head>
+  <body data-draw="0">
+    <div class="app">
+      <!-- ===================== Top bar ===================== -->
+      <header class="topbar">
+        <a
+          class="brand home-link"
+          href="/curriculum/"
+          title="Back to Curriculum Hub"
+        >
+          <span class="logo" aria-hidden="true">∑</span>
+          <span class="titles">
+            <span class="eyebrow">Mr. Neft · Grade 6 Math</span>
+            <h1>Math Workbench</h1>
+          </span>
+        </a>
+        <div class="top-actions">
+          <span
+            id="savePill"
+            class="save-pill"
+            title="Your work saves automatically on this device"
+            >Saved</span
+          >
+          <button class="tbtn" id="bgBtn" title="Change the background">
+            <span class="i">▦</span><span class="txt">Paper</span>
+          </button>
+          <button class="tbtn" id="undoBtn" title="Undo (Ctrl+Z)" disabled>
+            <span class="i">↶</span><span class="txt">Undo</span>
+          </button>
+          <button class="tbtn" id="redoBtn" title="Redo (Ctrl+Y)" disabled>
+            <span class="i">↷</span><span class="txt">Redo</span>
+          </button>
+          <button
+            class="tbtn danger"
+            id="clearBtn"
+            title="Clear the whole board"
+          >
+            <span class="i">🗑</span><span class="txt">Clear</span>
+          </button>
+          <button
+            class="tbtn"
+            id="printBtn"
+            title="Print or save your work as a PDF"
+          >
+            <span class="i">⤓</span><span class="txt">Save / Print</span>
+          </button>
+          <button
+            class="tbtn solid"
+            id="helpBtn"
+            title="How to use the Workbench"
+          >
+            <span class="i">?</span><span class="txt">Help</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- ===================== Stage ===================== -->
+      <div class="stage">
+        <!-- Tool rail -->
+        <nav class="rail" id="rail" aria-label="Tools">
+          <button
+            class="tool active"
+            data-tool="move"
+            title="Select & move (V)"
+          >
+            <span class="glyph">✥</span><span class="lbl">Move</span>
+          </button>
+          <button
+            class="tool"
+            data-tool="pen"
+            data-flyout="pen"
+            title="Pen — write &amp; draw (P)"
+          >
+            <span class="glyph">✏️</span><span class="lbl">Pen</span>
+          </button>
+          <button
+            class="tool"
+            data-tool="highlighter"
+            data-flyout="pen"
+            title="Highlighter"
+          >
+            <span class="glyph">🖍️</span><span class="lbl">Mark</span>
+          </button>
+          <button class="tool" data-tool="eraser" title="Eraser (E)">
+            <span class="glyph">🧽</span><span class="lbl">Erase</span>
+          </button>
+          <div class="rail-sep"></div>
+          <span class="rail-cap">Build</span>
+          <button
+            class="tool has-flyout"
+            data-tool="number"
+            data-flyout="number"
+            title="Number tiles"
+          >
+            <span class="glyph">7</span><span class="lbl">Numbers</span>
+          </button>
+          <button
+            class="tool has-flyout"
+            data-tool="operation"
+            data-flyout="operation"
+            title="Operation symbols"
+          >
+            <span class="glyph">＋</span><span class="lbl">Symbols</span>
+          </button>
+          <button class="tool" data-tool="text" title="Type text (T)">
+            <span class="glyph">T</span><span class="lbl">Text</span>
+          </button>
+          <div class="rail-sep"></div>
+          <span class="rail-cap">Set Up</span>
+          <button
+            class="tool"
+            data-tool="fraction"
+            title="Fraction (number over number)"
+          >
+            <span class="glyph">½</span><span class="lbl">Fraction</span>
+          </button>
+          <button class="tool" data-tool="division" title="Long division frame">
+            <span class="glyph">⟌</span><span class="lbl">Divide</span>
+          </button>
+          <button
+            class="tool"
+            data-tool="line"
+            title="Separator line — under add/subtract/multiply"
+          >
+            <span class="glyph">─</span><span class="lbl">Line</span>
+          </button>
+          <button
+            class="tool"
+            data-tool="cross"
+            title="Cross-out line (for regrouping &amp; canceling)"
+          >
+            <span class="glyph" style="color: #dc2626">╳</span
+            ><span class="lbl">Cross</span>
+          </button>
+          <div class="rail-sep"></div>
+          <span class="rail-cap">Shapes</span>
+          <button
+            class="tool has-flyout"
+            data-tool="shape2d"
+            data-flyout="shape2d"
+            title="2-D shapes"
+          >
+            <span class="glyph">⬡</span><span class="lbl">2-D</span>
+          </button>
+          <button
+            class="tool has-flyout"
+            data-tool="shape3d"
+            data-flyout="shape3d"
+            title="3-D figures"
+          >
+            <span class="glyph">🧊</span><span class="lbl">3-D</span>
+          </button>
+        </nav>
+
+        <!-- Flyout palette -->
+        <section class="flyout" id="flyout" aria-live="polite"></section>
+
+        <!-- Workspace -->
+        <div class="workspace bg-grid" id="workspace">
+          <canvas id="board"></canvas>
+          <div id="overlay"></div>
+          <div class="empty-hint" id="emptyHint">
+            <div class="big">✏️➗📐</div>
+            <h2>Your math workspace</h2>
+            <p>
+              Pick a tool on the left to write, stamp numbers, set up problems,
+              and drop in shapes. Tap <b>Help</b> any time. Open a formula topic
+              below.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== Formula dock ===================== -->
+      <footer class="dock" id="dock">
+        <div class="dock-head">
+          <span class="lab"
+            ><span class="ic">📚</span> Formula &amp; Reference Bank</span
+          >
+          <span class="sub"
+            >PreK&nbsp;–&nbsp;Grade&nbsp;6 · tap a topic, then tap a formula to
+            drop it on the board</span
+          >
+          <button class="dock-toggle" id="dockToggle">
+            <span id="dockToggleIc">▴</span>
+            <span id="dockToggleTxt">Hide</span>
+          </button>
+        </div>
+        <div class="dock-tabs" id="dockTabs"></div>
+        <div class="formula-panel">
+          <div class="formula-list" id="formulaList"></div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- ===================== Help modal ===================== -->
+    <div class="modal-bg" id="helpModal">
+      <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="helpTitle"
+      >
+        <h2 id="helpTitle">How to use the Math Workbench</h2>
+        <p class="lead">
+          Everything you need to work out a problem — all in one place.
+        </p>
+        <ul>
+          <li>
+            <span class="k">✏️</span
+            ><span
+              ><b>Write anywhere.</b> Pick <b>Pen</b> and write numbers,
+              symbols, or notes right on the board. Use <b>Highlighter</b> to
+              mark, and <b>Erase</b> to remove pen marks.</span
+            >
+          </li>
+          <li>
+            <span class="k">✥</span
+            ><span
+              ><b>Move &amp; edit.</b> With <b>Move</b>, drag anything around.
+              Tap an item to select it — a tiny toolbar lets you delete,
+              duplicate, resize, or recolor it.</span
+            >
+          </li>
+          <li>
+            <span class="k">7</span
+            ><span
+              ><b>Stamp numbers &amp; symbols.</b> Open <b>Numbers</b> or
+              <b>Symbols</b> and tap to drop draggable tiles. Line them up to
+              build problems.</span
+            >
+          </li>
+          <li>
+            <span class="k">➗</span
+            ><span
+              ><b>Set up problems.</b> Use <b>Fraction</b>,
+              <b>Long division</b>, and <b>Line</b> to add the bars that
+              separate numbers when you add, subtract, multiply, or divide. Use
+              <b>Cross</b> to cross out digits when you regroup or cancel.</span
+            >
+          </li>
+          <li>
+            <span class="k">📐</span
+            ><span
+              ><b>Drop in shapes.</b> Add <b>2-D</b> shapes and
+              <b>3-D</b> figures, then label them and write your
+              measurements.</span
+            >
+          </li>
+          <li>
+            <span class="k">📚</span
+            ><span
+              ><b>Formula bank.</b> Open a topic at the bottom and tap any
+              formula to drop a reminder card onto your board.</span
+            >
+          </li>
+          <li>
+            <span class="k">⤓</span
+            ><span
+              ><b>Keep your work.</b> It saves automatically on this device. Use
+              <b>Save / Print</b> to make a PDF or paper copy.</span
+            >
+          </li>
+        </ul>
+        <div class="close-row">
+          <button class="tbtn solid" id="helpClose">Got it</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      "use strict";
+      /* =====================================================================
+         Math Workbench — interactive math whiteboard
+         Single-file, dependency-free. State = { strokes, objects, bg }.
+         ===================================================================== */
+      const $ = (s, r = document) => r.querySelector(s);
+      const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+
+      const workspace = $("#workspace");
+      const overlay = $("#overlay");
+      const canvas = $("#board");
+      const ctx = canvas.getContext("2d");
+      const emptyHint = $("#emptyHint");
+
+      const PEN_COLORS = [
+        "#14223a",
+        "#205fa6",
+        "#2c7d6b",
+        "#d97706",
+        "#dc2626",
+        "#7c3aed",
+      ];
+      const PEN_SIZES = [2, 4, 7, 12];
+
+      const state = {
+        strokes: [], // { tool, color, size, pts:[{x,y}] }
+        objects: [], // see makeObject
+        bg: "grid", // grid | dot | blank
+      };
+      let tool = "move";
+      let penColor = PEN_COLORS[0];
+      let penSize = PEN_SIZES[1];
+      let selectedId = null;
+      let uid = 1;
+      const nid = () => "o" + uid++ + "_" + ((performance.now() | 0) % 100000);
+
+      /* ----------------------- Undo / redo history ----------------------- */
+      const history = [];
+      let hpos = -1;
+      function snapshot() {
+        return JSON.stringify({
+          strokes: state.strokes,
+          objects: state.objects,
+          bg: state.bg,
+        });
+      }
+      function pushHistory() {
+        const snap = snapshot();
+        if (history[hpos] === snap) return;
+        history.splice(hpos + 1);
+        history.push(snap);
+        if (history.length > 60) history.shift();
+        hpos = history.length - 1;
+        updateUndoButtons();
+        persist();
+      }
+      function applySnap(snap) {
+        const d = JSON.parse(snap);
+        state.strokes = d.strokes || [];
+        state.objects = d.objects || [];
+        state.bg = d.bg || "grid";
+        renderAll();
+      }
+      function undo() {
+        if (hpos <= 0) return;
+        hpos--;
+        applySnap(history[hpos]);
+        updateUndoButtons();
+        persist();
+      }
+      function redo() {
+        if (hpos >= history.length - 1) return;
+        hpos++;
+        applySnap(history[hpos]);
+        updateUndoButtons();
+        persist();
+      }
+      function updateUndoButtons() {
+        $("#undoBtn").disabled = hpos <= 0;
+        $("#redoBtn").disabled = hpos >= history.length - 1;
+      }
+
+      /* ----------------------- Persistence ----------------------- */
+      const LS_KEY = "neft.mathWorkbench.v1";
+      let saveTimer = null;
+      function persist() {
+        const pill = $("#savePill");
+        pill.textContent = "Saving…";
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => {
+          try {
+            localStorage.setItem(LS_KEY, snapshot());
+            pill.textContent = "Saved";
+          } catch (e) {
+            pill.textContent = "Not saved";
+          }
+        }, 350);
+      }
+      function restore() {
+        try {
+          const raw = localStorage.getItem(LS_KEY);
+          if (raw) {
+            applySnap(raw);
+            return true;
+          }
+        } catch (e) {}
+        return false;
+      }
+
+      /* ----------------------- Canvas sizing ----------------------- */
+      function sizeCanvas() {
+        const r = workspace.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        canvas.width = Math.round(r.width * dpr);
+        canvas.height = Math.round(r.height * dpr);
+        canvas.style.width = r.width + "px";
+        canvas.style.height = r.height + "px";
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        renderCanvas();
+      }
+      function renderCanvas() {
+        const r = workspace.getBoundingClientRect();
+        ctx.clearRect(0, 0, r.width, r.height);
+        for (const st of state.strokes) drawStroke(st);
+      }
+      function drawStroke(st) {
+        const pts = st.pts;
+        if (!pts.length) return;
+        ctx.linejoin = "round";
+        ctx.lineCap = "round";
+        ctx.strokeStyle = st.color;
+        ctx.lineWidth = st.size;
+        ctx.globalAlpha = st.tool === "highlighter" ? 0.32 : 1;
+        ctx.beginPath();
+        ctx.moveTo(pts[0].x, pts[0].y);
+        if (pts.length === 1) ctx.lineTo(pts[0].x + 0.1, pts[0].y + 0.1);
+        for (let i = 1; i < pts.length; i++) {
+          const mx = (pts[i - 1].x + pts[i].x) / 2;
+          const my = (pts[i - 1].y + pts[i].y) / 2;
+          ctx.quadraticCurveTo(pts[i - 1].x, pts[i - 1].y, mx, my);
+        }
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+
+      /* ----------------------- Drawing interaction ----------------------- */
+      let drawing = null;
+      function localPt(e) {
+        const r = workspace.getBoundingClientRect();
+        return { x: e.clientX - r.left, y: e.clientY - r.top };
+      }
+      canvas.addEventListener("pointerdown", (e) => {
+        if (document.body.dataset.draw !== "1") return;
+        canvas.setPointerCapture(e.pointerId);
+        const p = localPt(e);
+        if (tool === "eraser") {
+          eraseAt(p);
+          drawing = { erase: true };
+          return;
+        }
+        const color = tool === "highlighter" ? penColor : penColor;
+        const size =
+          tool === "highlighter" ? Math.max(penSize * 3, 14) : penSize;
+        drawing = { tool, color, size, pts: [p] };
+      });
+      canvas.addEventListener("pointermove", (e) => {
+        if (!drawing) return;
+        const p = localPt(e);
+        if (drawing.erase) {
+          eraseAt(p);
+          return;
+        }
+        drawing.pts.push(p);
+        // incremental draw
+        drawStroke(drawing);
+      });
+      function endDraw() {
+        if (!drawing) return;
+        if (!drawing.erase && drawing.pts && drawing.pts.length) {
+          state.strokes.push(drawing);
+          pushHistory();
+          updateEmpty();
+        }
+        drawing = null;
+      }
+      canvas.addEventListener("pointerup", endDraw);
+      canvas.addEventListener("pointercancel", endDraw);
+      canvas.addEventListener("pointerleave", (e) => {
+        if (drawing && !drawing.erase) endDraw();
+      });
+
+      function eraseAt(p) {
+        const R = 16;
+        let changed = false;
+        for (let i = state.strokes.length - 1; i >= 0; i--) {
+          const st = state.strokes[i];
+          if (
+            st.pts.some((q) => Math.hypot(q.x - p.x, q.y - p.y) < R + st.size)
+          ) {
+            state.strokes.splice(i, 1);
+            changed = true;
+          }
+        }
+        if (changed) {
+          renderCanvas();
+          clearTimeout(eraseAt._t);
+          eraseAt._t = setTimeout(() => {
+            pushHistory();
+            updateEmpty();
+          }, 250);
+        }
+      }
+
+      /* ----------------------- Object model ----------------------- */
+      function makeObject(type, props) {
+        const r = workspace.getBoundingClientRect();
+        const o = Object.assign(
+          {
+            id: nid(),
+            type,
+            x: Math.round(r.width / 2 - 40 + (Math.random() * 60 - 30)),
+            y: Math.round(r.height / 2 - 50 + (Math.random() * 50 - 25)),
+            scale: 1,
+            color: null,
+          },
+          props || {},
+        );
+        state.objects.push(o);
+        renderAll();
+        selectObject(o.id);
+        pushHistory();
+        return o;
+      }
+
+      function objById(id) {
+        return state.objects.find((o) => o.id === id);
+      }
+
+      /* ----------------------- Rendering objects ----------------------- */
+      function renderAll() {
+        document.body.classList.toggle("paper", true);
+        workspace.classList.remove("bg-grid", "bg-dot");
+        if (state.bg === "grid") workspace.classList.add("bg-grid");
+        else if (state.bg === "dot") workspace.classList.add("bg-dot");
+        // objects
+        overlay.innerHTML = "";
+        for (const o of state.objects) overlay.appendChild(buildObjEl(o));
+        if (selectedId && objById(selectedId)) {
+          const el = overlay.querySelector('[data-id="' + selectedId + '"]');
+          if (el) el.classList.add("sel");
+        } else {
+          selectedId = null;
+        }
+        renderCanvas();
+        updateEmpty();
+      }
+
+      function updateEmpty() {
+        emptyHint.style.display =
+          state.objects.length || state.strokes.length ? "none" : "block";
+      }
+
+      function applyTransform(el, o) {
+        el.style.transform =
+          "translate(" +
+          o.x +
+          "px," +
+          o.y +
+          "px) scale(" +
+          (o.scale || 1) +
+          ")";
+      }
+
+      function miniTools(o, opts = {}) {
+        const wrap = document.createElement("div");
+        wrap.className = "obj-tools";
+        const mk = (label, title, cls, fn) => {
+          const b = document.createElement("button");
+          b.textContent = label;
+          b.title = title;
+          if (cls) b.className = cls;
+          b.addEventListener("pointerdown", (e) => {
+            e.stopPropagation();
+          });
+          b.addEventListener("click", (e) => {
+            e.stopPropagation();
+            fn();
+          });
+          wrap.appendChild(b);
+          return b;
+        };
+        if (opts.resize !== false) {
+          mk("－", "Smaller", "", () => {
+            o.scale = Math.max(0.4, (o.scale || 1) - 0.15);
+            const el = overlay.querySelector('[data-id="' + o.id + '"]');
+            applyTransform(el, o);
+            pushHistory();
+          });
+          mk("＋", "Bigger", "", () => {
+            o.scale = Math.min(4, (o.scale || 1) + 0.15);
+            const el = overlay.querySelector('[data-id="' + o.id + '"]');
+            applyTransform(el, o);
+            pushHistory();
+          });
+        }
+        if (opts.color) {
+          const sw = document.createElement("button");
+          sw.className = "mini-sw";
+          sw.title = "Change color";
+          const cur = o.color || opts.color;
+          sw.style.background = cur;
+          sw.addEventListener("pointerdown", (e) => e.stopPropagation());
+          sw.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const idx = PEN_COLORS.indexOf(o.color || opts.color);
+            o.color = PEN_COLORS[(idx + 1) % PEN_COLORS.length];
+            renderAll();
+            selectObject(o.id);
+            pushHistory();
+          });
+          wrap.appendChild(sw);
+        }
+        mk("⧉", "Duplicate", "", () => {
+          const copy = JSON.parse(JSON.stringify(o));
+          copy.id = nid();
+          copy.x += 24;
+          copy.y += 24;
+          state.objects.push(copy);
+          renderAll();
+          selectObject(copy.id);
+          pushHistory();
+        });
+        mk("✕", "Delete", "del", () => deleteObject(o.id));
+        return wrap;
+      }
+
+      function buildObjEl(o) {
+        const el = document.createElement("div");
+        el.className = "obj";
+        el.dataset.id = o.id;
+        applyTransform(el, o);
+        const inner = document.createElement("div");
+        inner.className = "obj-inner";
+        el.appendChild(inner);
+
+        let toolOpts = {};
+        if (o.type === "tile") {
+          const t = document.createElement("div");
+          t.className = "tile" + (o.kind === "op" ? " op" : "");
+          t.textContent = o.value;
+          if (o.color) t.style.color = o.color;
+          inner.appendChild(t);
+          toolOpts = { resize: true };
+        } else if (o.type === "text") {
+          const t = document.createElement("div");
+          t.className = "textobj";
+          t.contentEditable = "true";
+          t.spellcheck = false;
+          t.textContent = o.text || "";
+          if (o.color) t.style.color = o.color;
+          bindEditable(t, (v) => (o.text = v));
+          inner.appendChild(t);
+          toolOpts = { color: penColor };
+        } else if (o.type === "fraction") {
+          const f = document.createElement("div");
+          f.className = "fracobj";
+          const num = document.createElement("div");
+          num.className = "num";
+          num.contentEditable = "true";
+          num.textContent = o.num || "";
+          bindEditable(num, (v) => (o.num = v));
+          const bar = document.createElement("div");
+          bar.className = "bar";
+          const den = document.createElement("div");
+          den.className = "den";
+          den.contentEditable = "true";
+          den.textContent = o.den || "";
+          bindEditable(den, (v) => (o.den = v));
+          f.append(num, bar, den);
+          if (o.color) {
+            num.style.color = den.style.color = o.color;
+            bar.style.background = o.color;
+          }
+          inner.appendChild(f);
+          toolOpts = { color: "#14223a" };
+        } else if (o.type === "division") {
+          const d = document.createElement("div");
+          d.className = "divobj";
+          const dv = document.createElement("div");
+          dv.className = "divisor";
+          dv.contentEditable = "true";
+          dv.textContent = o.divisor || "";
+          bindEditable(dv, (v) => (o.divisor = v));
+          const frame = document.createElement("div");
+          frame.className = "frame";
+          const q = document.createElement("div");
+          q.className = "quotient";
+          q.contentEditable = "true";
+          q.textContent = o.quotient || "";
+          bindEditable(q, (v) => (o.quotient = v));
+          const dd = document.createElement("div");
+          dd.className = "dividend";
+          dd.contentEditable = "true";
+          dd.textContent = o.dividend || "";
+          bindEditable(dd, (v) => (o.dividend = v));
+          frame.append(q, dd);
+          d.append(dv, frame);
+          inner.appendChild(d);
+          toolOpts = { resize: true };
+        } else if (o.type === "line") {
+          const ln = document.createElement("div");
+          ln.className = "lineobj" + (o.cross ? " cross" : "");
+          const bar = document.createElement("div");
+          bar.className = "bar";
+          bar.style.width = (o.len || 140) + "px";
+          if (o.color) bar.style.background = o.color;
+          const ep = document.createElement("div");
+          ep.className = "endpt";
+          ln.append(bar, ep);
+          el.style.transform =
+            "translate(" +
+            o.x +
+            "px," +
+            o.y +
+            "px) rotate(" +
+            (o.angle || 0) +
+            "deg) scale(" +
+            (o.scale || 1) +
+            ")";
+          inner.appendChild(ln);
+          bindLineEndpoint(ep, el, o, bar);
+          toolOpts = { resize: false, color: o.cross ? "#dc2626" : "#14223a" };
+        } else if (o.type === "shape2d" || o.type === "shape3d") {
+          const s = document.createElement("div");
+          s.className = "shapeobj";
+          s.innerHTML = SHAPE_SVG[o.shape] || "";
+          const svg = s.querySelector("svg");
+          if (svg && o.color) {
+            svg
+              .querySelectorAll("[data-stroke]")
+              .forEach((p) => (p.style.stroke = o.color));
+          }
+          const lbl = document.createElement("div");
+          lbl.className = "shape-lbl";
+          lbl.contentEditable = "true";
+          lbl.textContent = o.label || "";
+          bindEditable(lbl, (v) => (o.label = v));
+          s.appendChild(lbl);
+          inner.appendChild(s);
+          toolOpts = { resize: true, color: "#205fa6" };
+        } else if (o.type === "formula") {
+          const f = document.createElement("div");
+          f.className = "formulaobj";
+          f.innerHTML = o.html;
+          inner.appendChild(f);
+          toolOpts = { resize: true };
+        }
+
+        el.appendChild(miniTools(o, toolOpts));
+        bindObjectDrag(el, o);
+        return el;
+      }
+
+      /* ----------------------- Editable helpers ----------------------- */
+      function bindEditable(node, onChange) {
+        node.addEventListener("pointerdown", (e) => {
+          if (document.body.dataset.draw === "1") return;
+          e.stopPropagation();
+        });
+        node.addEventListener("input", () => {
+          onChange(node.textContent);
+          persist();
+        });
+        node.addEventListener("blur", () => {
+          onChange(node.textContent);
+          pushHistory();
+        });
+        node.addEventListener("keydown", (e) => e.stopPropagation());
+      }
+
+      /* ----------------------- Object dragging ----------------------- */
+      function bindObjectDrag(el, o) {
+        let start = null;
+        el.addEventListener("pointerdown", (e) => {
+          if (document.body.dataset.draw === "1") return;
+          if (e.target.isContentEditable) {
+            selectObject(o.id);
+            return;
+          }
+          if (
+            e.target.closest(".obj-tools") ||
+            e.target.classList.contains("endpt")
+          )
+            return;
+          selectObject(o.id);
+          el.setPointerCapture(e.pointerId);
+          start = { mx: e.clientX, my: e.clientY, ox: o.x, oy: o.y };
+          e.preventDefault();
+        });
+        el.addEventListener("pointermove", (e) => {
+          if (!start) return;
+          o.x = Math.round(start.ox + (e.clientX - start.mx));
+          o.y = Math.round(start.oy + (e.clientY - start.my));
+          if (o.type === "line") {
+            el.style.transform =
+              "translate(" +
+              o.x +
+              "px," +
+              o.y +
+              "px) rotate(" +
+              (o.angle || 0) +
+              "deg) scale(" +
+              (o.scale || 1) +
+              ")";
+          } else {
+            applyTransform(el, o);
+          }
+        });
+        const up = (e) => {
+          if (!start) return;
+          start = null;
+          pushHistory();
+        };
+        el.addEventListener("pointerup", up);
+        el.addEventListener("pointercancel", up);
+      }
+
+      function bindLineEndpoint(ep, el, o, bar) {
+        ep.addEventListener("pointerdown", (e) => {
+          e.stopPropagation();
+          ep.setPointerCapture(e.pointerId);
+          const r = workspace.getBoundingClientRect();
+          const move = (ev) => {
+            const cx = o.x + r.left;
+            const cy = o.y + r.top + 11;
+            const dx = ev.clientX - cx;
+            const dy = ev.clientY - cy;
+            o.len = Math.max(30, Math.round(Math.hypot(dx, dy)));
+            o.angle = Math.round((Math.atan2(dy, dx) * 180) / Math.PI);
+            bar.style.width = o.len + "px";
+            el.style.transform =
+              "translate(" +
+              o.x +
+              "px," +
+              o.y +
+              "px) rotate(" +
+              o.angle +
+              "deg) scale(" +
+              (o.scale || 1) +
+              ")";
+          };
+          const fin = () => {
+            window.removeEventListener("pointermove", move);
+            window.removeEventListener("pointerup", fin);
+            pushHistory();
+          };
+          window.addEventListener("pointermove", move);
+          window.addEventListener("pointerup", fin);
+        });
+      }
+
+      /* ----------------------- Selection ----------------------- */
+      function selectObject(id) {
+        selectedId = id;
+        $$(".obj", overlay).forEach((el) =>
+          el.classList.toggle("sel", el.dataset.id === id),
+        );
+      }
+      function deselect() {
+        selectedId = null;
+        $$(".obj.sel", overlay).forEach((el) => el.classList.remove("sel"));
+      }
+      function deleteObject(id) {
+        const i = state.objects.findIndex((o) => o.id === id);
+        if (i < 0) return;
+        state.objects.splice(i, 1);
+        if (selectedId === id) selectedId = null;
+        renderAll();
+        pushHistory();
+      }
+
+      overlay.addEventListener("pointerdown", (e) => {
+        if (document.body.dataset.draw === "1") return;
+        if (e.target === overlay) {
+          // empty space
+          if (tool === "text") {
+            const p = localPt(e);
+            const o = makeObject("text", {
+              x: Math.round(p.x),
+              y: Math.round(p.y - 18),
+              text: "",
+            });
+            setTimeout(() => {
+              const node = overlay.querySelector(
+                '[data-id="' + o.id + '"] .textobj',
+              );
+              if (node) node.focus();
+            }, 10);
+          } else {
+            deselect();
+          }
+        }
+      });
+
+      /* ----------------------- Tool selection ----------------------- */
+      const DRAW_TOOLS = new Set(["pen", "highlighter", "eraser"]);
+      const SPAWN_TOOLS = {
+        fraction: () => makeObject("fraction", { num: "", den: "" }),
+        division: () =>
+          makeObject("division", { divisor: "", dividend: "", quotient: "" }),
+        line: () =>
+          makeObject("line", {
+            len: 150,
+            angle: 0,
+            cross: false,
+            color: "#14223a",
+          }),
+        cross: () =>
+          makeObject("line", {
+            len: 90,
+            angle: -18,
+            cross: true,
+            color: "#dc2626",
+          }),
+      };
+
+      function setTool(t, btn) {
+        // spawn-style tools create an object then revert to move
+        if (SPAWN_TOOLS[t]) {
+          SPAWN_TOOLS[t]();
+          setTool("move");
+          return;
+        }
+        tool = t;
+        $$(".tool", $("#rail")).forEach((b) =>
+          b.classList.toggle("active", b.dataset.tool === t),
+        );
+        document.body.dataset.draw = DRAW_TOOLS.has(t) ? "1" : "0";
+        workspace.classList.remove("cursor-pen", "cursor-text", "cursor-erase");
+        if (t === "pen" || t === "highlighter")
+          workspace.classList.add("cursor-pen");
+        else if (t === "eraser") workspace.classList.add("cursor-erase");
+        else if (t === "text") workspace.classList.add("cursor-text");
+        if (DRAW_TOOLS.has(t)) deselect();
+        // flyout
+        const fb = btn && btn.dataset.flyout;
+        if (fb) openFlyout(fb, t);
+        else if (!["number", "operation", "shape2d", "shape3d"].includes(t))
+          closeFlyout();
+      }
+
+      $("#rail").addEventListener("click", (e) => {
+        const btn = e.target.closest(".tool");
+        if (!btn) return;
+        setTool(btn.dataset.tool, btn);
+      });
+
+      /* ----------------------- Flyout palettes ----------------------- */
+      const flyout = $("#flyout");
+      function closeFlyout() {
+        flyout.classList.remove("open");
+      }
+      function openFlyout(kind, t) {
+        flyout.classList.add("open");
+        if (kind === "pen") {
+          flyout.innerHTML = penFlyoutHTML(t);
+          wirePenFlyout();
+        } else if (kind === "number") {
+          flyout.innerHTML =
+            '<h3>Number tiles</h3><p class="hint">Tap a number to drop a draggable tile. Build numbers by placing tiles side by side.</p>' +
+            '<div class="pal-grid n5" id="numGrid"></div>';
+          const grid = $("#numGrid");
+          [
+            "7",
+            "8",
+            "9",
+            "4",
+            "5",
+            "6",
+            "1",
+            "2",
+            "3",
+            "0",
+            ".",
+            ",",
+            "−",
+            "(",
+            ")",
+          ].forEach((v) => {
+            const b = document.createElement("button");
+            b.className = "pal-item";
+            b.textContent = v;
+            b.addEventListener("click", () =>
+              makeObject("tile", { value: v, kind: "num" }),
+            );
+            grid.appendChild(b);
+          });
+        } else if (kind === "operation") {
+          flyout.innerHTML =
+            '<h3>Symbols &amp; operations</h3><p class="hint">Tap a symbol to drop a draggable tile.</p>' +
+            '<div class="pal-grid n5" id="opGrid"></div>';
+          const grid = $("#opGrid");
+          [
+            "+",
+            "−",
+            "×",
+            "÷",
+            "=",
+            "≠",
+            "<",
+            ">",
+            "≤",
+            "≥",
+            "±",
+            "√",
+            "%",
+            "π",
+            "°",
+            ":",
+            "≈",
+            "²",
+            "³",
+            "|",
+          ].forEach((v) => {
+            const b = document.createElement("button");
+            b.className = "pal-item";
+            b.textContent = v;
+            b.addEventListener("click", () =>
+              makeObject("tile", { value: v, kind: "op" }),
+            );
+            grid.appendChild(b);
+          });
+        } else if (kind === "shape2d") {
+          flyout.innerHTML =
+            '<h3>2-D shapes</h3><p class="hint">Tap a shape to drop it. Then label it and write the measurements.</p>' +
+            '<div class="pal-grid n3" id="s2Grid"></div>';
+          const grid = $("#s2Grid");
+          SHAPES_2D.forEach((s) => {
+            const b = document.createElement("button");
+            b.className = "pal-item tall";
+            b.innerHTML = SHAPE_SVG[s.id] + "<small>" + s.name + "</small>";
+            b.addEventListener("click", () =>
+              makeObject("shape2d", { shape: s.id, label: s.name }),
+            );
+            grid.appendChild(b);
+          });
+        } else if (kind === "shape3d") {
+          flyout.innerHTML =
+            '<h3>3-D figures</h3><p class="hint">Tap a figure to drop it. Then label it and write the measurements.</p>' +
+            '<div class="pal-grid n3" id="s3Grid"></div>';
+          const grid = $("#s3Grid");
+          SHAPES_3D.forEach((s) => {
+            const b = document.createElement("button");
+            b.className = "pal-item tall";
+            b.innerHTML = SHAPE_SVG[s.id] + "<small>" + s.name + "</small>";
+            b.addEventListener("click", () =>
+              makeObject("shape3d", { shape: s.id, label: s.name }),
+            );
+            grid.appendChild(b);
+          });
+        }
+      }
+      function penFlyoutHTML(t) {
+        const title = t === "highlighter" ? "Highlighter" : "Pen";
+        return (
+          "<h3>" +
+          title +
+          '</h3><p class="hint">Pick a color and thickness, then write or draw on the board.</p>' +
+          '<p class="field-lbl">Color</p><div class="opt-row" id="swatchRow"></div>' +
+          '<p class="field-lbl">Thickness</p><div class="size-dots" id="sizeRow"></div>'
+        );
+      }
+      function wirePenFlyout() {
+        const sr = $("#swatchRow");
+        PEN_COLORS.forEach((c) => {
+          const s = document.createElement("button");
+          s.className = "swatch" + (c === penColor ? " sel" : "");
+          s.style.background = c;
+          s.addEventListener("click", () => {
+            penColor = c;
+            $$(".swatch", sr).forEach((x) => x.classList.remove("sel"));
+            s.classList.add("sel");
+          });
+          sr.appendChild(s);
+        });
+        const zr = $("#sizeRow");
+        PEN_SIZES.forEach((sz) => {
+          const b = document.createElement("button");
+          b.className = "size-dot" + (sz === penSize ? " sel" : "");
+          const dot = document.createElement("i");
+          const d = Math.max(6, sz + 4);
+          dot.style.width = d + "px";
+          dot.style.height = d + "px";
+          b.appendChild(dot);
+          b.addEventListener("click", () => {
+            penSize = sz;
+            $$(".size-dot", zr).forEach((x) => x.classList.remove("sel"));
+            b.classList.add("sel");
+          });
+          zr.appendChild(b);
+        });
+      }
+
+      // close flyout when clicking workspace (but keep palette tools available)
+      workspace.addEventListener("pointerdown", () => {
+        if (["pen", "highlighter"].includes(tool)) return;
+      });
+
+      /* ===================================================================
+         SHAPE SVGs (2-D outlines + 3-D isometric figures)
+         data-stroke marks recolorable outlines.
+         =================================================================== */
+      const SHAPE_SVG = {
+        // --- 2D ---
+        square:
+          '<svg viewBox="0 0 100 100" width="92" height="92"><rect data-stroke x="14" y="14" width="72" height="72" fill="rgba(32,95,166,.08)" stroke="#205fa6" stroke-width="3"/></svg>',
+        rectangle:
+          '<svg viewBox="0 0 120 80" width="112" height="76"><rect data-stroke x="10" y="14" width="100" height="52" fill="rgba(32,95,166,.08)" stroke="#205fa6" stroke-width="3"/></svg>',
+        triangle:
+          '<svg viewBox="0 0 100 90" width="96" height="86"><polygon data-stroke points="50,10 90,80 10,80" fill="rgba(44,125,107,.08)" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"/></svg>',
+        righttriangle:
+          '<svg viewBox="0 0 100 90" width="96" height="86"><polygon data-stroke points="14,12 14,80 88,80" fill="rgba(44,125,107,.08)" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"/><rect x="14" y="66" width="14" height="14" fill="none" stroke="#205fa6" stroke-width="2"/></svg>',
+        circle:
+          '<svg viewBox="0 0 100 100" width="92" height="92"><circle data-stroke cx="50" cy="50" r="40" fill="rgba(217,119,6,.08)" stroke="#205fa6" stroke-width="3"/></svg>',
+        parallelogram:
+          '<svg viewBox="0 0 120 80" width="112" height="76"><polygon data-stroke points="30,16 110,16 90,66 10,66" fill="rgba(32,95,166,.08)" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"/></svg>',
+        trapezoid:
+          '<svg viewBox="0 0 120 80" width="112" height="76"><polygon data-stroke points="34,16 86,16 110,66 10,66" fill="rgba(32,95,166,.08)" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"/></svg>',
+        rhombus:
+          '<svg viewBox="0 0 100 100" width="92" height="92"><polygon data-stroke points="50,10 90,50 50,90 10,50" fill="rgba(124,58,237,.08)" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"/></svg>',
+        pentagon:
+          '<svg viewBox="0 0 100 100" width="92" height="92"><polygon data-stroke points="50,8 92,40 76,90 24,90 8,40" fill="rgba(32,95,166,.08)" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"/></svg>',
+        hexagon:
+          '<svg viewBox="0 0 100 100" width="92" height="92"><polygon data-stroke points="28,12 72,12 94,50 72,88 28,88 6,50" fill="rgba(44,125,107,.08)" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"/></svg>',
+        numberline:
+          '<svg viewBox="0 0 220 50" width="200" height="46"><line data-stroke x1="10" y1="28" x2="210" y2="28" stroke="#205fa6" stroke-width="3"/><polygon points="210,28 200,22 200,34" fill="#205fa6"/><polygon points="10,28 20,22 20,34" fill="#205fa6"/>' +
+          [0, 1, 2, 3, 4, 5, 6]
+            .map((i) => {
+              const x = 30 + i * 30;
+              return (
+                '<line x1="' +
+                x +
+                '" y1="22" x2="' +
+                x +
+                '" y2="34" stroke="#205fa6" stroke-width="2"/>'
+              );
+            })
+            .join("") +
+          "</svg>",
+        coordplane:
+          '<svg viewBox="0 0 120 120" width="108" height="108">' +
+          [20, 40, 60, 80, 100]
+            .map(
+              (v) =>
+                '<line x1="' +
+                v +
+                '" y1="10" x2="' +
+                v +
+                '" y2="110" stroke="#dbe5f1" stroke-width="1"/><line x1="10" y1="' +
+                v +
+                '" x2="110" y2="' +
+                v +
+                '" stroke="#dbe5f1" stroke-width="1"/>',
+            )
+            .join("") +
+          '<line data-stroke x1="60" y1="10" x2="60" y2="110" stroke="#205fa6" stroke-width="2.5"/><line data-stroke x1="10" y1="60" x2="110" y2="60" stroke="#205fa6" stroke-width="2.5"/></svg>',
+        // --- 3D (isometric) ---
+        cube: '<svg viewBox="0 0 110 110" width="100" height="100"><g data-stroke fill="rgba(32,95,166,.10)" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"><polygon points="30,30 80,30 80,80 30,80"/><polygon points="30,30 50,12 100,12 80,30"/><polygon points="80,30 100,12 100,62 80,80"/></g></svg>',
+        rectprism:
+          '<svg viewBox="0 0 130 110" width="118" height="100"><g data-stroke fill="rgba(32,95,166,.10)" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"><polygon points="24,40 96,40 96,84 24,84"/><polygon points="24,40 44,20 116,20 96,40"/><polygon points="96,40 116,20 116,64 96,84"/></g></svg>',
+        cylinder:
+          '<svg viewBox="0 0 100 120" width="92" height="108"><g data-stroke fill="rgba(44,125,107,.10)" stroke="#205fa6" stroke-width="3"><path d="M24 28 L24 92 A26 11 0 0 0 76 92 L76 28" fill="rgba(44,125,107,.10)"/><ellipse cx="50" cy="28" rx="26" ry="11"/><path d="M24 92 A26 11 0 0 0 76 92" fill="none"/></g></svg>',
+        cone: '<svg viewBox="0 0 100 120" width="92" height="108"><g data-stroke fill="rgba(217,119,6,.10)" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"><path d="M50 14 L78 96 A28 11 0 0 1 22 96 Z"/><path d="M22 96 A28 11 0 0 0 78 96" fill="none"/></g></svg>',
+        sphere:
+          '<svg viewBox="0 0 110 110" width="100" height="100"><g data-stroke stroke="#205fa6" stroke-width="3" fill="rgba(124,58,237,.10)"><circle cx="55" cy="55" r="42"/><ellipse cx="55" cy="55" rx="42" ry="15" fill="none" stroke-width="2"/></g></svg>',
+        sqpyramid:
+          '<svg viewBox="0 0 120 110" width="110" height="100"><g data-stroke fill="rgba(32,95,166,.10)" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"><polygon points="60,14 104,86 16,86"/><polygon points="16,86 60,98 104,86" fill="rgba(32,95,166,.05)"/><line x1="60" y1="14" x2="60" y2="98" stroke-width="2" stroke-dasharray="4 4"/></g></svg>',
+        triprism:
+          '<svg viewBox="0 0 130 100" width="118" height="92"><g data-stroke fill="rgba(44,125,107,.10)" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"><polygon points="20,30 50,18 50,78 20,90"/><polygon points="20,30 50,18 110,18 80,30"/><polygon points="20,90 50,78 110,78 80,90"/><line x1="80" y1="30" x2="80" y2="90"/></g></svg>',
+      };
+      const SHAPES_2D = [
+        { id: "square", name: "Square" },
+        { id: "rectangle", name: "Rectangle" },
+        { id: "triangle", name: "Triangle" },
+        { id: "righttriangle", name: "Right △" },
+        { id: "circle", name: "Circle" },
+        { id: "parallelogram", name: "Parallelogram" },
+        { id: "trapezoid", name: "Trapezoid" },
+        { id: "rhombus", name: "Rhombus" },
+        { id: "pentagon", name: "Pentagon" },
+        { id: "hexagon", name: "Hexagon" },
+        { id: "numberline", name: "Number line" },
+        { id: "coordplane", name: "Coordinate plane" },
+      ];
+      const SHAPES_3D = [
+        { id: "cube", name: "Cube" },
+        { id: "rectprism", name: "Rectangular prism" },
+        { id: "triprism", name: "Triangular prism" },
+        { id: "cylinder", name: "Cylinder" },
+        { id: "cone", name: "Cone" },
+        { id: "sphere", name: "Sphere" },
+        { id: "sqpyramid", name: "Square pyramid" },
+      ];
+
+      /* ===================================================================
+         FORMULA & REFERENCE BANK  (PreK – Grade 6)
+         =================================================================== */
+      const TOPICS = [
+        {
+          id: "ooo",
+          em: "🔢",
+          name: "Order of Operations & Properties",
+          items: [
+            {
+              name: "Order of operations",
+              eq: "P · E · MD · AS",
+              note: "Parentheses → Exponents → Multiply/Divide (L→R) → Add/Subtract (L→R).",
+            },
+            {
+              name: "Commutative property",
+              eq: "a + b = b + a",
+              note: "Order doesn't change a sum or product: a × b = b × a.",
+            },
+            {
+              name: "Associative property",
+              eq: "(a + b) + c = a + (b + c)",
+              note: "Grouping doesn't change a sum or product.",
+            },
+            {
+              name: "Distributive property",
+              eq: "a(b + c) = a·b + a·c",
+              note: "Multiply across a sum.",
+            },
+            {
+              name: "Identity properties",
+              eq: "a + 0 = a,  a × 1 = a",
+              note: "Adding 0 or multiplying by 1 keeps the value.",
+            },
+          ],
+        },
+        {
+          id: "whole",
+          em: "➕",
+          name: "Whole-Number Operations",
+          items: [
+            {
+              name: "Addition",
+              eq: "addend + addend = sum",
+              note: "Line up place values; regroup when a column is 10 or more.",
+            },
+            {
+              name: "Subtraction",
+              eq: "minuend − subtrahend = difference",
+              note: "Regroup (borrow) when the top digit is too small.",
+            },
+            {
+              name: "Multiplication",
+              eq: "factor × factor = product",
+              note: "Area model or standard algorithm for multi-digit.",
+            },
+            {
+              name: "Division",
+              eq: "dividend ÷ divisor = quotient (r)",
+              note: "‘r’ is the remainder left over.",
+            },
+            {
+              name: "Check division",
+              eq: "quotient × divisor + r = dividend",
+              note: "Multiply back to check your answer.",
+            },
+            {
+              name: "Exponent",
+              eq: "a<sup>n</sup> = a × a × … (n times)",
+              note: "Repeated multiplication. Example: 2³ = 8.",
+            },
+            {
+              name: "GCF & LCM",
+              eq: "GCF = biggest shared factor",
+              note: "LCM = smallest shared multiple. Useful for fractions.",
+            },
+          ],
+        },
+        {
+          id: "frac",
+          em: "½",
+          name: "Fractions",
+          items: [
+            {
+              name: "Add / subtract fractions",
+              eq: '<span class="ifr"><span>a</span><span>b</span></span> ± <span class="ifr"><span>c</span><span>b</span></span> = <span class="ifr"><span>a ± c</span><span>b</span></span>',
+              note: "Need a common denominator first.",
+            },
+            {
+              name: "Multiply fractions",
+              eq: '<span class="ifr"><span>a</span><span>b</span></span> × <span class="ifr"><span>c</span><span>d</span></span> = <span class="ifr"><span>a·c</span><span>b·d</span></span>',
+              note: "Multiply tops, multiply bottoms, then simplify.",
+            },
+            {
+              name: "Divide fractions",
+              eq: '<span class="ifr"><span>a</span><span>b</span></span> ÷ <span class="ifr"><span>c</span><span>d</span></span> = <span class="ifr"><span>a</span><span>b</span></span> × <span class="ifr"><span>d</span><span>c</span></span>',
+              note: "Keep · Change · Flip (multiply by the reciprocal).",
+            },
+            {
+              name: "Simplify a fraction",
+              eq: "divide top & bottom by the GCF",
+              note: "Makes an equivalent fraction in lowest terms.",
+            },
+            {
+              name: "Mixed → improper",
+              eq: "whole × denom + numer",
+              note: "Put the result over the same denominator.",
+            },
+            {
+              name: "Compare fractions",
+              eq: "same denom → bigger numerator wins",
+              note: "Or cross-multiply to compare.",
+            },
+          ],
+        },
+        {
+          id: "dec",
+          em: "💲",
+          name: "Decimals & Percents",
+          items: [
+            {
+              name: "Add / subtract decimals",
+              eq: "line up the decimal points",
+              note: "Fill empty places with zeros.",
+            },
+            {
+              name: "Multiply decimals",
+              eq: "count decimal places in both factors",
+              note: "Product has that many decimal places.",
+            },
+            {
+              name: "Divide decimals",
+              eq: "move both decimals to make a whole divisor",
+              note: "Then divide as usual.",
+            },
+            {
+              name: "Percent of a number",
+              eq: "part = percent × whole",
+              note: "Write the percent as a decimal first (25% = 0.25).",
+            },
+            {
+              name: "Find the percent",
+              eq: 'percent = <span class="ifr"><span>part</span><span>whole</span></span> × 100',
+              note: "What percent one number is of another.",
+            },
+            {
+              name: "Fraction ↔ decimal ↔ %",
+              eq: "÷ to decimal, × 100 to percent",
+              note: "½ = 0.5 = 50%.",
+            },
+          ],
+        },
+        {
+          id: "ratio",
+          em: "⚖️",
+          name: "Ratios, Rates & Proportions",
+          items: [
+            {
+              name: "Ratio",
+              eq: "a : b  or  a to b",
+              note: "Compares two quantities.",
+            },
+            {
+              name: "Unit rate",
+              eq: '<span class="ifr"><span>quantity</span><span>1 unit</span></span>',
+              note: "How much for ONE (miles per hour, price per item).",
+            },
+            {
+              name: "Equivalent ratios",
+              eq: "× or ÷ both parts by the same number",
+              note: "Builds a ratio table.",
+            },
+            {
+              name: "Proportion",
+              eq: '<span class="ifr"><span>a</span><span>b</span></span> = <span class="ifr"><span>c</span><span>d</span></span>',
+              note: "Two equal ratios. Cross-multiply: a·d = b·c.",
+            },
+            {
+              name: "Speed / distance / time",
+              eq: "distance = rate × time",
+              note: "rate = distance ÷ time.",
+            },
+            {
+              name: "Convert with rates",
+              eq: "multiply by a unit ratio",
+              note: "e.g. × (12 in / 1 ft) to change units.",
+            },
+          ],
+        },
+        {
+          id: "int",
+          em: "➖",
+          name: "Integers & Rational Numbers",
+          items: [
+            {
+              name: "Absolute value",
+              eq: "|x| = distance from 0",
+              note: "Always zero or positive. |−6| = 6.",
+            },
+            {
+              name: "Opposites",
+              eq: "x and −x",
+              note: "Same distance from 0, different sides.",
+            },
+            {
+              name: "Order on a number line",
+              eq: "left is less, right is greater",
+              note: "−5 < −2 < 0 < 3.",
+            },
+            {
+              name: "Adding integers",
+              eq: "same sign → add; different → subtract",
+              note: "Take the sign of the bigger absolute value.",
+            },
+          ],
+        },
+        {
+          id: "ee",
+          em: "🟰",
+          name: "Expressions & Equations",
+          items: [
+            {
+              name: "Evaluate an expression",
+              eq: "substitute, then simplify",
+              note: "Replace the variable with its value.",
+            },
+            {
+              name: "Combine like terms",
+              eq: "3x + 2x = 5x",
+              note: "Add coefficients of the same variable.",
+            },
+            {
+              name: "Solve x + a = b",
+              eq: "x = b − a",
+              note: "Subtract the same amount from both sides.",
+            },
+            {
+              name: "Solve x − a = b",
+              eq: "x = b + a",
+              note: "Add to both sides.",
+            },
+            {
+              name: "Solve a·x = b",
+              eq: 'x = <span class="ifr"><span>b</span><span>a</span></span>',
+              note: "Divide both sides by a.",
+            },
+            {
+              name: "Solve x ÷ a = b",
+              eq: "x = b · a",
+              note: "Multiply both sides by a.",
+            },
+            {
+              name: "Inequality",
+              eq: "x > a,  x ≤ b",
+              note: "Open dot for < >, closed dot for ≤ ≥.",
+            },
+          ],
+        },
+        {
+          id: "geo2d",
+          em: "📐",
+          name: "2-D Geometry — Area & Perimeter",
+          items: [
+            {
+              name: "Perimeter (rectangle)",
+              eq: "P = 2(l + w)",
+              note: "Distance all the way around.",
+            },
+            {
+              name: "Perimeter (any polygon)",
+              eq: "P = sum of all sides",
+              note: "Add every side length.",
+            },
+            {
+              name: "Area of rectangle",
+              eq: "A = l × w",
+              note: "length times width.",
+            },
+            {
+              name: "Area of square",
+              eq: "A = s<sup>2</sup>",
+              note: "side × side.",
+            },
+            {
+              name: "Area of triangle",
+              eq: 'A = <span class="ifr"><span>1</span><span>2</span></span> b · h',
+              note: "½ × base × height (height is perpendicular).",
+            },
+            {
+              name: "Area of parallelogram",
+              eq: "A = b × h",
+              note: "base × perpendicular height.",
+            },
+            {
+              name: "Area of trapezoid",
+              eq: 'A = <span class="ifr"><span>1</span><span>2</span></span> (b<sub>1</sub> + b<sub>2</sub>) h',
+              note: "Average the two bases, times height.",
+            },
+            {
+              name: "Circumference",
+              eq: "C = π d = 2 π r",
+              note: "π ≈ 3.14. d = 2r.",
+            },
+            {
+              name: "Area of circle",
+              eq: "A = π r<sup>2</sup>",
+              note: "π times radius squared.",
+            },
+          ],
+        },
+        {
+          id: "geo3d",
+          em: "🧊",
+          name: "3-D Figures — Volume & Surface Area",
+          items: [
+            {
+              name: "Volume (rectangular prism)",
+              eq: "V = l × w × h",
+              note: "Also V = B × h (B = area of base).",
+            },
+            {
+              name: "Volume of cube",
+              eq: "V = s<sup>3</sup>",
+              note: "edge × edge × edge.",
+            },
+            {
+              name: "Volume (any prism)",
+              eq: "V = B × h",
+              note: "B = area of the base, h = height.",
+            },
+            {
+              name: "Volume of cylinder",
+              eq: "V = π r<sup>2</sup> h",
+              note: "Base circle area times height.",
+            },
+            {
+              name: "Surface area (rect. prism)",
+              eq: "SA = 2(lw + lh + wh)",
+              note: "Add the areas of all 6 faces.",
+            },
+            {
+              name: "Surface area of cube",
+              eq: "SA = 6 s<sup>2</sup>",
+              note: "Six equal square faces.",
+            },
+            {
+              name: "Surface area from a net",
+              eq: "SA = sum of all face areas",
+              note: "Unfold the figure and add the faces.",
+            },
+          ],
+        },
+        {
+          id: "coord",
+          em: "🗺️",
+          name: "Coordinate Plane",
+          items: [
+            {
+              name: "Ordered pair",
+              eq: "(x, y)",
+              note: "x = right/left, y = up/down. Start at the origin (0,0).",
+            },
+            {
+              name: "Quadrants",
+              eq: "I (+,+)  II (−,+)  III (−,−)  IV (+,−)",
+              note: "Counterclockwise from top-right.",
+            },
+            {
+              name: "Horizontal distance",
+              eq: "|x<sub>2</sub> − x<sub>1</sub>|",
+              note: "Same y — subtract the x-values.",
+            },
+            {
+              name: "Vertical distance",
+              eq: "|y<sub>2</sub> − y<sub>1</sub>|",
+              note: "Same x — subtract the y-values.",
+            },
+            {
+              name: "Reflect across an axis",
+              eq: "flip the sign of one coordinate",
+              note: "Across x-axis: (x, −y). Across y-axis: (−x, y).",
+            },
+          ],
+        },
+        {
+          id: "stats",
+          em: "📊",
+          name: "Statistics & Data",
+          items: [
+            {
+              name: "Mean (average)",
+              eq: 'mean = <span class="ifr"><span>sum of values</span><span>how many</span></span>',
+              note: "Add them all, divide by the count.",
+            },
+            {
+              name: "Median",
+              eq: "middle value (in order)",
+              note: "If two middles, average them.",
+            },
+            {
+              name: "Mode",
+              eq: "value that appears most",
+              note: "There can be none, one, or several.",
+            },
+            {
+              name: "Range",
+              eq: "range = max − min",
+              note: "Spread from lowest to highest.",
+            },
+            {
+              name: "Mean Absolute Deviation",
+              eq: "MAD = mean distance from the mean",
+              note: "Average of |each value − mean|.",
+            },
+            {
+              name: "Interquartile range",
+              eq: "IQR = Q3 − Q1",
+              note: "Middle 50% of the data.",
+            },
+          ],
+        },
+        {
+          id: "measure",
+          em: "📏",
+          name: "Measurement & Conversions",
+          items: [
+            {
+              name: "Length (customary)",
+              eq: "12 in = 1 ft · 3 ft = 1 yd",
+              note: "5,280 ft = 1 mile.",
+            },
+            {
+              name: "Length (metric)",
+              eq: "10 mm = 1 cm · 100 cm = 1 m",
+              note: "1,000 m = 1 km.",
+            },
+            {
+              name: "Capacity (customary)",
+              eq: "8 oz = 1 c · 2 c = 1 pt · 2 pt = 1 qt",
+              note: "4 qt = 1 gallon.",
+            },
+            { name: "Capacity (metric)", eq: "1,000 mL = 1 L", note: "" },
+            {
+              name: "Weight / mass",
+              eq: "16 oz = 1 lb · 1,000 g = 1 kg",
+              note: "2,000 lb = 1 ton.",
+            },
+            {
+              name: "Time",
+              eq: "60 s = 1 min · 60 min = 1 hr",
+              note: "24 hr = 1 day.",
+            },
+          ],
+        },
+      ];
+
+      // Build topic tabs + formula panel
+      const dock = $("#dock");
+      const dockTabs = $("#dockTabs");
+      const formulaList = $("#formulaList");
+      let activeTopic = TOPICS[7].id; // open on 2-D Geometry by default
+
+      function renderTabs() {
+        dockTabs.innerHTML = "";
+        TOPICS.forEach((t) => {
+          const b = document.createElement("button");
+          b.className = "topic-tab" + (t.id === activeTopic ? " active" : "");
+          b.innerHTML = '<span class="em">' + t.em + "</span> " + t.name;
+          b.addEventListener("click", () => {
+            activeTopic = t.id;
+            dock.classList.add("open");
+            setDockToggle(true);
+            renderTabs();
+            renderFormulas();
+          });
+          dockTabs.appendChild(b);
+        });
+      }
+      function renderFormulas() {
+        const t = TOPICS.find((x) => x.id === activeTopic);
+        formulaList.innerHTML = "";
+        t.items.forEach((it) => {
+          const c = document.createElement("button");
+          c.className = "formula-card";
+          c.innerHTML =
+            '<span class="fc-name">' +
+            it.name +
+            '</span><span class="fc-eq">' +
+            it.eq +
+            "</span>" +
+            (it.note ? '<span class="fc-note">' + it.note + "</span>" : "") +
+            '<span class="fc-add">＋ tap to add to board</span>';
+          c.addEventListener("click", () => {
+            makeObject("formula", {
+              html: "<b>" + it.name + ":</b>&nbsp; " + it.eq,
+            });
+          });
+          formulaList.appendChild(c);
+        });
+      }
+      function setDockToggle(open) {
+        $("#dockToggleIc").textContent = open ? "▾" : "▴";
+        $("#dockToggleTxt").textContent = open ? "Hide" : "Show";
+      }
+      $("#dockToggle").addEventListener("click", () => {
+        const open = !dock.classList.contains("open");
+        dock.classList.toggle("open", open);
+        setDockToggle(open);
+      });
+
+      /* ----------------------- Top-bar actions ----------------------- */
+      $("#undoBtn").addEventListener("click", undo);
+      $("#redoBtn").addEventListener("click", redo);
+      $("#bgBtn").addEventListener("click", () => {
+        state.bg =
+          state.bg === "grid" ? "dot" : state.bg === "dot" ? "blank" : "grid";
+        renderAll();
+        pushHistory();
+      });
+      $("#clearBtn").addEventListener("click", () => {
+        if (!state.objects.length && !state.strokes.length) return;
+        if (
+          confirm(
+            "Clear the whole board? This cannot be undone after you leave.",
+          )
+        ) {
+          state.objects = [];
+          state.strokes = [];
+          selectedId = null;
+          renderAll();
+          pushHistory();
+        }
+      });
+      $("#printBtn").addEventListener("click", () => {
+        deselect();
+        setTimeout(() => window.print(), 60);
+      });
+      $("#helpBtn").addEventListener("click", () =>
+        $("#helpModal").classList.add("open"),
+      );
+      $("#helpClose").addEventListener("click", () =>
+        $("#helpModal").classList.remove("open"),
+      );
+      $("#helpModal").addEventListener("click", (e) => {
+        if (e.target.id === "helpModal") e.target.classList.remove("open");
+      });
+
+      /* ----------------------- Keyboard ----------------------- */
+      window.addEventListener("keydown", (e) => {
+        if (
+          e.target.isContentEditable ||
+          /INPUT|TEXTAREA/.test(e.target.tagName)
+        )
+          return;
+        const k = e.key.toLowerCase();
+        if ((e.metaKey || e.ctrlKey) && k === "z") {
+          e.preventDefault();
+          e.shiftKey ? redo() : undo();
+          return;
+        }
+        if ((e.metaKey || e.ctrlKey) && k === "y") {
+          e.preventDefault();
+          redo();
+          return;
+        }
+        if (k === "delete" || k === "backspace") {
+          if (selectedId) {
+            e.preventDefault();
+            deleteObject(selectedId);
+          }
+          return;
+        }
+        if (k === "escape") {
+          deselect();
+          closeFlyout();
+          $("#helpModal").classList.remove("open");
+          return;
+        }
+        const map = {
+          v: "move",
+          p: "pen",
+          h: "highlighter",
+          e: "eraser",
+          t: "text",
+        };
+        if (map[k]) {
+          const btn = $('.tool[data-tool="' + map[k] + '"]');
+          setTool(map[k], btn);
+        }
+      });
+
+      /* ----------------------- Init ----------------------- */
+      let rsz;
+      window.addEventListener("resize", () => {
+        clearTimeout(rsz);
+        rsz = setTimeout(sizeCanvas, 120);
+      });
+
+      function init() {
+        renderTabs();
+        renderFormulas();
+        setDockToggle(true);
+        dock.classList.add("open");
+        const had = restore();
+        sizeCanvas();
+        if (!had) {
+          renderAll();
+        }
+        // seed history baseline
+        history.length = 0;
+        hpos = -1;
+        pushHistory();
+        updateUndoButtons();
+        updateEmpty();
+        // first-visit help, or deep link via #help
+        try {
+          if (
+            location.hash === "#help" ||
+            !localStorage.getItem("neft.mathWorkbench.seen")
+          ) {
+            $("#helpModal").classList.add("open");
+            localStorage.setItem("neft.mathWorkbench.seen", "1");
+          }
+        } catch (e) {}
+      }
+      init();
+    </script>
+  </body>
+</html>
