@@ -141,27 +141,47 @@ function popoverScript() {
 </script>`;
 }
 
-// Wrap the FIRST occurrence of each vocabulary term in `text` with a tap-to-define
-// popover trigger (token pass so terms never match inside another term's
-// attributes). Returns HTML-escaped text with the triggers inlined.
+// Short-form aliases so step text using the everyday form of a term ("prime",
+// "composite", "exponents") still gets a tap-to-define pop-up. We add the
+// adjective form (dropping a trailing "number(s)") and allow a trailing plural.
+function aliasesFor(term) {
+  const t = String(term).trim();
+  const out = [t];
+  const m = t.match(/^(.+?)\s+numbers?$/i);
+  if (m && m[1] && m[1].length >= 4 && !/\s/.test(m[1])) out.push(m[1]);
+  return out;
+}
+
+// Wrap the first occurrence of each vocabulary term (or one of its short-form
+// aliases) in `text` with a tap-to-define popover trigger. A token pass keeps a
+// term from matching inside another term's attributes; each term pops at most
+// once per text, and longer aliases win so phrases beat their adjective forms.
 function popoverize(text, vocab) {
-  const items = (Array.isArray(vocab) ? vocab : [])
-    .filter((v) => v && v.term && v.definition)
-    .slice()
-    .sort((a, b) => b.term.length - a.term.length);
+  const items = (Array.isArray(vocab) ? vocab : []).filter(
+    (v) => v && v.term && v.definition,
+  );
+  const pairs = [];
+  items.forEach((v) => {
+    aliasesFor(v.term).forEach((alias) => pairs.push({ alias, item: v }));
+  });
+  pairs.sort((a, b) => b.alias.length - a.alias.length);
   let out = esc(text);
   const tokens = [];
+  const used = new Set();
   // Private-use-area markers so a placeholder never collides with a math number.
   const MARK_A = String.fromCharCode(57344);
   const MARK_B = String.fromCharCode(57345);
-  items.forEach((v) => {
-    const e = esc(v.term).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const re = new RegExp("\\b(" + e + ")\\b", "i");
+  pairs.forEach(({ alias, item }) => {
+    if (used.has(item.term)) return;
+    const e = esc(alias).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp("\\b(" + e + "s?)\\b", "i");
+    if (!re.test(out)) return;
     out = out.replace(re, (m, g1) => {
-      const img = resolveVocabImage(v.term, v.image).replace(/^\//, "../../");
+      const img = resolveVocabImage(item.term, item.image).replace(/^\//, "../../");
       tokens.push(
-        `<button type="button" class="li-pop" data-popover data-term="${esc(v.term)}" data-def="${esc(v.definition)}" data-img="${esc(img)}" aria-label="What does ${esc(v.term)} mean?">${g1}<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>`,
+        `<button type="button" class="li-pop" data-popover data-term="${esc(item.term)}" data-def="${esc(item.definition)}" data-img="${esc(img)}" aria-label="What does ${esc(item.term)} mean?">${g1}<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>`,
       );
+      used.add(item.term);
       return MARK_A + (tokens.length - 1) + MARK_B;
     });
   });
