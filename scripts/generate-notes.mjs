@@ -1047,6 +1047,11 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
   font-size:15px;line-height:1;flex:0 0 auto;}
 .vx-say:hover{background:var(--teal-light);}
 .vx-def{margin:0;font-size:15px;line-height:1.55;color:var(--ink);}
+.vx-langs{display:flex;flex-wrap:wrap;gap:6px;align-items:baseline;margin:0 0 8px;font-size:13px;color:var(--muted);}
+.vx-lang b{color:var(--teal);font-size:10px;font-weight:800;letter-spacing:.04em;margin-right:3px;}
+.vx-langsep{color:var(--line);}
+.vx-def-es{margin:6px 0 0;padding-left:10px;border-left:2px solid var(--teal-light);
+  font-size:13.5px;line-height:1.5;color:var(--muted);font-style:italic;}
 .vx-match{margin-top:6px;}
 .vx-mcols{display:grid;grid-template-columns:1fr 1.5fr;gap:12px;}
 .vx-mcol{display:flex;flex-direction:column;gap:10px;}
@@ -2000,16 +2005,33 @@ function vocabExplorer(cfg = {}) {
   if (!items.length)
     return `<p class="level-note">No vocabulary is listed for this lesson yet.</p>`;
 
-  // ① Word Wall — receptive (picture + word + say-it + plain meaning).
+  // ① Word Wall — receptive (picture + word + say-it + plain meaning), with the
+  // lesson's authored translations (Spanish / Vietnamese / Arabic) so multilingual
+  // learners get a first-language anchor for every term.
   const wall = items
     .map((v) => {
       const imgSrc = resolveVocabImage(v.term, v.image).replace(/^\//, "../../");
       const say = esc(`${v.term}. ${v.definition || ""}`);
+      const langs = [];
+      if (v.termEs)
+        langs.push(`<span class="vx-lang" lang="es"><b>ES</b> ${esc(v.termEs)}</span>`);
+      if (v.termVi)
+        langs.push(`<span class="vx-lang" lang="vi"><b>VI</b> ${esc(v.termVi)}</span>`);
+      if (v.termAr)
+        langs.push(`<span class="vx-lang" lang="ar" dir="rtl"><b>AR</b> ${esc(v.termAr)}</span>`);
+      const transLine = langs.length
+        ? `<p class="vx-langs">${langs.join('<span class="vx-langsep">·</span>')}</p>`
+        : "";
+      const defEs = v.definitionEs
+        ? `<p class="vx-def-es" lang="es">${esc(v.definitionEs)}</p>`
+        : "";
       return `<div class="vx-card">
         <div class="vx-figure"><img src="${esc(imgSrc)}" alt="${esc(vocabImageAlt(v.term, v.definition))}" onerror="this.style.display='none'" /></div>
         <div class="vx-termline"><span class="vx-term">${esc(v.term)}</span>
           <button type="button" class="vx-say" data-say="${say}" aria-label="Hear ${esc(v.term)} read aloud">🔊</button></div>
+        ${transLine}
         <p class="vx-def">${esc(v.definition || "")}</p>
+        ${defEs}
       </div>`;
     })
     .join("");
