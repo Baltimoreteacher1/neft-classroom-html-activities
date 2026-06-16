@@ -7,7 +7,10 @@ const STRINGS = {
   startActivity: { en: "Start Activity →", es: "Comenzar actividad →" },
   yourName: { en: "Your Name", es: "Tu nombre" },
   period: { en: "Period", es: "Período" },
-  namePlaceholder: { en: "First name Last initial", es: "Nombre e inicial del apellido" },
+  namePlaceholder: {
+    en: "First name Last initial",
+    es: "Nombre e inicial del apellido",
+  },
   periodPlaceholder: { en: "e.g. 3", es: "ej. 3" },
   enterNamePrompt: {
     en: "Enter your name to start. Your progress saves on <strong>this device</strong>. Ask your teacher before switching Chromebooks.",
@@ -19,8 +22,14 @@ const STRINGS = {
   lessonSlides: { en: "Lesson slides", es: "Diapositivas de la lección" },
   googleSlides: { en: "Google Slides", es: "Google Slides" },
   teacherNotes: { en: "Teacher notes", es: "Notas del maestro" },
-  teacherNotesToggle: { en: "Show teacher pacing & tips", es: "Ver ritmo y consejos del maestro" },
-  teacherNotesHide: { en: "Hide teacher notes", es: "Ocultar notas del maestro" },
+  teacherNotesToggle: {
+    en: "Show teacher pacing & tips",
+    es: "Ver ritmo y consejos del maestro",
+  },
+  teacherNotesHide: {
+    en: "Hide teacher notes",
+    es: "Ocultar notas del maestro",
+  },
   newToTopic: { en: "New to this topic?", es: "¿Nuevo en este tema?" },
   getReady: { en: "Get Ready", es: "Prepárate" },
   getReadyDesc: {
@@ -33,7 +42,10 @@ const STRINGS = {
   practiceItems: { en: "practice items", es: "ejercicios de práctica" },
   phases: { en: "phases", es: "fases" },
   standardsTap: { en: "tap to learn more", es: "toca para saber más" },
-  savedProgress: { en: "Saved progress on this device:", es: "Progreso guardado en este dispositivo:" },
+  savedProgress: {
+    en: "Saved progress on this device:",
+    es: "Progreso guardado en este dispositivo:",
+  },
   lessonForms: { en: "Lesson Forms", es: "Formularios de la lección" },
   notes: { en: "Notes", es: "Notas" },
   practice: { en: "Practice", es: "Práctica" },
@@ -69,8 +81,14 @@ const STRINGS = {
   xpEarned: { en: "XP Earned", es: "XP ganados" },
   stars: { en: "Stars", es: "Estrellas" },
   printCertificate: { en: "Print Certificate", es: "Imprimir certificado" },
-  downloadCertificate: { en: "Download Certificate (PNG)", es: "Descargar certificado (PNG)" },
-  scanToRevisit: { en: "Scan to revisit this lesson", es: "Escanea para volver a esta lección" },
+  downloadCertificate: {
+    en: "Download Certificate (PNG)",
+    es: "Descargar certificado (PNG)",
+  },
+  scanToRevisit: {
+    en: "Scan to revisit this lesson",
+    es: "Escanea para volver a esta lección",
+  },
   myLessonSummary: { en: "My Lesson Summary", es: "Mi resumen de la lección" },
   printSummary: { en: "Print my summary", es: "Imprimir mi resumen" },
   student: { en: "Student", es: "Estudiante" },
@@ -85,13 +103,22 @@ const STRINGS = {
   reflection321: { en: "3-2-1 Reflection", es: "Reflexión 3-2-1" },
   thingsLearned: { en: "things I learned", es: "cosas que aprendí" },
   connectionsMade: { en: "connections I made", es: "conexiones que hice" },
-  questionStillHave: { en: "question I still have", es: "pregunta que aún tengo" },
-  oneThingToday: { en: "One thing I learned today", es: "Una cosa que aprendí hoy" },
+  questionStillHave: {
+    en: "question I still have",
+    es: "pregunta que aún tengo",
+  },
+  oneThingToday: {
+    en: "One thing I learned today",
+    es: "Una cosa que aprendí hoy",
+  },
   oneThingPlaceholder: {
     en: "The most important thing I learned is...",
     es: "Lo más importante que aprendí es...",
   },
-  howConfident: { en: "How confident do you feel about", es: "¿Qué tan seguro te sientes sobre" },
+  howConfident: {
+    en: "How confident do you feel about",
+    es: "¿Qué tan seguro te sientes sobre",
+  },
   notYet: { en: "Not yet", es: "Aún no" },
   gettingThere: { en: "Getting there", es: "Casi lo tengo" },
   gotIt: { en: "Got it!", es: "¡Lo tengo!" },
@@ -102,14 +129,26 @@ const STRINGS = {
   languageObjective: { en: "Language Objective", es: "Objetivo de lenguaje" },
   teacherView: { en: "Teacher View", es: "Vista del maestro" },
   pacingGuide: { en: "Pacing Guide", es: "Guía de ritmo" },
-  standardsObjectives: { en: "Standards & Objectives", es: "Estándares y objetivos" },
+  standardsObjectives: {
+    en: "Standards & Objectives",
+    es: "Estándares y objetivos",
+  },
   listenFor: { en: "Listen For", es: "Escuchar por" },
-  answerKey: { en: "Answer Key (Practice)", es: "Clave de respuestas (Práctica)" },
-  differentiationTips: { en: "Differentiation Tips", es: "Consejos de diferenciación" },
+  answerKey: {
+    en: "Answer Key (Practice)",
+    es: "Clave de respuestas (Práctica)",
+  },
+  differentiationTips: {
+    en: "Differentiation Tips",
+    es: "Consejos de diferenciación",
+  },
   printPacingSheet: { en: "Print pacing sheet", es: "Imprimir hoja de ritmo" },
   commonMistake: { en: "Watch out!", es: "¡Cuidado!" },
   tapToReveal: { en: "Tap to reveal →", es: "Toca para revelar →" },
-  storyBeats: { en: "Story beats — tap to reveal", es: "Partes de la historia — toca para revelar" },
+  storyBeats: {
+    en: "Story beats — tap to reveal",
+    es: "Partes de la historia — toca para revelar",
+  },
   gradeOutstanding: { en: "Outstanding!", es: "¡Excelente!" },
   gradeGreat: { en: "Great Job!", es: "¡Gran trabajo!" },
   gradeGood: { en: "Good Effort!", es: "¡Buen esfuerzo!" },
@@ -121,7 +160,7 @@ const STRINGS = {
 
 const PHASE_NAMES = {
   launch: { en: "Launch", es: "Inicio" },
-  vocab: { en: "Vocab Builder", es: "Vocabulario" },
+  vocab: { en: "Vocabulary", es: "Vocabulario" },
   explore: { en: "Explore", es: "Explorar" },
   practice: { en: "Practice", es: "Práctica" },
   connect: { en: "Connect", es: "Conectar" },
@@ -149,7 +188,10 @@ export function getPreferredLang() {
     const htmlLang = document.documentElement.lang || "";
     if (htmlLang.startsWith("es")) return "es";
   }
-  if (typeof navigator !== "undefined" && navigator.language?.startsWith("es")) {
+  if (
+    typeof navigator !== "undefined" &&
+    navigator.language?.startsWith("es")
+  ) {
     return "es";
   }
   return "en";

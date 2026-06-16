@@ -40,7 +40,7 @@ function buildExportHtml(state, config) {
   // Collect responses by phase
   const phaseNames = [
     "Launch",
-    "Vocab Builder",
+    "Vocabulary",
     "Explore",
     "Practice",
     "Connect",
@@ -69,12 +69,12 @@ function buildExportHtml(state, config) {
       </table>`;
   }
 
-  // Phase 1: Vocab Builder (status only)
+  // Phase 1: Vocabulary (status only)
   const vocabPhase = s.phases[1];
   if (vocabPhase) {
     responseSections += `
       <h2 style="color:#F2C15B; border-bottom:2px solid #F2C15B; padding-bottom:4px;">
-        Phase 2: Vocab Builder
+        Phase 2: Vocabulary
       </h2>
       <p>Status: <strong>${vocabPhase.status === "completed" ? "Completed" : "In Progress"}</strong>
          &nbsp;|&nbsp; Stars: ${"★".repeat(vocabPhase.stars)}${"☆".repeat(3 - vocabPhase.stars)}</p>`;
