@@ -703,10 +703,29 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
     ? `<aside class="li-keyidea"><span class="li-keyidea-label">Key idea</span><p>${esc(intro.keyIdea)}</p></aside>`
     : "";
 
-  const visual = learnVisual(cfg);
-  const visualBlock = visual ? `<div class="li-figure">${visual}</div>` : "";
-
   const vocab = Array.isArray(cfg.vocabulary) ? cfg.vocabulary : [];
+
+  // "Picture it" — concrete graphics so English learners can SEE the math: the
+  // authored launch visual (chips / number line) plus the lesson's vocabulary
+  // pictures (which are concept diagrams — factor trees, models, etc.).
+  const authored = learnVisual(cfg);
+  const vocabPics = vocab
+    .filter((v) => v && v.term)
+    .slice(0, 3)
+    .map((v) => {
+      const src = resolveVocabImage(v.term, v.image).replace(/^\//, "../../");
+      return `<figure class="li-graphic"><img src="${esc(src)}" alt="${esc(vocabImageAlt(v.term, v.definition))}" loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption>${esc(v.term)}</figcaption></figure>`;
+    })
+    .join("");
+  const visualBlock =
+    authored || vocabPics
+      ? `<section class="li-block li-seeit">
+          <p class="li-eyebrow">👁️ Picture it</p>
+          <p class="li-lead">These pictures show what the math looks like.</p>
+          ${authored ? `<div class="li-figure">${authored}</div>` : ""}
+          ${vocabPics ? `<div class="li-graphics">${vocabPics}</div>` : ""}
+        </section>`
+      : "";
 
   // Worked example (I do) — read-only model, clean numbered steps. Key math
   // words become tap-to-define pop-ups (English-learner friendly).
@@ -778,36 +797,21 @@ function notesSection(cfg = {}, worked = null, fillHtml = "") {
     </div>`
     : "";
 
-  // Textbook-style teaching block — explains the concept and shows it solved,
-  // BEFORE any fill-in-the-blank or practice. This is the part that "explains
-  // the math and how to solve it" in big, clear, step-by-step type.
-  const learnBlock = conceptLearnBlock(cfg);
-
-  // Fill-in-the-blank notes (the centerpiece) are built in buildPacket and
-  // passed in so their answers can also flow into the teacher answer key.
+  // This packet is JUST note-taking now. The explanation + worked examples live
+  // in Learn It; vocabulary lives in the Vocab tab; problems live in Practice.
   const fillBlock = fillHtml
     ? `<p class="gn-directions">✏️ Fill in each blank as we go. Use the Word Bank to help you.</p>${fillHtml}`
     : "";
 
-  // Guided "I Do → We Do → You Do" mini-frame with real worked problems. This
-  // now comes AFTER the Learn It explanation, so it reads as guided practice
-  // (applying the method just taught), not the first exposure to the math.
-  const gradualHtml = workedFrame(worked);
-  const workedBlock = gradualHtml
-    ? `<h3 class="gn-subhead">🧮 Practice It Together — Worked Problems</h3>
-       <p class="gn-subhead-note">Use the steps from <strong>Learn It</strong> above. Watch one, solve one together, then try one on your own.</p>${gradualHtml}`
-    : "";
-
   return `<section class="section notes">
-  <h2>Guided Notes
+  <h2>My Notes
     <span class="level-tag level-1 l1-only">Level 1 Support</span>
     <span class="level-tag level-2 l2-only">Level 2 Standard</span>
     <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
   </h2>
   ${learningHtml}
-  ${learnBlock}
+  <p class="gn-pointer">📖 See <strong>Learn It</strong> for the explanation and worked examples, and the <strong>Vocab</strong> tab for the words. These are your notes to fill in and keep.</p>
   ${fillBlock}
-  ${workedBlock}
 </section>`;
 }
 
@@ -1078,7 +1082,13 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .li-keyidea-label{display:block;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
   color:var(--teal);margin-bottom:4px;}
 .li-keyidea p{margin:0;font-size:17px;line-height:1.6;color:var(--navy);font-weight:600;}
-.li-figure{margin:0 0 24px;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:#fbfdfc;}
+.li-seeit{background:#fbfdfc;border:1px solid var(--line);border-radius:14px;padding:18px 20px;}
+.li-figure{margin:0 0 16px;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:#fff;}
+.li-seeit .li-figure{margin:0 0 16px;}
+.li-graphics{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;}
+.li-graphic{margin:0;text-align:center;border:1px solid var(--line);border-radius:12px;background:#fff;padding:12px;}
+.li-graphic img{display:block;width:100%;max-height:150px;object-fit:contain;}
+.li-graphic figcaption{margin-top:8px;font-weight:700;color:var(--navy);font-size:14.5px;}
 .li-visual-title{font-weight:700;color:var(--navy);margin:0 0 10px;font-size:14px;}
 .li-chips{display:flex;flex-wrap:wrap;gap:10px;}
 .li-chip{display:inline-flex;align-items:center;justify-content:center;min-width:42px;padding:8px 14px;
@@ -1690,6 +1700,7 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
 <style>
   /* Fill-in-the-blank guided notes */
   .gn-directions{margin:14px 0 6px;font-weight:700;color:var(--navy);font-size:15px;}
+  .gn-pointer{margin:10px 0 14px;padding:10px 14px;background:var(--teal-light);border-radius:10px;font-size:14px;color:var(--navy);}
   .gn-fill{margin:6px 0 4px;}
   .gn-bank{border:2px dashed var(--teal);border-radius:12px;background:#f0faf8;padding:12px 14px;margin-bottom:14px;}
   .gn-bank-label{display:block;font-weight:800;color:var(--teal);font-size:13px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:8px;}
@@ -2008,11 +2019,9 @@ ${autoSaveScript(`nt-notes:${esc(id)}`)}
     </div>
   </header>
   ${missionBanner(cfg)}
-  ${vocabSection(cfg.vocabulary)}
   ${notesSection(cfg, worked, gn.html)}
-  ${tryItSection(cfg.practice, usedStems)}
   ${reflectSection(cfg.reflect)}
-  ${teacher ? answerKeySection(cfg.practice, cfg.reflect, cfg, worked, usedStems, gn.keyRows) : ""}
+  ${teacher ? answerKeySection({}, cfg.reflect, cfg, null, new Set(), gn.keyRows) : ""}
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson ${esc(id)}${standard ? " · " + standard : ""}${teacher ? " · Teacher Copy" : ""}</footer>
 </main>
 </body>

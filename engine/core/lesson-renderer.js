@@ -1574,8 +1574,10 @@ function renderVocabPhase(el, state, ctx, config) {
 }
 
 function resolveVocabActivities(config) {
+  // The "builder" (Vocabulary Builder) is a term↔definition match — already the
+  // Vocab Explorer tab's "Match it". Drop it here so the two don't duplicate.
   if (config.vocabActivities && config.vocabActivities.length) {
-    const acts = config.vocabActivities;
+    const acts = config.vocabActivities.filter((a) => a !== "builder");
     return acts[0] === "intro" ? acts : ["intro", ...acts];
   }
   // The interactive Vocab Explorer tab now owns full vocab practice (Word Wall,
