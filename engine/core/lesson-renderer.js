@@ -1578,8 +1578,10 @@ function resolveVocabActivities(config) {
     const acts = config.vocabActivities;
     return acts[0] === "intro" ? acts : ["intro", ...acts];
   }
-  if (config.vocabMode === "matching") return ["intro", "drag-match", "cloze"];
-  return ["intro", "builder", "drag-match"];
+  // The interactive Vocab Explorer tab now owns full vocab practice (Word Wall,
+  // match, cloze, use-it), so the graded phase stays lean: a quick study + one
+  // match check, rather than a multi-activity gauntlet that re-covers the words.
+  return ["intro", "drag-match"];
 }
 
 // ── Phase 3: Explore ──
