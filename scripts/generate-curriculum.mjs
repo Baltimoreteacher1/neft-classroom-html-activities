@@ -30,16 +30,16 @@ const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
 // Friendly unit themes / titles. Pulled from each unit's lesson config "theme"
 // plus the standard cluster the lessons share.
 const UNIT_THEMES = {
-  1: { name: "Number System Launch", blurb: "Factors, multiples & decimal operations" },
-  2: { name: "Fraction Detective Agency", blurb: "Dividing fractions & mixed numbers" },
-  3: { name: "Culinary Academy", blurb: "Ratios & ratio reasoning" },
-  4: { name: "Arcade Builder", blurb: "Rates, unit rates & percents" },
-  5: { name: "Architecture Firm", blurb: "Area of polygons & composite figures" },
-  6: { name: "Music Studio", blurb: "Expressions, exponents & properties" },
-  7: { name: "Equation Detective Agency", blurb: "Equations & inequalities" },
-  8: { name: "Sports Analytics Lab", blurb: "Statistics & data displays" },
-  9: { name: "Treasure Map Navigator", blurb: "Integers & the coordinate plane" },
-  10: { name: "Time Capsule Engineers", blurb: "Volume & surface area" },
+  1: { name: "The Number System", blurb: "Factors, multiples & decimal operations" },
+  2: { name: "Fractions", blurb: "Dividing fractions & mixed numbers" },
+  3: { name: "Ratios", blurb: "Ratios & ratio reasoning" },
+  4: { name: "Rates & Percents", blurb: "Rates, unit rates & percents" },
+  5: { name: "Area", blurb: "Area of polygons & composite figures" },
+  6: { name: "Expressions & Exponents", blurb: "Expressions, exponents & properties" },
+  7: { name: "Equations & Inequalities", blurb: "Equations & inequalities" },
+  8: { name: "Statistics", blurb: "Statistics & data displays" },
+  9: { name: "Integers & the Coordinate Plane", blurb: "Integers & the coordinate plane" },
+  10: { name: "Volume & Surface Area", blurb: "Volume & surface area" },
 };
 
 function lessonConfigs() {

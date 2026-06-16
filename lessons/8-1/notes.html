@@ -491,6 +491,31 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
 </style>
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
+<style>
+  /* Fill-in-the-blank guided notes */
+  .gn-directions{margin:14px 0 6px;font-weight:700;color:var(--navy);font-size:15px;}
+  .gn-fill{margin:6px 0 4px;}
+  .gn-bank{border:2px dashed var(--teal);border-radius:12px;background:#f0faf8;padding:12px 14px;margin-bottom:14px;}
+  .gn-bank-label{display:block;font-weight:800;color:var(--teal);font-size:13px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:8px;}
+  .gn-bank-words{display:flex;flex-wrap:wrap;gap:8px;}
+  .gn-bank-word{background:#fff;border:1.5px solid var(--teal);color:var(--navy);border-radius:999px;padding:5px 14px;font-weight:700;font-size:14px;}
+  .gn-bank-hint{margin:8px 0 0;font-size:12px;color:#5a6b78;font-style:italic;}
+  .gn-lines{list-style:none;margin:0;padding:0;counter-reset:none;}
+  .gn-line{display:flex;align-items:flex-start;gap:12px;padding:11px 12px;border:1px solid #e3e8ec;border-radius:10px;margin-bottom:10px;background:#fff;break-inside:avoid;page-break-inside:avoid;}
+  .gn-num{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .gn-sentence{flex:1;font-size:16px;line-height:1.9;color:#1c2b36;}
+  .gn-blank{display:inline-block;min-width:120px;border-bottom:2px solid var(--navy);height:1.25em;margin:0 4px;vertical-align:bottom;}
+  .gn-subhead{margin:20px 0 8px;color:var(--navy);font-size:16px;font-weight:800;}
+  @media print{
+    .gn-bank{border:1.5px dashed #000;background:#fff;}
+    .gn-bank-label{color:#000;}
+    .gn-bank-word{border-color:#000;color:#000;}
+    .gn-line{border-color:#000;}
+    .gn-num{background:#000;}
+    .gn-blank{border-bottom-color:#000;}
+    .gn-subhead,.gn-directions{color:#000;}
+  }
+</style>
 <script>
   if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}
   (function() {
@@ -498,9 +523,6 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     document.documentElement.classList.add('level-' + savedLevel);
   })();
 </script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -671,7 +693,7 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   </div>
 </section>
   <section class="section notes">
-  <h2>Key Ideas &amp; Notes
+  <h2>Guided Notes
     <span class="level-tag level-1 l1-only">Level 1 Support</span>
     <span class="level-tag level-2 l2-only">Level 2 Standard</span>
     <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
@@ -683,32 +705,15 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
         <p class="notes-learning-text">I can tell the difference between a statistical question and a non-statistical question.</p>
       </div>
     </div>
-  <div class="notes-steps"><div class="notes-step notes-step-1">
-      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">1️⃣</span>
-        <h4 class="notes-step-title">Notice</h4></div>
-      <div class="notes-step-body-l1"><p class="notes-step-text">You've just been hired as the data analyst for a youth basketball league.</p></div>
-      <div class="notes-step-body-l2"><p class="notes-step-prompt">Record your observations:</p><div class="writeline"></div><div class="writeline"></div></div>
-      <div class="notes-step-body-l3"><p class="notes-step-prompt">State the math observation you see in the launch:</p><div class="writeline"></div><div class="writeline"></div></div>
-    </div><div class="notes-step notes-step-2">
-      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">2️⃣</span>
-        <h4 class="notes-step-title">Key idea</h4></div>
-      <div class="notes-step-body-l1"><p class="notes-step-text">I can tell the difference between a statistical question and a non-statistical question.</p></div>
-      <div class="notes-step-body-l2"><p class="notes-step-prompt">Record the key idea:</p><div class="writeline"></div><div class="writeline"></div></div>
-      <div class="notes-step-body-l3"><p class="notes-step-prompt">Summarize the key mathematical relationship in full sentences:</p><div class="writeline"></div><div class="writeline"></div></div>
-    </div><div class="notes-step notes-step-3">
-      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">3️⃣</span>
-        <h4 class="notes-step-title">Words I'll use</h4></div>
-      <div class="notes-step-body-l1"><div class="notes-word-chips"><span class="notes-word-chip">Statistical Question</span><span class="notes-word-chip">Data</span><span class="notes-word-chip">Variability</span><span class="notes-word-chip">Survey</span><span class="notes-word-chip">Data distribution</span></div></div>
-      <div class="notes-step-body-l2"><div class="notes-word-chips"><span class="notes-word-chip">Statistical Question</span><span class="notes-word-chip">Data</span><span class="notes-word-chip">Variability</span><span class="notes-word-chip">Survey</span><span class="notes-word-chip">Data distribution</span></div></div>
-      <div class="notes-step-body-l3"><div class="notes-word-chips"><span class="notes-word-chip">Statistical Question</span><span class="notes-word-chip">Data</span><span class="notes-word-chip">Variability</span><span class="notes-word-chip">Survey</span><span class="notes-word-chip">Data distribution</span></div>
-         <p class="notes-step-prompt" style="margin-top: 8px;">Write a mathematical explanation using at least two of these terms:</p>
-         <div class="writeline"></div><div class="writeline"></div></div>
-    </div></div>
-  <div class="think-block">
-    <h3>🤔 Think About It</h3>
-    <ul class="prompt-list"><li>Which questions could have many different answers?</li><li>Which questions have only one exact answer?</li><li>What makes a question good for collecting data?</li></ul>
+  <p class="gn-directions">✏️ Fill in each blank as we go. Use the Word Bank to help you.</p><div class="gn-fill">
+    <div class="gn-bank">
+      <span class="gn-bank-label">📚 Word Bank — fill each blank with the best word</span>
+      <div class="gn-bank-words"><span class="gn-bank-word">Statistical Question</span><span class="gn-bank-word">Data</span><span class="gn-bank-word">Variability</span><span class="gn-bank-word">Survey</span><span class="gn-bank-word">Data distribution</span></div>
+      <p class="gn-bank-hint l3-only">Level 3: try the blanks from memory first, then check the bank.</p>
+    </div>
+    <ol class="gn-lines"><li class="gn-line"><span class="gn-num">1</span><span class="gn-sentence">A question that expects a variety of answers and is answered by collecting data is a <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">2</span><span class="gn-sentence">Facts or numbers collected to answer a question are <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">3</span><span class="gn-sentence">How much the values in a data set differ from one another is the <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">4</span><span class="gn-sentence">A way to collect data by asking many people the same question is a <span class="gn-blank"></span>.</span></li><li class="gn-line"><span class="gn-num">5</span><span class="gn-sentence">The way data values are spread out across a range is the <span class="gn-blank"></span>.</span></li></ol>
   </div>
-  <div class="notes-gradual">
+  <h3 class="gn-subhead">🧮 Watch &amp; Try — Worked Examples</h3><div class="notes-gradual">
     <div class="l1-only">
     <p class="notes-gr-intro">Watch the teacher model, fill in We Do together, and check your choice on You Do.</p>
     <div class="notes-gr-step notes-gr-watch">
@@ -801,248 +806,17 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   </div>
   </div>
 </section>
-  <section class="section turn-and-talk">
-  <h2>Turn &amp; Talk — Discussion Points
-    <span class="level-tag level-1 l1-only">Level 1 Support</span>
-    <span class="level-tag level-2 l2-only">Level 2 Standard</span>
-    <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
-  </h2>
-  <p class="level-note">Talk with a partner about each prompt. If you need help getting started, use the Level 1 sentence stems. Ready for more? Try the Level 2 question.</p>
-  <div class="tt-card">
-  <span class="tt-phase">Launch</span>
-  <p class="tt-question">The coach asks, &quot;How tall is our point guard?&quot; and &quot;How tall is each player on the roster?&quot; Which one is a statistical question, and why?</p>
-  <div class="tt-support">
-    <span class="level-tag level-1">Level 1 support</span>
-    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> A statistical question expects answers that vary across many cases.</p>
-    <details class="tt-hint-toggle">
-      <summary>💡 Need a hint?</summary>
-      <p class="tt-hint-text">Try starting with the word &quot;statistical question&quot; or &quot;variability&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
-    </details>
-    <div class="tt-stems">
-      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
-      <p class="twr-frame"><span class="twr-en">The question &quot;___&quot; is statistical because ___.</span><span class="twr-es">La pregunta &quot;___&quot; es estadística porque ___.</span></p><p class="twr-frame"><span class="twr-en">The other question is not statistical because it has only ___ answer.</span><span class="twr-es">La otra pregunta no es estadística porque tiene solo ___ respuesta.</span></p>
-    </div>
-    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">statistical question</span><span class="tt-word">variability</span><span class="tt-word">data</span><span class="tt-word">survey</span><span class="tt-word">answer</span></div>
-    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students identify &quot;How tall is each player?&quot; as statistical because heights vary, while &quot;How tall is our point guard?&quot; has one fixed answer.</p>
-  </div>
-  <div class="tt-extend">
-    <span class="level-tag level-2">Level 2</span>
-    <p class="tt-extend-q">Take a non-statistical question and reword it so it becomes statistical. Explain exactly what you changed to create variability.</p>
-    <ul class="tt-extend-stems"><li>I changed it to &quot;___&quot; so the answers will ___.</li><li>Now it is statistical because the data will ___ from player to player.</li></ul>
-  </div>
-</div>
-<div class="tt-card">
-  <span class="tt-phase">Explore</span>
-  <p class="tt-question">While sorting the questions, what clue tells you instantly that a question will need DATA from many players to answer?</p>
-  <div class="tt-support">
-    <span class="level-tag level-1">Level 1 support</span>
-    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Questions that ask about &quot;each&quot; player usually anticipate variability.</p>
-    <details class="tt-hint-toggle">
-      <summary>💡 Need a hint?</summary>
-      <p class="tt-hint-text">Try starting with the word &quot;statistical question&quot; or &quot;variability&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
-    </details>
-    <div class="tt-stems">
-      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
-      <p class="twr-frame"><span class="twr-en">I know it needs data because it asks about ___.</span><span class="twr-es">Sé que necesita datos porque pregunta sobre ___.</span></p><p class="twr-frame"><span class="twr-en">The answers will be different because ___.</span><span class="twr-es">Las respuestas serán diferentes porque ___.</span></p>
-    </div>
-    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">statistical question</span><span class="tt-word">variability</span><span class="tt-word">data</span><span class="tt-word">survey</span><span class="tt-word">vary</span></div>
-    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> A strong answer notes words like &quot;each&quot; or &quot;per player&quot; signal variability, so you must collect data from many cases rather than look up one fact.</p>
-  </div>
-  <div class="tt-extend">
-    <span class="level-tag level-2">Level 2</span>
-    <p class="tt-extend-q">Is it possible for a question with a numerical answer to still be NOT statistical? Justify with an example from the basketball league.</p>
-    <ul class="tt-extend-stems"><li>Yes, a question like &quot;___&quot; has numbers but is not statistical because ___.</li><li>It is not statistical even with numbers since the answer ___.</li></ul>
-  </div>
-</div>
-<div class="tt-card">
-  <span class="tt-phase">Connect</span>
-  <p class="tt-question">The newspaper editor prefers &quot;How many goals did each player score?&quot; over &quot;How many goals did the team score total?&quot; Which gives more interesting data for a story?</p>
-  <div class="tt-support">
-    <span class="level-tag level-1">Level 1 support</span>
-    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> A statistical question reveals variability that a single total hides.</p>
-    <details class="tt-hint-toggle">
-      <summary>💡 Need a hint?</summary>
-      <p class="tt-hint-text">Try starting with the word &quot;statistical question&quot; or &quot;variability&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
-    </details>
-    <div class="tt-stems">
-      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
-      <p class="twr-frame"><span class="twr-en">The editor's question is better because it shows ___ among players.</span><span class="twr-es">La pregunta del editor es mejor porque muestra ___ entre los jugadores.</span></p><p class="twr-frame"><span class="twr-en">The total only gives ___ number, so it hides ___.</span><span class="twr-es">El total solo da ___ número, así que oculta ___.</span></p>
-    </div>
-    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">statistical question</span><span class="tt-word">variability</span><span class="tt-word">data</span><span class="tt-word">survey</span><span class="tt-word">total</span></div>
-    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students explain the per-player question is statistical and shows variability (who scored most/least), while the total is one fixed number that hides individual differences.</p>
-  </div>
-  <div class="tt-extend">
-    <span class="level-tag level-2">Level 2</span>
-    <p class="tt-extend-q">Critique the reporter's plan: when might a single total actually be the RIGHT thing to report instead of per-player data? Defend your view.</p>
-    <ul class="tt-extend-stems"><li>A total would be better when the reader wants to know ___.</li><li>But per-player data is better here because the story is about ___.</li></ul>
-  </div>
-</div>
-<div class="tt-card">
-  <span class="tt-phase">Reflect</span>
-  <p class="tt-question">Think of one statistical question you could ask about students in this room. What variability do you expect in the answers?</p>
-  <div class="tt-support">
-    <span class="level-tag level-1">Level 1 support</span>
-    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> A good statistical question is answered by collecting varied data, not one fact.</p>
-    <details class="tt-hint-toggle">
-      <summary>💡 Need a hint?</summary>
-      <p class="tt-hint-text">Try starting with the word &quot;statistical question&quot; or &quot;variability&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
-    </details>
-    <div class="tt-stems">
-      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
-      <p class="twr-frame"><span class="twr-en">My statistical question is &quot;___&quot;.</span><span class="twr-es">Mi pregunta estadística es &quot;___&quot;.</span></p><p class="twr-frame"><span class="twr-en">I expect variability because ___.</span><span class="twr-es">Espero variabilidad porque ___.</span></p>
-    </div>
-    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">statistical question</span><span class="tt-word">variability</span><span class="tt-word">data</span><span class="tt-word">survey</span><span class="tt-word">collect</span></div>
-    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students pose a question whose answers vary across classmates and name the variability they expect (e.g., different bedtimes, different shoe sizes).</p>
-  </div>
-  <div class="tt-extend">
-    <span class="level-tag level-2">Level 2</span>
-    <p class="tt-extend-q">Generalize: what is the one test you can always run on any question to decide if it is statistical? State your rule in one sentence.</p>
-    <ul class="tt-extend-stems"><li>My rule is: a question is statistical if ___.</li><li>I can test any question by asking whether the answers will ___.</li></ul>
-  </div>
-</div>
-</section>
-  <section class="section projects no-print">
-  <h2>Interactive Unit Projects</h2>
-  <p class="level-note">Apply your math skills in these interactive dashboard games and coding labs.</p>
-  <div class="projects-grid">
-    <div class="project-card">
-      <div class="project-header">
-        <span class="project-emoji" aria-hidden="true">🏆</span>
-        <h3 class="project-title">Unit 8 Project — Statistics in Action</h3>
-      </div>
-      <p class="project-desc">Capstone: pose a statistical question, collect data, and tell the story behind the numbers.</p>
-      <div class="project-links">
-        <a href="/math/statistics/projects/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
-      </div>
-    </div>
-<div class="project-card">
-      <div class="project-header">
-        <span class="project-emoji" aria-hidden="true">📊</span>
-        <h3 class="project-title">Statistics of My Life</h3>
-      </div>
-      <p class="project-desc">Exemplar project — turn real questions about your own life into a data investigation.</p>
-      <div class="project-links">
-        <a href="/math/statistics/statistics-of-my-life/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
-      </div>
-    </div>
-<div class="project-card">
-      <div class="project-header">
-        <span class="project-emoji" aria-hidden="true">🔎</span>
-        <h3 class="project-title">Statistical Questions Data Lab</h3>
-      </div>
-      <p class="project-desc">Flagship lab on recognizing statistical questions and the variability in data (6.SP.1).</p>
-      <div class="project-links">
-        <a href="/math/statistics/6-sp-a-1data-lab-6-sp-a-1-flagship/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
-      </div>
-    </div>
-<div class="project-card">
-      <div class="project-header">
-        <span class="project-emoji" aria-hidden="true">🎮</span>
-        <h3 class="project-title">Statistical Questions Game</h3>
-      </div>
-      <p class="project-desc">Sort and identify statistical vs. non-statistical questions in a fast-paced game.</p>
-      <div class="project-links">
-        <a href="/math/statistics/6-sp-a-1game/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
-      </div>
-    </div>
-  </div>
-</section>
-  <section class="section twr">
-  <h2>Write About the Math
-    <span class="twr-method l1-only">Level 1 Support</span>
-    <span class="twr-method l2-only">Level 2 Standard</span>
-    <span class="twr-method l3-only">Level 3 Enrichment</span>
-  </h2>
-  <p class="level-note l1-only l2-only-block">I can explain my reasoning using the words statistical question, data, variability, and survey.</p>
-  <div class="l1-only l2-only-block">
-    <div class="twr-block">
-    <h3>1. Kernel Sentence <span class="twr-tag">subject + verb</span></h3>
-    <p class="twr-model"><span class="twr-label">Model:</span> Statistical Question is a question where the answers will be different for different people.<span class="twr-es">Pregunta estadística es una pregunta cuyas respuestas serán distintas para distintas personas.</span></p>
-    <p class="twr-frame"><span class="twr-en">Write a kernel sentence about statistical question. Use a subject and a verb.</span><span class="twr-es">Escribe una oración base sobre pregunta estadística. Usa un sujeto y un verbo.</span></p>
-    <div class="writeline"></div><div class="writeline"></div>
-  </div>
-    <div class="twr-block">
-    <h3>2. Sentence Expansion <span class="twr-tag">because · but · so</span></h3>
-    <p class="twr-model"><span class="twr-label">Kernel:</span> Statistical Question matters in math<span class="twr-es">Pregunta estadística importa en matemáticas</span></p>
-    <p class="muted">Expand the kernel three ways. Add a reason, a contrast, and a result.</p>
-    <div class="twr-exp-row">
-      <span class="twr-conj">because<span class="twr-conj-es">porque</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-frame"><span class="twr-en">Statistical Question matters in math because ___.</span><span class="twr-es">Pregunta estadística importa en matemáticas porque ___.</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div><div class="twr-exp-row">
-      <span class="twr-conj">but<span class="twr-conj-es">pero</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-frame"><span class="twr-en">Statistical Question matters in math, but ___.</span><span class="twr-es">Pregunta estadística importa en matemáticas, pero ___.</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div><div class="twr-exp-row">
-      <span class="twr-conj">so<span class="twr-conj-es">entonces</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-frame"><span class="twr-en">Statistical Question matters in math, so ___.</span><span class="twr-es">Pregunta estadística importa en matemáticas, entonces ___.</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div>
-  </div>
-    <div class="twr-block">
-    <h3>3. Sentence Types <span class="twr-tag">4 ways to write a math idea</span></h3>
-    <div class="twr-type-row">
-      <span class="twr-type-name">Statement<span class="twr-conj-es">Afirmación</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-hint">Tell one true fact about statistical question.<span class="twr-es">Di un hecho verdadero sobre statistical question.</span></p>
-        <p class="twr-frame"><span class="twr-en">Statistical question ___.</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div><div class="twr-type-row">
-      <span class="twr-type-name">Question<span class="twr-conj-es">Pregunta</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-hint">Ask a question about statistical question.<span class="twr-es">Haz una pregunta sobre statistical question.</span></p>
-        <p class="twr-frame"><span class="twr-en">How does ___ ?</span><span class="twr-es">¿Cómo ___ ?</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div><div class="twr-type-row">
-      <span class="twr-type-name">Exclamation<span class="twr-conj-es">Exclamación</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-hint">Show excitement about statistical question.<span class="twr-es">Muestra entusiasmo sobre statistical question.</span></p>
-        <p class="twr-frame"><span class="twr-en">Wow, ___ !</span><span class="twr-es">¡Guau, ___ !</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div><div class="twr-type-row">
-      <span class="twr-type-name">Command<span class="twr-conj-es">Mandato</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-hint">Tell a partner what to do with statistical question.<span class="twr-es">Dile a un compañero qué hacer con statistical question.</span></p>
-        <p class="twr-frame"><span class="twr-en">First, ___ .</span><span class="twr-es">Primero, ___ .</span></p>
-        <div class="writeline"></div>
-      </div>
-    </div>
-  </div>
-    <div class="twr-block">
-    <h3>4. Explain Your Reasoning <span class="twr-tag">use a sentence starter</span></h3>
-    <div class="twr-stems"><p class="twr-frame"><span class="twr-en">The question &quot;___&quot; is statistical because ___.</span><span class="twr-es">La pregunta &quot;___&quot; es estadística porque ___.</span></p><p class="twr-frame"><span class="twr-en">The other question is not statistical because it has only ___ answer.</span><span class="twr-es">La otra pregunta no es estadística porque tiene solo ___ respuesta.</span></p><p class="twr-frame"><span class="twr-en">I know it needs data because it asks about ___.</span><span class="twr-es">Sé que necesita datos porque pregunta sobre ___.</span></p></div>
-    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
-  </div>
-  </div>
-  <div class="l3-only">
-    <div class="twr-block" style="border-left-color: var(--amber);">
-      <h3>Advanced Mathematical Explanation</h3>
-      <p class="sentence-frame"><strong>Writing Prompt:</strong> Write an explanatory paragraph summarizing today's key mathematical concept. Your explanation must include at least one complex sentence using a conjunction (because, since, although, or unless) to justify your mathematical reasoning. Draw models or sketch graphs to support your argument.</p>
-      <div class="scratchpad"><span class="scratchpad-label">Doodle / Diagram / Sketch Area</span></div>
-      <div class="work-space"><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
-    </div>
-  </div>
-</section>
   <section class="section tryit-section">
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
   <div class="tryit">
-  <p class="tryit-num">1. Why do statistical questions expect different answers?</p>
-  <ol class="try-choices" type="A"><li>Because the data values vary from one case to another</li><li>Because they are always about numbers</li><li>Because they cannot be answered</li><li>Because they only have one answer</li></ol>
+  <p class="tryit-num">1. The team analyst writes four questions for the scouting report. Which one is a statistical question?</p>
+  <ol class="try-choices" type="A"><li>How many rebounds does each player grab per game?</li><li>How many points is a single free throw worth?</li><li>What is the height of the basketball rim?</li><li>How many timeouts does each team get per half?</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
 <div class="tryit">
-  <p class="tryit-num">2. Which rewrite makes 'How old am I?' a statistical question?</p>
-  <ol class="try-choices" type="A"><li>How old are the students in this school?</li><li>How old is my best friend?</li><li>When is my birthday?</li><li>Am I older than 12?</li></ol>
+  <p class="tryit-num">2. Why does the question &quot;How many minutes did each athlete warm up before the game?&quot; count as a statistical question?</p>
+  <ol class="try-choices" type="A"><li>Because the warm-up times will vary from one athlete to another</li><li>Because the answer is measured in minutes</li><li>Because every athlete warmed up for exactly the same time</li><li>Because it is about a sports team</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
   <div class="enrich-block">
@@ -1066,13 +840,9 @@ D) How many days are in a week?</p>
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. How many innings are in a baseball game? <span class="ak-why">— &quot;How many innings are in a baseball game?&quot; has one fixed answer (9) — no variability. The other questions all produce different answers for different people.</span></li><li><strong>You Try (notes):</strong> A. Because different students got different amounts of sleep <span class="ak-why">— A statistical question anticipates variability — different students slept different amounts, so the data will vary.</span></li><li><strong>Try It 1:</strong> A. Because the data values vary from one case to another <span class="ak-why">— Statistical questions anticipate variability in the data.</span></li><li><strong>Try It 2:</strong> A. How old are the students in this school? <span class="ak-why">— Asking about many students produces data that varies.</span></li><li><strong>Exit Ticket:</strong> A. B) How many hours does each student exercise per week? <span class="ak-why">— &quot;How many hours does each student exercise per week?&quot; is statistical because different students exercise different amounts — the data has variability.</span></li></ol>
-  <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Statistical Question is a question where the answers will be different for different people.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
+  <ol class="ak-list"><li><strong>Notes 1:</strong> Statistical Question</li><li><strong>Notes 2:</strong> Data</li><li><strong>Notes 3:</strong> Variability</li><li><strong>Notes 4:</strong> Survey</li><li><strong>Notes 5:</strong> Data distribution</li><li><strong>We Try (notes):</strong> A. How many innings are in a baseball game? <span class="ak-why">— &quot;How many innings are in a baseball game?&quot; has one fixed answer (9) — no variability. The other questions all produce different answers for different people.</span></li><li><strong>You Try (notes):</strong> A. Because different students got different amounts of sleep <span class="ak-why">— A statistical question anticipates variability — different students slept different amounts, so the data will vary.</span></li><li><strong>Try It 1:</strong> A. How many rebounds does each player grab per game? <span class="ak-why">— &quot;How many rebounds does each player grab per game?&quot; anticipates variability — different players grab different numbers of rebounds, so you must collect data. The other three each have one fixed answer.</span></li><li><strong>Try It 2:</strong> A. Because the warm-up times will vary from one athlete to another <span class="ak-why">— A statistical question anticipates variability. Different athletes warm up for different amounts of time, so the data you collect will vary.</span></li><li><strong>Exit Ticket:</strong> A. B) How many hours does each student exercise per week? <span class="ak-why">— &quot;How many hours does each student exercise per week?&quot; is statistical because different students exercise different amounts — the data has variability.</span></li></ol>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 8-1 · Standard 6.SP.1</footer>
 </main>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>

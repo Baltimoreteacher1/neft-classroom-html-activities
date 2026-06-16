@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Properties of Operations — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+</style>
+</head>
+<body>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.EE.3</span>
+      <span class="ws-ver">Version A</span>
+    </div>
+    <h1 class="ws-title">Properties of Operations</h1>
+    <p class="ws-sub">Practice — Version A</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h3 class="ws-bank-h">📕 Word Bank</h3>
+    <div class="ws-bankwords"><span class="ws-bankword">Commutative Property</span><span class="ws-bankword">Associative Property</span><span class="ws-bankword">Identity Property</span><span class="ws-bankword">Property</span><span class="ws-bankword">Coefficient</span><span class="ws-bankword">Like terms</span></div>
+  </section><section class="ws-example">
+    <h3 class="ws-example-h">✏️ Worked Example</h3>
+    <ol class="ws-example-steps"><li><b>Statement:</b> 15 − 8 = 8 − 15</li><li><b>Student's claim:</b> This shows the Commutative Property of Subtraction.</li><li><b>Reasoning:</b> I switched the order, so it must be commutative.</li></ol>
+  </section>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Which property is shown? 5 + 13 = 13 + 5</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Commutative Property</li><li class="ws-opt"><span class="ws-bub">B</span>Associative Property</li><li class="ws-opt"><span class="ws-bub">C</span>Identity Property</li><li class="ws-opt"><span class="ws-bub">D</span>Distributive Property</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Which property is shown? (6 × 3) × 2 = 6 × (3 × 2)</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Associative Property</li><li class="ws-opt"><span class="ws-bub">B</span>Commutative Property</li><li class="ws-opt"><span class="ws-bub">C</span>Identity Property</li><li class="ws-opt"><span class="ws-bub">D</span>Distributive Property</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which property is shown? 47 + 0 = 47</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Identity Property</li><li class="ws-opt"><span class="ws-bub">B</span>Commutative Property</li><li class="ws-opt"><span class="ws-bub">C</span>Associative Property</li><li class="ws-opt"><span class="ws-bub">D</span>Distributive Property</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Which property lets you rearrange 8 × 5 to 5 × 8?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Commutative Property</li><li class="ws-opt"><span class="ws-bub">B</span>Associative Property</li><li class="ws-opt"><span class="ws-bub">C</span>Identity Property</li><li class="ws-opt"><span class="ws-bub">D</span>Distributive Property</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Sort each equation by the property it shows.</p>
+  <p class="ws-prompt">Categories: <b>commutative · identity · associative</b></p>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span>9 + 4 = 4 + 9</li><li><span class="ws-blank ws-blank-sm"></span>7 × 1 = 7</li><li><span class="ws-blank ws-blank-sm"></span>(5 + 1) + 3 = 5 + (1 + 3)</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Properties of Operations.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Changing the order or the grouping of numbers being added or multiplied does not change the answer.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.EE.3</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">Properties of Operations</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Match each equation with the property it demonstrates.</p>
+  <p class="ws-prompt">Categories: <b>commutative · identity · associative</b></p>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span>a + b = b + a</li><li><span class="ws-blank ws-blank-sm"></span>x × 1 = x</li><li><span class="ws-blank ws-blank-sm"></span>(m + n) + p = m + (n + p)</li><li><span class="ws-blank ws-blank-sm"></span>c × d = d × c</li><li><span class="ws-blank ws-blank-sm"></span>y + 0 = y</li><li><span class="ws-blank ws-blank-sm"></span>(a × b) × c = a × (b × c)</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Write the letter of the matching answer next to each.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>7 + 9 = 9 + 7</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>(2 × 5) × 3 = 2 × (5 × 3)</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>15 × 1 = 15</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>0 + 23 = 23</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>6 × 4 = 4 × 6</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>(8 + 3) + 7 = 8 + (3 + 7)</li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span>Commutative (Mult)</li><li><span class="ws-bub ws-bub-sm">B</span>Identity (Add)</li><li><span class="ws-bub ws-bub-sm">C</span>Associative (Add)</li><li><span class="ws-bub ws-bub-sm">D</span>Commutative (Add)</li><li><span class="ws-bub ws-bub-sm">E</span>Associative (Mult)</li><li><span class="ws-bub ws-bub-sm">F</span>Identity (Mult)</li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>25 × 7 × 4</td><td></td><td></td></tr><tr><td>19 + 36 + 1</td><td></td><td></td></tr><tr><td>50 × 9 × 2</td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Associative Property of Addition: same value (13), different grouping</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Properties of Operations.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Changing the order or the grouping of numbers being added or multiplied does not change the answer.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.EE.3</span>
+      <span class="ws-ver">Version A — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Properties of Operations</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Which property is shown? 5 + 13 = 13 + 5</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Commutative Property</li><li class="ws-opt"><span class="ws-bub">B</span>Associative Property</li><li class="ws-opt"><span class="ws-bub">C</span>Identity Property</li><li class="ws-opt"><span class="ws-bub">D</span>Distributive Property</li></ol><p class="ws-keynote">The order of the addends changed, so this is the Commutative Property of Addition.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Which property is shown? (6 × 3) × 2 = 6 × (3 × 2)</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Associative Property</li><li class="ws-opt"><span class="ws-bub">B</span>Commutative Property</li><li class="ws-opt"><span class="ws-bub">C</span>Identity Property</li><li class="ws-opt"><span class="ws-bub">D</span>Distributive Property</li></ol><p class="ws-keynote">The grouping (parentheses) changed but the order stayed the same, so this is the Associative Property of Multiplication.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which property is shown? 47 + 0 = 47</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Identity Property</li><li class="ws-opt"><span class="ws-bub">B</span>Commutative Property</li><li class="ws-opt"><span class="ws-bub">C</span>Associative Property</li><li class="ws-opt"><span class="ws-bub">D</span>Distributive Property</li></ol><p class="ws-keynote">Adding 0 does not change the value, so this is the Identity Property of Addition.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Which property lets you rearrange 8 × 5 to 5 × 8?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Commutative Property</li><li class="ws-opt"><span class="ws-bub">B</span>Associative Property</li><li class="ws-opt"><span class="ws-bub">C</span>Identity Property</li><li class="ws-opt"><span class="ws-bub">D</span>Distributive Property</li></ol><p class="ws-keynote">Changing the order of factors is the Commutative Property of Multiplication.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Sort each equation by the property it shows.</p>
+  <p class="ws-prompt">Categories: <b>commutative · identity · associative</b></p>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm">commutative</span>9 + 4 = 4 + 9</li><li><span class="ws-blank ws-blank-sm">identity</span>7 × 1 = 7</li><li><span class="ws-blank ws-blank-sm">associative</span>(5 + 1) + 3 = 5 + (1 + 3)</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Properties of Operations.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Changing the order or the grouping of numbers being added or multiplied does not change the answer.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.EE.3</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Properties of Operations</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Match each equation with the property it demonstrates.</p>
+  <p class="ws-prompt">Categories: <b>commutative · identity · associative</b></p>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm">commutative</span>a + b = b + a</li><li><span class="ws-blank ws-blank-sm">identity</span>x × 1 = x</li><li><span class="ws-blank ws-blank-sm">associative</span>(m + n) + p = m + (n + p)</li><li><span class="ws-blank ws-blank-sm">commutative</span>c × d = d × c</li><li><span class="ws-blank ws-blank-sm">identity</span>y + 0 = y</li><li><span class="ws-blank ws-blank-sm">associative</span>(a × b) × c = a × (b × c)</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Write the letter of the matching answer next to each.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span>7 + 9 = 9 + 7</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">E</span>(2 × 5) × 3 = 2 × (5 × 3)</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">F</span>15 × 1 = 15</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span>0 + 23 = 23</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span>6 × 4 = 4 × 6</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span>(8 + 3) + 7 = 8 + (3 + 7)</li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span>Commutative (Mult)</li><li><span class="ws-bub ws-bub-sm">B</span>Identity (Add)</li><li><span class="ws-bub ws-bub-sm">C</span>Associative (Add)</li><li><span class="ws-bub ws-bub-sm">D</span>Commutative (Add)</li><li><span class="ws-bub ws-bub-sm">E</span>Associative (Mult)</li><li><span class="ws-bub ws-bub-sm">F</span>Identity (Mult)</li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>25 × 7 × 4</td><td>25 × 4 × 7 = 100 × 7</td><td></td></tr><tr><td>19 + 36 + 1</td><td>19 + 1 + 36 = 20 + 36</td><td></td></tr><tr><td>50 × 9 × 2</td><td>50 × 2 × 9 = 100 × 9</td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Associative Property of Addition: same value (13), different grouping</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Properties of Operations.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Changing the order or the grouping of numbers being added or multiplied does not change the answer.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  </section>
+</body>
+</html>

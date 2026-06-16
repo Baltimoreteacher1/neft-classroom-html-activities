@@ -1118,526 +1118,537 @@
         color: #ffffff;
       }
     </style>
+    <link
+      rel="stylesheet"
+      href="/assets/curriculum-polish.css?v=20260615-polish4"
+    />
   </head>
   <body class="light-theme">
     <a class="skip-link" href="#hub-content">Skip to lessons</a>
     <div class="wrap">
-      <header class="hub">
-        <p class="eyebrow">Neft Teacher · Grade 6 Math</p>
-        <h1>Curriculum Hub</h1>
-        <p class="lede">
-          Every resource organized by Unit → Lesson. Expand a unit to see its
-          graphic novels, 3D game, pre/post-tests and study guide, then open
-          each lesson to find its interactive activity, guided notes, downloads,
-          and homework — all in one place.
+      <div class="hub-side" id="hub-side">
+        <header class="hub">
+          <p class="eyebrow">Neft Teacher · Grade 6 Math</p>
+          <h1>Curriculum Hub</h1>
+          <p class="lede">
+            Every resource organized by Unit → Lesson. Expand a unit to see its
+            graphic novels, 3D game, pre/post-tests and study guide, then open
+            each lesson to find its interactive activity, guided notes,
+            downloads, and homework — all in one place.
+          </p>
+        </header>
+
+        <div class="controls" id="hub-content" role="search">
+          <div class="search">
+            <label for="curr-search">Search</label>
+            <input
+              id="curr-search"
+              type="search"
+              placeholder="Filter by lesson, standard, or topic…"
+              aria-label="Filter lessons by title, standard, or topic"
+              autocomplete="off"
+            />
+          </div>
+        </div>
+        <p
+          class="result-count"
+          id="result-count"
+          role="status"
+          aria-live="polite"
+        ></p>
+        <p class="no-results" id="no-results" role="status">
+          No lessons match your search.
         </p>
-      </header>
 
-      <!-- Featured tools: Student Digital Mailbox & Gemini AI Learning Hub -->
-      <style>
-        .features-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 14px;
-          margin: 0 0 16px;
-        }
-        .mailbox-feature {
-          position: relative;
-          display: flex;
-          gap: 14px;
-          align-items: flex-start;
-          background:
-            radial-gradient(
-              900px 300px at 100% 0%,
-              rgba(44, 125, 107, 0.18),
-              transparent 60%
-            ),
-            linear-gradient(135deg, #15487f 0%, #205fa6 100%);
-          color: #fff;
-          border-radius: 14px;
-          padding: 18px;
-          margin: 0;
-          box-shadow: 0 10px 24px rgba(21, 72, 127, 0.16);
-          overflow: hidden;
-        }
-        .mailbox-feature .mf-icon {
-          flex: 0 0 auto;
-          width: 52px;
-          height: 52px;
-          border-radius: 14px;
-          background: rgba(255, 255, 255, 0.16);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 1.8rem;
-        }
-        .mailbox-feature .mf-body {
-          flex: 1;
-          min-width: 0;
-        }
-        .mailbox-feature .mf-tag {
-          display: inline-block;
-          font-size: 11px;
-          font-weight: 800;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          color: #d7e6ff;
-          margin: 0 0 3px;
-        }
-        .mailbox-feature h2 {
-          font-family: "Nunito", system-ui, sans-serif;
-          font-size: clamp(1.18rem, 2vw, 1.45rem);
-          font-weight: 800;
-          margin: 0 0 2px;
-          color: #fff;
-        }
-        .mailbox-feature .mf-sub {
-          font-weight: 700;
-          color: #eaf2ff;
-          margin: 0 0 4px;
-          font-size: 0.92rem;
-        }
-        .mailbox-feature .mf-text {
-          color: rgba(255, 255, 255, 0.9);
-          margin: 0 0 10px;
-          font-size: 0.88rem;
-          line-height: 1.45;
-          max-width: 62ch;
-        }
-        .mailbox-feature .mf-actions {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
-        }
-        .mailbox-feature .mf-btn {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          min-height: 38px;
-          padding: 0 14px;
-          border-radius: 10px;
-          font-family: "Nunito", system-ui, sans-serif;
-          font-weight: 800;
-          font-size: 0.9rem;
-          text-decoration: none;
-          border: 2px solid transparent;
-          transition:
-            background 0.15s,
-            color 0.15s;
-        }
-        .mailbox-feature .mf-btn.solid {
-          background: #fff;
-          color: #15487f;
-        }
-        .mailbox-feature .mf-btn.solid:hover {
-          background: #eaf2ff;
-        }
-        .mailbox-feature .mf-btn.outline {
-          background: transparent;
-          color: #fff;
-          border-color: rgba(255, 255, 255, 0.6);
-        }
-        .mailbox-feature .mf-btn.outline:hover {
-          background: rgba(255, 255, 255, 0.14);
-        }
-        .mailbox-feature .mf-btn:focus-visible {
-          outline: 3px solid #fff;
-          outline-offset: 2px;
-        }
-
-        /* AI Learning Hub Feature Styles */
-        .ai-hub-feature {
-          position: relative;
-          display: flex;
-          gap: 14px;
-          align-items: flex-start;
-          background:
-            radial-gradient(
-              900px 300px at 100% 0%,
-              rgba(161, 66, 244, 0.22),
-              rgba(26, 115, 232, 0.15),
-              transparent 60%
-            ),
-            linear-gradient(135deg, #0b0f19 0%, #171235 100%);
-          color: #fff;
-          border-radius: 14px;
-          padding: 18px;
-          margin: 0;
-          box-shadow: 0 10px 24px rgba(23, 18, 53, 0.2);
-          overflow: hidden;
-          border: 1px solid rgba(161, 66, 244, 0.2);
-          transition:
-            transform 0.2s ease,
-            box-shadow 0.2s ease,
-            border-color 0.2s ease;
-        }
-        .ai-hub-feature:hover {
-          transform: translateY(-1px);
-          border-color: rgba(161, 66, 244, 0.4);
-          box-shadow:
-            0 12px 26px rgba(23, 18, 53, 0.28),
-            0 0 15px rgba(161, 66, 244, 0.15);
-        }
-        .ai-hub-feature .ahf-icon {
-          flex: 0 0 auto;
-          width: 52px;
-          height: 52px;
-          border-radius: 14px;
-          background: rgba(255, 255, 255, 0.08);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .ai-hub-feature .ahf-body {
-          flex: 1;
-          min-width: 0;
-        }
-        .ai-hub-feature .ahf-tag {
-          display: inline-block;
-          font-size: 11px;
-          font-weight: 800;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          background: linear-gradient(90deg, #8ab4f8, #c58af9);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          margin: 0 0 3px;
-        }
-        .ai-hub-feature h2 {
-          font-family: "Nunito", system-ui, sans-serif;
-          font-size: clamp(1.18rem, 2vw, 1.45rem);
-          font-weight: 800;
-          margin: 0 0 2px;
-          color: #fff;
-        }
-        .ai-hub-feature .ahf-sub {
-          font-weight: 700;
-          color: #e2d9f3;
-          margin: 0 0 4px;
-          font-size: 0.92rem;
-        }
-        .ai-hub-feature .ahf-text {
-          color: rgba(255, 255, 255, 0.85);
-          margin: 0 0 10px;
-          font-size: 0.88rem;
-          line-height: 1.45;
-          max-width: 62ch;
-        }
-        .ai-hub-feature .ahf-actions {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
-        }
-        .ai-hub-feature .ahf-btn {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          min-height: 38px;
-          padding: 0 14px;
-          border-radius: 10px;
-          font-family: "Nunito", system-ui, sans-serif;
-          font-weight: 800;
-          font-size: 0.9rem;
-          text-decoration: none;
-          border: 2px solid transparent;
-          transition:
-            background 0.15s,
-            color 0.15s,
-            border-color 0.15s,
-            box-shadow 0.15s;
-        }
-        .ai-hub-feature .ahf-btn.solid {
-          background: linear-gradient(90deg, #8ab4f8, #c58af9);
-          color: #0c081e;
-        }
-        .ai-hub-feature .ahf-btn.solid:hover {
-          opacity: 0.9;
-          box-shadow: 0 0 12px rgba(197, 138, 249, 0.4);
-        }
-        .ai-hub-feature .ahf-btn.outline {
-          background: transparent;
-          color: #fff;
-          border-color: rgba(255, 255, 255, 0.3);
-        }
-        .ai-hub-feature .ahf-btn.outline:hover {
-          background: rgba(255, 255, 255, 0.08);
-          border-color: rgba(255, 255, 255, 0.5);
-        }
-        .ai-hub-feature .ahf-btn:focus-visible {
-          outline: 3px solid #c58af9;
-          outline-offset: 2px;
-        }
-
-        @media (max-width: 820px) {
+        <!-- Featured tools: Student Digital Mailbox & Gemini AI Learning Hub -->
+        <style>
           .features-grid {
-            grid-template-columns: 1fr;
-            gap: 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin: 0 0 16px;
           }
-        }
-        @media (max-width: 600px) {
-          .mailbox-feature,
-          .ai-hub-feature {
-            flex-direction: column;
+          .mailbox-feature {
+            position: relative;
+            display: flex;
+            gap: 14px;
             align-items: flex-start;
-            text-align: left;
-            padding: 16px;
+            background:
+              radial-gradient(
+                900px 300px at 100% 0%,
+                rgba(44, 125, 107, 0.18),
+                transparent 60%
+              ),
+              linear-gradient(135deg, #15487f 0%, #205fa6 100%);
+            color: #fff;
+            border-radius: 14px;
+            padding: 18px;
+            margin: 0;
+            box-shadow: 0 10px 24px rgba(21, 72, 127, 0.16);
+            overflow: hidden;
           }
-          .mailbox-feature .mf-icon,
+          .mailbox-feature .mf-icon {
+            flex: 0 0 auto;
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.16);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+          }
+          .mailbox-feature .mf-body {
+            flex: 1;
+            min-width: 0;
+          }
+          .mailbox-feature .mf-tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #d7e6ff;
+            margin: 0 0 3px;
+          }
+          .mailbox-feature h2 {
+            font-family: "Nunito", system-ui, sans-serif;
+            font-size: clamp(1.18rem, 2vw, 1.45rem);
+            font-weight: 800;
+            margin: 0 0 2px;
+            color: #fff;
+          }
+          .mailbox-feature .mf-sub {
+            font-weight: 700;
+            color: #eaf2ff;
+            margin: 0 0 4px;
+            font-size: 0.92rem;
+          }
+          .mailbox-feature .mf-text {
+            color: rgba(255, 255, 255, 0.9);
+            margin: 0 0 10px;
+            font-size: 0.88rem;
+            line-height: 1.45;
+            max-width: 62ch;
+          }
+          .mailbox-feature .mf-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+          }
+          .mailbox-feature .mf-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 38px;
+            padding: 0 14px;
+            border-radius: 10px;
+            font-family: "Nunito", system-ui, sans-serif;
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-decoration: none;
+            border: 2px solid transparent;
+            transition:
+              background 0.15s,
+              color 0.15s;
+          }
+          .mailbox-feature .mf-btn.solid {
+            background: #fff;
+            color: #15487f;
+          }
+          .mailbox-feature .mf-btn.solid:hover {
+            background: #eaf2ff;
+          }
+          .mailbox-feature .mf-btn.outline {
+            background: transparent;
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.6);
+          }
+          .mailbox-feature .mf-btn.outline:hover {
+            background: rgba(255, 255, 255, 0.14);
+          }
+          .mailbox-feature .mf-btn:focus-visible {
+            outline: 3px solid #fff;
+            outline-offset: 2px;
+          }
+
+          /* AI Learning Hub Feature Styles */
+          .ai-hub-feature {
+            position: relative;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            background:
+              radial-gradient(
+                900px 300px at 100% 0%,
+                rgba(161, 66, 244, 0.22),
+                rgba(26, 115, 232, 0.15),
+                transparent 60%
+              ),
+              linear-gradient(135deg, #0b0f19 0%, #171235 100%);
+            color: #fff;
+            border-radius: 14px;
+            padding: 18px;
+            margin: 0;
+            box-shadow: 0 10px 24px rgba(23, 18, 53, 0.2);
+            overflow: hidden;
+            border: 1px solid rgba(161, 66, 244, 0.2);
+            transition:
+              transform 0.2s ease,
+              box-shadow 0.2s ease,
+              border-color 0.2s ease;
+          }
+          .ai-hub-feature:hover {
+            transform: translateY(-1px);
+            border-color: rgba(161, 66, 244, 0.4);
+            box-shadow:
+              0 12px 26px rgba(23, 18, 53, 0.28),
+              0 0 15px rgba(161, 66, 244, 0.15);
+          }
           .ai-hub-feature .ahf-icon {
-            width: 48px;
-            height: 48px;
-            font-size: 1.7rem;
+            flex: 0 0 auto;
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
           }
-        }
-      </style>
+          .ai-hub-feature .ahf-body {
+            flex: 1;
+            min-width: 0;
+          }
+          .ai-hub-feature .ahf-tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #8ab4f8, #c58af9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0 0 3px;
+          }
+          .ai-hub-feature h2 {
+            font-family: "Nunito", system-ui, sans-serif;
+            font-size: clamp(1.18rem, 2vw, 1.45rem);
+            font-weight: 800;
+            margin: 0 0 2px;
+            color: #fff;
+          }
+          .ai-hub-feature .ahf-sub {
+            font-weight: 700;
+            color: #e2d9f3;
+            margin: 0 0 4px;
+            font-size: 0.92rem;
+          }
+          .ai-hub-feature .ahf-text {
+            color: rgba(255, 255, 255, 0.85);
+            margin: 0 0 10px;
+            font-size: 0.88rem;
+            line-height: 1.45;
+            max-width: 62ch;
+          }
+          .ai-hub-feature .ahf-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+          }
+          .ai-hub-feature .ahf-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 38px;
+            padding: 0 14px;
+            border-radius: 10px;
+            font-family: "Nunito", system-ui, sans-serif;
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-decoration: none;
+            border: 2px solid transparent;
+            transition:
+              background 0.15s,
+              color 0.15s,
+              border-color 0.15s,
+              box-shadow 0.15s;
+          }
+          .ai-hub-feature .ahf-btn.solid {
+            background: linear-gradient(90deg, #8ab4f8, #c58af9);
+            color: #0c081e;
+          }
+          .ai-hub-feature .ahf-btn.solid:hover {
+            opacity: 0.9;
+            box-shadow: 0 0 12px rgba(197, 138, 249, 0.4);
+          }
+          .ai-hub-feature .ahf-btn.outline {
+            background: transparent;
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.3);
+          }
+          .ai-hub-feature .ahf-btn.outline:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.5);
+          }
+          .ai-hub-feature .ahf-btn:focus-visible {
+            outline: 3px solid #c58af9;
+            outline-offset: 2px;
+          }
 
-      <div class="features-grid">
-        <section
-          class="mailbox-feature"
-          aria-labelledby="mailbox-feature-title"
-        >
-          <span class="mf-icon" aria-hidden="true">✉️</span>
-          <div class="mf-body">
-            <span class="mf-tag">Featured Tool</span>
-            <h2 id="mailbox-feature-title">Student Digital Mailbox</h2>
-            <p class="mf-sub">
-              A safe place to share ideas, questions, suggestions, and class
-              feedback.
-            </p>
-            <p class="mf-text">
-              Give students a simple way to tell Mr. Neft what is going on in
-              class, what is helping, what is confusing, and what ideas they
-              have.
-            </p>
-            <div class="mf-actions">
-              <a
-                class="mf-btn solid"
-                href="/curriculum/student-digital-mailbox/"
-                >Open Student Mailbox</a
-              >
-              <a
-                class="mf-btn outline"
-                href="/curriculum/student-digital-mailbox/teacher/"
-                >Teacher Setup</a
-              >
-            </div>
-          </div>
-        </section>
+          @media (max-width: 820px) {
+            .features-grid {
+              grid-template-columns: 1fr;
+              gap: 16px;
+            }
+          }
+          @media (max-width: 600px) {
+            .mailbox-feature,
+            .ai-hub-feature {
+              flex-direction: column;
+              align-items: flex-start;
+              text-align: left;
+              padding: 16px;
+            }
+            .mailbox-feature .mf-icon,
+            .ai-hub-feature .ahf-icon {
+              width: 48px;
+              height: 48px;
+              font-size: 1.7rem;
+            }
+          }
+        </style>
 
-        <section class="ai-hub-feature" aria-labelledby="ai-hub-feature-title">
-          <div class="ahf-icon" aria-hidden="true">
-            <svg
-              width="36"
-              height="36"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12,2 C12,7.5 16.5,12 22,12 C16.5,12 12,16.5 12,22 C12,16.5 7.5,12 2,12 C7.5,12 12,7.5 12,2 Z"
-                fill="url(#gemini-star-grad)"
-              />
-              <defs>
-                <linearGradient
-                  id="gemini-star-grad"
-                  x1="2"
-                  y1="2"
-                  x2="22"
-                  y2="22"
-                  gradientUnits="userSpaceOnUse"
+        <div class="features-grid">
+          <section
+            class="mailbox-feature"
+            aria-labelledby="mailbox-feature-title"
+          >
+            <span class="mf-icon" aria-hidden="true">✉️</span>
+            <div class="mf-body">
+              <span class="mf-tag">Featured Tool</span>
+              <h2 id="mailbox-feature-title">Student Digital Mailbox</h2>
+              <p class="mf-sub">
+                A safe place to share ideas, questions, suggestions, and class
+                feedback.
+              </p>
+              <p class="mf-text">
+                Give students a simple way to tell Mr. Neft what is going on in
+                class, what is helping, what is confusing, and what ideas they
+                have.
+              </p>
+              <div class="mf-actions">
+                <a
+                  class="mf-btn solid"
+                  href="/curriculum/student-digital-mailbox/"
+                  >Open Student Mailbox</a
                 >
-                  <stop offset="0%" stop-color="#4285F4" />
-                  <stop offset="35%" stop-color="#9b72cb" />
-                  <stop offset="70%" stop-color="#d96a8f" />
-                  <stop offset="100%" stop-color="#ea4335" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-          <div class="ahf-body">
-            <span class="ahf-tag">Gemini AI Hub</span>
-            <h2 id="ai-hub-feature-title">AI Learning Hub</h2>
-            <p class="ahf-sub">
-              Responsible usage guides &amp; interactive practice activities.
-            </p>
-            <p class="ahf-text">
-              Learn how to use Gemini as your personal step-by-step math tutor.
-              Try unit-specific AI challenges designed for students and parents.
-            </p>
-            <div class="ahf-actions">
-              <a class="ahf-btn solid" href="/curriculum/ai-hub/"
-                >Open AI Hub</a
-              >
-              <a class="ahf-btn outline" href="/curriculum/ai-hub/#parents"
-                >Parent Guide</a
-              >
+                <a
+                  class="mf-btn outline"
+                  href="/curriculum/student-digital-mailbox/teacher/"
+                  >Teacher Setup</a
+                >
+              </div>
             </div>
-          </div>
+          </section>
+
+          <section
+            class="ai-hub-feature"
+            aria-labelledby="ai-hub-feature-title"
+          >
+            <div class="ahf-icon" aria-hidden="true">
+              <svg
+                width="36"
+                height="36"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12,2 C12,7.5 16.5,12 22,12 C16.5,12 12,16.5 12,22 C12,16.5 7.5,12 2,12 C7.5,12 12,7.5 12,2 Z"
+                  fill="url(#gemini-star-grad)"
+                />
+                <defs>
+                  <linearGradient
+                    id="gemini-star-grad"
+                    x1="2"
+                    y1="2"
+                    x2="22"
+                    y2="22"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop offset="0%" stop-color="#4285F4" />
+                    <stop offset="35%" stop-color="#9b72cb" />
+                    <stop offset="70%" stop-color="#d96a8f" />
+                    <stop offset="100%" stop-color="#ea4335" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <div class="ahf-body">
+              <span class="ahf-tag">Gemini AI Hub</span>
+              <h2 id="ai-hub-feature-title">AI Learning Hub</h2>
+              <p class="ahf-sub">
+                Responsible usage guides &amp; interactive practice activities.
+              </p>
+              <p class="ahf-text">
+                Learn how to use Gemini as your personal step-by-step math
+                tutor. Try unit-specific AI challenges designed for students and
+                parents.
+              </p>
+              <div class="ahf-actions">
+                <a class="ahf-btn solid" href="/curriculum/ai-hub/"
+                  >Open AI Hub</a
+                >
+                <a class="ahf-btn outline" href="/curriculum/ai-hub/#parents"
+                  >Parent Guide</a
+                >
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Seasonal entry point: End-of-Year Command Center -->
+        <style>
+          .eoy-callout {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            background: var(--amber-light);
+            border: 1px solid rgba(44, 125, 107, 0.35);
+            border-radius: 14px;
+            padding: 14px 18px;
+            margin: 0 0 18px;
+          }
+          .eoy-callout .eoy-text {
+            flex: 1;
+            min-width: 220px;
+            font-weight: 600;
+            color: var(--ink);
+          }
+          .eoy-callout .eoy-text b {
+            color: var(--amber);
+            font-weight: 800;
+          }
+          .eoy-callout a.eoy-btn {
+            display: inline-flex;
+            align-items: center;
+            min-height: 44px;
+            padding: 0 18px;
+            border-radius: 10px;
+            background: var(--amber);
+            color: #fff;
+            font-weight: 800;
+            font-size: 0.95rem;
+            text-decoration: none;
+          }
+          .eoy-callout a.eoy-btn:hover {
+            background: #24685a;
+            color: #fff;
+          }
+        </style>
+        <section class="eoy-callout" aria-label="End-of-year resources">
+          <span class="eoy-text"
+            >🎓 <b>End-of-Year Command Center</b> — quick review, MCAP practice,
+            summer bridge, and final projects in one place.</span
+          >
+          <a class="eoy-btn" href="/end-of-year/">Open Command Center →</a>
         </section>
+
+        <style>
+          .teacher-tools {
+            background: #ffffff;
+            border: 1px solid #dbe5ef;
+            border-radius: 14px;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+            margin: 0 0 18px;
+            overflow: hidden;
+          }
+          .teacher-tools > summary {
+            list-style: none;
+            cursor: pointer;
+            padding: 13px 16px;
+            font-weight: 800;
+            color: #17283a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+          .teacher-tools > summary::-webkit-details-marker {
+            display: none;
+          }
+          .teacher-tools > summary::after {
+            content: "▸";
+            margin-left: auto;
+            color: #0f766e;
+            transition: transform 0.15s;
+          }
+          .teacher-tools[open] > summary::after {
+            transform: rotate(90deg);
+          }
+          .teacher-tools .tt-sub {
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #64748b;
+          }
+          .tt-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 0 14px 14px;
+          }
+          .tt-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: #17283a;
+            background: #f5f7fb;
+            border: 1px solid #dbe5ef;
+            border-radius: 9px;
+            padding: 8px 14px;
+            min-height: 40px;
+          }
+          .tt-link:hover,
+          .tt-link:focus-visible {
+            background: #e8f7f4;
+            border-color: #0f766e;
+            color: #0f766e;
+            outline: none;
+          }
+        </style>
+        <details class="teacher-tools">
+          <summary>
+            🧰 Teacher Tools <span class="tt-sub">(for Mr. Neft)</span>
+          </summary>
+          <div class="tt-links">
+            <a class="tt-link" href="/teacher-tools/post-forms/"
+              >📋 Post Forms → Classroom / Canvas</a
+            >
+            <a
+              class="tt-link"
+              href="https://docs.google.com/document/d/1gcEe-NFvhKC56K4iz7lWQ6yVaMkEfN32N4p-qpTDuqM/edit"
+              target="_blank"
+              rel="noopener"
+              >✏️ Edit Google Forms</a
+            >
+            <a class="tt-link" href="/neft-school-hub/">🏫 School Hub</a>
+            <a class="tt-link" href="/teacher-tools/class-dashboard/"
+              >📊 Class Dashboard</a
+            >
+            <a class="tt-link" href="/teacher-tools/">🛠️ All Teacher Tools</a>
+          </div>
+        </details>
       </div>
-
-      <!-- Seasonal entry point: End-of-Year Command Center -->
-      <style>
-        .eoy-callout {
-          display: flex;
-          flex-wrap: wrap;
-          align-items: center;
-          gap: 12px;
-          background: var(--amber-light);
-          border: 1px solid rgba(44, 125, 107, 0.35);
-          border-radius: 14px;
-          padding: 14px 18px;
-          margin: 0 0 18px;
-        }
-        .eoy-callout .eoy-text {
-          flex: 1;
-          min-width: 220px;
-          font-weight: 600;
-          color: var(--ink);
-        }
-        .eoy-callout .eoy-text b {
-          color: var(--amber);
-          font-weight: 800;
-        }
-        .eoy-callout a.eoy-btn {
-          display: inline-flex;
-          align-items: center;
-          min-height: 44px;
-          padding: 0 18px;
-          border-radius: 10px;
-          background: var(--amber);
-          color: #fff;
-          font-weight: 800;
-          font-size: 0.95rem;
-          text-decoration: none;
-        }
-        .eoy-callout a.eoy-btn:hover {
-          background: #24685a;
-          color: #fff;
-        }
-      </style>
-      <section class="eoy-callout" aria-label="End-of-year resources">
-        <span class="eoy-text"
-          >🎓 <b>End-of-Year Command Center</b> — quick review, MCAP practice,
-          summer bridge, and final projects in one place.</span
-        >
-        <a class="eoy-btn" href="/end-of-year/">Open Command Center →</a>
-      </section>
-
-      <style>
-        .teacher-tools {
-          background: #ffffff;
-          border: 1px solid #dbe5ef;
-          border-radius: 14px;
-          box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
-          margin: 0 0 18px;
-          overflow: hidden;
-        }
-        .teacher-tools > summary {
-          list-style: none;
-          cursor: pointer;
-          padding: 13px 16px;
-          font-weight: 800;
-          color: #17283a;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-        .teacher-tools > summary::-webkit-details-marker {
-          display: none;
-        }
-        .teacher-tools > summary::after {
-          content: "▸";
-          margin-left: auto;
-          color: #0f766e;
-          transition: transform 0.15s;
-        }
-        .teacher-tools[open] > summary::after {
-          transform: rotate(90deg);
-        }
-        .teacher-tools .tt-sub {
-          font-weight: 600;
-          font-size: 0.8rem;
-          color: #64748b;
-        }
-        .tt-links {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-          padding: 0 14px 14px;
-        }
-        .tt-link {
-          display: inline-flex;
-          align-items: center;
-          gap: 7px;
-          text-decoration: none;
-          font-weight: 700;
-          font-size: 0.88rem;
-          color: #17283a;
-          background: #f5f7fb;
-          border: 1px solid #dbe5ef;
-          border-radius: 9px;
-          padding: 8px 14px;
-          min-height: 40px;
-        }
-        .tt-link:hover,
-        .tt-link:focus-visible {
-          background: #e8f7f4;
-          border-color: #0f766e;
-          color: #0f766e;
-          outline: none;
-        }
-      </style>
-      <details class="teacher-tools">
-        <summary>
-          🧰 Teacher Tools <span class="tt-sub">(for Mr. Neft)</span>
-        </summary>
-        <div class="tt-links">
-          <a class="tt-link" href="/teacher-tools/post-forms/"
-            >📋 Post Forms → Classroom / Canvas</a
-          >
-          <a
-            class="tt-link"
-            href="https://docs.google.com/document/d/1gcEe-NFvhKC56K4iz7lWQ6yVaMkEfN32N4p-qpTDuqM/edit"
-            target="_blank"
-            rel="noopener"
-            >✏️ Edit Google Forms</a
-          >
-          <a class="tt-link" href="/neft-school-hub/">🏫 School Hub</a>
-          <a class="tt-link" href="/teacher-tools/class-dashboard/"
-            >📊 Class Dashboard</a
-          >
-          <a class="tt-link" href="/teacher-tools/">🛠️ All Teacher Tools</a>
-        </div>
-      </details>
-
-      <div class="controls" id="hub-content" role="search">
-        <div class="search">
-          <label for="curr-search">Search</label>
-          <input
-            id="curr-search"
-            type="search"
-            placeholder="Filter by lesson, standard, or topic…"
-            aria-label="Filter lessons by title, standard, or topic"
-            autocomplete="off"
-          />
-        </div>
-      </div>
-      <p
-        class="result-count"
-        id="result-count"
-        role="status"
-        aria-live="polite"
-      ></p>
-      <p class="no-results" id="no-results" role="status">
-        No lessons match your search.
-      </p>
+      <!-- /hub-side -->
       <details class="unit" open>
         <summary class="unit-sum">
           <span class="unit-title">
             <span class="unit-num">Unit 1</span>
-            <span class="unit-name">Number System Launch</span>
+            <span class="unit-name">The Number System</span>
           </span>
           <span class="unit-meta">
             <span class="unit-blurb"
@@ -1940,7 +1951,7 @@
         <summary class="unit-sum">
           <span class="unit-title">
             <span class="unit-num">Unit 2</span>
-            <span class="unit-name">Fraction Detective Agency</span>
+            <span class="unit-name">Fractions</span>
           </span>
           <span class="unit-meta">
             <span class="unit-blurb"
@@ -2179,7 +2190,7 @@
         <summary class="unit-sum">
           <span class="unit-title">
             <span class="unit-num">Unit 3</span>
-            <span class="unit-name">Culinary Academy</span>
+            <span class="unit-name">Ratios</span>
           </span>
           <span class="unit-meta">
             <span class="unit-blurb">Ratios &amp; ratio reasoning</span>
@@ -2477,7 +2488,7 @@
         <summary class="unit-sum">
           <span class="unit-title">
             <span class="unit-num">Unit 4</span>
-            <span class="unit-name">Arcade Builder</span>
+            <span class="unit-name">Rates &amp; Percents</span>
           </span>
           <span class="unit-meta">
             <span class="unit-blurb">Rates, unit rates &amp; percents</span>
@@ -2783,7 +2794,7 @@
         <summary class="unit-sum">
           <span class="unit-title">
             <span class="unit-num">Unit 5</span>
-            <span class="unit-name">Architecture Firm</span>
+            <span class="unit-name">Area</span>
           </span>
           <span class="unit-meta">
             <span class="unit-blurb"
@@ -3021,7 +3032,7 @@
         <summary class="unit-sum">
           <span class="unit-title">
             <span class="unit-num">Unit 6</span>
-            <span class="unit-name">Music Studio</span>
+            <span class="unit-name">Expressions &amp; Exponents</span>
           </span>
           <span class="unit-meta">
             <span class="unit-blurb"
@@ -3332,7 +3343,7 @@
         <summary class="unit-sum">
           <span class="unit-title">
             <span class="unit-num">Unit 7</span>
-            <span class="unit-name">Equation Detective Agency</span>
+            <span class="unit-name">Equations &amp; Inequalities</span>
           </span>
           <span class="unit-meta">
             <span class="unit-blurb">Equations &amp; inequalities</span>
@@ -3629,7 +3640,7 @@
         <summary class="unit-sum">
           <span class="unit-title">
             <span class="unit-num">Unit 8</span>
-            <span class="unit-name">Sports Analytics Lab</span>
+            <span class="unit-name">Statistics</span>
           </span>
           <span class="unit-meta">
             <span class="unit-blurb">Statistics &amp; data displays</span>
@@ -3927,7 +3938,7 @@
         <summary class="unit-sum">
           <span class="unit-title">
             <span class="unit-num">Unit 9</span>
-            <span class="unit-name">Treasure Map Navigator</span>
+            <span class="unit-name">Integers &amp; the Coordinate Plane</span>
           </span>
           <span class="unit-meta">
             <span class="unit-blurb">Integers &amp; the coordinate plane</span>
@@ -4228,7 +4239,7 @@
         <summary class="unit-sum">
           <span class="unit-title">
             <span class="unit-num">Unit 10</span>
-            <span class="unit-name">Time Capsule Engineers</span>
+            <span class="unit-name">Volume &amp; Surface Area</span>
           </span>
           <span class="unit-meta">
             <span class="unit-blurb">Volume &amp; surface area</span>
@@ -5286,6 +5297,11 @@
         var LESSON_PRINTABLES = {
           "1-1": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/1-1/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Factor Tree Relay",
               href: "/lessons/1-1/downloads/printables/1-1-activity.pdf",
               isPrintable: true,
@@ -5298,6 +5314,11 @@
           ],
           "1-1-flagship": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/1-1-flagship/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Prime Factorization Escape Folder",
               href: "/lessons/1-1-flagship/downloads/printables/1-1-flagship-activity.pdf",
               isPrintable: true,
@@ -5309,6 +5330,11 @@
             },
           ],
           "1-2": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/1-2/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 GCF Factor Grid Challenge",
               href: "/lessons/1-2/downloads/printables/1-2-activity.pdf",
@@ -5332,6 +5358,11 @@
           ],
           "1-3": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/1-3/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Multiple Race Track",
               href: "/lessons/1-3/downloads/printables/1-3-activity.pdf",
               isPrintable: true,
@@ -5343,6 +5374,11 @@
             },
           ],
           "1-4": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/1-4/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Division Detective Case Files",
               href: "/lessons/1-4/downloads/printables/1-4-activity.pdf",
@@ -5366,6 +5402,11 @@
           ],
           "1-5": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/1-5/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Decimal Bank Ledger",
               href: "/lessons/1-5/downloads/printables/1-5-activity.pdf",
               isPrintable: true,
@@ -5378,6 +5419,11 @@
           ],
           "1-6": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/1-6/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Decimal Product Shop",
               href: "/lessons/1-6/downloads/printables/1-6-activity.pdf",
               isPrintable: true,
@@ -5389,6 +5435,11 @@
             },
           ],
           "1-7": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/1-7/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Decimal Division Road Trip",
               href: "/lessons/1-7/downloads/printables/1-7-activity.pdf",
@@ -5412,6 +5463,11 @@
           ],
           "10-1": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/10-1/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Volume Cube Stack Task Cards",
               href: "/lessons/10-1/downloads/printables/10-1-activity.pdf",
               isPrintable: true,
@@ -5424,6 +5480,11 @@
           ],
           "10-1-flagship": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/10-1-flagship/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Time Capsule Design Challenge",
               href: "/lessons/10-1-flagship/downloads/printables/10-1-flagship-activity.pdf",
               isPrintable: true,
@@ -5435,6 +5496,11 @@
             },
           ],
           "10-2": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/10-2/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Fractional Edge Volume Boxes",
               href: "/lessons/10-2/downloads/printables/10-2-activity.pdf",
@@ -5458,6 +5524,11 @@
           ],
           "10-3": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/10-3/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Net Detective",
               href: "/lessons/10-3/downloads/printables/10-3-activity.pdf",
               isPrintable: true,
@@ -5479,6 +5550,11 @@
             },
           ],
           "10-4": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/10-4/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Prism Surface Area Wrap",
               href: "/lessons/10-4/downloads/printables/10-4-activity.pdf",
@@ -5502,6 +5578,11 @@
           ],
           "10-5": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/10-5/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Pyramid Surface Area Build",
               href: "/lessons/10-5/downloads/printables/10-5-activity.pdf",
               isPrintable: true,
@@ -5524,6 +5605,11 @@
           ],
           "2-1": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/2-1/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Fraction Division Model Match",
               href: "/lessons/2-1/downloads/printables/2-1-activity.pdf",
               isPrintable: true,
@@ -5536,6 +5622,11 @@
           ],
           "2-1-flagship": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/2-1-flagship/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Fraction Detective File-Folder Mystery",
               href: "/lessons/2-1-flagship/downloads/printables/2-1-flagship-activity.pdf",
               isPrintable: true,
@@ -5547,6 +5638,11 @@
             },
           ],
           "2-2": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/2-2/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Serving Size Scoops",
               href: "/lessons/2-2/downloads/printables/2-2-activity.pdf",
@@ -5570,6 +5666,11 @@
           ],
           "2-3": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/2-3/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Reciprocal Card Duel",
               href: "/lessons/2-3/downloads/printables/2-3-activity.pdf",
               isPrintable: true,
@@ -5581,6 +5682,11 @@
             },
           ],
           "2-4": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/2-4/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Mixed Number Conversion Trail",
               href: "/lessons/2-4/downloads/printables/2-4-activity.pdf",
@@ -5604,6 +5710,11 @@
           ],
           "2-5": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/2-5/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Fraction Division Story Court",
               href: "/lessons/2-5/downloads/printables/2-5-activity.pdf",
               isPrintable: true,
@@ -5615,6 +5726,11 @@
             },
           ],
           "3-1": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/3-1/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Ratio Recipe Sort",
               href: "/lessons/3-1/downloads/printables/3-1-activity.pdf",
@@ -5638,6 +5754,11 @@
           ],
           "3-1-flagship": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/3-1-flagship/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Create-a-Recipe Ratio Challenge",
               href: "/lessons/3-1-flagship/downloads/printables/3-1-flagship-activity.pdf",
               isPrintable: true,
@@ -5659,6 +5780,11 @@
             },
           ],
           "3-2": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/3-2/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Ratio Table Bingo",
               href: "/lessons/3-2/downloads/printables/3-2-activity.pdf",
@@ -5682,6 +5808,11 @@
           ],
           "3-3": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/3-3/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Coordinate Recipe Plot",
               href: "/lessons/3-3/downloads/printables/3-3-activity.pdf",
               isPrintable: true,
@@ -5704,6 +5835,11 @@
           ],
           "3-4": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/3-4/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Equivalent Ratio Card Capture",
               href: "/lessons/3-4/downloads/printables/3-4-activity.pdf",
               isPrintable: true,
@@ -5715,6 +5851,11 @@
             },
           ],
           "3-5": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/3-5/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Better Mix Debate Cards",
               href: "/lessons/3-5/downloads/printables/3-5-activity.pdf",
@@ -5738,6 +5879,11 @@
           ],
           "3-6": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/3-6/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Scale-It-Up Blueprint",
               href: "/lessons/3-6/downloads/printables/3-6-activity.pdf",
               isPrintable: true,
@@ -5750,6 +5896,11 @@
           ],
           "3-7": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/3-7/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Unit Rate Market Dash",
               href: "/lessons/3-7/downloads/printables/3-7-activity.pdf",
               isPrintable: true,
@@ -5761,6 +5912,11 @@
             },
           ],
           "4-1": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/4-1/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Unit Rate Shopping War",
               href: "/lessons/4-1/downloads/printables/4-1-activity.pdf",
@@ -5784,6 +5940,11 @@
           ],
           "4-1-flagship": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/4-1-flagship/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Arcade Better-Buy Tournament",
               href: "/lessons/4-1-flagship/downloads/printables/4-1-flagship-activity.pdf",
               isPrintable: true,
@@ -5805,6 +5966,11 @@
             },
           ],
           "4-2": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/4-2/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Fraction–Decimal–Percent Dominoes",
               href: "/lessons/4-2/downloads/printables/4-2-activity.pdf",
@@ -5828,6 +5994,11 @@
           ],
           "4-3": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/4-3/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Extreme Percent Headline Sort",
               href: "/lessons/4-3/downloads/printables/4-3-activity.pdf",
               isPrintable: true,
@@ -5839,6 +6010,11 @@
             },
           ],
           "4-4": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/4-4/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Percent Target Grid",
               href: "/lessons/4-4/downloads/printables/4-4-activity.pdf",
@@ -5862,6 +6038,11 @@
           ],
           "4-5": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/4-5/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Sale Rack Task Cards",
               href: "/lessons/4-5/downloads/printables/4-5-activity.pdf",
               isPrintable: true,
@@ -5883,6 +6064,11 @@
             },
           ],
           "4-6": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/4-6/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Measurement Conversion Ladder",
               href: "/lessons/4-6/downloads/printables/4-6-activity.pdf",
@@ -5906,6 +6092,11 @@
           ],
           "4-7": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/4-7/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Unit Rate Decision Tournament",
               href: "/lessons/4-7/downloads/printables/4-7-activity.pdf",
               isPrintable: true,
@@ -5917,6 +6108,11 @@
             },
           ],
           "5-1": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/5-1/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Parallelogram Cut-and-Slide Lab",
               href: "/lessons/5-1/downloads/printables/5-1-activity.pdf",
@@ -5940,6 +6136,11 @@
           ],
           "5-2": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/5-2/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Trapezoid Formula Builder Puzzle",
               href: "/lessons/5-2/downloads/printables/5-2-activity.pdf",
               isPrintable: true,
@@ -5961,6 +6162,11 @@
             },
           ],
           "5-3": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/5-3/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Triangle Half-Rectangle Match",
               href: "/lessons/5-3/downloads/printables/5-3-activity.pdf",
@@ -5984,6 +6190,11 @@
           ],
           "5-3-flagship": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/5-3-flagship/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Triangle Design Studio",
               href: "/lessons/5-3-flagship/downloads/printables/5-3-flagship-activity.pdf",
               isPrintable: true,
@@ -6006,6 +6217,11 @@
           ],
           "5-4": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/5-4/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Polygon Decompose Gallery",
               href: "/lessons/5-4/downloads/printables/5-4-activity.pdf",
               isPrintable: true,
@@ -6017,6 +6233,11 @@
             },
           ],
           "5-5": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/5-5/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Composite Figure Area Rescue",
               href: "/lessons/5-5/downloads/printables/5-5-activity.pdf",
@@ -6040,6 +6261,11 @@
           ],
           "6-1": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/6-1/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Exponent Card Stack",
               href: "/lessons/6-1/downloads/printables/6-1-activity.pdf",
               isPrintable: true,
@@ -6061,6 +6287,11 @@
             },
           ],
           "6-1-flagship": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/6-1-flagship/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Powers Puzzle Race",
               href: "/lessons/6-1-flagship/downloads/printables/6-1-flagship-activity.pdf",
@@ -6084,6 +6315,11 @@
           ],
           "6-2": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/6-2/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Expression Substitution Menu",
               href: "/lessons/6-2/downloads/printables/6-2-activity.pdf",
               isPrintable: true,
@@ -6105,6 +6341,11 @@
             },
           ],
           "6-3": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/6-3/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Words-to-Expression Match",
               href: "/lessons/6-3/downloads/printables/6-3-activity.pdf",
@@ -6128,6 +6369,11 @@
           ],
           "6-4": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/6-4/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Property Sorting Court",
               href: "/lessons/6-4/downloads/printables/6-4-activity.pdf",
               isPrintable: true,
@@ -6139,6 +6385,11 @@
             },
           ],
           "6-5": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/6-5/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Distributive Area Model Tiles",
               href: "/lessons/6-5/downloads/printables/6-5-activity.pdf",
@@ -6162,6 +6413,11 @@
           ],
           "6-6": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/6-6/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Equivalent Expression Maze",
               href: "/lessons/6-6/downloads/printables/6-6-activity.pdf",
               isPrintable: true,
@@ -6184,6 +6440,11 @@
           ],
           "6-7": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/6-7/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Like Terms Color Sort",
               href: "/lessons/6-7/downloads/printables/6-7-activity.pdf",
               isPrintable: true,
@@ -6195,6 +6456,11 @@
             },
           ],
           "7-1": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/7-1/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Equation Story Match",
               href: "/lessons/7-1/downloads/printables/7-1-activity.pdf",
@@ -6218,6 +6484,11 @@
           ],
           "7-1-flagship": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/7-1-flagship/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Equation Detective Case Files",
               href: "/lessons/7-1-flagship/downloads/printables/7-1-flagship-activity.pdf",
               isPrintable: true,
@@ -6239,6 +6510,11 @@
             },
           ],
           "7-2": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/7-2/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Balance Scale Inverse Cards",
               href: "/lessons/7-2/downloads/printables/7-2-activity.pdf",
@@ -6262,6 +6538,11 @@
           ],
           "7-3": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/7-3/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Equation Match Sprint",
               href: "/lessons/7-3/downloads/printables/7-3-activity.pdf",
               isPrintable: true,
@@ -6283,6 +6564,11 @@
             },
           ],
           "7-4": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/7-4/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Inequality Statement Sort",
               href: "/lessons/7-4/downloads/printables/7-4-activity.pdf",
@@ -6306,6 +6592,11 @@
           ],
           "7-5": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/7-5/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Number Line Gallery Walk",
               href: "/lessons/7-5/downloads/printables/7-5-activity.pdf",
               isPrintable: true,
@@ -6328,6 +6619,11 @@
           ],
           "7-6": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/7-6/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Solve-and-Graph Relay",
               href: "/lessons/7-6/downloads/printables/7-6-activity.pdf",
               isPrintable: true,
@@ -6340,6 +6636,11 @@
           ],
           "7-7": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/7-7/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Model-It Choice Board",
               href: "/lessons/7-7/downloads/printables/7-7-activity.pdf",
               isPrintable: true,
@@ -6351,6 +6652,11 @@
             },
           ],
           "8-1": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/8-1/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Statistical Question Sort",
               href: "/lessons/8-1/downloads/printables/8-1-activity.pdf",
@@ -6374,6 +6680,11 @@
           ],
           "8-1-flagship": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/8-1-flagship/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Data Investigation Proposal",
               href: "/lessons/8-1-flagship/downloads/printables/8-1-flagship-activity.pdf",
               isPrintable: true,
@@ -6395,6 +6706,11 @@
             },
           ],
           "8-2": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/8-2/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Center Measure Card Game",
               href: "/lessons/8-2/downloads/printables/8-2-activity.pdf",
@@ -6418,6 +6734,11 @@
           ],
           "8-3": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/8-3/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 MAD Step-Strip Lab",
               href: "/lessons/8-3/downloads/printables/8-3-activity.pdf",
               isPrintable: true,
@@ -6439,6 +6760,11 @@
             },
           ],
           "8-4": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/8-4/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Best Measure of Center Court",
               href: "/lessons/8-4/downloads/printables/8-4-activity.pdf",
@@ -6462,6 +6788,11 @@
           ],
           "8-5": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/8-5/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Five-Number Summary Box Plot",
               href: "/lessons/8-5/downloads/printables/8-5-activity.pdf",
               isPrintable: true,
@@ -6483,6 +6814,11 @@
             },
           ],
           "8-6": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/8-6/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Histogram Interval Builder",
               href: "/lessons/8-6/downloads/printables/8-6-activity.pdf",
@@ -6506,6 +6842,11 @@
           ],
           "8-7": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/8-7/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Distribution Shape Gallery",
               href: "/lessons/8-7/downloads/printables/8-7-activity.pdf",
               isPrintable: true,
@@ -6527,6 +6868,11 @@
             },
           ],
           "9-1": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/9-1/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Coordinate Treasure Hunt",
               href: "/lessons/9-1/downloads/printables/9-1-activity.pdf",
@@ -6550,6 +6896,11 @@
           ],
           "9-1-flagship": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/9-1-flagship/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Coordinate Map Mission",
               href: "/lessons/9-1-flagship/downloads/printables/9-1-flagship-activity.pdf",
               isPrintable: true,
@@ -6571,6 +6922,11 @@
             },
           ],
           "9-2": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/9-2/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Integer & Absolute Value Battle",
               href: "/lessons/9-2/downloads/printables/9-2-activity.pdf",
@@ -6594,6 +6950,11 @@
           ],
           "9-3": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/9-3/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Integer Order Relay",
               href: "/lessons/9-3/downloads/printables/9-3-activity.pdf",
               isPrintable: true,
@@ -6615,6 +6976,11 @@
             },
           ],
           "9-4": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/9-4/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Rational Number Clothesline",
               href: "/lessons/9-4/downloads/printables/9-4-activity.pdf",
@@ -6638,6 +7004,11 @@
           ],
           "9-5": [
             {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/9-5/worksheet.html",
+              isPrintable: true,
+            },
+            {
               text: "🎲 Four-Quadrant Battleship",
               href: "/lessons/9-5/downloads/printables/9-5-activity.pdf",
               isPrintable: true,
@@ -6649,6 +7020,11 @@
             },
           ],
           "9-6": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/9-6/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Coordinate Taxi Routes",
               href: "/lessons/9-6/downloads/printables/9-6-activity.pdf",
@@ -6671,6 +7047,11 @@
             },
           ],
           "9-7": [
+            {
+              text: "📝 Practice Worksheet (A & B)",
+              href: "/lessons/9-7/worksheet.html",
+              isPrintable: true,
+            },
             {
               text: "🎲 Reflection Mirror Map",
               href: "/lessons/9-7/downloads/printables/9-7-activity.pdf",
@@ -7639,7 +8020,12 @@
     <script src="/assets/curriculum-progress-bridge.js" defer></script>
     <script>
       window.CURRICULUM_SYNC = {
-        useApiContent: true,
+        // Content is served from this page's complete static curriculum (the
+        // source of truth: full unit names, topics, lessons, and resources).
+        // The D1 content API currently holds only a sparse stub (placeholder
+        // unit names, empty blurbs, partial lessons), so hydrating from it
+        // overrode the real content. Keep off until the D1 content is complete.
+        useApiContent: false,
         apiBase:
           window.location.hostname === "localhost" ||
           window.location.hostname === "127.0.0.1"

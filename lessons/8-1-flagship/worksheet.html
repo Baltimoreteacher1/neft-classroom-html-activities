@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Statistical Questions and Data — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+</style>
+</head>
+<body>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.SP.1</span>
+      <span class="ws-ver">Version A</span>
+    </div>
+    <h1 class="ws-title">Statistical Questions and Data</h1>
+    <p class="ws-sub">Practice — Version A</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h3 class="ws-bank-h">📕 Word Bank</h3>
+    <div class="ws-bankwords"><span class="ws-bankword">Statistical Question</span><span class="ws-bankword">Data</span><span class="ws-bankword">Variability</span><span class="ws-bankword">Survey</span><span class="ws-bankword">Data distribution</span></div>
+  </section><section class="ws-example">
+    <h3 class="ws-example-h">✏️ Worked Example</h3>
+    <ol class="ws-example-steps"><li><b>Question:</b> How many touchdowns did the quarterback throw this season?</li><li><b>Student says:</b> This is NOT a statistical question.</li><li><b>Reason:</b> It only asks about one player, so there is no variability.</li></ol>
+  </section>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Which of the following is a statistical question?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>How many points did each player score this season?</li><li class="ws-opt"><span class="ws-bub">B</span>How many points are scored for a free throw?</li><li class="ws-opt"><span class="ws-bub">C</span>What sport does this team play?</li><li class="ws-opt"><span class="ws-bub">D</span>How many halves are in a soccer game?</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Which question is NOT a statistical question?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>How many innings are in a baseball game?</li><li class="ws-opt"><span class="ws-bub">B</span>How many home runs did each player hit this year?</li><li class="ws-opt"><span class="ws-bub">C</span>How many miles does each runner train per week?</li><li class="ws-opt"><span class="ws-bub">D</span>How tall is each player on the basketball team?</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Why is 'How many hours of sleep did each student get last night?' a statistical question?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Because different students got different amounts of sleep</li><li class="ws-opt"><span class="ws-bub">B</span>Because it asks about sleep</li><li class="ws-opt"><span class="ws-bub">C</span>Because hours are numbers</li><li class="ws-opt"><span class="ws-bub">D</span>Because the answer is always 8 hours</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Write the letter of the matching answer next to each.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span></li><li><span class="ws-bub ws-bub-sm">B</span></li><li><span class="ws-bub ws-bub-sm">C</span></li><li><span class="ws-bub ws-bub-sm">D</span></li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Sort these questions into Statistical or Not Statistical.</p>
+  <p class="ws-prompt">Categories: <b></b></p>
+  <ul class="ws-sort"></ul></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Statistical Questions and Data.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: If you expect the answers to vary, it is a statistical question.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.SP.1</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">Statistical Questions and Data</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A coach asks: &quot;How many hours does each athlete on the track team sleep the night before a meet?&quot; Why is this a statistical question?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Because the answers will vary from athlete to athlete</li><li class="ws-opt"><span class="ws-bub">B</span>Because it is about sports</li><li class="ws-opt"><span class="ws-bub">C</span>Because it has a numerical answer</li><li class="ws-opt"><span class="ws-bub">D</span>Because the coach asked it</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Decide if each question is statistical and explain why.</p>
+  <table class="ws-table"><thead><tr><th>Question</th><th>Statistical?</th><th>Why?</th></tr></thead><tbody><tr><td>How many push-ups can each student do in one minute?</td><td></td><td></td></tr><tr><td>How many sides does a basketball court have?</td><td></td><td></td></tr><tr><td>How far does each player kick the ball?</td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Write the letter of the matching answer next to each.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span></li><li><span class="ws-bub ws-bub-sm">B</span></li><li><span class="ws-bub ws-bub-sm">C</span></li><li><span class="ws-bub ws-bub-sm">D</span></li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Each non-statistical question below has been rewritten to become statistical. Match the original to its rewritten version.</p>
+  <p class="ws-prompt">Categories: <b></b></p>
+  <ul class="ws-sort"></ul></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Statistical Questions and Data.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: If you expect the answers to vary, it is a statistical question.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.SP.1</span>
+      <span class="ws-ver">Version A — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Statistical Questions and Data</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Which of the following is a statistical question?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>How many points did each player score this season?</li><li class="ws-opt"><span class="ws-bub">B</span>How many points are scored for a free throw?</li><li class="ws-opt"><span class="ws-bub">C</span>What sport does this team play?</li><li class="ws-opt"><span class="ws-bub">D</span>How many halves are in a soccer game?</li></ol><p class="ws-keynote">&quot;How many points did each player score?&quot; is statistical because different players will have different scores — there is variability in the data.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Which question is NOT a statistical question?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>How many innings are in a baseball game?</li><li class="ws-opt"><span class="ws-bub">B</span>How many home runs did each player hit this year?</li><li class="ws-opt"><span class="ws-bub">C</span>How many miles does each runner train per week?</li><li class="ws-opt"><span class="ws-bub">D</span>How tall is each player on the basketball team?</li></ol><p class="ws-keynote">&quot;How many innings are in a baseball game?&quot; has one fixed answer (9) — no variability. The other questions all produce different answers for different people.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Why is 'How many hours of sleep did each student get last night?' a statistical question?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Because different students got different amounts of sleep</li><li class="ws-opt"><span class="ws-bub">B</span>Because it asks about sleep</li><li class="ws-opt"><span class="ws-bub">C</span>Because hours are numbers</li><li class="ws-opt"><span class="ws-bub">D</span>Because the answer is always 8 hours</li></ol><p class="ws-keynote">A statistical question anticipates variability — different students slept different amounts, so the data will vary.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Write the letter of the matching answer next to each.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span></li><li><span class="ws-bub ws-bub-sm">B</span></li><li><span class="ws-bub ws-bub-sm">C</span></li><li><span class="ws-bub ws-bub-sm">D</span></li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Sort these questions into Statistical or Not Statistical.</p>
+  <p class="ws-prompt">Categories: <b></b></p>
+  <ul class="ws-sort"></ul></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Statistical Questions and Data.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: If you expect the answers to vary, it is a statistical question.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.SP.1</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Statistical Questions and Data</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A coach asks: &quot;How many hours does each athlete on the track team sleep the night before a meet?&quot; Why is this a statistical question?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Because the answers will vary from athlete to athlete</li><li class="ws-opt"><span class="ws-bub">B</span>Because it is about sports</li><li class="ws-opt"><span class="ws-bub">C</span>Because it has a numerical answer</li><li class="ws-opt"><span class="ws-bub">D</span>Because the coach asked it</li></ol><p class="ws-keynote">A statistical question anticipates variability. Different athletes sleep different amounts, so the data collected will vary.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Decide if each question is statistical and explain why.</p>
+  <table class="ws-table"><thead><tr><th>Question</th><th>Statistical?</th><th>Why?</th></tr></thead><tbody><tr><td>How many push-ups can each student do in one minute?</td><td>Yes</td><td>Different students can do different amounts — there is variability.</td></tr><tr><td>How many sides does a basketball court have?</td><td>No</td><td>There is one fixed answer (4 sides) — no variability.</td></tr><tr><td>How far does each player kick the ball?</td><td>Yes</td><td>Different players kick different distances — the data varies.</td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Write the letter of the matching answer next to each.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span></li><li><span class="ws-bub ws-bub-sm">B</span></li><li><span class="ws-bub ws-bub-sm">C</span></li><li><span class="ws-bub ws-bub-sm">D</span></li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Each non-statistical question below has been rewritten to become statistical. Match the original to its rewritten version.</p>
+  <p class="ws-prompt">Categories: <b></b></p>
+  <ul class="ws-sort"></ul></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Statistical Questions and Data.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: If you expect the answers to vary, it is a statistical question.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  </section>
+</body>
+</html>

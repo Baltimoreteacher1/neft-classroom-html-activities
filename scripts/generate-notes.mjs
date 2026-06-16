@@ -5,7 +5,6 @@ import {
   resolveVocabImage,
   vocabImageAlt,
 } from "../engine/core/vocab-images.js";
-import { deriveTWR } from "../engine/core/twr.js";
 import { deriveWorkedSteps } from "../engine/core/worked-steps.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -112,45 +111,6 @@ ${cards}
 </section>`;
 }
 
-function projectsSection(projects = []) {
-  if (!projects.length) return "";
-  const cards = projects
-    .map((p) => {
-      let linksHtml = "";
-      if (Array.isArray(p.links) && p.links.length > 0) {
-        linksHtml = `<div class="project-links">
-        ${p.links.map((l) => `<a href="${esc(l.href)}" class="project-link-btn" target="_blank">${esc(l.label)}</a>`).join("\n")}
-      </div>`;
-      } else if (p.href) {
-        linksHtml = `<div class="project-links">
-        <a href="${esc(p.href)}" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
-      </div>`;
-      }
-      return `<div class="project-card">
-      <div class="project-header">
-        <span class="project-emoji" aria-hidden="true">${esc(p.emoji || "🎯")}</span>
-        <h3 class="project-title">${esc(p.title)}</h3>
-      </div>
-      <p class="project-desc">${esc(p.desc)}</p>
-      ${linksHtml}
-    </div>`;
-    })
-    .join("\n");
-
-  return `<section class="section projects no-print">
-  <h2>Interactive Unit Projects</h2>
-  <p class="level-note">Apply your math skills in these interactive dashboard games and coding labs.</p>
-  <div class="projects-grid">
-    ${cards}
-  </div>
-</section>`;
-}
-
-// Key Ideas & Notes — the guided-notes block. Rebuilt as an easier, more
-// visual, scaffolded sheet: a plain-language "what we're learning" line, then
-// color-coded numbered steps (Notice → Key idea → Words I'll use) and a guided
-// "Watch → We try → You try" mini-frame with blank work lines. Everything is
-// grounded in existing config fields; no math facts are invented.
 function choiceOl(choices) {
   if (!Array.isArray(choices) || !choices.length) return "";
   return `<ol class="try-choices" type="A">${choices
@@ -395,7 +355,52 @@ function workedFrame(worked) {
   </div>`;
 }
 
-function notesSection(cfg = {}, worked = null) {
+// Build the heart of the guided notes: fill-in-the-blank concept sentences.
+// Each vocabulary item already ships a `cloze` sentence (the blank is the term);
+// we render those as numbered fill-in lines with a Word Bank, exactly like a
+// TPT-style guided-notes page. Returns { html, keyRows } so the teacher answer
+// key can list every blank's answer.
+function guidedNotesFill(cfg = {}) {
+  const vocab = Array.isArray(cfg.vocabulary) ? cfg.vocabulary : [];
+  const items = vocab.filter((v) => v && v.term);
+  if (!items.length) return { html: "", keyRows: [] };
+
+  const bank = items
+    .map((v) => `<span class="gn-bank-word">${esc(v.term)}</span>`)
+    .join("");
+
+  const keyRows = [];
+  const lines = items.map((v, i) => {
+    const num = i + 1;
+    let sentence;
+    if (v.cloze && /_{2,}/.test(v.cloze)) {
+      // Drop a styled write-on blank where the term goes.
+      sentence = esc(v.cloze).replace(
+        /_{2,}/g,
+        `<span class="gn-blank"></span>`,
+      );
+    } else {
+      // No prepared cloze — fall back to "____ : plain-language meaning".
+      sentence = `<span class="gn-blank"></span> &mdash; ${esc(v.definition || "Write what this word means.")}`;
+    }
+    keyRows.push({ label: `Notes ${num}`, answer: v.term });
+    return `<li class="gn-line"><span class="gn-num">${num}</span><span class="gn-sentence">${sentence}</span></li>`;
+  });
+
+  return {
+    keyRows,
+    html: `<div class="gn-fill">
+    <div class="gn-bank">
+      <span class="gn-bank-label">📚 Word Bank — fill each blank with the best word</span>
+      <div class="gn-bank-words">${bank}</div>
+      <p class="gn-bank-hint l3-only">Level 3: try the blanks from memory first, then check the bank.</p>
+    </div>
+    <ol class="gn-lines">${lines.join("")}</ol>
+  </div>`,
+  };
+}
+
+function notesSection(cfg = {}, worked = null, fillHtml = "") {
   const launch = cfg.launch || {};
   const explore = cfg.explore || {};
 
@@ -415,231 +420,27 @@ function notesSection(cfg = {}, worked = null) {
     </div>`
     : "";
 
-  // 1️⃣ Notice — the first thing to look at, from the launch story / notice prompt.
-  const noticeText =
-    (launch.narrative
-      ? launch.narrative
-          .split(/(?<=[.!?])\s+/)
-          .map((s) => s.trim())
-          .filter(Boolean)[0]
-      : "") ||
-    (Array.isArray(launch.noticePrompts) ? launch.noticePrompts[0] : "") ||
-    "Look closely at the problem before you start.";
-
-  // 2️⃣ Key idea — the lesson's content objective stated as the big idea.
-  const keyIdeaText =
-    cfg.contentObjective ||
-    (explore.instructions ? explore.instructions.trim() : "") ||
-    "Write the main math idea in your own words.";
-
-  const stepCard = (num, icon, title, bodyL1, bodyL2, bodyL3) =>
-    `<div class="notes-step notes-step-${num}">
-      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">${icon}</span>
-        <h4 class="notes-step-title">${esc(title)}</h4></div>
-      <div class="notes-step-body-l1">${bodyL1}</div>
-      <div class="notes-step-body-l2">${bodyL2}</div>
-      <div class="notes-step-body-l3">${bodyL3}</div>
-    </div>`;
-
-  const steps = [
-    stepCard(
-      1,
-      "1️⃣",
-      "Notice",
-      `<p class="notes-step-text">${esc(noticeText)}</p>`,
-      `<p class="notes-step-prompt">Record your observations:</p>${blankLines(2)}`,
-      `<p class="notes-step-prompt">State the math observation you see in the launch:</p>${blankLines(2)}`,
-    ),
-    stepCard(
-      2,
-      "2️⃣",
-      "Key idea",
-      `<p class="notes-step-text">${esc(keyIdeaText)}</p>`,
-      `<p class="notes-step-prompt">Record the key idea:</p>${blankLines(2)}`,
-      `<p class="notes-step-prompt">Summarize the key mathematical relationship in full sentences:</p>${blankLines(2)}`,
-    ),
-  ];
-
-  // 3️⃣ Words I'll use — chip strip of the lesson's vocabulary terms.
-  const vocabTerms = Array.isArray(cfg.vocabulary)
-    ? cfg.vocabulary.map((v) => v && v.term).filter(Boolean)
-    : [];
-  if (vocabTerms.length) {
-    const chips = vocabTerms
-      .map((t) => `<span class="notes-word-chip">${esc(t)}</span>`)
-      .join("");
-    steps.push(
-      stepCard(
-        3,
-        "3️⃣",
-        "Words I'll use",
-        `<div class="notes-word-chips">${chips}</div>`,
-        `<div class="notes-word-chips">${chips}</div>`,
-        `<div class="notes-word-chips">${chips}</div>
-         <p class="notes-step-prompt" style="margin-top: 8px;">Write a mathematical explanation using at least two of these terms:</p>
-         ${blankLines(2)}`,
-      ),
-    );
-  }
-
-  const stepsHtml = `<div class="notes-steps">${steps.join("")}</div>`;
-
-  // "Think About It" prompts — kept, but presented as a friendly question strip.
-  const noticeWonder = []
-    .concat(launch.noticePrompts || [], launch.wonderPrompts || [])
-    .slice(0, 3);
-  const promptHtml = noticeWonder.length
-    ? `<div class="think-block">
-    <h3>🤔 Think About It</h3>
-    <ul class="prompt-list">${noticeWonder.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>
-  </div>`
+  // Fill-in-the-blank notes (the centerpiece) are built in buildPacket and
+  // passed in so their answers can also flow into the teacher answer key.
+  const fillBlock = fillHtml
+    ? `<p class="gn-directions">✏️ Fill in each blank as we go. Use the Word Bank to help you.</p>${fillHtml}`
     : "";
 
   // Guided "I Do → We Do → You Do" mini-frame with real worked problems.
   const gradualHtml = workedFrame(worked);
+  const workedBlock = gradualHtml
+    ? `<h3 class="gn-subhead">🧮 Watch &amp; Try — Worked Examples</h3>${gradualHtml}`
+    : "";
 
   return `<section class="section notes">
-  <h2>Key Ideas &amp; Notes
+  <h2>Guided Notes
     <span class="level-tag level-1 l1-only">Level 1 Support</span>
     <span class="level-tag level-2 l2-only">Level 2 Standard</span>
     <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
   </h2>
   ${learningHtml}
-  ${stepsHtml}
-  ${promptHtml}
-  ${gradualHtml}
-</section>`;
-}
-
-// Turn & Talk — Discussion Points. Driven by cfg.turnAndTalk[]. Renders a
-// leveled, partner-discussion section: Level 1 (support) gets a kernel,
-// bilingual sentence stems, a word bank, and a teacher "listen for" note;
-// Level 2 gets a deeper push question with stretch stems. Defensive about
-// every optional field so older configs still render.
-function ttBilingual(stem) {
-  // Accepts a string or { en, es } object; reuses the twr-frame bilingual look.
-  const en = typeof stem === "string" ? stem : stem && stem.en;
-  const es = typeof stem === "object" && stem ? stem.es : "";
-  if (!en) return "";
-  return `<p class="twr-frame"><span class="twr-en">${esc(en)}</span>${
-    es ? `<span class="twr-es">${esc(es)}</span>` : ""
-  }</p>`;
-}
-
-// Derive a SHORT strategy hint for a Turn & Talk item. Uses an explicit
-// item.hint when present; otherwise builds a non-answer-giving nudge (what to
-// look at / what to ask yourself / which word-bank term to try). NEVER uses
-// item.listenFor and NEVER states the answer.
-function deriveTtHint(item) {
-  if (item.hint) return String(item.hint).trim();
-  const parts = [];
-  const wb = Array.isArray(item.wordBank) ? item.wordBank.filter(Boolean) : [];
-  if (wb.length) {
-    const picks = wb.slice(0, 2).join('" or "');
-    parts.push(`Try starting with the word "${picks}".`);
-  }
-  // Turn the question into a self-check prompt without revealing the answer.
-  if (item.question) {
-    parts.push("Re-read the question and underline what it is asking you to compare or find.");
-  } else {
-    parts.push("Ask yourself: what does the math show, and how do I know?");
-  }
-  parts.push("Use one number or word from the problem as your evidence.");
-  return parts.join(" ");
-}
-
-function turnAndTalkCard(item) {
-  const phaseRaw = String(item.phase || "").trim();
-  const phaseLabel = phaseRaw
-    ? phaseRaw.charAt(0).toUpperCase() + phaseRaw.slice(1)
-    : "Discuss";
-  const phaseBadge = `<span class="tt-phase">${esc(phaseLabel)}</span>`;
-  const question = item.question
-    ? `<p class="tt-question">${esc(item.question)}</p>`
-    : "";
-
-  // --- Level 1 (support) block ---
-  const kernel = item.kernel
-    ? `<p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> ${esc(item.kernel)}</p>`
-    : "";
-  const stems = Array.isArray(item.stems)
-    ? item.stems.map((s) => ttBilingual(s)).filter(Boolean).join("")
-    : "";
-  const stemsHtml = stems
-    ? `<div class="tt-stems">
-      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
-      ${stems}
-    </div>`
-    : "";
-  // Optional collapsible strategy hint — never reveals the answer.
-  const hintText = deriveTtHint(item);
-  const hintHtml = hintText
-    ? `<details class="tt-hint-toggle">
-      <summary>💡 Need a hint?</summary>
-      <p class="tt-hint-text">${esc(hintText)}</p>
-    </details>`
-    : "";
-  const wordBank = Array.isArray(item.wordBank)
-    ? item.wordBank.filter(Boolean)
-    : [];
-  const wordBankHtml = wordBank.length
-    ? `<div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> ${wordBank
-        .map((w) => `<span class="tt-word">${esc(w)}</span>`)
-        .join("")}</div>`
-    : "";
-  const listenFor = item.listenFor
-    ? `<p class="tt-listen"><span class="tt-mini-label">Listen for:</span> ${esc(item.listenFor)}</p>`
-    : "";
-  const supportInner = [kernel, hintHtml, stemsHtml, wordBankHtml, listenFor]
-    .filter(Boolean)
-    .join("\n    ");
-  const support = supportInner
-    ? `<div class="tt-support">
-    <span class="level-tag level-1">Level 1 support</span>
-    ${supportInner}
-  </div>`
-    : "";
-
-  // --- Level 2 block ---
-  const extendQ = item.extend
-    ? `<p class="tt-extend-q">${esc(item.extend)}</p>`
-    : "";
-  const extendStems = Array.isArray(item.extendStems)
-    ? item.extendStems.filter(Boolean)
-    : [];
-  const extendStemsHtml = extendStems.length
-    ? `<ul class="tt-extend-stems">${extendStems
-        .map((s) => `<li>${esc(s)}</li>`)
-        .join("")}</ul>`
-    : "";
-  const extend =
-    extendQ || extendStemsHtml
-      ? `<div class="tt-extend">
-    <span class="level-tag level-2">Level 2</span>
-    ${[extendQ, extendStemsHtml].filter(Boolean).join("\n    ")}
-  </div>`
-      : "";
-
-  return `<div class="tt-card">
-  ${phaseBadge}
-  ${question}
-  ${support}
-  ${extend}
-</div>`;
-}
-
-function turnAndTalkSection(cfg) {
-  const items = Array.isArray(cfg.turnAndTalk) ? cfg.turnAndTalk : [];
-  if (!items.length) return "";
-  const cards = items.map((it) => turnAndTalkCard(it)).join("\n");
-  return `<section class="section turn-and-talk">
-  <h2>Turn &amp; Talk — Discussion Points
-    <span class="level-tag level-1 l1-only">Level 1 Support</span>
-    <span class="level-tag level-2 l2-only">Level 2 Standard</span>
-    <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
-  </h2>
-  <p class="level-note">Talk with a partner about each prompt. If you need help getting started, use the Level 1 sentence stems. Ready for more? Try the Level 2 question.</p>
-  ${cards}
+  ${fillBlock}
+  ${workedBlock}
 </section>`;
 }
 
@@ -751,10 +552,18 @@ function answerKeySection(
   config = null,
   worked = null,
   usedStems = new Set(),
+  gnKeyRows = [],
 ) {
   const rows = [];
   let n = 1;
-  // Guided-notes "We Do / You Do" answers come first so teachers can check the
+  // Fill-in-the-blank answers first, so a teacher can check the guided notes
+  // line by line.
+  if (Array.isArray(gnKeyRows)) {
+    gnKeyRows.forEach((r) => {
+      rows.push(`<li><strong>${esc(r.label)}:</strong> ${esc(r.answer)}</li>`);
+    });
+  }
+  // Guided-notes "We Do / You Do" answers come next so teachers can check the
   // worked frame before the independent practice.
   if (worked && Array.isArray(worked.keyRows)) {
     worked.keyRows.forEach((r) => {
@@ -796,130 +605,11 @@ function answerKeySection(
       }</li>`
     );
   }
-  const twrRows = config ? twrAnswerKey(config) : "";
-  if (!rows.length && !twrRows) return "";
+  if (!rows.length) return "";
   return `<section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
   <ol class="ak-list">${rows.join("")}</ol>
-  ${
-    twrRows
-      ? `<h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list">${twrRows}</ul>`
-      : ""
-  }
 </section>`;
-}
-
-/* ---------- The Writing Revolution (TWR) ---------- */
-
-// A bilingual frame line: bold English, italic Spanish under it.
-function frameLine(en, es) {
-  return `<p class="twr-frame"><span class="twr-en">${esc(en)}</span>${
-    es ? `<span class="twr-es">${esc(es)}</span>` : ""
-  }</p>`;
-}
-
-function twrSection(config) {
-  const twr = deriveTWR(config);
-
-  // 1. Kernel sentence
-  const kernel = `<div class="twr-block">
-    <h3>1. Kernel Sentence <span class="twr-tag">subject + verb</span></h3>
-    <p class="twr-model"><span class="twr-label">Model:</span> ${esc(twr.kernel.en)}${
-      twr.kernel.es ? `<span class="twr-es">${esc(twr.kernel.es)}</span>` : ""
-    }</p>
-    ${frameLine(twr.kernel.promptEn, twr.kernel.promptEs)}
-    ${blankLines(2)}
-  </div>`;
-
-  // 2. Sentence expansion (because / but / so)
-  const expRows = twr.expansion.conjunctions
-    .map(
-      (c) => `<div class="twr-exp-row">
-      <span class="twr-conj">${esc(c.word)}<span class="twr-conj-es">${esc(c.wordEs)}</span></span>
-      <div class="twr-exp-lines">
-        ${frameLine(c.frameEn, c.frameEs)}
-        ${blankLines(1)}
-      </div>
-    </div>`,
-    )
-    .join("");
-  const expansion = `<div class="twr-block">
-    <h3>2. Sentence Expansion <span class="twr-tag">because · but · so</span></h3>
-    <p class="twr-model"><span class="twr-label">Kernel:</span> ${esc(twr.expansion.kernelEn)}${
-      twr.expansion.kernelEs
-        ? `<span class="twr-es">${esc(twr.expansion.kernelEs)}</span>`
-        : ""
-    }</p>
-    <p class="muted">Expand the kernel three ways. Add a reason, a contrast, and a result.</p>
-    ${expRows}
-  </div>`;
-
-  // 3. Sentence types
-  const typeRows = twr.sentenceTypes
-    .map(
-      (t) => `<div class="twr-type-row">
-      <span class="twr-type-name">${esc(t.type)}<span class="twr-conj-es">${esc(t.typeEs)}</span></span>
-      <div class="twr-exp-lines">
-        <p class="twr-hint">${esc(t.hintEn)}${
-          t.hintEs ? `<span class="twr-es">${esc(t.hintEs)}</span>` : ""
-        }</p>
-        ${frameLine(t.frameEn, t.frameEs)}
-        ${blankLines(1)}
-      </div>
-    </div>`,
-    )
-    .join("");
-  const types = `<div class="twr-block">
-    <h3>3. Sentence Types <span class="twr-tag">4 ways to write a math idea</span></h3>
-    ${typeRows}
-  </div>`;
-
-  // 4. Explain your reasoning
-  const stemHtml = twr.reasoningStems
-    .map((s) => frameLine(s.en, s.es))
-    .join("");
-  const reasoning = `<div class="twr-block">
-    <h3>4. Explain Your Reasoning <span class="twr-tag">use a sentence starter</span></h3>
-    <div class="twr-stems">${stemHtml}</div>
-    ${blankLines(3)}
-  </div>`;
-
-  return `<section class="section twr">
-  <h2>Write About the Math
-    <span class="twr-method l1-only">Level 1 Support</span>
-    <span class="twr-method l2-only">Level 2 Standard</span>
-    <span class="twr-method l3-only">Level 3 Enrichment</span>
-  </h2>
-  <p class="level-note l1-only l2-only-block">${
-    twr.languageObjective
-      ? esc(twr.languageObjective)
-      : "Build strong math sentences. Write, then say each sentence out loud."
-  }</p>
-  <div class="l1-only l2-only-block">
-    ${kernel}
-    ${expansion}
-    ${types}
-    ${reasoning}
-  </div>
-  <div class="l3-only">
-    <div class="twr-block" style="border-left-color: var(--amber);">
-      <h3>Advanced Mathematical Explanation</h3>
-      <p class="sentence-frame"><strong>Writing Prompt:</strong> Write an explanatory paragraph summarizing today's key mathematical concept. Your explanation must include at least one complex sentence using a conjunction (because, since, although, or unless) to justify your mathematical reasoning. Draw models or sketch graphs to support your argument.</p>
-      <div class="scratchpad"><span class="scratchpad-label">Doodle / Diagram / Sketch Area</span></div>
-      <div class="work-space">${blankLines(6)}</div>
-    </div>
-  </div>
-</section>`;
-}
-
-function twrAnswerKey(config) {
-  const twr = deriveTWR(config);
-  const items = [
-    `<li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: ${esc(twr.kernel.en)}</li>`,
-    `<li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li>`,
-    `<li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li>`,
-  ];
-  return items.join("");
 }
 
 /* ---------- page assembly ---------- */
@@ -1427,6 +1117,7 @@ function missionBanner(cfg) {
 function buildPacket(id, cfg, isFlagship) {
   const worked = deriveWorkedSteps(cfg);
   const usedStems = new Set(worked.usedStems || []);
+  const gn = guidedNotesFill(cfg);
   const standard = cfg.standard ? `Standard ${esc(cfg.standard)}` : "";
   const standardPlain = cfg.standard ? `Standard ${cfg.standard}` : "";
   const unit = cfg.unit != null ? `Unit ${esc(cfg.unit)}` : "";
@@ -1441,6 +1132,31 @@ function buildPacket(id, cfg, isFlagship) {
 <title>${esc(cfg.title)} — Notes Packet</title>
 ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
+<style>
+  /* Fill-in-the-blank guided notes */
+  .gn-directions{margin:14px 0 6px;font-weight:700;color:var(--navy);font-size:15px;}
+  .gn-fill{margin:6px 0 4px;}
+  .gn-bank{border:2px dashed var(--teal);border-radius:12px;background:#f0faf8;padding:12px 14px;margin-bottom:14px;}
+  .gn-bank-label{display:block;font-weight:800;color:var(--teal);font-size:13px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:8px;}
+  .gn-bank-words{display:flex;flex-wrap:wrap;gap:8px;}
+  .gn-bank-word{background:#fff;border:1.5px solid var(--teal);color:var(--navy);border-radius:999px;padding:5px 14px;font-weight:700;font-size:14px;}
+  .gn-bank-hint{margin:8px 0 0;font-size:12px;color:#5a6b78;font-style:italic;}
+  .gn-lines{list-style:none;margin:0;padding:0;counter-reset:none;}
+  .gn-line{display:flex;align-items:flex-start;gap:12px;padding:11px 12px;border:1px solid #e3e8ec;border-radius:10px;margin-bottom:10px;background:#fff;break-inside:avoid;page-break-inside:avoid;}
+  .gn-num{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .gn-sentence{flex:1;font-size:16px;line-height:1.9;color:#1c2b36;}
+  .gn-blank{display:inline-block;min-width:120px;border-bottom:2px solid var(--navy);height:1.25em;margin:0 4px;vertical-align:bottom;}
+  .gn-subhead{margin:20px 0 8px;color:var(--navy);font-size:16px;font-weight:800;}
+  @media print{
+    .gn-bank{border:1.5px dashed #000;background:#fff;}
+    .gn-bank-label{color:#000;}
+    .gn-bank-word{border-color:#000;color:#000;}
+    .gn-line{border-color:#000;}
+    .gn-num{background:#000;}
+    .gn-blank{border-bottom-color:#000;}
+    .gn-subhead,.gn-directions{color:#000;}
+  }
+</style>
 <script>
   if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}
   (function() {
@@ -1508,13 +1224,10 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
   </header>
   ${missionBanner(cfg)}
   ${vocabSection(cfg.vocabulary)}
-  ${notesSection(cfg, worked)}
-  ${turnAndTalkSection(cfg)}
-  ${projectsSection(cfg.projects)}
-  ${twrSection(cfg)}
+  ${notesSection(cfg, worked, gn.html)}
   ${tryItSection(cfg.practice, usedStems)}
   ${reflectSection(cfg.reflect)}
-  ${answerKeySection(cfg.practice, cfg.reflect, cfg, worked, usedStems)}
+  ${answerKeySection(cfg.practice, cfg.reflect, cfg, worked, usedStems, gn.keyRows)}
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson ${esc(id)}${standard ? " · " + standard : ""}</footer>
 </main>
 </body>

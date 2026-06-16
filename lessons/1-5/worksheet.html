@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Add and Subtract Decimals — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+</style>
+</head>
+<body>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NS.3</span>
+      <span class="ws-ver">Version A</span>
+    </div>
+    <h1 class="ws-title">Add and Subtract Decimals</h1>
+    <p class="ws-sub">Practice — Version A</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h3 class="ws-bank-h">📕 Word Bank</h3>
+    <div class="ws-bankwords"><span class="ws-bankword">Decimal</span><span class="ws-bankword">Place value</span><span class="ws-bankword">Tenths</span><span class="ws-bankword">Hundredths</span><span class="ws-bankword">Annex zeros</span></div>
+  </section><section class="ws-example">
+    <h3 class="ws-example-h">✏️ Worked Example</h3>
+    <ol class="ws-example-steps"><li><b>Problem:</b> 15.7 − 8.36</li><li><b>Set up:</b> 15.7 − 8.36</li><li><b>Subtract:</b> 15.7 − 8.36 = 7.41</li><li><b>Final answer:</b> 7.41</li></ol>
+  </section>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is 14.6 + 3.85?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>18.45</li><li class="ws-opt"><span class="ws-bub">B</span>18.35</li><li class="ws-opt"><span class="ws-bub">C</span>17.45</li><li class="ws-opt"><span class="ws-bub">D</span>18.55</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is 20.3 − 7.48?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>12.82</li><li class="ws-opt"><span class="ws-bub">B</span>13.82</li><li class="ws-opt"><span class="ws-bub">C</span>12.92</li><li class="ws-opt"><span class="ws-bub">D</span>12.18</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is 9.05 + 4.7?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>13.75</li><li class="ws-opt"><span class="ws-bub">B</span>13.12</li><li class="ws-opt"><span class="ws-bub">C</span>14.75</li><li class="ws-opt"><span class="ws-bub">D</span>13.57</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Show 6.5 − 2.8 and 3.25 + 1.5 on the number line</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">What is 50 − 23.47?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>26.53</li><li class="ws-opt"><span class="ws-bub">B</span>27.53</li><li class="ws-opt"><span class="ws-bub">C</span>26.63</li><li class="ws-opt"><span class="ws-bub">D</span>27.47</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Add and Subtract Decimals.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Line up the decimal points, annex zeros if needed, then add or subtract one column at a time.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NS.3</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">Add and Subtract Decimals</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Compute each decimal sum or difference.</p>
+  <table class="ws-table"><thead><tr><th>Problem</th><th>Answer</th></tr></thead><tbody><tr><td>5.63 + 2.7</td><td></td></tr><tr><td>12.4 − 8.56</td><td></td></tr><tr><td>9.08 + 4.925</td><td></td></tr><tr><td>25.1 − 13.47</td><td></td></tr><tr><td>7.006 + 3.94</td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Estimate each sum or difference by rounding to the nearest whole number, then sort: is the result greater than 10 or less than 10?</p>
+  <p class="ws-prompt">Categories: <b>greater · less</b></p>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span>7.8 + 3.45 = 11.25</li><li><span class="ws-blank ws-blank-sm"></span>6.25 + 5.9 = 12.15</li><li><span class="ws-blank ws-blank-sm"></span>15.3 − 4.7 = 10.6</li><li><span class="ws-blank ws-blank-sm"></span>8.4 − 2.15 = 6.25</li><li><span class="ws-blank ws-blank-sm"></span>5.6 + 3.82 = 9.42</li><li><span class="ws-blank ws-blank-sm"></span>12.1 − 4.95 = 7.15</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A student buys items costing $4.59, $12.75, and $3.80. What is the total cost?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>$21.14</li><li class="ws-opt"><span class="ws-bub">B</span>$20.14</li><li class="ws-opt"><span class="ws-bub">C</span>$21.04</li><li class="ws-opt"><span class="ws-bub">D</span>$21.24</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Write the letter of the matching answer next to each.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>8.5 + 3.75</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>15.2 − 6.8</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>4.06 + 7.94</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>20 − 13.45</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>9.99 + 0.01</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>11.3 − 4.75</li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span>10</li><li><span class="ws-bub ws-bub-sm">B</span>6.55</li><li><span class="ws-bub ws-bub-sm">C</span>6.55</li><li><span class="ws-bub ws-bub-sm">D</span>12.25</li><li><span class="ws-bub ws-bub-sm">E</span>8.4</li><li><span class="ws-bub ws-bub-sm">F</span>12</li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Add and Subtract Decimals.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Line up the decimal points, annex zeros if needed, then add or subtract one column at a time.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NS.3</span>
+      <span class="ws-ver">Version A — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Add and Subtract Decimals</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is 14.6 + 3.85?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>18.45</li><li class="ws-opt"><span class="ws-bub">B</span>18.35</li><li class="ws-opt"><span class="ws-bub">C</span>17.45</li><li class="ws-opt"><span class="ws-bub">D</span>18.55</li></ol><p class="ws-keynote">Line up decimals: 14.60 + 3.85. Hundredths: 0 + 5 = 5. Tenths: 6 + 8 = 14, write 4 carry 1. Ones: 4 + 3 + 1 = 8. Tens: 1. Answer: 18.45.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is 20.3 − 7.48?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12.82</li><li class="ws-opt"><span class="ws-bub">B</span>13.82</li><li class="ws-opt"><span class="ws-bub">C</span>12.92</li><li class="ws-opt"><span class="ws-bub">D</span>12.18</li></ol><p class="ws-keynote">Rewrite as 20.30 − 7.48. Annex a zero so both have two decimal places. Work carefully with borrowing: 20.30 − 7.48 = 12.82.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is 9.05 + 4.7?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>13.75</li><li class="ws-opt"><span class="ws-bub">B</span>13.12</li><li class="ws-opt"><span class="ws-bub">C</span>14.75</li><li class="ws-opt"><span class="ws-bub">D</span>13.57</li></ol><p class="ws-keynote">Line up decimals: 9.05 + 4.70. Hundredths: 5 + 0 = 5. Tenths: 0 + 7 = 7. Ones: 9 + 4 = 13. Answer: 13.75.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Show 6.5 − 2.8 and 3.25 + 1.5 on the number line</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">What is 50 − 23.47?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>26.53</li><li class="ws-opt"><span class="ws-bub">B</span>27.53</li><li class="ws-opt"><span class="ws-bub">C</span>26.63</li><li class="ws-opt"><span class="ws-bub">D</span>27.47</li></ol><p class="ws-keynote">Rewrite 50 as 50.00. Then 50.00 − 23.47 = 26.53. You must borrow across multiple places.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Add and Subtract Decimals.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Line up the decimal points, annex zeros if needed, then add or subtract one column at a time.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NS.3</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Add and Subtract Decimals</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Compute each decimal sum or difference.</p>
+  <table class="ws-table"><thead><tr><th>Problem</th><th>Answer</th></tr></thead><tbody><tr><td>5.63 + 2.7</td><td>8.33</td></tr><tr><td>12.4 − 8.56</td><td>3.84</td></tr><tr><td>9.08 + 4.925</td><td>14.005</td></tr><tr><td>25.1 − 13.47</td><td>11.63</td></tr><tr><td>7.006 + 3.94</td><td>10.946</td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Estimate each sum or difference by rounding to the nearest whole number, then sort: is the result greater than 10 or less than 10?</p>
+  <p class="ws-prompt">Categories: <b>greater · less</b></p>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm">greater</span>7.8 + 3.45 = 11.25</li><li><span class="ws-blank ws-blank-sm">greater</span>6.25 + 5.9 = 12.15</li><li><span class="ws-blank ws-blank-sm">greater</span>15.3 − 4.7 = 10.6</li><li><span class="ws-blank ws-blank-sm">less</span>8.4 − 2.15 = 6.25</li><li><span class="ws-blank ws-blank-sm">less</span>5.6 + 3.82 = 9.42</li><li><span class="ws-blank ws-blank-sm">less</span>12.1 − 4.95 = 7.15</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A student buys items costing $4.59, $12.75, and $3.80. What is the total cost?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>$21.14</li><li class="ws-opt"><span class="ws-bub">B</span>$20.14</li><li class="ws-opt"><span class="ws-bub">C</span>$21.04</li><li class="ws-opt"><span class="ws-bub">D</span>$21.24</li></ol><p class="ws-keynote">4.59 + 12.75 + 3.80 = 21.14. Line up decimal points and add column by column.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Write the letter of the matching answer next to each.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span>8.5 + 3.75</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">E</span>15.2 − 6.8</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">F</span>4.06 + 7.94</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span>20 − 13.45</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span>9.99 + 0.01</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span>11.3 − 4.75</li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span>10</li><li><span class="ws-bub ws-bub-sm">B</span>6.55</li><li><span class="ws-bub ws-bub-sm">C</span>6.55</li><li><span class="ws-bub ws-bub-sm">D</span>12.25</li><li><span class="ws-bub ws-bub-sm">E</span>8.4</li><li><span class="ws-bub ws-bub-sm">F</span>12</li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Add and Subtract Decimals.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Line up the decimal points, annex zeros if needed, then add or subtract one column at a time.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  </section>
+</body>
+</html>

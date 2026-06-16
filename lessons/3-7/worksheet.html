@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ratio and Rate Problem Solving — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+</style>
+</head>
+<body>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.RP.3</span>
+      <span class="ws-ver">Version A</span>
+    </div>
+    <h1 class="ws-title">Ratio and Rate Problem Solving</h1>
+    <p class="ws-sub">Practice — Version A</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h3 class="ws-bank-h">📕 Word Bank</h3>
+    <div class="ws-bankwords"><span class="ws-bankword">Rate</span><span class="ws-bankword">Unit rate</span><span class="ws-bankword">Per</span><span class="ws-bankword">Problem solving</span><span class="ws-bankword">Proportion</span></div>
+  </section><section class="ws-example">
+    <h3 class="ws-example-h">✏️ Worked Example</h3>
+    <ol class="ws-example-steps"><li><b>Read the problem:</b> A store sells 6 oranges for $4.50. What is the cost of 10 oranges?</li><li><b>Find the unit rate:</b> $4.50 ÷ 6 = $0.75 per orange</li><li><b>Multiply for 10 oranges:</b> $0.75 + 10 = $10.75</li><li><b>Answer:</b> 10 oranges cost $10.75</li></ol>
+  </section>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A bakery makes 24 cookies in 3 batches. What is the unit rate of cookies per batch?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>8 cookies per batch</li><li class="ws-opt"><span class="ws-bub">B</span>3 cookies per batch</li><li class="ws-opt"><span class="ws-bub">C</span>24 cookies per batch</li><li class="ws-opt"><span class="ws-bub">D</span>6 cookies per batch</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Apples cost $5 for 4 pounds. What is the cost per pound?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>$1.25</li><li class="ws-opt"><span class="ws-bub">B</span>$0.80</li><li class="ws-opt"><span class="ws-bub">C</span>$1.50</li><li class="ws-opt"><span class="ws-bub">D</span>$4.00</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A cyclist rides 36 miles in 3 hours. At the same rate, how far will she ride in 5 hours?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>60 miles</li><li class="ws-opt"><span class="ws-bub">B</span>48 miles</li><li class="ws-opt"><span class="ws-bub">C</span>72 miles</li><li class="ws-opt"><span class="ws-bub">D</span>45 miles</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A printer prints 45 pages in 9 minutes. How many pages does it print per minute?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>5 pages per minute</li><li class="ws-opt"><span class="ws-bub">B</span>9 pages per minute</li><li class="ws-opt"><span class="ws-bub">C</span>4 pages per minute</li><li class="ws-opt"><span class="ws-bub">D</span>45 pages per minute</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Miles driven</td><td></td><td></td><td></td></tr><tr><td>Cost of juice</td><td></td><td></td><td></td></tr><tr><td>Words typed</td><td></td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Ratio and Rate Problem Solving.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Find the unit rate by dividing, then multiply it to find the amount you need.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.RP.3</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">Ratio and Rate Problem Solving</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>4</td><td></td></tr><tr><td>8</td><td></td></tr><tr><td>12</td><td></td></tr><tr><td>20</td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A car travels 150 miles in 3 hours. A bus travels 200 miles in 5 hours. Which vehicle is faster?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>The car</li><li class="ws-opt"><span class="ws-bub">B</span>The bus</li><li class="ws-opt"><span class="ws-bub">C</span>Same speed</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Sort each rate problem by the strategy that works BEST to solve it.</p>
+  <p class="ws-prompt">Categories: <b>unit-rate · ratio-table</b></p>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span>Find cost per pound when 5 lb costs $12</li><li><span class="ws-blank ws-blank-sm"></span>If 3 shirts cost $24, find cost of 9 shirts</li><li><span class="ws-blank ws-blank-sm"></span>A car goes 55 mph — how far in 4 hours?</li><li><span class="ws-blank ws-blank-sm"></span>Scale a recipe from 4 servings to 20 servings</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A runner goes 6 miles in 48 minutes. Place markers showing distance at 0, 16, 32, and 48 minutes.</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Ratio and Rate Problem Solving.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Find the unit rate by dividing, then multiply it to find the amount you need.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.RP.3</span>
+      <span class="ws-ver">Version A — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Ratio and Rate Problem Solving</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A bakery makes 24 cookies in 3 batches. What is the unit rate of cookies per batch?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>8 cookies per batch</li><li class="ws-opt"><span class="ws-bub">B</span>3 cookies per batch</li><li class="ws-opt"><span class="ws-bub">C</span>24 cookies per batch</li><li class="ws-opt"><span class="ws-bub">D</span>6 cookies per batch</li></ol><p class="ws-keynote">Unit rate: 24 cookies ÷ 3 batches = 8 cookies per batch.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Apples cost $5 for 4 pounds. What is the cost per pound?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>$1.25</li><li class="ws-opt"><span class="ws-bub">B</span>$0.80</li><li class="ws-opt"><span class="ws-bub">C</span>$1.50</li><li class="ws-opt"><span class="ws-bub">D</span>$4.00</li></ol><p class="ws-keynote">Unit rate: $5 ÷ 4 pounds = $1.25 per pound.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A cyclist rides 36 miles in 3 hours. At the same rate, how far will she ride in 5 hours?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>60 miles</li><li class="ws-opt"><span class="ws-bub">B</span>48 miles</li><li class="ws-opt"><span class="ws-bub">C</span>72 miles</li><li class="ws-opt"><span class="ws-bub">D</span>45 miles</li></ol><p class="ws-keynote">Unit rate: 36 ÷ 3 = 12 miles per hour. In 5 hours: 12 × 5 = 60 miles.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A printer prints 45 pages in 9 minutes. How many pages does it print per minute?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>5 pages per minute</li><li class="ws-opt"><span class="ws-bub">B</span>9 pages per minute</li><li class="ws-opt"><span class="ws-bub">C</span>4 pages per minute</li><li class="ws-opt"><span class="ws-bub">D</span>45 pages per minute</li></ol><p class="ws-keynote">Unit rate: 45 ÷ 9 = 5 pages per minute.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Miles driven</td><td>120 miles</td><td>4 hours</td><td>30 miles per hour</td></tr><tr><td>Cost of juice</td><td>$6.00</td><td>8 bottles</td><td></td></tr><tr><td>Words typed</td><td>180 words</td><td>3 minutes</td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Ratio and Rate Problem Solving.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Find the unit rate by dividing, then multiply it to find the amount you need.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.RP.3</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Ratio and Rate Problem Solving</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>4</td><td>5</td></tr><tr><td>8</td><td></td></tr><tr><td>12</td><td></td></tr><tr><td>20</td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A car travels 150 miles in 3 hours. A bus travels 200 miles in 5 hours. Which vehicle is faster?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>The car</li><li class="ws-opt"><span class="ws-bub">B</span>The bus</li><li class="ws-opt"><span class="ws-bub">C</span>Same speed</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol><p class="ws-keynote">Car: 150÷3 = 50 mph. Bus: 200÷5 = 40 mph. The car travels faster at 50 mph vs. 40 mph.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Sort each rate problem by the strategy that works BEST to solve it.</p>
+  <p class="ws-prompt">Categories: <b>unit-rate · ratio-table</b></p>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm">unit-rate</span>Find cost per pound when 5 lb costs $12</li><li><span class="ws-blank ws-blank-sm">ratio-table</span>If 3 shirts cost $24, find cost of 9 shirts</li><li><span class="ws-blank ws-blank-sm">unit-rate</span>A car goes 55 mph — how far in 4 hours?</li><li><span class="ws-blank ws-blank-sm">ratio-table</span>Scale a recipe from 4 servings to 20 servings</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A runner goes 6 miles in 48 minutes. Place markers showing distance at 0, 16, 32, and 48 minutes.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Ratio and Rate Problem Solving.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Find the unit rate by dividing, then multiply it to find the amount you need.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  </section>
+</body>
+</html>

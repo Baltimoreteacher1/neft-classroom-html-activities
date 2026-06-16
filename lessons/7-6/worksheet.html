@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Solve and Graph Inequalities — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+</style>
+</head>
+<body>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.EE.5</span>
+      <span class="ws-ver">Version A</span>
+    </div>
+    <h1 class="ws-title">Solve and Graph Inequalities</h1>
+    <p class="ws-sub">Practice — Version A</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h3 class="ws-bank-h">📕 Word Bank</h3>
+    <div class="ws-bankwords"><span class="ws-bankword">Solve</span><span class="ws-bankword">Graph</span><span class="ws-bankword">Solution</span><span class="ws-bankword">Substitute</span><span class="ws-bankword">Solution set</span><span class="ws-bankword">Inverse operation</span></div>
+  </section><section class="ws-example">
+    <h3 class="ws-example-h">✏️ Worked Example</h3>
+    <ol class="ws-example-steps"><li><b>Inequality:</b> x − 8 ≥ 15</li><li><b>Inverse operation:</b> Subtract 8 from both sides</li><li><b>Simplify:</b> x ≥ 7</li><li><b>Graph:</b> Closed circle at 7, shade right</li></ol>
+  </section>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Solve: x + 6 &gt; 14</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>x &gt; 8</li><li class="ws-opt"><span class="ws-bub">B</span>x &gt; 20</li><li class="ws-opt"><span class="ws-bub">C</span>x &lt; 8</li><li class="ws-opt"><span class="ws-bub">D</span>x = 8</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Solve: x − 9 ≤ 3</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>x ≤ 12</li><li class="ws-opt"><span class="ws-bub">B</span>x ≤ 6</li><li class="ws-opt"><span class="ws-bub">C</span>x ≥ 12</li><li class="ws-opt"><span class="ws-bub">D</span>x = 12</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve: x + 10 ≥ 25</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>x ≥ 15</li><li class="ws-opt"><span class="ws-bub">B</span>x ≥ 35</li><li class="ws-opt"><span class="ws-bub">C</span>x ≤ 15</li><li class="ws-opt"><span class="ws-bub">D</span>x = 15</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Solve: x − 4 &lt; 11</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>x &lt; 15</li><li class="ws-opt"><span class="ws-bub">B</span>x &lt; 7</li><li class="ws-opt"><span class="ws-bub">C</span>x &gt; 15</li><li class="ws-opt"><span class="ws-bub">D</span>x = 15</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Solve x + 3 &gt; 9, then graph the solution on the number line.</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Solve and Graph Inequalities.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Solve with inverse operations, then graph the solution set: open circle for &lt; or &gt;, closed for ≤ or ≥.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.EE.5</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">Solve and Graph Inequalities</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Solve each inequality, describe the inverse operation, and describe the graph.</p>
+  <table class="ws-table"><thead><tr><th>Inequality</th><th>Inverse Operation</th><th>Solution</th><th>Graph Description</th></tr></thead><tbody><tr><td>x + 11 ≥ 20</td><td></td><td></td><td></td></tr><tr><td>x − 3 &lt; 7</td><td></td><td></td><td></td></tr><tr><td>x + 8 ≤ 20</td><td></td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Is x = 5 a solution to x + 4 &gt; 12?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>No, because 5 + 4 = 9, and 9 is not greater than 12</li><li class="ws-opt"><span class="ws-bub">B</span>Yes, because 5 + 4 = 9</li><li class="ws-opt"><span class="ws-bub">C</span>Yes, because 5 &gt; 4</li><li class="ws-opt"><span class="ws-bub">D</span>No, because 5 &lt; 12</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve each inequality first, then sort by whether x = 10 is a solution.</p>
+  <p class="ws-prompt">Categories: <b></b></p>
+  <ul class="ws-sort"></ul></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Solve the inequality x + 7 ≥ 19 using the balance scale. What is the boundary value?</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Solve and Graph Inequalities.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Solve with inverse operations, then graph the solution set: open circle for &lt; or &gt;, closed for ≤ or ≥.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.EE.5</span>
+      <span class="ws-ver">Version A — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Solve and Graph Inequalities</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Solve: x + 6 &gt; 14</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>x &gt; 8</li><li class="ws-opt"><span class="ws-bub">B</span>x &gt; 20</li><li class="ws-opt"><span class="ws-bub">C</span>x &lt; 8</li><li class="ws-opt"><span class="ws-bub">D</span>x = 8</li></ol><p class="ws-keynote">Subtract 6 from both sides: x &gt; 14 − 6 = 8. Graph: open circle at 8, shade right.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Solve: x − 9 ≤ 3</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>x ≤ 12</li><li class="ws-opt"><span class="ws-bub">B</span>x ≤ 6</li><li class="ws-opt"><span class="ws-bub">C</span>x ≥ 12</li><li class="ws-opt"><span class="ws-bub">D</span>x = 12</li></ol><p class="ws-keynote">Add 9 to both sides: x ≤ 3 + 9 = 12. Graph: closed circle at 12, shade left.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve: x + 10 ≥ 25</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>x ≥ 15</li><li class="ws-opt"><span class="ws-bub">B</span>x ≥ 35</li><li class="ws-opt"><span class="ws-bub">C</span>x ≤ 15</li><li class="ws-opt"><span class="ws-bub">D</span>x = 15</li></ol><p class="ws-keynote">Subtract 10 from both sides: x ≥ 25 − 10 = 15. Graph: closed circle at 15, shade right.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Solve: x − 4 &lt; 11</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>x &lt; 15</li><li class="ws-opt"><span class="ws-bub">B</span>x &lt; 7</li><li class="ws-opt"><span class="ws-bub">C</span>x &gt; 15</li><li class="ws-opt"><span class="ws-bub">D</span>x = 15</li></ol><p class="ws-keynote">Add 4 to both sides: x &lt; 11 + 4 = 15. Graph: open circle at 15, shade left.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Solve x + 3 &gt; 9, then graph the solution on the number line.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Solve and Graph Inequalities.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Solve with inverse operations, then graph the solution set: open circle for &lt; or &gt;, closed for ≤ or ≥.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.EE.5</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Solve and Graph Inequalities</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Solve each inequality, describe the inverse operation, and describe the graph.</p>
+  <table class="ws-table"><thead><tr><th>Inequality</th><th>Inverse Operation</th><th>Solution</th><th>Graph Description</th></tr></thead><tbody><tr><td>x + 11 ≥ 20</td><td>Subtract 11</td><td>x ≥ 9</td><td>Closed circle at 9, shade right</td></tr><tr><td>x − 3 &lt; 7</td><td>Add 3</td><td>x &lt; 10</td><td>Open circle at 10, shade left</td></tr><tr><td>x + 8 ≤ 20</td><td>Subtract 8</td><td>x ≤ 12</td><td>Closed circle at 12, shade left</td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Is x = 5 a solution to x + 4 &gt; 12?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>No, because 5 + 4 = 9, and 9 is not greater than 12</li><li class="ws-opt"><span class="ws-bub">B</span>Yes, because 5 + 4 = 9</li><li class="ws-opt"><span class="ws-bub">C</span>Yes, because 5 &gt; 4</li><li class="ws-opt"><span class="ws-bub">D</span>No, because 5 &lt; 12</li></ol><p class="ws-keynote">Substitute: 5 + 4 = 9. Since 9 &gt; 12 is false, x = 5 is NOT a solution.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve each inequality first, then sort by whether x = 10 is a solution.</p>
+  <p class="ws-prompt">Categories: <b></b></p>
+  <ul class="ws-sort"></ul></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Solve the inequality x + 7 ≥ 19 using the balance scale. What is the boundary value?</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Solve and Graph Inequalities.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Solve with inverse operations, then graph the solution set: open circle for &lt; or &gt;, closed for ≤ or ≥.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  </section>
+</body>
+</html>

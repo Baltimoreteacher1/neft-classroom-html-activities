@@ -1664,10 +1664,100 @@ body.help-modal-open { overflow: hidden; }
   body { padding-bottom: 0; }
 }
 
+
+/* ============================================================
+   Polish layer — premium, TpT-quality finish (loads last).
+   Refines shared content surfaces without changing structure.
+   ============================================================ */
+body { font-size: 15px; line-height: 1.58; }
+.container { max-width: 840px; padding: 28px 18px 40px; }
+
+/* Section headings get a clear accent + stronger hierarchy */
+.section-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--line);
+}
+.section-title::before {
+  content: "";
+  width: 5px;
+  height: 22px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--teal), var(--navy));
+  flex: 0 0 auto;
+}
+
+/* Cards: softer, layered, consistent */
+.card {
+  border-radius: var(--radius-lg);
+  padding: 26px 28px;
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 2px rgba(18,53,91,.05), 0 14px 34px -22px rgba(18,53,91,.5);
+}
+
+/* Guided "worked steps" become clean carded rows with a left accent */
+.worked-step {
+  align-items: flex-start;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #fbfdff;
+  margin-bottom: 10px;
+}
+.worked-step.highlighted {
+  background: var(--amber-light);
+  border-color: var(--amber);
+  box-shadow: 0 8px 22px -14px rgba(242,193,91,.9);
+}
+.step-badge {
+  font-size: 10px;
+  letter-spacing: .04em;
+  padding: 4px 9px;
+  border-radius: 999px;
+  align-self: center;
+}
+.step-label { font-size: 15px; }
+
+/* Bilingual text: clearer separation, muted secondary language */
+.lang-es { color: var(--muted); }
+.worked-step .lang-es, .lang-en + .lang-es { display: block; margin-top: 3px; }
+
+/* "Watch for this" / tip callouts: crisp, friendly */
+.watch-for-list, .watch-for {
+  background: var(--hint-bg);
+  border: 1px solid #f0d9a0;
+  border-left: 4px solid var(--amber);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+/* Vocab flip cards: a touch more depth + polish */
+.vocab-card-inner, .vocab-card-front, .vocab-card-back {
+  border-radius: var(--radius-md);
+}
+.vocab-card-front, .vocab-card-back {
+  box-shadow: 0 1px 2px rgba(18,53,91,.05), 0 16px 30px -20px rgba(18,53,91,.5);
+  border: 1px solid var(--line);
+}
+
+/* Family guide block: warmer, cleaner */
+.family-guide {
+  border-radius: var(--radius-lg);
+  border: 1px solid #ead9b8;
+  box-shadow: 0 1px 2px rgba(18,53,91,.04), 0 16px 36px -24px rgba(180,140,60,.6);
+}
+
+@media print {
+  .worked-step { break-inside: avoid; box-shadow: none; }
+  .card { box-shadow: none; }
+}
 </style>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
 </head>
 <body>
 
@@ -3466,8 +3556,5 @@ window.onload = function() {
   });
 };
 </script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>
