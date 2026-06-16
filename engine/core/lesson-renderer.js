@@ -595,6 +595,42 @@ function renderConceptIntro(host, intro) {
   host.append(card);
 }
 
+// Bridge the Launch hook straight into the full step-by-step Learn It page.
+// Opens the Learn It view inline (ctx.openExtra), so the launch scenario and
+// the teaching read as one connected flow. Learn It lives here (off the Launch)
+// rather than as its own sidebar tab.
+function renderLearnItBridge(host, ctx, config) {
+  const intro = (config.launch && config.launch.conceptIntro) || null;
+  const heading = intro && intro.heading ? intro.heading : "how to solve it";
+  const card = document.createElement("div");
+  card.className = "card learnit-bridge-card";
+  card.style.cssText =
+    "border-left:4px solid var(--gold,#d4952a); background:rgba(233,196,106,0.12); display:flex; flex-wrap:wrap; gap:var(--sp-3,12px); align-items:center; justify-content:space-between;";
+  card.innerHTML = `
+    <div style="flex:1 1 260px;">
+      <h4 style="color:var(--navy,#264653); margin:0 0 4px;">📖 Now learn ${esc(
+        heading,
+      )
+        .replace(/^What is /i, "")
+        .replace(/\?$/, "")}</h4>
+      <p style="margin:0; font-size:0.95rem; line-height:1.5;">You've seen the problem. Open <strong>Learn It</strong> to see exactly how to solve it — step by step, with examples you can work through — then come back and keep going.</p>
+    </div>
+    <button type="button" class="btn btn-primary" data-open-learn style="flex:0 0 auto;">Open Learn It →</button>`;
+  const btn = card.querySelector("[data-open-learn]");
+  if (btn) {
+    btn.addEventListener("click", () => {
+      if (ctx && typeof ctx.openExtra === "function") ctx.openExtra("learn");
+      else
+        window.open(
+          `/lessons/${config.lessonId}/learn.html`,
+          "_blank",
+          "noopener",
+        );
+    });
+  }
+  host.append(card);
+}
+
 // ── Turn & Talk (non-graded student discussion moments) ──────────────────────
 // A reusable, visually distinct "🗣️ Turn & Talk" block. It is driven by an
 // optional config field `config.turnAndTalk` (array of
@@ -1450,6 +1486,10 @@ function renderLaunchPhase(el, state, ctx, config) {
 
   // After eliciting notice/wonder, teach the concept directly (opt-in).
   renderConceptIntro(el, cfg.conceptIntro);
+
+  // Hand off to the full step-by-step Learn It page — ties the Launch hook
+  // directly to the teaching, opened inline.
+  renderLearnItBridge(el, ctx, config);
 
   // Launch Turn & Talk — speech-bubble discussion moment (non-graded).
   const launchTT = resolveTurnTalk("launch", config);
