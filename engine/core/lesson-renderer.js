@@ -1471,7 +1471,7 @@ function renderVocabPhase(el, state, ctx, config) {
               : 1;
       setTimeout(
         async () =>
-          await completePhase(el, ctx, state, 1, "Vocab Builder", stars, 3),
+          await completePhase(el, ctx, state, 1, "Vocabulary", stars, 3),
         400,
       );
       return;
@@ -1485,7 +1485,7 @@ function renderVocabPhase(el, state, ctx, config) {
         el,
         "📖",
         "section-icon-amber",
-        "Vocab Builder",
+        "Vocabulary",
         "Study the words, then show what you know.",
       );
       instructionCallout(

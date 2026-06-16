@@ -24,7 +24,7 @@ const PHASE_ACCENTS = [
 
 const PHASE_CONFIGS = [
   { name: "Launch", icon: "🚀" },
-  { name: "Vocab Builder", icon: "📖" },
+  { name: "Vocabulary", icon: "📖" },
   { name: "Explore", icon: "🔍" },
   { name: "Practice", icon: "✏️" },
   { name: "Connect", icon: "🌎" },

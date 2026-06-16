@@ -1046,17 +1046,19 @@ function buildSidebar(config, state, phaseConfigs) {
 // These open inline in the lesson shell (see app.openExtra) and never affect
 // XP, stars, or phase completion.
 function preLessonNavHtml(config) {
-  // Non-graded warm-up tabs, shown as a clean numbered list (no group label).
-  // Learn It is reached from the Launch (see renderLearnItBridge), not here.
+  // Non-graded warm-up tabs: tap-to-open resources (icons, not numbers) so they
+  // read as distinct from the numbered 1–6 lesson phases below — one clean
+  // left nav, no two lists both restarting at 1.
   const tabs = [];
-  if (config.readiness) tabs.push({ extra: "readiness", label: "Get Ready" });
-  tabs.push({ extra: "objectives", label: "Objectives" });
-  tabs.push({ extra: "vocab", label: "Vocab" });
-  tabs.push({ extra: "notes", label: "Notes" });
+  if (config.readiness)
+    tabs.push({ extra: "readiness", icon: "📚", label: "Get Ready" });
+  tabs.push({ extra: "objectives", icon: "🎯", label: "Objectives" });
+  tabs.push({ extra: "vocab", icon: "🔑", label: "Vocab" });
+  tabs.push({ extra: "notes", icon: "📝", label: "Notes" });
   const items = tabs.map(
-    (t, i) =>
+    (t) =>
       `<button class="phase-btn extra-btn" data-extra="${t.extra}">
-        <span class="phase-num">${i + 1}</span>
+        <span class="phase-num" style="background:transparent; box-shadow:none; font-size:1.15rem;">${t.icon}</span>
         <span>${t.label}</span>
       </button>`,
   );
@@ -1193,10 +1195,6 @@ function updateSidebar(sidebar, state, phaseConfigs) {
   const nav = sidebar.querySelector('[data-bind="phases"]');
   if (!nav) return;
 
-  // Continue the numbering from the warm-up tabs so the whole left nav reads as
-  // one ordered roadmap (1..N) instead of two lists that both restart at 1.
-  const preCount = sidebar.querySelectorAll(".prelesson-nav .extra-btn").length;
-
   nav.innerHTML = s.phases
     .map((phase, i) => {
       const isCurrent = i === s.currentPhase;
@@ -1216,7 +1214,7 @@ function updateSidebar(sidebar, state, phaseConfigs) {
 
       return `
       <button class="${cls}" data-phase="${i}">
-        <span class="phase-num">${preCount + i + 1}</span>
+        <span class="phase-num">${i + 1}</span>
         <span>${escHtml(phaseConfigs[i]?.name || `Phase ${i + 1}`)}</span>
         <span class="phase-stars">${stars}</span>
       </button>
