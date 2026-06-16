@@ -500,24 +500,24 @@
 
       .builder-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 12px;
-        margin-bottom: 16px;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 18px;
       }
 
       .builder-col {
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 8px;
       }
 
       .col-label {
-        font-size: 0.75rem;
+        font-size: 0.9rem;
         font-weight: 800;
         text-transform: uppercase;
         color: var(--text-secondary);
         letter-spacing: 0.05em;
-        margin-bottom: 4px;
+        margin-bottom: 6px;
         text-align: center;
       }
 
@@ -526,13 +526,23 @@
         border: 1px dashed rgba(255, 255, 255, 0.15);
         color: var(--text-primary);
         font-family: var(--font-body);
-        font-size: 0.82rem;
-        padding: 8px 10px;
-        border-radius: 8px;
+        font-size: 1rem;
+        padding: 11px 12px;
+        border-radius: 10px;
         cursor: pointer;
         text-align: center;
         transition: all 0.2s;
+        line-height: 1.35;
+        min-height: 46px;
+      }
+
+      .builder-chip small {
+        color: var(--text-secondary);
+        display: block;
+        font-size: 0.82rem;
+        font-weight: 700;
         line-height: 1.25;
+        margin-top: 3px;
       }
 
       .builder-chip:hover {
@@ -556,7 +566,7 @@
       }
 
       .preview-label {
-        font-size: 0.7rem;
+        font-size: 0.84rem;
         font-weight: 800;
         text-transform: uppercase;
         color: var(--text-secondary);
@@ -567,11 +577,11 @@
 
       .preview-text {
         font-family: monospace;
-        font-size: 0.88rem;
+        font-size: 1rem;
         color: #cbd5e1;
         margin: 0;
         min-height: 40px;
-        line-height: 1.35;
+        line-height: 1.5;
       }
 
       .submit-prompt-btn {
@@ -1846,8 +1856,14 @@
         }
       }
 
+      @media (max-width: 1180px) {
+        .builder-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
       @media (max-width: 820px) {
-        .builder-grid, .parent-workspace-grid, .guide-steps {
+        .parent-workspace-grid, .guide-steps {
           grid-template-columns: 1fr;
         }
         .ai101-sort-grid,
@@ -1860,6 +1876,9 @@
       }
 
       @media (max-width: 480px) {
+        .builder-grid {
+          grid-template-columns: 1fr;
+        }
         .stepper {
           flex-direction: column;
           align-items: center;
@@ -3740,6 +3759,107 @@
         }
       };
 
+      const LESSON_CATALOG = {
+        1: [
+          { id: "1-1", title: "Prime Factorization" },
+          { id: "1-2", title: "Greatest Common Factor" },
+          { id: "1-3", title: "Least Common Multiple" },
+          { id: "1-4", title: "Divide Multi-Digit Numbers" },
+          { id: "1-5", title: "Add and Subtract Decimals" },
+          { id: "1-6", title: "Multiply Decimals" },
+          { id: "1-7", title: "Divide Decimals" }
+        ],
+        2: [
+          { id: "2-1", title: "Interpret Division of Fractions" },
+          { id: "2-2", title: "Divide Whole Numbers by Fractions" },
+          { id: "2-3", title: "Divide Fractions" },
+          { id: "2-4", title: "Divide Mixed Numbers" },
+          { id: "2-5", title: "Fraction Division Problem Solving" }
+        ],
+        3: [
+          { id: "3-1", title: "Understand Ratios" },
+          { id: "3-2", title: "Ratio Tables" },
+          { id: "3-3", title: "Graph Ratio Tables" },
+          { id: "3-4", title: "Equivalent Ratios" },
+          { id: "3-5", title: "Compare Ratios" },
+          { id: "3-6", title: "Use Ratio Reasoning" },
+          { id: "3-7", title: "Ratio and Rate Problem Solving" }
+        ],
+        4: [
+          { id: "4-1", title: "Rates and Unit Rates" },
+          { id: "4-2", title: "Relate Fractions, Decimals, and Percents" },
+          { id: "4-3", title: "Percents Greater Than 100% and Less Than 1%" },
+          { id: "4-4", title: "Find the Percent of a Number" },
+          { id: "4-5", title: "Use Percent to Solve Problems" },
+          { id: "4-6", title: "Convert Measurement Units" },
+          { id: "4-7", title: "Solve Problems with Unit Rates" }
+        ],
+        5: [
+          { id: "5-1", title: "Area of Parallelograms" },
+          { id: "5-2", title: "Area of Trapezoids" },
+          { id: "5-3", title: "Area of Triangles" },
+          { id: "5-4", title: "Area of Regular Polygons" },
+          { id: "5-5", title: "Area of Composite Figures" }
+        ],
+        6: [
+          { id: "6-1", title: "Powers and Exponents" },
+          { id: "6-2", title: "Evaluate Expressions" },
+          { id: "6-3", title: "Write Algebraic Expressions" },
+          { id: "6-4", title: "Properties of Operations" },
+          { id: "6-5", title: "The Distributive Property" },
+          { id: "6-6", title: "Equivalent Expressions" },
+          { id: "6-7", title: "Simplify Algebraic Expressions" }
+        ],
+        7: [
+          { id: "7-1", title: "Write Equations" },
+          { id: "7-2", title: "Solve One-Step Addition and Subtraction Equations" },
+          { id: "7-3", title: "Solve Multiplication and Division Equations" },
+          { id: "7-4", title: "Write Inequalities" },
+          { id: "7-5", title: "Graph Inequalities" },
+          { id: "7-6", title: "Solve and Graph Inequalities" },
+          { id: "7-7", title: "Equations and Inequalities Problem Solving" }
+        ],
+        8: [
+          { id: "8-1", title: "Statistical Questions and Data" },
+          { id: "8-2", title: "Mean, Median, and Mode" },
+          { id: "8-3", title: "Mean Absolute Deviation" },
+          { id: "8-4", title: "Appropriate Measures" },
+          { id: "8-5", title: "Display Data: Box Plots" },
+          { id: "8-6", title: "Display Data: Histograms" },
+          { id: "8-7", title: "Shape of Data Distributions" }
+        ],
+        9: [
+          { id: "9-1", title: "Graph on the Coordinate Plane" },
+          { id: "9-2", title: "Integers and Absolute Value" },
+          { id: "9-3", title: "Compare and Order Integers" },
+          { id: "9-4", title: "Rational Numbers on the Number Line" },
+          { id: "9-5", title: "Ordered Pairs in All Four Quadrants" },
+          { id: "9-6", title: "Distance on the Coordinate Plane" },
+          { id: "9-7", title: "Reflect Points Across Axes" }
+        ],
+        10: [
+          { id: "10-1", title: "Volume with Whole Number Edges" },
+          { id: "10-2", title: "Volume of Rectangular Prisms" },
+          { id: "10-3", title: "Surface Area Using Nets" },
+          { id: "10-4", title: "Surface Area of Prisms" },
+          { id: "10-5", title: "Surface Area of Pyramids" }
+        ]
+      };
+
+      const BUILDER_ROLES = [
+        { label: "Student Helper", desc: "Friendly tutor for students" },
+        { label: "Math Teacher", desc: "Clear lesson-style explanation" },
+        { label: "Math Expert", desc: "Precise vocabulary and reasoning" },
+        { label: "Spanish/English Support Helper", desc: "Bilingual vocabulary and sentence frames" }
+      ];
+
+      const HELP_LEVELS = [
+        { label: "Hint only", desc: "Smallest help; I still solve it." },
+        { label: "Similar example", desc: "Show one like it, not my exact problem." },
+        { label: "Step-by-step coaching", desc: "Guide me one step at a time." },
+        { label: "Reteach and practice", desc: "Most help; explain, model, then give practice." }
+      ];
+
       // Bilingual parent workspace dictionary
       const PARENT_LANG = {
         en: {
@@ -3936,23 +4056,25 @@
       }
 
       function getUnitRoles(unitNum) {
-        const SPECIAL = {
-          1: "Decimal Detective 🔍",
-          2: "Fraction Explorer 🧭",
-          3: "Ratio Chef 👨‍🍳",
-          4: "Arcade Prize Designer 🕹️",
-          5: "Architect 📐",
-          6: "Music Studio Engineer 🎚️",
-          7: "Equation Balancer ⚖️",
-          8: "Sports Analyst 📊",
-          9: "Treasure Map Navigator 🗺️",
-          10: "Time Capsule Accountant 💰"
-        };
-        return [
-          SPECIAL[unitNum] || "Math Coach 🧠",
-          "Math Teacher 🍎",
-          "Student Helper 🎒"
-        ];
+        return BUILDER_ROLES;
+      }
+
+      function getUnitLessons(unitNum) {
+        return LESSON_CATALOG[unitNum] || UNIT_DATA[unitNum].examples.map((ex, idx) => ({
+          id: ex.lessonId || `${unitNum}-${idx + 1}`,
+          title: ex.skill
+        }));
+      }
+
+      function getLessonExampleIndex(unitNum, lessonId) {
+        const exactMatch = UNIT_DATA[unitNum].examples.findIndex((ex) => ex.lessonId === lessonId);
+        if (exactMatch >= 0) return exactMatch;
+        const sameUnitMatch = UNIT_DATA[unitNum].examples.findIndex((ex) => ex.lessonId && ex.lessonId.split("-")[0] === String(unitNum));
+        return sameUnitMatch >= 0 ? sameUnitMatch : 0;
+      }
+
+      function escapeForAttr(value) {
+        return String(value).replace(/&/g, "&amp;").replace(/'/g, "&#39;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
       }
 
       const LEVELS = {
@@ -4099,27 +4221,26 @@
                   <div class="builder-grid">
                     <div class="builder-col">
                       <span class="col-label">1. Choose Role</span>
-                      ${getUnitRoles(selectedUnit).map(r => `<button class="builder-chip" onclick="selectChip('role', '${r}', this)">${r}</button>`).join('')}
+                      ${getUnitRoles(selectedUnit).map((r) => `<button type="button" class="builder-chip" data-value="${escapeForAttr(r.label)}" aria-label="Choose role: ${escapeForAttr(r.label)}" onclick="selectBuilderChip('role', this)">${r.label}<small>${r.desc}</small></button>`).join('')}
                     </div>
                     <div class="builder-col">
                       <span class="col-label">2. Choose Lesson</span>
-                      ${data.examples.map((ex, idx) => {
-                        const label = getLessonLabel(ex, idx);
-                        return `<button class="builder-chip" onclick="selectChip('topic', '${label}', this, ${idx})">${label}</button>`;
+                      ${getUnitLessons(selectedUnit).map((lesson) => {
+                        const idx = getLessonExampleIndex(selectedUnit, lesson.id);
+                        const label = `Lesson ${lesson.id.replace("-", ".")}: ${lesson.title}`;
+                        return `<button type="button" class="builder-chip" data-value="${escapeForAttr(label)}" data-example-index="${idx}" aria-label="Choose ${escapeForAttr(label)}" onclick="selectBuilderChip('topic', this)">${label}</button>`;
                       }).join('')}
                     </div>
                     <div class="builder-col">
-                      <span class="col-label">3. Choose Help</span>
-                      <button class="builder-chip" onclick="selectChip('help', 'Explain step-by-step 🪜', this)">Explain step-by-step 🪜</button>
-                      <button class="builder-chip" onclick="selectChip('help', 'Give hints only 💡', this)">Give hints only 💡</button>
-                      <button class="builder-chip" onclick="selectChip('help', 'Show similar examples 📝', this)">Show similar examples 📝</button>
+                      <span class="col-label">3. Choose Help Amount</span>
+                      ${HELP_LEVELS.map((h) => `<button type="button" class="builder-chip" data-value="${escapeForAttr(h.label + ': ' + h.desc)}" aria-label="Choose help amount: ${escapeForAttr(h.label)}" onclick="selectBuilderChip('help', this)">${h.label}<small>${h.desc}</small></button>`).join('')}
                     </div>
                     <div class="builder-col">
                       <span class="col-label">4. Choose Level</span>
-                      <button class="builder-chip" onclick="selectChip('level', 'absolute_beginner', this)">Absolute Beginner 🧒</button>
-                      <button class="builder-chip" onclick="selectChip('level', 'beginner', this)">Beginner 🎒</button>
-                      <button class="builder-chip" onclick="selectChip('level', 'understanding', this)">Understanding 🧠</button>
-                      <button class="builder-chip" onclick="selectChip('level', 'expert', this)">Expert 🎓</button>
+                      <button type="button" class="builder-chip" data-value="absolute_beginner" onclick="selectBuilderChip('level', this)">Absolute Beginner 🧒</button>
+                      <button type="button" class="builder-chip" data-value="beginner" onclick="selectBuilderChip('level', this)">Beginner 🎒</button>
+                      <button type="button" class="builder-chip" data-value="understanding" onclick="selectBuilderChip('level', this)">Understanding 🧠</button>
+                      <button type="button" class="builder-chip" data-value="expert" onclick="selectBuilderChip('level', this)">Expert 🎓</button>
                     </div>
                   </div>
 
@@ -4351,6 +4472,11 @@
           submitBtn.setAttribute("disabled", "true");
           copyBtn.setAttribute("disabled", "true");
         }
+      }
+
+      function selectBuilderChip(category, element) {
+        const exampleIdx = element.dataset.exampleIndex ? parseInt(element.dataset.exampleIndex, 10) : undefined;
+        selectChip(category, element.dataset.value || "", element, exampleIdx);
       }
 
       function copyPromptStudent() {
