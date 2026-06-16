@@ -110,11 +110,25 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
   color:var(--navy);padding-bottom:6px;border-bottom:2px solid var(--line);}
 .li-lead{margin:0 0 14px;font-size:15px;color:var(--muted);}
 .li-steps{margin:0;padding:0;list-style:none;counter-reset:li-step;}
-.li-steps>li{position:relative;counter-increment:li-step;padding:0 0 16px 44px;font-size:17px;line-height:1.65;color:var(--ink);}
-.li-steps>li::before{content:counter(li-step);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
-  background:var(--navy);color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;}
-.li-steps>li:not(:last-child)::after{content:"";position:absolute;left:13px;top:30px;bottom:2px;width:2px;background:var(--line);}
-.li-block-practice{background:#fbfdfc;border:1px solid var(--line);border-radius:14px;padding:18px 20px;}
+.li-steps>li{position:relative;counter-increment:li-step;padding:2px 0 22px 50px;font-size:19px;line-height:1.75;color:var(--ink);}
+.li-steps>li::before{content:counter(li-step);position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;
+  background:var(--navy);color:#fff;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+.li-steps>li:not(:last-child)::after{content:"";position:absolute;left:16px;top:36px;bottom:2px;width:2px;background:var(--line);}
+.li-block-practice{background:#fbfdfc;border:1px solid var(--line);border-radius:14px;padding:22px 24px;}
+/* Tap-to-define pop-up triggers inside Learn It steps */
+.li-pop{display:inline;border:0;background:transparent;padding:0;font:inherit;font-size:inherit;color:var(--teal);
+  font-weight:700;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;}
+.li-pop:hover{color:var(--navy);}
+.li-pop-i{font-size:.7em;vertical-align:super;margin-left:1px;opacity:.8;}
+.li-pop-demo{color:var(--teal);font-weight:700;text-decoration:underline;text-decoration-style:dotted;}
+.nt-popover{position:fixed;z-index:9999;max-width:280px;background:#fff;border:2px solid var(--teal);
+  border-radius:14px;box-shadow:0 12px 32px rgba(18,53,91,.22);padding:14px 16px;display:none;}
+.nt-popover.open{display:block;}
+.nt-popover img{display:block;width:100%;max-height:150px;object-fit:contain;border-radius:8px;background:#f0faf8;margin-bottom:10px;}
+.nt-popover h4{margin:0 0 6px;color:var(--navy);font-size:18px;font-family:Outfit,system-ui,sans-serif;}
+.nt-popover p{margin:0;font-size:15px;line-height:1.5;color:var(--ink);}
+.nt-popover .nt-pop-close{position:absolute;top:6px;right:8px;border:none;background:transparent;font-size:20px;line-height:1;color:var(--muted);cursor:pointer;}
+@media print{.li-pop{color:#000;}.li-pop-i,.nt-popover{display:none!important;}}
 .li-steps-fill>li{padding-bottom:20px;}
 .li-input{display:block;width:100%;margin-top:10px;border:0;border-bottom:2px solid var(--teal);
   padding:7px 4px;font:inherit;font-size:16px;color:var(--navy);background:transparent;}
@@ -741,6 +755,30 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     });
   })();
 </script>
+<script>
+  (function () {
+    var pop = null;
+    function ensure(){ if(pop) return pop; pop=document.createElement('div'); pop.className='nt-popover';
+      pop.innerHTML='<button type="button" class="nt-pop-close" aria-label="Close">×</button><img alt="" /><h4></h4><p></p>';
+      document.body.appendChild(pop); pop.querySelector('.nt-pop-close').addEventListener('click', hide); return pop; }
+    function hide(){ if(pop) pop.classList.remove('open'); }
+    function show(btn){ var p=ensure(), img=p.querySelector('img'), src=btn.getAttribute('data-img')||'';
+      if(src){ img.src=src; img.style.display=''; img.onerror=function(){img.style.display='none';}; } else { img.style.display='none'; }
+      p.querySelector('h4').textContent=btn.getAttribute('data-term')||'';
+      p.querySelector('p').textContent=btn.getAttribute('data-def')||'';
+      p.classList.add('open');
+      var r=btn.getBoundingClientRect(), pw=p.offsetWidth, ph=p.offsetHeight, top=r.bottom+8, left=r.left;
+      if(left+pw>window.innerWidth-8) left=window.innerWidth-pw-8; if(left<8) left=8;
+      if(top+ph>window.innerHeight-8) top=r.top-ph-8; if(top<8) top=8;
+      p.style.left=left+'px'; p.style.top=top+'px'; }
+    document.addEventListener('click', function(e){
+      var btn=e.target.closest?e.target.closest('[data-popover]'):null;
+      if(btn){ e.preventDefault(); show(btn); return; }
+      if(pop && !e.target.closest('.nt-popover')) hide();
+    });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape') hide(); });
+  })();
+</script>
 </head>
 <body>
 <div class="topbar no-print">
@@ -769,6 +807,7 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     
     <section class="li-block">
         <p class="li-eyebrow">Worked example</p>
+        <p class="li-lead">Read each step. Tap a <span class="li-pop-demo">blue word</span> to see what it means.</p>
         <ol class="li-steps"><li>I want to cut a 3-foot strip of tape into 1/4-foot pieces. I ask: how many 1/4-foot pieces fit into 3 feet?</li><li>First I look at just 1 foot. How many 1/4-foot pieces fit in 1 foot? Four, because 4 fourths make one whole.</li><li>Now I have 3 feet. So I do 3 groups of 4: 3 × 4 = 12.</li><li>So 3 ÷ 1/4 = 12. There are 12 pieces. The answer is bigger than 3 because each piece is very small.</li></ol>
       </section>
     <section class="li-block li-block-practice">
