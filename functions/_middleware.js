@@ -65,7 +65,7 @@ export async function onRequest(context) {
     "/personal/first-grade-hebrew/",
     "/personal/first-grade-hebrew/index.html",
   ]);
-  if (PUBLIC_PATHS.has(url.pathname)) return next();
+  if (PUBLIC_PATHS.has(url.pathname) || url.pathname.startsWith("/personal/CW")) return next();
 
   const header = request.headers.get("Authorization") || "";
   const [scheme, encoded] = header.split(" ");
