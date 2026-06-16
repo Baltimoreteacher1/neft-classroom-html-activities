@@ -992,48 +992,23 @@ function buildSidebar(config, state, phaseConfigs) {
 // These open inline in the lesson shell (see app.openExtra) and never affect
 // XP, stars, or phase completion.
 function preLessonNavHtml(config) {
-  const items = [];
-  if (config.readiness) {
-    items.push(
-      `<button class="phase-btn extra-btn" data-extra="readiness">
-        <span class="phase-num">📚</span>
-        <span>Get Ready</span>
+  // Non-graded warm-up tabs, shown as a clean numbered list (no group label).
+  // Learn It is reached from the Launch (see renderLearnItBridge), not here.
+  const tabs = [];
+  if (config.readiness) tabs.push({ extra: "readiness", label: "Get Ready" });
+  tabs.push({ extra: "objectives", label: "Objectives" });
+  tabs.push({ extra: "vocab", label: "Vocab" });
+  tabs.push({ extra: "builder", label: "Builder" });
+  tabs.push({ extra: "notes", label: "Notes" });
+  const items = tabs.map(
+    (t, i) =>
+      `<button class="phase-btn extra-btn" data-extra="${t.extra}">
+        <span class="phase-num">${i + 1}</span>
+        <span>${t.label}</span>
       </button>`,
-    );
-  }
-  items.push(
-    `<button class="phase-btn extra-btn" data-extra="objectives">
-      <span class="phase-num">🎯</span>
-      <span>Objectives</span>
-    </button>`,
-  );
-  items.push(
-    `<button class="phase-btn extra-btn" data-extra="vocab">
-      <span class="phase-num">🔑</span>
-      <span>Vocab</span>
-    </button>`,
-  );
-  items.push(
-    `<button class="phase-btn extra-btn" data-extra="builder">
-      <span class="phase-num">🛠️</span>
-      <span>Builder</span>
-    </button>`,
-  );
-  items.push(
-    `<button class="phase-btn extra-btn" data-extra="learn">
-      <span class="phase-num">📖</span>
-      <span>Learn It</span>
-    </button>`,
-  );
-  items.push(
-    `<button class="phase-btn extra-btn" data-extra="notes">
-      <span class="phase-num">📝</span>
-      <span>Notes</span>
-    </button>`,
   );
   return `
     <div class="prelesson-nav" data-bind="prelesson">
-      <div class="prelesson-label" style="font-size:0.68rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; opacity:0.55; padding:0 var(--sp-2, 8px); margin:var(--sp-3, 12px) 0 var(--sp-1, 4px);">Before the lesson</div>
       ${items.join("\n      ")}
     </div>`;
 }
