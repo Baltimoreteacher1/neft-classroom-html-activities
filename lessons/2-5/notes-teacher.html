@@ -137,6 +137,58 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
   .li-work{min-height:120px;border-color:#000;}
   .li-chip{border-color:#000;}
 }
+/* Vocab Explorer — interactive vocab home (Word Wall, Match, Fill-in, Use it) */
+.vx-section{margin:0 0 30px;}
+.vx-eyebrow{margin:0 0 6px;font-size:14px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--navy);padding-bottom:6px;border-bottom:2px solid var(--line);}
+.vx-lead{margin:0 0 14px;font-size:15px;color:var(--muted);}
+.vx-wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
+.vx-card{border:1px solid var(--line);border-radius:14px;background:#fff;padding:14px;page-break-inside:avoid;}
+.vx-figure{background:var(--teal-light);border-radius:10px;text-align:center;padding:10px;margin-bottom:10px;}
+.vx-figure img{max-width:100%;max-height:120px;}
+.vx-termline{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.vx-term{font-family:Outfit,system-ui,sans-serif;font-weight:800;color:var(--navy);font-size:18px;}
+.vx-say{border:1.5px solid var(--teal);background:#fff;border-radius:999px;width:32px;height:32px;cursor:pointer;
+  font-size:15px;line-height:1;flex:0 0 auto;}
+.vx-say:hover{background:var(--teal-light);}
+.vx-def{margin:0;font-size:15px;line-height:1.55;color:var(--ink);}
+.vx-match{margin-top:6px;}
+.vx-mcols{display:grid;grid-template-columns:1fr 1.5fr;gap:12px;}
+.vx-mcol{display:flex;flex-direction:column;gap:10px;}
+.vx-mterm,.vx-mdef{text-align:left;border:2px solid var(--line);background:#fff;border-radius:10px;
+  padding:11px 14px;font:inherit;font-size:15px;color:var(--ink);cursor:pointer;transition:border-color .12s,background .12s;}
+.vx-mterm{font-weight:800;color:var(--navy);}
+.vx-mterm:hover,.vx-mdef:hover{border-color:var(--teal);}
+.vx-sel{border-color:var(--teal)!important;background:var(--teal-light)!important;}
+.vx-done{border-color:#2e9e5b!important;background:#f1faf2!important;color:#2e7d46!important;cursor:default;}
+.vx-wrong{border-color:#d9534f!important;background:#fdf2f1!important;}
+.vx-mfeedback{margin:12px 0 0;font-size:15px;font-weight:700;}
+.vx-mfeedback.vx-ok{color:#2e9e5b;}
+.vx-bank{border:2px dashed var(--teal);border-radius:12px;background:#f0faf8;padding:12px 14px;margin-bottom:16px;}
+.vx-bank-label{display:block;font-weight:800;color:var(--teal);font-size:12px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;}
+.vx-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.vx-bankword{background:#fff;border:1.5px solid var(--teal);color:var(--navy);border-radius:999px;padding:5px 14px;font-weight:700;font-size:14px;}
+.vx-clozelist{list-style:none;margin:0;padding:0;}
+.vx-clozeline{display:flex;gap:12px;align-items:flex-start;padding:11px 12px;border:1px solid var(--line);
+  border-radius:10px;margin-bottom:10px;background:#fff;page-break-inside:avoid;}
+.vx-num{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:800;
+  font-size:13px;display:flex;align-items:center;justify-content:center;}
+.vx-clozetext{flex:1;font-size:16px;line-height:1.9;color:var(--ink);}
+.vx-blank{border:0;border-bottom:2px solid var(--teal);min-width:90px;font:inherit;font-size:15px;
+  color:var(--navy);background:transparent;padding:2px 4px;margin:0 2px;}
+.vx-blank:focus{outline:none;border-bottom-color:var(--amber);background:#fffdf5;}
+.vx-stem{font-size:17px;line-height:2;color:var(--ink);margin:0 0 12px;}
+.vx-blank-word{min-width:120px;}
+.vx-blank-wide{min-width:220px;}
+.vx-area{display:block;width:100%;border:1.5px solid var(--teal);border-radius:10px;padding:10px;
+  font:inherit;font-size:15px;color:var(--navy);background:#fff;resize:vertical;}
+.vx-area:focus{outline:none;border-color:var(--amber);background:#fffdf5;}
+@media print{
+  .vx-say,.vx-mfeedback{display:none;}
+  .vx-card,.vx-figure,.vx-bank,.vx-clozeline,.vx-mterm,.vx-mdef,.vx-area{background:#fff;border-color:#000;}
+  .vx-num{background:#000;}
+  .vx-blank{border-bottom-color:#000;}
+}
 @media print{
   .learnit{border-color:#000;box-shadow:none;}
   .learnit-watch,.learnit-we,.learnit-you,.learnit-key{background:#fff;}
@@ -1136,14 +1188,6 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
       <p class="gn-bank-hint l3-only">Level 3: try the blanks from memory first, then check the bank.</p>
     </div>
     <ol class="gn-lines"><li class="gn-line"><span class="gn-num">1</span><span class="gn-sentence">A drawing or diagram that shows a math situation is a <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">2</span><span class="gn-sentence">A math sentence that says two amounts are equal, with an = sign, is an <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">3</span><span class="gn-sentence">The value that makes an equation true is the <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">4</span><span class="gn-sentence">Checking whether an answer makes sense for the problem is checking its <input class="gn-blank" type="text" data-nt-field />.</span></li><li class="gn-line"><span class="gn-num">5</span><span class="gn-sentence">Operations that undo each other, like multiplication and division, are <input class="gn-blank" type="text" data-nt-field />.</span></li></ol>
-    <div class="match-up no-print" data-match-up>
-    <p class="mu-head"><strong>🔗 Match-up:</strong> Tap a word, then tap its meaning.</p>
-    <div class="mu-cols">
-      <div class="mu-col"><button type="button" class="mu-term" data-mu="0">Model</button><button type="button" class="mu-term" data-mu="1">Equation</button><button type="button" class="mu-term" data-mu="2">Solution</button><button type="button" class="mu-term" data-mu="3">Reasonableness</button></div>
-      <div class="mu-col"><button type="button" class="mu-def" data-mu="0">A picture or math way to show a problem so you can solve it.</button><button type="button" class="mu-def" data-mu="1">A math sentence with an equal sign showing both sides are the same.</button><button type="button" class="mu-def" data-mu="2">The answer to an equation or problem.</button><button type="button" class="mu-def" data-mu="3">Checking if your answer makes sense.</button></div>
-    </div>
-    <p class="mu-feedback" role="status" aria-live="polite"></p>
-  </div>
   </div>
   <h3 class="gn-subhead">🧮 Practice It Together — Worked Problems</h3>
        <p class="gn-subhead-note">Use the steps from <strong>Learn It</strong> above. Watch one, solve one together, then try one on your own.</p><div class="notes-gradual">
