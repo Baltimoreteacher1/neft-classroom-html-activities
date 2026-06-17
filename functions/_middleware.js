@@ -71,6 +71,7 @@ export async function onRequest(context) {
   if (
     PUBLIC_PATHS.has(url.pathname) ||
     url.pathname.startsWith("/personal/CW") ||
+    url.pathname === "/personal/aviad" ||
     url.pathname.startsWith("/personal/aviad/")
   )
     return next();
