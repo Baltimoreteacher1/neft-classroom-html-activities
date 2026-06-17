@@ -63,16 +63,25 @@
     "cardforge:publish": "node tools/cardforge/scripts/cardforge.mjs publish",
     "inject-game-fx": "node tools/inject-game-fx.js",
     "cardforge:update-card": "node tools/cardforge/scripts/cardforge.mjs update-card",
-    "generate-readiness": "node scripts/readiness/generate-readiness.mjs"
+    "generate-readiness": "node scripts/readiness/generate-readiness.mjs",
+    "format": "biome format --write",
+    "lint": "biome lint",
+    "check": "biome check",
+    "test": "node tools/run-tests.mjs",
+    "e2e": "playwright test",
+    "qa": "npm run check && npm run test && npm run e2e"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.3",
+    "@biomejs/biome": "^2.5.0",
     "jsdom": "^29.1.1",
     "minisearch": "^7.1.2",
-    "vite": "^8.0.14"
+    "vite": "^8.0.14",
+    "vitest": "^4.1.9"
   },
   "dependencies": {
     "@resvg/resvg-js": "^2.6.2",
-    "pptxgenjs": "^4.0.1",
-    "docx": "^9.7.1"
+    "docx": "^9.7.1",
+    "pptxgenjs": "^4.0.1"
   }
 }
