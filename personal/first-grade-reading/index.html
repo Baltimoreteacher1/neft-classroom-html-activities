@@ -4,6 +4,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow" />
+    <!-- iPad/iOS: clean full-screen "Add to Home Screen" web-app experience -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Reading" />
     <title>First Grade Reading — EduWonderLab</title>
     <style>
       :root {
@@ -3094,6 +3099,28 @@
           buildStory();
         });
       buildStory();
+    </script>
+    <script>
+      /* iPad/iOS Safari: unlock speechSynthesis on the first user gesture so
+         auto-spoken prompts (not just 🔊 button taps) are audible on iPad.
+         iOS keeps speech locked until a gesture-initiated utterance runs. */
+      (function () {
+        if (!("speechSynthesis" in window)) return;
+        var primed = false;
+        function prime() {
+          if (primed) return;
+          primed = true;
+          try {
+            window.speechSynthesis.resume();
+            var u = new SpeechSynthesisUtterance(" ");
+            u.volume = 0;
+            window.speechSynthesis.speak(u);
+          } catch (e) {}
+        }
+        ["pointerdown", "touchend", "click"].forEach(function (ev) {
+          window.addEventListener(ev, prime, { passive: true });
+        });
+      })();
     </script>
   </body>
 </html>
