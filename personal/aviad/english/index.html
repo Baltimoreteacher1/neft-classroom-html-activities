@@ -1,0 +1,838 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Aviad English 10 - EduWonderLab</title>
+    <link rel="stylesheet" href="/personal/aviad/shared.css" />
+    <style>
+      /* Page-specific overrides & layouts */
+      .highlighted-text {
+        padding: 4px;
+        border-radius: 4px;
+      }
+      .hl-green { background-color: #bbf7d0; }
+      .hl-purple { background-color: #e9d5ff; }
+      .hl-blue { background-color: #bfdbfe; }
+      
+      .passage-text {
+        font-family: 'Inter', Georgia, serif;
+        font-size: 1.05rem;
+        line-height: 1.7;
+      }
+      
+      /* Quote embed puzzle */
+      .word-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        background: #f8fafc;
+        border: 1px dashed var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 12px;
+        margin-bottom: 12px;
+      }
+      
+      /* Step cards */
+      .step-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      @media (min-width: 600px) {
+        .step-row {
+          grid-template-columns: 120px 1fr;
+          align-items: center;
+        }
+      }
+      .step-label {
+        font-family: var(--font-title);
+        font-weight: 800;
+        color: var(--accent);
+        font-size: 0.9rem;
+      }
+      
+      .checklist-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+      .checklist-item.checked {
+        color: var(--success);
+      }
+      
+      /* RPG Character card styling */
+      .rpg-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .rpg-input {
+        background: #f8fafc;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .rpg-input label {
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+      .rpg-input input {
+        border: none;
+        background: transparent;
+        border-bottom: 2px solid var(--border-color);
+        font-weight: 600;
+        outline: none;
+        padding: 4px 0;
+        transition: border-color 0.2s ease;
+      }
+      .rpg-input input:focus {
+        border-color: var(--accent);
+      }
+    </style>
+  </head>
+  <body data-subject="english" style="--accent:#5e35b1">
+    <main class="wrap">
+      <header class="hero">
+        <a class="back" href="/personal/aviad/">&larr; Aviad hub</a>
+        <span class="badge">English 10</span>
+        <h1>English 10 Readiness</h1>
+        <p class="lead">Read like a detective and write like a trial lawyer. Master claim construction, quote blending, and theme analysis to dominate 10th-grade English.</p>
+        
+        <div class="stats">
+          <div class="stat"><b id="xp">0 XP</b><span>earned here</span></div>
+          <div class="stat"><b>8</b><span>developed activities</span></div>
+          <div class="stat"><b id="done">0%</b><span>completion</span></div>
+        </div>
+      </header>
+    </main>
+
+    <!-- Tabs selector -->
+    <nav class="tabs">
+      <div class="tabbar" role="tablist">
+        <button class="tab" aria-selected="true" data-filter="all">All</button>
+        <button class="tab" data-filter="Workshop">Workshops</button>
+        <button class="tab" data-filter="Practice">Practice</button>
+        <button class="tab" data-filter="Project">Projects</button>
+      </div>
+    </nav>
+
+    <!-- Main Activities Panel -->
+    <main class="wrap panel active">
+      <div class="section-head">
+        <h2>Readiness Challenges</h2>
+        <p class="muted">Complete interactive tasks, verify your solutions, and save your work to log XP.</p>
+      </div>
+
+      <div class="grid">
+        
+        <!-- Activity 1: Claim-Evidence Raid (Workshop) -->
+        <article class="activity" data-id="claim" data-type="Workshop">
+          <div class="meta">
+            <span class="pill">Workshop</span>
+            <span class="pill">55 min</span>
+          </div>
+          <h3>Claim-Evidence Raid</h3>
+          <p>Read the excerpt from Jack London's <i>The Call of the Wild</i>, highlight details, and draft a high-school CER paragraph.</p>
+          
+          <div class="activity-interactive-area">
+            <div class="highlight-controls">
+              <span>Highlighter:</span>
+              <button class="h-btn h-green active" data-color="hl-green" title="Green: Evidence"></button>
+              <button class="h-btn h-purple" data-color="hl-purple" title="Purple: Author's Move"></button>
+              <button class="h-btn h-blue" data-color="hl-blue" title="Blue: Tension"></button>
+            </div>
+            
+            <div class="passage-container">
+              <p class="passage-text">
+                Buck did not read the newspapers, or he would have known that trouble was brewing, not alone for himself, but for every tide-water dog, strong of muscle and with warm, long hair, from Puget Sound to San Diego. Because men, groping in the Arctic darkness, had found a yellow metal, and because steamship and transportation companies were booming the find, thousands of men were rushing into the Northland. These men wanted dogs, and the dogs they wanted were heavy dogs, with strong muscles by which to toil, and furry coats to protect them from the frost.
+              </p>
+            </div>
+            
+            <div class="step-row" style="margin-top: 14px;">
+              <span class="step-label">1. Claim:</span>
+              <input type="text" id="cer-claim" placeholder="What does the environment force Buck to undergo?" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;" />
+            </div>
+            
+            <div class="step-row">
+              <span class="step-label">2. Evidence:</span>
+              <input type="text" id="cer-evidence" placeholder="Provide one quote or direct detail from the text." style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;" />
+            </div>
+            
+            <div class="step-row">
+              <span class="step-label">3. Reasoning:</span>
+              <textarea id="cer-reasoning" placeholder="Explain how this evidence supports your claim using analytical language." style="min-height: 80px;"></textarea>
+            </div>
+            
+            <!-- Live Checklist -->
+            <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
+              <div class="checklist-item" id="chk-claim">
+                <span>⬜</span> Has a clear claim statement
+              </div>
+              <div class="checklist-item" id="chk-evidence">
+                <span>⬜</span> Includes quotes or specific details
+              </div>
+              <div class="checklist-item" id="chk-reasoning">
+                <span>⬜</span> Includes reasoning words (e.g., because, shows, reveals, highlights)
+              </div>
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-claim"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 2: Theme Forge (Workshop) -->
+        <article class="activity" data-id="theme" data-type="Workshop">
+          <div class="meta">
+            <span class="pill">Workshop</span>
+            <span class="pill">45 min</span>
+          </div>
+          <h3>Theme Forge</h3>
+          <p>Construct a strong, complex thesis statement about "ambition" or "survival" step-by-step.</p>
+          
+          <div class="activity-interactive-area">
+            <div class="step-row">
+              <span class="step-label">Level 1 Topic:</span>
+              <select id="theme-topic" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;">
+                <option value="">Select a topic...</option>
+                <option value="Survival">Survival</option>
+                <option value="Ambition">Ambition</option>
+                <option value="Identity">Identity</option>
+              </select>
+            </div>
+            
+            <div class="step-row">
+              <span class="step-label">Level 2 Belief:</span>
+              <input type="text" id="theme-belief" placeholder="What does literature say happens when humans face this topic?" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;" />
+            </div>
+            
+            <div class="step-row">
+              <span class="step-label">Level 3 Counter:</span>
+              <input type="text" id="theme-counter" placeholder="What is the catch or complication? (Use 'although' or 'while')" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;" />
+            </div>
+            
+            <div class="step-row">
+              <span class="step-label">Final Thesis:</span>
+              <textarea id="theme-final" placeholder="Combine them: Although [Complication], because [Belief], literature demonstrates that [Resolution]." style="min-height: 80px;"></textarea>
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-theme"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 3: Quote Embed Lab (Practice) -->
+        <article class="activity" data-id="quotes" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">35 min</span>
+          </div>
+          <h3>Quote Embed Lab</h3>
+          <p>Drag the sentence fragments into the dropzone to create a perfectly blended quote introduction.</p>
+          
+          <div class="activity-interactive-area">
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;"><b>Goal:</b> Introduce the quote that Buck was a pampered pet before his abduction.</p>
+            
+            <div class="word-bank" id="quote-drawer">
+              <div class="drag-item" draggable="true" data-val="1" id="q-drag1" data-drawer="quote-drawer">Buck lived the life</div>
+              <div class="drag-item" draggable="true" data-val="2" id="q-drag2" data-drawer="quote-drawer">of a "sated aristocrat"</div>
+              <div class="drag-item" draggable="true" data-val="3" id="q-drag3" data-drawer="quote-drawer">on a wealthy estate</div>
+              <div class="drag-item" draggable="true" data-val="4" id="q-drag4" data-drawer="quote-drawer">before his harsh awakening.</div>
+            </div>
+            
+            <div class="drop-container" id="quote-drop" style="min-height: 80px; background: #f8fafc;">
+              <span style="font-size: 0.85rem; color: var(--text-muted); pointer-events: none;" id="quote-drop-placeholder">Drag sentence chunks here in order...</span>
+            </div>
+            
+            <div class="feedback-msg" id="quote-feedback"></div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-quotes"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 4: Character Build Sheet (Project) -->
+        <article class="activity" data-id="character" data-type="Project">
+          <div class="meta">
+            <span class="pill">Project</span>
+            <span class="pill">50 min</span>
+          </div>
+          <h3>Character Build Sheet</h3>
+          <p>Analyze a classic high school protagonist like a role-playing game character stat block.</p>
+          
+          <div class="activity-interactive-area">
+            <div class="rpg-grid">
+              <div class="rpg-input">
+                <label>Name</label>
+                <input type="text" id="rpg-name" placeholder="e.g. Romeo, Buck" />
+              </div>
+              <div class="rpg-input">
+                <label>Main Archetype</label>
+                <input type="text" id="rpg-archetype" placeholder="e.g. Tragic Hero, Survivor" />
+              </div>
+              <div class="rpg-input">
+                <label>Primary Flaw</label>
+                <input type="text" id="rpg-flaw" placeholder="e.g. Impulsiveness, Pride" />
+              </div>
+              <div class="rpg-input">
+                <label>Core Objective</label>
+                <input type="text" id="rpg-goal" placeholder="e.g. Freedom, Union" />
+              </div>
+            </div>
+            
+            <div class="step-row">
+              <span class="step-label">Turning Point:</span>
+              <input type="text" id="rpg-turning" placeholder="What specific scene alters their stats/destiny?" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;" />
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-character"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 5: Revision Speedrun (Practice) -->
+        <article class="activity" data-id="revision" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">35 min</span>
+          </div>
+          <h3>Revision Speedrun</h3>
+          <p>Clean up weak, wordy writing. Replace vague words ("stuff", "things") and weak verbs ("is", "get") to reduce your word count.</p>
+          
+          <div class="activity-interactive-area">
+            <div style="background: #fef2f2; padding: 10px; border-radius: 4px; font-size: 0.85rem; margin-bottom: 10px; border-left: 4px solid var(--danger);">
+              <b>Original text:</b> "Buck is getting really mad because bad things happen and he has stuff that is taken away by bad guys."
+            </div>
+            
+            <span class="step-label">Your Revision:</span>
+            <textarea id="speedrun-input" placeholder="Type a strong, active sentence replacing the weak verb patterns above..." style="min-height: 80px;"></textarea>
+            
+            <div style="margin-top: 8px; font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">
+              Weak words remaining: <span id="speedrun-count" style="color: var(--danger);">4</span> ("is", "getting", "things", "stuff")
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-revision"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 6: Discussion Loadout (Project) -->
+        <article class="activity" data-id="discussion" data-type="Project">
+          <div class="meta">
+            <span class="pill">Project</span>
+            <span class="pill">45 min</span>
+          </div>
+          <h3>Discussion Loadout</h3>
+          <p>Build a formal deck of cards to speak with confidence during Socratic Seminars or literature debates.</p>
+          
+          <div class="activity-interactive-area">
+            <div class="step-row">
+              <span class="step-label">Clarifying Card:</span>
+              <input type="text" id="disc-clarify" placeholder="What question solves confusion about the text?" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;" />
+            </div>
+            
+            <div class="step-row">
+              <span class="step-label">Challenge Card:</span>
+              <input type="text" id="disc-challenge" placeholder="What question critiques the author's decision?" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;" />
+            </div>
+            
+            <div class="step-row">
+              <span class="step-label">Connection Card:</span>
+              <input type="text" id="disc-connect" placeholder="Connect this text to a modern problem or historical event." style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;" />
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-discussion"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 7: Counterclaim Shield (Workshop) -->
+        <article class="activity" data-id="counterclaim" data-type="Workshop">
+          <div class="meta">
+            <span class="pill">Workshop</span>
+            <span class="pill">40 min</span>
+          </div>
+          <h3>Counterclaim Shield</h3>
+          <p>Defend your claim against the strongest possible objection using evidence and transition blocks.</p>
+          
+          <div class="activity-interactive-area">
+            <div class="step-row">
+              <span class="step-label">My Claim:</span>
+              <input type="text" id="cc-claim" value="Technology isolates individuals and ruins social communication." style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;" readonly />
+            </div>
+            
+            <div class="step-row">
+              <span class="step-label">Counterclaim:</span>
+              <select id="cc-select" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;">
+                <option value="">Choose the strongest counterargument...</option>
+                <option value="wrong">Technology is very cheap to buy.</option>
+                <option value="right">Devices allow isolated individuals to find supportive global communities.</option>
+                <option value="partial">Phones have games that make people happy.</option>
+              </select>
+            </div>
+            
+            <div class="step-row">
+              <span class="step-label">My Rebuttal:</span>
+              <textarea id="cc-rebuttal" placeholder="Write a response using: 'While critics claim... nevertheless, evidence shows...'"></textarea>
+            </div>
+            
+            <div class="feedback-msg" id="cc-feedback"></div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-counterclaim"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 8: One-Life Response (Practice) -->
+        <article class="activity" data-id="six" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">30 min</span>
+          </div>
+          <h3>One-Life Literary Response</h3>
+          <p>Construct a six-sentence analytical response: Claim, Context, Quote, Reasoning, Rebuttal, Broad Insight.</p>
+          
+          <div class="activity-interactive-area">
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <input type="text" id="s-1" placeholder="Sentence 1: The Claim (your core argument)" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;" />
+              <input type="text" id="s-2" placeholder="Sentence 2: The Context (who, where, when)" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;" />
+              <input type="text" id="s-3" placeholder="Sentence 3: The Quote (embedded phrase)" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;" />
+              <input type="text" id="s-4" placeholder="Sentence 4: The Analysis (what author move does this show)" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;" />
+              <input type="text" id="s-5" placeholder="Sentence 5: The Contrast (how it complicates things)" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;" />
+              <input type="text" id="s-6" placeholder="Sentence 6: The Insight (what it teaches about humanity)" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;" />
+            </div>
+            
+            <div id="sentence-checker" style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-top: 8px;">
+              Sentences filled: <span id="filled-sentences-count">0</span> / 6
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-six"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+      </div>
+      
+      <footer class="footer">EduWonderLab &bull; Aviad English 10 Tab</footer>
+    </main>
+
+    <script src="/personal/aviad/shared.js"></script>
+    <script>
+      // Page-specific interactive logic
+      
+      // 1. Claim-Evidence Raid Highlight Logic
+      var selectedHighlightColor = 'hl-green';
+      document.querySelectorAll('.highlight-controls .h-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.highlight-controls .h-btn').forEach(function(b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          selectedHighlightColor = btn.dataset.color;
+        });
+      });
+      
+      // Basic text highlighting on selection in passage
+      var passageTextEl = document.querySelector('.passage-text');
+      passageTextEl.addEventListener('mouseup', function() {
+        var selection = window.getSelection();
+        if (selection.toString().trim().length > 0) {
+          var range = selection.getRangeAt(0);
+          var span = document.createElement('span');
+          span.className = 'highlighted-text ' + selectedHighlightColor;
+          range.surroundContents(span);
+          selection.removeAllRanges();
+          
+          // Trigger validation
+          validateClaimActivity();
+        }
+      });
+      
+      function validateClaimActivity() {
+        var claimText = document.getElementById('cer-claim').value.trim();
+        var evidenceText = document.getElementById('cer-evidence').value.trim();
+        var reasoningText = document.getElementById('cer-reasoning').value.trim();
+        
+        var hasHighlights = passageTextEl.querySelectorAll('.highlighted-text').length > 0;
+        
+        document.getElementById('chk-claim').querySelector('span').textContent = (claimText.length > 5) ? '✅' : '⬜';
+        document.getElementById('chk-claim').classList.toggle('checked', claimText.length > 5);
+        
+        document.getElementById('chk-evidence').querySelector('span').textContent = (evidenceText.length > 5 && hasHighlights) ? '✅' : '⬜';
+        document.getElementById('chk-evidence').classList.toggle('checked', evidenceText.length > 5 && hasHighlights);
+        
+        var hasReasoningWords = /because|shows|reveals|highlights|illustrates/i.test(reasoningText);
+        document.getElementById('chk-reasoning').querySelector('span').textContent = (reasoningText.length > 10 && hasReasoningWords) ? '✅' : '⬜';
+        document.getElementById('chk-reasoning').classList.toggle('checked', reasoningText.length > 10 && hasReasoningWords);
+        
+        // Save state to hidden textarea
+        document.getElementById('evidence-text-claim').value = "CLAIM: " + claimText + "\nEVIDENCE: " + evidenceText + "\nREASONING: " + reasoningText;
+      }
+      
+      document.getElementById('cer-claim').addEventListener('input', validateClaimActivity);
+      document.getElementById('cer-evidence').addEventListener('input', validateClaimActivity);
+      document.getElementById('cer-reasoning').addEventListener('input', validateClaimActivity);
+      
+      // 2. Theme Forge logic
+      function validateThemeActivity() {
+        var t = document.getElementById('theme-topic').value;
+        var b = document.getElementById('theme-belief').value.trim();
+        var c = document.getElementById('theme-counter').value.trim();
+        var f = document.getElementById('theme-final').value.trim();
+        
+        document.getElementById('evidence-text-theme').value = "TOPIC: " + t + "\nBELIEF: " + b + "\nCOMPLICATION: " + c + "\nFINAL THESIS: " + f;
+      }
+      document.getElementById('theme-topic').addEventListener('change', validateThemeActivity);
+      document.getElementById('theme-belief').addEventListener('input', validateThemeActivity);
+      document.getElementById('theme-counter').addEventListener('input', validateThemeActivity);
+      document.getElementById('theme-final').addEventListener('input', validateThemeActivity);
+      
+      // 3. Quote Embed Game Validation
+      window.validateActivityState = function(card) {
+        if (card.dataset.id === "quotes") {
+          var container = document.getElementById('quote-drop');
+          var items = Array.from(container.querySelectorAll('.drag-item'));
+          var values = items.map(function(item) { return item.dataset.val; }).join('');
+          var feedback = document.getElementById('quote-feedback');
+          
+          if (values === '1324') {
+            feedback.textContent = "✅ Excellent embed! Introduce context + blend quote fragment + close.";
+            feedback.className = "feedback-msg show correct";
+            document.getElementById('evidence-text-quotes').value = "Correct drag order matched: Buck lived the life of a 'sated aristocrat' on a wealthy estate before his harsh awakening.";
+          } else if (values.length === 4) {
+            feedback.textContent = "❌ Chunks are out of order. Introduce context before dropping quotes.";
+            feedback.className = "feedback-msg show incorrect";
+          }
+        }
+      };
+      
+      // 4. Character Build logic
+      function validateCharacterActivity() {
+        var n = document.getElementById('rpg-name').value.trim();
+        var a = document.getElementById('rpg-archetype').value.trim();
+        var f = document.getElementById('rpg-flaw').value.trim();
+        var g = document.getElementById('rpg-goal').value.trim();
+        var t = document.getElementById('rpg-turning').value.trim();
+        
+        document.getElementById('evidence-text-character').value = "CHARACTER: " + n + " (" + a + ")\nFLAW: " + f + "\nOBJECTIVE: " + g + "\nTURNING POINT: " + t;
+      }
+      ['rpg-name', 'rpg-archetype', 'rpg-flaw', 'rpg-goal', 'rpg-turning'].forEach(function(id) {
+        document.getElementById(id).addEventListener('input', validateCharacterActivity);
+      });
+      
+      // 5. Revision Speedrun Word Counter
+      document.getElementById('speedrun-input').addEventListener('input', function() {
+        var val = this.value;
+        // Count instances of is, getting, things, stuff
+        var matches = val.match(/\b(is|getting|things|stuff)\b/gi) || [];
+        var remaining = 4 - (4 - matches.length);
+        var countEl = document.getElementById('speedrun-count');
+        countEl.textContent = matches.length;
+        
+        if (matches.length === 0 && val.trim().length > 10) {
+          countEl.style.color = 'var(--success)';
+        } else {
+          countEl.style.color = 'var(--danger)';
+        }
+        
+        document.getElementById('evidence-text-revision').value = val;
+      });
+      
+      // 6. Discussion Loadout logic
+      function validateDiscussionActivity() {
+        var cl = document.getElementById('disc-clarify').value.trim();
+        var ch = document.getElementById('disc-challenge').value.trim();
+        var co = document.getElementById('disc-connect').value.trim();
+        
+        document.getElementById('evidence-text-discussion').value = "CLARIFY: " + cl + "\nCHALLENGE: " + ch + "\nCONNECTION: " + co;
+      }
+      ['disc-clarify', 'disc-challenge', 'disc-connect'].forEach(function(id) {
+        document.getElementById(id).addEventListener('input', validateDiscussionActivity);
+      });
+      
+      // 7. Counterclaim Shield Validation
+      document.getElementById('cc-select').addEventListener('change', function() {
+        var val = this.value;
+        var feedback = document.getElementById('cc-feedback');
+        if (val === 'right') {
+          feedback.textContent = "✅ Correct! This is a fair, strong opposing argument that attacks the premise.";
+          feedback.className = "feedback-msg show correct";
+          validateCounterclaimActivity();
+        } else if (val !== "") {
+          feedback.textContent = "❌ Not quite. That's a weak detail or unrelated fact, not a strong counterclaim.";
+          feedback.className = "feedback-msg show incorrect";
+        }
+      });
+      
+      function validateCounterclaimActivity() {
+        var c = document.getElementById('cc-claim').value;
+        var sel = document.getElementById('cc-select').value;
+        var r = document.getElementById('cc-rebuttal').value.trim();
+        
+        document.getElementById('evidence-text-counterclaim').value = "CLAIM: " + c + "\nCOUNTER: " + sel + "\nREBUTTAL: " + r;
+      }
+      document.getElementById('cc-rebuttal').addEventListener('input', validateCounterclaimActivity);
+      
+      // 8. One-Life Response sentence checker
+      var sentenceInputs = ['s-1', 's-2', 's-3', 's-4', 's-5', 's-6'];
+      sentenceInputs.forEach(function(id) {
+        document.getElementById(id).addEventListener('input', function() {
+          var filled = 0;
+          var textLines = [];
+          sentenceInputs.forEach(function(sid) {
+            var val = document.getElementById(sid).value.trim();
+            if (val.length > 5) {
+              filled++;
+              textLines.push(val);
+            }
+          });
+          document.getElementById('filled-sentences-count').textContent = filled;
+          document.getElementById('evidence-text-six').value = textLines.join('\n');
+        });
+      });
+      
+      // Integrate with EWL shared validation
+      window.checkInteractiveComplete = function(card) {
+        var id = card.dataset.id;
+        
+        if (id === "claim") {
+          var hasHighlights = passageTextEl.querySelectorAll('.highlighted-text').length > 0;
+          var claimVal = document.getElementById('cer-claim').value.trim();
+          var reasoningVal = document.getElementById('cer-reasoning').value.trim();
+          if (claimVal.length < 10) {
+            return { success: false, message: "Draft a solid claim statement for Step 1." };
+          }
+          if (!hasHighlights) {
+            return { success: false, message: "Highlight at least one author move or tension point in the passage text first." };
+          }
+          if (reasoningVal.length < 15) {
+            return { success: false, message: "Provide full reasoning showing how the quote details connect to your claim." };
+          }
+        }
+        
+        if (id === "theme") {
+          var belief = document.getElementById('theme-belief').value.trim();
+          var counter = document.getElementById('theme-counter').value.trim();
+          var finalTh = document.getElementById('theme-final').value.trim();
+          if (belief.length < 10 || counter.length < 10 || finalTh.length < 15) {
+            return { success: false, message: "Complete all steps of the Theme Forge ladder to build your thesis statement." };
+          }
+        }
+        
+        if (id === "quotes") {
+          var values = Array.from(document.getElementById('quote-drop').querySelectorAll('.drag-item')).map(function(item) { return item.dataset.val; }).join('');
+          if (values !== '1324') {
+            return { success: false, message: "Assemble the quote introducer chunks in the correct order!" };
+          }
+        }
+        
+        if (id === "character") {
+          var turning = document.getElementById('rpg-turning').value.trim();
+          var name = document.getElementById('rpg-name').value.trim();
+          if (turning.length < 10 || name.length < 3) {
+            return { success: false, message: "Fill in the character's RPG sheet stats and turning point." };
+          }
+        }
+        
+        if (id === "revision") {
+          var speedrunInput = document.getElementById('speedrun-input').value.trim();
+          var remaining = parseInt(document.getElementById('speedrun-count').textContent, 10);
+          if (speedrunInput.length < 20) {
+            return { success: false, message: "Write a complete revision of the wordy sentence." };
+          }
+          if (remaining > 0) {
+            return { success: false, message: "Make sure you replace all vague words ('is', 'getting', 'things', 'stuff') in your revision!" };
+          }
+        }
+        
+        if (id === "discussion") {
+          var clarify = document.getElementById('disc-clarify').value.trim();
+          var connect = document.getElementById('disc-connect').value.trim();
+          if (clarify.length < 10 || connect.length < 10) {
+            return { success: false, message: "Complete your Socratic Seminar cards before declaring ready." };
+          }
+        }
+        
+        if (id === "counterclaim") {
+          var ccSelect = document.getElementById('cc-select').value;
+          var rebuttal = document.getElementById('cc-rebuttal').value.trim();
+          if (ccSelect !== 'right') {
+            return { success: false, message: "Select the correct counterclaim from the dropdown." };
+          }
+          if (rebuttal.length < 15) {
+            return { success: false, message: "Write a full rebuttal defending your claim using formal transition blocks." };
+          }
+        }
+        
+        if (id === "six") {
+          var filled = parseInt(document.getElementById('filled-sentences-count').textContent, 10);
+          if (filled < 6) {
+            return { success: false, message: "Fill in all 6 sentences of the response grid to verify completion." };
+          }
+        }
+        
+        // Bind the actual workspace data from hidden textareas
+        var hiddenText = document.getElementById('evidence-text-' + id).value;
+        card.querySelector('textarea').value = hiddenText;
+        
+        return { success: true };
+      };
+
+      // Restore custom Interactive State
+      window.restoreInteractiveState = function(card, savedState) {
+        var id = card.dataset.id;
+        if (id === "claim" && savedState.claim) {
+          document.getElementById('cer-claim').value = savedState.claim;
+          document.getElementById('cer-evidence').value = savedState.evidence;
+          document.getElementById('cer-reasoning').value = savedState.reasoning;
+          validateClaimActivity();
+        }
+        if (id === "theme" && savedState.final) {
+          document.getElementById('theme-topic').value = savedState.topic;
+          document.getElementById('theme-belief').value = savedState.belief;
+          document.getElementById('theme-counter').value = savedState.counter;
+          document.getElementById('theme-final').value = savedState.final;
+          validateThemeActivity();
+        }
+        if (id === "quotes" && savedState.sorted) {
+          var dropzone = document.getElementById('quote-drop');
+          var drawer = document.getElementById('quote-drawer');
+          savedState.sorted.split(',').forEach(function(itemId) {
+            var item = document.getElementById(itemId);
+            if (item) dropzone.appendChild(item);
+          });
+          window.validateActivityState(card);
+        }
+        if (id === "character" && savedState.name) {
+          document.getElementById('rpg-name').value = savedState.name;
+          document.getElementById('rpg-archetype').value = savedState.archetype;
+          document.getElementById('rpg-flaw').value = savedState.flaw;
+          document.getElementById('rpg-goal').value = savedState.goal;
+          document.getElementById('rpg-turning').value = savedState.turning;
+          validateCharacterActivity();
+        }
+        if (id === "revision" && savedState.revText) {
+          document.getElementById('speedrun-input').value = savedState.revText;
+          document.getElementById('speedrun-input').dispatchEvent(new Event('input'));
+        }
+        if (id === "discussion" && savedState.clarify) {
+          document.getElementById('disc-clarify').value = savedState.clarify;
+          document.getElementById('disc-challenge').value = savedState.challenge;
+          document.getElementById('disc-connect').value = savedState.connect;
+          validateDiscussionActivity();
+        }
+        if (id === "counterclaim" && savedState.rebuttal) {
+          document.getElementById('cc-select').value = savedState.select;
+          document.getElementById('cc-rebuttal').value = savedState.rebuttal;
+          document.getElementById('cc-select').dispatchEvent(new Event('change'));
+        }
+        if (id === "six" && savedState.sentences) {
+          savedState.sentences.forEach(function(val, idx) {
+            document.getElementById('s-' + (idx + 1)).value = val;
+          });
+          document.getElementById('s-1').dispatchEvent(new Event('input'));
+        }
+      };
+
+      // Retrieve custom Interactive State to save
+      window.getInteractiveState = function(card) {
+        var id = card.dataset.id;
+        if (id === "claim") {
+          return {
+            claim: document.getElementById('cer-claim').value,
+            evidence: document.getElementById('cer-evidence').value,
+            reasoning: document.getElementById('cer-reasoning').value
+          };
+        }
+        if (id === "theme") {
+          return {
+            topic: document.getElementById('theme-topic').value,
+            belief: document.getElementById('theme-belief').value,
+            counter: document.getElementById('theme-counter').value,
+            final: document.getElementById('theme-final').value
+          };
+        }
+        if (id === "quotes") {
+          var items = Array.from(document.getElementById('quote-drop').querySelectorAll('.drag-item'));
+          return {
+            sorted: items.map(function(item) { return item.id; }).join(',')
+          };
+        }
+        if (id === "character") {
+          return {
+            name: document.getElementById('rpg-name').value,
+            archetype: document.getElementById('rpg-archetype').value,
+            flaw: document.getElementById('rpg-flaw').value,
+            goal: document.getElementById('rpg-goal').value,
+            turning: document.getElementById('rpg-turning').value
+          };
+        }
+        if (id === "revision") {
+          return {
+            revText: document.getElementById('speedrun-input').value
+          };
+        }
+        if (id === "discussion") {
+          return {
+            clarify: document.getElementById('disc-clarify').value,
+            challenge: document.getElementById('disc-challenge').value,
+            connect: document.getElementById('disc-connect').value
+          };
+        }
+        if (id === "counterclaim") {
+          return {
+            select: document.getElementById('cc-select').value,
+            rebuttal: document.getElementById('cc-rebuttal').value
+          };
+        }
+        if (id === "six") {
+          return {
+            sentences: [
+              document.getElementById('s-1').value,
+              document.getElementById('s-2').value,
+              document.getElementById('s-3').value,
+              document.getElementById('s-4').value,
+              document.getElementById('s-5').value,
+              document.getElementById('s-6').value
+            ]
+          };
+        }
+        return {};
+      };
+    </script>
+  </body>
+</html>

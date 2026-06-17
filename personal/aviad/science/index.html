@@ -1,0 +1,1206 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Aviad Science - EduWonderLab</title>
+    <link rel="stylesheet" href="/personal/aviad/shared.css" />
+    <style>
+      /* Science tab overrides and custom layouts */
+      .science-grid-2col {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      @media (min-width: 768px) {
+        .science-grid-2col {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      
+      .bin-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        background: #f1f5f9;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 12px;
+      }
+      .bin-title {
+        font-family: var(--font-title);
+        font-weight: 800;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 4px;
+        text-align: center;
+      }
+      
+      /* SVG interactive graph */
+      .graph-svg {
+        width: 100%;
+        height: auto;
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        cursor: crosshair;
+      }
+      .data-point {
+        fill: var(--accent);
+        stroke: #ffffff;
+        stroke-width: 2;
+        transition: fill 0.2s ease, r 0.2s ease;
+      }
+      .data-point:hover {
+        fill: #ef4444;
+        r: 8;
+      }
+      .data-point.selected {
+        fill: #ef4444;
+        r: 9;
+        stroke: #ffd166;
+        stroke-width: 3;
+      }
+      
+      /* Equation balancer scale */
+      .balance-scale-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: #f8fafc;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 12px;
+        margin-bottom: 12px;
+      }
+      
+      .balance-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        font-family: var(--font-title);
+        font-weight: 800;
+        font-size: 1.1rem;
+        margin-bottom: 12px;
+      }
+      .balance-select {
+        padding: 4px 8px;
+        border-radius: 4px;
+        border: 2px solid var(--accent);
+        font-weight: 800;
+        font-family: var(--font-title);
+        color: var(--accent);
+        outline: none;
+      }
+      
+      /* Mitosis styles */
+      .mitosis-stages {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .mitosis-stage {
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+      .mitosis-stage svg {
+        background: #fafafa;
+        border-radius: 4px;
+      }
+      
+      /* Lab safety image hotspots */
+      .safety-viewer {
+        position: relative;
+        background: #f8fafc;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+        margin-bottom: 12px;
+      }
+      .hazard-overlay {
+        cursor: pointer;
+        opacity: 0.85;
+        transition: opacity 0.2s ease, filter 0.2s ease;
+      }
+      .hazard-overlay:hover {
+        opacity: 1;
+        filter: brightness(1.2);
+      }
+      .hazard-status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: var(--radius-full);
+        font-size: 0.8rem;
+        font-weight: 700;
+        font-family: var(--font-title);
+      }
+      .status-danger {
+        background: var(--danger-bg);
+        color: var(--danger-text);
+      }
+      .status-success {
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+    </style>
+  </head>
+  <body data-subject="science" style="--accent: #2e7d32">
+    <main class="wrap">
+      <header class="hero">
+        <a class="back" href="/personal/aviad/">&larr; Aviad hub</a>
+        <span class="badge">Science 10</span>
+        <h1>Science Readiness</h1>
+        <p class="lead">Think like a researcher. Investigate variables, decode graphs, balance metabolic reactions, and master experimental safety for 10th-grade Science.</p>
+        
+        <div class="stats">
+          <div class="stat"><b id="xp">0 XP</b><span>earned here</span></div>
+          <div class="stat"><b>8</b><span>developed activities</span></div>
+          <div class="stat"><b id="done">0%</b><span>completion</span></div>
+        </div>
+      </header>
+    </main>
+
+    <!-- Tabs selector -->
+    <nav class="tabs">
+      <div class="tabbar" role="tablist">
+        <button class="tab" aria-selected="true" data-filter="all">All</button>
+        <button class="tab" data-filter="Workshop">Workshops</button>
+        <button class="tab" data-filter="Practice">Practice</button>
+        <button class="tab" data-filter="Project">Projects</button>
+      </div>
+    </nav>
+
+    <!-- Main Activities Panel -->
+    <main class="wrap panel active">
+      <div class="section-head">
+        <h2>Readiness Challenges</h2>
+        <p class="muted">Complete interactive tasks, verify your solutions, and save your work to log XP.</p>
+      </div>
+
+      <div class="grid">
+        
+        <!-- Activity 1: Variable Sorter (Practice) -->
+        <article class="activity" data-id="variables" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Variable Sorter</h3>
+          <p>Scenario: <i>Investigating how different wavelengths (colors) of light affect the rate of oxygen bubble production in Elodea plants.</i> Drag variable cards into their correct categories.</p>
+          
+          <div class="activity-interactive-area">
+            <div class="word-bank" id="variables-drawer" style="min-height: 50px;">
+              <div class="drag-item" draggable="true" id="v-item-1" data-val="IV" data-drawer="variables-drawer">Wavelength (Color) of Light</div>
+              <div class="drag-item" draggable="true" id="v-item-2" data-val="DV" data-drawer="variables-drawer">Rate of Oxygen Bubble Production</div>
+              <div class="drag-item" draggable="true" id="v-item-3" data-val="CV" data-drawer="variables-drawer">Temperature of the Water</div>
+              <div class="drag-item" draggable="true" id="v-item-4" data-val="CV" data-drawer="variables-drawer">Species of Elodea Plant</div>
+              <div class="drag-item" draggable="true" id="v-item-5" data-val="CV" data-drawer="variables-drawer">Intensity of the Light Source</div>
+            </div>
+            
+            <div class="science-grid-2col" style="margin-top: 14px;">
+              <div class="bin-container">
+                <span class="bin-title">Independent Variable (IV)</span>
+                <div class="drop-container" id="bin-iv" data-bin="IV"></div>
+              </div>
+              <div class="bin-container">
+                <span class="bin-title">Dependent Variable (DV)</span>
+                <div class="drop-container" id="bin-dv" data-bin="DV"></div>
+              </div>
+            </div>
+            <div class="bin-container" style="margin-top: 10px;">
+              <span class="bin-title">Controlled Variables (CV - max 3)</span>
+              <div class="drop-container" id="bin-cv" data-bin="CV" data-max="3"></div>
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-variables"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 2: Data Detective (Workshop) -->
+        <article class="activity" data-id="detective" data-type="Workshop">
+          <div class="meta">
+            <span class="pill">Workshop</span>
+            <span class="pill">25 min</span>
+          </div>
+          <h3>Data Detective</h3>
+          <p>Analyze the solubility graph of Potassium Nitrate (KNO₃). Find the trial outlier point, click to isolate it, and draft a scientific Claim-Evidence-Reasoning explanation.</p>
+          
+          <div class="activity-interactive-area">
+            <svg class="graph-svg" viewBox="0 0 400 220" id="detective-graph">
+              <!-- Grid Lines -->
+              <line x1="40" y1="20" x2="380" y2="20" stroke="#f1f5f9" stroke-width="1" />
+              <line x1="40" y1="60" x2="380" y2="60" stroke="#f1f5f9" stroke-width="1" />
+              <line x1="40" y1="100" x2="380" y2="100" stroke="#f1f5f9" stroke-width="1" />
+              <line x1="40" y1="140" x2="380" y2="140" stroke="#f1f5f9" stroke-width="1" />
+              <line x1="40" y1="180" x2="380" y2="180" stroke="#f1f5f9" stroke-width="1" />
+              
+              <line x1="100" y1="20" x2="100" y2="180" stroke="#f1f5f9" stroke-width="1" />
+              <line x1="160" y1="20" x2="160" y2="180" stroke="#f1f5f9" stroke-width="1" />
+              <line x1="220" y1="20" x2="220" y2="180" stroke="#f1f5f9" stroke-width="1" />
+              <line x1="280" y1="20" x2="280" y2="180" stroke="#f1f5f9" stroke-width="1" />
+              <line x1="340" y1="20" x2="340" y2="180" stroke="#f1f5f9" stroke-width="1" />
+              
+              <!-- Axes -->
+              <line x1="40" y1="180" x2="380" y2="180" stroke="#475569" stroke-width="2" />
+              <line x1="40" y1="20" x2="40" y2="180" stroke="#475569" stroke-width="2" />
+              
+              <!-- Axis labels -->
+              <text x="210" y="212" text-anchor="middle" font-size="10" font-family="sans-serif" fill="#475569" font-weight="700">Temperature (°C)</text>
+              <text x="12" y="100" text-anchor="middle" font-size="10" font-family="sans-serif" fill="#475569" font-weight="700" transform="rotate(-90 12 100)">Solubility (g/100g H₂O)</text>
+              
+              <!-- Ticks and Tick Labels -->
+              <text x="40" y="195" text-anchor="middle" font-size="8" fill="#64748b">0</text>
+              <text x="100" y="195" text-anchor="middle" font-size="8" fill="#64748b">20</text>
+              <text x="160" y="195" text-anchor="middle" font-size="8" fill="#64748b">40</text>
+              <text x="220" y="195" text-anchor="middle" font-size="8" fill="#64748b">60</text>
+              <text x="280" y="195" text-anchor="middle" font-size="8" fill="#64748b">80</text>
+              <text x="340" y="195" text-anchor="middle" font-size="8" fill="#64748b">100</text>
+              
+              <text x="32" y="183" text-anchor="end" font-size="8" fill="#64748b">0</text>
+              <text x="32" y="143" text-anchor="end" font-size="8" fill="#64748b">40</text>
+              <text x="32" y="103" text-anchor="end" font-size="8" fill="#64748b">80</text>
+              <text x="32" y="63" text-anchor="end" font-size="8" fill="#64748b">120</text>
+              <text x="32" y="23" text-anchor="end" font-size="8" fill="#64748b">160</text>
+              
+              <!-- Ideal Solubility curve trendline -->
+              <path d="M 40 167 Q 160 145, 220 110 T 340 30" fill="none" stroke="#2e7d32" stroke-width="2" stroke-dasharray="4" opacity="0.5" />
+              
+              <!-- Data Points (Trials) -->
+              <!-- Correct Curve Points: (10, 160), (20, 155), (40, 137), (60, 110), (80, 70), (100, 30) -->
+              <circle cx="100" cy="155" r="6" class="data-point" id="pt-1" data-val="20C-45g" />
+              <circle cx="160" cy="137" r="6" class="data-point" id="pt-2" data-val="40C-63g" />
+              <circle cx="220" cy="50" r="6" class="data-point" id="pt-outlier" data-val="60C-150g" /> <!-- Outlier (Normally ~110 y=110) -->
+              <circle cx="280" cy="70" r="6" class="data-point" id="pt-4" data-val="80C-110g" />
+              <circle cx="340" cy="30" r="6" class="data-point" id="pt-5" data-val="100C-150g" />
+            </svg>
+            
+            <div style="margin-top: 10px; font-size: 0.85rem; font-weight: 700; color: #475569;">
+              Selected Outlier: <span id="selected-outlier-lbl" style="color:#ef4444;">None</span>
+            </div>
+            
+            <div class="step-row" style="margin-top: 10px;">
+              <span class="step-label">CER Box:</span>
+              <textarea id="detective-cer" placeholder="CLAIM: State which trial is the outlier. EVIDENCE: State the value compared to the trend line. REASONING: Explain what lab error might cause a higher recorded solubility (e.g. heating rate, undissolved salts, etc.)." style="min-height: 80px;"></textarea>
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-detective"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 3: Procedure Repair Shop (Practice) -->
+        <article class="activity" data-id="procedure" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">20 min</span>
+          </div>
+          <h3>Procedure Repair Shop</h3>
+          <p>Drag the vague lab steps into the correct logical sequence, then select the appropriate metric units for the procedure.</p>
+          
+          <div class="activity-interactive-area">
+            <div class="word-bank" id="procedure-drawer" style="min-height: 50px;">
+              <div class="drag-item" draggable="true" id="p-item-3" data-drawer="procedure-drawer" data-val="3">Heat the water to exactly 60°C on a hot plate.</div>
+              <div class="drag-item" draggable="true" id="p-item-1" data-drawer="procedure-drawer" data-val="1">Measure 100 mL of distilled water in a cylinder.</div>
+              <div class="drag-item" draggable="true" id="p-item-4" data-drawer="procedure-drawer" data-val="4">Add 15 g of solute and stir until dissolved.</div>
+              <div class="drag-item" draggable="true" id="p-item-2" data-drawer="procedure-drawer" data-val="2">Pour the water into a clean 250 mL beaker.</div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 6px; margin: 14px 0;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="step-label">Step 1:</span>
+                <div class="drop-container" id="proc-s1" data-max="1" style="flex:1; min-height: 40px; padding: 4px;"></div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="step-label">Step 2:</span>
+                <div class="drop-container" id="proc-s2" data-max="1" style="flex:1; min-height: 40px; padding: 4px;"></div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="step-label">Step 3:</span>
+                <div class="drop-container" id="proc-s3" data-max="1" style="flex:1; min-height: 40px; padding: 4px;"></div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="step-label">Step 4:</span>
+                <div class="drop-container" id="proc-s4" data-max="1" style="flex:1; min-height: 40px; padding: 4px;"></div>
+              </div>
+            </div>
+            
+            <div class="step-row" style="background:#f8fafc; padding: 10px; border-radius:4px; border: 1px solid var(--border-color);">
+              <span class="step-label" style="font-size:0.8rem;">Metric Units:</span>
+              <div style="display:flex; flex-direction:column; gap: 6px; flex:1;">
+                <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">
+                  Volume: 
+                  <select id="unit-vol" style="padding: 4px; border-radius: 4px; border:1px solid var(--border-color);">
+                    <option value="">Choose...</option>
+                    <option value="ounces">Ounces (oz)</option>
+                    <option value="ml">Milliliters (mL)</option>
+                    <option value="gallons">Gallons (gal)</option>
+                  </select>
+                </label>
+                <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">
+                  Mass: 
+                  <select id="unit-mass" style="padding: 4px; border-radius: 4px; border:1px solid var(--border-color);">
+                    <option value="">Choose...</option>
+                    <option value="g">Grams (g)</option>
+                    <option value="lbs">Pounds (lbs)</option>
+                    <option value="oz">Ounces (oz)</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-procedure"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 4: Misconception Breaker (Practice) -->
+        <article class="activity" data-id="misconception" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Misconception Breaker</h3>
+          <p>Match the common science myth with its scientific fact to bust the misconception.</p>
+          
+          <div class="activity-interactive-area">
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div style="background:#f8fafc; padding: 10px; border-radius: 4px; border: 1px solid var(--border-color);">
+                <div style="font-size: 0.85rem; font-weight: 700; color:#ef4444; margin-bottom: 6px;">Myth: "Evolution is just a guess because it is a theory."</div>
+                <select id="myth-1" style="width:100%; padding:6px; border-radius:4px; border:1px solid var(--border-color); font-size:0.8rem;">
+                  <option value="">Select refuting science fact...</option>
+                  <option value="wrong1">Sound waves travel much faster in denser iron lattices.</option>
+                  <option value="correct">A scientific theory is a thoroughly tested explanation backed by massive evidence.</option>
+                  <option value="wrong2">Friction is minor compared to high-altitude compression of air molecules.</option>
+                </select>
+              </div>
+              
+              <div style="background:#f8fafc; padding: 10px; border-radius: 4px; border: 1px solid var(--border-color);">
+                <div style="font-size: 0.85rem; font-weight: 700; color:#ef4444; margin-bottom: 6px;">Myth: "Meteors burn up in space because of friction."</div>
+                <select id="myth-2" style="width:100%; padding:6px; border-radius:4px; border:1px solid var(--border-color); font-size:0.8rem;">
+                  <option value="">Select refuting science fact...</option>
+                  <option value="wrong1">Brain scans demonstrate active metabolic consumption throughout the day.</option>
+                  <option value="wrong2">Solids have closer molecular bonds that propagate kinetic energy quicker.</option>
+                  <option value="correct">Meteors compress the air in front of them rapidly, creating extreme heat.</option>
+                </select>
+              </div>
+              
+              <div style="background:#f8fafc; padding: 10px; border-radius: 4px; border: 1px solid var(--border-color);">
+                <div style="font-size: 0.85rem; font-weight: 700; color:#ef4444; margin-bottom: 6px;">Myth: "Sound travels faster in the air than through metals."</div>
+                <select id="myth-3" style="width:100%; padding:6px; border-radius:4px; border:1px solid var(--border-color); font-size:0.8rem;">
+                  <option value="">Select refuting science fact...</option>
+                  <option value="correct">Sound travels 15x faster in steel than air due to high elastic density.</option>
+                  <option value="wrong1">Compressional ram waves heat up gaseous boundaries.</option>
+                  <option value="wrong2">Scientific laws only govern mathematical relationships.</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-misconception"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 5: Equation Balancer (Workshop) -->
+        <article class="activity" data-id="balancer" data-type="Workshop">
+          <div class="meta">
+            <span class="pill">Workshop</span>
+            <span class="pill">20 min</span>
+          </div>
+          <h3>Equation Balancer</h3>
+          <p>Balance the respiration formula to power the cell. Adjust coefficients and watch the atomic balance scale react.</p>
+          
+          <div class="activity-interactive-area">
+            <div class="balance-row">
+              <select id="coef-a" class="balance-select">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="6">6</option>
+              </select>
+              <span>C₆H₁₂O₆ +</span>
+              
+              <select id="coef-b" class="balance-select">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="6">6</option>
+              </select>
+              <span>O₂ &rarr;</span>
+              
+              <select id="coef-c" class="balance-select">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="6">6</option>
+              </select>
+              <span>CO₂ +</span>
+              
+              <select id="coef-d" class="balance-select">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="6">6</option>
+              </select>
+              <span>H₂O</span>
+            </div>
+            
+            <div class="balance-scale-container">
+              <!-- SVG Scale -->
+              <svg viewBox="0 0 200 100" width="100%" height="80" id="scale-svg" style="background:transparent;">
+                <!-- Base stand -->
+                <path d="M 90 90 L 110 90 L 100 60 Z" fill="#64748b" />
+                <circle cx="100" cy="30" r="4" fill="#475569" />
+                
+                <!-- Rotating Beam group -->
+                <g id="scale-beam" style="transform-origin: 100px 30px; transition: transform 0.4s ease;">
+                  <line x1="40" y1="30" x2="160" y2="30" stroke="#475569" stroke-width="3" />
+                  
+                  <!-- Left pan hanger -->
+                  <line x1="40" y1="30" x2="40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
+                  <path d="M 20 60 L 60 60 A 20 20 0 0 1 20 60 Z" fill="#2e7d32" opacity="0.8" />
+                  
+                  <!-- Right pan hanger -->
+                  <line x1="160" y1="30" x2="160" y2="60" stroke="#94a3b8" stroke-width="1.5" />
+                  <path d="M 140 60 L 180 60 A 20 20 0 0 1 140 60 Z" fill="#2e7d32" opacity="0.8" />
+                </g>
+              </svg>
+              
+              <div style="display:flex; justify-content:space-between; width:100%; font-size:0.75rem; font-weight:700; color:#475569; margin-top:8px;">
+                <span>Reactants (Left):<br/>C: <span id="r-c">6</span> | H: <span id="r-h">12</span> | O: <span id="r-o">8</span></span>
+                <span style="text-align:right;">Products (Right):<br/>C: <span id="p-c">1</span> | H: <span id="p-h">2</span> | O: <span id="p-o">3</span></span>
+              </div>
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-balancer"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 6: Hypothesis Forge (Practice) -->
+        <article class="activity" data-id="hypothesis" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Hypothesis Forge</h3>
+          <p>Construct a logical, testable scientific hypothesis regarding yeast cellular respiration rates in different sugar solutions. Drag fragments to build the IF/THEN/BECAUSE sequence.</p>
+          
+          <div class="activity-interactive-area">
+            <div class="word-bank" id="hypothesis-drawer" style="min-height: 50px;">
+              <div class="drag-item" draggable="true" id="h-item-3" data-drawer="hypothesis-drawer" data-val="BECAUSE">BECAUSE glucose is a simple monosaccharide that yeast can immediately enter into glycolysis without costly hydrolysis.</div>
+              <div class="drag-item" draggable="true" id="h-item-1" data-drawer="hypothesis-drawer" data-val="IF">IF we increase the concentration of glucose sugar in the yeast growth media,</div>
+              <div class="drag-item" draggable="true" id="h-item-2" data-drawer="hypothesis-drawer" data-val="THEN">THEN the rate of carbon dioxide gas production will increase proportionally,</div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 14px;">
+              <div class="bin-container">
+                <span class="bin-title" style="color:#2563eb;">1. IF Statement (Condition)</span>
+                <div class="drop-container" id="hyp-s1" data-max="1" data-step="IF"></div>
+              </div>
+              
+              <div class="bin-container">
+                <span class="bin-title" style="color:#d97706;">2. THEN Statement (Prediction)</span>
+                <div class="drop-container" id="hyp-s2" data-max="1" data-step="THEN"></div>
+              </div>
+              
+              <div class="bin-container">
+                <span class="bin-title" style="color:#059669;">3. BECAUSE Statement (Mechanism)</span>
+                <div class="drop-container" id="hyp-s3" data-max="1" data-step="BECAUSE"></div>
+              </div>
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-hypothesis"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 7: Mitosis Matcher (Workshop) -->
+        <article class="activity" data-id="mitosis" data-type="Workshop">
+          <div class="meta">
+            <span class="pill">Workshop</span>
+            <span class="pill">20 min</span>
+          </div>
+          <h3>Mitosis Matcher</h3>
+          <p>Study the cellular diagrams rendered below and identify the correct mitotic cell division phase for each.</p>
+          
+          <div class="activity-interactive-area">
+            <div class="mitosis-stages">
+              <div class="mitosis-stage">
+                <!-- Metaphase SVG -->
+                <svg width="70" height="70" viewBox="0 0 80 80">
+                  <circle cx="40" cy="40" r="35" fill="none" stroke="#64748b" stroke-width="1.5" />
+                  <!-- Spindles -->
+                  <circle cx="40" cy="6" r="3" fill="#475569" />
+                  <circle cx="40" cy="74" r="3" fill="#475569" />
+                  <!-- Chromosomes lined up at plate -->
+                  <line x1="40" y1="6" x2="35" y2="40" stroke="#94a3b8" stroke-width="0.75" />
+                  <line x1="40" y1="6" x2="40" y2="40" stroke="#94a3b8" stroke-width="0.75" />
+                  <line x1="40" y1="6" x2="45" y2="40" stroke="#94a3b8" stroke-width="0.75" />
+                  <line x1="40" y1="74" x2="35" y2="40" stroke="#94a3b8" stroke-width="0.75" />
+                  <line x1="40" y1="74" x2="40" y2="40" stroke="#94a3b8" stroke-width="0.75" />
+                  <line x1="40" y1="74" x2="45" y2="40" stroke="#94a3b8" stroke-width="0.75" />
+                  <!-- Centered sister chromatids -->
+                  <line x1="30" y1="40" x2="50" y2="40" stroke="#16a34a" stroke-width="4" />
+                  <line x1="30" y1="40" x2="50" y2="40" stroke="#1565c0" stroke-width="2" />
+                </svg>
+                <select id="mit-s1" style="width:100%; padding:4px; font-size:0.75rem; border-radius:4px; border:1px solid var(--border-color);">
+                  <option value="">Select...</option>
+                  <option value="pro">Prophase</option>
+                  <option value="meta">Metaphase</option>
+                  <option value="ana">Anaphase</option>
+                  <option value="telo">Telophase</option>
+                </select>
+              </div>
+              
+              <div class="mitosis-stage">
+                <!-- Anaphase SVG -->
+                <svg width="70" height="70" viewBox="0 0 80 80">
+                  <circle cx="40" cy="40" r="35" fill="none" stroke="#64748b" stroke-width="1.5" />
+                  <!-- Spindles -->
+                  <circle cx="40" cy="6" r="3" fill="#475569" />
+                  <circle cx="40" cy="74" r="3" fill="#475569" />
+                  <!-- Chromids separating -->
+                  <line x1="40" y1="6" x2="33" y2="28" stroke="#94a3b8" stroke-width="0.75" />
+                  <line x1="40" y1="6" x2="47" y2="28" stroke="#94a3b8" stroke-width="0.75" />
+                  <line x1="40" y1="74" x2="33" y2="52" stroke="#94a3b8" stroke-width="0.75" />
+                  <line x1="40" y1="74" x2="47" y2="52" stroke="#94a3b8" stroke-width="0.75" />
+                  <!-- Separating bodies -->
+                  <path d="M 28 26 Q 33 24 38 26" fill="none" stroke="#16a34a" stroke-width="3" />
+                  <path d="M 42 26 Q 47 24 52 26" fill="none" stroke="#1565c0" stroke-width="3" />
+                  
+                  <path d="M 28 54 Q 33 56 38 54" fill="none" stroke="#16a34a" stroke-width="3" />
+                  <path d="M 42 54 Q 47 56 52 54" fill="none" stroke="#1565c0" stroke-width="3" />
+                </svg>
+                <select id="mit-s2" style="width:100%; padding:4px; font-size:0.75rem; border-radius:4px; border:1px solid var(--border-color);">
+                  <option value="">Select...</option>
+                  <option value="pro">Prophase</option>
+                  <option value="meta">Metaphase</option>
+                  <option value="ana">Anaphase</option>
+                  <option value="telo">Telophase</option>
+                </select>
+              </div>
+              
+              <div class="mitosis-stage">
+                <!-- Prophase SVG -->
+                <svg width="70" height="70" viewBox="0 0 80 80">
+                  <circle cx="40" cy="40" r="35" fill="none" stroke="#64748b" stroke-width="1.5" />
+                  <!-- Nuclear envelope breaking -->
+                  <circle cx="40" cy="40" r="18" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3 3" />
+                  <!-- Condensing chromatin -->
+                  <path d="M 32 32 L 38 48 M 48 32 L 42 48" stroke="#16a34a" stroke-width="3" />
+                  <path d="M 36 34 L 46 44 M 46 36 L 34 44" stroke="#1565c0" stroke-width="3" />
+                </svg>
+                <select id="mit-s3" style="width:100%; padding:4px; font-size:0.75rem; border-radius:4px; border:1px solid var(--border-color);">
+                  <option value="">Select...</option>
+                  <option value="pro">Prophase</option>
+                  <option value="meta">Metaphase</option>
+                  <option value="ana">Anaphase</option>
+                  <option value="telo">Telophase</option>
+                </select>
+              </div>
+              
+              <div class="mitosis-stage">
+                <!-- Telophase SVG -->
+                <svg width="70" height="70" viewBox="0 0 80 80">
+                  <!-- Cleavage furrow -->
+                  <path d="M 8 40 C 28 35, 28 35, 40 35 C 52 35, 52 35, 72 40 C 72 50, 72 65, 40 78 C 8 65, 8 50, 8 40 Z" fill="none" stroke="#64748b" stroke-width="1.5" />
+                  <path d="M 8 40 C 28 45, 28 45, 40 45 C 52 45, 52 45, 72 40 C 72 30, 72 15, 40 2 C 8 15, 8 30, 8 40 Z" fill="none" stroke="#64748b" stroke-width="1.5" />
+                  <!-- Nuclear envelopes reforming -->
+                  <circle cx="40" cy="20" r="10" fill="none" stroke="#cbd5e1" stroke-width="1.5" />
+                  <circle cx="40" cy="60" r="10" fill="none" stroke="#cbd5e1" stroke-width="1.5" />
+                  <!-- Chromosomes uncoiling -->
+                  <path d="M 38 17 Q 40 22 42 18" stroke="#16a34a" stroke-width="1.5" />
+                  <path d="M 38 57 Q 40 62 42 58" stroke="#1565c0" stroke-width="1.5" />
+                </svg>
+                <select id="mit-s4" style="width:100%; padding:4px; font-size:0.75rem; border-radius:4px; border:1px solid var(--border-color);">
+                  <option value="">Select...</option>
+                  <option value="pro">Prophase</option>
+                  <option value="meta">Metaphase</option>
+                  <option value="ana">Anaphase</option>
+                  <option value="telo">Telophase</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-mitosis"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 8: Lab Safety Inspector (Project) -->
+        <article class="activity" data-id="safety" data-type="Project">
+          <div class="meta">
+            <span class="pill">Project</span>
+            <span class="pill">30 min</span>
+          </div>
+          <h3>Lab Safety Inspector</h3>
+          <p>Find the 4 hazards in the lab scene SVG and click them to secure the workspace.</p>
+          
+          <div class="activity-interactive-area">
+            <div class="safety-viewer">
+              <!-- Safety Scene SVG -->
+              <svg viewBox="0 0 320 180" width="100%" height="auto" style="display:block;">
+                <!-- Lab Bench Background -->
+                <rect x="0" y="0" width="320" height="180" fill="#f1f5f9" />
+                <rect x="10" y="110" width="300" height="10" fill="#cbd5e1" />
+                <rect x="10" y="120" width="300" height="60" fill="#94a3b8" />
+                
+                <!-- Hazard A: Open flame near ethanol -->
+                <g class="hazard-overlay" id="hz-flame">
+                  <!-- Ethanol Bottle -->
+                  <rect x="40" y="80" width="24" height="30" rx="3" fill="#1e293b" />
+                  <rect x="44" y="84" width="16" height="12" fill="#ef4444" />
+                  <text x="52" y="92" font-size="6" fill="#ffffff" font-weight="700" text-anchor="middle">EtOH</text>
+                  <!-- Flame element (will hide when corrected) -->
+                  <path id="flame-element" d="M 68 110 Q 72 70 76 110 Q 74 115 70 110 Z" fill="#f97316" />
+                  <circle cx="72" cy="110" r="10" fill="transparent" stroke="#f97316" stroke-dasharray="2 2" stroke-width="1.5" />
+                </g>
+                
+                <!-- Hazard B: Sandwich on lab bench -->
+                <g class="hazard-overlay" id="hz-food">
+                  <!-- Food Plate -->
+                  <ellipse cx="130" cy="108" rx="15" ry="4" fill="#ffffff" stroke="#64748b" />
+                  <!-- Sandwich (will hide when corrected) -->
+                  <path id="sandwich-element" d="M 120 106 L 140 106 L 130 98 Z" fill="#d97706" />
+                  <circle cx="130" cy="106" r="12" fill="transparent" stroke="#d97706" stroke-dasharray="2 2" stroke-width="1.5" />
+                </g>
+                
+                <!-- Hazard C: Cracked Beaker dripping -->
+                <g class="hazard-overlay" id="hz-glass">
+                  <!-- Beaker outline -->
+                  <rect x="200" y="85" width="20" height="25" fill="#e2e8f0" stroke="#475569" stroke-width="1.5" />
+                  <!-- Crack lines (will replace with clear beaker when resolved) -->
+                  <path id="crack-element" d="M 200 95 L 210 100 L 208 110" fill="none" stroke="#ef4444" stroke-width="2" />
+                  <!-- Drips -->
+                  <ellipse id="drip-element" cx="202" cy="122" rx="2" ry="4" fill="#f59e0b" />
+                  <circle cx="205" cy="100" r="12" fill="transparent" stroke="#ef4444" stroke-dasharray="2 2" stroke-width="1.5" />
+                </g>
+                
+                <!-- Hazard D: Unlabelled chemical bottle -->
+                <g class="hazard-overlay" id="hz-label">
+                  <rect x="260" y="80" width="22" height="30" rx="2" fill="#475569" />
+                  <!-- Question Mark (will replace with label when resolved) -->
+                  <text id="q-element" x="271" y="100" font-size="14" fill="#ffd166" font-weight="900" text-anchor="middle">?</text>
+                  <rect id="lbl-element" x="263" y="88" width="16" height="12" fill="#ffffff" style="display:none;" />
+                  <text id="lbl-text-element" x="271" y="96" font-size="6" fill="#1e293b" font-weight="700" text-anchor="middle" style="display:none;">H2O</text>
+                  <circle cx="271" cy="95" r="12" fill="transparent" stroke="#ffd166" stroke-dasharray="2 2" stroke-width="1.5" />
+                </g>
+              </svg>
+            </div>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="hazard-status-pill status-danger" id="safety-status-pill">
+                ⚠️ <span id="safety-count">0 / 4</span> Hazards Secured
+              </span>
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-safety"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+      </div>
+    </main>
+
+    <footer class="footer">EduWonderLab &bull; Aviad Science Readiness Summer Hub</footer>
+
+    <script src="/personal/aviad/shared.js"></script>
+    <script>
+      // 1. Variable Sorter Validation
+      function validateVariables() {
+        var ivCount = document.getElementById('bin-iv').querySelectorAll('.drag-item').length;
+        var dvCount = document.getElementById('bin-dv').querySelectorAll('.drag-item').length;
+        var cvCount = document.getElementById('bin-cv').querySelectorAll('.drag-item').length;
+        
+        var details = [];
+        document.querySelectorAll('.drop-container').forEach(function(bin) {
+          var name = bin.id.replace('bin-', '').toUpperCase();
+          var items = Array.from(bin.querySelectorAll('.drag-item')).map(function(item) {
+            return item.textContent.trim();
+          });
+          details.push(name + ": " + (items.join(', ') || "None"));
+        });
+        document.getElementById('evidence-text-variables').value = details.join('\n');
+      }
+      
+      // 2. Data Detective graph outlier clicks
+      var selectedOutlier = "";
+      document.querySelectorAll('.data-point').forEach(function(pt) {
+        pt.addEventListener('click', function() {
+          document.querySelectorAll('.data-point').forEach(function(p) { p.classList.remove('selected'); });
+          pt.classList.add('selected');
+          selectedOutlier = pt.id;
+          document.getElementById('selected-outlier-lbl').textContent = pt.dataset.val;
+          document.getElementById('selected-outlier-lbl').style.color = (pt.id === 'pt-outlier') ? '#10b981' : '#ef4444';
+          validateDetective();
+        });
+      });
+      
+      function validateDetective() {
+        var cerText = document.getElementById('detective-cer').value.trim();
+        document.getElementById('evidence-text-detective').value = "OUTLIER_SELECTION: " + selectedOutlier + "\nCER_RESPONSE: " + cerText;
+      }
+      document.getElementById('detective-cer').addEventListener('input', validateDetective);
+
+      // 3. Procedure Repair Shop
+      function validateProcedure() {
+        var order = [];
+        ['proc-s1', 'proc-s2', 'proc-s3', 'proc-s4'].forEach(function(id) {
+          var child = document.getElementById(id).querySelector('.drag-item');
+          order.push(child ? child.dataset.val : "");
+        });
+        
+        var vUnit = document.getElementById('unit-vol').value;
+        var mUnit = document.getElementById('unit-mass').value;
+        
+        document.getElementById('evidence-text-procedure').value = "ORDER: " + order.join(',') + "\nVOLUME_UNIT: " + vUnit + "\nMASS_UNIT: " + mUnit;
+      }
+      
+      document.getElementById('unit-vol').addEventListener('change', validateProcedure);
+      document.getElementById('unit-mass').addEventListener('change', validateProcedure);
+
+      // 4. Misconception Breaker
+      function validateMisconception() {
+        var m1 = document.getElementById('myth-1').value;
+        var m2 = document.getElementById('myth-2').value;
+        var m3 = document.getElementById('myth-3').value;
+        document.getElementById('evidence-text-misconception').value = "MYTH_1: " + m1 + "\nMYTH_2: " + m2 + "\nMYTH_3: " + m3;
+      }
+      document.getElementById('myth-1').addEventListener('change', validateMisconception);
+      document.getElementById('myth-2').addEventListener('change', validateMisconception);
+      document.getElementById('myth-3').addEventListener('change', validateMisconception);
+
+      // 5. Equation Balancer Real-time Tilt
+      var coefs = ['coef-a', 'coef-b', 'coef-c', 'coef-d'];
+      coefs.forEach(function(cid) {
+        document.getElementById(cid).addEventListener('change', function() {
+          var a = parseInt(document.getElementById('coef-a').value, 10);
+          var b = parseInt(document.getElementById('coef-b').value, 10);
+          var c = parseInt(document.getElementById('coef-c').value, 10);
+          var d = parseInt(document.getElementById('coef-d').value, 10);
+          
+          // Reactant Atoms
+          var rC = 6 * a;
+          var rH = 12 * a;
+          var rO = 6 * a + 2 * b;
+          
+          // Product Atoms
+          var pC = c;
+          var pH = 2 * d;
+          var pO = 2 * c + d;
+          
+          document.getElementById('r-c').textContent = rC;
+          document.getElementById('r-h').textContent = rH;
+          document.getElementById('r-o').textContent = rO;
+          
+          document.getElementById('p-c').textContent = pC;
+          document.getElementById('p-h').textContent = pH;
+          document.getElementById('p-o').textContent = pO;
+          
+          // Calculate scale rotation based on atom difference weight
+          var leftWeight = rC * 12 + rH * 1 + rO * 16;
+          var rightWeight = pC * 12 + pH * 1 + pO * 16;
+          
+          var diff = leftWeight - rightWeight;
+          var angle = Math.max(-15, Math.min(15, diff * 0.05));
+          
+          document.getElementById('scale-beam').style.transform = 'rotate(' + angle + 'deg)';
+          
+          document.getElementById('evidence-text-balancer').value = "COEFFICIENTS: " + a + "," + b + "," + c + "," + d;
+        });
+      });
+
+      // 6. Hypothesis Forge
+      function validateHypothesis() {
+        var steps = [];
+        ['hyp-s1', 'hyp-s2', 'hyp-s3'].forEach(function(id) {
+          var child = document.getElementById(id).querySelector('.drag-item');
+          steps.push(child ? child.dataset.val : "");
+        });
+        document.getElementById('evidence-text-hypothesis').value = "HYPOTHESIS_STEPS: " + steps.join(',');
+      }
+
+      // 7. Mitosis Matcher
+      function validateMitosis() {
+        var m1 = document.getElementById('mit-s1').value;
+        var m2 = document.getElementById('mit-s2').value;
+        var m3 = document.getElementById('mit-s3').value;
+        var m4 = document.getElementById('mit-s4').value;
+        document.getElementById('evidence-text-mitosis').value = "MIT_1: " + m1 + "\nMIT_2: " + m2 + "\nMIT_3: " + m3 + "\nMIT_4: " + m4;
+      }
+      document.getElementById('mit-s1').addEventListener('change', validateMitosis);
+      document.getElementById('mit-s2').addEventListener('change', validateMitosis);
+      document.getElementById('mit-s3').addEventListener('change', validateMitosis);
+      document.getElementById('mit-s4').addEventListener('change', validateMitosis);
+
+      // 8. Lab Safety hotspots click
+      var hazardsResolved = {
+        flame: false,
+        food: false,
+        glass: false,
+        label: false
+      };
+      
+      document.getElementById('hz-flame').addEventListener('click', function() {
+        hazardsResolved.flame = true;
+        document.getElementById('flame-element').style.display = 'none';
+        updateSafetyUI();
+      });
+      document.getElementById('hz-food').addEventListener('click', function() {
+        hazardsResolved.food = true;
+        document.getElementById('sandwich-element').style.display = 'none';
+        updateSafetyUI();
+      });
+      document.getElementById('hz-glass').addEventListener('click', function() {
+        hazardsResolved.glass = true;
+        document.getElementById('crack-element').style.display = 'none';
+        document.getElementById('drip-element').style.display = 'none';
+        updateSafetyUI();
+      });
+      document.getElementById('hz-label').addEventListener('click', function() {
+        hazardsResolved.label = true;
+        document.getElementById('q-element').style.display = 'none';
+        document.getElementById('lbl-element').style.display = '';
+        document.getElementById('lbl-text-element').style.display = '';
+        updateSafetyUI();
+      });
+      
+      function updateSafetyUI() {
+        var count = 0;
+        if (hazardsResolved.flame) count++;
+        if (hazardsResolved.food) count++;
+        if (hazardsResolved.glass) count++;
+        if (hazardsResolved.label) count++;
+        
+        var pill = document.getElementById('safety-status-pill');
+        document.getElementById('safety-count').textContent = count + " / 4";
+        
+        if (count === 4) {
+          pill.className = "hazard-status-pill status-success";
+          pill.innerHTML = "✅ All 4 Hazards Secured";
+        } else {
+          pill.className = "hazard-status-pill status-danger";
+          pill.innerHTML = "⚠️ " + count + " / 4 Hazards Secured";
+        }
+        
+        document.getElementById('evidence-text-safety').value = "FLAME:" + hazardsResolved.flame + "\nFOOD:" + hazardsResolved.food + "\nGLASS:" + hazardsResolved.glass + "\nLABEL:" + hazardsResolved.label;
+      }
+
+      // Drag and drop page state validation trigger
+      window.validateActivityState = function(card) {
+        var id = card.dataset.id;
+        if (id === "variables") validateVariables();
+        if (id === "procedure") validateProcedure();
+        if (id === "hypothesis") validateHypothesis();
+      };
+
+      // Integrate with EWL shared validation
+      window.checkInteractiveComplete = function(card) {
+        var id = card.dataset.id;
+        
+        if (id === "variables") {
+          var ivs = Array.from(document.getElementById('bin-iv').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
+          var dvs = Array.from(document.getElementById('bin-dv').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
+          var cvs = Array.from(document.getElementById('bin-cv').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
+          
+          if (ivs.length !== 1 || dvs.length !== 1 || cvs.length !== 3) {
+            return { success: false, message: "Sort all 5 variable cards into the correct categories first." };
+          }
+          if (ivs[0] !== 'v-item-1' || dvs[0] !== 'v-item-2') {
+            return { success: false, message: "Check your variable sorts! Make sure your Independent (Cause) and Dependent (Effect) match the light-to-bubble scenario." };
+          }
+        }
+        
+        if (id === "detective") {
+          if (selectedOutlier !== "pt-outlier") {
+            return { success: false, message: "Identify and select the outlier trial point on the potassium nitrate graph (the one far away from the trend line)." };
+          }
+          var cer = document.getElementById('detective-cer').value.trim();
+          if (cer.length < 25) {
+            return { success: false, message: "Enter a detailed scientific CER paragraph explaining the outlier trial (at least 25 characters)." };
+          }
+        }
+        
+        if (id === "procedure") {
+          var order = Array.from(document.querySelectorAll("[id^='proc-s']")).map(function(slot) {
+            var item = slot.querySelector('.drag-item');
+            return item ? item.dataset.val : "";
+          }).join('');
+          
+          if (order !== "1234") {
+            return { success: false, message: "Arrange all 4 laboratory steps in correct chronological order!" };
+          }
+          var vUnit = document.getElementById('unit-vol').value;
+          var mUnit = document.getElementById('unit-mass').value;
+          if (vUnit !== 'ml' || mUnit !== 'g') {
+            return { success: false, message: "Select the correct standard scientific metric units (volume in milliliters, mass in grams)." };
+          }
+        }
+        
+        if (id === "misconception") {
+          var m1 = document.getElementById('myth-1').value;
+          var m2 = document.getElementById('myth-2').value;
+          var m3 = document.getElementById('myth-3').value;
+          if (m1 !== 'correct' || m2 !== 'correct' || m3 !== 'correct') {
+            return { success: false, message: "Match each scientific myth with its correct evidence fact to bust the misconceptions." };
+          }
+        }
+        
+        if (id === "balancer") {
+          var a = document.getElementById('coef-a').value;
+          var b = document.getElementById('coef-b').value;
+          var c = document.getElementById('coef-c').value;
+          var d = document.getElementById('coef-d').value;
+          
+          if (a !== '1' || b !== '6' || c !== '6' || d !== '6') {
+            return { success: false, message: "Balance the cellular respiration formula! (Check your scale: Carbon, Hydrogen, and Oxygen must balance on both sides)." };
+          }
+        }
+        
+        if (id === "hypothesis") {
+          var steps = Array.from(document.querySelectorAll("[id^='hyp-s']")).map(function(slot) {
+            var item = slot.querySelector('.drag-item');
+            return item ? item.dataset.val : "";
+          }).join(',');
+          if (steps !== "IF,THEN,BECAUSE") {
+            return { success: false, message: "Structure the hypothesis in the correct logical order: IF [Condition], THEN [Prediction], BECAUSE [Mechanism]." };
+          }
+        }
+        
+        if (id === "mitosis") {
+          var s1 = document.getElementById('mit-s1').value;
+          var s2 = document.getElementById('mit-s2').value;
+          var s3 = document.getElementById('mit-s3').value;
+          var s4 = document.getElementById('mit-s4').value;
+          if (s1 !== 'meta' || s2 !== 'ana' || s3 !== 'pro' || s4 !== 'telo') {
+            return { success: false, message: "Label all 4 mitotic cell division phase diagrams correctly." };
+          }
+        }
+        
+        if (id === "safety") {
+          var secured = hazardsResolved.flame && hazardsResolved.food && hazardsResolved.glass && hazardsResolved.label;
+          if (!secured) {
+            return { success: false, message: "Find and click on all 4 safety hazards on the lab bench SVG to secure the lab!" };
+          }
+        }
+        
+        // Bind the actual workspace data from hidden textareas
+        var hiddenText = document.getElementById('evidence-text-' + id).value;
+        card.querySelector('textarea').value = hiddenText;
+        
+        return { success: true };
+      };
+
+      // Restore custom Interactive State
+      window.restoreInteractiveState = function(card, savedState) {
+        var id = card.dataset.id;
+        
+        if (id === "variables" && savedState.iv) {
+          if (savedState.iv) document.getElementById('bin-iv').appendChild(document.getElementById(savedState.iv));
+          if (savedState.dv) document.getElementById('bin-dv').appendChild(document.getElementById(savedState.dv));
+          if (savedState.cv) {
+            savedState.cv.split(',').forEach(function(cid) {
+              if (cid) document.getElementById('bin-cv').appendChild(document.getElementById(cid));
+            });
+          }
+          validateVariables();
+        }
+        
+        if (id === "detective" && savedState.selectedOutlier) {
+          selectedOutlier = savedState.selectedOutlier;
+          var pt = document.getElementById(selectedOutlier);
+          if (pt) {
+            pt.classList.add('selected');
+            document.getElementById('selected-outlier-lbl').textContent = pt.dataset.val;
+            document.getElementById('selected-outlier-lbl').style.color = (pt.id === 'pt-outlier') ? '#10b981' : '#ef4444';
+          }
+          document.getElementById('detective-cer').value = savedState.cerText || "";
+          validateDetective();
+        }
+        
+        if (id === "procedure" && savedState.order) {
+          var dropzones = ['proc-s1', 'proc-s2', 'proc-s3', 'proc-s4'];
+          savedState.order.split(',').forEach(function(val, idx) {
+            if (val) {
+              var item = document.querySelector('.drag-item[data-val="' + val + '"][data-drawer="procedure-drawer"]');
+              if (item) document.getElementById(dropzones[idx]).appendChild(item);
+            }
+          });
+          document.getElementById('unit-vol').value = savedState.vUnit || "";
+          document.getElementById('unit-mass').value = savedState.mUnit || "";
+          validateProcedure();
+        }
+        
+        if (id === "misconception" && savedState.m1) {
+          document.getElementById('myth-1').value = savedState.m1;
+          document.getElementById('myth-2').value = savedState.m2;
+          document.getElementById('myth-3').value = savedState.m3;
+          validateMisconception();
+        }
+        
+        if (id === "balancer" && savedState.coefs) {
+          var parts = savedState.coefs.split(',');
+          document.getElementById('coef-a').value = parts[0];
+          document.getElementById('coef-b').value = parts[1];
+          document.getElementById('coef-c').value = parts[2];
+          document.getElementById('coef-d').value = parts[3];
+          document.getElementById('coef-a').dispatchEvent(new Event('change'));
+        }
+        
+        if (id === "hypothesis" && savedState.steps) {
+          var hdropzones = ['hyp-s1', 'hyp-s2', 'hyp-s3'];
+          savedState.steps.split(',').forEach(function(stepVal, idx) {
+            if (stepVal) {
+              var item = document.querySelector('.drag-item[data-val="' + stepVal + '"][data-drawer="hypothesis-drawer"]');
+              if (item) document.getElementById(hdropzones[idx]).appendChild(item);
+            }
+          });
+          validateHypothesis();
+        }
+        
+        if (id === "mitosis" && savedState.s1) {
+          document.getElementById('mit-s1').value = savedState.s1;
+          document.getElementById('mit-s2').value = savedState.s2;
+          document.getElementById('mit-s3').value = savedState.s3;
+          document.getElementById('mit-s4').value = savedState.s4;
+          validateMitosis();
+        }
+        
+        if (id === "safety" && savedState.hazards) {
+          hazardsResolved = savedState.hazards;
+          if (hazardsResolved.flame) document.getElementById('flame-element').style.display = 'none';
+          if (hazardsResolved.food) document.getElementById('sandwich-element').style.display = 'none';
+          if (hazardsResolved.glass) {
+            document.getElementById('crack-element').style.display = 'none';
+            document.getElementById('drip-element').style.display = 'none';
+          }
+          if (hazardsResolved.label) {
+            document.getElementById('q-element').style.display = 'none';
+            document.getElementById('lbl-element').style.display = '';
+            document.getElementById('lbl-text-element').style.display = '';
+          }
+          updateSafetyUI();
+        }
+      };
+
+      // Retrieve custom Interactive State to save
+      window.getInteractiveState = function(card) {
+        var id = card.dataset.id;
+        
+        if (id === "variables") {
+          var ivItem = document.getElementById('bin-iv').querySelector('.drag-item');
+          var dvItem = document.getElementById('bin-dv').querySelector('.drag-item');
+          var cvItems = Array.from(document.getElementById('bin-cv').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
+          return {
+            iv: ivItem ? ivItem.id : "",
+            dv: dvItem ? dvItem.id : "",
+            cv: cvItems.join(',')
+          };
+        }
+        
+        if (id === "detective") {
+          return {
+            selectedOutlier: selectedOutlier,
+            cerText: document.getElementById('detective-cer').value
+          };
+        }
+        
+        if (id === "procedure") {
+          var order = Array.from(document.querySelectorAll("[id^='proc-s']")).map(function(slot) {
+            var item = slot.querySelector('.drag-item');
+            return item ? item.dataset.val : "";
+          }).join(',');
+          return {
+            order: order,
+            vUnit: document.getElementById('unit-vol').value,
+            mUnit: document.getElementById('unit-mass').value
+          };
+        }
+        
+        if (id === "misconception") {
+          return {
+            m1: document.getElementById('myth-1').value,
+            m2: document.getElementById('myth-2').value,
+            m3: document.getElementById('myth-3').value
+          };
+        }
+        
+        if (id === "balancer") {
+          return {
+            coefs: [
+              document.getElementById('coef-a').value,
+              document.getElementById('coef-b').value,
+              document.getElementById('coef-c').value,
+              document.getElementById('coef-d').value
+            ].join(',')
+          };
+        }
+        
+        if (id === "hypothesis") {
+          var steps = Array.from(document.querySelectorAll("[id^='hyp-s']")).map(function(slot) {
+            var item = slot.querySelector('.drag-item');
+            return item ? item.dataset.val : "";
+          }).join(',');
+          return {
+            steps: steps
+          };
+        }
+        
+        if (id === "mitosis") {
+          return {
+            s1: document.getElementById('mit-s1').value,
+            s2: document.getElementById('mit-s2').value,
+            s3: document.getElementById('mit-s3').value,
+            s4: document.getElementById('mit-s4').value
+          };
+        }
+        
+        if (id === "safety") {
+          return {
+            hazards: hazardsResolved
+          };
+        }
+        
+        return {};
+      };
+    </script>
+  </body>
+</html>

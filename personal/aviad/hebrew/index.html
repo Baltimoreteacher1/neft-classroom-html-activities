@@ -1,0 +1,870 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Aviad Hebrew - EduWonderLab</title>
+    <link rel="stylesheet" href="/personal/aviad/shared.css" />
+    <style>
+      /* Hebrew tab-specific styles */
+      .hebrew-passage-container {
+        max-height: 250px;
+        overflow-y: auto;
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 20px;
+        line-height: 2;
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+      }
+      
+      .rtl-sentence-builder {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-start;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 10px;
+        background: #f1f5f9;
+        border: 2px dashed #cbd5e1;
+        border-radius: var(--radius-sm);
+        min-height: 60px;
+        align-items: center;
+      }
+      
+      .hebrew-dialogue-box {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 12px;
+      }
+      .bubble {
+        padding: 12px 16px;
+        border-radius: 12px;
+        max-width: 80%;
+        font-family: var(--hebrew-font);
+        font-size: 1.05rem;
+        line-height: 1.5;
+        position: relative;
+        box-shadow: var(--shadow-sm);
+      }
+      .bubble.left {
+        background: #f1f5f9;
+        align-self: flex-start;
+        border-bottom-left-radius: 2px;
+        direction: rtl;
+        text-align: right;
+      }
+      .bubble.right {
+        background: var(--accent-light);
+        border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+        align-self: flex-end;
+        border-bottom-right-radius: 2px;
+        direction: rtl;
+        text-align: right;
+      }
+      
+      .dialogue-select {
+        font-family: var(--hebrew-font);
+        font-size: 0.95rem;
+        padding: 4px 8px;
+        border-radius: 4px;
+        border: 1px solid var(--accent);
+        outline: none;
+        direction: rtl;
+        background: #ffffff;
+      }
+    </style>
+  </head>
+  <body data-subject="hebrew" style="--accent: #b45309">
+    <main class="wrap">
+      <header class="hero">
+        <a class="back" href="/personal/aviad/">&larr; Aviad hub</a>
+        <span class="badge">Hebrew Campaign</span>
+        <h1>Hebrew Language</h1>
+        <p class="lead">Connect to your heritage and study vocabulary. Read with interactive translation assistance, conjugate verbs across tenses, and map word roots.</p>
+        
+        <div class="stats">
+          <div class="stat"><b id="xp">0 XP</b><span>earned here</span></div>
+          <div class="stat"><b>8</b><span>developed activities</span></div>
+          <div class="stat"><b id="done">0%</b><span>completion</span></div>
+        </div>
+      </header>
+    </main>
+
+    <!-- Tabs selector -->
+    <nav class="tabs">
+      <div class="tabbar" role="tablist">
+        <button class="tab" aria-selected="true" data-filter="all">All</button>
+        <button class="tab" data-filter="Workshop">Workshops</button>
+        <button class="tab" data-filter="Practice">Practice</button>
+        <button class="tab" data-filter="Project">Projects</button>
+      </div>
+    </nav>
+
+    <!-- Main Activities Panel -->
+    <main class="wrap panel active">
+      <div class="section-head">
+        <h2>Readiness Challenges</h2>
+        <p class="muted">Complete interactive tasks, verify your solutions, and save your work to log XP.</p>
+      </div>
+
+      <div class="grid">
+        
+        <!-- Activity 1: Passage Reader (Workshop) -->
+        <article class="activity" data-id="passage" data-type="Workshop">
+          <div class="meta">
+            <span class="pill">Workshop</span>
+            <span class="pill">25 min</span>
+          </div>
+          <h3>Passage Reader</h3>
+          <p>Read the paragraph below. Hover over Hebrew words for translation tooltips, then answer the questions below.</p>
+          
+          <div class="activity-interactive-area">
+            <div class="hebrew-passage-container hebrew" style="margin-bottom: 14px;">
+              <span class="hover-word" data-translation="Hello / Peace">שלום</span>, 
+              <span class="hover-word" data-translation="my name is">שמי</span> 
+              <span class="hover-word" data-translation="Aviad">אביאד</span>. 
+              <span class="hover-word" data-translation="In the year">בשנה</span> 
+              <span class="hover-word" data-translation="the next / coming">הבאה</span> 
+              <span class="hover-word" data-translation="I">אני</span> 
+              <span class="hover-word" data-translation="start (m.s.)">מתחיל</span> 
+              <span class="hover-word" data-translation="to study / learn">ללמוד</span> 
+              <span class="hover-word" data-translation="in 10th grade">בכיתה י׳</span> 
+              <span class="hover-word" data-translation="in high school">בבית הספר התיכון</span> 
+              <span class="hover-word" data-translation="Pikesville">פייקסוויל</span>. 
+              <span class="hover-word" data-translation="I">אני</span> 
+              <span class="hover-word" data-translation="love / like (m.s.)">אוהב</span> 
+              <span class="hover-word" data-translation="to study / learn">ללמוד</span> 
+              <span class="hover-word" data-translation="mathematics">מתמטיקה</span> 
+              <span class="hover-word" data-translation="and sciences">ומדעים</span>, 
+              <span class="hover-word" data-translation="but">אבל</span> 
+              <span class="hover-word" data-translation="I">אני</span> 
+              <span class="hover-word" data-translation="also">גם</span> 
+              <span class="hover-word" data-translation="want (m.s.)">רוצה</span> 
+              <span class="hover-word" data-translation="to improve">להשתפר</span> 
+              <span class="hover-word" data-translation="in Hebrew">בעברית</span>. 
+              <span class="hover-word" data-translation="This summer">הקיץ</span> 
+              <span class="hover-word" data-translation="I am preparing">אני מתכונן</span> 
+              <span class="hover-word" data-translation="for the school year">לשנת הלימודים</span> 
+              <span class="hover-word" data-translation="the new">החדשה</span>.
+            </div>
+            
+            <div class="step-row">
+              <span class="step-label">Question:</span>
+              <div style="flex:1;">
+                <p style="font-size:0.85rem; font-weight:700; color:var(--text-main); margin-bottom:4px;">According to the text, which academic subjects does Aviad love studying?</p>
+                <input type="text" id="pass-q-ans" placeholder="Enter subjects (in English or Hebrew)..." style="width:100%; padding:8px; border:1px solid var(--border-color); border-radius:4px;" />
+              </div>
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-passage"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 2: Verb Conjugation (Practice) -->
+        <article class="activity" data-id="conjugate" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">20 min</span>
+          </div>
+          <h3>Verb Conjugation</h3>
+          <p>Conjugate the root <b>ל-מ-ד</b> (to study/learn). Drag suffixes or prefixes to form the tenses below.</p>
+          
+          <div class="activity-interactive-area">
+            <div class="word-bank" id="conj-drawer" style="min-height: 50px;">
+              <div class="drag-item" draggable="true" id="c-item-1" data-drawer="conj-drawer" data-val="ti">תי (Past: I)</div>
+              <div class="drag-item" draggable="true" id="c-item-2" data-drawer="conj-drawer" data-val="a">א־ (Future: I)</div>
+              <div class="drag-item" draggable="true" id="c-item-3" data-drawer="conj-drawer" data-val="ta">ת (Past: You m.s.)</div>
+              <div class="drag-item" draggable="true" id="c-item-4" data-drawer="conj-drawer" data-val="t">ת־ (Future: You m.s.)</div>
+            </div>
+            
+            <div style="display:flex; flex-direction:column; gap:8px; margin-top:14px; direction:rtl; text-align:right;">
+              
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="step-label" style="width:140px;">1. I studied (Past):</span>
+                <span>למד</span>
+                <div class="drop-container" id="conj-s1" data-max="1" data-slot="ti" style="width:60px; min-height:40px; padding:4px;"></div>
+              </div>
+              
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="step-label" style="width:140px;">2. I will study (Future):</span>
+                <div class="drop-container" id="conj-s2" data-max="1" data-slot="a" style="width:60px; min-height:40px; padding:4px;"></div>
+                <span>למד</span>
+              </div>
+              
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="step-label" style="width:140px;">3. You (m) studied:</span>
+                <span>למד</span>
+                <div class="drop-container" id="conj-s3" data-max="1" data-slot="ta" style="width:60px; min-height:40px; padding:4px;"></div>
+              </div>
+              
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="step-label" style="width:140px;">4. You (m) will study:</span>
+                <div class="drop-container" id="conj-s4" data-max="1" data-slot="t" style="width:60px; min-height:40px; padding:4px;"></div>
+                <span>למד</span>
+              </div>
+
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-conjugate"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 3: Word Family Roots (Practice) -->
+        <article class="activity" data-id="roots" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Word Family Roots</h3>
+          <p>Match each Hebrew vocabulary word to its three-letter parent root code.</p>
+          
+          <div class="activity-interactive-area">
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              
+              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                <span class="hebrew" style="font-size:1.1rem; font-weight:700;">ספרייה (Library)</span>
+                <select id="root-w1" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                  <option value="">Select Root...</option>
+                  <option value="spr">ס - פ - ר (Book/Count)</option>
+                  <option value="ktb">כ - ת - ב (Writing)</option>
+                  <option value="dbr">ד - ב - ר (Speaking)</option>
+                </select>
+              </div>
+              
+              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                <span class="hebrew" style="font-size:1.1rem; font-weight:700;">מכתב (Letter)</span>
+                <select id="root-w2" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                  <option value="">Select Root...</option>
+                  <option value="spr">ס - פ - ר</option>
+                  <option value="ktb">כ - ת - ב</option>
+                  <option value="dbr">ד - ב - ר</option>
+                </select>
+              </div>
+
+              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                <span class="hebrew" style="font-size:1.1rem; font-weight:700;">מילה (Word)</span>
+                <select id="root-w3" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                  <option value="">Select Root...</option>
+                  <option value="spr">ס - פ - ר</option>
+                  <option value="ktb">כ - ת - ב</option>
+                  <option value="mll">מ - ל - ל (Speaking/Word)</option>
+                </select>
+              </div>
+
+              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                <span class="hebrew" style="font-size:1.1rem; font-weight:700;">כותב (Writer)</span>
+                <select id="root-w4" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                  <option value="">Select Root...</option>
+                  <option value="spr">ס - פ - ר</option>
+                  <option value="ktb">כ - ת - ב</option>
+                  <option value="dbr">ד - ב - ר</option>
+                </select>
+              </div>
+
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-roots"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 4: Vowel Speedrun (Practice) -->
+        <article class="activity" data-id="vowels" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Vowel Speedrun</h3>
+          <p>Identify the phonetic vowel sounds (Nikud markings) for reading fluency.</p>
+          
+          <div class="activity-interactive-area">
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              
+              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                <span class="hebrew" style="font-size:1.4rem; font-weight:900;">בָ / בַ (Kamatz / Patach)</span>
+                <select id="vow-1" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                  <option value="">Select sound...</option>
+                  <option value="ah">"Ah" sound (as in father)</option>
+                  <option value="ee">"Ee" sound (as in beet)</option>
+                  <option value="eh">"Eh" sound (as in bet)</option>
+                </select>
+              </div>
+              
+              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                <span class="hebrew" style="font-size:1.4rem; font-weight:900;">בִ (Hirik)</span>
+                <select id="vow-2" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                  <option value="">Select sound...</option>
+                  <option value="ah">"Ah" sound</option>
+                  <option value="ee">"Ee" sound (as in beet)</option>
+                  <option value="oo">"Oo" sound (as in boot)</option>
+                </select>
+              </div>
+
+              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                <span class="hebrew" style="font-size:1.4rem; font-weight:900;">בֵ / בֶ (Tzere / Segol)</span>
+                <select id="vow-3" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                  <option value="">Select sound...</option>
+                  <option value="oh">"Oh" sound</option>
+                  <option value="eh">"Eh" sound (as in bet)</option>
+                  <option value="ee">"Ee" sound</option>
+                </select>
+              </div>
+
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-vowels"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 5: Pronoun Connector (Practice) -->
+        <article class="activity" data-id="pronouns" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Pronoun Connector</h3>
+          <p>Match the Hebrew subject pronouns with their English definitions.</p>
+          
+          <div class="activity-interactive-area">
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              
+              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                <span class="hebrew" style="font-size:1.1rem; font-weight:700;">אני (Ani)</span>
+                <select id="pro-1" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                  <option value="">Select meaning...</option>
+                  <option value="i">I</option>
+                  <option value="we">We</option>
+                  <option value="he">He</option>
+                </select>
+              </div>
+              
+              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                <span class="hebrew" style="font-size:1.1rem; font-weight:700;">אנחנו (Anachnu)</span>
+                <select id="pro-2" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                  <option value="">Select meaning...</option>
+                  <option value="they">They</option>
+                  <option value="we">We</option>
+                  <option value="you">You (plural)</option>
+                </select>
+              </div>
+
+              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                <span class="hebrew" style="font-size:1.1rem; font-weight:700;">הוא (Hu)</span>
+                <select id="pro-3" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                  <option value="">Select meaning...</option>
+                  <option value="she">She</option>
+                  <option value="he">He</option>
+                  <option value="i">I</option>
+                </select>
+              </div>
+
+              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                <span class="hebrew" style="font-size:1.1rem; font-weight:700;">היא (Hi)</span>
+                <select id="pro-4" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                  <option value="">Select meaning...</option>
+                  <option value="she">She</option>
+                  <option value="they">They</option>
+                  <option value="he">He</option>
+                </select>
+              </div>
+
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-pronouns"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 6: School Vocabulary (Practice) -->
+        <article class="activity" data-id="vocabulary" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>School Vocabulary</h3>
+          <p>Match Pikesville High themed vocabulary terms with their English meanings.</p>
+          
+          <div class="activity-interactive-area">
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              
+              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                <span class="hebrew" style="font-size:1.1rem; font-weight:700;">תיכון (Tichon)</span>
+                <select id="voc-1" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                  <option value="">Select meaning...</option>
+                  <option value="elementary">Elementary School</option>
+                  <option value="high">High School</option>
+                  <option value="college">University</option>
+                </select>
+              </div>
+              
+              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                <span class="hebrew" style="font-size:1.1rem; font-weight:700;">מבחן (Mivchan)</span>
+                <select id="voc-2" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                  <option value="">Select meaning...</option>
+                  <option value="homework">Homework</option>
+                  <option value="notebook">Notebook</option>
+                  <option value="test">Test / Exam</option>
+                </select>
+              </div>
+
+              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                <span class="hebrew" style="font-size:1.1rem; font-weight:700;">חברים (Chaverim)</span>
+                <select id="voc-3" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                  <option value="">Select meaning...</option>
+                  <option value="teachers">Teachers</option>
+                  <option value="friends">Friends / Classmates</option>
+                  <option value="books">Books</option>
+                </select>
+              </div>
+
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-vocabulary"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 7: Sentence Constructor (Workshop) -->
+        <article class="activity" data-id="sentence" data-type="Workshop">
+          <div class="meta">
+            <span class="pill">Workshop</span>
+            <span class="pill">20 min</span>
+          </div>
+          <h3>Sentence Constructor</h3>
+          <p>Assemble the Hebrew sentence in the correct RTL order to write: <i>"The student writes a letter in Hebrew."</i></p>
+          
+          <div class="activity-interactive-area">
+            <div class="word-bank" id="sent-drawer" style="min-height: 50px;">
+              <div class="drag-item" draggable="true" id="s-item-b" data-drawer="sent-drawer" data-val="writes">כותב (writes)</div>
+              <div class="drag-item" draggable="true" id="s-item-a" data-drawer="sent-drawer" data-val="student">התלמיד (the student)</div>
+              <div class="drag-item" draggable="true" id="s-item-d" data-drawer="sent-drawer" data-val="hebrew">בעברית (in Hebrew)</div>
+              <div class="drag-item" draggable="true" id="s-item-c" data-drawer="sent-drawer" data-val="letter">מכתב (a letter)</div>
+            </div>
+            
+            <div style="margin-top:14px;">
+              <div class="rtl-sentence-builder" id="sent-drop">
+                <!-- Drop slots ordered RTL -->
+              </div>
+              <div style="font-size:0.75rem; color:var(--text-muted); text-align:right; margin-top:4px;">Drag blocks here in order (Right to Left)</div>
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-sentence"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 8: Dialogue Builder (Project) -->
+        <article class="activity" data-id="dialogue" data-type="Project">
+          <div class="meta">
+            <span class="pill">Project</span>
+            <span class="pill">25 min</span>
+          </div>
+          <h3>Dialogue Builder</h3>
+          <p>Complete the classroom dialogue below by selecting correct Hebrew phrases, then write a short reflection.</p>
+          
+          <div class="activity-interactive-area">
+            <div class="hebrew-dialogue-box">
+              <div class="bubble left">
+                שלום! מה נשמע?
+                <br/><span style="font-size:0.7rem; opacity:0.8; font-family:var(--font-body);">(Hello! How's it going?)</span>
+              </div>
+              
+              <div class="bubble right">
+                <select id="dial-ans-1" class="dialogue-select">
+                  <option value="">Choose reply...</option>
+                  <option value="ok">הכל טוב, תודה! ואצלך?</option>
+                  <option value="bad">עייף מאוד, אין לי כוח.</option>
+                </select>
+                <br/><span style="font-size:0.7rem; opacity:0.8; font-family:var(--font-body);">(All is good, thanks! And with you?)</span>
+              </div>
+              
+              <div class="bubble left">
+                מצוין. האם אתה מוכן לכיתה י׳?
+                <br/><span style="font-size:0.7rem; opacity:0.8; font-family:var(--font-body);">(Excellent. Are you ready for 10th grade?)</span>
+              </div>
+              
+              <div class="bubble right">
+                <select id="dial-ans-2" class="dialogue-select">
+                  <option value="">Choose reply...</option>
+                  <option value="ready">כן, אני קצת מתרגש אבל מוכן!</option>
+                  <option value="not">לא, אני לא רוצה ללמוד.</option>
+                </select>
+                <br/><span style="font-size:0.7rem; opacity:0.8; font-family:var(--font-body);">(Yes, I'm a bit excited but ready!)</span>
+              </div>
+            </div>
+            
+            <div class="step-row" style="margin-top: 10px;">
+              <span class="step-label">Reflection:</span>
+              <textarea id="dial-reflection" placeholder="Draft a brief reflection in English about what goals you have for Hebrew language learning this upcoming school year." style="min-height: 60px;"></textarea>
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-dialogue"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+      </div>
+    </main>
+
+    <footer class="footer">EduWonderLab &bull; Aviad Hebrew Summer Hub</footer>
+
+    <script src="/personal/aviad/shared.js"></script>
+    <script>
+      // 1. Passage question
+      function validatePassage() {
+        var ans = document.getElementById('pass-q-ans').value.trim();
+        document.getElementById('evidence-text-passage').value = "ANSWER: " + ans;
+      }
+      document.getElementById('pass-q-ans').addEventListener('input', validatePassage);
+
+      // 2. Verb Conjugation
+      function validateConjugate() {
+        var details = [];
+        ['conj-s1', 'conj-s2', 'conj-s3', 'conj-s4'].forEach(function(sid) {
+          var item = document.getElementById(sid).querySelector('.drag-item');
+          details.push(sid + ":" + (item ? item.dataset.val : ""));
+        });
+        document.getElementById('evidence-text-conjugate').value = details.join('\n');
+      }
+
+      // 3. Roots Matcher
+      var rootControls = ['root-w1', 'root-w2', 'root-w3', 'root-w4'];
+      function validateRoots() {
+        var vals = rootControls.map(function(cid) { return document.getElementById(cid).value; });
+        document.getElementById('evidence-text-roots').value = vals.join(',');
+      }
+      rootControls.forEach(function(cid) {
+        document.getElementById(cid).addEventListener('change', validateRoots);
+      });
+
+      // 4. Vowels
+      var vowelControls = ['vow-1', 'vow-2', 'vow-3'];
+      function validateVowels() {
+        var vals = vowelControls.map(function(cid) { return document.getElementById(cid).value; });
+        document.getElementById('evidence-text-vowels').value = vals.join(',');
+      }
+      vowelControls.forEach(function(cid) {
+        document.getElementById(cid).addEventListener('change', validateVowels);
+      });
+
+      // 5. Pronouns
+      var proControls = ['pro-1', 'pro-2', 'pro-3', 'pro-4'];
+      function validatePronouns() {
+        var vals = proControls.map(function(cid) { return document.getElementById(cid).value; });
+        document.getElementById('evidence-text-pronouns').value = vals.join(',');
+      }
+      proControls.forEach(function(cid) {
+        document.getElementById(cid).addEventListener('change', validatePronouns);
+      });
+
+      // 6. Vocabulary
+      var vocControls = ['voc-1', 'voc-2', 'voc-3'];
+      function validateVocabulary() {
+        var vals = vocControls.map(function(cid) { return document.getElementById(cid).value; });
+        document.getElementById('evidence-text-vocabulary').value = vals.join(',');
+      }
+      vocControls.forEach(function(cid) {
+        document.getElementById(cid).addEventListener('change', validateVocabulary);
+      });
+
+      // 7. Sentence
+      function validateSentence() {
+        var order = Array.from(document.getElementById('sent-drop').querySelectorAll('.drag-item')).map(function(item) {
+          return item.dataset.val;
+        });
+        document.getElementById('evidence-text-sentence').value = "SENTENCE_ORDER: " + order.join(',');
+      }
+
+      // 8. Dialogue
+      var dial1 = document.getElementById('dial-ans-1');
+      var dial2 = document.getElementById('dial-ans-2');
+      var dialRef = document.getElementById('dial-reflection');
+      function validateDialogue() {
+        var v1 = dial1.value;
+        var v2 = dial2.value;
+        var r = dialRef.value.trim();
+        document.getElementById('evidence-text-dialogue').value = "DIAL1:" + v1 + "\nDIAL2:" + v2 + "\nREFLECTION:" + r;
+      }
+      dial1.addEventListener('change', validateDialogue);
+      dial2.addEventListener('change', validateDialogue);
+      dialRef.addEventListener('input', validateDialogue);
+
+      // Drag and drop trigger validate callbacks
+      window.validateActivityState = function(card) {
+        var id = card.dataset.id;
+        if (id === "conjugate") validateConjugate();
+        if (id === "sentence") validateSentence();
+      };
+
+      // Integrate with EWL shared validation
+      window.checkInteractiveComplete = function(card) {
+        var id = card.dataset.id;
+        
+        if (id === "passage") {
+          var ans = document.getElementById('pass-q-ans').value.trim().toLowerCase();
+          if (ans.length < 5 || (ans.indexOf('math') === -1 && ans.indexOf('science') === -1 && ans.indexOf('מתמטיקה') === -1 && ans.indexOf('מדעים') === -1)) {
+            return { success: false, message: "Read the passage carefully! What are the subjects Aviad loves studying? (Enter both subjects in your answer)." };
+          }
+        }
+        
+        if (id === "conjugate") {
+          var s1 = document.getElementById('conj-s1').querySelector('.drag-item');
+          var s2 = document.getElementById('conj-s2').querySelector('.drag-item');
+          var s3 = document.getElementById('conj-s3').querySelector('.drag-item');
+          var s4 = document.getElementById('conj-s4').querySelector('.drag-item');
+          
+          if (!s1 || !s2 || !s3 || !s4) {
+            return { success: false, message: "Conjugate all 4 verb cases before completing." };
+          }
+          if (s1.dataset.val !== 'ti' || s2.dataset.val !== 'a' || s3.dataset.val !== 'ta' || s4.dataset.val !== 't') {
+            return { success: false, message: "Check your verb conjugations! Remember prefixes for future and suffixes for past." };
+          }
+        }
+        
+        if (id === "roots") {
+          var r1 = document.getElementById('root-w1').value;
+          var r2 = document.getElementById('root-w2').value;
+          var r3 = document.getElementById('root-w3').value;
+          var r4 = document.getElementById('root-w4').value;
+          if (r1 !== 'spr' || r2 !== 'ktb' || r3 !== 'mll' || r4 !== 'ktb') {
+            return { success: false, message: "Match all 4 vocabulary words with their correct three-letter Hebrew roots." };
+          }
+        }
+        
+        if (id === "vowels") {
+          var v1 = document.getElementById('vow-1').value;
+          var v2 = document.getElementById('vow-2').value;
+          var v3 = document.getElementById('vow-3').value;
+          if (v1 !== 'ah' || v2 !== 'ee' || v3 !== 'eh') {
+            return { success: false, message: "Identify all 3 vowel sounds correctly to clear the Nikud speedrun." };
+          }
+        }
+        
+        if (id === "pronouns") {
+          var p1 = document.getElementById('pro-1').value;
+          var p2 = document.getElementById('pro-2').value;
+          var p3 = document.getElementById('pro-3').value;
+          var p4 = document.getElementById('pro-4').value;
+          if (p1 !== 'i' || p2 !== 'we' || p3 !== 'he' || p4 !== 'she') {
+            return { success: false, message: "Provide the correct English translations for all 4 Hebrew subject pronouns." };
+          }
+        }
+        
+        if (id === "vocabulary") {
+          var voc1 = document.getElementById('voc-1').value;
+          var voc2 = document.getElementById('voc-2').value;
+          var voc3 = document.getElementById('voc-3').value;
+          if (voc1 !== 'high' || voc2 !== 'test' || voc3 !== 'friends') {
+            return { success: false, message: "Translate all 3 high school terms correctly." };
+          }
+        }
+        
+        if (id === "sentence") {
+          var items = Array.from(document.getElementById('sent-drop').querySelectorAll('.drag-item'));
+          if (items.length !== 4) {
+            return { success: false, message: "Drag all 4 word blocks into the drop zone first." };
+          }
+          // Correct order (RTL reading): התלמיד (student) כותב (writes) מכתב (letter) בעברית (hebrew)
+          var vals = items.map(function(item) { return item.dataset.val; }).join(',');
+          if (vals !== "student,writes,letter,hebrew") {
+            return { success: false, message: "Arrange the words in correct Hebrew grammatical order (Subject -> Verb -> Object -> Preposition) reading from right to left!" };
+          }
+        }
+        
+        if (id === "dialogue") {
+          var d1 = dial1.value;
+          var d2 = dial2.value;
+          var ref = dialRef.value.trim();
+          
+          if (d1 !== 'ok' || d2 !== 'ready') {
+            return { success: false, message: "Complete the dialogue flow by choosing the polite and appropriate classmate responses." };
+          }
+          if (ref.length < 20) {
+            return { success: false, message: "Complete the reflection text box (at least 20 characters) explaining your language learning goals." };
+          }
+        }
+        
+        // Bind the actual workspace data from hidden textareas
+        var hiddenText = document.getElementById('evidence-text-' + id).value;
+        card.querySelector('textarea').value = hiddenText;
+        
+        return { success: true };
+      };
+
+      // Restore custom Interactive State
+      window.restoreInteractiveState = function(card, savedState) {
+        var id = card.dataset.id;
+        
+        if (id === "passage" && savedState.ANSWER) {
+          document.getElementById('pass-q-ans').value = savedState.ANSWER;
+          validatePassage();
+        }
+        
+        if (id === "conjugate" && savedState.s1) {
+          // Parse list of lines
+          var lines = savedState.s1.split('\n');
+          // Format is conj-s1:ti, conj-s2:a, etc.
+          lines.forEach(function(line) {
+            var parts = line.split(':');
+            var sid = parts[0];
+            var val = parts[1];
+            if (val) {
+              var item = document.querySelector('.drag-item[data-val="' + val + '"][data-drawer="conj-drawer"]');
+              if (item) document.getElementById(sid).appendChild(item);
+            }
+          });
+          validateConjugate();
+        }
+        
+        if (id === "roots" && savedState.rootVal) {
+          var parts = savedState.rootVal.split(',');
+          rootControls.forEach(function(cid, idx) {
+            if (parts[idx]) document.getElementById(cid).value = parts[idx];
+          });
+          validateRoots();
+        }
+        
+        if (id === "vowels" && savedState.vowVal) {
+          var parts = savedState.vowVal.split(',');
+          vowelControls.forEach(function(cid, idx) {
+            if (parts[idx]) document.getElementById(cid).value = parts[idx];
+          });
+          validateVowels();
+        }
+        
+        if (id === "pronouns" && savedState.proVal) {
+          var parts = savedState.proVal.split(',');
+          proControls.forEach(function(cid, idx) {
+            if (parts[idx]) document.getElementById(cid).value = parts[idx];
+          });
+          validatePronouns();
+        }
+        
+        if (id === "vocabulary" && savedState.vocVal) {
+          var parts = savedState.vocVal.split(',');
+          vocControls.forEach(function(cid, idx) {
+            if (parts[idx]) document.getElementById(cid).value = parts[idx];
+          });
+          validateVocabulary();
+        }
+        
+        if (id === "sentence" && savedState.order) {
+          var dropzone = document.getElementById('sent-drop');
+          savedState.order.split(',').forEach(function(val) {
+            if (val) {
+              var item = document.querySelector('.drag-item[data-val="' + val + '"][data-drawer="sent-drawer"]');
+              if (item) dropzone.appendChild(item);
+            }
+          });
+          validateSentence();
+        }
+        
+        if (id === "dialogue" && savedState.DIAL1) {
+          dial1.value = savedState.DIAL1;
+          dial2.value = savedState.DIAL2;
+          dialRef.value = savedState.REFLECTION || "";
+          validateDialogue();
+        }
+      };
+
+      // Retrieve custom Interactive State to save
+      window.getInteractiveState = function(card) {
+        var id = card.dataset.id;
+        
+        if (id === "passage") {
+          return {
+            ANSWER: document.getElementById('pass-q-ans').value
+          };
+        }
+        
+        if (id === "conjugate") {
+          var details = [];
+          ['conj-s1', 'conj-s2', 'conj-s3', 'conj-s4'].forEach(function(sid) {
+            var item = document.getElementById(sid).querySelector('.drag-item');
+            details.push(sid + ":" + (item ? item.dataset.val : ""));
+          });
+          return {
+            s1: details.join('\n')
+          };
+        }
+        
+        if (id === "roots") {
+          var vals = rootControls.map(function(cid) { return document.getElementById(cid).value; });
+          return {
+            rootVal: vals.join(',')
+          };
+        }
+        
+        if (id === "vowels") {
+          var vals = vowelControls.map(function(cid) { return document.getElementById(cid).value; });
+          return {
+            vowVal: vals.join(',')
+          };
+        }
+        
+        if (id === "pronouns") {
+          var vals = proControls.map(function(cid) { return document.getElementById(cid).value; });
+          return {
+            proVal: vals.join(',')
+          };
+        }
+        
+        if (id === "vocabulary") {
+          var vals = vocControls.map(function(cid) { return document.getElementById(cid).value; });
+          return {
+            vocVal: vals.join(',')
+          };
+        }
+        
+        if (id === "sentence") {
+          var order = Array.from(document.getElementById('sent-drop').querySelectorAll('.drag-item')).map(function(item) {
+            return item.dataset.val;
+          });
+          return {
+            order: order.join(',')
+          };
+        }
+        
+        if (id === "dialogue") {
+          return {
+            DIAL1: dial1.value,
+            DIAL2: dial2.value,
+            REFLECTION: dialRef.value
+          };
+        }
+        
+        return {};
+      };
+    </script>
+  </body>
+</html>

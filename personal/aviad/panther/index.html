@@ -1,0 +1,1012 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Aviad Panther Life - EduWonderLab</title>
+    <link rel="stylesheet" href="/personal/aviad/shared.css" />
+    <style>
+      /* Panther Life tab overrides */
+      .panther-2col {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      @media (min-width: 768px) {
+        .panther-2col {
+          grid-template-columns: 1.2fr 0.8fr;
+        }
+      }
+      
+      .backpack-svg-container {
+        display: flex;
+        justify-content: center;
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 10px;
+      }
+      .pocket-target {
+        fill: #f1f5f9;
+        stroke: #94a3b8;
+        stroke-dasharray: 4 4;
+        transition: fill 0.2s ease, stroke 0.2s ease;
+      }
+      .pocket-target.dragover {
+        fill: rgba(109, 40, 217, 0.1);
+        stroke: var(--accent);
+      }
+      
+      /* Email builder */
+      .email-canvas {
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 16px;
+        box-shadow: var(--shadow-sm);
+      }
+      .email-header-row {
+        display: grid;
+        grid-template-columns: 80px 1fr;
+        border-bottom: 1px solid #f1f5f9;
+        padding: 6px 0;
+        align-items: center;
+        font-size: 0.85rem;
+      }
+      .email-label {
+        font-weight: 700;
+        color: var(--text-muted);
+      }
+      
+      /* School Map SVG */
+      .map-svg {
+        width: 100%;
+        height: auto;
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+      }
+      .room-block {
+        fill: #f1f5f9;
+        stroke: #cbd5e1;
+        stroke-width: 2;
+        cursor: pointer;
+        transition: fill 0.2s ease;
+      }
+      .room-block:hover {
+        fill: #e2e8f0;
+      }
+      .room-block.located {
+        fill: #d1fae5;
+        stroke: #10b981;
+      }
+      
+      /* Notification simulator card */
+      .notif-card {
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-left: 4px solid #3b82f6;
+        border-radius: 6px;
+        padding: 10px;
+        margin-bottom: 8px;
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+      }
+      .notif-card.distractor {
+        border-left-color: #ef4444;
+      }
+      .notif-card.correct-mute {
+        opacity: 0.6;
+        border-left-color: #94a3b8;
+        background: #f8fafc;
+      }
+      .notif-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-bottom: 2px;
+      }
+      .notif-body {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+      .notif-badge {
+        font-size: 0.65rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        padding: 2px 6px;
+        border-radius: var(--radius-full);
+      }
+      .badge-danger {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .badge-info {
+        background: #dbeafe;
+        color: #1e40af;
+      }
+    </style>
+  </head>
+  <body data-subject="panther" style="--accent: #6d28d9">
+    <main class="wrap">
+      <header class="hero">
+        <a class="back" href="/personal/aviad/">&larr; Aviad hub</a>
+        <span class="badge">Panther Life</span>
+        <h1>Panther Life Readiness</h1>
+        <p class="lead">Own your sophomore schedule. Master course requirements, balance sleep with extracurriculars, send professional teacher emails, and pack your gear.</p>
+        
+        <div class="stats">
+          <div class="stat"><b id="xp">0 XP</b><span>earned here</span></div>
+          <div class="stat"><b>8</b><span>developed activities</span></div>
+          <div class="stat"><b id="done">0%</b><span>completion</span></div>
+        </div>
+      </header>
+    </main>
+
+    <!-- Tabs selector -->
+    <nav class="tabs">
+      <div class="tabbar" role="tablist">
+        <button class="tab" aria-selected="true" data-filter="all">All</button>
+        <button class="tab" data-filter="Workshop">Workshops</button>
+        <button class="tab" data-filter="Practice">Practice</button>
+        <button class="tab" data-filter="Project">Projects</button>
+      </div>
+    </nav>
+
+    <!-- Main Activities Panel -->
+    <main class="wrap panel active">
+      <div class="section-head">
+        <h2>Readiness Challenges</h2>
+        <p class="muted">Complete interactive tasks, verify your solutions, and save your work to log XP.</p>
+      </div>
+
+      <div class="grid">
+        
+        <!-- Activity 1: FOCUS Course Room (Workshop) -->
+        <article class="activity" data-id="courses" data-type="Workshop">
+          <div class="meta">
+            <span class="pill">Workshop</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>FOCUS Course Control</h3>
+          <p>Drag sophomore courses into your 4-period schedule layout to model a balanced school day.</p>
+          
+          <div class="activity-interactive-area">
+            <div class="word-bank" id="course-drawer" style="min-height: 50px;">
+              <div class="drag-item" draggable="true" id="crs-eng" data-drawer="course-drawer" data-val="eng">English 10 Honors</div>
+              <div class="drag-item" draggable="true" id="crs-alg" data-drawer="course-drawer" data-val="alg">Algebra II / Trig</div>
+              <div class="drag-item" draggable="true" id="crs-bio" data-drawer="course-drawer" data-val="bio">Biology Lab</div>
+              <div class="drag-item" draggable="true" id="crs-gov" data-drawer="course-drawer" data-val="gov">AP Government</div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 6px; margin-top:14px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="step-label">Period 1:</span>
+                <div class="drop-container" id="p-slot-1" data-max="1" style="flex:1; min-height: 40px; padding: 4px;"></div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="step-label">Period 2:</span>
+                <div class="drop-container" id="p-slot-2" data-max="1" style="flex:1; min-height: 40px; padding: 4px;"></div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="step-label">Period 3:</span>
+                <div class="drop-container" id="p-slot-3" data-max="1" style="flex:1; min-height: 40px; padding: 4px;"></div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="step-label">Period 4:</span>
+                <div class="drop-container" id="p-slot-4" data-max="1" style="flex:1; min-height: 40px; padding: 4px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-courses"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 2: Weekly Map Builder (Workshop) -->
+        <article class="activity" data-id="scheduler" data-type="Workshop">
+          <div class="meta">
+            <span class="pill">Workshop</span>
+            <span class="pill">25 min</span>
+          </div>
+          <h3>Weekly Map Builder</h3>
+          <p>Model school-week time. Drag blocks to schedule your afternoon routine. Keep gaming moderate and sleep high.</p>
+          
+          <div class="activity-interactive-area">
+            <div class="word-bank" id="sched-drawer" style="min-height: 50px;">
+              <div class="drag-item" draggable="true" id="sc-sleep" data-drawer="sched-drawer" data-val="sleep">Sleep (8 hrs)</div>
+              <div class="drag-item" draggable="true" id="sc-study" data-drawer="sched-drawer" data-val="study">Study Core (2 hrs)</div>
+              <div class="drag-item" draggable="true" id="sc-hebrew" data-drawer="sched-drawer" data-val="hebrew">Hebrew Practice (1 hr)</div>
+              <div class="drag-item" draggable="true" id="sc-game-high" data-drawer="sched-drawer" data-val="game-hi">Gaming (6 hrs!)</div>
+              <div class="drag-item" draggable="true" id="sc-game-low" data-drawer="sched-drawer" data-val="game-lo">Gaming (1.5 hrs)</div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 14px;">
+              <div class="bin-container" style="background:#fff; border-color:#cbd5e1;">
+                <span class="bin-title" style="color:var(--accent); text-align:left;">Monday Afternoon Slots (Max 4 blocks)</span>
+                <div class="drop-container" id="sched-mon" data-max="4" style="min-height:60px;"></div>
+              </div>
+            </div>
+            
+            <div style="margin-top:8px; display:none; background:var(--danger-bg); color:var(--danger-text); border:1px solid var(--danger); border-radius:4px; padding:8px; font-size:0.8rem; font-weight:700;" id="sched-warn-box">
+              ⚠️ Warning: Gaming exceeds 2 hours! Sleep and grades may suffer.
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-scheduler"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 3: Backpack Systems (Practice) -->
+        <article class="activity" data-id="backpack" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Backpack Systems</h3>
+          <p>Pack your bag. Drag items to their dedicated pockets to avoid losing school materials.</p>
+          
+          <div class="activity-interactive-area">
+            <div class="word-bank" id="backpack-drawer" style="min-height: 45px;">
+              <div class="drag-item" draggable="true" id="bp-chromebook" data-drawer="backpack-drawer" data-val="large">Chromebook &amp; Charger</div>
+              <div class="drag-item" draggable="true" id="bp-notebooks" data-drawer="backpack-drawer" data-val="large">Math &amp; Hebrew Notebooks</div>
+              <div class="drag-item" draggable="true" id="bp-calculator" data-drawer="backpack-drawer" data-val="med">Graphing Calculator</div>
+              <div class="drag-item" draggable="true" id="bp-id" data-drawer="backpack-drawer" data-val="small">Student ID &amp; Bus Pass</div>
+            </div>
+            
+            <div class="panther-2col" style="margin-top: 14px;">
+              <div class="backpack-svg-container">
+                <!-- Backpack SVG diagram -->
+                <svg viewBox="0 0 120 160" width="90" height="120" id="backpack-svg">
+                  <!-- Main Body -->
+                  <path d="M 10 40 C 10 10, 110 10, 110 40 L 110 150 L 10 150 Z" fill="#6d28d9" stroke="#4c1d95" stroke-width="3" />
+                  
+                  <!-- Main pocket slot -->
+                  <rect x="20" y="45" width="80" height="30" rx="3" class="pocket-target" id="pocket-large" data-pocket="large" />
+                  
+                  <!-- Med pocket slot -->
+                  <rect x="25" y="85" width="70" height="25" rx="3" class="pocket-target" id="pocket-med" data-pocket="med" />
+                  
+                  <!-- Small pocket slot -->
+                  <rect x="30" y="120" width="60" height="20" rx="3" class="pocket-target" id="pocket-small" data-pocket="small" />
+                </svg>
+              </div>
+              
+              <div style="display:flex; flex-direction:column; gap:6px; font-size:0.75rem; font-weight:700;">
+                <div>Large Pocket items: <span id="bp-l-lbl" style="color:var(--accent);">0</span> / 2</div>
+                <div>Medium Pocket items: <span id="bp-m-lbl" style="color:var(--accent);">0</span> / 1</div>
+                <div>Small Pocket items: <span id="bp-s-lbl" style="color:var(--accent);">0</span> / 1</div>
+              </div>
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-backpack"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 4: Teacher Email Editor (Practice) -->
+        <article class="activity" data-id="email" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Teacher Email Editor</h3>
+          <p>Draft a professional email request to your teacher regarding a scheduled sports absence.</p>
+          
+          <div class="activity-interactive-area">
+            <div class="email-canvas">
+              <div class="email-header-row">
+                <span class="email-label">To:</span>
+                <span>mdavis@bcps.org</span>
+              </div>
+              <div class="email-header-row">
+                <span class="email-label">Subject:</span>
+                <select id="em-subject" style="padding:4px; font-size:0.8rem; border-radius:4px; border:1px solid var(--border-color); width:100%;">
+                  <option value="">Select Subject Line...</option>
+                  <option value="wrong1">i won't be in class</option>
+                  <option value="correct">Absence Request: Aviad (Period 2 Math) - Friday Soccer Match</option>
+                  <option value="wrong2">hey mr davis</option>
+                </select>
+              </div>
+              <div style="padding: 10px 0; display:flex; flex-direction:column; gap:8px;">
+                <select id="em-salut" style="padding:4px; font-size:0.8rem; border-radius:4px; border:1px solid var(--border-color); width:160px;">
+                  <option value="">Select Salutation...</option>
+                  <option value="correct">Dear Mr. Davis,</option>
+                  <option value="wrong">Hey man,</option>
+                </select>
+                
+                <select id="em-body" style="padding:4px; font-size:0.8rem; border-radius:4px; border:1px solid var(--border-color); width:100%;">
+                  <option value="">Select Email Body...</option>
+                  <option value="correct">I am writing to notify you that I will miss class this Friday due to a scheduled varsity soccer game. I will check Schoology and submit my homework assignment early.</option>
+                  <option value="wrong">i have a game on friday so i won't show up. tell me what we are doing or if i can skip the test.</option>
+                </select>
+                
+                <select id="em-close" style="padding:4px; font-size:0.8rem; border-radius:4px; border:1px solid var(--border-color); width:140px;">
+                  <option value="">Select Closing...</option>
+                  <option value="correct">Respectfully, Aviad</option>
+                  <option value="wrong">Thanks, see ya</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-email"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 5: Sports/Clubs Planner (Practice) -->
+        <article class="activity" data-id="clubs" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Sports/Clubs Planner</h3>
+          <p>Plan extracurriculars. Stay active but keep your total commitment within a healthy 10-20 hour range.</p>
+          
+          <div class="activity-interactive-area">
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem; font-weight:600;">
+                <input type="checkbox" id="club-soccer" data-hours="12" />
+                Varsity Soccer Team (12 hrs/week)
+              </label>
+              <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem; font-weight:600;">
+                <input type="checkbox" id="club-debate" data-hours="4" />
+                Debate Club (4 hrs/week)
+              </label>
+              <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem; font-weight:600;">
+                <input type="checkbox" id="club-hebrew" data-hours="2" />
+                Hebrew Culture Club (2 hrs/week)
+              </label>
+              <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem; font-weight:600;">
+                <input type="checkbox" id="club-robotics" data-hours="6" />
+                Robotics Team (6 hrs/week)
+              </label>
+            </div>
+            
+            <div style="margin-top:12px; background:#f8fafc; border:1px solid var(--border-color); border-radius:4px; padding:10px; font-size:0.85rem; font-weight:700; color:#475569;">
+              Total Scheduled Hours: <span id="club-hours-total" style="color:var(--accent);">0</span> hrs
+              <br/><span id="club-hours-status" style="font-size:0.75rem; color:var(--danger); font-weight:500;">Commitment too low (Must be &ge; 10 hrs)</span>
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-clubs"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 6: Exam Prep Strategy (Practice) -->
+        <article class="activity" data-id="examprep" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Exam Prep Strategy</h3>
+          <p>Drag study methods into categories representing their scientific memory effectiveness.</p>
+          
+          <div class="activity-interactive-area">
+            <div class="word-bank" id="study-drawer" style="min-height: 50px;">
+              <div class="drag-item" draggable="true" id="st-practice" data-drawer="study-drawer" data-val="high">Taking Practice Quizzes</div>
+              <div class="drag-item" draggable="true" id="st-highlight" data-drawer="study-drawer" data-val="low">Re-reading Highlights</div>
+              <div class="drag-item" draggable="true" id="st-flash" data-drawer="study-drawer" data-val="high">Spaced Repetition Flashcards</div>
+              <div class="drag-item" draggable="true" id="st-teach" data-drawer="study-drawer" data-val="high">Explaining topic to a friend</div>
+              <div class="drag-item" draggable="true" id="st-cram" data-drawer="study-drawer" data-val="low">6-hour night-before cramming</div>
+            </div>
+            
+            <div class="science-grid-2col" style="margin-top:14px;">
+              <div class="bin-container">
+                <span class="bin-title" style="color:#10b981;">High Effectiveness</span>
+                <div class="drop-container" id="study-bin-high" data-bin="high"></div>
+              </div>
+              <div class="bin-container">
+                <span class="bin-title" style="color:#ef4444;">Low Effectiveness</span>
+                <div class="drop-container" id="study-bin-low" data-bin="low"></div>
+              </div>
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-examprep"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 7: Distraction Blocker (Practice) -->
+        <article class="activity" data-id="distractions" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">20 min</span>
+          </div>
+          <h3>Distraction Blocker</h3>
+          <p>Select the correct action on these 4 incoming phone notifications to keep Aviad focused during study sessions.</p>
+          
+          <div class="activity-interactive-area">
+            <div style="display:flex; flex-direction:column;">
+              
+              <!-- Notification 1 -->
+              <div class="notif-card distractor" id="notif-1-box">
+                <div>
+                  <span class="notif-badge badge-danger">Social Media</span>
+                  <div class="notif-title">TikTok Alert</div>
+                  <div class="notif-body">Friend tagged you in a viral dance compilation.</div>
+                </div>
+                <select id="notif-1-action" style="padding:4px; font-size:0.75rem; border-radius:4px; border:1px solid var(--border-color);">
+                  <option value="">Action...</option>
+                  <option value="accept">Open TikTok</option>
+                  <option value="mute">Mute Notification</option>
+                </select>
+              </div>
+              
+              <!-- Notification 2 -->
+              <div class="notif-card" id="notif-2-box">
+                <div>
+                  <span class="notif-badge badge-info">School</span>
+                  <div class="notif-title">Schoology Announcement</div>
+                  <div class="notif-body">Mr. Davis uploaded the Unit 1 Geometry Study Guide.</div>
+                </div>
+                <select id="notif-2-action" style="padding:4px; font-size:0.75rem; border-radius:4px; border:1px solid var(--border-color);">
+                  <option value="">Action...</option>
+                  <option value="accept">Open Study Guide</option>
+                  <option value="mute">Mute/Ignore</option>
+                </select>
+              </div>
+
+              <!-- Notification 3 -->
+              <div class="notif-card distractor" id="notif-3-box">
+                <div>
+                  <span class="notif-badge badge-danger">Gaming</span>
+                  <div class="notif-title">Fortnite Invite</div>
+                  <div class="notif-body">Squad has room for one more for ranked matches.</div>
+                </div>
+                <select id="notif-3-action" style="padding:4px; font-size:0.75rem; border-radius:4px; border:1px solid var(--border-color);">
+                  <option value="">Action...</option>
+                  <option value="accept">Join Match</option>
+                  <option value="mute">Mute Notification</option>
+                </select>
+              </div>
+
+              <!-- Notification 4 -->
+              <div class="notif-card" id="notif-4-box">
+                <div>
+                  <span class="notif-badge badge-info">Calendar</span>
+                  <div class="notif-title">Hebrew Homework reminder</div>
+                  <div class="notif-body">Daily verb worksheets due at midnight.</div>
+                </div>
+                <select id="notif-4-action" style="padding:4px; font-size:0.75rem; border-radius:4px; border:1px solid var(--border-color);">
+                  <option value="">Action...</option>
+                  <option value="accept">Open Worksheet</option>
+                  <option value="mute">Ignore/Swipe away</option>
+                </select>
+              </div>
+
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-distractions"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 8: Pikesville Map Finder (Project) -->
+        <article class="activity" data-id="schoolmap" data-type="Project">
+          <div class="meta">
+            <span class="pill">Project</span>
+            <span class="pill">30 min</span>
+          </div>
+          <h3>Pikesville Map Finder</h3>
+          <p>Locate school resources. Click on the correct room in the map layout to match the prompt.</p>
+          
+          <div class="activity-interactive-area">
+            <div style="font-size:0.85rem; font-weight:700; color:var(--text-main); margin-bottom:8px;">
+              Current target: <span id="map-target-prompt" style="color:var(--accent); text-transform:uppercase;">Front Office</span>
+            </div>
+            
+            <div style="text-align:center;">
+              <!-- School map layout SVG -->
+              <svg viewBox="0 0 240 120" class="map-svg">
+                <!-- Room A: Gymnasium -->
+                <rect x="10" y="10" width="100" height="50" class="room-block" id="rm-gym" data-name="Gymnasium" />
+                <text x="60" y="40" font-size="8" font-family="sans-serif" font-weight="700" fill="#64748b" text-anchor="middle" pointer-events="none">GYM</text>
+                
+                <!-- Room B: Cafeteria -->
+                <rect x="10" y="65" width="100" height="45" class="room-block" id="rm-cafe" data-name="Cafeteria" />
+                <text x="60" y="90" font-size="8" font-family="sans-serif" font-weight="700" fill="#64748b" text-anchor="middle" pointer-events="none">CAFETERIA</text>
+                
+                <!-- Room C: Library -->
+                <rect x="120" y="10" width="110" height="50" class="room-block" id="rm-lib" data-name="Library" />
+                <text x="175" y="40" font-size="8" font-family="sans-serif" font-weight="700" fill="#64748b" text-anchor="middle" pointer-events="none">LIBRARY</text>
+                
+                <!-- Room D: Front Office -->
+                <rect x="120" y="65" width="110" height="45" class="room-block" id="rm-office" data-name="Front Office" />
+                <text x="175" y="90" font-size="8" font-family="sans-serif" font-weight="700" fill="#64748b" text-anchor="middle" pointer-events="none">FRONT OFFICE</text>
+              </svg>
+            </div>
+            
+            <div style="margin-top:8px; font-size:0.8rem; font-weight:700; color:#475569;" id="map-outcome-lbl">
+              Located: <span id="map-located-count">0 / 4</span> rooms
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-schoolmap"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+      </div>
+    </main>
+
+    <footer class="footer">EduWonderLab &bull; Aviad Panther Life Summer Hub</footer>
+
+    <script src="/personal/aviad/shared.js"></script>
+    <script>
+      // 1. FOCUS Course Control
+      function validateCourses() {
+        var order = [];
+        ['p-slot-1', 'p-slot-2', 'p-slot-3', 'p-slot-4'].forEach(function(sid) {
+          var item = document.getElementById(sid).querySelector('.drag-item');
+          order.push(item ? item.dataset.val : "");
+        });
+        document.getElementById('evidence-text-courses').value = "COURSES: " + order.join(',');
+      }
+
+      // 2. Weekly Map Builder
+      function validateScheduler() {
+        var items = Array.from(document.getElementById('sched-mon').querySelectorAll('.drag-item')).map(function(item) {
+          return item.dataset.val;
+        });
+        
+        var hasHighGame = items.indexOf('game-hi') > -1;
+        var warnBox = document.getElementById('sched-warn-box');
+        if (hasHighGame) {
+          warnBox.style.display = 'block';
+        } else {
+          warnBox.style.display = 'none';
+        }
+        
+        document.getElementById('evidence-text-scheduler').value = "SCHED: " + items.join(',');
+      }
+
+      // 3. Backpack Systems
+      function validateBackpack() {
+        var lCount = document.getElementById('pocket-large').querySelectorAll('.drag-item').length;
+        var mCount = document.getElementById('pocket-med').querySelectorAll('.drag-item').length;
+        var sCount = document.getElementById('pocket-small').querySelectorAll('.drag-item').length;
+        
+        document.getElementById('bp-l-lbl').textContent = lCount;
+        document.getElementById('bp-m-lbl').textContent = mCount;
+        document.getElementById('bp-s-lbl').textContent = sCount;
+        
+        var details = [];
+        ['pocket-large', 'pocket-med', 'pocket-small'].forEach(function(pid) {
+          var items = Array.from(document.getElementById(pid).querySelectorAll('.drag-item')).map(function(item) {
+            return item.textContent;
+          });
+          details.push(pid + ":" + items.join(', '));
+        });
+        document.getElementById('evidence-text-backpack').value = details.join('\n');
+      }
+
+      // 4. Teacher Email
+      var emSub = document.getElementById('em-subject');
+      var emSal = document.getElementById('em-salut');
+      var emBod = document.getElementById('em-body');
+      var emCls = document.getElementById('em-close');
+      
+      function validateEmail() {
+        var s = emSub.value;
+        var sal = emSal.value;
+        var b = emBod.value;
+        var c = emCls.value;
+        document.getElementById('evidence-text-email').value = "SUBJECT:" + s + "\nSALUTATION:" + sal + "\nBODY:" + b + "\nCLOSING:" + c;
+      }
+      [emSub, emSal, emBod, emCls].forEach(function(el) {
+        el.addEventListener('change', validateEmail);
+      });
+
+      // 5. Sports/Clubs Planner
+      var checkboxes = ['club-soccer', 'club-debate', 'club-hebrew', 'club-robotics'];
+      function validateClubs() {
+        var totalHours = 0;
+        var selected = [];
+        checkboxes.forEach(function(cid) {
+          var el = document.getElementById(cid);
+          if (el.checked) {
+            totalHours += parseInt(el.dataset.hours, 10);
+            selected.push(el.id);
+          }
+        });
+        
+        document.getElementById('club-hours-total').textContent = totalHours;
+        var statusEl = document.getElementById('club-hours-status');
+        
+        if (totalHours > 20) {
+          statusEl.textContent = "Warning: Commitment too high (>20 hrs)! Sleep and grades may suffer.";
+          statusEl.style.color = "#ef4444";
+        } else if (totalHours < 10) {
+          statusEl.textContent = "Commitment too low (Must be &ge; 10 hrs)";
+          statusEl.style.color = "#d97706";
+        } else {
+          statusEl.textContent = "Healthy commitment balance! Plan matches guidelines.";
+          statusEl.style.color = "#10b981";
+        }
+        
+        document.getElementById('evidence-text-clubs').value = "CLUBS:" + selected.join(',') + "\nHOURS:" + totalHours;
+      }
+      checkboxes.forEach(function(cid) {
+        document.getElementById(cid).addEventListener('change', validateClubs);
+      });
+
+      // 6. Exam Prep
+      function validateExamPrep() {
+        var highItems = Array.from(document.getElementById('study-bin-high').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
+        var lowItems = Array.from(document.getElementById('study-bin-low').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
+        document.getElementById('evidence-text-examprep').value = "HIGH:" + highItems.join(',') + "\nLOW:" + lowItems.join(',');
+      }
+
+      // 7. Distraction Blocker
+      var notifControls = ['notif-1-action', 'notif-2-action', 'notif-3-action', 'notif-4-action'];
+      function validateDistractions() {
+        var vals = notifControls.map(function(cid) {
+          var val = document.getElementById(cid).value;
+          var box = document.getElementById(cid.replace('-action', '-box'));
+          if (val === "mute") {
+            box.classList.add('correct-mute');
+          } else {
+            box.classList.remove('correct-mute');
+          }
+          return val;
+        });
+        document.getElementById('evidence-text-distractions').value = vals.join(',');
+      }
+      notifControls.forEach(function(cid) {
+        document.getElementById(cid).addEventListener('change', validateDistractions);
+      });
+
+      // 8. Pikesville Map Finder
+      var roomsFound = {
+        'Front Office': false,
+        'Library': false,
+        'Gymnasium': false,
+        'Cafeteria': false
+      };
+      var targetsSequence = ['Front Office', 'Library', 'Gymnasium', 'Cafeteria'];
+      var targetIdx = 0;
+      
+      document.querySelectorAll('.room-block').forEach(function(blk) {
+        blk.addEventListener('click', function() {
+          var name = blk.dataset.name;
+          var currentTarget = targetsSequence[targetIdx];
+          
+          if (name === currentTarget) {
+            roomsFound[name] = true;
+            blk.classList.add('located');
+            targetIdx = (targetIdx + 1) % targetsSequence.length;
+            
+            var count = Object.values(roomsFound).filter(Boolean).length;
+            document.getElementById('map-located-count').textContent = count;
+            
+            if (count === 4) {
+              document.getElementById('map-target-prompt').textContent = "All found! 🎉";
+              document.getElementById('map-target-prompt').style.color = "#10b981";
+            } else {
+              document.getElementById('map-target-prompt').textContent = targetsSequence[targetIdx];
+            }
+            validateMap();
+          } else {
+            EWL.playAudio(true); // Warning chime
+          }
+        });
+      });
+      
+      function validateMap() {
+        var count = Object.values(roomsFound).filter(Boolean).length;
+        document.getElementById('evidence-text-schoolmap').value = "ROOMS_FOUND_COUNT:" + count;
+      }
+
+      // Drag and drop event handlers
+      window.validateActivityState = function(card) {
+        var id = card.dataset.id;
+        if (id === "courses") validateCourses();
+        if (id === "scheduler") validateScheduler();
+        if (id === "backpack") validateBackpack();
+        if (id === "examprep") validateExamPrep();
+      };
+
+      // Integrate with EWL shared validation
+      window.checkInteractiveComplete = function(card) {
+        var id = card.dataset.id;
+        
+        if (id === "courses") {
+          var items = ['p-slot-1', 'p-slot-2', 'p-slot-3', 'p-slot-4'].map(function(sid) {
+            var el = document.getElementById(sid).querySelector('.drag-item');
+            return el ? el.id : "";
+          });
+          if (items.indexOf("") > -1) {
+            return { success: false, message: "Place a course in all 4 periods to build your schedule." };
+          }
+        }
+        
+        if (id === "scheduler") {
+          var items = Array.from(document.getElementById('sched-mon').querySelectorAll('.drag-item')).map(function(item) {
+            return item.dataset.val;
+          });
+          if (items.length < 3) {
+            return { success: false, message: "Schedule at least 3 blocks (e.g. sleep, study, hebrew) to establish a healthy routine." };
+          }
+          if (items.indexOf('game-hi') > -1) {
+            return { success: false, message: "Review your schedule! Gaming for 6 hours is too high on school nights. Replace it with moderate gaming." };
+          }
+        }
+        
+        if (id === "backpack") {
+          var lItems = Array.from(document.getElementById('pocket-large').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
+          var mItems = Array.from(document.getElementById('pocket-med').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
+          var sItems = Array.from(document.getElementById('pocket-small').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
+          
+          if (lItems.length !== 2 || mItems.length !== 1 || sItems.length !== 1) {
+            return { success: false, message: "Sort all 4 items into their correct physical backpack pockets." };
+          }
+          var lOk = (lItems.indexOf('bp-chromebook') > -1) && (lItems.indexOf('bp-notebooks') > -1);
+          var mOk = (mItems.indexOf('bp-calculator') > -1);
+          var sOk = (sItems.indexOf('bp-id') > -1);
+          if (!lOk || !mOk || !sOk) {
+            return { success: false, message: "Double-check your pockets! Large flat files go in the main pocket; calculators in middle; ID/pass in the small outer pocket." };
+          }
+        }
+        
+        if (id === "email") {
+          var s = emSub.value;
+          var sal = emSal.value;
+          var b = emBod.value;
+          var c = emCls.value;
+          if (s !== 'correct' || sal !== 'correct' || b !== 'correct' || c !== 'correct') {
+            return { success: false, message: "Assemble the email using polite, professional components appropriate for teacher communication." };
+          }
+        }
+        
+        if (id === "clubs") {
+          var totalHours = 0;
+          checkboxes.forEach(function(cid) {
+            var el = document.getElementById(cid);
+            if (el.checked) totalHours += parseInt(el.dataset.hours, 10);
+          });
+          if (totalHours < 10 || totalHours > 20) {
+            return { success: false, message: "Adjust your activity checkboxes! Total commitment hours must be between 10 and 20 hours to balance school life." };
+          }
+        }
+        
+        if (id === "examprep") {
+          var hItems = Array.from(document.getElementById('study-bin-high').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
+          var lItems = Array.from(document.getElementById('study-bin-low').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
+          
+          if (hItems.length !== 3 || lItems.length !== 2) {
+            return { success: false, message: "Sort all 5 study activities into the efficiency bins." };
+          }
+          
+          var hOk = (hItems.indexOf('st-practice') > -1) && (hItems.indexOf('st-flash') > -1) && (hItems.indexOf('st-teach') > -1);
+          if (!hOk) {
+            return { success: false, message: "Check your sorts! Recall that active recall (testing, teaching, flashcards) is much more effective than passive reading or cramming." };
+          }
+        }
+        
+        if (id === "distractions") {
+          var v1 = document.getElementById('notif-1-action').value;
+          var v2 = document.getElementById('notif-2-action').value;
+          var v3 = document.getElementById('notif-3-action').value;
+          var v4 = document.getElementById('notif-4-action').value;
+          
+          if (v1 !== 'mute' || v3 !== 'mute') {
+            return { success: false, message: "Mute distracting alerts (social media, gaming) to maintain deep focus." };
+          }
+          if (v2 !== 'accept' || v4 !== 'accept') {
+            return { success: false, message: "Keep school alerts open! Accept study guides and homework reminders." };
+          }
+        }
+        
+        if (id === "schoolmap") {
+          var count = Object.values(roomsFound).filter(Boolean).length;
+          if (count < 4) {
+            return { success: false, message: "Locate all 4 facilities on the high school floor plan." };
+          }
+        }
+        
+        // Bind the actual workspace data from hidden textareas
+        var hiddenText = document.getElementById('evidence-text-' + id).value;
+        card.querySelector('textarea').value = hiddenText;
+        
+        return { success: true };
+      };
+
+      // Restore custom Interactive State
+      window.restoreInteractiveState = function(card, savedState) {
+        var id = card.dataset.id;
+        
+        if (id === "courses" && savedState.COURSES) {
+          var slots = ['p-slot-1', 'p-slot-2', 'p-slot-3', 'p-slot-4'];
+          savedState.COURSES.replace("COURSES: ", "").split(',').forEach(function(val, idx) {
+            if (val) {
+              var item = document.querySelector('.drag-item[data-val="' + val + '"][data-drawer="course-drawer"]');
+              if (item) document.getElementById(slots[idx]).appendChild(item);
+            }
+          });
+          validateCourses();
+        }
+        
+        if (id === "scheduler" && savedState.SCHED) {
+          savedState.SCHED.replace("SCHED: ", "").split(',').forEach(function(val) {
+            if (val) {
+              var item = document.querySelector('.drag-item[data-val="' + val + '"][data-drawer="sched-drawer"]');
+              if (item) document.getElementById('sched-mon').appendChild(item);
+            }
+          });
+          validateScheduler();
+        }
+        
+        if (id === "backpack" && savedState.bpVal) {
+          // Parse lines
+          var lines = savedState.bpVal.split('\n');
+          lines.forEach(function(line) {
+            var parts = line.split(':');
+            var pid = parts[0];
+            var itemsStr = parts[1];
+            if (itemsStr) {
+              itemsStr.split(', ').forEach(function(txt) {
+                document.querySelectorAll('.drag-item[data-drawer="backpack-drawer"]').forEach(function(item) {
+                  if (item.textContent === txt) document.getElementById(pid).appendChild(item);
+                });
+              });
+            }
+          });
+          validateBackpack();
+        }
+        
+        if (id === "email" && savedState.SUBJECT) {
+          emSub.value = savedState.SUBJECT;
+          emSal.value = savedState.SALUTATION;
+          emBod.value = savedState.BODY;
+          emCls.value = savedState.CLOSING;
+          validateEmail();
+        }
+        
+        if (id === "clubs" && savedState.CLUBS) {
+          var selections = savedState.CLUBS.replace("CLUBS:", "").split(',');
+          selections.forEach(function(cid) {
+            if (cid) {
+              var el = document.getElementById(cid);
+              if (el) el.checked = true;
+            }
+          });
+          validateClubs();
+        }
+        
+        if (id === "examprep" && savedState.HIGH) {
+          var highList = savedState.HIGH.replace("HIGH:", "").split(',');
+          var lowList = savedState.LOW.replace("LOW:", "").split(',');
+          
+          document.querySelectorAll('.drag-item[data-drawer="study-drawer"]').forEach(function(item) {
+            if (highList.indexOf(item.id) > -1) document.getElementById('study-bin-high').appendChild(item);
+            if (lowList.indexOf(item.id) > -1) document.getElementById('study-bin-low').appendChild(item);
+          });
+          validateExamPrep();
+        }
+        
+        if (id === "distractions" && savedState.vals) {
+          var parts = savedState.vals.split(',');
+          notifControls.forEach(function(cid, idx) {
+            if (parts[idx]) document.getElementById(cid).value = parts[idx];
+          });
+          validateDistractions();
+        }
+        
+        if (id === "schoolmap" && savedState.ROOMS_FOUND_COUNT) {
+          var count = parseInt(savedState.ROOMS_FOUND_COUNT.replace("ROOMS_FOUND_COUNT:", ""), 10);
+          if (count === 4) {
+            roomsFound = { 'Front Office': true, 'Library': true, 'Gymnasium': true, 'Cafeteria': true };
+            document.querySelectorAll('.room-block').forEach(function(blk) { blk.classList.add('located'); });
+            document.getElementById('map-located-count').textContent = 4;
+            document.getElementById('map-target-prompt').textContent = "All found! 🎉";
+            document.getElementById('map-target-prompt').style.color = "#10b981";
+            validateMap();
+          }
+        }
+      };
+
+      // Retrieve custom Interactive State to save
+      window.getInteractiveState = function(card) {
+        var id = card.dataset.id;
+        
+        if (id === "courses") {
+          var order = [];
+          ['p-slot-1', 'p-slot-2', 'p-slot-3', 'p-slot-4'].forEach(function(sid) {
+            var item = document.getElementById(sid).querySelector('.drag-item');
+            order.push(item ? item.dataset.val : "");
+          });
+          return {
+            COURSES: "COURSES: " + order.join(',')
+          };
+        }
+        
+        if (id === "scheduler") {
+          var items = Array.from(document.getElementById('sched-mon').querySelectorAll('.drag-item')).map(function(item) {
+            return item.dataset.val;
+          });
+          return {
+            SCHED: "SCHED: " + items.join(',')
+          };
+        }
+        
+        if (id === "backpack") {
+          var largeText = Array.from(document.getElementById('pocket-large').querySelectorAll('.drag-item')).map(function(item) { return item.textContent; }).join(', ');
+          var medText = Array.from(document.getElementById('pocket-med').querySelectorAll('.drag-item')).map(function(item) { return item.textContent; }).join(', ');
+          var smallText = Array.from(document.getElementById('pocket-small').querySelectorAll('.drag-item')).map(function(item) { return item.textContent; }).join(', ');
+          return {
+            bpVal: "pocket-large:" + largeText + "\npocket-med:" + medText + "\npocket-small:" + smallText
+          };
+        }
+        
+        if (id === "email") {
+          return {
+            SUBJECT: emSub.value,
+            SALUTATION: emSal.value,
+            BODY: emBod.value,
+            CLOSING: emCls.value
+          };
+        }
+        
+        if (id === "clubs") {
+          var selected = checkboxes.filter(function(cid) { return document.getElementById(cid).checked; });
+          return {
+            CLUBS: "CLUBS:" + selected.join(','),
+            HOURS: document.getElementById('club-hours-total').textContent
+          };
+        }
+        
+        if (id === "examprep") {
+          var highItems = Array.from(document.getElementById('study-bin-high').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
+          var lowItems = Array.from(document.getElementById('study-bin-low').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
+          return {
+            HIGH: "HIGH:" + highItems.join(','),
+            LOW: "LOW:" + lowItems.join(',')
+          };
+        }
+        
+        if (id === "distractions") {
+          var valsArr = notifControls.map(function(cid) { return document.getElementById(cid).value; });
+          return {
+            vals: valsArr.join(',')
+          };
+        }
+        
+        if (id === "schoolmap") {
+          var count = Object.values(roomsFound).filter(Boolean).length;
+          return {
+            ROOMS_FOUND_COUNT: "ROOMS_FOUND_COUNT:" + count
+          };
+        }
+        
+        return {};
+      };
+    </script>
+  </body>
+</html>
