@@ -338,59 +338,85 @@
     }
   });
 
-  // ---- Per-selection instant correct/incorrect feedback ----
-  // Pages register an answer key: { selectId: "correctVal" | ["v1","v2"] }.
-  // Any registered <select> is graded the moment a choice is made.
+  // ---- Per-answer instant correct/incorrect feedback ----
+  // Pages register an answer key: { fieldId: "correctVal" | ["v1","v2"] }.
+  // Any registered <select> is graded the moment a choice is made; any
+  // registered text/number <input> is graded when the student leaves the
+  // field (the native "change" event). Matching is case-insensitive and
+  // numeric-tolerant ("7" matches "7.0", " -4 " matches "-4").
   var answerKey = {};
+
+  function normalizeAnswer(v) {
+    return String(v == null ? "" : v)
+      .trim()
+      .toLowerCase();
+  }
+
+  var NUMERIC_RE = /^-?\d*\.?\d+$/;
+
+  function valueMatches(expected, actual) {
+    var e = normalizeAnswer(expected);
+    var a = normalizeAnswer(actual);
+    if (e === a) return true;
+    if (NUMERIC_RE.test(e) && NUMERIC_RE.test(a)) {
+      return parseFloat(e) === parseFloat(a);
+    }
+    return false;
+  }
 
   function isCorrect(id, value) {
     var key = answerKey[id];
     if (key == null) return null;
     var list = Array.isArray(key) ? key : [key];
-    return list.indexOf(value) !== -1;
+    for (var i = 0; i < list.length; i++) {
+      if (valueMatches(list[i], value)) return true;
+    }
+    return false;
   }
 
-  function gradeSelect(sel) {
-    if (!sel || !sel.id || !(sel.id in answerKey)) return;
-    var mark = sel.parentNode
-      ? sel.parentNode.querySelector('.sel-mark[data-for="' + sel.id + '"]')
+  function gradeField(field) {
+    if (!field || !field.id || !(field.id in answerKey)) return;
+    var mark = field.parentNode
+      ? field.parentNode.querySelector('.sel-mark[data-for="' + field.id + '"]')
       : null;
     if (!mark) {
       mark = document.createElement("span");
       mark.className = "sel-mark";
-      mark.setAttribute("data-for", sel.id);
+      mark.setAttribute("data-for", field.id);
       mark.setAttribute("aria-hidden", "true");
-      sel.insertAdjacentElement("afterend", mark);
+      field.insertAdjacentElement("afterend", mark);
     }
-    if (!sel.value) {
-      sel.classList.remove("sel-correct", "sel-incorrect");
+    if (!String(field.value == null ? "" : field.value).trim()) {
+      field.classList.remove("sel-correct", "sel-incorrect");
       mark.textContent = "";
       mark.className = "sel-mark";
       return;
     }
-    var ok = isCorrect(sel.id, sel.value);
-    sel.classList.toggle("sel-correct", ok === true);
-    sel.classList.toggle("sel-incorrect", ok === false);
+    var ok = isCorrect(field.id, field.value);
+    field.classList.toggle("sel-correct", ok === true);
+    field.classList.toggle("sel-incorrect", ok === false);
     mark.textContent = ok ? "✓" : "✗";
     mark.className = "sel-mark " + (ok ? "ok" : "no");
   }
 
-  function gradeAllSelects() {
+  function gradeAllFields() {
     Object.keys(answerKey).forEach(function (id) {
-      var sel = document.getElementById(id);
-      if (sel && sel.value) gradeSelect(sel);
+      var field = document.getElementById(id);
+      if (field && String(field.value == null ? "" : field.value).trim()) {
+        gradeField(field);
+      }
     });
   }
 
   document.addEventListener("change", function (e) {
-    var sel = e.target;
-    if (!sel || !sel.matches || !sel.matches("select")) return;
-    if (!(sel.id in answerKey) || !sel.value) {
-      if (sel.id in answerKey) gradeSelect(sel);
-      return;
+    var field = e.target;
+    if (!field || !field.matches || !field.matches("select, input")) return;
+    if (!(field.id in answerKey)) return;
+    var hasVal = String(field.value == null ? "" : field.value).trim() !== "";
+    gradeField(field);
+    if (hasVal) {
+      playArcadeSound(isCorrect(field.id, field.value) ? "success" : "fail");
     }
-    gradeSelect(sel);
-    playArcadeSound(isCorrect(sel.id, sel.value) ? "success" : "fail");
   });
 
   // Expose API
@@ -408,9 +434,9 @@
       Object.keys(map || {}).forEach(function (id) {
         answerKey[id] = map[id];
       });
-      gradeAllSelects();
+      gradeAllFields();
       // Re-grade after restore pass populates saved selections.
-      setTimeout(gradeAllSelects, 250);
+      setTimeout(gradeAllFields, 250);
     },
   };
 
