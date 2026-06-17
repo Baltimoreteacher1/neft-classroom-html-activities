@@ -2089,6 +2089,70 @@
 
       /* ---- Phase 2: Google Enterprise Education CSS ---- */
       /* ---- Phase 3: Google Enterprise Education CSS ---- */
+      /* ---- Phase 4: Gold-Standard Enterprise CSS ---- */
+      .recording-active {
+        border: 2px dashed #ef4444 !important;
+        animation: pulseRecordBorder 1.5s infinite alternate;
+      }
+      @keyframes pulseRecordBorder {
+        from { box-shadow: 0 0 2px rgba(239, 68, 68, 0.2); }
+        to { box-shadow: 0 0 12px rgba(239, 68, 68, 0.7); }
+      }
+      .blink {
+        animation: blinkAnimation 1s infinite alternate;
+      }
+      @keyframes blinkAnimation {
+        from { opacity: 1; }
+        to { opacity: 0.3; }
+      }
+      /* IEP Accommodations rescales */
+      .accomm-large-text .chat-bubble {
+        font-size: 1.12rem !important;
+      }
+      .accomm-large-text .chat-text-input {
+        font-size: 1.1rem !important;
+      }
+      .accomm-xl-text .chat-bubble {
+        font-size: 1.25rem !important;
+      }
+      .accomm-xl-text .chat-text-input {
+        font-size: 1.25rem !important;
+      }
+      /* IEP High Contrast overrides */
+      .accomm-high-contrast {
+        --bg-dark: #000000 !important;
+        --bg-panel: #111111 !important;
+        --text-primary: #ffffff !important;
+        --text-secondary: #dddddd !important;
+        --bg-panel-border: #ffffff !important;
+      }
+      .accomm-high-contrast .chat-bubble.bot {
+        background: #1e1e1e !important;
+        color: #ffff00 !important;
+        border: 2px solid #ffff00 !important;
+      }
+      .accomm-high-contrast .chat-bubble.user {
+        background: #000080 !important;
+        color: #ffffff !important;
+        border: 2px solid #ffffff !important;
+      }
+      .accomm-high-contrast .glossary-term {
+        color: #00ffff !important;
+        border-bottom: 2px dashed #00ffff !important;
+      }
+      .accomm-high-contrast .builder-chip.selected {
+        background: #ffff00 !important;
+        color: #000000 !important;
+        border: 2px solid #ffffff !important;
+      }
+      /* Word-by-word reading highlight */
+      .reading-highlight-word {
+        background-color: rgba(251, 188, 5, 0.4);
+        color: #fff;
+        border-radius: 3px;
+        padding: 0 2px;
+      }
+
       .modal-overlay {
         transition: opacity 0.2s ease-in-out;
       }
@@ -2288,6 +2352,76 @@
       <p id="tooltip-def" style="margin: 0; color: #cbd5e1; font-size: 0.8rem;">Definition...</p>
     </div>
 
+
+
+    <!-- Teacher Sticker Congrats Overlay -->
+    <div id="sticker-award-modal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:30000; align-items:center; justify-content:center; padding:16px;">
+      <div style="background:#0b0f19; border:2.5px solid var(--gemini-purple); border-radius:24px; max-width:400px; width:100%; text-align:center; padding:30px; box-shadow:0 8px 32px rgba(155,114,203,0.3); font-family:var(--font-body); display:flex; flex-direction:column; align-items:center; gap:16px; position:relative;">
+        <span style="font-size:4.5rem; display:block; filter:drop-shadow(0 0 10px rgba(197,138,249,0.5));" id="sticker-award-icon">🧠</span>
+        <div>
+          <span style="font-size:0.75rem; color:#ffb74d; text-transform:uppercase; font-weight:800; letter-spacing:1px;">New Classroom Award!</span>
+          <h4 style="margin:6px 0 2px; font-family:var(--font-heading); font-size:1.4rem; font-weight:900; color:#fff;" id="sticker-award-title">Resilient Math Thinker</h4>
+          <p style="margin:8px 0 0; font-size:0.85rem; color:var(--text-secondary);" id="sticker-award-message">Your teacher Sofia Martinez awarded you this sticker for excellent reasoning.</p>
+        </div>
+        <button class="calc-btn eq" style="width:100%; margin:10px 0 0; cursor:pointer;" onclick="closeStickerAward()">Claim & Add to Cabinet 🏆</button>
+      </div>
+    </div>
+
+    <!-- Gemini Model Comparison Sandbox Drawer -->
+    <div class="tools-drawer" id="model-sandbox-drawer" style="right: -640px; width: 620px; max-width: 95%; transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1); z-index: 15000;" aria-hidden="true">
+      <div class="drawer-header">
+        <h4>🎛️ Gemini Model Sandbox Playground</h4>
+        <button class="close-drawer-btn" onclick="toggleModelSandbox()">✕</button>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:16px; padding:16px; overflow-y:auto; height:calc(100% - 60px); color:#fff; font-family:var(--font-body);">
+        <p style="margin:0; font-size:0.82rem; color:var(--text-secondary);">Test how different Google Gemini models respond to your math helper prompts. Compare speed, depth, and pedagogical visual scaffolding.</p>
+        
+        <div>
+          <label for="sandbox-prompt-select" style="font-size:0.75rem; color:var(--text-secondary); font-weight:800; text-transform:uppercase; display:block; margin-bottom:6px;">Select Math Concept</label>
+          <select id="sandbox-prompt-select" onchange="loadSandboxPreset(this.value)" style="width: 100%; background: rgba(7, 9, 19, 0.8); border: 1px solid var(--bg-panel-border); color: #fff; padding: 8px; border-radius: 6px; font-size: 0.85rem; outline: none; cursor:pointer;">
+            <option value="">-- Write your own prompt or choose a concept --</option>
+            <option value="Explain how dividing by a fraction is the same as multiplying by its reciprocal. Use visual models.">Fraction Division Reciprocals</option>
+            <option value="Solve 2.5 * 1.4 using partial decimal products. Present it clearly for a 6th grader.">Decimal Multiplication Area Grid</option>
+            <option value="Help me balance the algebraic scale for 3x + 4 = 19. Explain what subtraction property means.">One-Step Equation Balance Scale</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="sandbox-prompt-input" style="font-size:0.75rem; color:var(--text-secondary); font-weight:800; text-transform:uppercase; display:block; margin-bottom:6px;">Your Custom Sandbox Prompt</label>
+          <textarea id="sandbox-prompt-input" placeholder="Type prompt questions here (e.g. 'Explain GCF to a 6th grader...')" style="width:100%; height:80px; background:rgba(7,9,19,0.8); border:1px solid var(--bg-panel-border); border-radius:8px; padding:10px; color:#fff; font-size:0.85rem; outline:none; resize:none;"></textarea>
+        </div>
+
+        <button class="calc-btn eq" style="margin:0; width:100%; cursor:pointer;" onclick="submitSandboxPrompt()">🚀 Submit Prompt to Models</button>
+
+        <!-- Sandbox Comparison Grid -->
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px;">
+          <!-- Flash -->
+          <div style="background:rgba(255,255,255,0.01); border:1px solid var(--bg-panel-border); border-radius:10px; padding:10px; display:flex; flex-direction:column; gap:6px;">
+            <span style="font-size:0.7rem; font-weight:800; text-transform:uppercase; color:#8ab4f8;">⚡ Gemini Flash</span>
+            <span style="font-size:0.65rem; color:var(--text-secondary);">High-Speed Math Core</span>
+            <div id="sandbox-col-flash" style="font-size:0.75rem; line-height:1.4; color:#cbd5e1; border-top:1px dashed var(--bg-panel-border); padding-top:6px; min-height:180px; overflow-y:auto;">
+              <em>Waiting for prompt submission...</em>
+            </div>
+          </div>
+          <!-- Pro -->
+          <div style="background:rgba(255,255,255,0.01); border:1px solid var(--gemini-purple); border-radius:10px; padding:10px; display:flex; flex-direction:column; gap:6px;">
+            <span style="font-size:0.7rem; font-weight:800; text-transform:uppercase; color:#c58af9;">🧠 Gemini Pro</span>
+            <span style="font-size:0.65rem; color:var(--text-secondary);">Classroom Tutor Engine</span>
+            <div id="sandbox-col-pro" style="font-size:0.75rem; line-height:1.4; color:#cbd5e1; border-top:1px dashed var(--bg-panel-border); padding-top:6px; min-height:180px; overflow-y:auto;">
+              <em>Waiting for prompt submission...</em>
+            </div>
+          </div>
+          <!-- Ultra -->
+          <div style="background:rgba(255,255,255,0.01); border:1px solid var(--success); border-radius:10px; padding:10px; display:flex; flex-direction:column; gap:6px;">
+            <span style="font-size:0.7rem; font-weight:800; text-transform:uppercase; color:#10b981;">🏆 Gemini Ultra</span>
+            <span style="font-size:0.65rem; color:var(--text-secondary);">Premium Concept Specialist</span>
+            <div id="sandbox-col-ultra" style="font-size:0.75rem; line-height:1.4; color:#cbd5e1; border-top:1px dashed var(--bg-panel-border); padding-top:6px; min-height:180px; overflow-y:auto;">
+              <em>Waiting for prompt submission...</em>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Google Classroom Sync Modal -->
     <div id="classroom-sync-modal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:20000; align-items:center; justify-content:center; padding:16px;" role="dialog" aria-modal="true" aria-labelledby="sync-title">
@@ -4416,6 +4550,26 @@
       let sessionDialogues = [];
 
 
+
+      // ---- Phase 4 Gold-Standard State Variables ----
+      let screencastRecording = false;
+      let screencastTimer = null;
+      let screencastSeconds = 0;
+      let activeScreencastTranscript = "";
+      let modelSandboxActive = false;
+      let studentAccommodations = {
+        textSize: "normal",
+        highContrast: false,
+        dualColumn: false,
+        wordHighlight: false
+      };
+      
+      let teamScores = {
+        fractions: 14,
+        decimals: 10,
+        ratios: 12
+      };
+
       // ---- Phase 3 Voice & Classroom state variables ----
       let speechRate = 1.0;
       let autoSpeakEnabled = false;
@@ -4974,11 +5128,23 @@
                   <div class="chat-input-bar">
                     <input type="text" id="chat-input" class="chat-text-input" placeholder="Type your math answer here..." onkeydown="handleChatKeyDown(event)" />
                     <button class="chat-send-btn" id="mic-btn" onclick="toggleSpeech()" style="background: rgba(255,255,255,0.05); border: 1px solid var(--bg-panel-border); color: #8ab4f8; padding: 0 14px;" aria-label="Start voice dictation">🎤</button>
+                    <button class="chat-send-btn" id="screencast-btn" onclick="toggleScreencast()" style="background: rgba(255,255,255,0.05); border: 1px solid var(--bg-panel-border); color: #c58af9; padding: 0 14px;" aria-label="Record math explanation screencast" title="Simulate Screen & Audio Reflection Recording">📹 Explain Math</button>
                     <button class="chat-send-btn" onclick="sendChatAnswer()">Send</button>
                   </div>
+                  <!-- Screencast Recording Panel -->
+                  <div class="screencast-bar" id="screencast-recorder-panel" style="display:none; background:rgba(239, 68, 68, 0.1); border:1px solid #ef4444; border-radius:8px; padding:10px; margin-bottom:12px; align-items:center; justify-content:space-between;">
+                    <div style="display:flex; align-items:center; gap:8px; font-size:0.82rem;">
+                      <span style="color:#ef4444; font-weight:bold;" class="blink">● REC</span>
+                      <span id="screencast-timer-text" style="color:#fff; font-family:monospace; font-weight:bold;">0:00</span>
+                      <span style="color:var(--text-secondary);">Recording screencast audio & canvas strokes...</span>
+                    </div>
+                    <button class="nav-btn" onclick="stopScreencast()" style="border-color:#ef4444; color:#ef4444; font-size:0.75rem; padding:4px 8px; cursor:pointer;">🛑 Stop & Analyze</button>
+                  </div>
+
                   <div class="chat-helpers">
                     <button class="helper-btn" onclick="revealHint()">❓ Need a Hint?</button>
                     <button class="helper-btn" onclick="resetWorkspace()">🔄 Reset Challenge</button>
+                    <button class="helper-btn" onclick="toggleModelSandbox()" style="border-color:var(--gemini-purple); color:#c58af9; font-weight:bold;">🎛️ Gemini Model Sandbox</button>
                   </div>
                   <div class="hint-display-box" id="hint-box"></div>
                 </div>
@@ -5060,11 +5226,12 @@
           // Render Teacher Integration View
           container.innerHTML = `
             <!-- Teacher Tab Selector -->
-            <div style="display:flex; gap:12px; margin-bottom:20px; border-bottom:1px solid var(--bg-panel-border); padding-bottom:10px; flex-wrap:wrap; align-items:center;">
-              <button class="nav-btn" id="teacher-tab-live" onclick="switchTeacherTab('live')" style="border-color:#10b981; color:#10b981; background:rgba(16,185,129,0.05); font-weight:bold; cursor:pointer;">📊 Live Classroom Feed</button>
-              <button class="nav-btn" id="teacher-tab-matrix" onclick="switchTeacherTab('matrix')" style="border-color:transparent; color:var(--text-secondary); cursor:pointer;">🍎 Publisher &amp; Standards Matrix</button>
-              <button class="nav-btn" id="teacher-tab-tools" onclick="switchTeacherTab('tools')" style="border-color:transparent; color:var(--text-secondary); cursor:pointer;">🛠️ Lesson Generator &amp; Workshop</button>
-              <button class="nav-btn" onclick="goToStep(1)" style="margin-left:auto; border-color:var(--gemini-purple); color:#c58af9; background:rgba(197,138,249,0.05); font-weight:bold; cursor:pointer;">🏠 Exit to Main Hub</button>
+            <div style="display:flex; gap:10px; margin-bottom:20px; border-bottom:1px solid var(--bg-panel-border); padding-bottom:10px; flex-wrap:wrap; align-items:center;">
+              <button class="nav-btn" id="teacher-tab-live" onclick="switchTeacherTab('live')" style="border-color:#10b981; color:#10b981; background:rgba(16,185,129,0.05); font-weight:bold; cursor:pointer; font-size:0.82rem; padding:6px 10px;">📊 Live Classroom Feed</button>
+              <button class="nav-btn" id="teacher-tab-matrix" onclick="switchTeacherTab('matrix')" style="border-color:transparent; color:var(--text-secondary); cursor:pointer; font-size:0.82rem; padding:6px 10px;">🍎 Publisher Matrix</button>
+              <button class="nav-btn" id="teacher-tab-tools" onclick="switchTeacherTab('tools')" style="border-color:transparent; color:var(--text-secondary); cursor:pointer; font-size:0.82rem; padding:6px 10px;">🛠️ Lesson Generator</button>
+              <button class="nav-btn" id="teacher-tab-accomm" onclick="switchTeacherTab('accomm')" style="border-color:transparent; color:var(--text-secondary); cursor:pointer; font-size:0.82rem; padding:6px 10px;">♿ Accommodations &amp; Grouping</button>
+              <button class="nav-btn" onclick="goToStep(1)" style="margin-left:auto; border-color:var(--gemini-purple); color:#c58af9; background:rgba(197,138,249,0.05); font-weight:bold; cursor:pointer; font-size:0.82rem; padding:6px 10px;">🏠 Exit to Main Hub</button>
             </div>
 
             <!-- Tab 1: Live Classroom Feed -->
@@ -5676,6 +5843,393 @@
       }
 
 
+
+      // ---- Phase 4 Voice, Screencast, IEP & Drive Exporter Functions ----
+      
+      // 1. Screencast Recording Simulator
+      function toggleScreencast() {
+        if (screencastRecording) {
+          stopScreencast();
+        } else {
+          startScreencast();
+        }
+      }
+
+      function startScreencast() {
+        screencastRecording = true;
+        screencastSeconds = 0;
+        document.getElementById("screencast-btn").style.background = "rgba(239, 68, 68, 0.2)";
+        document.getElementById("screencast-btn").style.color = "#ef4444";
+        document.getElementById("screencast-btn").style.borderColor = "#ef4444";
+        document.getElementById("screencast-btn").innerHTML = "🛑 Stop";
+        document.getElementById("screencast-recorder-panel").style.display = "flex";
+        
+        // Highlight active models
+        document.getElementById("svg-canvas-container").classList.add("recording-active");
+        const scratchpad = document.getElementById("scratchpad-canvas");
+        if (scratchpad) scratchpad.classList.add("recording-active");
+
+        // System message indicating recording
+        appendTutorMessage("bot", "📹 <em>Screencast started. Explain your math steps out loud and draw on the scratchpad workspace.</em>");
+
+        screencastTimer = setInterval(() => {
+          screencastSeconds++;
+          const mins = Math.floor(screencastSeconds / 60);
+          const secs = screencastSeconds % 60;
+          document.getElementById("screencast-timer-text").textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }, 1000);
+      }
+
+      function stopScreencast() {
+        if (!screencastRecording) return;
+        screencastRecording = false;
+        clearInterval(screencastTimer);
+        document.getElementById("screencast-btn").style.background = "rgba(255, 255, 255, 0.05)";
+        document.getElementById("screencast-btn").style.color = "#c58af9";
+        document.getElementById("screencast-btn").style.borderColor = "var(--bg-panel-border)";
+        document.getElementById("screencast-btn").innerHTML = "📹 Explain Math";
+        document.getElementById("screencast-recorder-panel").style.display = "none";
+        
+        document.getElementById("svg-canvas-container").classList.remove("recording-active");
+        const scratchpad = document.getElementById("scratchpad-canvas");
+        if (scratchpad) scratchpad.classList.remove("recording-active");
+
+        // Simulated transcription text output based on current topic
+        const transDB = {
+          1: "First, I set up the GCF Venn diagram circles. Then I placed the factors in the outer sections and sorted the largest shared factor 12 into the center.",
+          2: "I clicked the partition button to divide the whole shapes into quarters. This split the 1 1/2 wholes into 6 equal segments. I counted them: 1, 2, 3, 4, 5, 6. So 6 fits.",
+          3: "I looked at the equivalent ratios double number line. I matched 7.5 flour cups to 30 cookies along the vertical axis, showing that the ratio is equivalent.",
+          7: "I saw that the balance scale was tilted. I subtracted 5 from both sides, which left 2x = 10. Then I divided by 2 to get x = 5.",
+          9: "I selected the coordinate point (2,3). To reflect it across the x-axis, I folded it downwards, mapping it to the point (2, -3)."
+        };
+        const transcriptText = transDB[selectedUnit] || "I looked at the visual model and explained how the equations balanced to find the value of x.";
+        
+        activeScreencastTranscript = transcriptText;
+        
+        // Populate chat response transcript
+        const inputEl = document.getElementById("chat-input");
+        if (inputEl) {
+          inputEl.value = `📹 [Screencast Transcription]: "${transcriptText}"`;
+        }
+      }
+
+      // 2. IEP Accommodations Engine
+      function saveIEPAccommodations() {
+        const textSel = document.getElementById("accomm-select-text").value;
+        const contrastCheck = document.getElementById("accomm-check-contrast").checked;
+        const columnCheck = document.getElementById("accomm-check-column").checked;
+        
+        studentAccommodations = {
+          textSize: textSel,
+          highContrast: contrastCheck,
+          dualColumn: columnCheck,
+          wordHighlight: false
+        };
+
+        try {
+          localStorage.setItem("ai-hub-accommodations", JSON.stringify(studentAccommodations));
+        } catch (_) {}
+
+        applyAccommodations();
+        alert("Accommodations synced! Switch back to Student view to check.");
+      }
+
+      function applyAccommodations() {
+        const workspaceContent = document.getElementById("ws-content");
+        if (!workspaceContent) return;
+
+        // Reset classes
+        workspaceContent.classList.remove("accomm-large-text", "accomm-xl-text");
+        document.body.classList.remove("accomm-high-contrast");
+
+        // Apply scale
+        if (studentAccommodations.textSize === "large") {
+          workspaceContent.classList.add("accomm-large-text");
+        } else if (studentAccommodations.textSize === "xl") {
+          workspaceContent.classList.add("accomm-xl-text");
+        }
+
+        // Apply high contrast
+        if (studentAccommodations.highContrast) {
+          document.body.classList.add("accomm-high-contrast");
+        }
+        
+        // Sync Accommodations panel indicators if open
+        const textSel = document.getElementById("accomm-select-text");
+        const contrastCheck = document.getElementById("accomm-check-contrast");
+        const columnCheck = document.getElementById("accomm-check-column");
+        
+        if (textSel) textSel.value = studentAccommodations.textSize;
+        if (contrastCheck) contrastCheck.checked = studentAccommodations.highContrast;
+        if (columnCheck) columnCheck.checked = studentAccommodations.dualColumn;
+      }
+
+      function translateToSpanishPlaceholder(text) {
+        // Mock translation helper
+        const dict = {
+          "first, let's ignore the decimal point": "Primero, ignoremos el punto decimal",
+          "what is 125 * 4?": "¿cuánto es 125 * 4?",
+          "correct! 125 * 4 = 500": "¡Correcto! 125 * 4 = 500",
+          "now let's place the decimal point": "Ahora coloquemos el punto decimal",
+          "keep: 2/3": "Mantener: 2/3",
+          "let's solve the equation 2x + 5 = 15": "Resolvamos la ecuación 2x + 5 = 15",
+          "subtract 5 from both sides": "Restar 5 de ambos lados",
+          "divide both sides by 2": "Dividir ambos lados por 2",
+          "correct! x = 5": "¡Correcto! x = 5"
+        };
+        
+        let translated = "Resolvamos el problema de matemáticas paso a paso utilizando modelos visuales.";
+        Object.keys(dict).forEach(key => {
+          if (text.toLowerCase().includes(key)) {
+            translated = dict[key];
+          }
+        });
+        return translated;
+      }
+
+      // 3. Model Comparison Sandbox
+      function toggleModelSandbox() {
+        const drawer = document.getElementById("model-sandbox-drawer");
+        if (!drawer) return;
+        const isOpen = drawer.classList.contains("open");
+        if (isOpen) {
+          drawer.classList.remove("open");
+          drawer.setAttribute("aria-hidden", "true");
+        } else {
+          drawer.classList.add("open");
+          drawer.setAttribute("aria-hidden", "false");
+          
+          // Focus trap
+          document.getElementById("sandbox-prompt-input").focus();
+        }
+      }
+
+      function loadSandboxPreset(val) {
+        if (val) {
+          document.getElementById("sandbox-prompt-input").value = val;
+        }
+      }
+
+      function submitSandboxPrompt() {
+        const prompt = document.getElementById("sandbox-prompt-input").value;
+        if (!prompt.trim()) return;
+
+        const colFlash = document.getElementById("sandbox-col-flash");
+        const colPro = document.getElementById("sandbox-col-pro");
+        const colUltra = document.getElementById("sandbox-col-ultra");
+
+        colFlash.innerHTML = '<div class="sync-spinner" style="border: 2px solid rgba(255,255,255,0.1); border-left-color: #8ab4f8; border-radius: 50%; width: 20px; height: 20px; margin: 20px auto;"></div>';
+        colPro.innerHTML = '<div class="sync-spinner" style="border: 2px solid rgba(255,255,255,0.1); border-left-color: #c58af9; border-radius: 50%; width: 20px; height: 20px; margin: 20px auto;"></div>';
+        colUltra.innerHTML = '<div class="sync-spinner" style="border: 2px solid rgba(255,255,255,0.1); border-left-color: #10b981; border-radius: 50%; width: 20px; height: 20px; margin: 20px auto;"></div>';
+
+        setTimeout(() => {
+          colFlash.textContent = `[Gemini 1.5 Flash - Response Time: 180ms]:
+To solve: 2.5 * 1.4.
+Ignore decimals: 25 * 14 = 350.
+Two decimal digits total in factors.
+Move decimal point 2 places left: 3.50.
+Answer: 3.5`;
+          
+          colPro.textContent = `[Gemini 1.5 Pro - Response Time: 380ms]:
+Hi there! Let's solve 2.5 * 1.4 using an area grid model.
+Imagine a rectangle with width 2.5 and height 1.4. We split it:
+- Part A (2 * 1) = 2.0
+- Part B (2 * 0.4) = 0.8
+- Part C (0.5 * 1) = 0.5
+- Part D (0.5 * 0.4) = 0.2
+Summing these partial products:
+2.0 + 0.8 + 0.5 + 0.2 = 3.5.
+What do you think is the benefit of breaking down the area? Let's discuss!`;
+
+          colUltra.textContent = `[Gemini 1.5 Ultra - Response Time: 750ms]:
+CONCEPT ANALYSIS: DECIMAL AREA MODELS
+Problem: Calculate 2.5 * 1.4.
+
+Visual Representation:
+  Width:  2.0 + 0.5
+  Height: 1.0 + 0.4
+
+  +----------+-------+
+  | (1.0*2.0)|(1.0*5)|
+  |   2.0    |  0.5  |
+  +----------+-------+
+  | (0.4*2.0)|(0.4*5)|
+  |   0.8    |  0.2  |
+  +----------+-------+
+
+Summing components:
+2.0 (Whole units) + 1.3 (Tenths) + 0.2 (Hundredths) = 3.50.
+IEP Guidance: Click visualizer cells to view fractional blocks.`;
+        }, 1200);
+      }
+
+      // 4. Group Leaderboard & Stickers
+      function awardTeamPoint(teamKey) {
+        if (teamScores[teamKey] !== undefined) {
+          teamScores[teamKey]++;
+          const scoreEl = document.getElementById("score-" + teamKey);
+          if (scoreEl) scoreEl.textContent = teamScores[teamKey] + "★";
+          
+          triggerConfetti();
+        }
+      }
+
+      function awardTeacherSticker(stickerName) {
+        // Teacher awards a sticker to student_demo
+        try {
+          localStorage.setItem("student_sticker_pending", stickerName);
+          alert(`Sticker "${stickerName}" awarded successfully to Student Demo! Switch back to Student view to check.`);
+        } catch (_) {}
+      }
+
+      function triggerStickerAlert(stickerName) {
+        const modal = document.getElementById("sticker-award-modal");
+        const icon = document.getElementById("sticker-award-icon");
+        const title = document.getElementById("sticker-award-title");
+        
+        const stickersDB = {
+          "Resilient Math Thinker": "🧠",
+          "Master Prompter": "⚡",
+          "Accuracy Champ": "🎯"
+        };
+
+        if (modal && title && icon) {
+          icon.textContent = stickersDB[stickerName] || "🏆";
+          title.textContent = stickerName;
+          modal.style.display = "flex";
+          
+          triggerConfetti();
+        }
+      }
+
+      function closeStickerAward() {
+        const modal = document.getElementById("sticker-award-modal");
+        const title = document.getElementById("sticker-award-title").textContent;
+        if (modal) modal.style.display = "none";
+        
+        try {
+          localStorage.removeItem("student_sticker_pending");
+          // Save to cabinet
+          const current = JSON.parse(localStorage.getItem("ai-hub-stickers") || "[]");
+          if (!current.includes(title)) {
+            current.push(title);
+            localStorage.setItem("ai-hub-stickers", JSON.stringify(current));
+          }
+        } catch (_) {}
+
+        updateDashboardProgress();
+      }
+
+      // 5. Portfolio Drive Exporter
+      function exportPortfolioDrive() {
+        // Simulate Google Drive sync loading
+        const originalText = document.querySelector("#dashboard-drawer .close-drawer-btn").textContent;
+        const exportBtn = document.querySelector("#dashboard-drawer button[onclick='exportPortfolioDrive()']");
+        
+        if (exportBtn) {
+          exportBtn.setAttribute("disabled", "true");
+          exportBtn.textContent = "⏳ Syncing to Classroom Google Drive...";
+        }
+
+        setTimeout(() => {
+          if (exportBtn) {
+            exportBtn.removeAttribute("disabled");
+            exportBtn.textContent = "📂 Export Math Journal to Drive";
+          }
+          
+          // Generate Math Journal content
+          let totalMastered = 0;
+          Object.keys(UNIT_DATA).forEach(unitKey => {
+            const unitNum = parseInt(unitKey);
+            if (completedChallenges[unitNum]) {
+              completedChallenges[unitNum].forEach(val => {
+                if (val) totalMastered++;
+              });
+            }
+          });
+
+          const activeStickers = JSON.parse(localStorage.getItem("ai-hub-stickers") || "[]");
+          const reflection = localStorage.getItem("ai-hub-sync-reflection") || "Active intervention block study.";
+
+          let chatHistoryText = "";
+          if (activeStudentChatLog.length > 0) {
+            chatHistoryText = activeStudentChatLog.map(c => `
+              <p><strong>${c.sender === 'user' ? 'Student' : 'Tutor'}:</strong> ${c.text}</p>
+            `).join('');
+          } else {
+            chatHistoryText = "<p><em>No active chat transcripts recorded in this session.</em></p>";
+          }
+
+          const journalHtml = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <title>Google Classroom Math Journal Portfolio</title>
+              <style>
+                body { font-family: sans-serif; background: #fafafa; color: #111; padding: 30px; }
+                .card { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 600px; margin: 0 auto; }
+                h1 { color: #137333; margin-top: 0; }
+                .stat { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 6px; }
+                .chat-box { background: #f1f3f4; border-radius: 8px; padding: 12px; margin-top: 15px; }
+                .sticker { display: inline-block; background: #e8f0fe; color: #1a73e8; font-weight: bold; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; margin-right: 6px; }
+              </style>
+            </head>
+            <body>
+              <div class="card">
+                <h1>📓 Math Journal Portfolio</h1>
+                <p><strong>Student Name:</strong> Math Explorer (Student Demo)</p>
+                <p><strong>Session Date:</strong> ${new Date().toLocaleDateString()}</p>
+                
+                <div style="margin: 20px 0;">
+                  <div class="stat"><span>Mastered Challenges:</span> <strong>${totalMastered} / 50</strong></div>
+                  <div class="stat"><span>IEP Text Scale:</span> <strong>${studentAccommodations.textSize}</strong></div>
+                  <div class="stat"><span>High Contrast Active:</span> <strong>${studentAccommodations.highContrast ? 'Yes' : 'No'}</strong></div>
+                </div>
+
+                <h3>Awarded Teacher Stickers</h3>
+                <div>
+                  ${activeStickers.length > 0 ? activeStickers.map(st => `<span class="sticker">🏆 ${st}</span>`).join('') : '<em>No teacher stickers awarded yet.</em>'}
+                </div>
+
+                <h3>Student reflection note:</h3>
+                <p style="background:#fcf8e3; border:1px solid #fbeed5; padding:10px; border-radius:6px; font-style:italic;">
+                  "${reflection}"
+                </p>
+
+                ${activeScreencastTranscript ? `
+                  <h3>📹 Audio Screencast Transcription:</h3>
+                  <p style="background:#e8f0fe; border:1px solid #d2e3fc; padding:10px; border-radius:6px;">
+                    "${activeScreencastTranscript}"
+                  </p>
+                ` : ''}
+
+                <h3>Chat Conversation Logs:</h3>
+                <div class="chat-box">
+                  ${chatHistoryText}
+                </div>
+
+                <div style="margin-top:24px; font-size:0.75rem; text-align:center; color:#5f6368;">
+                  Generated via Gemini AI Classroom Hub &bull; Google for Education
+                </div>
+              </div>
+            </body>
+            </html>
+          `;
+
+          const blob = new Blob([journalHtml], { type: "text/html" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "Math_Intervention_Journal_Portfolio.html";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          
+          triggerConfetti();
+        }, 1500);
+      }
+
       // ---- Phase 3 Voice, Sync & Teacher Functions ----
       function toggleAutoSpeak(checked) {
         autoSpeakEnabled = checked;
@@ -5793,12 +6347,13 @@
         document.getElementById("teacher-view-live").style.display = tabId === "live" ? "block" : "none";
         document.getElementById("teacher-view-matrix").style.display = tabId === "matrix" ? "block" : "none";
         document.getElementById("teacher-view-tools").style.display = tabId === "tools" ? "block" : "none";
+        document.getElementById("teacher-view-accomm").style.display = tabId === "accomm" ? "block" : "none";
 
         document.getElementById("teacher-tab-live").classList.toggle("active", tabId === "live");
         document.getElementById("teacher-tab-matrix").classList.toggle("active", tabId === "matrix");
         document.getElementById("teacher-tab-tools").classList.toggle("active", tabId === "tools");
         
-        const tabs = ["live", "matrix", "tools"];
+        const tabs = ["live", "matrix", "tools", "accomm"];
         tabs.forEach(t => {
           const btn = document.getElementById("teacher-tab-" + t);
           if (!btn) return;
@@ -5920,6 +6475,10 @@
               <div style="display:flex; gap:8px; margin-top:4px;">
                 <button class="nav-btn" style="flex:1; padding:6px; font-size:0.75rem; border-radius:6px; cursor:pointer;" onclick="inspectStudentChat('${student.id}')">🔍 Inspect Logs</button>
                 <button class="nav-btn" style="flex:1; padding:6px; font-size:0.75rem; border-radius:6px; border-color:#8ab4f8; color:#8ab4f8; cursor:pointer;" onclick="openInterventionDialog('${student.id}')">🍎 Intervene</button>
+              </div>
+              <div style="display:flex; gap:6px; margin-top:2px;">
+                <button class="nav-btn" style="flex:1; padding:4px; font-size:0.7rem; border-color:#ffb74d; color:#ffb74d; cursor:pointer;" onclick="awardTeacherSticker('Resilient Math Thinker')">🧠 Award Resilience</button>
+                <button class="nav-btn" style="flex:1; padding:4px; font-size:0.7rem; border-color:#ffb74d; color:#ffb74d; cursor:pointer;" onclick="awardTeacherSticker('Master Prompter')">⚡ Award Prompting</button>
               </div>
             </div>
           `;
@@ -6114,6 +6673,17 @@
         const bubble = document.createElement("div");
         bubble.className = "chat-bubble";
         bubble.innerHTML = parseGlossaryTerms(text); // parse bilingual terms
+        
+        // IEP Accommodations: Dual Column English/Spanish layout
+        if (sender === "bot" && studentAccommodations.dualColumn) {
+          const cleanText = text.replace(/<[^>]*>/g, "");
+          const esText = translateToSpanishPlaceholder(cleanText);
+          bubble.innerHTML = parseGlossaryTerms(text) + `
+            <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.06); font-size: 0.85em; color: #a78bfa; font-style: italic;">
+              📚 Translation: ${esText}
+            </div>
+          `;
+        }
 
         row.appendChild(avatar);
         row.appendChild(bubble);
@@ -6458,6 +7028,21 @@
                 syncBtn.style.color = "#8ab4f8";
                 syncBtn.style.borderColor = "var(--bg-panel-border)";
               }
+            }
+            
+            // Load Phase 4 accommodations
+            const savedAccomm = localStorage.getItem("ai-hub-accommodations");
+            if (savedAccomm) {
+              studentAccommodations = JSON.parse(savedAccomm);
+              applyAccommodations();
+            }
+
+            // Check for pending stickers from teacher
+            const pendingSticker = localStorage.getItem("student_sticker_pending");
+            if (pendingSticker && role === "student") {
+              setTimeout(() => {
+                triggerStickerAlert(pendingSticker);
+              }, 1800);
             }
           } catch (_) {}
           }
